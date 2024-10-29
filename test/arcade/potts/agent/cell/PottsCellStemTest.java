@@ -61,7 +61,9 @@ public class PottsCellStemTest {
     @BeforeAll
     public static void setupMocks() {
         locationMock = mock(PottsLocation.class);
-        parametersMock = new Parameters(new MiniBox(), null, null);
+        parametersMock = spy(new Parameters(new MiniBox(), null, null));
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
     }
 
     @Test

@@ -59,7 +59,7 @@ public class PottsModuleProliferationSimpleTest {
         defaults.put("proliferation/STEPS_G2", randomIntBetween(1, 100));
         defaults.put("proliferation/STEPS_M", randomIntBetween(1, 100));
         defaults.put("proliferation/CELL_GROWTH_RATE", randomDoubleBetween(1, 100));
-        defaults.put("proliferation/NUCLEAR_GROWTH_RATE", randomDoubleBetween(1, 100));
+        defaults.put("proliferation/NUCLEUS_GROWTH_RATE", randomDoubleBetween(1, 100));
         defaults.put("proliferation/BASAL_APOPTOSIS_RATE", randomDoubleBetween(0, 0.5));
         defaults.put(
                 "proliferation/NUCLEUS_CONDENSATION_FRACTION", randomDoubleBetween(0.25, 0.75));

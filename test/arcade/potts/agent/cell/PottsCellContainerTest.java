@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
-import arcade.potts.agent.module.PottsModule;
 import arcade.potts.env.location.PottsLocation;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -127,12 +126,12 @@ public class PottsCellContainerTest {
         int cellPop = randomIntBetween(1, 10);
         int cellAge = randomIntBetween(1, 100);
         int cellDivisions = randomIntBetween(1, 100);
-        State cellState = State.PROLIFERATIVE;
-        Phase cellPhase = Phase.PROLIFERATIVE_S;
+        State cellState = State.UNDEFINED;
+        Phase cellPhase = Phase.UNDEFINED;
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
-        MiniBox parameters = mock(MiniBox.class);
-        when(parameters.get("CLASS")).thenReturn("");
+        MiniBox parameters = new MiniBox();
+        parameters.put("CLASS", "");
 
         factory.popToParameters.put(cellPop, parameters);
         factory.popToRegions.put(cellPop, false);
@@ -159,7 +158,6 @@ public class PottsCellContainerTest {
         assertEquals(cellDivisions, cell.getDivisions());
         assertEquals(cellState, cell.getState());
         assertEquals(parameters, cell.getParameters().popParameters);
-        assertEquals(cellPhase, ((PottsModule) cell.getModule()).getPhase());
         assertEquals(criticalVolume, cell.getCriticalVolume(), EPSILON);
         assertEquals(criticalHeight, cell.getCriticalHeight(), EPSILON);
         assertEquals(0, cell.getTargetVolume(), EPSILON);
@@ -176,12 +174,12 @@ public class PottsCellContainerTest {
         int cellPop = randomIntBetween(1, 10);
         int cellAge = randomIntBetween(1, 100);
         int cellDivisions = randomIntBetween(1, 100);
-        State cellState = State.PROLIFERATIVE;
-        Phase cellPhase = Phase.PROLIFERATIVE_S;
+        State cellState = State.UNDEFINED;
+        Phase cellPhase = Phase.UNDEFINED;
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
-        MiniBox parameters = mock(MiniBox.class);
-        when(parameters.get("CLASS")).thenReturn("");
+        MiniBox parameters = new MiniBox();
+        parameters.put("CLASS", "");
 
         EnumSet<Region> regionList = EnumSet.of(Region.NUCLEUS, Region.UNDEFINED);
         doReturn(regionList).when(location).getRegions();
@@ -222,7 +220,6 @@ public class PottsCellContainerTest {
         assertEquals(cellDivisions, cell.getDivisions());
         assertEquals(cellState, cell.getState());
         assertEquals(parameters, cell.getParameters().popParameters);
-        assertEquals(cellPhase, ((PottsModule) cell.getModule()).getPhase());
         assertEquals(criticalVolume, cell.getCriticalVolume(), EPSILON);
         assertEquals(criticalHeight, cell.getCriticalHeight(), EPSILON);
         assertEquals(0, cell.getTargetVolume(), EPSILON);

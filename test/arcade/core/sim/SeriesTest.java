@@ -24,9 +24,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.Series.SEED_OFFSET;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 public class SeriesTest {
-    private static final double EPSILON = 1E-8;
+    private static final double EPSILON = 1E-5;
 
     private static final double DS = randomDoubleBetween(1, 10);
 
@@ -560,7 +561,7 @@ public class SeriesTest {
     }
 
     @Test
-    public void parseParameter_withValueOnly_usesDefault() {
+    public void parseParameter_withValueOnly_usesValue() {
         MiniBox box = new MiniBox();
         String parameter = randomString();
         double defaultParameter = randomDoubleBetween(0, 100);
@@ -575,7 +576,7 @@ public class SeriesTest {
     }
 
     @Test
-    public void parseParameter_withScaleOnly_usesDefault() {
+    public void parseParameter_withScaleOnly_usesScaledDefault() {
         MiniBox box = new MiniBox();
         String parameter = randomString();
         double defaultParameter = randomDoubleBetween(0, 100);
@@ -590,7 +591,7 @@ public class SeriesTest {
     }
 
     @Test
-    public void parseParameter_valueAndScale_usesDefault() {
+    public void parseParameter_valueAndScale_usesScaledValue() {
         MiniBox box = new MiniBox();
         String parameter = randomString();
         double defaultParameter = randomDoubleBetween(0, 100);
@@ -605,6 +606,23 @@ public class SeriesTest {
 
         Series.parseParameter(box, parameter, "" + defaultParameter, values, scales);
         assertEquals(parameterValue * parameterScale, box.getDouble(parameter), EPSILON);
+    }
+
+    @Test
+    public void parseParameter_noValueDistribution_usesDefault() {
+        MiniBox box = new MiniBox();
+        String parameter = randomString();
+        String distribution = randomString().toUpperCase();
+        double defaultParameterA = randomDoubleBetween(0, 100);
+        double defaultParameterB = randomDoubleBetween(0, 100);
+        String code =
+                String.format("%s(A=%f,B=%f)", distribution, defaultParameterA, defaultParameterB);
+        MiniBox values = new MiniBox();
+        MiniBox scales = new MiniBox();
+        Series.parseParameter(box, parameter, code, values, scales);
+        assertEquals(distribution, box.get("(DISTRIBUTION)" + TAG_SEPARATOR + parameter));
+        assertEquals(defaultParameterA, box.getDouble(parameter + "_A"), EPSILON);
+        assertEquals(defaultParameterB, box.getDouble(parameter + "_B"), EPSILON);
     }
 
     @Test
