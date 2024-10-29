@@ -119,7 +119,7 @@ public class PatchSeriesTest {
         verify(series).updatePatch(eq(patch), any(MiniBox.class));
 
         ArrayList<Box> populations = setupLists.get("populations");
-        verify(series).updatePopulations(eq(populations), any(MiniBox.class), eq(null));
+        verify(series).updatePopulations(eq(populations), any(MiniBox.class), any(MiniBox.class));
 
         ArrayList<Box> layers = setupLists.get("layers");
         verify(series).updateLayers(eq(layers), any(MiniBox.class), any(MiniBox.class));
@@ -195,7 +195,7 @@ public class PatchSeriesTest {
         ArrayList<Box> populations = setupLists.get("populations");
         populations.addAll(Arrays.asList(boxes));
 
-        series.updatePopulations(populations, POPULATION, null);
+        series.updatePopulations(populations, POPULATION, new MiniBox());
         return series;
     }
 

@@ -2,8 +2,10 @@ package arcade.core.util.distributions;
 
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
+import arcade.core.util.MiniBox;
 import arcade.core.util.exceptions.OutOfBoundsException;
 import static org.junit.jupiter.api.Assertions.*;
+import static arcade.core.ARCADETestUtilities.*;
 
 public class NormalFractionalDistributionTest {
     private static final double EPSILON = 1E-5;
@@ -14,9 +16,14 @@ public class NormalFractionalDistributionTest {
     public void constructor_calledWithCode_populatesAttributes() {
         double mu = 0.2;
         double sigma = 0.1;
-        String code = NormalFractionalDistribution.convert(mu, sigma);
 
-        NormalFractionalDistribution dist = new NormalFractionalDistribution(code, RANDOM);
+        String name = randomString().toUpperCase();
+        MiniBox parameters = new MiniBox();
+        parameters.put(name + "_MU", mu);
+        parameters.put(name + "_SIGMA", sigma);
+
+        NormalFractionalDistribution dist =
+                new NormalFractionalDistribution(name, parameters, RANDOM);
 
         assertAll(
                 () -> assertEquals(mu, dist.mu, EPSILON),

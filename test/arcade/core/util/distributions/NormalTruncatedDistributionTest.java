@@ -2,7 +2,9 @@ package arcade.core.util.distributions;
 
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
+import arcade.core.util.MiniBox;
 import static org.junit.jupiter.api.Assertions.*;
+import static arcade.core.ARCADETestUtilities.randomString;
 
 public class NormalTruncatedDistributionTest {
     private static final double EPSILON = 1E-5;
@@ -13,9 +15,14 @@ public class NormalTruncatedDistributionTest {
     public void constructor_calledWithCode_populatesAttributes() {
         double mu = 4.0;
         double sigma = 0.25;
-        String code = NormalTruncatedDistribution.convert(mu, sigma);
 
-        NormalTruncatedDistribution dist = new NormalTruncatedDistribution(code, RANDOM);
+        String name = randomString().toUpperCase();
+        MiniBox parameters = new MiniBox();
+        parameters.put(name + "_MU", mu);
+        parameters.put(name + "_SIGMA", sigma);
+
+        NormalTruncatedDistribution dist =
+                new NormalTruncatedDistribution(name, parameters, RANDOM);
 
         assertAll(
                 () -> assertEquals(mu, dist.mu, EPSILON),

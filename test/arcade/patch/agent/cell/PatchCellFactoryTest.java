@@ -5,7 +5,6 @@ import java.util.HashSet;
 import org.junit.jupiter.api.Test;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
-import arcade.core.util.distributions.Distribution;
 import arcade.patch.sim.PatchSeries;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -27,18 +26,6 @@ public class PatchCellFactoryTest {
         }
 
         return series;
-    }
-
-    static Distribution makeDistributionMock(double values) {
-        Distribution distribution = mock(Distribution.class);
-        doReturn(values).when(distribution).nextDouble();
-        return distribution;
-    }
-
-    static Distribution makeDistributionMock(int values) {
-        Distribution distribution = mock(Distribution.class);
-        doReturn(values).when(distribution).nextInt();
-        return distribution;
     }
 
     @Test
@@ -63,13 +50,16 @@ public class PatchCellFactoryTest {
         int divisions = randomIntBetween(1, 100);
         double compression = randomDoubleBetween(1, 10);
 
+        MiniBox parameters = new MiniBox();
+        parameters.put("CELL_VOLUME", volume);
+        parameters.put("CELL_HEIGHT", height);
+        parameters.put("CELL_AGE", age);
+        parameters.put("DIVISION_POTENTIAL", divisions);
+        parameters.put("COMPRESSION_TOLERANCE", compression);
+
         PatchCellFactory factory = new PatchCellFactory();
         factory.popToIDs.put(1, new HashSet<>());
-        factory.popToCriticalVolumes.put(1, makeDistributionMock(volume));
-        factory.popToCriticalHeights.put(1, makeDistributionMock(height));
-        factory.popToAges.put(1, makeDistributionMock(age));
-        factory.popToDivisions.put(1, divisions);
-        factory.popToCompression.put(1, compression);
+        factory.popToParameters.put(1, parameters);
         factory.createCells(series);
 
         assertEquals(count, factory.cells.size());
@@ -100,13 +90,16 @@ public class PatchCellFactoryTest {
         int divisions = randomIntBetween(1, 100);
         double compression = randomDoubleBetween(1, 10);
 
+        MiniBox parameters = new MiniBox();
+        parameters.put("CELL_VOLUME", volume);
+        parameters.put("CELL_HEIGHT", height);
+        parameters.put("CELL_AGE", age);
+        parameters.put("DIVISION_POTENTIAL", divisions);
+        parameters.put("COMPRESSION_TOLERANCE", compression);
+
         PatchCellFactory factory = new PatchCellFactory();
         factory.popToIDs.put(1, new HashSet<>());
-        factory.popToCriticalVolumes.put(1, makeDistributionMock(volume));
-        factory.popToCriticalHeights.put(1, makeDistributionMock(height));
-        factory.popToAges.put(1, makeDistributionMock(age));
-        factory.popToDivisions.put(1, divisions);
-        factory.popToCompression.put(1, compression);
+        factory.popToParameters.put(1, parameters);
         factory.createCells(series);
 
         assertEquals(init, factory.cells.size());
@@ -136,13 +129,16 @@ public class PatchCellFactoryTest {
         int divisions = randomIntBetween(1, 100);
         double compression = randomDoubleBetween(1, 10);
 
+        MiniBox parameters = new MiniBox();
+        parameters.put("CELL_VOLUME", volume);
+        parameters.put("CELL_HEIGHT", height);
+        parameters.put("CELL_AGE", age);
+        parameters.put("DIVISION_POTENTIAL", divisions);
+        parameters.put("COMPRESSION_TOLERANCE", compression);
+
         PatchCellFactory factory = new PatchCellFactory();
         factory.popToIDs.put(1, new HashSet<>());
-        factory.popToCriticalVolumes.put(1, makeDistributionMock(volume));
-        factory.popToCriticalHeights.put(1, makeDistributionMock(height));
-        factory.popToAges.put(1, makeDistributionMock(age));
-        factory.popToDivisions.put(1, divisions);
-        factory.popToCompression.put(1, compression);
+        factory.popToParameters.put(1, parameters);
         factory.createCells(series);
 
         assertEquals(totalPatches, factory.cells.size());
@@ -199,25 +195,34 @@ public class PatchCellFactoryTest {
                     randomDoubleBetween(1, 10),
                 };
 
+        MiniBox parameters1 = new MiniBox();
+        parameters1.put("CELL_VOLUME", volumes[0]);
+        parameters1.put("CELL_HEIGHT", heights[0]);
+        parameters1.put("CELL_AGE", ages[0]);
+        parameters1.put("DIVISION_POTENTIAL", divisions[0]);
+        parameters1.put("COMPRESSION_TOLERANCE", compressions[0]);
+
+        MiniBox parameters2 = new MiniBox();
+        parameters2.put("CELL_VOLUME", volumes[1]);
+        parameters2.put("CELL_HEIGHT", heights[1]);
+        parameters2.put("CELL_AGE", ages[1]);
+        parameters2.put("DIVISION_POTENTIAL", divisions[1]);
+        parameters2.put("COMPRESSION_TOLERANCE", compressions[1]);
+
+        MiniBox parameters3 = new MiniBox();
+        parameters3.put("CELL_VOLUME", volumes[2]);
+        parameters3.put("CELL_HEIGHT", heights[2]);
+        parameters3.put("CELL_AGE", ages[2]);
+        parameters3.put("DIVISION_POTENTIAL", divisions[2]);
+        parameters3.put("COMPRESSION_TOLERANCE", compressions[2]);
+
         PatchCellFactory factory = new PatchCellFactory();
         factory.popToIDs.put(1, new HashSet<>());
         factory.popToIDs.put(2, new HashSet<>());
         factory.popToIDs.put(3, new HashSet<>());
-        factory.popToCriticalVolumes.put(1, makeDistributionMock(volumes[0]));
-        factory.popToCriticalVolumes.put(2, makeDistributionMock(volumes[1]));
-        factory.popToCriticalVolumes.put(3, makeDistributionMock(volumes[2]));
-        factory.popToCriticalHeights.put(1, makeDistributionMock(heights[0]));
-        factory.popToCriticalHeights.put(2, makeDistributionMock(heights[1]));
-        factory.popToCriticalHeights.put(3, makeDistributionMock(heights[2]));
-        factory.popToAges.put(1, makeDistributionMock(ages[0]));
-        factory.popToAges.put(2, makeDistributionMock(ages[1]));
-        factory.popToAges.put(3, makeDistributionMock(ages[2]));
-        factory.popToDivisions.put(1, divisions[0]);
-        factory.popToDivisions.put(2, divisions[1]);
-        factory.popToDivisions.put(3, divisions[2]);
-        factory.popToCompression.put(1, compressions[0]);
-        factory.popToCompression.put(2, compressions[1]);
-        factory.popToCompression.put(3, compressions[2]);
+        factory.popToParameters.put(1, parameters1);
+        factory.popToParameters.put(2, parameters2);
+        factory.popToParameters.put(3, parameters3);
         factory.createCells(series);
         factory.createCells(series);
 

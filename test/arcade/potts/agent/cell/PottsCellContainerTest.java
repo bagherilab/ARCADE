@@ -1,5 +1,6 @@
 package arcade.potts.agent.cell;
 
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,6 @@ import arcade.potts.env.location.PottsLocation;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
-import static arcade.potts.agent.cell.PottsCellFactoryTest.*;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
@@ -186,8 +186,13 @@ public class PottsCellContainerTest {
         EnumSet<Region> regionList = EnumSet.of(Region.NUCLEUS, Region.UNDEFINED);
         doReturn(regionList).when(location).getRegions();
 
-        EnumMap<Region, Double> criticalRegionVolumes = makeRegionEnumMap();
-        EnumMap<Region, Double> criticalRegionHeights = makeRegionEnumMap();
+        EnumMap<Region, Double> criticalRegionVolumes = new EnumMap<>(Region.class);
+        EnumMap<Region, Double> criticalRegionHeights = new EnumMap<>(Region.class);
+
+        Arrays.stream(Region.values())
+                .forEach(region -> criticalRegionVolumes.put(region, randomDoubleBetween(0, 100)));
+        Arrays.stream(Region.values())
+                .forEach(region -> criticalRegionHeights.put(region, randomDoubleBetween(0, 100)));
 
         factory.popToParameters.put(cellPop, parameters);
         factory.popToRegions.put(cellPop, true);
