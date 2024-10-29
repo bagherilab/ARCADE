@@ -473,7 +473,7 @@ public abstract class TissueCell implements Cell {
 		String cycles = "";
 		for (Object c : cycle) { cycles += (double)c + ","; }
 		return "[" + code + "," + pop + "," + type + "," + location.getPosition() 
-			+ "," + String.format("%.2f", volume)
+			+ "," + String.format("%.2f", volume) + "," + age
 			+ ",[" + cycles.replaceFirst(",$","") + "]]";
 	}
 }

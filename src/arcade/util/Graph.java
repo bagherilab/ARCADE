@@ -19,47 +19,57 @@ import sim.util.Bag;
  * {@code Edge} objects represent edges in the graph and {@code Node} objects
  * represent nodes in the graph.
  * Nodes may have more than one edge in or out.
- * 
+ *
  * @version 2.3.12
  * @since   2.3
  */
 
 public class Graph implements Serializable {
+
+    /** Calculation strategies. */
+    public enum Strategy {
+        /** Code for upstream calculation strategy. */
+        UPSTREAM,
+
+        /** Code for downstream direction strategy. */
+        DOWNSTREAM
+    }
+
 	/** Serialization version identifier */
 	private static final long serialVersionUID = 0;
-	
+
 	/** Code indicating the FROM node of an edge */
 	public static final int DIR_FROM = -1;
-	
+
 	/** Code indicating the TO node of an edge */
 	public static final int DIR_TO = 1;
-	
+
 	/** Code indicating that an edge was added for degree updates */
 	private static final int ADD = 1;
-	
+
 	/** Code indicating that an edge was removed for degree updates */
 	private static final int REMOVE = -1;
-	
+
 	/** Collection of all {@code Edge} objects in a graph */
 	private final Bag allEdges;
-	
+
 	/** Map of {@code Node} OUT to bag of {@code Edge} objects */
 	private final Map<Node, Bag> nodeToOutBag;
-	
+
 	/** Map of {@code Node} IN to bag of {@code Edge} objects */
 	private final Map<Node, Bag> nodeToInBag;
 
     private Map<String, Node> allNodes;
-	
+
 	/** Array of in degree for node coordinates */
 	private final int[][] inDegree;
-	
+
 	/** Array of out degree for node coordinates */
 	private final int[][] outDegree;
-	
+
 	/**
 	 * Creates a {@code Graph} for the given array size.
-	 * 
+	 *
 	 * @param length  the length of the array (x direction)
 	 * @param width  the width of the array (y direction)
 	 */
@@ -71,59 +81,73 @@ public class Graph implements Serializable {
 		inDegree = new int[length][width];
 		outDegree = new int[length][width];
 	}
-	
+
 	/**
 	 * Gets all edges in the graph.
-	 * 
+	 *
 	 * @return  a bag containing the edges
 	 */
 	public Bag getAllEdges() { return allEdges; }
-	
+
     public Set<Node> getAllNodes() { return retrieveNodes(); }
 
-	/**
-	 * Gets edges out of the given node.
-	 * 
-	 * @param node  the node that edges are from
-	 * @return  a bag containing the edges
-	 */
-	public Bag getEdgesOut(Node node) { return nodeToOutBag.get(node); }
-	
-	/**
-	 * Gets edges into the given node.
-	 * 
-	 * @param node  the node that edges are to
-	 * @return  a bag containing the edges
-	 */
-	public Bag getEdgesIn(Node node) { return nodeToInBag.get(node); }
-	
+    /**
+     * Gets all edges in the graph based on the given node and category.
+     *
+     * @param node the node to get edges from
+     * @param strategy the category of edges to get
+     * @return a bag containing the edges
+     */
+    public Bag getEdges(Node node, Strategy strategy) {
+        return (strategy == Strategy.UPSTREAM) ? nodeToInBag.get(node) : nodeToOutBag.get(node);
+    }
+
+    /**
+     * Gets edges out of the given node.
+     *
+     * @param node the node that edges are from
+     * @return a bag containing the edges
+     */
+    public Bag getEdgesOut(Node node) {
+        return getEdges(node, Strategy.DOWNSTREAM);
+    }
+
+    /**
+     * Gets edges into the given node.
+     *
+     * @param node the node that edges are to
+     * @return a bag containing the edges
+     */
+    public Bag getEdgesIn(Node node) {
+        return getEdges(node, Strategy.UPSTREAM);
+    }
 	/**
 	 * Gets the in degree at the given node.
-	 * 
+	 *
 	 * @param node  the node
 	 * @return  the in degree
 	 */
 	public int getInDegree(Node node) { return inDegree[node.x][node.y]; }
-	
+
 	/**
 	 * Gets the out degree at the given node.
-	 * 
+	 *
 	 * @param node  the node
 	 * @return  the out degree
 	 */
 	public int getOutDegree(Node node) { return outDegree[node.x][node.y]; }
-	
+
 	/**
 	 * Gets the total degree (in degree + out degree) at the given node.
-	 * 
+	 *
 	 * @param node  the node
 	 * @return  the degree
 	 */
 	public int getDegree(Node node) { return inDegree[node.x][node.y] + outDegree[node.x][node.y]; }
-	
+
 	/**
 	 * Checks if the graph has an edge between the given nodes.
-	 * 
+	 *
 	 * @param from  the node the edge points from
 	 * @param to  the node the edge points to
 	 * @return  {@code true} if edge exists, {@code false} otherwise
@@ -134,7 +158,7 @@ public class Graph implements Serializable {
 		for (Object obj : bag) { if (to.equals(((Edge)obj).to)) { return true; } }
 		return false;
 	}
-	
+
 	/** Defines a filter for edges in a graph */
 	public interface Filter { boolean filter(Edge edge); }
 
@@ -142,7 +166,7 @@ public class Graph implements Serializable {
 	 * Filters this graph for edges and copies them to the given graph object.
 	 * <p>
 	 * Notes that the links in the subgraph are not correct.
-	 * 
+	 *
 	 * @param g  the graph to add filtered edges to
 	 * @param f  the edge filter
 	 */
@@ -156,7 +180,7 @@ public class Graph implements Serializable {
 			}
 		}
 	}
-	
+
 	/**
 	 * Sets the TO and FROM nodes for edges to be the same object.
 	 */
@@ -164,13 +188,13 @@ public class Graph implements Serializable {
 		Set<Node> sOut = nodeToOutBag.keySet();
 		Set<Node> sIn = nodeToInBag.keySet();
 		Set<Node> set = new LinkedHashSet<Node>() { { addAll(sOut); addAll(sIn); }};
-		
+
 		for (Object obj : set) {
 			Node node = (Node)obj;
 			Node join = node.duplicate();
 			Bag out = getEdgesOut(node);
 			Bag in = getEdgesIn(node);
-			
+
 			// Iterate through all edges OUT of node.
 			if (out != null) {
 				for (Object x : out) {
@@ -178,7 +202,7 @@ public class Graph implements Serializable {
 					e.setFrom(join);
 				}
 			}
-			
+
 			// Iterate through all edges IN to node.
 			if (in != null) {
 				for (Object x : in) {
@@ -191,10 +215,10 @@ public class Graph implements Serializable {
 
 		}
 	}
-	
+
 	/**
 	 * Adds edge to graph.
-	 * 
+	 *
 	 * @param edge  the edge to add
 	 */
 	public void addEdge(Edge edge) {
@@ -205,7 +229,7 @@ public class Graph implements Serializable {
 		updateDegrees(edge, ADD);
         addNodes(edge);
 	}
-	
+
     private void addNodes(Edge edge){
         Node from = edge.getFrom();
         Node to = edge.getTo();
@@ -225,7 +249,7 @@ public class Graph implements Serializable {
 
 	/**
 	 * Adds the edge to the bag for the mapping of OUT node to edge.
-	 * 
+	 *
 	 * @param node  the node hash
 	 * @param edge  the edge
 	 */
@@ -237,10 +261,10 @@ public class Graph implements Serializable {
 		}
 		objs.add(edge);
 	}
-	
+
 	/**
 	 * Adds the edge to the bag for the mapping of IN node to edge.
-	 * 
+	 *
 	 * @param node  the node hash
 	 * @param edge  the edge
 	 */
@@ -252,10 +276,10 @@ public class Graph implements Serializable {
 		}
 		objs.add(edge);
 	}
-	
+
 	/**
 	 * Adds links between edges in and out of the nodes for a given edge.
-	 * 
+	 *
 	 * @param edge  the edge
 	 */
 	public void setLinks(Edge edge) {
@@ -267,7 +291,7 @@ public class Graph implements Serializable {
 				if (!edge.edgesOut.contains(e)) { edge.edgesOut.add(e); }
 			}
 		}
-		
+
 		Bag inFrom = getEdgesIn(edge.getFrom());
 		if (inFrom != null) {
 			for (Object obj : inFrom) {
@@ -277,10 +301,10 @@ public class Graph implements Serializable {
 			}
 		}
 	}
-	
+
 	/**
 	 * Removes edge from graph.
-	 * 
+	 *
 	 * @param edge  the edge to remove
 	 */
 	public void removeEdge(Edge edge) {
@@ -294,7 +318,7 @@ public class Graph implements Serializable {
     public Node lookupNode(int x, int y, int z){
         return allNodes.get("(" + x + "," + y + "," + z + ")");
     }
-	
+
     public Node lookupNode(Node node){
         return allNodes.get(node.toString());
     }
@@ -311,7 +335,7 @@ public class Graph implements Serializable {
 		objs.remove(edge);
 		if (objs.numObjs == 0) { nodeToOutBag.remove(node); }
 	}
-	
+
 	/**
 	 * Removes the edge from the bag for the mapping of IN node to edge.
 	 *
@@ -324,7 +348,7 @@ public class Graph implements Serializable {
 		objs.remove(edge);
 		if (objs.numObjs == 0) { nodeToInBag.remove(node); }
 	}
-	
+
 	/**
 	 * Removes links between edges in and out of the nodes for a given edge.
 	 *
@@ -339,7 +363,7 @@ public class Graph implements Serializable {
 				edge.edgesOut.remove(e);
 			}
 		}
-		
+
 		Bag inFrom = getEdgesIn(edge.getFrom());
 		if (inFrom != null) {
 			for (Object obj : inFrom) {
@@ -349,10 +373,10 @@ public class Graph implements Serializable {
 			}
 		}
 	}
-	
+
 	/**
 	 * Updates the in and out degree for the given edge.
-	 * 
+	 *
 	 * @param edge  the edge that was added or removed
 	 * @param type  the type of update (addition or removal)
 	 */
@@ -362,17 +386,17 @@ public class Graph implements Serializable {
 		inDegree[to.getX()][to.getY()] += type;
 		outDegree[from.getX()][from.getY()] += type;
 	}
-	
+
 	/**
 	 * Removes the given edge and adds the reversed edge.
-	 * 
+	 *
 	 * @param edge  the edge to reverse
 	 */
 	public void reverseEdge(Edge edge) {
 		removeEdge(edge);
 		addEdge(edge.reverse());
 	}
-	
+
     public boolean containsNode(Node node) {
         return nodeToOutBag.containsKey(node) || nodeToInBag.containsKey(node);
     }
@@ -388,109 +412,158 @@ public class Graph implements Serializable {
         };
         return set;
     }
+    /**
+     * Find the first downstream node where two edges intersect.
+     *
+     * @param edge1 first edge to start from
+     * @param edge2 second edge to start from
+     * @return the intersection node or null if no intersection
+     */
+    public Node findDownstreamIntersection(Edge edge1, Edge edge2) {
+        return findIntersection(edge1, edge2, Strategy.DOWNSTREAM);
+    }
 
-    public Bag getAllDownstream(Node node){
-        Bag out = getEdgesOut(node);
-        if (out == null){
+    /**
+     * Find the first upstream node where two edges intersect.
+     *
+     * @param edge1 first edge to start from
+     * @param edge2 second edge to start from
+     * @return the intersection node or null if no intersection
+     */
+    public Node findUpstreamIntersection(Edge edge1, Edge edge2) {
+        return findIntersection(edge1, edge2, Strategy.UPSTREAM);
+    }
+
+    /**
+     * Find the first node where two edges intersect based on a calulcation strategy (upstream or
+     * downstream).
+     *
+     * @param edge1 first edge to start from
+     * @param edge2 second edge to start from
+     * @param strategy the direction to search
+     * @return the intersection node or null if no intersection
+     */
+    private Node findIntersection(Edge edge1, Edge edge2, Strategy strategy) {
+        if (edge1.getNode(strategy).equals(edge2.getNode(strategy))) {
+            return edge1.getNode(strategy);
+        }
+        Bag allConnected = getConnectedNodes(edge1.getNode(strategy), strategy);
+        if (allConnected == null) {
+            return null;
+        }
+        Node intersection = breadthFirstSearch(edge2.getNode(strategy), allConnected, strategy);
+        return intersection;
+    }
+
+    /**
+     * Get all nodes connected to the given node based on a calculation strategy (e.g. upstream or
+     * downstream).
+     *
+     * @param node the node to start from
+     * @param strategy the direction to search
+     * @return a bag of connected nodes
+     */
+    private Bag getConnectedNodes(Node node, Strategy strategy) {
+        Bag first = getEdges(node, strategy);
+        if (first == null) {
             return null;
         }
         Bag visited = new Bag();
         Queue<Node> queue = new LinkedList<>();
-        for (Object e:out){
+        for (Object e : first) {
             Edge edge = (Edge) e;
-            queue.add((Node) edge.getTo());
+            queue.add(edge.getNode(strategy));
         }
 
         while (!queue.isEmpty()) {
             Node active = queue.poll();
-            if (!visited.contains(active)) {
-                visited.add(active);
-                if (getEdgesOut(active) == null){ continue; }
-                for (Object nextOut : getEdgesOut(active)) {
-                    Edge edge = (Edge) nextOut;
-                    if (!visited.contains(edge)) {
-                        queue.add(edge.getTo());
-                    }
+            visited.add(active);
+            if (getEdges(active, strategy) == null) {
+                continue;
+            }
+            for (Object next : getEdges(active, strategy)) {
+                Edge edge = (Edge) next;
+                if (!visited.contains(edge.getNode(strategy))) {
+                    queue.add(edge.getNode(strategy));
                 }
             }
         }
         return visited;
     }
 
-    private Node breadthFirstSearch(Edge edge, Bag targetsBag){
-        Bag out = getEdgesOut(edge.getTo());
-        if (out == null){
+    /**
+     * Breadth first search from node according to strategy for a subset of target nodes.
+     *
+     * @param node the node to start from
+     * @param targetNodes the bag of potential intersection nodes
+     * @param strategy the direction to search
+     * @return the target node or null if not found
+     */
+    private Node breadthFirstSearch(Node node, Bag targetNodes, Strategy strategy) {
+        Bag first = getEdges(node, strategy);
+        if (first == null) {
             return null;
         }
+        Bag visited = new Bag();
         Queue<Node> queue = new LinkedList<>();
-        for (Object obj:out){
-            Edge e = (Edge) obj;
-            queue.add(e.getTo());
+        for (Object e : first) {
+            Edge edge = (Edge) e;
+            queue.add(edge.getNode(strategy));
         }
+
         while (!queue.isEmpty()) {
-            Node next = queue.poll();
-            if (targetsBag.contains(next)){
-                return next;
+            Node active = queue.poll();
+            visited.add(active);
+            if (targetNodes.contains(active)) {
+                return active;
             }
-            if (getEdgesOut(next) == null){continue;}
-            for (Object obj: getEdgesOut(next)){
-                Edge e = (Edge) obj;
-                queue.add(e.getTo());
+            if (getEdges(active, strategy) == null) {
+                continue;
+            }
+            for (Object next : getEdges(active, strategy)) {
+                Edge edge = (Edge) next;
+                if (!visited.contains(edge.getNode(strategy))) {
+                    queue.add(edge.getNode(strategy));
+                }
             }
         }
         return null;
     }
-
-    public Node findIntersection(Node node){
-        Bag out = getEdgesOut(node);
-        if (out.numObjs < 2){
-            return null;
-        }
-        Edge first_edge = (Edge) out.get(0);
-        Bag allDownstream = getAllDownstream(first_edge.getTo());
-        if (allDownstream == null){
-            return null;
-        }
-        Edge second_edge = (Edge) out.get(1);
-        Node intersection = breadthFirstSearch(second_edge, allDownstream);
-        return intersection;
-    }
-
 	/**
 	 * Displays the graph as a list of edges and nodes.
-	 * 
+	 *
 	 * @return  the string representation of the graph
 	 */
 	public String toString() {
 		String s = "";
-		
+
 		s += "\nEDGES OUT\n\n";
 		Set<Node> setFrom = nodeToOutBag.keySet();
 		List<Node> sortedFrom = new ArrayList<>(setFrom);
 		Collections.sort(sortedFrom);
-		
+
 		for (Object obj : sortedFrom) {
 			Bag b = nodeToOutBag.get(obj);
 			s += obj.toString() + " : ";
 			for (int i = 0; i < b.numObjs; i++) { s += b.get(i) + " "; }
 			s += "\n";
 		}
-		
+
 		s += "\nEDGES IN\n\n";
 		Set<Node> setTo = nodeToInBag.keySet();
 		List<Node> sortedTo = new ArrayList<>(setTo);
 		Collections.sort(sortedTo);
-		
+
 		for (Object obj : sortedTo) {
 			Bag b = nodeToInBag.get(obj);
 			s += obj.toString() + " : ";
 			for (int i = 0; i < b.numObjs; i++) { s += b.get(i) + " "; }
 			s += "\n";
 		}
-		
+
 		return s;
 	}
-	
+
 	/**
 	 * Nested class representing a graph node.
 	 * <p>
@@ -499,15 +572,15 @@ public class Graph implements Serializable {
 	public abstract static class Node implements Serializable, Comparable {
 		/** Coordinate in x direction */
 		protected int x;
-		
+
 		/** Coordinate in y direction */
 		protected int y;
-		
+
 		/** Coordinate in z direction */
 		protected int z;
-		
+
 		/** Creates a {@code Node} at the given coordinates.
-		 * 
+		 *
 		 * @param x  the x coordinate
 		 * @param y  the y coordinate
 		 * @param z  the z coordinate
@@ -517,31 +590,31 @@ public class Graph implements Serializable {
 			this.y = y;
 			this.z = z;
 		}
-		
+
 		/**
 		 * Gets the x coordinate of the node.
-		 * 
+		 *
 		 * @return  the x coordinate
 		 */
 		public int getX() { return x; }
-		
+
 		/**
 		 * Gets the y coordinate of the node.
 		 *
 		 * @return  the y coordinate
 		 */
 		public int getY() { return y; }
-		
+
 		/**
 		 * Gets the z coordinate of the node.
 		 *
 		 * @return  the z coordinate
 		 */
 		public int getZ() { return z; }
-		
+
 		/**
 		 * Compares a node to this node.
-		 * 
+		 *
 		 * @param object  the node to compare
 		 * @return  zero if the x and y coordinates are equal, otherwise the
 		 *          the result of integer comparison for x and y
@@ -550,36 +623,36 @@ public class Graph implements Serializable {
 			Node comp = (Node)object;
 			int xComp = Integer.compare(x, comp.getX());
 			int yComp = Integer.compare(y, comp.getY());
-			
+
 			if (xComp == 0) { return yComp; }
 			else { return xComp; }
 		}
-		
+
 		/**
 		 * Creates a duplicate node with the same coordinates.
-		 * 
+		 *
 		 * @return  a {@code Node} copy
 		 */
 		public abstract Node duplicate();
-		
+
 		/**
 		 * Updates the position of this {@code Node} with coordinate from given
 		 * {@code Node}.
-		 * 
+		 *
 		 * @param node  the {@code Node} with coordinates to update with
 		 */
 		public void update(Node node) { this.x = node.x; this.y = node.y; this.z = node.z; }
-		
+
 		/**
 		 * Specifies object hashing based on coordinates.
-		 * 
+		 *
 		 * @return  a hash based on coordinates
 		 */
 		public final int hashCode() { return x + y << 8 + z << 16; }
-		
+
 		/**
 		 * Checks if two nodes are equal based on coordinates.
-		 * 
+		 *
 		 * @param obj  the object to check
 		 * @return  {@code true} if the coordinate match, {@code false} otherwise
 		 */
@@ -590,12 +663,12 @@ public class Graph implements Serializable {
 			}
 			return false;
 		}
-		
+
 		public String toString() {
 			return "(" + x + "," + y + "," + z + ")";
 		}
 	}
-	
+
 	/**
 	 * Nested class representing a graph edge.
 	 * <p>
@@ -605,26 +678,26 @@ public class Graph implements Serializable {
 	public abstract static class Edge implements Serializable {
 		/** Node this edge points to */
 		protected Node to;
-		
+
 		/** Node this edge points from */
 		protected Node from;
-		
+
 		/** List of edges that point into the node this edge points from */
 		private final ArrayList<Edge> edgesIn;
-		
+
 		/** List of edges that point out of the node this edge points to */
 		private final ArrayList<Edge> edgesOut;
-		
+
 		/**
 		 * Creates an {@code Edge} between two {@link arcade.util.Graph.Node} objects.
-		 * 
+		 *
 		 * @param from  the node the edge is from
 		 * @param to  the node the edge is to
 		 */
 		public Edge(Node from, Node to) {
             this(from, to, true);
 		}
-		
+
         public Edge(Node from, Node to, boolean duplicate) {
             if (!duplicate){
                 this.from = from;
@@ -637,51 +710,67 @@ public class Graph implements Serializable {
             edgesOut = new ArrayList<>();
         }
 
-		/**
-		 * Gets the node the edge points from.
-		 * 
-		 * @return  the node the edge points from
-		 */
-		public Node getFrom() { return from; }
-		
-		/**
-		 * Gets the node the edge points to.
-		 * 
-		 * @return  the node the edge points to
-		 */
-		public Node getTo() { return to; }
-		
+
+        /**
+         * Gets the node the edge points to based on the calculation strategy (e.g. upstream or
+         * downstream).
+         *
+         * @param strategy the calculation strategy
+         * @return the node the edge points to
+         */
+        public Node getNode(Strategy strategy) {
+            return (strategy == Strategy.UPSTREAM) ? from : to;
+        }
+
+        /**
+         * Gets the node the edge points from.
+         *
+         * @return the node the edge points from
+         */
+        public Node getFrom() {
+            return getNode(Strategy.UPSTREAM);
+        }
+
+        /**
+         * Gets the node the edge points to.
+         *
+         * @return the node the edge points to
+         */
+        public Node getTo() {
+            return getNode(Strategy.UPSTREAM);
+        }
+
 		/**
 		 * Sets the node the edge points to.
-		 * 
+		 *
 		 * @param to  the node the edge points to
 		 */
 		public void setTo(Node to) { this.to = to; }
-		
+
 		/**
 		 * Sets the node the edge points from.
-		 * 
+		 *
 		 * @param from  the node the edge points from
 		 */
 		public void setFrom(Node from) { this.from = from; }
-		
+
 		/**
 		 * Gets the list of edges that point into the node this edge points from.
-		 * 
+		 *
 		 * @return  the list of edges
 		 */
 		public ArrayList<Edge> getEdgesIn() { return edgesIn; }
-		
+
 		/**
 		 * Gets the list of edges that point out of the node this edge points to.
-		 * 
+		 *
 		 * @return  the list of edges
 		 */
 		public ArrayList<Edge> getEdgesOut() { return edgesOut; }
-		
+
 		/**
 		 * Gets the node for the given direction of this edge
-		 * 
+		 *
 		 * @param dir  the direction
 		 * @return  the node
 		 */
@@ -692,10 +781,10 @@ public class Graph implements Serializable {
 				default: return null;
 			}
 		}
-		
+
 		/**
 		 * Reverses the edge by swapping the nodes.
-		 * 
+		 *
 		 * @return  the reversed edge
 		 */
 		public Edge reverse() {
@@ -705,7 +794,7 @@ public class Graph implements Serializable {
 			from = tempTo;
 			return this;
 		}
-		
+
 		/**
 		 * Removes the linked edges.
 		 */
@@ -713,7 +802,7 @@ public class Graph implements Serializable {
 			edgesIn.clear();
 			edgesOut.clear();
 		}
-		
+
 		public String toString() {
 			return "[" + from.toString() + "~" + to.toString() + "]";
 		}

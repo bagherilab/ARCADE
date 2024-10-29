@@ -15,7 +15,6 @@ import static arcade.env.comp.GraphSitesUtilities.calcPressures;
 import static arcade.env.comp.GraphSitesUtilities.calcStress;
 import static arcade.env.comp.GraphSitesUtilities.calculateLocalFlow;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -52,6 +51,14 @@ import sim.engine.SimState;
 public class GrowthComponent implements Component {
     private static Logger LOGGER = Logger.getLogger(GrowthComponent.class.getName());
 
+    /** Calculation strategies. */
+    public enum Calculation {
+        /** Code for upstream calculation strategy. */
+        COMPENSATE,
+
+        /** Code for downstream direction strategy. */
+        DIVERT
+    }
 
     private final double migrationRate;
     private final double vegfThreshold;
@@ -141,9 +148,9 @@ public class GrowthComponent implements Component {
 
         final double tick = sim.getTime();
 
-        if (((int) tick - 1) % (12*60) == 0) {
-            LOGGER.info((int)(tick - 1) + " | number of nodes to check: " +  graph.getAllNodes().size());
-        }
+        // if (((int) tick - 1) % (12*60) == 0) {
+        //     LOGGER.info((int)(tick - 1) + " | number of nodes to check: " +  graph.getAllNodes().size());
+        // }
 
 		LinkedHashSet<SiteNode> set = new LinkedHashSet<>();
 
@@ -314,10 +321,10 @@ public class GrowthComponent implements Component {
                         nodesToRemove.add(sproutNode);
                     }
                     if (init.pressure == 0 || fin.pressure == 0) {
-                        LOGGER.info("Pressure is 0, skipping");
+                        // LOGGER.info("Pressure is 0, skipping");
                         continue;
                     }
-                    addAngioEdges(angioMap.get(sproutNode), init, fin, tick);
+                    addAngioEdges(angioMap.get(sproutNode), init, fin, tick, Calculation.COMPENSATE);
                 }
             }
         }
@@ -328,7 +335,7 @@ public class GrowthComponent implements Component {
         // If any edges are removed, update the graph edges that are ignored.
         // Otherwise, recalculate calculate stresses.
         if (!added.isEmpty()) {
-            LOGGER.info("*****Updating graph.****** Time: " + tick);
+            // LOGGER.info("*****Updating graph.****** Time: " + tick);
             updateGraph(graph, sites, added);
         }
     }
@@ -525,7 +532,7 @@ public class GrowthComponent implements Component {
         addEdgeList(list, updateProperties, default_type);
     }
 
-    private void addAngioEdges(ArrayList<SiteEdge> list, SiteNode start, SiteNode end, double tick) {
+    private void addAngioEdges(ArrayList<SiteEdge> list, SiteNode start, SiteNode end, double tick, Calculation calc) {
 
         ArrayList<SiteEdge> added = new ArrayList<>();
 
@@ -587,12 +594,20 @@ public class GrowthComponent implements Component {
         }
 
         addEdgeList(added);
-        SiteNode intersection = (SiteNode) graph.findIntersection(start);
-        if (intersection != null){
-            recalcRadii(added, start, end, intersection);
-        }
-        else {
-            removeEdgeList(added);
+
+        switch (calc) {
+            case COMPENSATE:
+                updateRootsAndRadii(added, start, end);
+                break;
+            case DIVERT:
+                SiteNode intersection = (SiteNode) graph.findDownstreamIntersection((SiteEdge) outEdges.get(0), (SiteEdge) added.get(0));
+                if (intersection != null){
+                    recalcRadii(added, start, end, intersection);
+                }
+                else {
+                    removeEdgeList(added);
+                }
+                break;
         }
 
     }
@@ -609,6 +624,102 @@ public class GrowthComponent implements Component {
         return newRadius;
     }
 
+    private void updateRootsAndRadii(ArrayList<SiteEdge> addedEdges, SiteNode start, SiteNode end) {
+        updateGraph(graph, sites);
+        ArrayList<Double> oldRadii = new ArrayList<>();
+        ArrayList<SiteEdge> updatedEdges = new ArrayList<>();
+        Boolean failed = false;
+
+        Bag edges = graph.getEdgesOut(start);
+
+        if (edges == null) {
+            return;
+        }
+        if (edges.size() < 2 ) {
+            return;
+        }
+
+        Double deltaP = start.pressure - end.pressure;
+        Double newFlow = calculateLocalFlow(CAP_RADIUS, addedEdges, deltaP);
+
+        ArrayList<Root> arteries = sites.arteries;
+        Integer num_arteries = 0;
+        ArrayList<Root> veins = sites.veins;
+        Integer num_veins = 0;
+
+        ArrayList<ArrayList<SiteEdge>> pathsArteries = new ArrayList<>();
+        for (Root artery : arteries) {
+            ArrayList<SiteEdge> path = getPath(graph, artery.node, start);
+            if (path.isEmpty()) { continue; }
+            pathsArteries.add(path);
+            num_arteries++;
+        }
+
+        Double arteryFlow = newFlow / num_arteries;
+        for (ArrayList<SiteEdge> path : pathsArteries) {
+            if (!path.get(0).getFrom().isRoot) {
+                throw new ArithmeticException("Root is not the start of the path");
+            }
+
+            updatedEdges.addAll(path);
+            for (SiteEdge e : path) {
+                oldRadii.add(e.radius);
+            }
+
+            SiteEdge rootEdge = path.remove(0);
+
+            if (calculateArteryRootRadius(rootEdge, arteryFlow, false) == -1) {
+                failed = true;
+                break;
+            }
+            if (updateRadiiOfEdgeList(path, arteryFlow, false) == -1) {
+                failed = true;
+                break;
+            }
+        }
+
+        if (failed) {
+            resetRadii(updatedEdges, oldRadii);
+            return;
+        }
+
+        ArrayList<ArrayList<SiteEdge>> pathsVeins = new ArrayList<>();
+        for (Root vein : veins) {
+            ArrayList<SiteEdge> path = getPath(graph, end, vein.node);
+            if (path.isEmpty()) { continue; }
+            pathsVeins.add(path);
+            num_veins++;
+        }
+
+        Double veinFlow = newFlow / num_veins;
+
+        for (ArrayList<SiteEdge> path : pathsVeins) {
+            if (!path.get(0).getFrom().isRoot) {
+                throw new ArithmeticException("Root is not the start of the path");
+            }
+            SiteEdge rootEdge = path.remove(path.size() - 1);
+            oldRadii.add(rootEdge.radius);
+            updatedEdges.add(rootEdge);
+            if (calculateArteryRootRadius(rootEdge, veinFlow, false) == -1) {
+                failed = true;
+                break;
+            }
+            if (updateRadiiOfEdgeList(path, veinFlow, false) == -1) {
+                failed = true;
+                break;
+            }
+        }
+
+        if (num_arteries == 0 || num_veins == 0) {
+            LOGGER.info("No arteries or veins found, not updating roots");
+            failed = true;
+        }
+
+        if (failed) {
+            resetRadii(updatedEdges, oldRadii);
+            return;
+        }
+    }
 
     private void recalcRadii(ArrayList<SiteEdge> ignoredEdges, SiteNode start, SiteNode end, SiteNode intersection){
 
@@ -645,7 +756,7 @@ public class GrowthComponent implements Component {
             };
 
             if (updateRadius((SiteEdge) edges.get(angioIndex), intersection, divertedFlow, false, ignoredEdges) == -1){
-                LOGGER.info("Failed to update radius when increasing size, something seems up");
+                // LOGGER.info("Failed to update radius when increasing size, something seems up");
             };
         }
         else {
@@ -655,7 +766,7 @@ public class GrowthComponent implements Component {
             SiteNode boundary = sites.veins.get(0).node;
             path(graph, start, boundary);
             if (boundary.prev != null && ((SiteEdge) edges.get(angioIndex)).radius > CAP_RADIUS_MIN) {
-                LOGGER.info("Calculating additional flow to vein");
+                // LOGGER.info("Calculating additional flow to vein");
                 updateRadiusToRoot((SiteEdge) edges.get(angioIndex), sites.veins.get(0).node, divertedFlow, false, ignoredEdges);
             }
             else{
@@ -668,16 +779,22 @@ public class GrowthComponent implements Component {
 
     private int updateRadius(SiteEdge edge, SiteNode intersection, double flow, boolean decrease, ArrayList<SiteEdge> ignored){
         ArrayList<SiteEdge> edgesToUpdate = getPath(graph, edge.getTo(), intersection);
-        ArrayList<Double> oldRadii = new ArrayList<>();
         edgesToUpdate.add(0, edge);
 
-        for (SiteEdge e : edgesToUpdate){
+        return updateRadiiOfEdgeList(edgesToUpdate, flow, decrease, ignored);
+    }
+
+    private int updateRadiiOfEdgeList(ArrayList<SiteEdge> edges, double flow, boolean decrease) {
+        return updateRadiiOfEdgeList(edges, flow, decrease, new ArrayList<>());
+    }
+
+    private int updateRadiiOfEdgeList(ArrayList<SiteEdge> edges, double flow, boolean decrease, ArrayList<SiteEdge> ignored){
+        ArrayList<Double> oldRadii = new ArrayList<>();
+        for (SiteEdge e : edges){
             oldRadii.add(e.radius);
             if (ignored.contains(e)) { continue; }
             if (calculateRadius(e, flow, decrease) == -1) {
-                for (int i = 0; i < edgesToUpdate.indexOf(e); i++){
-                    edgesToUpdate.get(i).radius = oldRadii.get(i);
-                }
+                resetRadii(edges, oldRadii);
                 return -1;
             }
         }
@@ -686,11 +803,10 @@ public class GrowthComponent implements Component {
 
     private int calculateRadius(SiteEdge edge, double flow, boolean decrease){
         int sign = decrease ? -1 : 1;
-        double original_radius = edge.radius;
+        double originalRadius = edge.radius;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
-        double originalFlow = calculateLocalFlow(original_radius, edge.length, deltaP);
+        double originalFlow = calculateLocalFlow(originalRadius, edge.length, deltaP);
         Function f = (double r) -> originalFlow + sign * flow - calculateLocalFlow(r, edge.length, deltaP);
-        // Function f = (double r) -> Math.pow(originalFlow + sign * flow - calculateLocalFlow(r, edge.length, deltaP), 2);
         double newRadius;
         newRadius = Solver.bisection(f, 1E-6, 5*CAP_RADIUS_MAX, 1E-6);
         if (newRadius == 1E-6) {
@@ -698,45 +814,75 @@ public class GrowthComponent implements Component {
         }
         edge.radius = newRadius;
         return 0;
-        // if (decrease) {
-        //     if (original_radius < CAP_RADIUS){newRadius = Solver.boundedGradientDescent(f, original_radius, 1E-17, CAP_RADIUS_MIN, CAP_RADIUS);}
-        //     else {newRadius = Solver.boundedGradientDescent(f, original_radius, 1E-17, CAP_RADIUS_MIN, CAP_RADIUS);}
-        // }
-        // else {newRadius = Solver.boundedGradientDescent(f, original_radius, 1E-17, original_radius, original_radius + CAP_RADIUS);}
-        // edge.radius = newRadius;
     }
 
-    private void calculateRootRadius(SiteEdge edge, double flow, boolean decrease){
+    private int calculateVeinRootRadius(SiteEdge edge, double flow, boolean decrease){
         int sign = decrease ? -1 : 1;
-        double original_radius = edge.radius;
+        double originalRadius = edge.radius;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
-        double originalFlow = calculateLocalFlow(original_radius, edge.length, deltaP);
+        double originalFlow = calculateLocalFlow(originalRadius, edge.length, deltaP);
 
-        Function f = (double r) -> originalFlow + sign * flow - calculateLocalFlow(r, edge.length, edge.getFrom().pressure - calcPressure(edge.radius, edge.type));
-        // Function f = (double r) -> Math.pow(originalFlow + sign * flow - calculateLocalFlow(r, edge.length, edge.getFrom().pressure - calcPressure(edge.radius, edge.type)), 2);
+        Function f = (double r) -> originalFlow + sign * flow - calculateLocalFlow(r, edge.length, edge.getFrom().pressure - calcPressure(r, edge.type));
 
-        double newRadius = Solver.bisection(f, 1E-6, 5*CAP_RADIUS_MAX, 1E-6);
-        // double newRadius = Solver.boundedGradientDescent(f, original_radius, 1E-17, original_radius, original_radius + CAP_RADIUS);
+        double newRadius = Solver.bisection(f, .5*originalRadius, 1.5*originalRadius, 1E-6);
+
+        if (newRadius == .5*originalRadius || newRadius == Double.NaN) {
+            return -1;
+        }
 
         edge.radius = newRadius;
+        edge.getTo().pressure = calcPressure(newRadius, edge.type);
+        return 0;
+    }
+
+    private int calculateArteryRootRadius(SiteEdge edge, double flow, boolean decrease) {
+        int sign = decrease ? -1 : 1;
+        double originalRadius = edge.radius;
+        double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
+        double originalFlow = calculateLocalFlow(originalRadius, edge.length, deltaP);
+
+        Function f = (double r) -> originalFlow + sign * flow - calculateLocalFlow(r, edge.length, calcPressure(r, edge.type) - edge.getTo().pressure);
+
+        double newRadius = Solver.bisection(f, .5*originalRadius, 1.5*originalRadius, 1E-6);
+        if (newRadius == .5*originalRadius || newRadius == Double.NaN || newRadius ==  1.5*originalRadius) {
+            return -1;
+        }
+
+        edge.radius = newRadius;
+        edge.getFrom().pressure = calcPressure(newRadius, edge.type);
+        return 0;
     }
 
     private void updateRadiusToRoot(SiteEdge edge, SiteNode intersection, double flow, boolean decrease, ArrayList<SiteEdge> ignored){
         ArrayList<Root> veins = sites.veins;
+        ArrayList<Double> oldRadii = new ArrayList<>();
         for (Root vein: veins){
             ArrayList<SiteEdge> path = getPath(graph, edge.getTo(), vein.node);
             if (path.isEmpty()) {continue;}
             path.add(0, edge);
             for (SiteEdge e: path){
+                oldRadii.add(e.radius);
                 if (ignored.contains(e)) { continue; }
                 if (e.getTo().isRoot){
-                    calculateRootRadius(e, flow, decrease);
+                    if (calculateVeinRootRadius(e, flow, decrease) == -1) {
+                        resetRadii(path, oldRadii);
+                        return;
+                    }
                 }
                 else {
-                    if (calculateRadius(e, flow, decrease) == -1) { return; }
+                    if (calculateRadius(e, flow, decrease) == -1) {
+                        resetRadii(path, oldRadii);
+                        return;
+                    }
                 }
             }
             break;
+        }
+    }
+
+    private void resetRadii(ArrayList<SiteEdge> edges, ArrayList<Double> oldRadii){
+        for (int i = 0; i < oldRadii.size(); i++){
+            edges.get(i).radius = oldRadii.get(i);
         }
     }
 

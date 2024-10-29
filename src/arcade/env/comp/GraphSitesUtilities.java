@@ -860,7 +860,7 @@ abstract class GraphSitesUtilities {
 		ArrayList<SiteEdge> list;
 		Graph gCurr = G;
 
-        LOGGER.info("Updating graph with " + add.toString());
+        // LOGGER.info("Updating graph with " + add.toString());
 
 		do {
 			Graph gNew = gs.newGraph();
@@ -1005,7 +1005,7 @@ abstract class GraphSitesUtilities {
 				for (Object obj : out) {
 					SiteEdge edge = (SiteEdge)obj;
 					if (edge.flow < MIN_FLOW || Double.isNaN(edge.flow)) {
-                        LOGGER.info("Removing" + edge + "because low flow : " + edge.flow);
+                        // LOGGER.info("Removing" + edge + "because low flow : " + edge.flow);
 						G.removeEdge(edge);
 						edge.getFrom().pressure = Double.NaN;
 						edge.getTo().pressure = Double.NaN;
@@ -1021,7 +1021,7 @@ abstract class GraphSitesUtilities {
 				for (Object obj : in) {
 					SiteEdge edge = (SiteEdge)obj;
 					if (edge.flow < MIN_FLOW || Double.isNaN(edge.flow)) {
-                        LOGGER.info("Removing" + edge + "because low flow : " + edge.flow);
+                        // LOGGER.info("Removing" + edge + "because low flow : " + edge.flow);
 						G.removeEdge(edge);
 						edge.getFrom().pressure = Double.NaN;
 						edge.getTo().pressure = Double.NaN;
@@ -1039,14 +1039,14 @@ abstract class GraphSitesUtilities {
 					double totalFlow = edge1.flow + edge2.flow;
 					
 					if (edge1.flow/totalFlow < MIN_FLOW_PERCENT) {
-                        LOGGER.info("Removing" + edge1 + "because low flow");
+                        // LOGGER.info("Removing" + edge1 + "because low flow");
 						G.removeEdge(edge1);
 						edge1.getFrom().pressure = Double.NaN;
 						edge1.getTo().pressure = Double.NaN;
 						updateGraph(G, gs);
 					}
 					else if (edge2.flow/totalFlow < MIN_FLOW_PERCENT) {
-                        LOGGER.info("Removing" + edge2 + "because low flow");
+                        // LOGGER.info("Removing" + edge2 + "because low flow");
 						G.removeEdge(edge2);
 						edge2.getFrom().pressure = Double.NaN;
 						edge2.getTo().pressure = Double.NaN;
