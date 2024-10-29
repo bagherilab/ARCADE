@@ -32,6 +32,21 @@ public class PlaneTest {
     }
 
     @Test
+    public void constructor_givenPointAndDoubleVector_returnsCorrectPlane() {
+        Voxel point = new Voxel(1, 2, 3);
+        Double3D normalVector = new Double3D(1.5, 1.5, 1);
+
+        Plane plane = new Plane(point, normalVector);
+
+        double expectedX = normalVector.getX() / Math.sqrt(5.5);
+        double expectedY = normalVector.getY() / Math.sqrt(5.5);
+        double expectedZ = normalVector.getZ() / Math.sqrt(5.5);
+        Double3D expectedUnitNormal = new Double3D(expectedX, expectedY, expectedZ);
+        assertEquals(point, plane.referencePoint);
+        assertEquals(expectedUnitNormal, plane.unitNormalVector);
+    }
+
+    @Test
     public void getNormalVectorMagnitude_givenNormalVector_returnsCorrectMagnitude() {
         double magnitude = Plane.getNormalVectorMagnitude(new Double3D(1, 2, 2));
         assertEquals(3, magnitude, EPSILON);
