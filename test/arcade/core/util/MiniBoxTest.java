@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import org.junit.jupiter.api.Test;
+import ec.util.MersenneTwisterFast;
+import arcade.core.util.distributions.Distribution;
+import arcade.core.util.distributions.NormalDistribution;
+import arcade.core.util.distributions.NormalFractionalDistribution;
+import arcade.core.util.distributions.NormalTruncatedDistribution;
+import arcade.core.util.distributions.UniformDistribution;
 import static org.junit.jupiter.api.Assertions.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
@@ -160,6 +166,59 @@ public class MiniBoxTest {
         MiniBox box = new MiniBox();
         String key = randomString();
         assertTrue(Double.isNaN(box.getDouble(key)));
+    }
+
+    @Test
+    public void getDistribution_givenValidKey_returnsDistribution() {
+        MersenneTwisterFast random = new MersenneTwisterFast();
+        String key = randomString();
+        String[][] distributions =
+                new String[][] {
+                    {"UNIFORM", "MIN", "-100", "MAX", "99.5"},
+                    {"NORMAL", "MU", "100", "SIGMA", "20"},
+                    {"TRUNCATED_NORMAL", "MU", "10", "SIGMA", "2"},
+                    {"FRACTIONAL_NORMAL", "MU", "0.5", "SIGMA", "0.2"},
+                };
+
+        Distribution[] expectedDistributions =
+                new Distribution[] {
+                    new UniformDistribution(-100, 99.5, random),
+                    new NormalDistribution(100, 20, random),
+                    new NormalTruncatedDistribution(10, 2, random),
+                    new NormalFractionalDistribution(0.5, 0.2, random),
+                };
+
+        for (int i = 0; i < distributions.length; i++) {
+            MiniBox box = new MiniBox();
+            box.put("(DISTRIBUTION)" + TAG_SEPARATOR + key, distributions[i][0]);
+            box.put(key + "_" + distributions[i][1], distributions[i][2]);
+            box.put(key + "_" + distributions[i][3], distributions[i][4]);
+
+            Distribution distribution = box.getDistribution(key, random);
+            double[] parameters = distribution.getParameters();
+
+            assertSame(distribution.getClass(), expectedDistributions[i].getClass());
+            assertEquals(expectedDistributions[i].getParameters()[0], parameters[0]);
+            assertEquals(expectedDistributions[i].getParameters()[1], parameters[1]);
+        }
+    }
+
+    @Test
+    public void getDistribution_givenInvalidKey_returnsNull() {
+        MersenneTwisterFast random = new MersenneTwisterFast();
+        MiniBox box = new MiniBox();
+        String key = randomString();
+        assertNull(box.getDistribution(key, random));
+    }
+
+    @Test
+    public void getDistribution_givenInvalidDistribution_returnsNull() {
+        MersenneTwisterFast random = new MersenneTwisterFast();
+        MiniBox box = new MiniBox();
+        String key = randomString();
+        String distribution = "INVALID";
+        box.put("(DISTRIBUTION)" + TAG_SEPARATOR + key, distribution);
+        assertNull(box.getDistribution(key, random));
     }
 
     @Test

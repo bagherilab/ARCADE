@@ -76,7 +76,9 @@ public class MiniBox {
     public Distribution getDistribution(String id, MersenneTwisterFast random) {
         String s = contents.get("(DISTRIBUTION)" + TAG_SEPARATOR + id);
 
-        if (s.equals("UNIFORM")) {
+        if (s == null) {
+            return null;
+        } else if (s.equals("UNIFORM")) {
             return new UniformDistribution(id, this, random);
         } else if (s.equals("TRUNCATED_NORMAL")) {
             return new NormalTruncatedDistribution(id, this, random);
