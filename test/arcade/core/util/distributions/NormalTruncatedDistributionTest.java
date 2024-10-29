@@ -42,71 +42,84 @@ public class NormalTruncatedDistributionTest {
     }
 
     @Test
-    public void nextDouble_positiveMu_returnsWithinRange() {
+    public void getDoubleValue_positiveMu_returnsWithinRange() {
         double mu = 4.0;
         double sigma = 1.0;
         double maxValue = 6.0;
         double minValue = 2.0;
         int iterations = 10000;
 
-        NormalTruncatedDistribution dist = new NormalTruncatedDistribution(mu, sigma, RANDOM);
-
         for (int i = 0; i < iterations; i++) {
-            double value = dist.nextDouble();
+            NormalTruncatedDistribution dist = new NormalTruncatedDistribution(mu, sigma, RANDOM);
+            double value = dist.getDoubleValue();
+            assertEquals(dist.value, value);
             assertTrue(value >= minValue);
             assertTrue(value <= maxValue);
         }
     }
 
     @Test
-    public void nextDouble_negativeMu_returnsWithinRange() {
+    public void getDoubleValue_negativeMu_returnsWithinRange() {
         double mu = -4.0;
         double sigma = 1.0;
         double maxValue = -2.0;
         double minValue = -6.0;
         int iterations = 10000;
 
-        NormalTruncatedDistribution dist = new NormalTruncatedDistribution(mu, sigma, RANDOM);
-
         for (int i = 0; i < iterations; i++) {
-            double value = dist.nextDouble();
+            NormalTruncatedDistribution dist = new NormalTruncatedDistribution(mu, sigma, RANDOM);
+            double value = dist.getDoubleValue();
+            assertEquals(dist.value, value);
             assertTrue(value >= minValue);
             assertTrue(value <= maxValue);
         }
     }
 
     @Test
-    public void nextInt_positiveMu_returnsWithinRange() {
+    public void getIntValue_positiveMu_returnsWithinRange() {
         double mu = 4.0;
         double sigma = 1.0;
         int maxValue = 6;
         int minValue = 2;
         int iterations = 10000;
 
-        NormalTruncatedDistribution dist = new NormalTruncatedDistribution(mu, sigma, RANDOM);
-
         for (int i = 0; i < iterations; i++) {
-            int value = dist.nextInt();
+            NormalTruncatedDistribution dist = new NormalTruncatedDistribution(mu, sigma, RANDOM);
+            int value = dist.getIntValue();
+            assertEquals((int) dist.value, value);
             assertTrue(value >= minValue);
             assertTrue(value <= maxValue);
         }
     }
 
     @Test
-    public void nextInt_negativeMu_returnsWithinRange() {
+    public void getIntValue_negativeMu_returnsWithinRange() {
         double mu = -4.0;
         double sigma = 1.0;
         int maxValue = -2;
         int minValue = -6;
         int iterations = 10000;
 
-        NormalTruncatedDistribution dist = new NormalTruncatedDistribution(mu, sigma, RANDOM);
-
         for (int i = 0; i < iterations; i++) {
-            int value = dist.nextInt();
+            NormalTruncatedDistribution dist = new NormalTruncatedDistribution(mu, sigma, RANDOM);
+            int value = dist.getIntValue();
+            assertEquals((int) dist.value, value);
             assertTrue(value >= minValue);
             assertTrue(value <= maxValue);
         }
+    }
+
+    @Test
+    public void getParameters_called_returnsParameters() {
+        double mu = 4.0;
+        double sigma = 0.25;
+
+        NormalTruncatedDistribution dist = new NormalTruncatedDistribution(mu, sigma, RANDOM);
+        double[] parameters = dist.getParameters();
+
+        assertAll(
+                () -> assertEquals(mu, parameters[0], EPSILON),
+                () -> assertEquals(sigma, parameters[1], EPSILON));
     }
 
     @Test

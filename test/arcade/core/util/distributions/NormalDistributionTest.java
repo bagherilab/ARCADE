@@ -3,27 +3,26 @@ package arcade.core.util.distributions;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.MiniBox;
-import arcade.core.util.exceptions.OutOfBoundsException;
-import static org.junit.jupiter.api.Assertions.*;
-import static arcade.core.ARCADETestUtilities.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static arcade.core.ARCADETestUtilities.randomString;
 
-public class NormalFractionalDistributionTest {
+public class NormalDistributionTest {
     private static final double EPSILON = 1E-5;
 
     private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast();
 
     @Test
     public void constructor_calledWithCode_populatesAttributes() {
-        double mu = 0.2;
-        double sigma = 0.1;
+        double mu = 200;
+        double sigma = 10;
 
         String name = randomString().toUpperCase();
         MiniBox parameters = new MiniBox();
         parameters.put(name + "_MU", mu);
         parameters.put(name + "_SIGMA", sigma);
 
-        NormalFractionalDistribution dist =
-                new NormalFractionalDistribution(name, parameters, RANDOM);
+        NormalDistribution dist = new NormalDistribution(name, parameters, RANDOM);
 
         assertAll(
                 () -> assertEquals(mu, dist.mu, EPSILON),
@@ -32,10 +31,10 @@ public class NormalFractionalDistributionTest {
 
     @Test
     public void constructor_calledWithParameters_populatesAttributes() {
-        double mu = 0.2;
-        double sigma = 0.1;
+        double mu = 200;
+        double sigma = 10;
 
-        NormalFractionalDistribution dist = new NormalFractionalDistribution(mu, sigma, RANDOM);
+        NormalDistribution dist = new NormalDistribution(mu, sigma, RANDOM);
 
         assertAll(
                 () -> assertEquals(mu, dist.mu, EPSILON),
@@ -43,63 +42,37 @@ public class NormalFractionalDistributionTest {
     }
 
     @Test
-    public void constructor_muGreaterThan1_throwsIllegalArgumentException() {
-        double mu = 2.0;
-        double sigma = 0.25;
-        assertThrows(
-                OutOfBoundsException.class,
-                () -> new NormalFractionalDistribution(mu, sigma, RANDOM));
-    }
-
-    @Test
-    public void constructor_muLessThan0_throwsIllegalArgumentException() {
-        double mu = -2.0;
-        double sigma = 0.25;
-        assertThrows(
-                OutOfBoundsException.class,
-                () -> new NormalFractionalDistribution(mu, sigma, RANDOM));
-    }
-
-    @Test
-    public void getDoubleValue_called_returnsWithinRange() {
+    public void getDoubleValue_called_returnsValue() {
         double mu = 0.5;
         double sigma = 0.5;
-        double maxValue = 1.0;
-        double minValue = 0.0;
         int iterations = 10000;
 
         for (int i = 0; i < iterations; i++) {
-            NormalFractionalDistribution dist = new NormalFractionalDistribution(mu, sigma, RANDOM);
+            NormalDistribution dist = new NormalDistribution(mu, sigma, RANDOM);
             double value = dist.getDoubleValue();
             assertEquals(dist.value, value);
-            assertTrue(value >= minValue);
-            assertTrue(value <= maxValue);
         }
     }
 
     @Test
-    public void getIntValue_called_returnsWithinRange() {
+    public void getIntValue_called_returnsValue() {
         double mu = 0.5;
         double sigma = 0.5;
-        int maxValue = 1;
-        int minValue = 0;
         int iterations = 10000;
 
         for (int i = 0; i < iterations; i++) {
-            NormalFractionalDistribution dist = new NormalFractionalDistribution(mu, sigma, RANDOM);
+            NormalDistribution dist = new NormalDistribution(mu, sigma, RANDOM);
             int value = dist.getIntValue();
             assertEquals((int) dist.value, value);
-            assertTrue(value >= minValue);
-            assertTrue(value <= maxValue);
         }
     }
 
     @Test
     public void getParameters_called_returnsParameters() {
-        double mu = 0.2;
-        double sigma = 0.1;
+        double mu = 200;
+        double sigma = 10;
 
-        NormalFractionalDistribution dist = new NormalFractionalDistribution(mu, sigma, RANDOM);
+        NormalDistribution dist = new NormalDistribution(mu, sigma, RANDOM);
         double[] parameters = dist.getParameters();
 
         assertAll(
@@ -112,9 +85,8 @@ public class NormalFractionalDistributionTest {
         double mu = 0.2;
         double sigma = 0.1;
 
-        NormalFractionalDistribution oldDist = new NormalFractionalDistribution(mu, sigma, RANDOM);
-        NormalFractionalDistribution newDist =
-                (NormalFractionalDistribution) oldDist.rebase(RANDOM);
+        NormalDistribution oldDist = new NormalDistribution(mu, sigma, RANDOM);
+        NormalDistribution newDist = (NormalDistribution) oldDist.rebase(RANDOM);
 
         assertAll(
                 () -> assertEquals(mu, oldDist.mu, EPSILON),

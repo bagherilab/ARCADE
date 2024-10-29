@@ -15,11 +15,8 @@ public class NormalDistribution implements Distribution {
     /** Standard deviation of the distribution. */
     final double sigma;
 
-    /** Normal distribution. */
-    final Normal normal;
-
     /** Value drawn from the distribution. */
-    public final double value;
+    final double value;
 
     /**
      * Creates a normal {@code Distribution} from parameters dictionary.
@@ -42,9 +39,14 @@ public class NormalDistribution implements Distribution {
     public NormalDistribution(double mu, double sigma, MersenneTwisterFast random) {
         this.mu = mu;
         this.sigma = Math.abs(sigma);
-        this.normal = new Normal(mu, sigma, random);
         this.bounds = getBounds();
-        this.value = nextDouble();
+
+        Normal normal = new Normal(mu, sigma, random);
+        if (bounds != null) {
+            this.value = Math.min(Math.max(normal.nextDouble(), bounds[0]), bounds[1]);
+        } else {
+            this.value = normal.nextDouble();
+        }
     }
 
     /**
@@ -72,32 +74,7 @@ public class NormalDistribution implements Distribution {
     }
 
     @Override
-    public double nextDouble() {
-        if (bounds != null) {
-            return Math.min(Math.max(normal.nextDouble(), bounds[0]), bounds[1]);
-        } else {
-            return normal.nextDouble();
-        }
-    }
-
-    @Override
-    public int nextInt() {
-        return (int) nextDouble();
-    }
-
-    @Override
     public Distribution rebase(MersenneTwisterFast random) {
         return new NormalDistribution(value, sigma, random);
-    }
-
-    /**
-     * Convert normal distribution parameters to distribution code.
-     *
-     * @param mu the mean of the normal distribution
-     * @param sigma the standard deviation of the normal distribution
-     * @return the normal distribution code
-     */
-    public static String convert(double mu, double sigma) {
-        return String.format("NORMAL(MU=%f,SIGMA=%f)", mu, sigma);
     }
 }

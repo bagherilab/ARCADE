@@ -40,15 +40,4 @@ public class NormalTruncatedDistribution extends NormalDistribution {
     public Distribution rebase(MersenneTwisterFast random) {
         return new NormalTruncatedDistribution(value, sigma, random);
     }
-
-    /**
-     * Convert truncated normal distribution parameters to distribution code.
-     *
-     * @param mu the mean of the normal distribution
-     * @param sigma the standard deviation of the normal distribution
-     * @return the truncated normal distribution code
-     */
-    public static String convert(double mu, double sigma) {
-        return String.format("TRUNCATED_NORMAL(MU=%f,SIGMA=%f)", mu, sigma);
-    }
 }
