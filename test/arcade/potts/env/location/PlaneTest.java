@@ -165,11 +165,11 @@ public class PlaneTest {
                 Plane.probablisticallyRotateNormalVector(unRotatedNormal, stDevDegrees, random);
 
         assertEquals(
-                unRotatedNormal.x, rotatedNormal.x, EPSILON, "X component should be unchanged");
+                unRotatedNormal.x, rotatedNormal.x, EPSILON);
         assertEquals(
-                unRotatedNormal.y, rotatedNormal.y, EPSILON, "Y component should be unchanged");
+                unRotatedNormal.y, rotatedNormal.y, EPSILON);
         assertEquals(
-                unRotatedNormal.z, rotatedNormal.z, EPSILON, "Z component should be unchanged");
+                unRotatedNormal.z, rotatedNormal.z, EPSILON);
     }
 
     @Test
@@ -188,9 +188,9 @@ public class PlaneTest {
         // theorem, 2x^2 = 1, or x = y = sqrt(1/2)
         // Positive rotation angle means rotation should be counter-clockwise, so y = sqrt(1/2)
 
-        assertEquals(Math.sqrt(.5), rotatedNormal.x, EPSILON, "X component should be 0.0");
-        assertEquals(Math.sqrt(.5), rotatedNormal.y, EPSILON, "Y component should be 1.0");
-        assertEquals(0.0, rotatedNormal.z, EPSILON, "Z component should be 0.0");
+        assertEquals(Math.sqrt(.5), rotatedNormal.x, EPSILON);
+        assertEquals(Math.sqrt(.5), rotatedNormal.y, EPSILON);
+        assertEquals(0.0, rotatedNormal.z, EPSILON);
     }
 
     @Test
@@ -209,8 +209,8 @@ public class PlaneTest {
         // pythagorean theorem, 2x^2 = 1, or |x| = |y| = sqrt(1/2)
         // Negative rotation angle means rotation should be clockwise, so y = -(sqrt(1/2))
 
-        assertEquals(Math.sqrt(.5), rotatedNormal.x, EPSILON, "X component should be 0.0");
-        assertEquals(-Math.sqrt(.5), rotatedNormal.y, EPSILON, "Y component should be 1.0");
-        assertEquals(0.0, rotatedNormal.z, EPSILON, "Z component should be 0.0");
+        assertEquals(Math.sqrt(.5), rotatedNormal.x, EPSILON);
+        assertEquals(-Math.sqrt(.5), rotatedNormal.y, EPSILON);
+        assertEquals(0.0, rotatedNormal.z, EPSILON);
     }
 }
