@@ -316,7 +316,7 @@ public abstract class Series {
         Matcher match = Pattern.compile(DISTRIBUTION_REGEX).matcher(value);
 
         if (match.find()) {
-            box.put("(DISTRIBUTION)" + TAG_SEPARATOR + parameter, match.group(1));
+            box.put("(DISTRIBUTION)" + TAG_SEPARATOR + parameter, match.group(1).toUpperCase());
             box.put(parameter + "_" + match.group(2), match.group(3));
             box.put(parameter + "_" + match.group(4), match.group(5));
         } else {
