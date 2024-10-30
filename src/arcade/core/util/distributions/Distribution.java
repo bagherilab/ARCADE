@@ -29,6 +29,20 @@ public interface Distribution {
     int getIntValue();
 
     /**
+     * Draws a new double from the distribution.
+     *
+     * @return a double drawn from the distribution
+     */
+    double nextDouble();
+
+    /**
+     * Draws a new integer from the distribution.
+     *
+     * @return an integer drawn from the distribution
+     */
+    int nextInt();
+
+    /**
      * Gets the distribution parameters.
      *
      * @return the distribution parameters

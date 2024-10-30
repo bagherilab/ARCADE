@@ -15,6 +15,9 @@ public class UniformDistribution implements Distribution {
     /** Value drawn from the distribution. */
     final double value;
 
+    /** Uniform distribution. */
+    private final Uniform uniform;
+
     /**
      * Creates a uniform {@code Distribution} from parameters dictionary.
      *
@@ -36,8 +39,8 @@ public class UniformDistribution implements Distribution {
     public UniformDistribution(double min, double max, MersenneTwisterFast random) {
         this.min = min;
         this.max = max;
-        Uniform uniform = new Uniform(min, max, random);
-        this.value = uniform.nextDouble();
+        this.uniform = new Uniform(min, max, random);
+        this.value = nextDouble();
     }
 
     @Override
@@ -61,6 +64,16 @@ public class UniformDistribution implements Distribution {
     @Override
     public int getIntValue() {
         return (int) value;
+    }
+
+    @Override
+    public double nextDouble() {
+        return uniform.nextDouble();
+    }
+
+    @Override
+    public int nextInt() {
+        return (int) nextDouble();
     }
 
     @Override

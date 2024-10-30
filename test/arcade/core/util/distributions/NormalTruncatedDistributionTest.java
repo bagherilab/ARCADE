@@ -133,6 +133,74 @@ public class NormalTruncatedDistributionTest {
     }
 
     @Test
+    public void nextDouble_positiveMu_returnsWithinRange() {
+        double mu = 4.0;
+        double sigma = 1.0;
+        double maxValue = 6.0;
+        double minValue = 2.0;
+        int iterations = 10000;
+
+        NormalTruncatedDistribution dist = new NormalTruncatedDistribution(mu, sigma, RANDOM);
+
+        for (int i = 0; i < iterations; i++) {
+            double value = dist.nextDouble();
+            assertTrue(value >= minValue);
+            assertTrue(value <= maxValue);
+        }
+    }
+
+    @Test
+    public void nextDouble_negativeMu_returnsWithinRange() {
+        double mu = -4.0;
+        double sigma = 1.0;
+        double maxValue = -2.0;
+        double minValue = -6.0;
+        int iterations = 10000;
+
+        NormalTruncatedDistribution dist = new NormalTruncatedDistribution(mu, sigma, RANDOM);
+
+        for (int i = 0; i < iterations; i++) {
+            double value = dist.nextDouble();
+            assertTrue(value >= minValue);
+            assertTrue(value <= maxValue);
+        }
+    }
+
+    @Test
+    public void nextInt_positiveMu_returnsWithinRange() {
+        double mu = 4.0;
+        double sigma = 1.0;
+        int maxValue = 6;
+        int minValue = 2;
+        int iterations = 10000;
+
+        NormalTruncatedDistribution dist = new NormalTruncatedDistribution(mu, sigma, RANDOM);
+
+        for (int i = 0; i < iterations; i++) {
+            int value = dist.nextInt();
+            assertTrue(value >= minValue);
+            assertTrue(value <= maxValue);
+        }
+    }
+
+    @Test
+    public void nextInt_negativeMu_returnsWithinRange() {
+        double mu = -4.0;
+        double sigma = 1.0;
+        int maxValue = -2;
+        int minValue = -6;
+        int iterations = 10000;
+
+        NormalTruncatedDistribution dist = new NormalTruncatedDistribution(mu, sigma, RANDOM);
+
+        for (int i = 0; i < iterations; i++) {
+            int value = dist.nextInt();
+            assertTrue(value >= minValue);
+            assertTrue(value <= maxValue);
+        }
+    }
+
+    @Test
     public void rebase_called_returnsNewDistribution() {
         double mu = 8.0;
         double sigma = 2.0;

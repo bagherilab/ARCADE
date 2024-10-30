@@ -18,6 +18,9 @@ public class NormalDistribution implements Distribution {
     /** Value drawn from the distribution. */
     final double value;
 
+    /** Normal distribution. */
+    private final Normal normal;
+
     /**
      * Creates a normal {@code Distribution} from parameters dictionary.
      *
@@ -39,14 +42,9 @@ public class NormalDistribution implements Distribution {
     public NormalDistribution(double mu, double sigma, MersenneTwisterFast random) {
         this.mu = mu;
         this.sigma = Math.abs(sigma);
+        this.normal = new Normal(mu, sigma, random);
         this.bounds = getBounds();
-
-        Normal normal = new Normal(mu, sigma, random);
-        if (bounds != null) {
-            this.value = Math.min(Math.max(normal.nextDouble(), bounds[0]), bounds[1]);
-        } else {
-            this.value = normal.nextDouble();
-        }
+        this.value = nextDouble();
     }
 
     /**
@@ -79,6 +77,20 @@ public class NormalDistribution implements Distribution {
     @Override
     public int getIntValue() {
         return (int) value;
+    }
+
+    @Override
+    public double nextDouble() {
+        if (bounds != null) {
+            return Math.min(Math.max(normal.nextDouble(), bounds[0]), bounds[1]);
+        } else {
+            return normal.nextDouble();
+        }
+    }
+
+    @Override
+    public int nextInt() {
+        return (int) nextDouble();
     }
 
     @Override

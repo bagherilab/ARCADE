@@ -118,8 +118,42 @@ public class NormalFractionalDistributionTest {
     }
 
     @Test
+    public void nextDouble_called_returnsWithinRange() {
+        double mu = 0.5;
+        double sigma = 0.5;
+        double maxValue = 1.0;
+        double minValue = 0.0;
+        int iterations = 10000;
+
+        NormalFractionalDistribution dist = new NormalFractionalDistribution(mu, sigma, RANDOM);
+
+        for (int i = 0; i < iterations; i++) {
+            double value = dist.nextDouble();
+            assertTrue(value >= minValue);
+            assertTrue(value <= maxValue);
+        }
+    }
+
+    @Test
+    public void nextInt_called_returnsWithinRange() {
+        double mu = 0.5;
+        double sigma = 0.5;
+        int maxValue = 1;
+        int minValue = 0;
+        int iterations = 10000;
+
+        NormalFractionalDistribution dist = new NormalFractionalDistribution(mu, sigma, RANDOM);
+
+        for (int i = 0; i < iterations; i++) {
+            int value = dist.nextInt();
+            assertTrue(value >= minValue);
+            assertTrue(value <= maxValue);
+        }
+    }
+
+    @Test
     public void rebase_called_returnsNewDistribution() {
-        double mu = 0.2;
+        double mu = 0.5;
         double sigma = 0.1;
 
         NormalFractionalDistribution oldDist = new NormalFractionalDistribution(mu, sigma, RANDOM);

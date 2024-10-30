@@ -94,6 +94,36 @@ public class UniformDistributionTest {
     }
 
     @Test
+    public void nextDouble_called_returnsWithinRange() {
+        double min = -100;
+        double max = 99.5;
+        int iterations = 10000;
+
+        UniformDistribution dist = new UniformDistribution(min, max, RANDOM);
+
+        for (int i = 0; i < iterations; i++) {
+            double value = dist.nextDouble();
+            assertTrue(value >= min);
+            assertTrue(value <= max);
+        }
+    }
+
+    @Test
+    public void nextInt_called_returnsWithinRange() {
+        double min = -100;
+        double max = 99.5;
+        int iterations = 10000;
+
+        UniformDistribution dist = new UniformDistribution(min, max, RANDOM);
+
+        for (int i = 0; i < iterations; i++) {
+            int value = dist.nextInt();
+            assertTrue(value >= min);
+            assertTrue(value <= max);
+        }
+    }
+
+    @Test
     public void rebase_called_returnsNewDistribution() {
         double min = -100;
         double max = 99.5;
