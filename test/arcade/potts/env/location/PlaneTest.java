@@ -1,12 +1,22 @@
 package arcade.potts.env.location;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sim.util.Double3D;
-import sim.util.Int3D;
+import ec.util.MersenneTwisterFast;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class PlaneTest {
-    static final double EPSILON = 0.0001;
+    private static final double EPSILON = 1E-10;
+    static MersenneTwisterFast random;
+    ;
+
+    @BeforeAll
+    public static void setupMocks() {
+        random = mock(MersenneTwisterFast.class);
+    }
 
     @Test
     public void constructor_givenPointAndUnitVector_returnsCorrectPlane() {
@@ -144,5 +154,63 @@ public class PlaneTest {
         Plane plane2 = new Plane(point, normalVector);
 
         assertEquals(plane1.hashCode(), plane2.hashCode());
+    }
+
+    @Test
+    public void probablisticallyRotateNormalVector_zeroStDev_returnsInputVector() {
+        Double3D unRotatedNormal = new Double3D(1.0, 0.0, 0.0);
+        double stDevDegrees = 0.0;
+
+        Double3D rotatedNormal =
+                Plane.probablisticallyRotateNormalVector(unRotatedNormal, stDevDegrees, random);
+
+        assertEquals(
+                unRotatedNormal.x, rotatedNormal.x, EPSILON, "X component should be unchanged");
+        assertEquals(
+                unRotatedNormal.y, rotatedNormal.y, EPSILON, "Y component should be unchanged");
+        assertEquals(
+                unRotatedNormal.z, rotatedNormal.z, EPSILON, "Z component should be unchanged");
+    }
+
+    @Test
+    public void probablisticallyRotateNormalVector_called45Degrees_rotatesNormalVector() {
+        Double3D unRotatedNormal = new Double3D(1.0, 0.0, 0.0);
+        double stDevDegrees = 50;
+
+        // Mock the random.nextGaussian() to return the known value
+        when(random.nextGaussian()).thenReturn(.9);
+        // 50 * .9 = 45, so this will yield a 45 degree rotation
+
+        Double3D rotatedNormal =
+                Plane.probablisticallyRotateNormalVector(unRotatedNormal, stDevDegrees, random);
+
+        // length of vector will remain 1, and 45 degree rotation will make x = y, so by pythagorean
+        // theorem, 2x^2 = 1, or x = y = sqrt(1/2)
+        // Positive rotation angle means rotation should be counter-clockwise, so y = sqrt(1/2)
+
+        assertEquals(Math.sqrt(.5), rotatedNormal.x, EPSILON, "X component should be 0.0");
+        assertEquals(Math.sqrt(.5), rotatedNormal.y, EPSILON, "Y component should be 1.0");
+        assertEquals(0.0, rotatedNormal.z, EPSILON, "Z component should be 0.0");
+    }
+
+    @Test
+    public void probablisticallyRotateNormalVector_calledneg45Degrees_rotatesNormalVector() {
+        Double3D unRotatedNormal = new Double3D(1.0, 0.0, 0.0);
+        double stDevDegrees = 50;
+
+        // Mock the random.nextGaussian() to return the known value
+        when(random.nextGaussian()).thenReturn(-.9);
+        // 50 * -.9 = -45, so this will yield a -45 degree rotation
+
+        Double3D rotatedNormal =
+                Plane.probablisticallyRotateNormalVector(unRotatedNormal, stDevDegrees, random);
+
+        // length of vector will remain 1, and 45 degree rotation will make |x| = |y|, so by
+        // pythagorean theorem, 2x^2 = 1, or |x| = |y| = sqrt(1/2)
+        // Negative rotation angle means rotation should be clockwise, so y = -(sqrt(1/2))
+
+        assertEquals(Math.sqrt(.5), rotatedNormal.x, EPSILON, "X component should be 0.0");
+        assertEquals(-Math.sqrt(.5), rotatedNormal.y, EPSILON, "Y component should be 1.0");
+        assertEquals(0.0, rotatedNormal.z, EPSILON, "Z component should be 0.0");
     }
 }

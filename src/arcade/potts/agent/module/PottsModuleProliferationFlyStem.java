@@ -1,7 +1,7 @@
 package arcade.potts.agent.module;
 
 import java.util.ArrayList;
-import sim.util.Int3D;
+import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.Location;
@@ -12,12 +12,9 @@ import arcade.potts.agent.cell.PottsCellFlyStem.StemType;
 import arcade.potts.env.location.Plane;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocation2D;
+import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
-import arcade.potts.util.PottsEnums.Direction;
-import arcade.potts.util.PottsEnums.State;
-import static arcade.potts.agent.cell.PottsCellFlyStem.StemType;
-import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.State;
 
 /**
@@ -34,68 +31,30 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         super(cell); // Reuse the logic from PottsModuleProliferationSimple
     }
 
-    Plane getDivisionPlaneDeterministic(PottsCellFlyStem cell) {
+    public static Voxel getCellSplitLocation(PottsCellFlyStem cell) {
+        // Prepare info to get location of split
         ArrayList<Integer> splitOffsetPercent = new ArrayList<>();
         splitOffsetPercent.add(cell.stemType.splitOffsetPercentX);
         splitOffsetPercent.add(cell.stemType.splitOffsetPercentY);
-        Direction splitDirection = cell.stemType.splitDirection;
         PottsLocation location = (PottsLocation) cell.getLocation();
-        return new Plane(location.getOffset(splitOffsetPercent), splitDirection);
+        return location.getOffset(splitOffsetPercent);
     }
 
-    /**
-     * Generates a division plane for a PottsCellFlyStem with rotational variance.
-     *
-     * @param cell The cell for which to generate the division plane.
-     * @param meanDegrees The mean rotation angle in degrees.
-     * @param varianceDegrees The variance of the rotation angle in degrees squared.
-     * @return A Plane object representing the division plane.
-     */
     public Plane getDivisionPlaneWithRotationalVariance(
-            PottsCellFlyStem cell, double meanDegrees, double varianceDegrees) {
-        ArrayList<Integer> splitOffsetPercent = new ArrayList<>();
-        splitOffsetPercent.add(cell.stemType.splitOffsetPercentX);
-        splitOffsetPercent.add(cell.stemType.splitOffsetPercentY);
+            PottsCellFlyStem cell, double varianceDegrees, MersenneTwisterFast random) {
 
-        // Original split direction (assuming [0,1,0])
-        Direction splitDirection = cell.stemType.splitDirection;
-        PottsLocation location = (PottsLocation) cell.getLocation();
-
-        // Initialize Random instance
-        MersenneTwisterFast random = new MersenneTwisterFast();
-
-        // Sample theta from normal distribution: N(mean, variance)
-        double thetaDegrees = meanDegrees + Math.sqrt(varianceDegrees) * random.nextGaussian();
-        double thetaRadians = Math.toRadians(thetaDegrees); // Convert to radians
-
-        // Compute rotated normal vector [-sin(theta), cos(theta), 0]
-        int rotatedX = (int) Math.round(-Math.sin(thetaRadians));
-        int rotatedY = (int) Math.round(Math.cos(thetaRadians));
-        int rotatedZ = 0;
-
-        // Create new Direction object with rotated normal vector
-        Int3D rotatedDirection = new Int3D(rotatedX, rotatedY, rotatedZ);
+        // Get original split direction
+        Double3D plainSplitNormal = cell.stemType.splitDirection.vector;
 
         // Create and return the new Plane
-        return new Plane(location.getOffset(splitOffsetPercent), rotatedDirection);
+        return new Plane(
+                getCellSplitLocation(cell),
+                Plane.probablisticallyRotateNormalVector(
+                        plainSplitNormal, varianceDegrees, random));
     }
 
-    public Plane getDivisionPlaneWithRandomX(PottsCellFlyStem cell) {
-        ArrayList<Integer> splitOffsetPercent = new ArrayList<>();
-        splitOffsetPercent.add(cell.stemType.splitOffsetPercentX);
-        splitOffsetPercent.add(cell.stemType.splitOffsetPercentY);
-
-        // Original split direction (assuming [0,1,0])
-        Direction splitDirection = cell.stemType.splitDirection;
-        Int3D plainSplitNormal = splitDirection.vector;
-        PottsLocation location = (PottsLocation) cell.getLocation();
-
-        // set x to [-1, 0, 1] with equal probability
-        MersenneTwisterFast random = new MersenneTwisterFast();
-        int x = random.nextInt(3) - 1;
-        Int3D splitNormal = new Int3D(x, plainSplitNormal.y, plainSplitNormal.z);
-        // Create and return the new Plane
-        return new Plane(location.getOffset(splitOffsetPercent), splitNormal);
+    Plane getDivisionPlaneDeterministic(PottsCellFlyStem cell, MersenneTwisterFast random) {
+        return new Plane(getCellSplitLocation(cell), cell.stemType.splitDirection);
     }
 
     /**
@@ -110,7 +69,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         Potts potts = ((PottsSimulation) sim).getPotts();
 
         PottsCellFlyStem flyStemCell = (PottsCellFlyStem) cell;
-        Plane divisionPlane = getDivisionPlaneDeterministic(flyStemCell);
+        Plane divisionPlane = getDivisionPlaneDeterministic(flyStemCell, random);
         double splitProbability = flyStemCell.stemType.splitSelectionProbability;
 
         // Split current location

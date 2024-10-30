@@ -1,7 +1,7 @@
 package arcade.potts.env.location;
 
 import sim.util.Double3D;
-import sim.util.Int3D;
+import ec.util.MersenneTwisterFast;
 import arcade.potts.util.PottsEnums.Direction;
 
 /** A plane in 3D space. */
@@ -107,5 +107,24 @@ public final class Plane {
         hash = 31 * hash + Double.hashCode(unitNormalVector.getY());
         hash = 31 * hash + Double.hashCode(unitNormalVector.getZ());
         return hash;
+    }
+
+    public static Double3D probablisticallyRotateNormalVector(
+            Double3D unRotatedNormal, double stdDevDegrees, MersenneTwisterFast random) {
+        // Sample theta from normal distribution: N(0, stdev)
+        double thetaDegrees = stdDevDegrees * random.nextGaussian();
+        double thetaRadians = Math.toRadians(thetaDegrees); // Convert to radians
+
+        // Rotate the normal vector around the Z-axis by thetaRadians
+        double rotatedX =
+                unRotatedNormal.x * Math.cos(thetaRadians)
+                        - unRotatedNormal.y * Math.sin(thetaRadians);
+        double rotatedY =
+                unRotatedNormal.x * Math.sin(thetaRadians)
+                        + unRotatedNormal.y * Math.cos(thetaRadians);
+        double rotatedZ = unRotatedNormal.z;
+
+        // return rotated normal vector
+        return new Double3D(rotatedX, rotatedY, rotatedZ);
     }
 }
