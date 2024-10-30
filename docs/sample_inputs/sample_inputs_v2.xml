@@ -1,0 +1,15 @@
+<set prefix="test_cycle_" path="docs/sample_output/">
+    <series name="height_13.05" days="10">
+        <simulation type="growth" radius="10" margin="2">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="2">
+            <populations>
+                <population type="C" fraction="1.0" />
+            </populations>
+        </agents>
+        <environment coordinate="hex" />
+    </series>
+</set>
