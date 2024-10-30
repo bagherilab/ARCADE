@@ -63,7 +63,7 @@ public class NormalDistributionTest {
         for (int i = 0; i < iterations; i++) {
             NormalDistribution dist = new NormalDistribution(mu, sigma, RANDOM);
             int value = dist.getIntValue();
-            assertEquals((int) dist.value, value);
+            assertEquals((int) Math.round(dist.value), value);
         }
     }
 

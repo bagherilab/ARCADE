@@ -86,7 +86,7 @@ public class NormalTruncatedDistributionTest {
         for (int i = 0; i < iterations; i++) {
             NormalTruncatedDistribution dist = new NormalTruncatedDistribution(mu, sigma, RANDOM);
             int value = dist.getIntValue();
-            assertEquals((int) dist.value, value);
+            assertEquals((int) Math.round(dist.value), value);
             assertTrue(value >= minValue);
             assertTrue(value <= maxValue);
         }
@@ -103,7 +103,7 @@ public class NormalTruncatedDistributionTest {
         for (int i = 0; i < iterations; i++) {
             NormalTruncatedDistribution dist = new NormalTruncatedDistribution(mu, sigma, RANDOM);
             int value = dist.getIntValue();
-            assertEquals((int) dist.value, value);
+            assertEquals((int) Math.round(dist.value), value);
             assertTrue(value >= minValue);
             assertTrue(value <= maxValue);
         }
