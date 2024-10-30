@@ -1,5 +1,5 @@
 <set prefix="SYNTHESIS_DURATION_">
-    <series name="0" start="0" end="0" ticks="43200" interval="43200" radius="10" margin="2" depth="1" >
+    <series name="637" start="0" end="0" ticks="14400" interval="14400" radius="10" margin="2" depth="1" >
         <patch>
             <patch.parameter id="GEOMETRY" value="hex" />
         </patch>
