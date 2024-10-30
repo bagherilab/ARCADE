@@ -86,4 +86,18 @@ public class Parameters {
             throw new InvalidParameterException();
         }
     }
+
+    /**
+     * Gets the parameter value as a distribution, if it exists.
+     *
+     * @param key the parameter key
+     * @return the parameter value as a distribution
+     */
+    public Distribution getDistribution(String key) {
+        if (distributions.containsKey(key)) {
+            return distributions.get(key);
+        } else {
+            throw new InvalidParameterException();
+        }
+    }
 }

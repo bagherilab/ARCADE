@@ -178,4 +178,28 @@ public class ParametersTest {
 
         assertThrows(InvalidParameterException.class, () -> parameters.getInt(key));
     }
+
+    @Test
+    public void getDistribution_keyHasDistribution_returnsDistribution() {
+        MersenneTwisterFast random = new MersenneTwisterFast();
+        MiniBox box = new MiniBox();
+        String key = randomString();
+
+        Distribution distribution = mock(Distribution.class);
+        Parameters parameters = new Parameters(box, null, random);
+        parameters.distributions.put(key, distribution);
+
+        assertSame(distribution, parameters.getDistribution(key));
+    }
+
+    @Test
+    public void getDistribution_keyDoesNotExist_throwsException() {
+        MersenneTwisterFast random = new MersenneTwisterFast();
+        MiniBox box = new MiniBox();
+        String key = randomString();
+
+        Parameters parameters = new Parameters(box, null, random);
+
+        assertThrows(InvalidParameterException.class, () -> parameters.getDouble(key));
+    }
 }
