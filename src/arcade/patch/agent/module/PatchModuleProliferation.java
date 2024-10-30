@@ -35,6 +35,7 @@ public class PatchModuleProliferation extends PatchModule {
     /** Time required for DNA synthesis [min]. */
     private final double synthesisDuration;
 
+    /** Time of cell creation. */
     private final double start;
 
     /**
@@ -47,6 +48,7 @@ public class PatchModuleProliferation extends PatchModule {
      * </ul>
      *
      * @param cell the {@link PatchCell} the module is associated with
+     * @param start the time of cell switching to proliferation state
      */
     public PatchModuleProliferation(PatchCell cell, double start) {
         super(cell);

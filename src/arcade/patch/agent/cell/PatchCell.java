@@ -128,7 +128,7 @@ public abstract class PatchCell implements Cell {
     /** Cell population links. */
     final GrabBag links;
 
-    /** List of cell cycle lengths (in minutes) */
+    /** List of cell cycle lengths (in minutes). */
     private final Bag cycles = new Bag();
 
     /**
@@ -327,9 +327,15 @@ public abstract class PatchCell implements Cell {
         }
     }
 
-    public void setState(CellState state, double currentSimTime) {
-        if (state == State.PROLIFERATIVE) {
-            this.state = state;
+    /**
+     * Sets the cell state to proliferative.
+     *
+     * @param proliferativeState the target cell state
+     * @param currentSimTime the current simulation time
+     */
+    public void setState(CellState proliferativeState, double currentSimTime) {
+        if (proliferativeState == State.PROLIFERATIVE) {
+            this.state = proliferativeState;
             this.flag = Flag.PROLIFERATIVE;
             module = new PatchModuleProliferation(this, currentSimTime);
         } else {
@@ -337,6 +343,11 @@ public abstract class PatchCell implements Cell {
         }
     }
 
+    /**
+     * Sets the cell module.
+     *
+     * @param module the target cell module
+     */
     public void setModule(PatchModule module) {
         this.module = module;
     }

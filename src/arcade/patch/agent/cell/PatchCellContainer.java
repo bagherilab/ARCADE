@@ -46,7 +46,7 @@ public final class PatchCellContainer implements CellContainer {
     /** Critical cell height [um]. */
     public final double criticalHeight;
 
-    /** List of cell cycle lengths (in minutes) */
+    /** List of cell cycle lengths (in minutes). */
     public final Bag cycles;
 
     /**
@@ -62,6 +62,7 @@ public final class PatchCellContainer implements CellContainer {
      * @param height the cell height
      * @param criticalVolume the critical volume
      * @param criticalHeight the critical height
+     * @param cycles the list of cell cycle lengths
      */
     public PatchCellContainer(
             int id,
