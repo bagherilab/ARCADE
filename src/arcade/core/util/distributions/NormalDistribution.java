@@ -76,7 +76,7 @@ public class NormalDistribution implements Distribution {
 
     @Override
     public int getIntValue() {
-        return (int) value;
+        return (int) Math.round(value);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class NormalDistribution implements Distribution {
 
     @Override
     public int nextInt() {
-        return (int) nextDouble();
+        return (int) Math.round(nextDouble());
     }
 
     @Override
