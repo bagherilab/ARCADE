@@ -35,7 +35,7 @@ public abstract class Series {
 
     /** Regular expression for distributions. */
     public static final String DISTRIBUTION_REGEX =
-            "^([A-Z\\_]+)\\(([A-Z]+)=([\\d\\.]+),([A-Z]+)=([\\d\\.]+)\\)$";
+            "^([A-Z\\_]+)\\(([A-Z]+)=([\\d\\.]+)(?:,([A-Z]+)=([\\d\\.]+))*\\)$";
 
     /** Offset of random seed to avoid using seed of 0. */
     public static final int SEED_OFFSET = 1000;
@@ -317,8 +317,10 @@ public abstract class Series {
 
         if (match.find()) {
             box.put("(DISTRIBUTION)" + TAG_SEPARATOR + parameter, match.group(1).toUpperCase());
-            box.put(parameter + "_" + match.group(2), match.group(3));
-            box.put(parameter + "_" + match.group(4), match.group(5));
+            for (int i = 0; i < (match.groupCount() - 1) / 2; i++) {
+                int index = 2 * (i + 1);
+                box.put(parameter + "_" + match.group(index), match.group(index + 1));
+            }
         } else {
             box.put(parameter, value);
             if (scales.contains(parameter)) {

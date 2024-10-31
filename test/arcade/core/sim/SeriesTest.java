@@ -609,20 +609,88 @@ public class SeriesTest {
     }
 
     @Test
-    public void parseParameter_noValueDistribution_usesDefault() {
+    public void parseParameter_noValueOneParameterDistribution_usesDefault() {
         MiniBox box = new MiniBox();
         String parameter = randomString();
         String distribution = randomString().toUpperCase();
-        double defaultParameterA = randomDoubleBetween(0, 100);
-        double defaultParameterB = randomDoubleBetween(0, 100);
-        String code =
-                String.format("%s(A=%f,B=%f)", distribution, defaultParameterA, defaultParameterB);
+
+        double defaultA = randomDoubleBetween(0, 100);
+        String defaultCode = String.format("%s(A=%f)", distribution, defaultA);
+
         MiniBox values = new MiniBox();
         MiniBox scales = new MiniBox();
-        Series.parseParameter(box, parameter, code, values, scales);
+
+        Series.parseParameter(box, parameter, defaultCode, values, scales);
+
         assertEquals(distribution, box.get("(DISTRIBUTION)" + TAG_SEPARATOR + parameter));
-        assertEquals(defaultParameterA, box.getDouble(parameter + "_A"), EPSILON);
-        assertEquals(defaultParameterB, box.getDouble(parameter + "_B"), EPSILON);
+        assertEquals(defaultA, box.getDouble(parameter + "_A"), EPSILON);
+    }
+
+    @Test
+    public void parseParameter_noValueTwoParameterDistribution_usesDefault() {
+        MiniBox box = new MiniBox();
+        String parameter = randomString();
+        String distribution = randomString().toUpperCase();
+
+        double defaultA = randomDoubleBetween(0, 100);
+        double defaultB = randomDoubleBetween(0, 100);
+        String defaultCode = String.format("%s(A=%f,B=%f)", distribution, defaultA, defaultB);
+
+        MiniBox values = new MiniBox();
+        MiniBox scales = new MiniBox();
+
+        Series.parseParameter(box, parameter, defaultCode, values, scales);
+
+        assertEquals(distribution, box.get("(DISTRIBUTION)" + TAG_SEPARATOR + parameter));
+        assertEquals(defaultA, box.getDouble(parameter + "_A"), EPSILON);
+        assertEquals(defaultB, box.getDouble(parameter + "_B"), EPSILON);
+    }
+
+    @Test
+    public void parseParameter_withOneParameterDistributionValue_usesValue() {
+        MiniBox box = new MiniBox();
+        String parameter = randomString();
+        String distribution = randomString().toUpperCase();
+
+        double defaultA = randomDoubleBetween(0, 100);
+        String defaultCode = String.format("%s(A=%f)", distribution, defaultA);
+
+        MiniBox values = new MiniBox();
+        MiniBox scales = new MiniBox();
+
+        double valueA = randomDoubleBetween(0, 100);
+        String valueCode = String.format("%s(A=%f)", distribution, valueA);
+        values.put(parameter, valueCode);
+
+        Series.parseParameter(box, parameter, defaultCode, values, scales);
+
+        assertEquals(distribution, box.get("(DISTRIBUTION)" + TAG_SEPARATOR + parameter));
+        assertEquals(valueA, box.getDouble(parameter + "_A"), EPSILON);
+    }
+
+    @Test
+    public void parseParameter_withTwoParameterDistributionValue_usesValue() {
+        MiniBox box = new MiniBox();
+        String parameter = randomString();
+        String distribution = randomString().toUpperCase();
+
+        double defaultA = randomDoubleBetween(0, 100);
+        double defaultB = randomDoubleBetween(0, 100);
+        String defaultCode = String.format("%s(A=%f,B=%f)", distribution, defaultA, defaultB);
+
+        MiniBox values = new MiniBox();
+        MiniBox scales = new MiniBox();
+
+        double valueA = randomDoubleBetween(0, 100);
+        double valueB = randomDoubleBetween(0, 100);
+        String valueCode = String.format("%s(A=%f,B=%f)", distribution, valueA, valueB);
+        values.put(parameter, valueCode);
+
+        Series.parseParameter(box, parameter, defaultCode, values, scales);
+
+        assertEquals(distribution, box.get("(DISTRIBUTION)" + TAG_SEPARATOR + parameter));
+        assertEquals(valueA, box.getDouble(parameter + "_A"), EPSILON);
+        assertEquals(valueB, box.getDouble(parameter + "_B"), EPSILON);
     }
 
     @Test
