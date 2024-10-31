@@ -64,7 +64,7 @@ public class UniformDistributionTest {
         for (int i = 0; i < iterations; i++) {
             UniformDistribution dist = new UniformDistribution(min, max, RANDOM);
             int value = dist.getIntValue();
-            assertEquals((int) dist.value, value);
+            assertEquals((int) Math.round(dist.value), value);
             assertTrue(value >= min);
             assertTrue(value <= max);
         }
