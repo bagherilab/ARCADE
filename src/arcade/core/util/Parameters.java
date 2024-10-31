@@ -2,6 +2,7 @@ package arcade.core.util;
 
 import java.security.InvalidParameterException;
 import java.util.HashMap;
+import java.util.HashSet;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.distributions.Distribution;
 
@@ -13,7 +14,7 @@ import arcade.core.util.distributions.Distribution;
  */
 public class Parameters {
     /** Population parameters. */
-    public final MiniBox popParameters;
+    final MiniBox popParameters;
 
     /** Map of parameter names to distributions. */
     final HashMap<String, Distribution> distributions;
@@ -99,5 +100,46 @@ public class Parameters {
         } else {
             throw new InvalidParameterException();
         }
+    }
+
+    /**
+     * Filters parameters by the given code.
+     *
+     * @param code the code to filter by
+     * @return the filtered box
+     */
+    public MiniBox filter(String code) {
+        return popParameters.filter(code);
+    }
+
+    /**
+     * Compares two {@code Parameters} instances.
+     *
+     * <p>Instances are equal if (1) both parameters have the same population parameters and (2)
+     * both parameters have the same distributions. Note that distributions are the same if they
+     * have the same distribution parameters; the value pulled from each distribution is ignored.
+     *
+     * @param parameters the {@code Parameters} to compare to
+     * @return {@code true} if contents match, {@code false} otherwise
+     */
+    public boolean compare(Parameters parameters) {
+        HashSet<String> allKeys = new HashSet<>();
+        allKeys.addAll(distributions.keySet());
+        allKeys.addAll(parameters.distributions.keySet());
+
+        for (String key : allKeys) {
+            if (!distributions.containsKey(key)) {
+                return false;
+            } else if (!parameters.distributions.containsKey(key)) {
+                return false;
+            } else if (!distributions
+                    .get(key)
+                    .getParameters()
+                    .compare(parameters.distributions.get(key).getParameters())) {
+                return false;
+            }
+        }
+
+        return popParameters.compare(parameters.popParameters);
     }
 }

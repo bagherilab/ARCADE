@@ -192,9 +192,7 @@ public class MiniBox {
         for (String key : allKeys) {
             if (!contents.containsKey(key)) {
                 return false;
-            }
-
-            if (!box.contents.containsKey(key)) {
+            } else if (!box.contents.containsKey(key)) {
                 return false;
             } else if (!contents.get(key).equals(box.get(key))) {
                 return false;
