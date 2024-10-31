@@ -20,7 +20,7 @@ import static arcade.potts.util.PottsEnums.State;
 public class PottsCellContainerTest {
     private static final double EPSILON = 1E-10;
 
-    private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast(randomSeed());
+    private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast();
 
     @Test
     public void constructor_noRegions_setsFields() {

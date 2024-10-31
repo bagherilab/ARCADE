@@ -15,7 +15,7 @@ import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.util.PottsEnums.Phase;
 
 public class PottsModuleApoptosisTest {
-    static MersenneTwisterFast randomMock = new MersenneTwisterFast(randomSeed());
+    static MersenneTwisterFast randomMock = new MersenneTwisterFast();
 
     static PottsSimulation simMock;
 

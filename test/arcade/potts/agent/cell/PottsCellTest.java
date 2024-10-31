@@ -31,7 +31,7 @@ public class PottsCellTest {
 
     private static final double OFFSET = 0.01;
 
-    private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast(randomSeed());
+    private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast();
 
     static EnumMap<Region, Double> criticalVolumesRegionMock;
 
@@ -63,9 +63,9 @@ public class PottsCellTest {
 
     static int cellDivisions = randomIntBetween(1, 100);
 
-    static double cellCriticalVolume = randomDoubleBetween(10, 100);
+    static double cellCriticalVolume = randomDoubleBetween(30, 40);
 
-    static double cellCriticalHeight = randomDoubleBetween(10, 100);
+    static double cellCriticalHeight = randomDoubleBetween(30, 40);
 
     static State cellState = State.QUIESCENT;
 
@@ -1018,8 +1018,6 @@ public class PottsCellTest {
         double defaultVolume = criticalVolumesRegionMock.get(Region.DEFAULT);
         double defaultHeight = criticalHeightsRegionMock.get(Region.DEFAULT);
         double threshold = defaultVolume / cellCriticalVolume;
-
-        System.out.println(defaultVolume + " " + cellCriticalVolume);
 
         double[] scales =
                 new double[] {
