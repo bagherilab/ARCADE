@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PottsEnums.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.util</a> &gt; <span class="el_source">PottsEnums.java</span></div><h1>PottsEnums.java</h1><pre class="source lang-java linenums">package arcade.potts.util;
 
-import sim.util.Int3D;
+import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.agent.process.ProcessDomain;
@@ -174,41 +174,41 @@ public final class PottsEnums {
 <span class="fc" id="L174">        UNDEFINED(null),</span>
 
         /** Direction along the yz plane (y = 0, z = 0). */
-<span class="fc" id="L177">        YZ_PLANE(new Int3D(1, 0, 0)),</span>
+<span class="fc" id="L177">        YZ_PLANE(new Double3D(1, 0, 0)),</span>
 
         /** Direction along the zx plane (z = 0, x = 0). */
-<span class="fc" id="L180">        ZX_PLANE(new Int3D(0, 1, 0)),</span>
+<span class="fc" id="L180">        ZX_PLANE(new Double3D(0, 1, 0)),</span>
 
         /** Direction along the xy plane (x = 0, y = 0). */
-<span class="fc" id="L183">        XY_PLANE(new Int3D(0, 0, 1)),</span>
+<span class="fc" id="L183">        XY_PLANE(new Double3D(0, 0, 1)),</span>
 
         /** Direction along the positive xy axis (x = y, z = 0). */
-<span class="fc" id="L186">        POSITIVE_XY(new Int3D(-1, 1, 0)),</span>
+<span class="fc" id="L186">        POSITIVE_XY(new Double3D(-1, 1, 0)),</span>
 
         /** Direction along the negative xy axis (x = -y, z = 0). */
-<span class="fc" id="L189">        NEGATIVE_XY(new Int3D(-1, -1, 0)),</span>
+<span class="fc" id="L189">        NEGATIVE_XY(new Double3D(-1, -1, 0)),</span>
 
         /** Direction along the positive yz axis (y = z, x = 0). */
-<span class="fc" id="L192">        POSITIVE_YZ(new Int3D(0, -1, 1)),</span>
+<span class="fc" id="L192">        POSITIVE_YZ(new Double3D(0, -1, 1)),</span>
 
         /** Direction along the negative yz axis (y = -z, x = 0). */
-<span class="fc" id="L195">        NEGATIVE_YZ(new Int3D(0, -1, -1)),</span>
+<span class="fc" id="L195">        NEGATIVE_YZ(new Double3D(0, -1, -1)),</span>
 
         /** Direction along the positive zx axis (z = x, y = 0). */
-<span class="fc" id="L198">        POSITIVE_ZX(new Int3D(1, 0, -1)),</span>
+<span class="fc" id="L198">        POSITIVE_ZX(new Double3D(1, 0, -1)),</span>
 
         /** Direction along the negative zx axis (z = -x, y = 0). */
-<span class="fc" id="L201">        NEGATIVE_ZX(new Int3D(-1, 0, -1));</span>
+<span class="fc" id="L201">        NEGATIVE_ZX(new Double3D(-1, 0, -1));</span>
 
         /** The normal vector of the plane in this direction. */
-        public final Int3D vector;
+        public final Double3D vector;
 
         /**
          * Creates a new {@code Direction} with the given vector.
          *
          * @param vector the vector associated with this direction
          */
-<span class="fc" id="L211">        Direction(Int3D vector) {</span>
+<span class="fc" id="L211">        Direction(Double3D vector) {</span>
 <span class="fc" id="L212">            this.vector = vector;</span>
 <span class="fc" id="L213">        }</span>
 

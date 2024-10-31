@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Plane.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.env.location</a> &gt; <span class="el_source">Plane.java</span></div><h1>Plane.java</h1><pre class="source lang-java linenums">package arcade.potts.env.location;
 
 import sim.util.Double3D;
-import sim.util.Int3D;
 import arcade.potts.util.PottsEnums.Direction;
 
 /** A plane in 3D space. */
@@ -18,10 +17,10 @@ public final class Plane {
      * @param voxel a point on the plane
      * @param normalVector the normal vector to the plane
      */
-<span class="fc" id="L21">    public Plane(Voxel voxel, Int3D normalVector) {</span>
-<span class="fc" id="L22">        this.referencePoint = voxel;</span>
-<span class="fc" id="L23">        this.unitNormalVector = scaleNormalVector(normalVector);</span>
-<span class="fc" id="L24">    }</span>
+<span class="fc" id="L20">    public Plane(Voxel voxel, Double3D normalVector) {</span>
+<span class="fc" id="L21">        this.referencePoint = voxel;</span>
+<span class="fc" id="L22">        this.unitNormalVector = scaleNormalVector(normalVector);</span>
+<span class="fc" id="L23">    }</span>
 
     /**
      * Creates a plane from a point and a direction.
@@ -30,8 +29,8 @@ public final class Plane {
      * @param direction the direction of the plane
      */
     public Plane(Voxel voxel, Direction direction) {
-<span class="fc" id="L33">        this(voxel, direction.vector);</span>
-<span class="fc" id="L34">    }</span>
+<span class="fc" id="L32">        this(voxel, direction.vector);</span>
+<span class="fc" id="L33">    }</span>
 
     /**
      * Determines the magnitude of the normal vector.
@@ -39,11 +38,11 @@ public final class Plane {
      * @param normalVector the normal vector
      * @return the magnitude of the normal vector
      */
-    static double getNormalVectorMagnitude(Int3D normalVector) {
-<span class="fc" id="L43">        return Math.sqrt(</span>
-<span class="fc" id="L44">                normalVector.getX() * normalVector.getX()</span>
-<span class="fc" id="L45">                        + normalVector.getY() * normalVector.getY()</span>
-<span class="fc" id="L46">                        + normalVector.getZ() * normalVector.getZ());</span>
+    static double getNormalVectorMagnitude(Double3D normalVector) {
+<span class="fc" id="L42">        return Math.sqrt(</span>
+<span class="fc" id="L43">                normalVector.getX() * normalVector.getX()</span>
+<span class="fc" id="L44">                        + normalVector.getY() * normalVector.getY()</span>
+<span class="fc" id="L45">                        + normalVector.getZ() * normalVector.getZ());</span>
     }
 
     /**
@@ -52,13 +51,13 @@ public final class Plane {
      * @param normalVector the normal vector
      * @return the unit normal vector
      */
-    static Double3D scaleNormalVector(Int3D normalVector) {
-<span class="fc" id="L56">        double magnitude = getNormalVectorMagnitude(normalVector);</span>
-<span class="fc" id="L57">        double scaledX = normalVector.getX() / magnitude;</span>
-<span class="fc" id="L58">        double scaledY = normalVector.getY() / magnitude;</span>
-<span class="fc" id="L59">        double scaledZ = normalVector.getZ() / magnitude;</span>
-<span class="fc" id="L60">        Double3D unitNormalVector = new Double3D(scaledX, scaledY, scaledZ);</span>
-<span class="fc" id="L61">        return unitNormalVector;</span>
+    static Double3D scaleNormalVector(Double3D normalVector) {
+<span class="fc" id="L55">        double magnitude = getNormalVectorMagnitude(normalVector);</span>
+<span class="fc" id="L56">        double scaledX = normalVector.getX() / magnitude;</span>
+<span class="fc" id="L57">        double scaledY = normalVector.getY() / magnitude;</span>
+<span class="fc" id="L58">        double scaledZ = normalVector.getZ() / magnitude;</span>
+<span class="fc" id="L59">        Double3D unitNormalVector = new Double3D(scaledX, scaledY, scaledZ);</span>
+<span class="fc" id="L60">        return unitNormalVector;</span>
     }
 
     /**
@@ -71,11 +70,11 @@ public final class Plane {
      * @return the distance from the point to the plane.
      */
     public double signedDistanceToPlane(Voxel point) {
-<span class="fc" id="L74">        double dotProduct =</span>
-<span class="fc" id="L75">                (point.x - referencePoint.x) * unitNormalVector.getX()</span>
-<span class="fc" id="L76">                        + (point.y - referencePoint.y) * unitNormalVector.getY()</span>
-<span class="fc" id="L77">                        + (point.z - referencePoint.z) * unitNormalVector.getZ();</span>
-<span class="fc" id="L78">        return dotProduct;</span>
+<span class="fc" id="L73">        double dotProduct =</span>
+<span class="fc" id="L74">                (point.x - referencePoint.x) * unitNormalVector.getX()</span>
+<span class="fc" id="L75">                        + (point.y - referencePoint.y) * unitNormalVector.getY()</span>
+<span class="fc" id="L76">                        + (point.z - referencePoint.z) * unitNormalVector.getZ();</span>
+<span class="fc" id="L77">        return dotProduct;</span>
     }
 
     /**
@@ -86,12 +85,12 @@ public final class Plane {
      */
     @Override
     public boolean equals(Object obj) {
-<span class="pc bpc" id="L89" title="2 of 4 branches missed.">        if (obj == null || getClass() != obj.getClass()) {</span>
-<span class="nc" id="L90">            return false;</span>
+<span class="pc bpc" id="L88" title="2 of 4 branches missed.">        if (obj == null || getClass() != obj.getClass()) {</span>
+<span class="nc" id="L89">            return false;</span>
         }
-<span class="fc" id="L92">        Plane other = (Plane) obj;</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">        return referencePoint.equals(other.referencePoint)</span>
-<span class="pc bpc" id="L94" title="1 of 2 branches missed.">                &amp;&amp; unitNormalVector.equals(other.unitNormalVector);</span>
+<span class="fc" id="L91">        Plane other = (Plane) obj;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        return referencePoint.equals(other.referencePoint)</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">                &amp;&amp; unitNormalVector.equals(other.unitNormalVector);</span>
     }
 
     /**
@@ -101,12 +100,12 @@ public final class Plane {
      */
     @Override
     public int hashCode() {
-<span class="fc" id="L104">        int hash = 7;</span>
-<span class="fc" id="L105">        hash = 31 * hash + referencePoint.hashCode();</span>
-<span class="fc" id="L106">        hash = 31 * hash + Double.hashCode(unitNormalVector.getX());</span>
-<span class="fc" id="L107">        hash = 31 * hash + Double.hashCode(unitNormalVector.getY());</span>
-<span class="fc" id="L108">        hash = 31 * hash + Double.hashCode(unitNormalVector.getZ());</span>
-<span class="fc" id="L109">        return hash;</span>
+<span class="fc" id="L103">        int hash = 7;</span>
+<span class="fc" id="L104">        hash = 31 * hash + referencePoint.hashCode();</span>
+<span class="fc" id="L105">        hash = 31 * hash + Double.hashCode(unitNormalVector.getX());</span>
+<span class="fc" id="L106">        hash = 31 * hash + Double.hashCode(unitNormalVector.getY());</span>
+<span class="fc" id="L107">        hash = 31 * hash + Double.hashCode(unitNormalVector.getZ());</span>
+<span class="fc" id="L108">        return hash;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
