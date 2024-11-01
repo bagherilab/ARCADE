@@ -245,51 +245,55 @@ public final class PottsSeries extends Series {
 <span class="fc" id="L245">            MiniBox parameterValues = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;value&quot;);</span>
 <span class="fc" id="L246">            MiniBox parameterScales = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;scale&quot;);</span>
 
+            // Apply conversion factors.
+<span class="fc bfc" id="L249" title="All 2 branches covered.">            for (String convert : populationConversions.getKeys()) {</span>
+<span class="fc" id="L250">                double conversion = parseConversion(populationConversions.get(convert), ds, dt);</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">                if (parameterScales.contains(convert)) {</span>
+<span class="fc" id="L252">                    parameterScales.put(convert, parameterScales.getDouble(convert) * conversion);</span>
+                } else {
+<span class="fc" id="L254">                    parameterScales.put(convert, conversion);</span>
+                }
+<span class="fc" id="L256">            }</span>
+
             // Add in parameters. Start with value (if given) or default (if not
             // given). Then apply any scaling.
-<span class="fc bfc" id="L250" title="All 2 branches covered.">            for (String parameter : populationDefaults.getKeys()) {</span>
-<span class="fc" id="L251">                parseParameter(</span>
+<span class="fc bfc" id="L260" title="All 2 branches covered.">            for (String parameter : populationDefaults.getKeys()) {</span>
+<span class="fc" id="L261">                parseParameter(</span>
                         population,
                         parameter,
-<span class="fc" id="L254">                        populationDefaults.get(parameter),</span>
+<span class="fc" id="L264">                        populationDefaults.get(parameter),</span>
                         parameterValues,
                         parameterScales);
-<span class="fc" id="L257">            }</span>
+<span class="fc" id="L267">            }</span>
 
             // Get list of links, if valid.
-<span class="fc" id="L260">            MiniBox links = box.filterBoxByTag(&quot;LINK&quot;).getIdValForTagAtt(&quot;LINK&quot;, &quot;weight&quot;);</span>
-<span class="fc bfc" id="L261" title="All 2 branches covered.">            for (String link : links.getKeys()) {</span>
-<span class="fc" id="L262">                population.put(&quot;(LINK)&quot; + TAG_SEPARATOR + link, links.getDouble(link));</span>
-<span class="fc" id="L263">            }</span>
+<span class="fc" id="L270">            MiniBox links = box.filterBoxByTag(&quot;LINK&quot;).getIdValForTagAtt(&quot;LINK&quot;, &quot;weight&quot;);</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">            for (String link : links.getKeys()) {</span>
+<span class="fc" id="L272">                population.put(&quot;(LINK)&quot; + TAG_SEPARATOR + link, links.getDouble(link));</span>
+<span class="fc" id="L273">            }</span>
 
             // Get list of regions, if valid.
-<span class="fc" id="L266">            HashSet&lt;String&gt; regions = box.filterTags(&quot;REGION&quot;);</span>
-<span class="fc bfc" id="L267" title="All 2 branches covered.">            for (String region : regions) {</span>
-<span class="fc" id="L268">                population.put(&quot;(REGION)&quot; + TAG_SEPARATOR + region, &quot;&quot;);</span>
-<span class="fc" id="L269">            }</span>
-
-            // Apply conversion factors.
-<span class="fc bfc" id="L272" title="All 2 branches covered.">            for (String convert : populationConversions.getKeys()) {</span>
-<span class="fc" id="L273">                double conversion = parseConversion(populationConversions.get(convert), ds, dt);</span>
-<span class="fc" id="L274">                population.put(convert, population.getDouble(convert) * conversion);</span>
-<span class="fc" id="L275">            }</span>
-<span class="fc" id="L276">        }</span>
-<span class="fc" id="L277">    }</span>
+<span class="fc" id="L276">            HashSet&lt;String&gt; regions = box.filterTags(&quot;REGION&quot;);</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">            for (String region : regions) {</span>
+<span class="fc" id="L278">                population.put(&quot;(REGION)&quot; + TAG_SEPARATOR + region, &quot;&quot;);</span>
+<span class="fc" id="L279">            }</span>
+<span class="fc" id="L280">        }</span>
+<span class="fc" id="L281">    }</span>
 
     @Override
     protected void updateLayers(
             ArrayList&lt;Box&gt; layersBox, MiniBox layerDefaults, MiniBox layerConversions) {
         // TODO
-<span class="fc" id="L283">    }</span>
+<span class="fc" id="L287">    }</span>
 
     @Override
     protected void updateActions(ArrayList&lt;Box&gt; actionsBox, MiniBox actionDefaults) {
         // TODO
-<span class="fc" id="L288">    }</span>
+<span class="fc" id="L292">    }</span>
 
     @Override
     protected void updateComponents(ArrayList&lt;Box&gt; componentsBox, MiniBox componentDefaults) {
         // TODO
-<span class="fc" id="L293">    }</span>
+<span class="fc" id="L297">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

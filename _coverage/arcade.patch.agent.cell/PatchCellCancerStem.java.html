@@ -4,7 +4,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 
 /**
  * Extension of {@link PatchCellCancer} for cancerous stem cells.
@@ -27,7 +27,7 @@ public class PatchCellCancerStem extends PatchCellCancer {
      * @param parameters the dictionary of parameters
      */
     public PatchCellCancerStem(
-            PatchCellContainer container, Location location, MiniBox parameters) {
+            PatchCellContainer container, Location location, Parameters parameters) {
 <span class="nc" id="L31">        this(container, location, parameters, null);</span>
 <span class="nc" id="L32">    }</span>
 
@@ -40,7 +40,7 @@ public class PatchCellCancerStem extends PatchCellCancer {
      * @param links the map of population links
      */
     public PatchCellCancerStem(
-            PatchCellContainer container, Location location, MiniBox parameters, GrabBag links) {
+            PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
 <span class="nc" id="L44">        super(container, location, parameters, links);</span>
 
         // TODO: set death age

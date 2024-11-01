@@ -56,8 +56,7 @@ public final class Plane {
 <span class="fc" id="L56">        double scaledX = normalVector.getX() / magnitude;</span>
 <span class="fc" id="L57">        double scaledY = normalVector.getY() / magnitude;</span>
 <span class="fc" id="L58">        double scaledZ = normalVector.getZ() / magnitude;</span>
-<span class="fc" id="L59">        Double3D unitNormalVector = new Double3D(scaledX, scaledY, scaledZ);</span>
-<span class="fc" id="L60">        return unitNormalVector;</span>
+<span class="fc" id="L59">        return new Double3D(scaledX, scaledY, scaledZ);</span>
     }
 
     /**
@@ -70,11 +69,9 @@ public final class Plane {
      * @return the distance from the point to the plane.
      */
     public double signedDistanceToPlane(Voxel point) {
-<span class="fc" id="L73">        double dotProduct =</span>
-<span class="fc" id="L74">                (point.x - referencePoint.x) * unitNormalVector.getX()</span>
-<span class="fc" id="L75">                        + (point.y - referencePoint.y) * unitNormalVector.getY()</span>
-<span class="fc" id="L76">                        + (point.z - referencePoint.z) * unitNormalVector.getZ();</span>
-<span class="fc" id="L77">        return dotProduct;</span>
+<span class="fc" id="L72">        return (point.x - referencePoint.x) * unitNormalVector.getX()</span>
+<span class="fc" id="L73">                + (point.y - referencePoint.y) * unitNormalVector.getY()</span>
+<span class="fc" id="L74">                + (point.z - referencePoint.z) * unitNormalVector.getZ();</span>
     }
 
     /**
@@ -85,12 +82,12 @@ public final class Plane {
      */
     @Override
     public boolean equals(Object obj) {
-<span class="pc bpc" id="L88" title="2 of 4 branches missed.">        if (obj == null || getClass() != obj.getClass()) {</span>
-<span class="nc" id="L89">            return false;</span>
+<span class="pc bpc" id="L85" title="2 of 4 branches missed.">        if (obj == null || getClass() != obj.getClass()) {</span>
+<span class="nc" id="L86">            return false;</span>
         }
-<span class="fc" id="L91">        Plane other = (Plane) obj;</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">        return referencePoint.equals(other.referencePoint)</span>
-<span class="pc bpc" id="L93" title="1 of 2 branches missed.">                &amp;&amp; unitNormalVector.equals(other.unitNormalVector);</span>
+<span class="fc" id="L88">        Plane other = (Plane) obj;</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        return referencePoint.equals(other.referencePoint)</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">                &amp;&amp; unitNormalVector.equals(other.unitNormalVector);</span>
     }
 
     /**
@@ -100,12 +97,12 @@ public final class Plane {
      */
     @Override
     public int hashCode() {
-<span class="fc" id="L103">        int hash = 7;</span>
-<span class="fc" id="L104">        hash = 31 * hash + referencePoint.hashCode();</span>
-<span class="fc" id="L105">        hash = 31 * hash + Double.hashCode(unitNormalVector.getX());</span>
-<span class="fc" id="L106">        hash = 31 * hash + Double.hashCode(unitNormalVector.getY());</span>
-<span class="fc" id="L107">        hash = 31 * hash + Double.hashCode(unitNormalVector.getZ());</span>
-<span class="fc" id="L108">        return hash;</span>
+<span class="fc" id="L100">        int hash = 7;</span>
+<span class="fc" id="L101">        hash = 31 * hash + referencePoint.hashCode();</span>
+<span class="fc" id="L102">        hash = 31 * hash + Double.hashCode(unitNormalVector.getX());</span>
+<span class="fc" id="L103">        hash = 31 * hash + Double.hashCode(unitNormalVector.getY());</span>
+<span class="fc" id="L104">        hash = 31 * hash + Double.hashCode(unitNormalVector.getZ());</span>
+<span class="fc" id="L105">        return hash;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

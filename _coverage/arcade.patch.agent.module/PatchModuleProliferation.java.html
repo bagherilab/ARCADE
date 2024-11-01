@@ -4,7 +4,7 @@ import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.process.PatchProcess;
 import arcade.patch.env.grid.PatchGrid;
@@ -52,7 +52,7 @@ public class PatchModuleProliferation extends PatchModule {
 <span class="nc" id="L52">        maxHeight = cell.getCriticalHeight();</span>
 
         // Set loaded parameters.
-<span class="nc" id="L55">        MiniBox parameters = cell.getParameters();</span>
+<span class="nc" id="L55">        Parameters parameters = cell.getParameters();</span>
 <span class="nc" id="L56">        synthesisDuration = parameters.getInt(&quot;proliferation/SYNTHESIS_DURATION&quot;);</span>
 <span class="nc" id="L57">    }</span>
 
@@ -87,31 +87,36 @@ public class PatchModuleProliferation extends PatchModule {
 <span class="nc" id="L87">                    int newID = sim.getID();</span>
 <span class="nc" id="L88">                    CellContainer newContainer = cell.make(newID, State.UNDEFINED, random);</span>
 <span class="nc" id="L89">                    PatchCell newCell =</span>
-<span class="nc" id="L90">                            (PatchCell) newContainer.convert(sim.getCellFactory(), newLocation);</span>
-<span class="nc" id="L91">                    sim.getGrid().addObject(newCell, newLocation);</span>
-<span class="nc" id="L92">                    newCell.schedule(sim.getSchedule());</span>
+                            (PatchCell)
+<span class="nc" id="L91">                                    newContainer.convert(</span>
+<span class="nc" id="L92">                                            sim.getCellFactory(),</span>
+                                            newLocation,
+                                            random,
+<span class="nc" id="L95">                                            cell.getParameters());</span>
+<span class="nc" id="L96">                    sim.getGrid().addObject(newCell, newLocation);</span>
+<span class="nc" id="L97">                    newCell.schedule(sim.getSchedule());</span>
 
                     // Update cell volume and energy based on split.
-<span class="nc" id="L95">                    double split = (random.nextDouble() / 10 + 0.45);</span>
-<span class="nc" id="L96">                    double volume = cell.getVolume();</span>
-<span class="nc" id="L97">                    double energy = cell.getEnergy();</span>
-<span class="nc" id="L98">                    cell.setVolume(volume * split);</span>
-<span class="nc" id="L99">                    cell.setEnergy(energy * split);</span>
-<span class="nc" id="L100">                    newCell.setVolume(volume * (1 - split));</span>
-<span class="nc" id="L101">                    newCell.setEnergy(energy * (1 - split));</span>
+<span class="nc" id="L100">                    double split = (random.nextDouble() / 10 + 0.45);</span>
+<span class="nc" id="L101">                    double volume = cell.getVolume();</span>
+<span class="nc" id="L102">                    double energy = cell.getEnergy();</span>
+<span class="nc" id="L103">                    cell.setVolume(volume * split);</span>
+<span class="nc" id="L104">                    cell.setEnergy(energy * split);</span>
+<span class="nc" id="L105">                    newCell.setVolume(volume * (1 - split));</span>
+<span class="nc" id="L106">                    newCell.setEnergy(energy * (1 - split));</span>
 
                     // Update processes.
-<span class="nc" id="L104">                    PatchProcess metabolism = (PatchProcess) newCell.getProcess(Domain.METABOLISM);</span>
-<span class="nc" id="L105">                    metabolism.update(cell.getProcess(Domain.METABOLISM));</span>
-<span class="nc" id="L106">                    PatchProcess signaling = (PatchProcess) newCell.getProcess(Domain.SIGNALING);</span>
-<span class="nc" id="L107">                    signaling.update(cell.getProcess(Domain.SIGNALING));</span>
+<span class="nc" id="L109">                    PatchProcess metabolism = (PatchProcess) newCell.getProcess(Domain.METABOLISM);</span>
+<span class="nc" id="L110">                    metabolism.update(cell.getProcess(Domain.METABOLISM));</span>
+<span class="nc" id="L111">                    PatchProcess signaling = (PatchProcess) newCell.getProcess(Domain.SIGNALING);</span>
+<span class="nc" id="L112">                    signaling.update(cell.getProcess(Domain.SIGNALING));</span>
 
                     // TODO: Update environment generator sites.
-<span class="nc" id="L110">                } else {</span>
-<span class="nc" id="L111">                    ticker++;</span>
+<span class="nc" id="L115">                } else {</span>
+<span class="nc" id="L116">                    ticker++;</span>
                 }
             }
         }
-<span class="nc" id="L115">    }</span>
+<span class="nc" id="L120">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -158,7 +158,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
 <span class="fc" id="L158">        int heightRange = 1;</span>
 
 <span class="fc bfc" id="L160" title="All 2 branches covered.">        for (MiniBox population : series.populations.values()) {</span>
-<span class="fc" id="L161">            double criticalHeight = population.getDouble(&quot;CRITICAL_HEIGHT_MEAN&quot;);</span>
+<span class="fc" id="L161">            double criticalHeight = population.getDouble(&quot;CRITICAL_HEIGHT&quot;);</span>
 <span class="fc" id="L162">            int voxelsPerHeight = (int) (Math.min(series.height - 2, Math.ceil(criticalHeight)));</span>
 <span class="fc bfc" id="L163" title="All 2 branches covered.">            if (voxelsPerHeight &gt; heightRange) {</span>
 <span class="fc" id="L164">                heightRange = voxelsPerHeight;</span>
@@ -180,7 +180,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
 <span class="fc" id="L180">        int sideRange = 0;</span>
 
 <span class="fc bfc" id="L182" title="All 2 branches covered.">        for (MiniBox population : series.populations.values()) {</span>
-<span class="fc" id="L183">            double criticalVolume = population.getDouble(&quot;CRITICAL_VOLUME_MEAN&quot;);</span>
+<span class="fc" id="L183">            double criticalVolume = population.getDouble(&quot;CRITICAL_VOLUME&quot;);</span>
 <span class="fc" id="L184">            int padding = population.getInt(&quot;PADDING&quot;);</span>
 <span class="fc" id="L185">            int voxelsPerSide = convert(2 * criticalVolume, heightRange) + padding;</span>
 <span class="fc bfc" id="L186" title="All 2 branches covered.">            if (voxelsPerSide &gt; sideRange) {</span>

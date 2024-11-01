@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchCellContainer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.agent.cell</a> &gt; <span class="el_source">PatchCellContainer.java</span></div><h1>PatchCellContainer.java</h1><pre class="source lang-java linenums">package arcade.patch.agent.cell;
 
+import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.cell.CellFactory;
@@ -7,6 +8,7 @@ import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 
 /**
  * Implementation of {@link CellContainer} for {@link PatchCell} agents.
@@ -69,45 +71,43 @@ public final class PatchCellContainer implements CellContainer {
             double volume,
             double height,
             double criticalVolume,
-<span class="fc" id="L72">            double criticalHeight) {</span>
-<span class="fc" id="L73">        this.id = id;</span>
-<span class="fc" id="L74">        this.parent = parent;</span>
-<span class="fc" id="L75">        this.pop = pop;</span>
-<span class="fc" id="L76">        this.age = age;</span>
-<span class="fc" id="L77">        this.divisions = divisions;</span>
-<span class="fc" id="L78">        this.state = state;</span>
-<span class="fc" id="L79">        this.volume = volume;</span>
-<span class="fc" id="L80">        this.height = height;</span>
-<span class="fc" id="L81">        this.criticalVolume = criticalVolume;</span>
-<span class="fc" id="L82">        this.criticalHeight = criticalHeight;</span>
-<span class="fc" id="L83">    }</span>
+<span class="fc" id="L74">            double criticalHeight) {</span>
+<span class="fc" id="L75">        this.id = id;</span>
+<span class="fc" id="L76">        this.parent = parent;</span>
+<span class="fc" id="L77">        this.pop = pop;</span>
+<span class="fc" id="L78">        this.age = age;</span>
+<span class="fc" id="L79">        this.divisions = divisions;</span>
+<span class="fc" id="L80">        this.state = state;</span>
+<span class="fc" id="L81">        this.volume = volume;</span>
+<span class="fc" id="L82">        this.height = height;</span>
+<span class="fc" id="L83">        this.criticalVolume = criticalVolume;</span>
+<span class="fc" id="L84">        this.criticalHeight = criticalHeight;</span>
+<span class="fc" id="L85">    }</span>
 
     @Override
     public int getID() {
-<span class="nc" id="L87">        return id;</span>
+<span class="nc" id="L89">        return id;</span>
     }
 
     @Override
-    public Cell convert(CellFactory factory, Location location) {
-<span class="nc" id="L92">        return convert((PatchCellFactory) factory, location);</span>
+    public Cell convert(CellFactory factory, Location location, MersenneTwisterFast random) {
+<span class="nc" id="L94">        return convert(factory, location, random, null);</span>
     }
 
-    /**
-     * Converts the cell container into a {@link PatchCell}.
-     *
-     * @param factory the cell factory instance
-     * @param location the cell location
-     * @return a {@link PatchCell} instance
-     */
-    private Cell convert(PatchCellFactory factory, Location location) {
-        // Get parameters for the cell population.
-<span class="nc" id="L104">        MiniBox parameters = factory.popToParameters.get(pop);</span>
+    @Override
+    public Cell convert(
+            CellFactory factory,
+            Location location,
+            MersenneTwisterFast random,
+            Parameters cellParameters) {
+<span class="nc" id="L103">        MiniBox popParameters = factory.getParameters(pop);</span>
+<span class="nc" id="L104">        Parameters parameters = new Parameters(popParameters, cellParameters, random);</span>
 
         // Get links for the cell population.
-<span class="nc" id="L107">        GrabBag links = factory.popToLinks.get(pop);</span>
+<span class="nc" id="L107">        GrabBag links = factory.getLinks(pop);</span>
 
         // Make cell.
-<span class="nc bnc" id="L110" title="All 4 branches missed.">        switch (parameters.get(&quot;CLASS&quot;)) {</span>
+<span class="nc bnc" id="L110" title="All 4 branches missed.">        switch (popParameters.get(&quot;CLASS&quot;)) {</span>
             default:
             case &quot;tissue&quot;:
 <span class="nc" id="L113">                return new PatchCellTissue(this, location, parameters, links);</span>

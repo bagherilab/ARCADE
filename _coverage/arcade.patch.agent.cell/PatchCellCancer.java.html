@@ -6,7 +6,7 @@ import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import static arcade.patch.util.PatchEnums.State;
 
 /**
@@ -27,7 +27,7 @@ public class PatchCellCancer extends PatchCellTissue {
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
      */
-    public PatchCellCancer(PatchCellContainer container, Location location, MiniBox parameters) {
+    public PatchCellCancer(PatchCellContainer container, Location location, Parameters parameters) {
 <span class="nc" id="L31">        this(container, location, parameters, null);</span>
 <span class="nc" id="L32">    }</span>
 
@@ -40,7 +40,7 @@ public class PatchCellCancer extends PatchCellTissue {
      * @param links the map of population links
      */
     public PatchCellCancer(
-            PatchCellContainer container, Location location, MiniBox parameters, GrabBag links) {
+            PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
 <span class="nc" id="L44">        super(container, location, parameters, links);</span>
 <span class="nc" id="L45">    }</span>
 

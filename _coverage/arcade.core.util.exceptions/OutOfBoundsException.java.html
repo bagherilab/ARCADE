@@ -5,10 +5,15 @@ public class OutOfBoundsException extends RuntimeException {
     /**
      * Constructs an {@code OutOfBoundsException} with the specified detail message.
      *
-     * @param message the detail message
+     * @param given the given valid parameter value
+     * @param minValid the minimum valid parameter value
+     * @param maxValid the maximum valid parameter value
      */
-    public OutOfBoundsException(String message) {
-<span class="fc" id="L11">        super(message);</span>
-<span class="fc" id="L12">    }</span>
+    public OutOfBoundsException(double given, double minValid, double maxValid) {
+<span class="fc" id="L13">        super(</span>
+<span class="fc" id="L14">                String.format(</span>
+                        &quot;Parameter value [ %f ] must be between [ %f ] and [ %f ]&quot;,
+<span class="fc" id="L16">                        given, minValid, maxValid));</span>
+<span class="fc" id="L17">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

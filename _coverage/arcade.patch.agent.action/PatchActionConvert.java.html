@@ -88,9 +88,10 @@ public class PatchActionConvert implements Action {
 <span class="nc" id="L88">                        oldCell.getHeight(),</span>
 <span class="nc" id="L89">                        oldCell.getCriticalVolume(),</span>
 <span class="nc" id="L90">                        oldCell.getCriticalHeight());</span>
-<span class="nc" id="L91">        PatchCell newCell = (PatchCell) cellContainer.convert(sim.cellFactory, location);</span>
-<span class="nc" id="L92">        grid.addObject(newCell, location);</span>
-<span class="nc" id="L93">        newCell.schedule(sim.getSchedule());</span>
-<span class="nc" id="L94">    }</span>
+<span class="nc" id="L91">        PatchCell newCell =</span>
+<span class="nc" id="L92">                (PatchCell) cellContainer.convert(sim.cellFactory, location, sim.random);</span>
+<span class="nc" id="L93">        grid.addObject(newCell, location);</span>
+<span class="nc" id="L94">        newCell.schedule(sim.getSchedule());</span>
+<span class="nc" id="L95">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

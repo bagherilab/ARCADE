@@ -4,11 +4,14 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import sim.display.GUIState;
 import sim.engine.SimState;
 import arcade.core.sim.output.*;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 /**
  * Abstract simulation manager for {@link Simulation} objects, differing only in random seed.
@@ -22,13 +25,17 @@ import arcade.core.util.MiniBox;
  */
 public abstract class Series {
     /** Logger for {@code Series}. */
-<span class="fc" id="L25">    private static final Logger LOGGER = Logger.getLogger(Series.class.getName());</span>
+<span class="fc" id="L28">    private static final Logger LOGGER = Logger.getLogger(Series.class.getName());</span>
 
     /** Regular expression for numbers. */
     private static final String NUMBER_REGEX = &quot;^(\\d+)|(\\d+E\\d+)$&quot;;
 
     /** Regular expression for fractions. */
     private static final String FRACTION_REGEX = &quot;^(([0]*(\\.\\d*|))|(1[\\.0]*))$&quot;;
+
+    /** Regular expression for distributions. */
+    public static final String DISTRIBUTION_REGEX =
+            &quot;^([A-Z\\_]+)\\(([A-Z]+)=([\\d\\.]+)(?:,([A-Z]+)=([\\d\\.]+))*\\)$&quot;;
 
     /** Offset of random seed to avoid using seed of 0. */
     public static final int SEED_OFFSET = 1000;
@@ -116,50 +123,50 @@ public abstract class Series {
             HashMap&lt;String, ArrayList&lt;Box&gt;&gt; setupLists,
             String path,
             Box parameters,
-<span class="fc" id="L119">            boolean isVis) {</span>
-<span class="fc" id="L120">        MiniBox set = setupDicts.get(&quot;set&quot;);</span>
-<span class="fc" id="L121">        MiniBox series = setupDicts.get(&quot;series&quot;);</span>
-<span class="fc" id="L122">        MiniBox defaults = parameters.getIdValForTag(&quot;DEFAULT&quot;);</span>
+<span class="fc" id="L126">            boolean isVis) {</span>
+<span class="fc" id="L127">        MiniBox set = setupDicts.get(&quot;set&quot;);</span>
+<span class="fc" id="L128">        MiniBox series = setupDicts.get(&quot;series&quot;);</span>
+<span class="fc" id="L129">        MiniBox defaults = parameters.getIdValForTag(&quot;DEFAULT&quot;);</span>
 
-<span class="fc" id="L124">        this.isVis = isVis;</span>
+<span class="fc" id="L131">        this.isVis = isVis;</span>
 
         // Set name and prefix.
-<span class="fc" id="L127">        this.name = series.get(&quot;name&quot;);</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">        this.prefix = path + (set.contains(&quot;prefix&quot;) ? set.get(&quot;prefix&quot;) : &quot;&quot;) + name;</span>
+<span class="fc" id="L134">        this.name = series.get(&quot;name&quot;);</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">        this.prefix = path + (set.contains(&quot;prefix&quot;) ? set.get(&quot;prefix&quot;) : &quot;&quot;) + name;</span>
 
         // Set random seeds.
-<span class="fc" id="L131">        this.startSeed =</span>
-<span class="fc bfc" id="L132" title="All 2 branches covered.">                (series.contains(&quot;start&quot;) ? series.getInt(&quot;start&quot;) : defaults.getInt(&quot;START_SEED&quot;));</span>
-<span class="fc" id="L133">        this.endSeed =</span>
-<span class="fc bfc" id="L134" title="All 2 branches covered.">                (series.contains(&quot;end&quot;) ? series.getInt(&quot;end&quot;) : defaults.getInt(&quot;END_SEED&quot;));</span>
+<span class="fc" id="L138">        this.startSeed =</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">                (series.contains(&quot;start&quot;) ? series.getInt(&quot;start&quot;) : defaults.getInt(&quot;START_SEED&quot;));</span>
+<span class="fc" id="L140">        this.endSeed =</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">                (series.contains(&quot;end&quot;) ? series.getInt(&quot;end&quot;) : defaults.getInt(&quot;END_SEED&quot;));</span>
 
         // Set number of ticks and interval
-<span class="fc bfc" id="L137" title="All 2 branches covered.">        this.ticks = (series.contains(&quot;ticks&quot;) ? series.getInt(&quot;ticks&quot;) : defaults.getInt(&quot;TICKS&quot;));</span>
-<span class="fc" id="L138">        this.interval =</span>
-<span class="fc bfc" id="L139" title="All 2 branches covered.">                (series.contains(&quot;interval&quot;)</span>
-<span class="fc" id="L140">                        ? series.getInt(&quot;interval&quot;)</span>
-<span class="fc" id="L141">                        : defaults.getInt(&quot;INTERVAL&quot;));</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">        this.ticks = (series.contains(&quot;ticks&quot;) ? series.getInt(&quot;ticks&quot;) : defaults.getInt(&quot;TICKS&quot;));</span>
+<span class="fc" id="L145">        this.interval =</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">                (series.contains(&quot;interval&quot;)</span>
+<span class="fc" id="L147">                        ? series.getInt(&quot;interval&quot;)</span>
+<span class="fc" id="L148">                        : defaults.getInt(&quot;INTERVAL&quot;));</span>
 
         // Set sizing.
-<span class="fc" id="L144">        this.length =</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">                (series.contains(&quot;length&quot;) ? series.getInt(&quot;length&quot;) : defaults.getInt(&quot;LENGTH&quot;));</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">        this.width = (series.contains(&quot;width&quot;) ? series.getInt(&quot;width&quot;) : defaults.getInt(&quot;WIDTH&quot;));</span>
-<span class="fc" id="L147">        this.height =</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">                (series.contains(&quot;height&quot;) ? series.getInt(&quot;height&quot;) : defaults.getInt(&quot;HEIGHT&quot;));</span>
-<span class="fc" id="L149">        this.margin =</span>
-<span class="fc bfc" id="L150" title="All 2 branches covered.">                (series.contains(&quot;margin&quot;) ? series.getInt(&quot;margin&quot;) : defaults.getInt(&quot;MARGIN&quot;));</span>
+<span class="fc" id="L151">        this.length =</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">                (series.contains(&quot;length&quot;) ? series.getInt(&quot;length&quot;) : defaults.getInt(&quot;LENGTH&quot;));</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">        this.width = (series.contains(&quot;width&quot;) ? series.getInt(&quot;width&quot;) : defaults.getInt(&quot;WIDTH&quot;));</span>
+<span class="fc" id="L154">        this.height =</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">                (series.contains(&quot;height&quot;) ? series.getInt(&quot;height&quot;) : defaults.getInt(&quot;HEIGHT&quot;));</span>
+<span class="fc" id="L156">        this.margin =</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">                (series.contains(&quot;margin&quot;) ? series.getInt(&quot;margin&quot;) : defaults.getInt(&quot;MARGIN&quot;));</span>
 
         // Set conversion factors.
-<span class="fc bfc" id="L153" title="All 2 branches covered.">        this.ds = (series.contains(&quot;ds&quot;) ? series.getDouble(&quot;ds&quot;) : defaults.getDouble(&quot;DS&quot;));</span>
-<span class="fc bfc" id="L154" title="All 2 branches covered.">        this.dz = (series.contains(&quot;dz&quot;) ? series.getDouble(&quot;dz&quot;) : defaults.getDouble(&quot;DZ&quot;));</span>
-<span class="fc bfc" id="L155" title="All 2 branches covered.">        this.dt = (series.contains(&quot;dt&quot;) ? series.getDouble(&quot;dt&quot;) : defaults.getDouble(&quot;DT&quot;));</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        this.ds = (series.contains(&quot;ds&quot;) ? series.getDouble(&quot;ds&quot;) : defaults.getDouble(&quot;DS&quot;));</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">        this.dz = (series.contains(&quot;dz&quot;) ? series.getDouble(&quot;dz&quot;) : defaults.getDouble(&quot;DZ&quot;));</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">        this.dt = (series.contains(&quot;dt&quot;) ? series.getDouble(&quot;dt&quot;) : defaults.getDouble(&quot;DT&quot;));</span>
 
         // Initialize simulation series.
-<span class="fc" id="L158">        initialize(setupLists, parameters);</span>
+<span class="fc" id="L165">        initialize(setupLists, parameters);</span>
 
         // Create constructors for simulation and visualization.
-<span class="fc" id="L161">        makeConstructors();</span>
-<span class="fc" id="L162">    }</span>
+<span class="fc" id="L168">        makeConstructors();</span>
+<span class="fc" id="L169">    }</span>
 
     /**
      * Gets the name of the series.
@@ -167,7 +174,7 @@ public abstract class Series {
      * @return the name of the series
      */
     public String getName() {
-<span class="fc" id="L170">        return name;</span>
+<span class="fc" id="L177">        return name;</span>
     }
 
     /**
@@ -176,7 +183,7 @@ public abstract class Series {
      * @return the file path and prefix for the series
      */
     public String getPrefix() {
-<span class="fc" id="L179">        return prefix;</span>
+<span class="fc" id="L186">        return prefix;</span>
     }
 
     /**
@@ -185,7 +192,7 @@ public abstract class Series {
      * @return the random seed
      */
     public int getStartSeed() {
-<span class="fc" id="L188">        return startSeed;</span>
+<span class="fc" id="L195">        return startSeed;</span>
     }
 
     /**
@@ -194,7 +201,7 @@ public abstract class Series {
      * @return the random seed
      */
     public int getEndSeed() {
-<span class="fc" id="L197">        return endSeed;</span>
+<span class="fc" id="L204">        return endSeed;</span>
     }
 
     /**
@@ -203,7 +210,7 @@ public abstract class Series {
      * @return the ticks
      */
     public int getTicks() {
-<span class="fc" id="L206">        return ticks;</span>
+<span class="fc" id="L213">        return ticks;</span>
     }
 
     /**
@@ -212,7 +219,7 @@ public abstract class Series {
      * @return the interval
      */
     public int getInterval() {
-<span class="fc" id="L215">        return interval;</span>
+<span class="fc" id="L222">        return interval;</span>
     }
 
     /**
@@ -223,10 +230,10 @@ public abstract class Series {
      * @return {@code true if valid}, {@code false} otherwise
      */
     protected static boolean isValidNumber(Box box, String key) {
-<span class="fc bfc" id="L226" title="All 2 branches covered.">        if (box.getValue(key) == null) {</span>
-<span class="fc" id="L227">            return false;</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">        if (box.getValue(key) == null) {</span>
+<span class="fc" id="L234">            return false;</span>
         }
-<span class="fc" id="L229">        return box.getValue(key).matches(NUMBER_REGEX);</span>
+<span class="fc" id="L236">        return box.getValue(key).matches(NUMBER_REGEX);</span>
     }
 
     /**
@@ -237,10 +244,10 @@ public abstract class Series {
      * @return {@code true if valid}, {@code false} otherwise
      */
     protected static boolean isValidFraction(Box box, String key) {
-<span class="fc bfc" id="L240" title="All 2 branches covered.">        if (box.getValue(key) == null) {</span>
-<span class="fc" id="L241">            return false;</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">        if (box.getValue(key) == null) {</span>
+<span class="fc" id="L248">            return false;</span>
         }
-<span class="fc" id="L243">        return box.getValue(key).matches(FRACTION_REGEX);</span>
+<span class="fc" id="L250">        return box.getValue(key).matches(FRACTION_REGEX);</span>
     }
 
     /**
@@ -305,16 +312,22 @@ public abstract class Series {
             String defaultParameter,
             MiniBox values,
             MiniBox scales) {
-<span class="fc" id="L308">        box.put(parameter, defaultParameter);</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">        String value = values.contains(parameter) ? values.get(parameter) : defaultParameter;</span>
+<span class="fc" id="L316">        Matcher match = Pattern.compile(DISTRIBUTION_REGEX).matcher(value);</span>
 
-<span class="fc bfc" id="L310" title="All 2 branches covered.">        if (values.get(parameter) != null) {</span>
-<span class="fc" id="L311">            box.put(parameter, values.get(parameter));</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">        if (match.find()) {</span>
+<span class="fc" id="L319">            box.put(&quot;(DISTRIBUTION)&quot; + TAG_SEPARATOR + parameter, match.group(1).toUpperCase());</span>
+<span class="fc bfc" id="L320" title="All 2 branches covered.">            for (int i = 0; i &lt; (match.groupCount() - 1) / 2; i++) {</span>
+<span class="fc" id="L321">                int index = 2 * (i + 1);</span>
+<span class="fc" id="L322">                box.put(parameter + &quot;_&quot; + match.group(index), match.group(index + 1));</span>
+            }
+        } else {
+<span class="fc" id="L325">            box.put(parameter, value);</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">            if (scales.contains(parameter)) {</span>
+<span class="fc" id="L327">                box.put(parameter, box.getDouble(parameter) * scales.getDouble(parameter));</span>
+            }
         }
-
-<span class="fc bfc" id="L314" title="All 2 branches covered.">        if (scales.get(parameter) != null) {</span>
-<span class="fc" id="L315">            box.put(parameter, box.getDouble(parameter) * scales.getDouble(parameter));</span>
-        }
-<span class="fc" id="L317">    }</span>
+<span class="fc" id="L330">    }</span>
 
     /**
      * Updates conversion string into a value.
@@ -330,7 +343,7 @@ public abstract class Series {
      * @return the updated conversion factor
      */
     protected static double parseConversion(String convert, double ds, double dt) {
-<span class="fc" id="L333">        return parseConversion(convert, ds, ds, dt);</span>
+<span class="fc" id="L346">        return parseConversion(convert, ds, ds, dt);</span>
     }
 
     /**
@@ -347,44 +360,44 @@ public abstract class Series {
      * @return the updated conversion factor
      */
     protected static double parseConversion(String convert, double ds, double dz, double dt) {
-<span class="fc" id="L350">        double value = 1;</span>
-<span class="fc" id="L351">        String[] split = convert.split(&quot;\\.&quot;);</span>
-<span class="fc bfc" id="L352" title="All 2 branches covered.">        for (String s : split) {</span>
-<span class="fc" id="L353">            String[] subsplit = s.replace(&quot; &quot;, &quot;&quot;).split(&quot;\\^&quot;);</span>
+<span class="fc" id="L363">        double value = 1;</span>
+<span class="fc" id="L364">        String[] split = convert.split(&quot;\\.&quot;);</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">        for (String s : split) {</span>
+<span class="fc" id="L366">            String[] subsplit = s.replace(&quot; &quot;, &quot;&quot;).split(&quot;\\^&quot;);</span>
             double v =
-<span class="fc bfc" id="L355" title="All 2 branches covered.">                    (subsplit[0].equals(&quot;DS&quot;)</span>
-<span class="fc" id="L356">                            ? ds</span>
-<span class="fc bfc" id="L357" title="All 2 branches covered.">                            : (subsplit[0].equals(&quot;DZ&quot;)</span>
-<span class="fc" id="L358">                                    ? dz</span>
-<span class="fc bfc" id="L359" title="All 2 branches covered.">                                    : (subsplit[0].equals(&quot;DT&quot;) ? dt : 1)));</span>
-<span class="fc bfc" id="L360" title="All 2 branches covered.">            int n = (subsplit.length == 2 ? Integer.parseInt(subsplit[1]) : 1);</span>
-<span class="fc" id="L361">            value *= Math.pow(v, n);</span>
+<span class="fc bfc" id="L368" title="All 2 branches covered.">                    (subsplit[0].equals(&quot;DS&quot;)</span>
+<span class="fc" id="L369">                            ? ds</span>
+<span class="fc bfc" id="L370" title="All 2 branches covered.">                            : (subsplit[0].equals(&quot;DZ&quot;)</span>
+<span class="fc" id="L371">                                    ? dz</span>
+<span class="fc bfc" id="L372" title="All 2 branches covered.">                                    : (subsplit[0].equals(&quot;DT&quot;) ? dt : 1)));</span>
+<span class="fc bfc" id="L373" title="All 2 branches covered.">            int n = (subsplit.length == 2 ? Integer.parseInt(subsplit[1]) : 1);</span>
+<span class="fc" id="L374">            value *= Math.pow(v, n);</span>
         }
-<span class="fc" id="L363">        return value;</span>
+<span class="fc" id="L376">        return value;</span>
     }
 
     /** Uses reflections to build constructors for simulation and visualization. */
     protected void makeConstructors() {
         // Create constructor for simulation class.
         try {
-<span class="fc" id="L370">            Class&lt;?&gt; c = Class.forName(getSimClass());</span>
-<span class="fc" id="L371">            simCons = c.getConstructor(long.class, Series.class);</span>
-<span class="fc" id="L372">        } catch (Exception e) {</span>
-<span class="fc" id="L373">            LOGGER.severe(&quot;simulation class [ &quot; + getSimClass() + &quot; ] not found&quot;);</span>
-<span class="fc" id="L374">            e.printStackTrace();</span>
-<span class="fc" id="L375">            isSkipped = true;</span>
-<span class="fc" id="L376">        }</span>
+<span class="fc" id="L383">            Class&lt;?&gt; c = Class.forName(getSimClass());</span>
+<span class="fc" id="L384">            simCons = c.getConstructor(long.class, Series.class);</span>
+<span class="fc" id="L385">        } catch (Exception e) {</span>
+<span class="fc" id="L386">            LOGGER.severe(&quot;simulation class [ &quot; + getSimClass() + &quot; ] not found&quot;);</span>
+<span class="fc" id="L387">            e.printStackTrace();</span>
+<span class="fc" id="L388">            isSkipped = true;</span>
+<span class="fc" id="L389">        }</span>
 
         // Create constructor for visualization class.
         try {
-<span class="fc" id="L380">            Class&lt;?&gt; c = Class.forName(getVisClass());</span>
-<span class="fc" id="L381">            visCons = c.getConstructor(Simulation.class);</span>
-<span class="fc" id="L382">        } catch (Exception e) {</span>
-<span class="fc" id="L383">            LOGGER.severe(&quot;visualization class [ &quot; + getSimClass() + &quot; ] not found&quot;);</span>
-<span class="fc" id="L384">            e.printStackTrace();</span>
-<span class="fc" id="L385">            isSkipped = true;</span>
-<span class="fc" id="L386">        }</span>
-<span class="fc" id="L387">    }</span>
+<span class="fc" id="L393">            Class&lt;?&gt; c = Class.forName(getVisClass());</span>
+<span class="fc" id="L394">            visCons = c.getConstructor(Simulation.class);</span>
+<span class="fc" id="L395">        } catch (Exception e) {</span>
+<span class="fc" id="L396">            LOGGER.severe(&quot;visualization class [ &quot; + getSimClass() + &quot; ] not found&quot;);</span>
+<span class="fc" id="L397">            e.printStackTrace();</span>
+<span class="fc" id="L398">            isSkipped = true;</span>
+<span class="fc" id="L399">        }</span>
+<span class="fc" id="L400">    }</span>
 
     /**
      * Gets the class name for the simulation.
@@ -410,23 +423,23 @@ public abstract class Series {
         long simEnd;
 
         // Iterate through each seed.
-<span class="fc bfc" id="L413" title="All 2 branches covered.">        for (int seed = startSeed; seed &lt;= endSeed; seed++) {</span>
+<span class="fc bfc" id="L426" title="All 2 branches covered.">        for (int seed = startSeed; seed &lt;= endSeed; seed++) {</span>
             // Pre-simulation output.
-<span class="fc" id="L415">            LOGGER.info(String.format(&quot;simulation [ %s | %04d ] started&quot;, name, seed));</span>
-<span class="fc" id="L416">            simStart = System.currentTimeMillis();</span>
+<span class="fc" id="L428">            LOGGER.info(String.format(&quot;simulation [ %s | %04d ] started&quot;, name, seed));</span>
+<span class="fc" id="L429">            simStart = System.currentTimeMillis();</span>
 
             // Run simulation.
-<span class="fc" id="L419">            SimState simstate = (SimState) (simCons.newInstance(seed + SEED_OFFSET, this));</span>
-<span class="fc" id="L420">            runSim(simstate, seed);</span>
+<span class="fc" id="L432">            SimState simstate = (SimState) (simCons.newInstance(seed + SEED_OFFSET, this));</span>
+<span class="fc" id="L433">            runSim(simstate, seed);</span>
 
             // Post-simulation output.
-<span class="fc" id="L423">            simEnd = System.currentTimeMillis();</span>
-<span class="fc" id="L424">            LOGGER.info(</span>
-<span class="fc" id="L425">                    String.format(</span>
+<span class="fc" id="L436">            simEnd = System.currentTimeMillis();</span>
+<span class="fc" id="L437">            LOGGER.info(</span>
+<span class="fc" id="L438">                    String.format(</span>
                             &quot;simulation [ %s | %04d ] finished in %.4f minutes&quot;,
-<span class="fc" id="L427">                            name, seed, (double) (simEnd - simStart) / 1000 / 60));</span>
+<span class="fc" id="L440">                            name, seed, (double) (simEnd - simStart) / 1000 / 60));</span>
         }
-<span class="fc" id="L429">    }</span>
+<span class="fc" id="L442">    }</span>
 
     /**
      * Iterates through each tick of the simulation.
@@ -436,32 +449,32 @@ public abstract class Series {
      */
     void runSim(SimState simstate, int seed) {
         // Start simulation.
-<span class="fc" id="L439">        simstate.start();</span>
+<span class="fc" id="L452">        simstate.start();</span>
 
         // Set up logger checkpoints.
-<span class="fc" id="L442">        double delta = ticks / 10.0;</span>
-<span class="fc" id="L443">        double checkpoint = delta;</span>
+<span class="fc" id="L455">        double delta = ticks / 10.0;</span>
+<span class="fc" id="L456">        double checkpoint = delta;</span>
 
         // Run simulation loop.
         double tick;
         do {
-<span class="fc bfc" id="L448" title="All 2 branches covered.">            if (!simstate.schedule.step(simstate)) {</span>
-<span class="fc" id="L449">                break;</span>
+<span class="fc bfc" id="L461" title="All 2 branches covered.">            if (!simstate.schedule.step(simstate)) {</span>
+<span class="fc" id="L462">                break;</span>
             }
-<span class="fc" id="L451">            tick = simstate.schedule.getTime();</span>
+<span class="fc" id="L464">            tick = simstate.schedule.getTime();</span>
 
-<span class="fc bfc" id="L453" title="All 2 branches covered.">            if (tick &gt;= checkpoint) {</span>
-<span class="fc" id="L454">                LOGGER.info(</span>
-<span class="fc" id="L455">                        String.format(</span>
+<span class="fc bfc" id="L466" title="All 2 branches covered.">            if (tick &gt;= checkpoint) {</span>
+<span class="fc" id="L467">                LOGGER.info(</span>
+<span class="fc" id="L468">                        String.format(</span>
                                 &quot;simulation [ %s | %04d ] tick %6d ( %4.2f %% )&quot;,
-<span class="fc" id="L457">                                name, seed, (int) tick, (100 * tick / ticks)));</span>
-<span class="fc" id="L458">                checkpoint += delta;</span>
+<span class="fc" id="L470">                                name, seed, (int) tick, (100 * tick / ticks)));</span>
+<span class="fc" id="L471">                checkpoint += delta;</span>
             }
-<span class="fc bfc" id="L460" title="All 2 branches covered.">        } while (tick &lt; ticks - 1);</span>
+<span class="fc bfc" id="L473" title="All 2 branches covered.">        } while (tick &lt; ticks - 1);</span>
 
         // Finish simulation.
-<span class="fc" id="L463">        simstate.finish();</span>
-<span class="fc" id="L464">    }</span>
+<span class="fc" id="L476">        simstate.finish();</span>
+<span class="fc" id="L477">    }</span>
 
     /**
      * Creates controller for visualization.
@@ -469,12 +482,12 @@ public abstract class Series {
      * @throws Exception if visualization constructor cannot be instantiated
      */
     public void runVis() throws Exception {
-<span class="fc bfc" id="L472" title="All 2 branches covered.">        if (System.getProperty(&quot;java.awt.headless&quot;) != null</span>
-<span class="fc bfc" id="L473" title="All 2 branches covered.">                &amp;&amp; System.getProperty(&quot;java.awt.headless&quot;).equals(&quot;true&quot;)) {</span>
-<span class="fc" id="L474">            return;</span>
+<span class="fc bfc" id="L485" title="All 2 branches covered.">        if (System.getProperty(&quot;java.awt.headless&quot;) != null</span>
+<span class="fc bfc" id="L486" title="All 2 branches covered.">                &amp;&amp; System.getProperty(&quot;java.awt.headless&quot;).equals(&quot;true&quot;)) {</span>
+<span class="fc" id="L487">            return;</span>
         }
-<span class="fc" id="L476">        Simulation sim = (Simulation) (simCons.newInstance(startSeed + SEED_OFFSET, this));</span>
-<span class="fc" id="L477">        ((GUIState) visCons.newInstance(sim)).createController();</span>
-<span class="fc" id="L478">    }</span>
+<span class="fc" id="L489">        Simulation sim = (Simulation) (simCons.newInstance(startSeed + SEED_OFFSET, this));</span>
+<span class="fc" id="L490">        ((GUIState) visCons.newInstance(sim)).createController();</span>
+<span class="fc" id="L491">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

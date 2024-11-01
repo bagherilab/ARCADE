@@ -239,7 +239,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 
                 // Make the location and cell.
 <span class="fc" id="L241">                Location location = locationContainer.convert(locationFactory, cellContainer);</span>
-<span class="fc" id="L242">                PottsCell cell = (PottsCell) cellContainer.convert(cellFactory, location);</span>
+<span class="fc" id="L242">                PottsCell cell = (PottsCell) cellContainer.convert(cellFactory, location, random);</span>
 
                 // Add, initialize, and schedule the cell.
 <span class="fc" id="L245">                grid.addObject(cell, null);</span>

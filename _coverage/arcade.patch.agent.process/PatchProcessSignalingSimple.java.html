@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.core.util.Solver;
 import arcade.core.util.Solver.Equations;
 import arcade.patch.agent.cell.PatchCell;
@@ -110,10 +110,9 @@ public class PatchProcessSignalingSimple extends PatchProcessSignaling {
 <span class="nc" id="L110">        names.add(P_ACTIVE, &quot;plcg_active&quot;);</span>
 
         // Set loaded parameters.
-        // TODO: pull migratory threshold from distribution
-<span class="nc" id="L114">        MiniBox parameters = cell.getParameters();</span>
-<span class="nc" id="L115">        migratoryThreshold = parameters.getDouble(&quot;metabolism/MIGRATORY_THRESHOLD&quot;);</span>
-<span class="nc" id="L116">    }</span>
+<span class="nc" id="L113">        Parameters parameters = cell.getParameters();</span>
+<span class="nc" id="L114">        migratoryThreshold = parameters.getDouble(&quot;signaling/MIGRATORY_THRESHOLD&quot;);</span>
+<span class="nc" id="L115">    }</span>
 
     /**
      * System of ODEs for network.
@@ -126,52 +125,52 @@ public class PatchProcessSignalingSimple extends PatchProcessSignaling {
      *   &lt;li&gt;wC = decrease in TGFa-EGFR by active PLCg
      * &lt;/ul&gt;
      */
-<span class="nc" id="L129">    Equations equations =</span>
+<span class="nc" id="L128">    Equations equations =</span>
             (t, y) -&gt; {
-<span class="nc" id="L131">                double wG = 1 + y[G_INT] / (WG + y[G_INT]);</span>
-<span class="nc" id="L132">                double wP = 1 + y[TE_CYTO] / (WP + y[TE_CYTO]);</span>
-<span class="nc" id="L133">                double wC = 1 - y[P_ACTIVE] / (WC + y[P_ACTIVE]);</span>
+<span class="nc" id="L130">                double wG = 1 + y[G_INT] / (WG + y[G_INT]);</span>
+<span class="nc" id="L131">                double wP = 1 + y[TE_CYTO] / (WP + y[TE_CYTO]);</span>
+<span class="nc" id="L132">                double wC = 1 - y[P_ACTIVE] / (WC + y[P_ACTIVE]);</span>
 
-<span class="nc" id="L135">                double[] dydt = new double[NUM_COMPONENTS];</span>
+<span class="nc" id="L134">                double[] dydt = new double[NUM_COMPONENTS];</span>
 
-<span class="nc" id="L137">                dydt[G_INT] = 0;</span>
-<span class="nc" id="L138">                dydt[T_EXT] = K6 - K1 * y[T_EXT] * wG * wC - K3 * y[T_EXT];</span>
-<span class="nc" id="L139">                dydt[TE_CYTO] = K1 * y[T_EXT] * wG * wC - K2 * y[TE_CYTO];</span>
-<span class="nc" id="L140">                dydt[P_INACTIVE] = K5 * y[P_ACTIVE] - K4 * (PLCG - y[P_ACTIVE]) * wP;</span>
-<span class="nc" id="L141">                dydt[P_ACTIVE] = K4 * (PLCG - y[P_ACTIVE]) * wP - K5 * y[P_ACTIVE];</span>
+<span class="nc" id="L136">                dydt[G_INT] = 0;</span>
+<span class="nc" id="L137">                dydt[T_EXT] = K6 - K1 * y[T_EXT] * wG * wC - K3 * y[T_EXT];</span>
+<span class="nc" id="L138">                dydt[TE_CYTO] = K1 * y[T_EXT] * wG * wC - K2 * y[TE_CYTO];</span>
+<span class="nc" id="L139">                dydt[P_INACTIVE] = K5 * y[P_ACTIVE] - K4 * (PLCG - y[P_ACTIVE]) * wP;</span>
+<span class="nc" id="L140">                dydt[P_ACTIVE] = K4 * (PLCG - y[P_ACTIVE]) * wP - K5 * y[P_ACTIVE];</span>
 
-<span class="nc" id="L143">                return dydt;</span>
+<span class="nc" id="L142">                return dydt;</span>
             };
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
         // Get metabolism process from cell.
-<span class="nc" id="L149">        PatchProcessMetabolism metabolism =</span>
-<span class="nc" id="L150">                (PatchProcessMetabolism) cell.getProcess(Domain.METABOLISM);</span>
+<span class="nc" id="L148">        PatchProcessMetabolism metabolism =</span>
+<span class="nc" id="L149">                (PatchProcessMetabolism) cell.getProcess(Domain.METABOLISM);</span>
 
         // Get concentration of external TGFa and internal glucose in nM.
-<span class="nc" id="L153">        concs[G_INT] = metabolism.intAmts[0] / cell.getVolume() * 1E9;</span>
-<span class="nc" id="L154">        concs[T_EXT] = sim.getLattice(&quot;TGFA&quot;).getAverageValue(location) / TGFA_MW;</span>
+<span class="nc" id="L152">        concs[G_INT] = metabolism.intAmts[0] / cell.getVolume() * 1E9;</span>
+<span class="nc" id="L153">        concs[T_EXT] = sim.getLattice(&quot;TGFA&quot;).getAverageValue(location) / TGFA_MW;</span>
 
         // Solve system of equations.
-<span class="nc" id="L157">        double pre = concs[P_ACTIVE];</span>
-<span class="nc" id="L158">        concs = Solver.euler(equations, 0, concs, 60, STEP_SIZE);</span>
-<span class="nc" id="L159">        double post = concs[P_ACTIVE];</span>
+<span class="nc" id="L156">        double pre = concs[P_ACTIVE];</span>
+<span class="nc" id="L157">        concs = Solver.euler(equations, 0, concs, 60, STEP_SIZE);</span>
+<span class="nc" id="L158">        double post = concs[P_ACTIVE];</span>
 
         // Calculate fold change and set migratory or proliferative flag.
-<span class="nc bnc" id="L162" title="All 2 branches missed.">        current = ((pre &gt; post ? pre / post : post / pre) - 1);</span>
-<span class="nc bnc" id="L163" title="All 2 branches missed.">        double delta = (current &gt; previous ? current / previous : previous / current);</span>
-<span class="nc bnc" id="L164" title="All 2 branches missed.">        cell.setFlag(delta &gt; migratoryThreshold ? Flag.MIGRATORY : Flag.PROLIFERATIVE);</span>
-<span class="nc" id="L165">        previous = current;</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">        current = ((pre &gt; post ? pre / post : post / pre) - 1);</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">        double delta = (current &gt; previous ? current / previous : previous / current);</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">        cell.setFlag(delta &gt; migratoryThreshold ? Flag.MIGRATORY : Flag.PROLIFERATIVE);</span>
+<span class="nc" id="L164">        previous = current;</span>
 
         // Update environment.
-<span class="nc" id="L168">        sim.getLattice(&quot;TGFA&quot;).setValue(location, concs[T_EXT] * TGFA_MW);</span>
-<span class="nc" id="L169">    }</span>
+<span class="nc" id="L167">        sim.getLattice(&quot;TGFA&quot;).setValue(location, concs[T_EXT] * TGFA_MW);</span>
+<span class="nc" id="L168">    }</span>
 
     @Override
     public void update(Process process) {
-<span class="nc" id="L173">        PatchProcessSignalingSimple signaling = (PatchProcessSignalingSimple) process;</span>
-<span class="nc" id="L174">        this.concs = signaling.concs.clone();</span>
-<span class="nc" id="L175">    }</span>
+<span class="nc" id="L172">        PatchProcessSignalingSimple signaling = (PatchProcessSignalingSimple) process;</span>
+<span class="nc" id="L173">        this.concs = signaling.concs.clone();</span>
+<span class="nc" id="L174">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

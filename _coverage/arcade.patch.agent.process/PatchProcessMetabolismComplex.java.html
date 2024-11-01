@@ -4,7 +4,7 @@ import java.util.Arrays;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 
 /**
@@ -93,134 +93,133 @@ public class PatchProcessMetabolismComplex extends PatchProcessMetabolism {
 <span class="nc" id="L93">        names = Arrays.asList(intNames);</span>
 
         // Set loaded parameters.
-        // TODO: pull metabolic preference from distribution
-<span class="nc" id="L97">        MiniBox parameters = cell.getParameters();</span>
-<span class="nc" id="L98">        metabolicPreference = parameters.getDouble(&quot;metabolism/METABOLIC_PREFERENCE&quot;);</span>
-<span class="nc" id="L99">        conversionFraction = parameters.getDouble(&quot;metabolism/CONVERSION_FRACTION&quot;);</span>
-<span class="nc" id="L100">        minimumMassFraction = parameters.getDouble(&quot;metabolism/MINIMUM_MASS_FRACTION&quot;);</span>
-<span class="nc" id="L101">        ratioGlucosePyruvate = parameters.getDouble(&quot;metabolism/RATIO_GLUCOSE_PYRUVATE&quot;);</span>
-<span class="nc" id="L102">        lactateRate = parameters.getDouble(&quot;metabolism/LACTATE_RATE&quot;);</span>
-<span class="nc" id="L103">        autophagyRate = parameters.getDouble(&quot;metabolism/AUTOPHAGY_RATE&quot;);</span>
-<span class="nc" id="L104">        glucoseUptakeRate = parameters.getDouble(&quot;metabolism/GLUCOSE_UPTAKE_RATE&quot;);</span>
-<span class="nc" id="L105">    }</span>
+<span class="nc" id="L96">        Parameters parameters = cell.getParameters();</span>
+<span class="nc" id="L97">        metabolicPreference = parameters.getDouble(&quot;metabolism/METABOLIC_PREFERENCE&quot;);</span>
+<span class="nc" id="L98">        conversionFraction = parameters.getDouble(&quot;metabolism/CONVERSION_FRACTION&quot;);</span>
+<span class="nc" id="L99">        minimumMassFraction = parameters.getDouble(&quot;metabolism/MINIMUM_MASS_FRACTION&quot;);</span>
+<span class="nc" id="L100">        ratioGlucosePyruvate = parameters.getDouble(&quot;metabolism/RATIO_GLUCOSE_PYRUVATE&quot;);</span>
+<span class="nc" id="L101">        lactateRate = parameters.getDouble(&quot;metabolism/LACTATE_RATE&quot;);</span>
+<span class="nc" id="L102">        autophagyRate = parameters.getDouble(&quot;metabolism/AUTOPHAGY_RATE&quot;);</span>
+<span class="nc" id="L103">        glucoseUptakeRate = parameters.getDouble(&quot;metabolism/GLUCOSE_UPTAKE_RATE&quot;);</span>
+<span class="nc" id="L104">    }</span>
 
     @Override
     void stepProcess(MersenneTwisterFast random, Simulation sim) {
-<span class="nc" id="L109">        double glucInt = intAmts[GLUCOSE]; // [fmol]</span>
-<span class="nc" id="L110">        double pyruInt = intAmts[PYRUVATE]; // [fmol]</span>
-<span class="nc" id="L111">        double glucExt = extAmts[GLUCOSE]; // [fmol]</span>
-<span class="nc" id="L112">        double oxyExt = extAmts[OXYGEN]; // [fmol]</span>
+<span class="nc" id="L108">        double glucInt = intAmts[GLUCOSE]; // [fmol]</span>
+<span class="nc" id="L109">        double pyruInt = intAmts[PYRUVATE]; // [fmol]</span>
+<span class="nc" id="L110">        double glucExt = extAmts[GLUCOSE]; // [fmol]</span>
+<span class="nc" id="L111">        double oxyExt = extAmts[OXYGEN]; // [fmol]</span>
 
         // Take up glucose from environment, relative to glucose gradient.
         // If agent shares location with other agents, occupied area for
         // calculating surface area is limited by the number of neighbors.
-<span class="nc" id="L117">        double area = location.getArea() * f;</span>
-<span class="nc" id="L118">        double surfaceArea = area * 2 + (volume / area) * location.getPerimeter(f);</span>
-<span class="nc" id="L119">        double glucGrad = (glucExt / location.getVolume()) - (glucInt / volume);</span>
-<span class="nc bnc" id="L120" title="All 2 branches missed.">        glucGrad *= glucGrad &lt; 1E-10 ? 0 : 1;</span>
-<span class="nc" id="L121">        double glucUptake = glucoseUptakeRate * surfaceArea * glucGrad;</span>
-<span class="nc" id="L122">        glucInt += glucUptake;</span>
+<span class="nc" id="L116">        double area = location.getArea() * f;</span>
+<span class="nc" id="L117">        double surfaceArea = area * 2 + (volume / area) * location.getPerimeter(f);</span>
+<span class="nc" id="L118">        double glucGrad = (glucExt / location.getVolume()) - (glucInt / volume);</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        glucGrad *= glucGrad &lt; 1E-10 ? 0 : 1;</span>
+<span class="nc" id="L120">        double glucUptake = glucoseUptakeRate * surfaceArea * glucGrad;</span>
+<span class="nc" id="L121">        glucInt += glucUptake;</span>
 
         // Determine energy requirement given current type in terms of glucose.
         // Additional energy needed for cell that is migrating or proliferating.
         // Arrays indicate oxidative phosphorylation (0) and glycolysis (1).
-<span class="nc" id="L127">        double[] energyGen = {0, 0};</span>
-<span class="nc" id="L128">        double glucReq = metabolicPreference * energyReq / ENERGY_FROM_GLYC;</span>
-<span class="nc" id="L129">        double pyruReq = (1 - metabolicPreference) * energyReq / ENERGY_FROM_OXPHOS;</span>
+<span class="nc" id="L126">        double[] energyGen = {0, 0};</span>
+<span class="nc" id="L127">        double glucReq = metabolicPreference * energyReq / ENERGY_FROM_GLYC;</span>
+<span class="nc" id="L128">        double pyruReq = (1 - metabolicPreference) * energyReq / ENERGY_FROM_OXPHOS;</span>
 
         // Calculate oxygen required and take up from environment.
-<span class="nc" id="L132">        double oxyReq = pyruReq * OXY_PER_PYRU;</span>
-<span class="nc" id="L133">        double oxyUptake = Math.min(oxyExt, oxyReq);</span>
-<span class="nc bnc" id="L134" title="All 2 branches missed.">        oxyUptake *= oxyUptake &lt; 1E-10 ? 0 : 1;</span>
+<span class="nc" id="L131">        double oxyReq = pyruReq * OXY_PER_PYRU;</span>
+<span class="nc" id="L132">        double oxyUptake = Math.min(oxyExt, oxyReq);</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">        oxyUptake *= oxyUptake &lt; 1E-10 ? 0 : 1;</span>
 
         // Perform oxidative phosphorylation using internal pyruvate.
-<span class="nc" id="L137">        double oxyUptakeInPyru = oxyUptake / OXY_PER_PYRU;</span>
-<span class="nc bnc" id="L138" title="All 2 branches missed.">        if (pyruInt &gt; oxyUptakeInPyru) {</span>
-<span class="nc" id="L139">            energyGen[0] += oxyUptakeInPyru * ENERGY_FROM_OXPHOS; // add energy</span>
-<span class="nc" id="L140">            pyruInt -= oxyUptakeInPyru; // use up internal pyruvate</span>
+<span class="nc" id="L136">        double oxyUptakeInPyru = oxyUptake / OXY_PER_PYRU;</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        if (pyruInt &gt; oxyUptakeInPyru) {</span>
+<span class="nc" id="L138">            energyGen[0] += oxyUptakeInPyru * ENERGY_FROM_OXPHOS; // add energy</span>
+<span class="nc" id="L139">            pyruInt -= oxyUptakeInPyru; // use up internal pyruvate</span>
         } else {
-<span class="nc" id="L142">            energyGen[0] += pyruInt * ENERGY_FROM_OXPHOS; // add energy</span>
-<span class="nc" id="L143">            oxyUptake = pyruInt * OXY_PER_PYRU; // return unused oxygen</span>
-<span class="nc" id="L144">            pyruInt = 0.0; // use up internal pyruvate</span>
+<span class="nc" id="L141">            energyGen[0] += pyruInt * ENERGY_FROM_OXPHOS; // add energy</span>
+<span class="nc" id="L142">            oxyUptake = pyruInt * OXY_PER_PYRU; // return unused oxygen</span>
+<span class="nc" id="L143">            pyruInt = 0.0; // use up internal pyruvate</span>
         }
 
         // Check if more glucose needs to be diverted to compensate for energy
         // deficit (from not enough oxygen) and is available.
-<span class="nc bnc" id="L149" title="All 4 branches missed.">        if (energy &lt;= 0 &amp;&amp; glucInt &gt; 0) {</span>
-<span class="nc" id="L150">            double glucNeeded = -(energy - energyCons + energyGen[0]) / ENERGY_FROM_GLYC;</span>
-<span class="nc" id="L151">            glucReq = Math.max(glucReq, glucNeeded);</span>
+<span class="nc bnc" id="L148" title="All 4 branches missed.">        if (energy &lt;= 0 &amp;&amp; glucInt &gt; 0) {</span>
+<span class="nc" id="L149">            double glucNeeded = -(energy - energyCons + energyGen[0]) / ENERGY_FROM_GLYC;</span>
+<span class="nc" id="L150">            glucReq = Math.max(glucReq, glucNeeded);</span>
         }
 
         // Perform glycolysis. Internal glucose is converted to internal pyruvate
         // which is used in oxidative phosphorylation or to increase mass.
-<span class="nc bnc" id="L156" title="All 2 branches missed.">        if (glucInt &gt; glucReq) {</span>
-<span class="nc" id="L157">            energyGen[1] += glucReq * ENERGY_FROM_GLYC;</span>
-<span class="nc" id="L158">            pyruInt += glucReq * PYRU_PER_GLUC; // increase internal pyruvate</span>
-<span class="nc" id="L159">            glucInt -= glucReq; // use up internal glucose</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">        if (glucInt &gt; glucReq) {</span>
+<span class="nc" id="L156">            energyGen[1] += glucReq * ENERGY_FROM_GLYC;</span>
+<span class="nc" id="L157">            pyruInt += glucReq * PYRU_PER_GLUC; // increase internal pyruvate</span>
+<span class="nc" id="L158">            glucInt -= glucReq; // use up internal glucose</span>
         } else {
-<span class="nc" id="L161">            energyGen[1] += glucInt * ENERGY_FROM_GLYC;</span>
-<span class="nc" id="L162">            pyruInt += glucInt * PYRU_PER_GLUC; // increase internal pyruvate</span>
-<span class="nc" id="L163">            glucInt = 0.0; // use up all internal glucose</span>
+<span class="nc" id="L160">            energyGen[1] += glucInt * ENERGY_FROM_GLYC;</span>
+<span class="nc" id="L161">            pyruInt += glucInt * PYRU_PER_GLUC; // increase internal pyruvate</span>
+<span class="nc" id="L162">            glucInt = 0.0; // use up all internal glucose</span>
         }
 
         // Update energy.
-<span class="nc" id="L167">        energy += energyGen[0];</span>
-<span class="nc" id="L168">        energy += energyGen[1];</span>
-<span class="nc" id="L169">        energy -= energyCons;</span>
-<span class="nc bnc" id="L170" title="All 2 branches missed.">        energy *= Math.abs(energy) &lt; 1E-10 ? 0 : 1;</span>
+<span class="nc" id="L166">        energy += energyGen[0];</span>
+<span class="nc" id="L167">        energy += energyGen[1];</span>
+<span class="nc" id="L168">        energy -= energyCons;</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">        energy *= Math.abs(energy) &lt; 1E-10 ? 0 : 1;</span>
 
         // Increase mass if (i) dividing and less than double mass or (ii)
         // below critical mass for maintenance.
-<span class="nc bnc" id="L174" title="All 10 branches missed.">        if ((energy &gt;= 0 &amp;&amp; isProliferative &amp;&amp; mass &lt; 2 * critMass)</span>
+<span class="nc bnc" id="L173" title="All 10 branches missed.">        if ((energy &gt;= 0 &amp;&amp; isProliferative &amp;&amp; mass &lt; 2 * critMass)</span>
                 || (energy &gt;= 0 &amp;&amp; mass &lt; 0.99 * critMass)) {
-<span class="nc" id="L176">            mass +=</span>
+<span class="nc" id="L175">            mass +=</span>
                     conversionFraction
                             * (ratioGlucosePyruvate * glucInt
                                     + (1 - ratioGlucosePyruvate) * pyruInt / PYRU_PER_GLUC)
                             / ratioGlucoseBiomass;
-<span class="nc" id="L181">            glucInt *= (1 - conversionFraction * ratioGlucosePyruvate);</span>
-<span class="nc" id="L182">            pyruInt *= (1 - conversionFraction * (1 - ratioGlucosePyruvate));</span>
+<span class="nc" id="L180">            glucInt *= (1 - conversionFraction * ratioGlucosePyruvate);</span>
+<span class="nc" id="L181">            pyruInt *= (1 - conversionFraction * (1 - ratioGlucosePyruvate));</span>
         }
 
         // Decrease mass through autophagy if (i) negative energy indicating
         // not enough nutrients or (ii) above critical mass for maintenance
-<span class="nc bnc" id="L187" title="All 10 branches missed.">        if ((energy &lt; 0 &amp;&amp; mass &gt; minimumMassFraction * critMass)</span>
+<span class="nc bnc" id="L186" title="All 10 branches missed.">        if ((energy &lt; 0 &amp;&amp; mass &gt; minimumMassFraction * critMass)</span>
                 || (energy &gt;= 0 &amp;&amp; mass &gt; 1.01 * critMass &amp;&amp; !isProliferative)) {
-<span class="nc" id="L189">            mass -= autophagyRate;</span>
-<span class="nc" id="L190">            glucInt += autophagyRate * ratioGlucoseBiomass;</span>
+<span class="nc" id="L188">            mass -= autophagyRate;</span>
+<span class="nc" id="L189">            glucInt += autophagyRate * ratioGlucoseBiomass;</span>
         }
 
         // Update volume based on changes in mass.
-<span class="nc" id="L194">        volume = mass / cellDensity;</span>
+<span class="nc" id="L193">        volume = mass / cellDensity;</span>
 
         // Convert internal pyruvate to lactate (i.e. remove pyruvate).
-<span class="nc" id="L197">        pyruInt -= lactateRate * pyruInt;</span>
+<span class="nc" id="L196">        pyruInt -= lactateRate * pyruInt;</span>
 
         // Reset values.
-<span class="nc" id="L200">        intAmts[GLUCOSE] = glucInt;</span>
-<span class="nc" id="L201">        upAmts[GLUCOSE] = glucUptake;</span>
-<span class="nc" id="L202">        upAmts[OXYGEN] = oxyUptake;</span>
-<span class="nc" id="L203">        intAmts[PYRUVATE] = pyruInt;</span>
-<span class="nc" id="L204">    }</span>
+<span class="nc" id="L199">        intAmts[GLUCOSE] = glucInt;</span>
+<span class="nc" id="L200">        upAmts[GLUCOSE] = glucUptake;</span>
+<span class="nc" id="L201">        upAmts[OXYGEN] = oxyUptake;</span>
+<span class="nc" id="L202">        intAmts[PYRUVATE] = pyruInt;</span>
+<span class="nc" id="L203">    }</span>
 
     @Override
     public void update(Process process) {
-<span class="nc" id="L208">        PatchProcessMetabolismComplex metabolism = (PatchProcessMetabolismComplex) process;</span>
-<span class="nc" id="L209">        double split = this.cell.getVolume() / this.volume;</span>
+<span class="nc" id="L207">        PatchProcessMetabolismComplex metabolism = (PatchProcessMetabolismComplex) process;</span>
+<span class="nc" id="L208">        double split = this.cell.getVolume() / this.volume;</span>
 
         // Update this process as split of given process.
-<span class="nc" id="L212">        this.volume = this.cell.getVolume();</span>
-<span class="nc" id="L213">        this.energy = this.cell.getEnergy();</span>
-<span class="nc" id="L214">        this.mass = this.volume * cellDensity;</span>
-<span class="nc" id="L215">        this.intAmts[GLUCOSE] = metabolism.intAmts[GLUCOSE] * split;</span>
-<span class="nc" id="L216">        this.intAmts[PYRUVATE] = metabolism.intAmts[PYRUVATE] * split;</span>
+<span class="nc" id="L211">        this.volume = this.cell.getVolume();</span>
+<span class="nc" id="L212">        this.energy = this.cell.getEnergy();</span>
+<span class="nc" id="L213">        this.mass = this.volume * cellDensity;</span>
+<span class="nc" id="L214">        this.intAmts[GLUCOSE] = metabolism.intAmts[GLUCOSE] * split;</span>
+<span class="nc" id="L215">        this.intAmts[PYRUVATE] = metabolism.intAmts[PYRUVATE] * split;</span>
 
         // Update given process with remaining split.
-<span class="nc" id="L219">        metabolism.volume = metabolism.cell.getVolume();</span>
-<span class="nc" id="L220">        metabolism.energy = metabolism.cell.getEnergy();</span>
-<span class="nc" id="L221">        metabolism.mass = metabolism.volume * cellDensity;</span>
-<span class="nc" id="L222">        metabolism.intAmts[GLUCOSE] *= (1 - split);</span>
-<span class="nc" id="L223">        metabolism.intAmts[PYRUVATE] *= (1 - split);</span>
-<span class="nc" id="L224">    }</span>
+<span class="nc" id="L218">        metabolism.volume = metabolism.cell.getVolume();</span>
+<span class="nc" id="L219">        metabolism.energy = metabolism.cell.getEnergy();</span>
+<span class="nc" id="L220">        metabolism.mass = metabolism.volume * cellDensity;</span>
+<span class="nc" id="L221">        metabolism.intAmts[GLUCOSE] *= (1 - split);</span>
+<span class="nc" id="L222">        metabolism.intAmts[PYRUVATE] *= (1 - split);</span>
+<span class="nc" id="L223">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

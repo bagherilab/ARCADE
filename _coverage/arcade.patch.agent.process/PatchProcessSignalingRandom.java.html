@@ -3,7 +3,7 @@
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 import static arcade.patch.util.PatchEnums.Flag;
 
@@ -32,18 +32,17 @@ public class PatchProcessSignalingRandom extends PatchProcessSignaling {
 <span class="nc" id="L32">        super(cell);</span>
 
         // Set loaded parameters.
-        // TODO: pull migratory threshold from distribution
-<span class="nc" id="L36">        MiniBox parameters = cell.getParameters();</span>
-<span class="nc" id="L37">        migratoryProbability = parameters.getDouble(&quot;metabolism/MIGRATORY_PROBABILITY&quot;);</span>
-<span class="nc" id="L38">    }</span>
+<span class="nc" id="L35">        Parameters parameters = cell.getParameters();</span>
+<span class="nc" id="L36">        migratoryProbability = parameters.getDouble(&quot;signaling/MIGRATORY_PROBABILITY&quot;);</span>
+<span class="nc" id="L37">    }</span>
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-<span class="nc" id="L42">        cell.setFlag(</span>
-<span class="nc bnc" id="L43" title="All 2 branches missed.">                random.nextDouble() &lt; migratoryProbability ? Flag.MIGRATORY : Flag.PROLIFERATIVE);</span>
-<span class="nc" id="L44">    }</span>
+<span class="nc" id="L41">        cell.setFlag(</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">                random.nextDouble() &lt; migratoryProbability ? Flag.MIGRATORY : Flag.PROLIFERATIVE);</span>
+<span class="nc" id="L43">    }</span>
 
     @Override
-<span class="nc" id="L47">    public void update(Process process) {}</span>
+<span class="nc" id="L46">    public void update(Process process) {}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

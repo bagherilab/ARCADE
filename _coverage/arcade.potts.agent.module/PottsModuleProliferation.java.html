@@ -103,11 +103,14 @@ public abstract class PottsModuleProliferation extends PottsModule {
         // Create and schedule new cell.
 <span class="fc" id="L104">        int newID = sim.getID();</span>
 <span class="fc" id="L105">        CellContainer newContainer = cell.make(newID, State.PROLIFERATIVE, random);</span>
-<span class="fc" id="L106">        PottsCell newCell = (PottsCell) newContainer.convert(sim.getCellFactory(), newLocation);</span>
-<span class="fc" id="L107">        sim.getGrid().addObject(newCell, null);</span>
-<span class="fc" id="L108">        potts.register(newCell);</span>
-<span class="fc" id="L109">        newCell.reset(potts.ids, potts.regions);</span>
-<span class="fc" id="L110">        newCell.schedule(sim.getSchedule());</span>
-<span class="fc" id="L111">    }</span>
+<span class="fc" id="L106">        PottsCell newCell =</span>
+                (PottsCell)
+<span class="fc" id="L108">                        newContainer.convert(</span>
+<span class="fc" id="L109">                                sim.getCellFactory(), newLocation, random, cell.getParameters());</span>
+<span class="fc" id="L110">        sim.getGrid().addObject(newCell, null);</span>
+<span class="fc" id="L111">        potts.register(newCell);</span>
+<span class="fc" id="L112">        newCell.reset(potts.ids, potts.regions);</span>
+<span class="fc" id="L113">        newCell.schedule(sim.getSchedule());</span>
+<span class="fc" id="L114">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

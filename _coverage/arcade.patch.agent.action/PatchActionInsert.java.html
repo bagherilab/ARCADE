@@ -104,12 +104,13 @@ public class PatchActionInsert implements Action {
 <span class="nc" id="L104">                PatchCellContainer cellContainer = sim.cellFactory.createCellForPopulation(id, pop);</span>
 
 <span class="nc" id="L106">                Location location = locationContainer.convert(sim.locationFactory, cellContainer);</span>
-<span class="nc" id="L107">                PatchCell cell = (PatchCell) cellContainer.convert(sim.cellFactory, location);</span>
+<span class="nc" id="L107">                PatchCell cell =</span>
+<span class="nc" id="L108">                        (PatchCell) cellContainer.convert(sim.cellFactory, location, sim.random);</span>
 
-<span class="nc" id="L109">                grid.addObject(cell, location);</span>
-<span class="nc" id="L110">                cell.schedule(sim.getSchedule());</span>
+<span class="nc" id="L110">                grid.addObject(cell, location);</span>
+<span class="nc" id="L111">                cell.schedule(sim.getSchedule());</span>
             }
-<span class="nc" id="L112">        }</span>
-<span class="nc" id="L113">    }</span>
+<span class="nc" id="L113">        }</span>
+<span class="nc" id="L114">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

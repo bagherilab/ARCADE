@@ -3,7 +3,7 @@
 import sim.util.distribution.Poisson;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.location.PottsLocations;
 import arcade.potts.sim.Potts;
@@ -64,7 +64,7 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
     public PottsModuleProliferationSimple(PottsCell cell) {
 <span class="fc" id="L65">        super(cell);</span>
 
-<span class="fc" id="L67">        MiniBox parameters = cell.getParameters();</span>
+<span class="fc" id="L67">        Parameters parameters = cell.getParameters();</span>
 <span class="fc" id="L68">        rateG1 = parameters.getDouble(&quot;proliferation/RATE_G1&quot;);</span>
 <span class="fc" id="L69">        rateS = parameters.getDouble(&quot;proliferation/RATE_S&quot;);</span>
 <span class="fc" id="L70">        rateG2 = parameters.getDouble(&quot;proliferation/RATE_G2&quot;);</span>

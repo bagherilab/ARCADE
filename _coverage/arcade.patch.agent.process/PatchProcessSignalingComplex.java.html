@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.core.util.Solver;
 import arcade.core.util.Solver.Equations;
 import arcade.patch.agent.cell.PatchCell;
@@ -219,10 +219,9 @@ public class PatchProcessSignalingComplex extends PatchProcessSignaling {
 <span class="nc" id="L219">        names.add(POOL, &quot;nucleotide_pool&quot;);</span>
 
         // Set loaded parameters.
-        // TODO: pull migratory threshold from distribution
-<span class="nc" id="L223">        MiniBox parameters = cell.getParameters();</span>
-<span class="nc" id="L224">        migratoryThreshold = parameters.getDouble(&quot;metabolism/MIGRATORY_THRESHOLD&quot;);</span>
-<span class="nc" id="L225">    }</span>
+<span class="nc" id="L222">        Parameters parameters = cell.getParameters();</span>
+<span class="nc" id="L223">        migratoryThreshold = parameters.getDouble(&quot;signaling/MIGRATORY_THRESHOLD&quot;);</span>
+<span class="nc" id="L224">    }</span>
 
     /**
      * System of ODEs for network.
@@ -237,93 +236,93 @@ public class PatchProcessSignalingComplex extends PatchProcessSignaling {
      *   &lt;li&gt;wC = increase in TGFa-EGFR dephosphorylation by active PLCg
      * &lt;/ul&gt;
      */
-<span class="nc" id="L240">    Equations equations =</span>
+<span class="nc" id="L239">    Equations equations =</span>
             (t, y) -&gt; {
                 // Calculate weighting factors.
-<span class="nc" id="L243">                double wG = 1 + y[G_INT] / (WG + y[G_INT]);</span>
-<span class="nc" id="L244">                double wE = 1 - y[TE_MEM_P] / (WE + y[TE_MEM_P]);</span>
-<span class="nc" id="L245">                double wT = 1 + y[TE_MEM_P] / (WT + y[TE_MEM_P]);</span>
-<span class="nc" id="L246">                double wP = 1 + y[TE_MEM_P] / (WP + y[TE_MEM_P]);</span>
-<span class="nc" id="L247">                double wC = 1 + y[P_ACTIVE] / (WC + y[P_ACTIVE]);</span>
+<span class="nc" id="L242">                double wG = 1 + y[G_INT] / (WG + y[G_INT]);</span>
+<span class="nc" id="L243">                double wE = 1 - y[TE_MEM_P] / (WE + y[TE_MEM_P]);</span>
+<span class="nc" id="L244">                double wT = 1 + y[TE_MEM_P] / (WT + y[TE_MEM_P]);</span>
+<span class="nc" id="L245">                double wP = 1 + y[TE_MEM_P] / (WP + y[TE_MEM_P]);</span>
+<span class="nc" id="L246">                double wC = 1 + y[P_ACTIVE] / (WC + y[P_ACTIVE]);</span>
 
-<span class="nc" id="L249">                double[] dydt = new double[NUM_COMPONENTS];</span>
+<span class="nc" id="L248">                double[] dydt = new double[NUM_COMPONENTS];</span>
 
-<span class="nc" id="L251">                dydt[G_INT] = 0;</span>
-<span class="nc" id="L252">                dydt[T_EXT] =</span>
+<span class="nc" id="L250">                dydt[G_INT] = 0;</span>
+<span class="nc" id="L251">                dydt[T_EXT] =</span>
                         K_1 * y[TE_MEM]
                                 - K1 * y[T_EXT] * y[E_MEM]
                                 + K9 * y[T_CYTO]
                                 - K11 * y[T_EXT];
-<span class="nc" id="L257">                dydt[E_MEM] =</span>
+<span class="nc" id="L256">                dydt[E_MEM] =</span>
                         K_1 * y[TE_MEM]
                                 - K1 * y[T_EXT] * y[E_MEM]
                                 + K8 * y[E_CYTO]
                                 - K_8 * y[E_MEM]
                                 - K10 * y[E_MEM];
-<span class="nc" id="L263">                dydt[TE_MEM] =</span>
+<span class="nc" id="L262">                dydt[TE_MEM] =</span>
                         2 * K1 * y[T_EXT] * y[E_MEM]
                                 - 2 * K_1 * y[TE_MEM]
                                 - K2 * y[TE_MEM] * wG
                                 + K_2 * y[TE_MEM_P] * wC
                                 - K3 * y[TE_MEM];
-<span class="nc" id="L269">                dydt[TE_MEM_P] = K2 * y[TE_MEM] * wG - K_2 * y[TE_MEM_P] * wC - K4 * y[TE_MEM_P];</span>
-<span class="nc" id="L270">                dydt[TE_CYTO] =</span>
+<span class="nc" id="L268">                dydt[TE_MEM_P] = K2 * y[TE_MEM] * wG - K_2 * y[TE_MEM_P] * wC - K4 * y[TE_MEM_P];</span>
+<span class="nc" id="L269">                dydt[TE_CYTO] =</span>
                         K3 * y[TE_MEM]
                                 + K4 * y[TE_MEM_P]
                                 + 2 * K_5 * y[E_CYTO] * y[T_CYTO]
                                 - 2 * K5 * y[TE_CYTO];
-<span class="nc" id="L275">                dydt[E_CYTO] =</span>
+<span class="nc" id="L274">                dydt[E_CYTO] =</span>
                         K5 * y[TE_CYTO]
                                 - K_5 * y[E_CYTO] * y[T_CYTO]
                                 + K14 * y[E_RNA]
                                 - K6 * y[E_CYTO]
                                 - K8 * y[E_CYTO]
                                 + K_8 * y[E_MEM];
-<span class="nc" id="L282">                dydt[T_CYTO] =</span>
+<span class="nc" id="L281">                dydt[T_CYTO] =</span>
                         K5 * y[TE_CYTO]
                                 - K_5 * y[E_CYTO] * y[T_CYTO]
                                 + K15 * y[T_RNA]
                                 - K7 * y[T_CYTO]
                                 - K9 * y[T_CYTO];
-<span class="nc" id="L288">                dydt[E_RNA] = K16 * y[POOL] * wE - K18 * y[E_RNA];</span>
-<span class="nc" id="L289">                dydt[T_RNA] = K17 * y[POOL] * wT - K19 * y[T_RNA];</span>
-<span class="nc" id="L290">                dydt[P_INACTIVE] = K13 * y[P_ACTIVE] - K12 * (PLCG - y[P_ACTIVE]) * wP;</span>
-<span class="nc" id="L291">                dydt[P_ACTIVE] = K12 * (PLCG - y[P_ACTIVE]) * wP - K13 * y[P_ACTIVE];</span>
-<span class="nc" id="L292">                dydt[POOL] =</span>
+<span class="nc" id="L287">                dydt[E_RNA] = K16 * y[POOL] * wE - K18 * y[E_RNA];</span>
+<span class="nc" id="L288">                dydt[T_RNA] = K17 * y[POOL] * wT - K19 * y[T_RNA];</span>
+<span class="nc" id="L289">                dydt[P_INACTIVE] = K13 * y[P_ACTIVE] - K12 * (PLCG - y[P_ACTIVE]) * wP;</span>
+<span class="nc" id="L290">                dydt[P_ACTIVE] = K12 * (PLCG - y[P_ACTIVE]) * wP - K13 * y[P_ACTIVE];</span>
+<span class="nc" id="L291">                dydt[POOL] =</span>
                         -K16 * y[POOL] * wE - K17 * y[POOL] * wT + K18 * y[E_RNA] + K19 * y[T_RNA];
 
-<span class="nc" id="L295">                return dydt;</span>
+<span class="nc" id="L294">                return dydt;</span>
             };
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
         // Get metabolism process from cell.
-<span class="nc" id="L301">        PatchProcessMetabolism metabolism =</span>
-<span class="nc" id="L302">                (PatchProcessMetabolism) cell.getProcess(Domain.METABOLISM);</span>
+<span class="nc" id="L300">        PatchProcessMetabolism metabolism =</span>
+<span class="nc" id="L301">                (PatchProcessMetabolism) cell.getProcess(Domain.METABOLISM);</span>
 
         // Get concentration of external TGFa and internal glucose in nM.
-<span class="nc" id="L305">        concs[G_INT] = metabolism.intAmts[0] / cell.getVolume() * 1E9;</span>
-<span class="nc" id="L306">        concs[T_EXT] = sim.getLattice(&quot;TGFA&quot;).getAverageValue(location) / TGFA_MW;</span>
+<span class="nc" id="L304">        concs[G_INT] = metabolism.intAmts[0] / cell.getVolume() * 1E9;</span>
+<span class="nc" id="L305">        concs[T_EXT] = sim.getLattice(&quot;TGFA&quot;).getAverageValue(location) / TGFA_MW;</span>
 
         // Solve system of equations.
-<span class="nc" id="L309">        double pre = concs[P_ACTIVE];</span>
-<span class="nc" id="L310">        concs = Solver.euler(equations, 0, concs, 60, STEP_SIZE);</span>
-<span class="nc" id="L311">        double post = concs[P_ACTIVE];</span>
+<span class="nc" id="L308">        double pre = concs[P_ACTIVE];</span>
+<span class="nc" id="L309">        concs = Solver.euler(equations, 0, concs, 60, STEP_SIZE);</span>
+<span class="nc" id="L310">        double post = concs[P_ACTIVE];</span>
 
         // Calculate fold change and set migratory or proliferative flag.
-<span class="nc bnc" id="L314" title="All 2 branches missed.">        current = ((pre &gt; post ? pre / post : post / pre) - 1);</span>
-<span class="nc bnc" id="L315" title="All 2 branches missed.">        double delta = (current &gt; previous ? current / previous : previous / current);</span>
-<span class="nc bnc" id="L316" title="All 2 branches missed.">        cell.setFlag(delta &gt; migratoryThreshold ? Flag.MIGRATORY : Flag.PROLIFERATIVE);</span>
-<span class="nc" id="L317">        previous = current;</span>
+<span class="nc bnc" id="L313" title="All 2 branches missed.">        current = ((pre &gt; post ? pre / post : post / pre) - 1);</span>
+<span class="nc bnc" id="L314" title="All 2 branches missed.">        double delta = (current &gt; previous ? current / previous : previous / current);</span>
+<span class="nc bnc" id="L315" title="All 2 branches missed.">        cell.setFlag(delta &gt; migratoryThreshold ? Flag.MIGRATORY : Flag.PROLIFERATIVE);</span>
+<span class="nc" id="L316">        previous = current;</span>
 
         // Update environment.
-<span class="nc" id="L320">        sim.getLattice(&quot;TGFA&quot;).setValue(location, concs[T_EXT] * TGFA_MW);</span>
-<span class="nc" id="L321">    }</span>
+<span class="nc" id="L319">        sim.getLattice(&quot;TGFA&quot;).setValue(location, concs[T_EXT] * TGFA_MW);</span>
+<span class="nc" id="L320">    }</span>
 
     @Override
     public void update(Process process) {
-<span class="nc" id="L325">        PatchProcessSignalingComplex signaling = (PatchProcessSignalingComplex) process;</span>
-<span class="nc" id="L326">        this.concs = signaling.concs.clone();</span>
-<span class="nc" id="L327">    }</span>
+<span class="nc" id="L324">        PatchProcessSignalingComplex signaling = (PatchProcessSignalingComplex) process;</span>
+<span class="nc" id="L325">        this.concs = signaling.concs.clone();</span>
+<span class="nc" id="L326">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

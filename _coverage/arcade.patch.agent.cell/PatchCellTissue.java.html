@@ -4,7 +4,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 
 /** Extension of {@link PatchCell} for healthy tissue cells. */
 public class PatchCellTissue extends PatchCell {
@@ -15,7 +15,7 @@ public class PatchCellTissue extends PatchCell {
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
      */
-    public PatchCellTissue(PatchCellContainer container, Location location, MiniBox parameters) {
+    public PatchCellTissue(PatchCellContainer container, Location location, Parameters parameters) {
 <span class="nc" id="L19">        this(container, location, parameters, null);</span>
 <span class="nc" id="L20">    }</span>
 
@@ -28,7 +28,7 @@ public class PatchCellTissue extends PatchCell {
      * @param links the map of population links
      */
     public PatchCellTissue(
-            PatchCellContainer container, Location location, MiniBox parameters, GrabBag links) {
+            PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
 <span class="nc" id="L32">        super(container, location, parameters, links);</span>
 <span class="nc" id="L33">    }</span>
 
