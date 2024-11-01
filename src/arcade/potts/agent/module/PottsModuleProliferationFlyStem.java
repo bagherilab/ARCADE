@@ -41,7 +41,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
     }
 
     public Plane getDivisionPlaneWithRotationalVariance(
-            PottsCellFlyStem cell, double varianceDegrees, MersenneTwisterFast random) {
+            PottsCellFlyStem cell, double stdevDegrees, MersenneTwisterFast random) {
 
         // Get original split direction
         Double3D plainSplitNormal = cell.stemType.splitDirection.vector;
@@ -49,8 +49,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         // Create and return the new Plane
         return new Plane(
                 getCellSplitLocation(cell),
-                Plane.probablisticallyRotateNormalVector(
-                        plainSplitNormal, varianceDegrees, random));
+                Plane.probablisticallyRotateNormalVector(plainSplitNormal, stdevDegrees, random));
     }
 
     Plane getDivisionPlaneDeterministic(PottsCellFlyStem cell, MersenneTwisterFast random) {
@@ -69,7 +68,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         Potts potts = ((PottsSimulation) sim).getPotts();
 
         PottsCellFlyStem flyStemCell = (PottsCellFlyStem) cell;
-        Plane divisionPlane = getDivisionPlaneDeterministic(flyStemCell, random);
+        Plane divisionPlane = getDivisionPlaneWithRotationalVariance(flyStemCell, 30.0, random);
         double splitProbability = flyStemCell.stemType.splitSelectionProbability;
 
         // Split current location

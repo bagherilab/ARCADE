@@ -164,12 +164,9 @@ public class PlaneTest {
         Double3D rotatedNormal =
                 Plane.probablisticallyRotateNormalVector(unRotatedNormal, stDevDegrees, random);
 
-        assertEquals(
-                unRotatedNormal.x, rotatedNormal.x, EPSILON);
-        assertEquals(
-                unRotatedNormal.y, rotatedNormal.y, EPSILON);
-        assertEquals(
-                unRotatedNormal.z, rotatedNormal.z, EPSILON);
+        assertEquals(unRotatedNormal.x, rotatedNormal.x, EPSILON);
+        assertEquals(unRotatedNormal.y, rotatedNormal.y, EPSILON);
+        assertEquals(unRotatedNormal.z, rotatedNormal.z, EPSILON);
     }
 
     @Test
