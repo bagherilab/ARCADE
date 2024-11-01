@@ -6,7 +6,7 @@ import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -25,7 +25,7 @@ public class PatchCellRandom extends PatchCell {
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
      */
-    public PatchCellRandom(PatchCellContainer container, Location location, MiniBox parameters) {
+    public PatchCellRandom(PatchCellContainer container, Location location, Parameters parameters) {
         this(container, location, parameters, null);
     }
 
@@ -38,7 +38,7 @@ public class PatchCellRandom extends PatchCell {
      * @param links the map of population links
      */
     public PatchCellRandom(
-            PatchCellContainer container, Location location, MiniBox parameters, GrabBag links) {
+            PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
     }
 

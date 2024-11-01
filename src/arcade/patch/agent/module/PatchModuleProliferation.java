@@ -4,7 +4,7 @@ import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.process.PatchProcess;
 import arcade.patch.env.grid.PatchGrid;
@@ -52,7 +52,7 @@ public class PatchModuleProliferation extends PatchModule {
         maxHeight = cell.getCriticalHeight();
 
         // Set loaded parameters.
-        MiniBox parameters = cell.getParameters();
+        Parameters parameters = cell.getParameters();
         synthesisDuration = parameters.getInt("proliferation/SYNTHESIS_DURATION");
     }
 
@@ -87,7 +87,12 @@ public class PatchModuleProliferation extends PatchModule {
                     int newID = sim.getID();
                     CellContainer newContainer = cell.make(newID, State.UNDEFINED, random);
                     PatchCell newCell =
-                            (PatchCell) newContainer.convert(sim.getCellFactory(), newLocation);
+                            (PatchCell)
+                                    newContainer.convert(
+                                            sim.getCellFactory(),
+                                            newLocation,
+                                            random,
+                                            cell.getParameters());
                     sim.getGrid().addObject(newCell, newLocation);
                     newCell.schedule(sim.getSchedule());
 

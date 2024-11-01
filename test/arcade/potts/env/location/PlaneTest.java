@@ -17,7 +17,7 @@ public class PlaneTest {
     }
 
     @Test
-    public void constructor_givenPointAndVector_returnsCorrectPlane() {
+    public void constructor_givenPointAndIntegerVector_returnsCorrectPlane() {
         Voxel point = new Voxel(1, 2, 3);
         Double3D normalVector = new Double3D(2, 2, 1);
 

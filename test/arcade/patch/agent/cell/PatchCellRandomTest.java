@@ -1,9 +1,11 @@
 package arcade.patch.agent.cell;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModule;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.env.location.PatchLocation;
@@ -17,7 +19,9 @@ import static arcade.patch.util.PatchEnums.State;
 public class PatchCellRandomTest {
     private static final double EPSILON = 1E-8;
 
-    static PatchLocation locationMock = mock(PatchLocation.class);
+    static PatchLocation locationMock;
+
+    static Parameters parametersMock;
 
     static int cellID = randomIntBetween(1, 10);
 
@@ -39,8 +43,6 @@ public class PatchCellRandomTest {
 
     static State cellState = State.QUIESCENT;
 
-    static MiniBox parametersMock = new MiniBox();
-
     static PatchCellContainer baseContainer =
             new PatchCellContainer(
                     cellID,
@@ -53,6 +55,14 @@ public class PatchCellRandomTest {
                     cellHeight,
                     cellCriticalVolume,
                     cellCriticalHeight);
+
+    @BeforeAll
+    public static void setupMocks() {
+        locationMock = mock(PatchLocation.class);
+        parametersMock = spy(new Parameters(new MiniBox(), null, null));
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+    }
 
     @Test
     public void make_calledNoLinks_createsContainer() {

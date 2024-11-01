@@ -1,15 +1,17 @@
 package arcade.potts.agent.cell;
 
+import java.util.EnumMap;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModuleApoptosisSimple;
 import arcade.potts.agent.module.PottsModuleAutosis;
 import arcade.potts.agent.module.PottsModuleNecrosis;
 import arcade.potts.agent.module.PottsModuleProliferationSimple;
 import arcade.potts.agent.module.PottsModuleQuiescence;
+import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
 
 /**
@@ -24,14 +26,9 @@ public final class PottsCellStem extends PottsCell {
      * @param container the cell container
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
-     * @param hasRegions {@code true} if cell has regions, {@code false} otherwise
      */
-    public PottsCellStem(
-            PottsCellContainer container,
-            Location location,
-            MiniBox parameters,
-            boolean hasRegions) {
-        this(container, location, parameters, hasRegions, null);
+    public PottsCellStem(PottsCellContainer container, Location location, Parameters parameters) {
+        this(container, location, parameters, null);
     }
 
     /**
@@ -40,16 +37,11 @@ public final class PottsCellStem extends PottsCell {
      * @param container the cell container
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
-     * @param hasRegions {@code true} if cell has regions, {@code false} otherwise
      * @param links the map of population links
      */
     public PottsCellStem(
-            PottsCellContainer container,
-            Location location,
-            MiniBox parameters,
-            boolean hasRegions,
-            GrabBag links) {
-        super(container, location, parameters, hasRegions, links);
+            PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
+        super(container, location, parameters, links);
     }
 
     @Override
@@ -67,7 +59,7 @@ public final class PottsCellStem extends PottsCell {
                 newState,
                 null,
                 0,
-                null,
+                (hasRegions ? new EnumMap<>(Region.class) : null),
                 criticalVolume,
                 criticalHeight,
                 criticalRegionVolumes,

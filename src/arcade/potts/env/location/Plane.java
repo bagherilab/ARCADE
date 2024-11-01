@@ -56,8 +56,7 @@ public final class Plane {
         double scaledX = normalVector.getX() / magnitude;
         double scaledY = normalVector.getY() / magnitude;
         double scaledZ = normalVector.getZ() / magnitude;
-        Double3D unitNormalVector = new Double3D(scaledX, scaledY, scaledZ);
-        return unitNormalVector;
+        return new Double3D(scaledX, scaledY, scaledZ);
     }
 
     /**
@@ -70,11 +69,9 @@ public final class Plane {
      * @return the distance from the point to the plane.
      */
     public double signedDistanceToPlane(Voxel point) {
-        double dotProduct =
-                (point.x - referencePoint.x) * unitNormalVector.getX()
-                        + (point.y - referencePoint.y) * unitNormalVector.getY()
-                        + (point.z - referencePoint.z) * unitNormalVector.getZ();
-        return dotProduct;
+        return (point.x - referencePoint.x) * unitNormalVector.getX()
+                + (point.y - referencePoint.y) * unitNormalVector.getY()
+                + (point.z - referencePoint.z) * unitNormalVector.getZ();
     }
 
     /**
