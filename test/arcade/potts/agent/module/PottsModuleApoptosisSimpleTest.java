@@ -6,6 +6,7 @@ import sim.util.distribution.Poisson;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.grid.Grid;
 import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
@@ -29,9 +30,7 @@ public class PottsModuleApoptosisSimpleTest {
 
     static PottsSimulation simMock;
 
-    static PottsCell cellMock;
-
-    static MiniBox parameters;
+    static Parameters parameters;
 
     @BeforeAll
     public static void setupMocks() {
@@ -45,20 +44,16 @@ public class PottsModuleApoptosisSimpleTest {
         when(simMock.getPotts()).thenReturn(mock(Potts.class));
         when(simMock.getGrid()).thenReturn(mock(Grid.class));
 
-        cellMock = mock(PottsCell.class);
-        MiniBox box = mock(MiniBox.class);
-        doReturn(0.).when(box).getDouble(anyString());
-        doReturn(box).when(cellMock).getParameters();
-
-        parameters = new MiniBox();
-        parameters.put("apoptosis/RATE_EARLY", randomDoubleBetween(1, 10));
-        parameters.put("apoptosis/RATE_LATE", randomDoubleBetween(1, 10));
-        parameters.put("apoptosis/STEPS_EARLY", randomIntBetween(1, 100));
-        parameters.put("apoptosis/STEPS_LATE", randomIntBetween(1, 100));
-        parameters.put("apoptosis/WATER_LOSS_RATE", randomDoubleBetween(100, 500));
-        parameters.put("apoptosis/CYTOPLASMIC_BLEBBING_RATE", randomDoubleBetween(100, 500));
-        parameters.put("apoptosis/NUCLEUS_PYKNOSIS_RATE", randomDoubleBetween(0, 100));
-        parameters.put("apoptosis/NUCLEUS_FRAGMENTATION_RATE", randomDoubleBetween(0, 100));
+        MiniBox defaults = new MiniBox();
+        defaults.put("apoptosis/RATE_EARLY", randomDoubleBetween(1, 10));
+        defaults.put("apoptosis/RATE_LATE", randomDoubleBetween(1, 10));
+        defaults.put("apoptosis/STEPS_EARLY", randomIntBetween(1, 100));
+        defaults.put("apoptosis/STEPS_LATE", randomIntBetween(1, 100));
+        defaults.put("apoptosis/WATER_LOSS_RATE", randomDoubleBetween(100, 500));
+        defaults.put("apoptosis/CYTOPLASMIC_BLEBBING_RATE", randomDoubleBetween(100, 500));
+        defaults.put("apoptosis/NUCLEUS_PYKNOSIS_RATE", randomDoubleBetween(0, 100));
+        defaults.put("apoptosis/NUCLEUS_FRAGMENTATION_RATE", randomDoubleBetween(0, 100));
+        parameters = new Parameters(defaults, null, random);
     }
 
     @Test

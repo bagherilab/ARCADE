@@ -3,7 +3,7 @@ package arcade.potts.agent.module;
 import sim.util.distribution.Poisson;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.potts.agent.cell.PottsCell;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Region;
@@ -48,7 +48,7 @@ public class PottsModuleApoptosisSimple extends PottsModuleApoptosis {
     public PottsModuleApoptosisSimple(PottsCell cell) {
         super(cell);
 
-        MiniBox parameters = cell.getParameters();
+        Parameters parameters = cell.getParameters();
         rateEarly = parameters.getDouble("apoptosis/RATE_EARLY");
         rateLate = parameters.getDouble("apoptosis/RATE_LATE");
         stepsEarly = parameters.getInt("apoptosis/STEPS_EARLY");

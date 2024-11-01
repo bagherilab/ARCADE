@@ -4,7 +4,7 @@ import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.Cell;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.env.grid.PatchGrid;
 import static arcade.patch.util.PatchEnums.State;
@@ -38,7 +38,7 @@ public class PatchModuleApoptosis extends PatchModule {
         super(cell);
 
         // Set loaded parameters.
-        MiniBox parameters = cell.getParameters();
+        Parameters parameters = cell.getParameters();
         deathDuration = parameters.getInt("apoptosis/DEATH_DURATION");
     }
 

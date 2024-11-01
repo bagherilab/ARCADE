@@ -1,10 +1,12 @@
 package arcade.potts.agent.cell;
 
 import java.util.EnumMap;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModuleApoptosis;
 import arcade.potts.agent.module.PottsModuleAutosis;
 import arcade.potts.agent.module.PottsModuleNecrosis;
@@ -21,7 +23,9 @@ import static arcade.potts.util.PottsEnums.State;
 public class PottsCellStemTest {
     private static final double EPSILON = 1E-8;
 
-    static PottsLocation locationMock = mock(PottsLocation.class);
+    static PottsLocation locationMock;
+
+    static Parameters parametersMock;
 
     static int cellID = randomIntBetween(1, 10);
 
@@ -41,8 +45,6 @@ public class PottsCellStemTest {
 
     static Phase cellPhase = Phase.UNDEFINED;
 
-    static MiniBox parametersMock = new MiniBox();
-
     static PottsCellContainer baseContainer =
             new PottsCellContainer(
                     cellID,
@@ -56,9 +58,17 @@ public class PottsCellStemTest {
                     cellCriticalVolume,
                     cellCriticalHeight);
 
+    @BeforeAll
+    public static void setupMocks() {
+        locationMock = mock(PottsLocation.class);
+        parametersMock = spy(new Parameters(new MiniBox(), null, null));
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+    }
+
     @Test
     public void setState_givenState_assignsValue() {
-        PottsCellStem cell = new PottsCellStem(baseContainer, locationMock, parametersMock, false);
+        PottsCellStem cell = new PottsCellStem(baseContainer, locationMock, parametersMock);
 
         cell.setState(State.QUIESCENT);
         assertEquals(State.QUIESCENT, cell.getState());
@@ -78,7 +88,7 @@ public class PottsCellStemTest {
 
     @Test
     public void setState_givenState_updatesModule() {
-        PottsCellStem cell = new PottsCellStem(baseContainer, locationMock, parametersMock, false);
+        PottsCellStem cell = new PottsCellStem(baseContainer, locationMock, parametersMock);
 
         cell.setState(State.QUIESCENT);
         assertTrue(cell.module instanceof PottsModuleQuiescence);
@@ -98,7 +108,7 @@ public class PottsCellStemTest {
 
     @Test
     public void setState_invalidState_setsNull() {
-        PottsCellStem cell = new PottsCellStem(baseContainer, locationMock, parametersMock, false);
+        PottsCellStem cell = new PottsCellStem(baseContainer, locationMock, parametersMock);
         cell.setState(State.UNDEFINED);
         assertNull(cell.getModule());
     }
@@ -122,8 +132,7 @@ public class PottsCellStemTest {
                         0,
                         criticalVolume,
                         criticalHeight);
-        PottsCellStem cell =
-                new PottsCellStem(cellContainer, locationMock, parametersMock, false, null);
+        PottsCellStem cell = new PottsCellStem(cellContainer, locationMock, parametersMock);
 
         PottsCellContainer container = cell.make(cellID + 1, state2, null);
 
@@ -169,8 +178,7 @@ public class PottsCellStemTest {
                         0,
                         criticalVolume,
                         criticalHeight);
-        PottsCellStem cell =
-                new PottsCellStem(cellContainer, locationMock, parametersMock, false, links);
+        PottsCellStem cell = new PottsCellStem(cellContainer, locationMock, parametersMock, links);
 
         PottsCellContainer container = cell.make(cellID + 1, state2, random);
 
@@ -214,13 +222,12 @@ public class PottsCellStemTest {
                         state1,
                         cellPhase,
                         0,
-                        null,
+                        new EnumMap<>(Region.class),
                         criticalVolume,
                         criticalHeight,
                         criticalVolumesRegion,
                         criticalHeightsRegion);
-        PottsCellStem cell =
-                new PottsCellStem(cellContainer, locationMock, parametersMock, true, null);
+        PottsCellStem cell = new PottsCellStem(cellContainer, locationMock, parametersMock);
 
         PottsCellContainer container = cell.make(cellID + 1, state2, null);
 
@@ -233,7 +240,7 @@ public class PottsCellStemTest {
         assertEquals(state2, container.state);
         assertNull(container.phase);
         assertEquals(0, container.voxels);
-        assertNull(container.regionVoxels);
+        assertNotNull(container.regionVoxels);
         assertEquals(criticalVolume, container.criticalVolume, EPSILON);
         assertEquals(criticalHeight, container.criticalHeight, EPSILON);
         for (Region region : Region.values()) {
@@ -279,14 +286,13 @@ public class PottsCellStemTest {
                         state1,
                         cellPhase,
                         0,
-                        null,
+                        new EnumMap<>(Region.class),
                         criticalVolume,
                         criticalHeight,
                         criticalVolumesRegion,
                         criticalHeightsRegion);
 
-        PottsCellStem cell =
-                new PottsCellStem(cellContainer, locationMock, parametersMock, true, links);
+        PottsCellStem cell = new PottsCellStem(cellContainer, locationMock, parametersMock, links);
 
         PottsCellContainer container = cell.make(cellID + 1, state2, random);
 
@@ -299,7 +305,7 @@ public class PottsCellStemTest {
         assertEquals(state2, container.state);
         assertNull(container.phase);
         assertEquals(0, container.voxels);
-        assertNull(container.regionVoxels);
+        assertNotNull(container.regionVoxels);
         assertEquals(criticalVolume, container.criticalVolume, EPSILON);
         assertEquals(criticalHeight, container.criticalHeight, EPSILON);
         for (Region region : Region.values()) {

@@ -17,6 +17,7 @@ import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModuleApoptosis;
 import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleProliferation;
@@ -103,9 +104,6 @@ public abstract class PatchCell implements Cell {
     /** Cell state change flag. */
     private Flag flag;
 
-    /** Variation in cell agent parameters. */
-    private final double heterogeneity;
-
     /** Fraction of necrotic cells that become apoptotic. */
     private final double necroticFraction;
 
@@ -122,7 +120,7 @@ public abstract class PatchCell implements Cell {
     protected final Map<ProcessDomain, Process> processes;
 
     /** Cell parameters. */
-    final MiniBox parameters;
+    final Parameters parameters;
 
     /** Cell population links. */
     final GrabBag links;
@@ -141,11 +139,11 @@ public abstract class PatchCell implements Cell {
      *
      * @param container the cell container
      * @param location the {@link Location} of the cell
-     * @param parameters the dictionary of parameters
+     * @param parameters the cell parameters
      * @param links the map of population links
      */
     public PatchCell(
-            PatchCellContainer container, Location location, MiniBox parameters, GrabBag links) {
+            PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         this.id = container.id;
         this.parent = container.parent;
         this.pop = container.pop;
@@ -164,12 +162,9 @@ public abstract class PatchCell implements Cell {
         setState(container.state);
 
         // Set loaded parameters.
-        heterogeneity = parameters.getDouble("HETEROGENEITY");
         necroticFraction = parameters.getDouble("NECROTIC_FRACTION");
         senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
         energyThreshold = -parameters.getDouble("ENERGY_THRESHOLD");
-
-        // TODO: implement heterogeneity
 
         // Add cell processes.
         processes = new HashMap<>();
@@ -228,7 +223,7 @@ public abstract class PatchCell implements Cell {
     }
 
     @Override
-    public MiniBox getParameters() {
+    public Parameters getParameters() {
         return parameters;
     }
 

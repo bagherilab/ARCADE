@@ -1,6 +1,6 @@
 package arcade.potts.util;
 
-import sim.util.Int3D;
+import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.agent.process.ProcessDomain;
@@ -174,41 +174,41 @@ public final class PottsEnums {
         UNDEFINED(null),
 
         /** Direction along the yz plane (y = 0, z = 0). */
-        YZ_PLANE(new Int3D(1, 0, 0)),
+        YZ_PLANE(new Double3D(1, 0, 0)),
 
         /** Direction along the zx plane (z = 0, x = 0). */
-        ZX_PLANE(new Int3D(0, 1, 0)),
+        ZX_PLANE(new Double3D(0, 1, 0)),
 
         /** Direction along the xy plane (x = 0, y = 0). */
-        XY_PLANE(new Int3D(0, 0, 1)),
+        XY_PLANE(new Double3D(0, 0, 1)),
 
         /** Direction along the positive xy axis (x = y, z = 0). */
-        POSITIVE_XY(new Int3D(-1, 1, 0)),
+        POSITIVE_XY(new Double3D(-1, 1, 0)),
 
         /** Direction along the negative xy axis (x = -y, z = 0). */
-        NEGATIVE_XY(new Int3D(-1, -1, 0)),
+        NEGATIVE_XY(new Double3D(-1, -1, 0)),
 
         /** Direction along the positive yz axis (y = z, x = 0). */
-        POSITIVE_YZ(new Int3D(0, -1, 1)),
+        POSITIVE_YZ(new Double3D(0, -1, 1)),
 
         /** Direction along the negative yz axis (y = -z, x = 0). */
-        NEGATIVE_YZ(new Int3D(0, -1, -1)),
+        NEGATIVE_YZ(new Double3D(0, -1, -1)),
 
         /** Direction along the positive zx axis (z = x, y = 0). */
-        POSITIVE_ZX(new Int3D(1, 0, -1)),
+        POSITIVE_ZX(new Double3D(1, 0, -1)),
 
         /** Direction along the negative zx axis (z = -x, y = 0). */
-        NEGATIVE_ZX(new Int3D(-1, 0, -1));
+        NEGATIVE_ZX(new Double3D(-1, 0, -1));
 
         /** The normal vector of the plane in this direction. */
-        public final Int3D vector;
+        public final Double3D vector;
 
         /**
          * Creates a new {@code Direction} with the given vector.
          *
          * @param vector the vector associated with this direction
          */
-        Direction(Int3D vector) {
+        Direction(Double3D vector) {
             this.vector = vector;
         }
 
