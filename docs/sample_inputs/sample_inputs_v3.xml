@@ -1,11 +1,11 @@
 <set prefix="test_2000_">
-    <series name="simple" start="0" end="0" ticks="3000" interval="14400" radius="10" margin="2" depth="1" >
+    <series name="simple" start="0" end="0" ticks="14400" interval="14400" radius="10" margin="2" depth="1" >
         <patch>
             <patch.parameter id="GEOMETRY" value="hex" />
         </patch>
         <agents>
             <populations>
-                <population id="cancerous" init="10" class="cancer">
+                <population id="cancerous" init="7" class="cancer">
                     <population.process id="METABOLISM" version="simple" />
                     <population.process id="SIGNALING" version="simple"  />
                     <population.parameter id="proliferation/SYNTHESIS_DURATION" value="2000" />

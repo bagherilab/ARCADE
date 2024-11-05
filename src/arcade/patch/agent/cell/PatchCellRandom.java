@@ -1,7 +1,6 @@
 package arcade.patch.agent.cell;
 
 import sim.engine.SimState;
-import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
@@ -57,8 +56,7 @@ public class PatchCellRandom extends PatchCell {
                 volume,
                 height,
                 criticalVolume,
-                criticalHeight,
-                new Bag());
+                criticalHeight);
     }
 
     @Override

@@ -313,7 +313,10 @@ public abstract class PatchCell implements Cell {
         switch ((State) state) {
             case PROLIFERATIVE:
                 // Throw an exception or handle the case if you accidentally use this method
-                throw new IllegalArgumentException("PROLIFERATIVE state requires simulation time.");
+                // throw new IllegalArgumentException("PROLIFERATIVE state requires simulation
+                // time.");
+                module = new PatchModuleProliferation(this);
+                break;
             case MIGRATORY:
                 module = new PatchModuleMigration(this);
                 break;
@@ -323,22 +326,6 @@ public abstract class PatchCell implements Cell {
             default:
                 module = null;
                 break;
-        }
-    }
-
-    /**
-     * Sets the cell state to proliferative.
-     *
-     * @param proliferativeState the target cell state
-     * @param currentSimTime the current simulation time
-     */
-    public void setState(CellState proliferativeState, double currentSimTime) {
-        if (proliferativeState == State.PROLIFERATIVE) {
-            this.state = proliferativeState;
-            this.flag = Flag.PROLIFERATIVE;
-            module = new PatchModuleProliferation(this, currentSimTime);
-        } else {
-            throw new IllegalArgumentException("This method only handles the PROLIFERATIVE state.");
         }
     }
 
@@ -406,7 +393,7 @@ public abstract class PatchCell implements Cell {
                     setState(State.SENESCENT);
                 }
             } else {
-                setState(State.PROLIFERATIVE, simstate.schedule.getTime());
+                setState(State.PROLIFERATIVE); // , simstate.schedule.getTime());
             }
         }
 
@@ -428,8 +415,7 @@ public abstract class PatchCell implements Cell {
                 volume,
                 height,
                 criticalVolume,
-                criticalHeight,
-                cycles);
+                criticalHeight);
     }
 
     /**

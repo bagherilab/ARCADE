@@ -145,13 +145,6 @@ public final class PatchOutputSerializer {
             criticals.add((int) (100 * src.criticalHeight) / 100.0);
             json.add("criticals", criticals);
 
-            JsonArray cyclesArray = new JsonArray();
-            for (int i = 0; i < src.cycles.numObjs; i++) {
-                double cycleDuration = (double) src.cycles.get(i); // Cast each cycle to double
-                cyclesArray.add(cycleDuration); // Add each cycle duration to the JsonArray
-            }
-            json.add("cycles", cyclesArray); // Add the cycles array to the final JSON object
-
             return json;
         }
     }

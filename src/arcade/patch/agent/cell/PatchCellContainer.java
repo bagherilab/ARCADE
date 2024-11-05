@@ -1,6 +1,5 @@
 package arcade.patch.agent.cell;
 
-import sim.util.Bag;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.cell.CellFactory;
@@ -46,9 +45,6 @@ public final class PatchCellContainer implements CellContainer {
     /** Critical cell height [um]. */
     public final double criticalHeight;
 
-    /** List of cell cycle lengths (in minutes). */
-    public final Bag cycles;
-
     /**
      * Creates a {@code PatchCellContainer} instance.
      *
@@ -74,8 +70,7 @@ public final class PatchCellContainer implements CellContainer {
             double volume,
             double height,
             double criticalVolume,
-            double criticalHeight,
-            Bag cycles) {
+            double criticalHeight) {
         this.id = id;
         this.parent = parent;
         this.pop = pop;
@@ -86,7 +81,6 @@ public final class PatchCellContainer implements CellContainer {
         this.height = height;
         this.criticalVolume = criticalVolume;
         this.criticalHeight = criticalHeight;
-        this.cycles = cycles;
     }
 
     @Override

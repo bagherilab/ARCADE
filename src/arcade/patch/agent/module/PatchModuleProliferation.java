@@ -49,13 +49,13 @@ public class PatchModuleProliferation extends PatchModule {
      * @param cell the {@link PatchCell} the module is associated with
      * @param start the time of cell switching to proliferation state
      */
-    public PatchModuleProliferation(PatchCell cell, double start) {
+    public PatchModuleProliferation(PatchCell cell) {
         super(cell);
 
         // Calculate thresholds.
         targetVolume = 2 * cell.getCriticalVolume();
         maxHeight = cell.getCriticalHeight();
-        this.start = start;
+        this.start = 0;
         // Set loaded parameters.
         MiniBox parameters = cell.getParameters();
         synthesisDuration = parameters.getInt("proliferation/SYNTHESIS_DURATION");
@@ -84,7 +84,7 @@ public class PatchModuleProliferation extends PatchModule {
                 cell.setState(State.QUIESCENT);
             } else if (cell.getVolume() >= targetVolume) {
                 if (ticker > synthesisDuration) {
-                    cell.addCycle(simstate.schedule.getTime() - start);
+                    // cell.addCycle(0); // simstate.schedule.getTime() - start);
                     // Reset current cell.
                     cell.setState(State.UNDEFINED);
                     // Create and schedule new cell.

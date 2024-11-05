@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
-import sim.util.Bag;
 import sim.util.distribution.Normal;
 import sim.util.distribution.Uniform;
 import ec.util.MersenneTwisterFast;
@@ -189,8 +188,7 @@ public final class PatchCellFactory implements CellFactory {
                 volume,
                 height,
                 volume,
-                height + compression,
-                new Bag());
+                height + compression);
     }
 
     /**
