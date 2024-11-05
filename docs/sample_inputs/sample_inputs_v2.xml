@@ -1,5 +1,5 @@
 <set prefix="test_cycle_" path="docs/sample_output/">
-    <series name="height_13.05" days="10">
+    <series name="height_8.7" days="10">
         <simulation type="growth" radius="10" margin="2">
             <profilers>
                 <profiler type="growth" interval="720" suffix="" />

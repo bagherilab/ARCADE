@@ -1,14 +1,19 @@
-<set prefix="SYNTHESIS_DURATION_">
-    <series name="637" start="0" end="0" ticks="14400" interval="14400" radius="10" margin="2" depth="1" >
+<set prefix="test_2000_">
+    <series name="simple" start="7" end="8" ticks="3000" interval="14400" radius="10" margin="2" depth="1" >
         <patch>
             <patch.parameter id="GEOMETRY" value="hex" />
         </patch>
         <agents>
             <populations>
-                <population id="cancerous" init="7" class="cancer">
-                    <population.process id="METABOLISM" version="complex" />
-                    <population.process id="SIGNALING" version="complex"  />
-                    <population.parameter id="proliferation/SYNTHESIS_DURATION" value="637" />
+                <population id="cancerous" init="10" class="cancer">
+                    <population.process id="METABOLISM" version="simple" />
+                    <population.process id="SIGNALING" version="simple"  />
+                    <population.parameter id="proliferation/SYNTHESIS_DURATION" value="2000" />
+                    <population.parameter id="COMPRESSION_TOLERANCE" value="0.0" />
+                    <population.parameter id="CELL_VOLUME_STDEV" value="0.0" />
+                    <population.parameter id="CELL_AGE_MAX" value="0.0" />
+                    <population.parameter id="NECROTIC_FRACTION" value="1.0" />
+                    <population.parameter id="metabolism/CONSTANT_VOLUME_GROWTH_RATE" value="2.819" />
                 </population>
             </populations>
         </agents>
