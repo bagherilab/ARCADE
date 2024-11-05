@@ -17,7 +17,6 @@ import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
-import arcade.patch.agent.module.PatchModule;
 import arcade.patch.agent.module.PatchModuleApoptosis;
 import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleProliferation;
@@ -322,7 +321,7 @@ public abstract class PatchCell implements Cell {
                 module = new PatchModuleApoptosis(this);
                 break;
             default:
-                setModule(null);
+                module = null;
                 break;
         }
     }
@@ -341,15 +340,6 @@ public abstract class PatchCell implements Cell {
         } else {
             throw new IllegalArgumentException("This method only handles the PROLIFERATIVE state.");
         }
-    }
-
-    /**
-     * Sets the cell module.
-     *
-     * @param module the target cell module
-     */
-    public void setModule(PatchModule module) {
-        this.module = module;
     }
 
     /**

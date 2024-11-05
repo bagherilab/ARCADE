@@ -11,7 +11,6 @@ import arcade.patch.agent.process.PatchProcess;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
 import static arcade.patch.util.PatchEnums.Domain;
-import static arcade.patch.util.PatchEnums.Flag;
 import static arcade.patch.util.PatchEnums.State;
 
 /**
@@ -76,7 +75,6 @@ public class PatchModuleProliferation extends PatchModule {
         // volume has been reached, and if so, create a new cell.
         if (currentHeight > maxHeight) {
             cell.setState(State.QUIESCENT);
-            cell.setModule(null); // might be duplicate because set state already does this
         } else {
             PatchLocation newLocation =
                     PatchCell.selectBestLocation(
@@ -84,13 +82,11 @@ public class PatchModuleProliferation extends PatchModule {
 
             if (newLocation == null) {
                 cell.setState(State.QUIESCENT);
-                cell.setModule(null);
             } else if (cell.getVolume() >= targetVolume) {
                 if (ticker > synthesisDuration) {
                     cell.addCycle(simstate.schedule.getTime() - start);
                     // Reset current cell.
                     cell.setState(State.UNDEFINED);
-                    cell.setFlag(Flag.UNDEFINED);
                     // Create and schedule new cell.
                     int newID = sim.getID();
                     CellContainer newContainer = cell.make(newID, State.UNDEFINED, random);

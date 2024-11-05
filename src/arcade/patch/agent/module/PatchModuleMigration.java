@@ -37,7 +37,7 @@ public class PatchModuleMigration extends PatchModule {
      */
     public PatchModuleMigration(PatchCell cell) {
         super(cell);
-        LOGGER.info("Creating PatchModuleMigration for cell");
+        System.out.println("Migration module created");
         // Set loaded parameters.
         MiniBox parameters = cell.getParameters();
         migrationRate = parameters.getDouble("migration/MIGRATION_RATE");
