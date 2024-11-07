@@ -1,6 +1,7 @@
 package arcade.patch.agent.module;
 
 import sim.util.Bag;
+import sim.engine.SimState;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.Cell;
 import arcade.core.sim.Simulation;
@@ -44,6 +45,7 @@ public class PatchModuleApoptosis extends PatchModule {
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
+        Simstate simstate = (Simstate) sim;
         if (ticker > deathDuration) {
             // Induce one neighboring quiescent cell to proliferate.
             Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocations(location.getNeighbors());
@@ -51,7 +53,7 @@ public class PatchModuleApoptosis extends PatchModule {
             for (Object obj : bag) {
                 Cell neighbor = (Cell) obj;
                 if (neighbor.getState() == State.QUIESCENT) {
-                    neighbor.setState(State.PROLIFERATIVE);
+                    neighbor.setState(State.PROLIFERATIVE, simstate.schedule.getTime());
                     break;
                 }
             }
