@@ -1,5 +1,6 @@
 package arcade.patch.agent.cell;
 
+import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
@@ -47,6 +48,9 @@ public final class PatchCellContainer implements CellContainer {
     /** Critical cell height [um]. */
     public final double criticalHeight;
 
+    /** List of cell cycle lengths (in minutes). */
+    public final Bag cycles;
+
     /**
      * Creates a {@code PatchCellContainer} instance.
      *
@@ -60,6 +64,7 @@ public final class PatchCellContainer implements CellContainer {
      * @param height the cell height
      * @param criticalVolume the critical volume
      * @param criticalHeight the critical height
+     * @param cycles the list of cell cycle lengths
      */
     public PatchCellContainer(
             int id,
@@ -71,7 +76,8 @@ public final class PatchCellContainer implements CellContainer {
             double volume,
             double height,
             double criticalVolume,
-            double criticalHeight) {
+            double criticalHeight,
+            Bag cycles) {
         this.id = id;
         this.parent = parent;
         this.pop = pop;
@@ -82,6 +88,7 @@ public final class PatchCellContainer implements CellContainer {
         this.height = height;
         this.criticalVolume = criticalVolume;
         this.criticalHeight = criticalHeight;
+        this.cycles = cycles;
     }
 
     @Override
