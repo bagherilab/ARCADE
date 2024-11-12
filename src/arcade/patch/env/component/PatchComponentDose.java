@@ -24,8 +24,10 @@ public class PatchComponentDose implements Component {
     private final double mediaVolume;
     private final double latticePatchVolume;
     private final double latticePatchArea;
-    private final double doseDelay;
+    private final double doseStart;
     private final double doseDuration;
+    private final double doseInterval;
+    private final double doseEnd;
 
     public PatchComponentDose(Series series, MiniBox parameters) {
         layers = new ArrayList<>();
@@ -36,8 +38,10 @@ public class PatchComponentDose implements Component {
 
         // Set loaded parameters.
         mediaAmount = parameters.getDouble("MEDIA_AMOUNT");
-        doseDelay = parameters.getDouble("DOSE_DELAY");
+        doseStart = parameters.getDouble("DOSE_START");
         doseDuration = parameters.getDouble("DOSE_DURATION");
+        doseInterval = parameters.getDouble("DOSE_INTERVAL");
+        doseEnd = parameters.getDouble("DOSE_END");
 
         // Set patch parameters.
         MiniBox patch = ((PatchSeries) series).patch;
@@ -65,7 +69,7 @@ public class PatchComponentDose implements Component {
 
     @Override
     public void schedule(Schedule schedule) {
-        schedule.scheduleOnce(doseDelay, Ordering.FIRST_COMPONENT.ordinal() - 1, this);
+        schedule.scheduleRepeating(doseStart, Ordering.FIRST_COMPONENT.ordinal(), this);
     }
 
     @Override
@@ -95,27 +99,24 @@ public class PatchComponentDose implements Component {
 
     @Override
     public void step(SimState simstate) {
+        double tick = simstate.schedule.getTime();
+
+        double doseAmount = 400000;
         for (DoseLayer layer : layers) {
-            double delta = 0;
-            for (int k = 0; k < latticeHeight; k++) {
-                for (int i = 0; i < latticeLength; i++) {
-                    for (int j = 0; j < latticeWidth; j++) {
-                        delta +=
-                                latticePatchVolume
-                                        * (layer.current[k][i][j] - layer.siteLayer.concentration);
-                    }
-                }
+            if (tick > doseEnd) {
+                layer.currentAmount = 0;
+                layer.siteLayer.concentration = 0;
+                return;
             }
-            layer.currentAmount = Math.max(0, layer.currentAmount - delta);
+
+            if (tick >= doseStart && (tick - doseStart) % doseInterval < doseDuration) {
+            layer.currentAmount += doseAmount;
+            } else {
+                layer.currentAmount = 0;
+            }
+
             layer.siteLayer.concentration = layer.currentAmount / mediaVolume;
 
-            // System.out.print(simstate.schedule.getTime());
-            // System.out.print((doseDelay + doseDuration));
-            // if (simstate.schedule.getTime() >= (doseDelay + doseDuration)) {
-            //     System.out.println("Dose Ends");
-            //     layer.currentAmount = layer.initialConcentration * mediaVolume;
-            //     layer.siteLayer.concentration = layer.initialConcentration;
-            // }
         }
     }
 }

@@ -91,7 +91,6 @@ public abstract class PatchProcessChemotherapy extends PatchProcess {
     private void updateExternal(Simulation sim) {
         extAmt = sim.getLattice("DRUG").getAverageValue(location) * location.getVolume();
         extAmt *= (1.0 - drugDecayRate);
-        System.out.println("extAmt: " + extAmt);
     }
 
     @Override
