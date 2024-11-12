@@ -137,7 +137,6 @@ public class PatchComponentPulse implements Component {
         Lattice lattice = sim.getLattice(layerSplit[1]);
         Operation generator = lattice.getOperation(Category.GENERATOR);
         Component component = sim.getComponent(layerSplit[0]);
-
         if (!(component instanceof PatchComponentSitesSource)) {
             return;
         }
@@ -174,10 +173,15 @@ public class PatchComponentPulse implements Component {
                 }
             }
 
+            System.out.println(delta);
+            System.out.println(layer.currentAmount);
             // Update available concentrations.
             layer.currentAmount = Math.max(0, layer.currentAmount - delta);
-            layer.siteLayer.concentration = layer.currentAmount / mediaVolume;
+            System.out.println(layer.currentAmount);
 
+            System.out.println(layer.siteLayer.concentration);
+            layer.siteLayer.concentration = layer.currentAmount / mediaVolume;
+            System.out.println(layer.siteLayer.concentration);
             // Pulse returns concentration to initial value.
             if (tick % pulseInterval == 0) {
                 layer.currentAmount = layer.initialConcentration * mediaVolume;
