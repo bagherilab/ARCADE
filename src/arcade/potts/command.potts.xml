@@ -1,2 +1,3 @@
 <commands>
+    <toggle id="FLY_STEM_CELLS" long="flystem" help="Enable the fly stem feature" />
 </commands>

@@ -5,7 +5,22 @@ import java.util.HashSet;
 
 public enum Feature {
     /** Placeholder feature. */
-    PLACEHOLDER;
+    PLACEHOLDER,
+
+    /** Angiogenesis for patch implementation. */
+    ANGIOGENESIS,
+
+    /** CART cell agents for patch implementation. */
+    CART_CELLS,
+
+    /** Cell cycle tracking for patch implementation. */
+    CELL_CYCLE_TRACKING,
+
+    /** Chemotherapy action for patch implementation. */
+    CHEMOTHERAPY,
+
+    /** Fly stem cell agents for potts implementation. */
+    FLY_STEM_CELLS;
 
     /** Map of activated features. */
     public static final HashSet<Feature> activationMap = new HashSet<>();

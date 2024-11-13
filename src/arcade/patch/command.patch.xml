@@ -1,2 +1,6 @@
 <commands>
+    <toggle id="ANGIOGENESIS" long="angiogenesis" help="Enable the angiogenesis feature" />
+    <toggle id="CART_CELLS" long="cart" help="Enable the CAR T cells feature" />
+    <toggle id="CELL_CYCLE_TRACKING" long="cellcycle" help="Enable the cell cycle tracking feature" />
+    <toggle id="CHEMOTHERAPY" long="chemotherapy" help="Enable the chemotherapy feature" />
 </commands>
