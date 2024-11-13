@@ -39,9 +39,9 @@ public class InputParserTest {
     @Test
     public void constructor_emptyTags_addsCommands() {
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "POSITION");
-        box.addTag(COMMAND_ID_2, "OPTION");
-        box.addTag(COMMAND_ID_3, "SWITCH");
+        box.addTag(COMMAND_ID_1, CommandType.POSITION.name());
+        box.addTag(COMMAND_ID_2, CommandType.OPTION.name());
+        box.addTag(COMMAND_ID_3, CommandType.SWITCH.name());
 
         InputParser parser = new InputParser(box);
 
@@ -57,8 +57,8 @@ public class InputParserTest {
         String shortFlag = randomString();
 
         Box box = new Box();
-        box.addTag(COMMAND_ID_2, "OPTION");
-        box.addTag(COMMAND_ID_3, "SWITCH");
+        box.addTag(COMMAND_ID_2, CommandType.OPTION.name());
+        box.addTag(COMMAND_ID_3, CommandType.SWITCH.name());
         box.addAtt(COMMAND_ID_2, "long", longFlag);
         box.addAtt(COMMAND_ID_3, "short", shortFlag);
 
@@ -76,7 +76,7 @@ public class InputParserTest {
         String invalidFlag = randomString();
 
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "OPTION");
+        box.addTag(COMMAND_ID_1, CommandType.OPTION.name());
         box.addAtt(COMMAND_ID_1, "long", longFlag);
         box.addAtt(COMMAND_ID_1, "invalid", invalidFlag);
         InputParser parser = new InputParser(box);
@@ -90,15 +90,15 @@ public class InputParserTest {
     @Test
     public void constructor_emptyTags_assignsTypes() {
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "POSITION");
-        box.addTag(COMMAND_ID_2, "OPTION");
-        box.addTag(COMMAND_ID_3, "SWITCH");
+        box.addTag(COMMAND_ID_1, CommandType.POSITION.name());
+        box.addTag(COMMAND_ID_2, CommandType.OPTION.name());
+        box.addTag(COMMAND_ID_3, CommandType.SWITCH.name());
 
         InputParser parser = new InputParser(box);
 
-        assertEquals(POSITION, parser.allCommands.get(0).type);
-        assertEquals(OPTION, parser.allCommands.get(1).type);
-        assertEquals(SWITCH, parser.allCommands.get(2).type);
+        assertEquals(CommandType.POSITION, parser.allCommands.get(0).type);
+        assertEquals(CommandType.OPTION, parser.allCommands.get(1).type);
+        assertEquals(CommandType.SWITCH, parser.allCommands.get(2).type);
     }
 
     @Test
@@ -107,9 +107,9 @@ public class InputParserTest {
         String helpText2 = randomString();
 
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "POSITION");
-        box.addTag(COMMAND_ID_2, "OPTION");
-        box.addTag(COMMAND_ID_3, "SWITCH");
+        box.addTag(COMMAND_ID_1, CommandType.POSITION.name());
+        box.addTag(COMMAND_ID_2, CommandType.OPTION.name());
+        box.addTag(COMMAND_ID_3, CommandType.SWITCH.name());
         box.addAtt(COMMAND_ID_1, "help", helpText1);
         box.addAtt(COMMAND_ID_3, "help", helpText2);
 
@@ -124,7 +124,7 @@ public class InputParserTest {
     public void constructor_givenDefaultOption_assignsField() {
         String defaultValue1 = randomString();
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "OPTION");
+        box.addTag(COMMAND_ID_1, CommandType.OPTION.name());
         box.addAtt(COMMAND_ID_1, "default", defaultValue1);
         InputParser parser = new InputParser(box);
         assertEquals(defaultValue1, parser.allCommands.get(0).defaults);
@@ -133,7 +133,7 @@ public class InputParserTest {
     @Test
     public void constructor_givenDefaultSwitch_doesNothing() {
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "SWITCH");
+        box.addTag(COMMAND_ID_1, CommandType.SWITCH.name());
         box.addAtt(COMMAND_ID_1, "default", randomString());
         InputParser parser = new InputParser(box);
         assertNull(parser.allCommands.get(0).defaults);
@@ -142,7 +142,7 @@ public class InputParserTest {
     @Test
     public void constructor_givenDefaultPosition_doesNothing() {
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "POSITION");
+        box.addTag(COMMAND_ID_1, CommandType.POSITION.name());
         box.addAtt(COMMAND_ID_1, "default", randomString());
         InputParser parser = new InputParser(box);
         assertNull(parser.allCommands.get(0).defaults);
@@ -153,8 +153,8 @@ public class InputParserTest {
         String shortFlag = randomString();
 
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "OPTION");
-        box.addTag(COMMAND_ID_2, "SWITCH");
+        box.addTag(COMMAND_ID_1, CommandType.OPTION.name());
+        box.addTag(COMMAND_ID_2, CommandType.SWITCH.name());
         box.addAtt(COMMAND_ID_1, "short", shortFlag);
 
         InputParser parser = new InputParser(box);
@@ -168,8 +168,8 @@ public class InputParserTest {
         String longFlag = randomString();
 
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "OPTION");
-        box.addTag(COMMAND_ID_2, "SWITCH");
+        box.addTag(COMMAND_ID_1, CommandType.OPTION.name());
+        box.addTag(COMMAND_ID_2, CommandType.SWITCH.name());
         box.addAtt(COMMAND_ID_1, "long", longFlag);
 
         InputParser parser = new InputParser(box);
@@ -184,8 +184,8 @@ public class InputParserTest {
         String longFlag = randomString();
 
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "OPTION");
-        box.addTag(COMMAND_ID_2, "SWITCH");
+        box.addTag(COMMAND_ID_1, CommandType.OPTION.name());
+        box.addTag(COMMAND_ID_2, CommandType.SWITCH.name());
         box.addAtt(COMMAND_ID_2, "short", shortFlag);
         box.addAtt(COMMAND_ID_2, "long", longFlag);
 
@@ -203,7 +203,7 @@ public class InputParserTest {
         String longFlag = randomString();
 
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "POSITION");
+        box.addTag(COMMAND_ID_1, CommandType.POSITION.name());
         box.addAtt(COMMAND_ID_1, "short", shortFlag);
         box.addAtt(COMMAND_ID_1, "long", longFlag);
 
@@ -224,7 +224,7 @@ public class InputParserTest {
     @Test
     public void parse_withoutPositionNoArgs_returnsEmpty() {
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "SWITCH");
+        box.addTag(COMMAND_ID_1, CommandType.SWITCH.name());
 
         InputParser parser = new InputParser(box);
         MiniBox parsed = parser.parse(new String[] {});
@@ -237,7 +237,7 @@ public class InputParserTest {
                 IllegalArgumentException.class,
                 () -> {
                     Box box = new Box();
-                    box.addTag(COMMAND_ID_1, "POSITION");
+                    box.addTag(COMMAND_ID_1, CommandType.POSITION.name());
 
                     InputParser parser = new InputParser(box);
                     MiniBox parsed = parser.parse(new String[] {});
@@ -249,7 +249,7 @@ public class InputParserTest {
     public void parse_withDefaultsNoArgs_usesDefaults() {
         String defaultValue = randomString();
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "OPTION");
+        box.addTag(COMMAND_ID_1, CommandType.OPTION.name());
         box.addAtt(COMMAND_ID_1, "default", defaultValue);
 
         InputParser parser = new InputParser(box);
@@ -269,10 +269,10 @@ public class InputParserTest {
         String longFlag = randomString();
 
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "OPTION");
+        box.addTag(COMMAND_ID_1, CommandType.OPTION.name());
         box.addAtt(COMMAND_ID_1, "default", defaultValue1);
         box.addAtt(COMMAND_ID_1, "long", longFlag);
-        box.addTag(COMMAND_ID_2, "OPTION");
+        box.addTag(COMMAND_ID_2, CommandType.OPTION.name());
         box.addAtt(COMMAND_ID_2, "default", defaultValue2);
 
         InputParser parser = new InputParser(box);
@@ -288,8 +288,8 @@ public class InputParserTest {
     @Test
     public void addDefaults_onlyPositions_doesNothing() {
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "POSITION");
-        box.addTag(COMMAND_ID_2, "POSITION");
+        box.addTag(COMMAND_ID_1, CommandType.POSITION.name());
+        box.addTag(COMMAND_ID_2, CommandType.POSITION.name());
 
         InputParser parser = new InputParser(box);
         parser.parsed = new MiniBox();
@@ -301,9 +301,9 @@ public class InputParserTest {
     @Test
     public void addDefaults_noDefaults_doesNothing() {
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "SWITCH");
-        box.addTag(COMMAND_ID_2, "SWITCH");
-        box.addTag(COMMAND_ID_3, "OPTION");
+        box.addTag(COMMAND_ID_1, CommandType.SWITCH.name());
+        box.addTag(COMMAND_ID_2, CommandType.SWITCH.name());
+        box.addTag(COMMAND_ID_3, CommandType.OPTION.name());
 
         InputParser parser = new InputParser(box);
         parser.parsed = new MiniBox();
@@ -318,9 +318,9 @@ public class InputParserTest {
         String defaultValue2 = randomString();
 
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "OPTION");
-        box.addTag(COMMAND_ID_2, "OPTION");
-        box.addTag(COMMAND_ID_3, "OPTION");
+        box.addTag(COMMAND_ID_1, CommandType.OPTION.name());
+        box.addTag(COMMAND_ID_2, CommandType.OPTION.name());
+        box.addTag(COMMAND_ID_3, CommandType.OPTION.name());
         box.addAtt(COMMAND_ID_2, "default", defaultValue1);
         box.addAtt(COMMAND_ID_3, "default", defaultValue2);
 
@@ -338,8 +338,8 @@ public class InputParserTest {
     @Test
     public void parseArg_givenPositions_parsesArgument() {
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "POSITION");
-        box.addTag(COMMAND_ID_2, "POSITION");
+        box.addTag(COMMAND_ID_1, CommandType.POSITION.name());
+        box.addTag(COMMAND_ID_2, CommandType.POSITION.name());
 
         String[] arguments =
                 new String[] {
@@ -363,9 +363,9 @@ public class InputParserTest {
         String longFlag = randomString();
 
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "OPTION");
+        box.addTag(COMMAND_ID_1, CommandType.OPTION.name());
         box.addAtt(COMMAND_ID_1, "short", shortFlag);
-        box.addTag(COMMAND_ID_2, "OPTION");
+        box.addTag(COMMAND_ID_2, CommandType.OPTION.name());
         box.addAtt(COMMAND_ID_2, "long", longFlag);
 
         String[] arguments =
@@ -390,11 +390,11 @@ public class InputParserTest {
         String longFlag = randomString();
 
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "SWITCH");
+        box.addTag(COMMAND_ID_1, CommandType.SWITCH.name());
         box.addAtt(COMMAND_ID_1, "short", shortFlag);
-        box.addTag(COMMAND_ID_2, "SWITCH");
+        box.addTag(COMMAND_ID_2, CommandType.SWITCH.name());
         box.addAtt(COMMAND_ID_2, "long", longFlag);
-        box.addTag(COMMAND_ID_3, "SWITCH");
+        box.addTag(COMMAND_ID_3, CommandType.SWITCH.name());
 
         String[] arguments = new String[] {"--" + longFlag, "-" + shortFlag};
 
@@ -412,8 +412,8 @@ public class InputParserTest {
     @Test
     public void parsePositionArgument_givenPosition_parsesArgument() {
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "POSITION");
-        box.addTag(COMMAND_ID_2, "POSITION");
+        box.addTag(COMMAND_ID_1, CommandType.POSITION.name());
+        box.addTag(COMMAND_ID_2, CommandType.POSITION.name());
 
         InputParser parser = new InputParser(box);
         parser.parsed = new MiniBox();
@@ -434,8 +434,8 @@ public class InputParserTest {
     @Test
     public void parsePositionArgument_givenPosition_updatesIndex() {
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "POSITION");
-        box.addTag(COMMAND_ID_2, "POSITION");
+        box.addTag(COMMAND_ID_1, CommandType.POSITION.name());
+        box.addTag(COMMAND_ID_2, CommandType.POSITION.name());
 
         InputParser parser = new InputParser(box);
         parser.parsed = new MiniBox();
@@ -451,7 +451,7 @@ public class InputParserTest {
     @Test
     public void parseFlaggedArgument_givenSwitch_parsesArgument() {
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "SWITCH");
+        box.addTag(COMMAND_ID_1, CommandType.SWITCH.name());
 
         InputParser parser = new InputParser(box);
         parser.parsed = new MiniBox();
@@ -468,7 +468,7 @@ public class InputParserTest {
     @Test
     public void parseFlaggedArgument_givenSwitch_updatesIndex() {
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "SWITCH");
+        box.addTag(COMMAND_ID_1, CommandType.SWITCH.name());
 
         InputParser parser = new InputParser(box);
         parser.parsed = new MiniBox();
@@ -483,7 +483,7 @@ public class InputParserTest {
     @Test
     public void parseFlaggedArgument_givenOption_parsesArgument() {
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "OPTION");
+        box.addTag(COMMAND_ID_1, CommandType.OPTION.name());
 
         InputParser parser = new InputParser(box);
         parser.parsed = new MiniBox();
@@ -501,7 +501,7 @@ public class InputParserTest {
     @Test
     public void parseFlaggedArgument_givenOption_updatesIndex() {
         Box box = new Box();
-        box.addTag(COMMAND_ID_1, "OPTION");
+        box.addTag(COMMAND_ID_1, CommandType.OPTION.name());
 
         InputParser parser = new InputParser(box);
         parser.parsed = new MiniBox();

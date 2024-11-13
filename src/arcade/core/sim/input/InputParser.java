@@ -40,14 +40,17 @@ public class InputParser {
     /** Logger for {@code InputParser}. */
     private static final Logger LOGGER = Logger.getLogger(InputParser.class.getName());
 
-    /** ID for position commands. */
-    static final int POSITION = 0;
+    /** Command types. */
+    enum CommandType {
+        /** Positional command type. */
+        POSITION,
 
-    /** ID for option commands. */
-    static final int OPTION = 1;
+        /** Optional command type. */
+        OPTION,
 
-    /** ID for switch commands. */
-    static final int SWITCH = 2;
+        /** Switch command type. */
+        SWITCH,
+    }
 
     /** Dictionary of parsed commands. */
     MiniBox parsed;
@@ -87,13 +90,9 @@ public class InputParser {
             Command cmd;
             switch (options.getTag(id)) {
                 case "POSITION":
-                    cmd = new Command(id, POSITION);
-                    break;
                 case "OPTION":
-                    cmd = new Command(id, OPTION);
-                    break;
                 case "SWITCH":
-                    cmd = new Command(id, SWITCH);
+                    cmd = new Command(id, CommandType.valueOf(options.getTag(id)));
                     break;
                 default:
                     continue;
@@ -109,17 +108,17 @@ public class InputParser {
                         cmd.help = val;
                         break;
                     case "default":
-                        if (cmd.type != POSITION && cmd.type != SWITCH) {
+                        if (cmd.type == CommandType.OPTION) {
                             cmd.defaults = val;
                         }
                         break;
                     case "short":
-                        if (cmd.type != POSITION) {
+                        if (cmd.type != CommandType.POSITION) {
                             cmd.shortFlag = val;
                         }
                         break;
                     case "long":
-                        if (cmd.type != POSITION) {
+                        if (cmd.type != CommandType.POSITION) {
                             cmd.longFlag = val;
                         }
                         break;
@@ -129,7 +128,7 @@ public class InputParser {
             }
 
             allCommands.add(cmd);
-            if (cmd.type != POSITION) {
+            if (cmd.type != CommandType.POSITION) {
                 if (cmd.shortFlag != null) {
                     shortToCommand.put(cmd.shortFlag, cmd);
                 }
@@ -155,7 +154,7 @@ public class InputParser {
         String format = "\t%20s %s\n";
 
         /** Command type. */
-        int type;
+        CommandType type;
 
         /** Command id. */
         String id;
@@ -178,7 +177,7 @@ public class InputParser {
          * @param id the unique id of the command
          * @param type the command type
          */
-        Command(String id, int type) {
+        Command(String id, CommandType type) {
             this.id = id;
             this.type = type;
         }
@@ -269,7 +268,7 @@ public class InputParser {
      * @return the next argument index
      */
     int parseFlaggedArgument(String[] args, int index, Command cmd) {
-        if (cmd.type == SWITCH) {
+        if (cmd.type == CommandType.SWITCH) {
             parsed.put(cmd.id, "");
         } else {
             parsed.put(cmd.id, args[++index]);
