@@ -48,9 +48,6 @@ public class PatchProcessMetabolismRandom extends PatchProcessMetabolism {
     /** Average cell volume [um<sup>3</sup>]. */
     private final double averageCellVolume;
 
-    /** Initial cell internal glucose concentration [fmol]. */
-    private final double initGluc;
-
     /**
      * Creates a random metabolism {@code Process} for the given {@link PatchCell}.
      *
@@ -76,11 +73,10 @@ public class PatchProcessMetabolismRandom extends PatchProcessMetabolism {
         // Set loaded parameters.
         Parameters parameters = cell.getParameters();
         averageCellVolume = parameters.getDouble("CELL_VOLUME");
-        initGluc = parameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION");
 
         // Initial internal concentrations.
         intAmts = new double[1];
-        intAmts[GLUCOSE] = initGluc;
+        intAmts[GLUCOSE] = parameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION");
     }
 
     @Override

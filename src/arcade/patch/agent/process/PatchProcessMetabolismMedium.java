@@ -47,9 +47,6 @@ public class PatchProcessMetabolismMedium extends PatchProcessMetabolism {
     /** Rate of ATP production [fmol ATP/um<sup>3</sup>/min/M glucose]. */
     private final double atpProductionRate;
 
-    /** Initial cell internal glucose concentration [fmol]. */
-    private final double initGluc;
-
     /**
      * Creates a medium metabolism {@code Process} for the given {@link PatchCell}.
      *
@@ -83,11 +80,10 @@ public class PatchProcessMetabolismMedium extends PatchProcessMetabolism {
         minimumMassFraction = parameters.getDouble("metabolism/MINIMUM_MASS_FRACTION");
         autophagyRate = parameters.getDouble("metabolism/AUTOPHAGY_RATE");
         atpProductionRate = parameters.getDouble("metabolism/ATP_PRODUCTION_RATE");
-        initGluc = parameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION");
 
         // Initial internal concentrations.
         intAmts = new double[1];
-        intAmts[GLUCOSE] = initGluc;
+        intAmts[GLUCOSE] = parameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION");
     }
 
     @Override

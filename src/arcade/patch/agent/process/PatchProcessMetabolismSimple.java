@@ -33,9 +33,6 @@ public class PatchProcessMetabolismSimple extends PatchProcessMetabolism {
     /** Constant volume growth rate [um<sup>3</sup>/min]. */
     private final double volumeGrowthRate;
 
-    /** Initial cell internal glucose concentration [fmol]. */
-    private final double initGluc;
-
     /**
      * Creates a simple metabolism {@code Process} for the given {@link PatchCell}.
      *
@@ -69,11 +66,10 @@ public class PatchProcessMetabolismSimple extends PatchProcessMetabolism {
         glucoseUptakeRate = parameters.getDouble("metabolism/CONSTANT_GLUCOSE_UPTAKE_RATE");
         atpProductionRate = parameters.getDouble("metabolism/CONSTANT_ATP_PRODUCTION_RATE");
         volumeGrowthRate = parameters.getDouble("metabolism/CONSTANT_VOLUME_GROWTH_RATE");
-        initGluc = parameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION");
 
         // Initial internal concentrations.
         intAmts = new double[1];
-        intAmts[GLUCOSE] = initGluc;
+        intAmts[GLUCOSE] = parameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION");
     }
 
     @Override
