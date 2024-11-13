@@ -59,6 +59,9 @@ public class PatchProcessMetabolismComplex extends PatchProcessMetabolism {
     /** Rate of glucose uptake [fmol glucose/um<sup>2</sup> cell/min/M glucose]. */
     private final double glucoseUptakeRate;
 
+    /** Initial cell internal glucose concentration [fmol]. */
+    private final double initGluc;
+
     /**
      * Creates a complex metabolism {@code Process} for the given {@link PatchCell}.
      *
@@ -74,17 +77,13 @@ public class PatchProcessMetabolismComplex extends PatchProcessMetabolism {
      *   <li>{@code LACTATE_RATE} = rate of lactate production
      *   <li>{@code AUTOPHAGY_RATE} = rate of autophagy
      *   <li>{@code GLUCOSE_UPTAKE_RATE} = rate of glucose uptake
+     *   <li>{@code INITIAL_GLUCOSE_CONCENTRATION} = initial cell internal glucose concentration
      * </ul>
      *
      * @param cell the {@link PatchCell} the process is associated with
      */
     public PatchProcessMetabolismComplex(PatchCell cell) {
         super(cell);
-
-        // Initial internal concentrations.
-        intAmts = new double[2];
-        intAmts[GLUCOSE] = extAmts[GLUCOSE];
-        intAmts[PYRUVATE] = extAmts[GLUCOSE] * PYRU_PER_GLUC;
 
         // Mapping for internal concentration access.
         String[] intNames = new String[2];
@@ -101,6 +100,12 @@ public class PatchProcessMetabolismComplex extends PatchProcessMetabolism {
         lactateRate = parameters.getDouble("metabolism/LACTATE_RATE");
         autophagyRate = parameters.getDouble("metabolism/AUTOPHAGY_RATE");
         glucoseUptakeRate = parameters.getDouble("metabolism/GLUCOSE_UPTAKE_RATE");
+        initGluc = parameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION");
+
+        // Initial internal concentrations.
+        intAmts = new double[2];
+        intAmts[GLUCOSE] = initGluc;
+        intAmts[PYRUVATE] = extAmts[GLUCOSE] * PYRU_PER_GLUC;
     }
 
     @Override
