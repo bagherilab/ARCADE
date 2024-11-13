@@ -1,6 +1,5 @@
 package arcade.patch.agent.cell;
 
-import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
@@ -47,7 +46,6 @@ public class PatchCellTissue extends PatchCell {
                 volume,
                 height,
                 criticalVolume,
-                criticalHeight,
-                new Bag());
+                criticalHeight);
     }
 }

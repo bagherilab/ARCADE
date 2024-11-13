@@ -2,7 +2,6 @@ package arcade.patch.agent.cell;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
@@ -55,8 +54,7 @@ public class PatchCellRandomTest {
                     cellVolume,
                     cellHeight,
                     cellCriticalVolume,
-                    cellCriticalHeight,
-                    new Bag());
+                    cellCriticalHeight);
 
     @BeforeAll
     public static void setupMocks() {
@@ -86,8 +84,7 @@ public class PatchCellRandomTest {
                         volume,
                         height,
                         criticalVolume,
-                        criticalHeight,
-                        new Bag());
+                        criticalHeight);
         PatchCellRandom cell =
                 new PatchCellRandom(cellContainer, locationMock, parametersMock, null);
 
@@ -133,8 +130,7 @@ public class PatchCellRandomTest {
                         volume,
                         height,
                         criticalVolume,
-                        criticalHeight,
-                        new Bag());
+                        criticalHeight);
 
         PatchCellRandom cell =
                 new PatchCellRandom(cellContainer, locationMock, parametersMock, links);

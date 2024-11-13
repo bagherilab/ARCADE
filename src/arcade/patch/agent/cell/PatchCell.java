@@ -410,8 +410,7 @@ public abstract class PatchCell implements Cell {
                 volume,
                 height,
                 criticalVolume,
-                criticalHeight,
-                cycles);
+                criticalHeight);
     }
 
     /**
