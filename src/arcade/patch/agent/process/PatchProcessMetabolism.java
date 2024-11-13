@@ -8,6 +8,7 @@ import arcade.core.util.MiniBox;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.env.grid.PatchGrid;
 import static arcade.patch.util.PatchEnums.State;
+import sim.engine.SimState;
 
 /**
  * Implementation of {@link Process} for cell metabolism.
@@ -143,6 +144,9 @@ public abstract class PatchProcessMetabolism extends PatchProcess {
         // Initialize external and uptake concentration arrays;
         extAmts = new double[2];
         upAmts = new double[2];
+
+        // Update extAmts with initial values
+        //updateExternal(cell.getSimulation());
     }
 
     /**

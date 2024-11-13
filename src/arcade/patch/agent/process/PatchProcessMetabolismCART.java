@@ -1,7 +1,7 @@
 package arcade.patch.agent.process;
 
 import java.util.Arrays;
-
+import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.patch.agent.cell.PatchCell;
@@ -9,8 +9,14 @@ import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.util.PatchEnums.Domain;
 import ec.util.MersenneTwisterFast;
 
+import sim.engine.SimState;
 
-public class PatchProcessMetabolismCART extends PatchProcessMetabolismComplex {
+
+
+
+
+
+public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
 
     /** ID for pyruvate */
 	public static final int PYRUVATE = 1;
@@ -96,7 +102,7 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolismComplex {
         // Set loaded parameters.
         // TODO: pull metabolic preference from distribution
         MiniBox parameters = cell.getParameters();
-        metaPref = parameters.getDouble("metabolism/METABOLIC_PREFERENCE");
+        metaPref =  parameters.getDouble("metabolism/METABOLIC_PREFERENCE");
         conversionFraction = parameters.getDouble("metabolism/CONVERSION_FRACTION");
         fracMass = parameters.getDouble("metabolism/MINIMUM_MASS_FRACTION");
         ratioGlucosePyruvate = parameters.getDouble("metabolism/RATIO_GLUCOSE_PYRUVATE");
@@ -233,6 +239,42 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolismComplex {
         upAmts[GLUCOSE] = glucUptake;
         upAmts[OXYGEN] = oxyUptake;
         intAmts[PYRUVATE] = pyruInt;
+    }
+
+
+    @Override
+    public void update(Process process) {
+        PatchProcessMetabolismCART metabolism = (PatchProcessMetabolismCART) process;
+        double split = this.cell.getVolume() / this.volume;
+
+        // Update daughter cell metabolism as fraction of parent.
+		this.energy = metabolism.energy*f;
+		this.intAmts[GLUCOSE] = metabolism.intAmts[GLUCOSE]*split;
+		this.intAmts[PYRUVATE] = metabolism.intAmts[PYRUVATE]*split;
+		
+		// Update parent cell with remaining fraction.
+		metabolism.energy *= (1 - split);
+		metabolism.intAmts[GLUCOSE] *= (1 - split);
+		metabolism.intAmts[PYRUVATE] *= (1 - split);
+		metabolism.volume *= (1 - split);
+		metabolism.mass *= (1 - split);
+
+        // PatchProcessMetabolismCART metabolism = (PatchProcessMetabolismCART) process;
+        // double split = this.cell.getVolume() / this.volume;
+
+        // // Update this process as split of given process.
+        // this.volume = this.cell.getVolume();
+        // this.energy = this.cell.getEnergy();
+        // this.mass = this.volume * cellDensity;
+        // this.intAmts[GLUCOSE] = metabolism.intAmts[GLUCOSE] * split;
+        // this.intAmts[PYRUVATE] = metabolism.intAmts[PYRUVATE] * split;
+
+        // // Update given process with remaining split.
+        // metabolism.volume = metabolism.cell.getVolume();
+        // metabolism.energy = metabolism.cell.getEnergy();
+        // metabolism.mass = metabolism.volume * cellDensity;
+        // metabolism.intAmts[GLUCOSE] *= (1 - split);
+        // metabolism.intAmts[PYRUVATE] *= (1 - split);
     }
     
 }

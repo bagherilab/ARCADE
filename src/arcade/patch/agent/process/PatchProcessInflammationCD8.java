@@ -54,19 +54,20 @@ public class PatchProcessInflammationCD8 extends PatchProcessInflammation {
 		
 		// Update environment.
 		// Convert units back from molecules to molecules/cm^3.
-		double IL2Env = (extIL2 - (extIL2*f - amts[IL2_EXT]))*1E12/loc.getVolume();
+		double IL2Env = ((extIL2 - (extIL2*f - amts[IL2_EXT]))*1E12/loc.getVolume());
         sim.getLattice("IL-2").setValue(loc, IL2Env);
 	}
 
     @Override
     public void update(Process mod) {
 		PatchProcessInflammationCD8 inflammation = (PatchProcessInflammationCD8) mod;
-        double split = this.cell.getVolume() / this.volume;
+        double split = (this.cell.getVolume() / this.volume);
 		
 		// Update daughter cell inflammation as a fraction of parent.
+		// this.volume = this.cell.getVolume();
 		this.amts[IL2Rbga] = inflammation.amts[IL2Rbga]*split;
 		this.amts[IL2_IL2Rbg] = inflammation.amts[IL2_IL2Rbg]*split;
-		this.amts[IL2_IL2Rbga] = inflammation.amts[IL2_IL2Rbga]*f;
+		this.amts[IL2_IL2Rbga] = inflammation.amts[IL2_IL2Rbga]*split;
 		this.amts[IL2Rbg] = IL2_RECEPTORS - this.amts[IL2Rbga] - this.amts[IL2_IL2Rbg] - this.amts[IL2_IL2Rbga];		
 		this.amts[IL2_INT_TOTAL] = this.amts[IL2_IL2Rbg] + this.amts[IL2_IL2Rbga];
 		this.amts[IL2R_TOTAL] = this.amts[IL2Rbg] + this.amts[IL2Rbga];

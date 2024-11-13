@@ -171,7 +171,7 @@ public abstract class PatchProcessInflammation extends PatchProcess{
 	/**
 	 * System of ODEs for network
 	 */
-	    Equations dydt = (Equations & Serializable) (t, y) -> {
+	Equations dydt = (Equations & Serializable) (t, y) -> {
 		double[] dydt = new double[NUM_COMPONENTS];
 		
 		double kon_2 = IL2_BINDING_ON_RATE_MIN/loc.getVolume()/60/STEP_DIVIDER;

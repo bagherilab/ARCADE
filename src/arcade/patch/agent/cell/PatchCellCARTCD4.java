@@ -1,9 +1,5 @@
 package arcade.patch.agent.cell;
-
-import java.util.Set;
-
 import arcade.core.agent.cell.CellState;
-import arcade.core.agent.process.ProcessDomain;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
@@ -52,10 +48,7 @@ public class PatchCellCARTCD4 extends PatchCellCART{
         
         @Override
         public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random)  {
-            
             divisions--;
-            // return new PatchCellCARTCD4(newID, id, pop, newState, age, divisions, newLocation,
-            //     parameters, volume, height, criticalVolume, criticalHeight);
             return new PatchCellContainer(
                 newID,
                 id,

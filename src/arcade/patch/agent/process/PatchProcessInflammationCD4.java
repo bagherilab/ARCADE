@@ -1,8 +1,4 @@
 package arcade.patch.agent.process;
-
-import java.util.ArrayList;
-import java.util.Set;
-
 import arcade.core.agent.process.Process;
 import arcade.core.util.MiniBox;
 import arcade.core.sim.Simulation;
@@ -46,10 +42,7 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
 		super(c);
 
 		// Set parameters.
-
-		//TODO: parameters are not grabbing here
 		MiniBox parameters = cell.getParameters();
-		ArrayList<String> keys = parameters.getKeys();
 		this.IL2_PROD_RATE_IL2 = parameters.getDouble( "inflammation/IL2_PROD_RATE_IL2");
 		this.IL2_PROD_RATE_ACTIVE = parameters.getDouble("inflammation/IL2_PROD_RATE_ACTIVE");
 		this.IL2_SYNTHESIS_DELAY = parameters.getInt("inflammation/IL2_SYNTHESIS_DELAY");
@@ -76,16 +69,17 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
 		// Update environment.
 		// Take current IL2 external concentration and add the amount produced,
 		// then convert units back to molecules/cm^3.
-		double IL2Env = ((extIL2 - (extIL2*f - amts[IL2_EXT])) + IL2Produced)*1E12/loc.getVolume();
+		double IL2Env = (((extIL2 - (extIL2*f - amts[IL2_EXT])) + IL2Produced)*1E12/loc.getVolume());
 		sim.getLattice("IL-2").setValue(loc, IL2Env);
     }
 	
     @Override
 	public void update(Process mod) {
 		PatchProcessInflammationCD4 inflammation = (PatchProcessInflammationCD4) mod;
-        double split = this.cell.getVolume() / this.volume;
+        double split =  (this.cell.getVolume() / this.volume);
 		
 		// Update daughter cell inflammation as a fraction of parent.
+		// this.volume = this.cell.getVolume();
 		this.amts[IL2Rbga] = inflammation.amts[IL2Rbga]*split;
 		this.amts[IL2_IL2Rbg] = inflammation.amts[IL2_IL2Rbg]*split;
 		this.amts[IL2_IL2Rbga] = inflammation.amts[IL2_IL2Rbga]*split;
