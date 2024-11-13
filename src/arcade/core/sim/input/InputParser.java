@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 import arcade.core.util.Box;
+import arcade.core.util.Feature;
 import arcade.core.util.MiniBox;
 
 /**
@@ -50,6 +51,9 @@ public class InputParser {
 
         /** Switch command type. */
         SWITCH,
+
+        /** Toggle command type. */
+        TOGGLE,
     }
 
     /** Dictionary of parsed commands. */
@@ -86,16 +90,12 @@ public class InputParser {
 
         // Create a Command object for each entry.
         for (String id : options.getKeys()) {
-            // Create appropriate command type object.
             Command cmd;
-            switch (options.getTag(id)) {
-                case "POSITION":
-                case "OPTION":
-                case "SWITCH":
-                    cmd = new Command(id, CommandType.valueOf(options.getTag(id)));
-                    break;
-                default:
-                    continue;
+
+            try {
+                cmd = new Command(id, CommandType.valueOf(options.getTag(id)));
+            } catch (Exception ignored) {
+                continue;
             }
 
             // Modify selected attributes.
@@ -260,7 +260,7 @@ public class InputParser {
     }
 
     /**
-     * Parses a flagged (either option or switch) argument.
+     * Parses a flagged (either option, switch, or toggle) argument.
      *
      * @param args the argument contents
      * @param index the argument index
@@ -270,6 +270,9 @@ public class InputParser {
     int parseFlaggedArgument(String[] args, int index, Command cmd) {
         if (cmd.type == CommandType.SWITCH) {
             parsed.put(cmd.id, "");
+        } else if (cmd.type == CommandType.TOGGLE) {
+            Feature.valueOf(cmd.id).activate();
+            LOGGER.info("enabling experimental feature [ " + cmd.id + " ]");
         } else {
             parsed.put(cmd.id, args[++index]);
         }

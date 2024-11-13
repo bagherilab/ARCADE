@@ -2,6 +2,7 @@ package arcade.core.sim.input;
 
 import org.junit.jupiter.api.Test;
 import arcade.core.util.Box;
+import arcade.core.util.Feature;
 import arcade.core.util.MiniBox;
 import static org.junit.jupiter.api.Assertions.*;
 import static arcade.core.ARCADETestUtilities.*;
@@ -511,5 +512,37 @@ public class InputParserTest {
         int newIndex = parser.parseFlaggedArgument(arguments, index, parser.allCommands.get(0));
 
         assertEquals(index + 2, newIndex);
+    }
+
+    @Test
+    public void parseFlaggedArgument_givenToggle_activatesFeature() {
+        Feature.deactivateAll();
+
+        Box box = new Box();
+        box.addTag(Feature.PLACEHOLDER.name(), CommandType.TOGGLE.name());
+
+        InputParser parser = new InputParser(box);
+        parser.parsed = new MiniBox();
+
+        int index = randomIntBetween(1, 10);
+        String[] arguments = randomStringArray(index + randomIntBetween(1, 10));
+        parser.parseFlaggedArgument(arguments, index, parser.allCommands.get(0));
+
+        assertTrue(Feature.PLACEHOLDER.isActive());
+    }
+
+    @Test
+    public void parseFlaggedArgument_givenToggle_updatesIndex() {
+        Box box = new Box();
+        box.addTag(Feature.PLACEHOLDER.name(), CommandType.SWITCH.name());
+
+        InputParser parser = new InputParser(box);
+        parser.parsed = new MiniBox();
+
+        int index = randomIntBetween(1, 10);
+        String[] arguments = randomStringArray(index + randomIntBetween(1, 10));
+        int newIndex = parser.parseFlaggedArgument(arguments, index, parser.allCommands.get(0));
+
+        assertEquals(index + 1, newIndex);
     }
 }
