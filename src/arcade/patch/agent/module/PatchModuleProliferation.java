@@ -34,9 +34,6 @@ public class PatchModuleProliferation extends PatchModule {
     /** Time required for DNA synthesis [min]. */
     private final double synthesisDuration;
 
-    /** Time of cell creation. */
-    private final double start;
-
     /**
      * Creates a proliferation {@link PatchModule} for the given cell.
      *
@@ -48,13 +45,12 @@ public class PatchModuleProliferation extends PatchModule {
      *
      * @param cell the {@link PatchCell} the module is associated with
      */
-    public PatchModuleProliferation(PatchCell cell, double start) {
+    public PatchModuleProliferation(PatchCell cell) {
         super(cell);
 
         // Calculate thresholds.
         targetVolume = 2 * cell.getCriticalVolume();
         maxHeight = cell.getCriticalHeight();
-        this.start = start;
         // Set loaded parameters.
         Parameters parameters = cell.getParameters();
         synthesisDuration = parameters.getInt("proliferation/SYNTHESIS_DURATION");

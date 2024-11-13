@@ -1,5 +1,5 @@
 <set prefix="test_">
-    <series name="complex_complex" start="0" end="0" ticks="43200" interval="14400" radius="10" margin="2" depth="1" >
+    <series name="complex_complex" start="0" end="0" ticks="3000" interval="14400" radius="10" margin="2" depth="1" >
         <patch>
             <patch.parameter id="GEOMETRY" value="hex" />
         </patch>

@@ -307,9 +307,8 @@ public abstract class PatchCell implements Cell {
 
         switch ((State) state) {
             case PROLIFERATIVE:
-                // Throw an exception or handle the case if you accidentally use this method
-                throw new IllegalArgumentException("PROLIFERATIVE state requires simulation time.");
-                // module = new PatchModuleProliferation(this);
+                module = new PatchModuleProliferation(this);
+                break;
             case MIGRATORY:
                 module = new PatchModuleMigration(this);
                 break;
@@ -319,16 +318,6 @@ public abstract class PatchCell implements Cell {
             default:
                 module = null;
                 break;
-        }
-    }
-
-    public void setState(CellState proliferativeState, double currentSimTime) {
-        if (proliferativeState == State.PROLIFERATIVE) {
-            this.state = proliferativeState;
-            this.flag = Flag.PROLIFERATIVE;
-            module = new PatchModuleProliferation(this, currentSimTime);
-        } else {
-            throw new IllegalArgumentException("This method only handles the PROLIFERATIVE state.");
         }
     }
 
@@ -359,7 +348,7 @@ public abstract class PatchCell implements Cell {
     @Override
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
-
+        double time = simstate.schedule.getTime();
         // Increase age of cell.
         age++;
 
@@ -396,10 +385,13 @@ public abstract class PatchCell implements Cell {
                     setState(State.SENESCENT);
                 }
             } else {
-                setState(State.PROLIFERATIVE, simstate.schedule.getTime());
+                setState(State.PROLIFERATIVE);
             }
         }
-
+        if (module instanceof PatchModuleProliferation
+                && ((PatchModuleProliferation) module).getStart() == -1) {
+            ((PatchModuleProliferation) module).setStart(time);
+        }
         // Step the module for the cell state.
         if (module != null) {
             module.step(simstate.random, sim);

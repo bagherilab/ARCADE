@@ -16,8 +16,8 @@ public abstract class PatchModule implements Module {
     /** The {@link PatchLocation} the module is associated with. */
     final PatchLocation location;
 
-    /** Tick the {@code Module} was started. */
-    double start;
+    /** Tick the {@code Module} was started. start = -1 if the module doesn't need start time */
+    double start = -1;
 
     /** Tick the {@code Module} was stopped. */
     double stop;
@@ -39,6 +39,15 @@ public abstract class PatchModule implements Module {
      */
     public double getStart() {
         return start;
+    }
+
+    /**
+     * Sets the module start tick.
+     *
+     * @param startTime the module start
+     */
+    public void setStart(double start) {
+        this.start = start;
     }
 
     /**
