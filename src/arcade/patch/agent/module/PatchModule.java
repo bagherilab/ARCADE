@@ -44,7 +44,7 @@ public abstract class PatchModule implements Module {
     /**
      * Sets the module start tick.
      *
-     * @param startTime the module start
+     * @param start the module start tick
      */
     public void setStart(double start) {
         this.start = start;
