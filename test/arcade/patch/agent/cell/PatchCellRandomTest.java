@@ -65,6 +65,40 @@ public class PatchCellRandomTest {
     }
 
     @Test
+    public void test_addCycleLength() {
+        double volume = randomDoubleBetween(10, 100);
+        double height = randomDoubleBetween(10, 100);
+        double criticalVolume = randomDoubleBetween(10, 100);
+        double criticalHeight = randomDoubleBetween(10, 100);
+        State state = State.PROLIFERATIVE;
+
+        PatchCellContainer cellContainer =
+                new PatchCellContainer(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellAge,
+                        cellDivisions,
+                        state,
+                        volume,
+                        height,
+                        criticalVolume,
+                        criticalHeight);
+        PatchCellRandom cell =
+                new PatchCellRandom(cellContainer, locationMock, parametersMock, null);
+        // Test the number of objects in the cell.cycles bag
+        assertEquals(0, cell.getCycles().size());
+        cell.addCycle(1);
+        assertEquals(1, cell.getCycles().size());
+        cell.addCycle(2);
+        assertEquals(2, cell.getCycles().size());
+
+        // Test the values in the cell.cycles bag
+        assertEquals(1.0, (double) cell.getCycles().get(0), EPSILON);
+        assertEquals(2.0, (double) cell.getCycles().get(1), EPSILON);
+    }
+
+    @Test
     public void make_calledNoLinks_createsContainer() {
         double volume = randomDoubleBetween(10, 100);
         double height = randomDoubleBetween(10, 100);

@@ -295,6 +295,15 @@ public abstract class PatchCell implements Cell {
         cycles.add(val);
     }
 
+    /**
+     * Gets the list of cell cycle lengths.
+     *
+     * @return the list of cell cycle lengths
+     */
+    public Bag getCycles() {
+        return cycles;
+    }
+
     @Override
     public void stop() {
         stopper.stop();
