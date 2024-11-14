@@ -100,7 +100,8 @@ public class PatchProcessMetabolismComplex extends PatchProcessMetabolism {
 
         // Initial internal concentrations.
         intAmts = new double[2];
-        intAmts[GLUCOSE] = parameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION");
+        intAmts[GLUCOSE] =
+                parameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION") * volume;
         intAmts[PYRUVATE] = extAmts[GLUCOSE] * PYRU_PER_GLUC;
     }
 
