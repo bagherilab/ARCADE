@@ -76,7 +76,10 @@ public class PatchCellRandomTest {
         PatchCellRandom cell = new PatchCellRandom(baseContainer, locationMock, parametersMock);
         // Test the number of objects in the cell.cycles bag
         cell.addCycle(1);
-        assertEquals(1, cell.getCycles().size());
+        cell.addCycle(3);
+        cell.addCycle(5);
+
+        assertEquals(3, cell.getCycles().size());
     }
 
     @Test
@@ -90,15 +93,6 @@ public class PatchCellRandomTest {
         assertEquals(1, cell.getCycles().get(0));
         assertEquals(3, cell.getCycles().get(1));
         assertEquals(5, cell.getCycles().get(2));
-    }
-
-    @Test
-    public void getCycles_afterDivision_returnsBagSize() {
-        PatchCellRandom cell = new PatchCellRandom(baseContainer, locationMock, parametersMock);
-        cell.addCycle(1);
-        cell.addCycle(3);
-        cell.addCycle(5);
-        assertEquals(3, cell.getCycles().size());
     }
 
     @Test
