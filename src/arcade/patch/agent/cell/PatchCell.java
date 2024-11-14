@@ -287,11 +287,11 @@ public abstract class PatchCell implements Cell {
     }
 
     /**
-     * Adds a completed cell cycle length to the list of lengths.
+     * Adds a completed cell cycle length [min] to the list of lengths.
      *
      * @param val the cell cycle length
      */
-    public void addCycle(double val) {
+    public void addCycle(int val) {
         cycles.add(val);
     }
 

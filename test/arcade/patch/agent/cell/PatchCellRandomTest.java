@@ -65,37 +65,42 @@ public class PatchCellRandomTest {
     }
 
     @Test
-    public void test_addCycleLength() {
-        double volume = randomDoubleBetween(10, 100);
-        double height = randomDoubleBetween(10, 100);
-        double criticalVolume = randomDoubleBetween(10, 100);
-        double criticalHeight = randomDoubleBetween(10, 100);
-        State state = State.PROLIFERATIVE;
-
-        PatchCellContainer cellContainer =
-                new PatchCellContainer(
-                        cellID,
-                        cellParent,
-                        cellPop,
-                        cellAge,
-                        cellDivisions,
-                        state,
-                        volume,
-                        height,
-                        criticalVolume,
-                        criticalHeight);
-        PatchCellRandom cell =
-                new PatchCellRandom(cellContainer, locationMock, parametersMock, null);
-        // Test the number of objects in the cell.cycles bag
+    public void getCycles_beforeDivision_returnsEmpty() {
+        PatchCellRandom cell = new PatchCellRandom(baseContainer, locationMock, parametersMock);
+        // Test the values in the cell.cycles bag
         assertEquals(0, cell.getCycles().size());
+    }
+
+    @Test
+    public void addCycle_givenCycle_appendBagSize() {
+        PatchCellRandom cell = new PatchCellRandom(baseContainer, locationMock, parametersMock);
+        // Test the number of objects in the cell.cycles bag
         cell.addCycle(1);
         assertEquals(1, cell.getCycles().size());
-        cell.addCycle(2);
-        assertEquals(2, cell.getCycles().size());
+    }
+
+    @Test
+    public void addCycle_givenCycles_appendValues() {
+        PatchCellRandom cell = new PatchCellRandom(baseContainer, locationMock, parametersMock);
+        cell.addCycle(1);
+        cell.addCycle(3);
+        cell.addCycle(5);
 
         // Test the values in the cell.cycles bag
-        assertEquals(1.0, (double) cell.getCycles().get(0), EPSILON);
-        assertEquals(2.0, (double) cell.getCycles().get(1), EPSILON);
+        System.out.println(cell.getCycles());
+        System.out.println(cell.getCycles().get(0));
+        assertEquals(1, cell.getCycles().get(0));
+        assertEquals(3, cell.getCycles().get(1));
+        assertEquals(5, cell.getCycles().get(2));
+    }
+
+    @Test
+    public void getCycles_afterDivision_returnsBagSize() {
+        PatchCellRandom cell = new PatchCellRandom(baseContainer, locationMock, parametersMock);
+        cell.addCycle(1);
+        cell.addCycle(3);
+        cell.addCycle(5);
+        assertEquals(3, cell.getCycles().size());
     }
 
     @Test
