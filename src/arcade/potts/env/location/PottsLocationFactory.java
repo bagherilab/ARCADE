@@ -158,7 +158,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
         int heightRange = 1;
 
         for (MiniBox population : series.populations.values()) {
-            double criticalHeight = population.getDouble("CRITICAL_HEIGHT_MEAN");
+            double criticalHeight = population.getDouble("CRITICAL_HEIGHT");
             int voxelsPerHeight = (int) (Math.min(series.height - 2, Math.ceil(criticalHeight)));
             if (voxelsPerHeight > heightRange) {
                 heightRange = voxelsPerHeight;
@@ -180,7 +180,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
         int sideRange = 0;
 
         for (MiniBox population : series.populations.values()) {
-            double criticalVolume = population.getDouble("CRITICAL_VOLUME_MEAN");
+            double criticalVolume = population.getDouble("CRITICAL_VOLUME");
             int padding = population.getInt("PADDING");
             int voxelsPerSide = convert(2 * criticalVolume, heightRange) + padding;
             if (voxelsPerSide > sideRange) {

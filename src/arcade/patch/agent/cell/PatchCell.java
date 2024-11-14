@@ -14,7 +14,9 @@ import arcade.core.agent.process.Process;
 import arcade.core.agent.process.ProcessDomain;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModuleApoptosis;
 import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleProliferation;
@@ -101,11 +103,13 @@ public abstract class PatchCell implements Cell {
 
     /** Cell state change flag. */
     Flag flag;
-    
-    /** Variation in cell agent parameters. */
-    private final double heterogeneity;
-    
-    
+
+    /** Fraction of necrotic cells that become apoptotic. */
+    final double necroticFraction;
+
+    /** Fraction of senescent cells that become apoptotic. */
+    final double senescentFraction;
+
     /** Maximum energy deficit before necrosis. */
     final double energyThreshold;
     
@@ -116,7 +120,10 @@ public abstract class PatchCell implements Cell {
     protected final Map<ProcessDomain, Process> processes;
 
     /** Cell parameters. */
-    final MiniBox parameters;
+    final Parameters parameters;
+
+    /** Cell population links. */
+    final GrabBag links;
 
      /** If cell is stopped in the simulation */
      private boolean isStopped;
@@ -133,54 +140,36 @@ public abstract class PatchCell implements Cell {
      *   <li>{@code HETEROGENEITY} = variation in cell agent parameters
      * </ul>
      *
-     * @param id the cell ID
-     * @param parent the parent ID
-     * @param pop the cell population index
-     * @param state the cell state
-     * @param age the cell age
-     * @param divisions the number of cell divisions
+     * @param container the cell container
      * @param location the {@link Location} of the cell
-     * @param parameters the dictionary of parameters
-     * @param volume the cell volume
-     * @param height the cell height
-     * @param criticalVolume the critical cell volume
-     * @param criticalHeight the critical cell height
+     * @param parameters the cell parameters
+     * @param links the map of population links
      */
     public PatchCell(
-            int id,
-            int parent,
-            int pop,
-            CellState state,
-            int age,
-            int divisions,
-            Location location,
-            MiniBox parameters,
-            double volume,
-            double height,
-            double criticalVolume,
-            double criticalHeight) {
-        this.id = id;
-        this.parent = parent;
-        this.pop = pop;
-        this.age = age;
+            PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
+        this.id = container.id;
+        this.parent = container.parent;
+        this.pop = container.pop;
+        this.age = container.age;
         this.energy = 0;
-        this.divisions = divisions;
+        this.divisions = container.divisions;
         this.location = (PatchLocation) location;
-        this.volume = volume;
-        this.height = height;
-        this.criticalVolume = criticalVolume;
-        this.criticalHeight = criticalHeight;
+        this.volume = container.volume;
+        this.height = container.height;
+        this.criticalVolume = container.criticalVolume;
+        this.criticalHeight = container.criticalHeight;
         this.flag = Flag.UNDEFINED;
         this.parameters = parameters;
         this.isStopped = false;
-        
-        setState(state);
+
+        setState(container.state);
 
         // Set loaded parameters.
-        heterogeneity = parameters.getDouble("HETEROGENEITY");
+        //heterogeneity = parameters.getDouble("HETEROGENEITY");
+        this.links = links;
+        necroticFraction = parameters.getDouble("NECROTIC_FRACTION");
+        senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
         energyThreshold = -parameters.getDouble("ENERGY_THRESHOLD");
-
-        // TODO: implement heterogeneity
 
         // Add cell processes.
         processes = new HashMap<>();
@@ -241,7 +230,7 @@ public abstract class PatchCell implements Cell {
     }
 
     @Override
-    public MiniBox getParameters() {
+    public Parameters getParameters() {
         return parameters;
     }
 

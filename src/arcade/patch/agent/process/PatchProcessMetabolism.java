@@ -4,7 +4,7 @@ import java.util.List;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.env.grid.PatchGrid;
 import static arcade.patch.util.PatchEnums.State;
@@ -127,7 +127,7 @@ public abstract class PatchProcessMetabolism extends PatchProcess {
         super(cell);
 
         // Set parameters.
-        MiniBox parameters = cell.getParameters();
+        Parameters parameters = cell.getParameters();
         basalEnergy = parameters.getDouble("metabolism/BASAL_ENERGY");
         proliferationEnergy = parameters.getDouble("metabolism/PROLIFERATION_ENERGY");
         migrationEnergy = parameters.getDouble("metabolism/MIGRATION_ENERGY");

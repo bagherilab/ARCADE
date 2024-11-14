@@ -258,7 +258,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
 
                 // Make the location and cell.
                 Location location = locationContainer.convert(locationFactory, cellContainer);
-                PatchCell cell = (PatchCell) cellContainer.convert(cellFactory, location);
+                PatchCell cell = (PatchCell) cellContainer.convert(cellFactory, location, random);
 
                 // Add and schedule the cell.
                 grid.addObject(cell, location);

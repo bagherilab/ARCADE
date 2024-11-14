@@ -245,6 +245,16 @@ public final class PottsSeries extends Series {
             MiniBox parameterValues = parameters.getIdValForTagAtt("PARAMETER", "value");
             MiniBox parameterScales = parameters.getIdValForTagAtt("PARAMETER", "scale");
 
+            // Apply conversion factors.
+            for (String convert : populationConversions.getKeys()) {
+                double conversion = parseConversion(populationConversions.get(convert), ds, dt);
+                if (parameterScales.contains(convert)) {
+                    parameterScales.put(convert, parameterScales.getDouble(convert) * conversion);
+                } else {
+                    parameterScales.put(convert, conversion);
+                }
+            }
+
             // Add in parameters. Start with value (if given) or default (if not
             // given). Then apply any scaling.
             for (String parameter : populationDefaults.getKeys()) {
@@ -256,16 +266,16 @@ public final class PottsSeries extends Series {
                         parameterScales);
             }
 
+            // Get list of links, if valid.
+            MiniBox links = box.filterBoxByTag("LINK").getIdValForTagAtt("LINK", "weight");
+            for (String link : links.getKeys()) {
+                population.put("(LINK)" + TAG_SEPARATOR + link, links.getDouble(link));
+            }
+
             // Get list of regions, if valid.
             HashSet<String> regions = box.filterTags("REGION");
             for (String region : regions) {
                 population.put("(REGION)" + TAG_SEPARATOR + region, "");
-            }
-
-            // Apply conversion factors.
-            for (String convert : populationConversions.getKeys()) {
-                double conversion = parseConversion(populationConversions.get(convert), ds, dt);
-                population.put(convert, population.getDouble(convert) * conversion);
             }
         }
     }

@@ -2,7 +2,6 @@ package arcade.potts.env.location;
 
 import org.junit.jupiter.api.Test;
 import sim.util.Double3D;
-import sim.util.Int3D;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PlaneTest {
@@ -11,16 +10,16 @@ public class PlaneTest {
     @Test
     public void constructor_givenPointAndUnitVector_returnsCorrectPlane() {
         Voxel point = new Voxel(1, 2, 3);
-        Int3D normalVector = new Int3D(1, 0, 0);
+        Double3D normalVector = new Double3D(1, 0, 0);
         Plane plane = new Plane(point, normalVector);
         assertEquals(point, plane.referencePoint);
         assertEquals(normalVector, plane.unitNormalVector);
     }
 
     @Test
-    public void constructor_givenPointAndVector_returnsCorrectPlane() {
+    public void constructor_givenPointAndIntegerVector_returnsCorrectPlane() {
         Voxel point = new Voxel(1, 2, 3);
-        Int3D normalVector = new Int3D(2, 2, 1);
+        Double3D normalVector = new Double3D(2, 2, 1);
 
         Plane plane = new Plane(point, normalVector);
 
@@ -33,27 +32,42 @@ public class PlaneTest {
     }
 
     @Test
+    public void constructor_givenPointAndDoubleVector_returnsCorrectPlane() {
+        Voxel point = new Voxel(1, 2, 3);
+        Double3D normalVector = new Double3D(1.5, 1.5, 1);
+
+        Plane plane = new Plane(point, normalVector);
+
+        double expectedX = normalVector.getX() / Math.sqrt(5.5);
+        double expectedY = normalVector.getY() / Math.sqrt(5.5);
+        double expectedZ = normalVector.getZ() / Math.sqrt(5.5);
+        Double3D expectedUnitNormal = new Double3D(expectedX, expectedY, expectedZ);
+        assertEquals(point, plane.referencePoint);
+        assertEquals(expectedUnitNormal, plane.unitNormalVector);
+    }
+
+    @Test
     public void getNormalVectorMagnitude_givenNormalVector_returnsCorrectMagnitude() {
-        double magnitude = Plane.getNormalVectorMagnitude(new Int3D(1, 2, 2));
+        double magnitude = Plane.getNormalVectorMagnitude(new Double3D(1, 2, 2));
         assertEquals(3, magnitude, EPSILON);
     }
 
     @Test
     public void getNormalVectorMagnitude_givenUnitVector_returnsOne() {
-        double magnitude = Plane.getNormalVectorMagnitude(new Int3D(1, 0, 0));
+        double magnitude = Plane.getNormalVectorMagnitude(new Double3D(1, 0, 0));
         assertEquals(1, magnitude, EPSILON);
     }
 
     @Test
     public void scaleNormalVector_givenUnitVector_returnsSameVector() {
-        Int3D normalVector = new Int3D(1, 0, 0);
+        Double3D normalVector = new Double3D(1, 0, 0);
         Double3D unitNormalVector = Plane.scaleNormalVector(normalVector);
         assertEquals(normalVector, unitNormalVector);
     }
 
     @Test
     public void scaleNormalVector_givenNonUnitVector_returnsUnitVector() {
-        Double3D unitNormalVector = Plane.scaleNormalVector(new Int3D(1, 2, 2));
+        Double3D unitNormalVector = Plane.scaleNormalVector(new Double3D(1, 2, 2));
         Double x = 1.0 / 3.0;
         Double y = 2.0 / 3.0;
         Double z = 2.0 / 3.0;
@@ -62,16 +76,16 @@ public class PlaneTest {
 
     @Test
     public void equals_givenDifferentPlane_returnsFalse() {
-        Plane plane1 = new Plane(new Voxel(1, 2, 3), new Int3D(4, 5, 6));
-        Plane plane2 = new Plane(new Voxel(4, 5, 6), new Int3D(7, 8, 9));
+        Plane plane1 = new Plane(new Voxel(1, 2, 3), new Double3D(4, 5, 6));
+        Plane plane2 = new Plane(new Voxel(4, 5, 6), new Double3D(7, 8, 9));
 
         assertNotEquals(plane1, plane2);
     }
 
     @Test
     public void equals_givenSamePlane_returnsTrue() {
-        Plane plane1 = new Plane(new Voxel(1, 2, 3), new Int3D(4, 5, 6));
-        Plane plane2 = new Plane(new Voxel(1, 2, 3), new Int3D(4, 5, 6));
+        Plane plane1 = new Plane(new Voxel(1, 2, 3), new Double3D(4, 5, 6));
+        Plane plane2 = new Plane(new Voxel(1, 2, 3), new Double3D(4, 5, 6));
 
         assertEquals(plane1, plane2);
     }
@@ -79,7 +93,7 @@ public class PlaneTest {
     @Test
     public void distanceToPlane_givenPointOnPlane_returnsZero() {
         Voxel pointOnPlane = new Voxel(0, 0, 0);
-        Int3D normalVector = new Int3D(1, 0, 0);
+        Double3D normalVector = new Double3D(1, 0, 0);
         Plane plane = new Plane(pointOnPlane, normalVector);
 
         Voxel pointToTest = new Voxel(0, 0, 0);
@@ -90,7 +104,7 @@ public class PlaneTest {
     @Test
     public void distanceToPlane_givenPointOnNormalSideOfPlane_returnsCorrectPositiveDistance() {
         Voxel pointOnPlane = new Voxel(0, 0, 0);
-        Int3D normalVector = new Int3D(1, 0, 0);
+        Double3D normalVector = new Double3D(1, 0, 0);
         Plane plane = new Plane(pointOnPlane, normalVector);
 
         Voxel pointToTest = new Voxel(1, 1, 1);
@@ -101,7 +115,7 @@ public class PlaneTest {
     @Test
     public void distanceToPlane_givenPointOnOppositeSideOfPlane_returnsCorrectNegativeDistance() {
         Voxel pointOnPlane = new Voxel(0, 0, 0);
-        Int3D normalVector = new Int3D(1, 0, 0);
+        Double3D normalVector = new Double3D(1, 0, 0);
         Plane plane = new Plane(pointOnPlane, normalVector);
 
         Voxel pointToTest = new Voxel(-1, -1, -1);
@@ -112,7 +126,7 @@ public class PlaneTest {
     @Test
     public void signedDistanceToPlane_givenPointOnAxis_returnsCorrectSignedDistance() {
         Voxel point = new Voxel(0, 0, 0);
-        Int3D normalVector = new Int3D(0, 0, 1);
+        Double3D normalVector = new Double3D(0, 0, 1);
         Plane plane = new Plane(point, normalVector);
 
         Voxel posTestPoint = new Voxel(0, 0, 5);
@@ -125,7 +139,7 @@ public class PlaneTest {
     @Test
     public void signedDistanceToPlane_givenPointOffAxis_returnsCorrectSignedDistance() {
         Voxel point = new Voxel(1, 1, 2);
-        Int3D normalVector = new Int3D(1, 2, 2);
+        Double3D normalVector = new Double3D(1, 2, 2);
         Plane plane = new Plane(point, normalVector);
 
         Voxel postestPoint = new Voxel(2, 2, 5);
@@ -138,7 +152,7 @@ public class PlaneTest {
     @Test
     public void hashCode_equalObjects_returnsSameCode() {
         Voxel point = new Voxel(1, 2, 3);
-        Int3D normalVector = new Int3D(4, 5, 6);
+        Double3D normalVector = new Double3D(4, 5, 6);
 
         Plane plane1 = new Plane(point, normalVector);
         Plane plane2 = new Plane(point, normalVector);

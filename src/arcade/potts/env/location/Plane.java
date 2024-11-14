@@ -1,7 +1,6 @@
 package arcade.potts.env.location;
 
 import sim.util.Double3D;
-import sim.util.Int3D;
 import arcade.potts.util.PottsEnums.Direction;
 
 /** A plane in 3D space. */
@@ -18,7 +17,7 @@ public final class Plane {
      * @param voxel a point on the plane
      * @param normalVector the normal vector to the plane
      */
-    public Plane(Voxel voxel, Int3D normalVector) {
+    public Plane(Voxel voxel, Double3D normalVector) {
         this.referencePoint = voxel;
         this.unitNormalVector = scaleNormalVector(normalVector);
     }
@@ -39,7 +38,7 @@ public final class Plane {
      * @param normalVector the normal vector
      * @return the magnitude of the normal vector
      */
-    static double getNormalVectorMagnitude(Int3D normalVector) {
+    static double getNormalVectorMagnitude(Double3D normalVector) {
         return Math.sqrt(
                 normalVector.getX() * normalVector.getX()
                         + normalVector.getY() * normalVector.getY()
@@ -52,13 +51,12 @@ public final class Plane {
      * @param normalVector the normal vector
      * @return the unit normal vector
      */
-    static Double3D scaleNormalVector(Int3D normalVector) {
+    static Double3D scaleNormalVector(Double3D normalVector) {
         double magnitude = getNormalVectorMagnitude(normalVector);
         double scaledX = normalVector.getX() / magnitude;
         double scaledY = normalVector.getY() / magnitude;
         double scaledZ = normalVector.getZ() / magnitude;
-        Double3D unitNormalVector = new Double3D(scaledX, scaledY, scaledZ);
-        return unitNormalVector;
+        return new Double3D(scaledX, scaledY, scaledZ);
     }
 
     /**
@@ -71,11 +69,9 @@ public final class Plane {
      * @return the distance from the point to the plane.
      */
     public double signedDistanceToPlane(Voxel point) {
-        double dotProduct =
-                (point.x - referencePoint.x) * unitNormalVector.getX()
-                        + (point.y - referencePoint.y) * unitNormalVector.getY()
-                        + (point.z - referencePoint.z) * unitNormalVector.getZ();
-        return dotProduct;
+        return (point.x - referencePoint.x) * unitNormalVector.getX()
+                + (point.y - referencePoint.y) * unitNormalVector.getY()
+                + (point.z - referencePoint.z) * unitNormalVector.getZ();
     }
 
     /**

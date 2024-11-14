@@ -172,8 +172,8 @@ class PatchColorMaps {
     PatchColorMaps(Series series) {
         double age = 0;
         for (MiniBox box : series.populations.values()) {
-            if (box.getDouble("CELL_AGE_MAX") > age) {
-                age = box.getDouble("CELL_AGE_MAX");
+            if (box.getDouble("CELL_AGE") > age) {
+                age = box.getDouble("CELL_AGE");
             }
         }
 
@@ -181,8 +181,8 @@ class PatchColorMaps {
 
         double volume = 0;
         for (MiniBox box : series.populations.values()) {
-            if (box.getDouble("CELL_VOLUME_MEAN") > volume) {
-                volume = box.getDouble("CELL_VOLUME_MEAN");
+            if (box.getDouble("CELL_VOLUME") > volume) {
+                volume = box.getDouble("CELL_VOLUME");
             }
         }
 
@@ -202,8 +202,8 @@ class PatchColorMaps {
 
         double height = 0;
         for (MiniBox box : series.populations.values()) {
-            if (box.getDouble("CELL_HEIGHT_MEAN") > height) {
-                height = box.getDouble("CELL_HEIGHT_MEAN");
+            if (box.getDouble("CELL_HEIGHT") > height) {
+                height = box.getDouble("CELL_HEIGHT");
             }
         }
 

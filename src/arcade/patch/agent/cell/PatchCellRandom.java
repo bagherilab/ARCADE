@@ -5,7 +5,8 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.GrabBag;
+import arcade.core.util.Parameters;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -20,54 +21,35 @@ public class PatchCellRandom extends PatchCell {
     /**
      * Creates a random {@code PatchCell} agent.
      *
-     * @param id the cell ID
-     * @param parent the parent ID
-     * @param pop the cell population index
-     * @param state the cell state
-     * @param age the cell age
-     * @param divisions the number of cell divisions
+     * @param container the cell container
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
-     * @param volume the cell volume
-     * @param height the cell height
-     * @param criticalVolume the critical cell volume
-     * @param criticalHeight the critical cell height
+     */
+    public PatchCellRandom(PatchCellContainer container, Location location, Parameters parameters) {
+        this(container, location, parameters, null);
+    }
+
+    /**
+     * Creates a random {@code PatchCell} agent with population links.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
      */
     public PatchCellRandom(
-            int id,
-            int parent,
-            int pop,
-            CellState state,
-            int age,
-            int divisions,
-            Location location,
-            MiniBox parameters,
-            double volume,
-            double height,
-            double criticalVolume,
-            double criticalHeight) {
-        super(
-                id,
-                parent,
-                pop,
-                state,
-                age,
-                divisions,
-                location,
-                parameters,
-                volume,
-                height,
-                criticalVolume,
-                criticalHeight);
+            PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
+        super(container, location, parameters, links);
     }
 
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
         divisions--;
+        int newPop = links == null ? pop : links.next(random);
         return new PatchCellContainer(
                 newID,
                 id,
-                pop,
+                newPop,
                 age,
                 divisions,
                 newState,

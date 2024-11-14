@@ -12,7 +12,8 @@ import arcade.core.agent.process.Process;
 import arcade.core.agent.process.ProcessDomain;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.GrabBag;
+import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModule;
 import arcade.potts.env.location.PottsLocation;
 import static arcade.potts.util.PottsEnums.Ordering;
@@ -93,55 +94,42 @@ public abstract class PottsCell implements Cell {
     protected Module module;
 
     /** Cell parameters. */
-    final MiniBox parameters;
+    final Parameters parameters;
+
+    /** Cell population links. */
+    final GrabBag links;
 
     /**
      * Creates a {@code PottsCell} agent.
      *
-     * @param id the cell ID
-     * @param parent the parent ID
-     * @param pop the cell population index
-     * @param state the cell state
-     * @param age the cell age
-     * @param divisions the number of cell divisions
+     * @param container the cell container
      * @param location the {@link Location} of the cell
-     * @param hasRegions {@code true} if cell has regions, {@code false} otherwise
-     * @param parameters the dictionary of parameters
-     * @param criticalVolume the critical cell volume
-     * @param criticalHeight the critical cell height
-     * @param criticalRegionVolumes the map of critical volumes for regions
-     * @param criticalRegionHeights the map of critical heights for regions
+     * @param parameters the cell parameters
+     * @param links the map of population links
      */
     public PottsCell(
-            int id,
-            int parent,
-            int pop,
-            CellState state,
-            int age,
-            int divisions,
-            Location location,
-            boolean hasRegions,
-            MiniBox parameters,
-            double criticalVolume,
-            double criticalHeight,
-            EnumMap<Region, Double> criticalRegionVolumes,
-            EnumMap<Region, Double> criticalRegionHeights) {
-        this.id = id;
-        this.parent = parent;
-        this.pop = pop;
-        this.age = age;
-        this.divisions = divisions;
-        this.hasRegions = hasRegions;
+            PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
+        this.id = container.id;
+        this.parent = container.parent;
+        this.pop = container.pop;
+        this.age = container.age;
+        this.divisions = container.divisions;
+        this.hasRegions = container.regionVoxels != null;
         this.location = (PottsLocation) location;
         this.parameters = parameters;
-        this.criticalVolume = criticalVolume;
-        this.criticalHeight = criticalHeight;
+        this.links = links;
+        this.criticalVolume = container.criticalVolume;
+        this.criticalHeight = container.criticalHeight;
 
-        setState(state);
+        setState(container.state);
+
+        if (module != null && container.phase != null) {
+            ((PottsModule) module).setPhase(container.phase);
+        }
 
         if (hasRegions) {
-            this.criticalRegionVolumes = criticalRegionVolumes.clone();
-            this.criticalRegionHeights = criticalRegionHeights.clone();
+            this.criticalRegionVolumes = container.criticalRegionVolumes.clone();
+            this.criticalRegionHeights = container.criticalRegionHeights.clone();
             this.targetRegionVolumes = new EnumMap<>(Region.class);
             this.targetRegionSurfaces = new EnumMap<>(Region.class);
         } else {
@@ -198,7 +186,7 @@ public abstract class PottsCell implements Cell {
     }
 
     @Override
-    public MiniBox getParameters() {
+    public Parameters getParameters() {
         return parameters;
     }
 

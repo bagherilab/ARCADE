@@ -7,7 +7,7 @@ import arcade.core.agent.module.Module;
 import arcade.core.agent.process.Process;
 import arcade.core.agent.process.ProcessDomain;
 import arcade.core.env.location.Location;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 
 /**
  * A {@code Cell} object represents a cell agent.
@@ -90,11 +90,11 @@ public interface Cell extends Steppable {
     Process getProcess(ProcessDomain domain);
 
     /**
-     * Gets the cell population parameters.
+     * Gets the cell parameters.
      *
-     * @return a dictionary of parameters
+     * @return the cell parameters
      */
-    MiniBox getParameters();
+    Parameters getParameters();
 
     /**
      * Gets the cell volume.

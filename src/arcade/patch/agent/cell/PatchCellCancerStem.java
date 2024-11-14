@@ -3,7 +3,8 @@ package arcade.patch.agent.cell;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
-import arcade.core.util.MiniBox;
+import arcade.core.util.GrabBag;
+import arcade.core.util.Parameters;
 
 /**
  * Extension of {@link PatchCellCancer} for cancerous stem cells.
@@ -18,60 +19,29 @@ import arcade.core.util.MiniBox;
  * </ul>
  */
 public class PatchCellCancerStem extends PatchCellCancer {
-    /** Fraction of divisions that are symmetric. */
-    private final double symmetricFraction;
-
     /**
-     * Creates a tissue {@code PatchCell} agent.
+     * Creates a cancer stem {@code PatchCell} agent.
      *
-     * <p>Loaded parameters include:
-     *
-     * <ul>
-     *   <li>{@code SYMMETRIC_FRACTION} = fraction of divisions that are symmetric
-     * </ul>
-     *
-     * @param id the cell ID
-     * @param parent the parent ID
-     * @param pop the cell population index
-     * @param state the cell state
-     * @param age the cell age
-     * @param divisions the number of cell divisions
+     * @param container the cell container
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
-     * @param volume the cell volume
-     * @param height the cell height
-     * @param criticalVolume the critical cell volume
-     * @param criticalHeight the critical cell height
      */
     public PatchCellCancerStem(
-            int id,
-            int parent,
-            int pop,
-            CellState state,
-            int age,
-            int divisions,
-            Location location,
-            MiniBox parameters,
-            double volume,
-            double height,
-            double criticalVolume,
-            double criticalHeight) {
-        super(
-                id,
-                parent,
-                pop,
-                state,
-                age,
-                divisions,
-                location,
-                parameters,
-                volume,
-                height,
-                criticalVolume,
-                criticalHeight);
+            PatchCellContainer container, Location location, Parameters parameters) {
+        this(container, location, parameters, null);
+    }
 
-        // Set loaded parameters.
-        symmetricFraction = parameters.getDouble("SYMMETRIC_FRACTION");
+    /**
+     * Creates a cancer stem {@code PatchCell} agent with population links.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
+    public PatchCellCancerStem(
+            PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
+        super(container, location, parameters, links);
 
         // TODO: set death age
     }
@@ -83,13 +53,14 @@ public class PatchCellCancerStem extends PatchCellCancer {
      */
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-        int newDivisons = random.nextDouble() < symmetricFraction ? divisions : divisions - 1;
+        int newPop = links == null ? pop : links.next(random);
+        int newDivisions = newPop == pop ? divisions : divisions - 1;
         return new PatchCellContainer(
                 newID,
                 id,
-                pop,
+                newPop,
                 age,
-                newDivisons,
+                newDivisions,
                 newState,
                 volume,
                 height,

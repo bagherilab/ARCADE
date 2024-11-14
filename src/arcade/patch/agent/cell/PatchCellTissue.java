@@ -3,22 +3,10 @@ package arcade.patch.agent.cell;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
-import arcade.core.util.MiniBox;
-import arcade.patch.util.PatchEnums.AntigenFlag;
-import arcade.patch.util.PatchEnums.Domain;
-import arcade.patch.util.PatchEnums.Flag;
-import arcade.patch.util.PatchEnums.State;
-import sim.engine.SimState;
-import arcade.core.sim.Simulation;
-import static arcade.patch.util.PatchEnums.Domain;
-import static arcade.patch.util.PatchEnums.Flag;
-import static arcade.patch.util.PatchEnums.State;
-/**
- * Extension of {@link PatchCell} for healthy tissue cells.
- */
+import arcade.core.util.GrabBag;
+import arcade.core.util.Parameters;
 
-
-
+/** Extension of {@link PatchCell} for healthy tissue cells. */
 public class PatchCellTissue extends PatchCell {
     /** Fraction of necrotic cells that become apoptotic. */
     private final double necroticFraction;
@@ -40,53 +28,36 @@ public class PatchCellTissue extends PatchCell {
 
     /**
      * Creates a tissue {@code PatchCell} agent.
-     * * <p>
-     * Loaded parameters include:
-     * <ul>
-     *     <li>{@code NECROTIC_FRACTION} = fraction of necrotic cells that
-     *         become apoptotic</li>
-     *     <li>{@code SENESCENT_FRACTION} = fraction of senescent cells that
-     *         become apoptotic</li>
-     *     <li>{@code CAR_ANTIGENS} = Cell surface antigen count </li>
-     *     <li>{@code SELF_TARGETS} = Cell surface PDL1 count </li>
-     * </ul>
      *
-     * @param id  the cell ID
-     * @param parent  the parent ID
-     * @param pop  the cell population index
-     * @param state  the cell state
-     * @param age  the cell age
-     * @param divisions  the number of cell divisions
-     * @param location  the {@link Location} of the cell
-     * @param parameters  the dictionary of parameters
-     * @param volume  the cell volume
-     * @param height  the cell height
-     * @param criticalVolume  the critical cell volume
-     * @param criticalHeight  the critical cell height
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
      */
-    public PatchCellTissue(int id, int parent, int pop, CellState state, int age, int divisions,
-                           Location location, MiniBox parameters, double volume, double height,
-                           double criticalVolume, double criticalHeight) {
-        super(id, parent, pop, state, age, divisions, location, parameters,
-                volume, height, criticalVolume, criticalHeight);
-        
-        // Set loaded parameters.
-        necroticFraction = parameters.getDouble("NECROTIC_FRACTION");
-        senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
-        
-        //These default to 0 if not present in input
-        carAntigens = parameters.getInt("CAR_ANTIGENS");
-        selfTargets = parameters.getInt("SELF_TARGETS");
-        this.binding = AntigenFlag.UNDEFINED;
+    public PatchCellTissue(PatchCellContainer container, Location location, Parameters parameters) {
+        this(container, location, parameters, null);
+    }
+
+    /**
+     * Creates a tissue {@code PatchCell} agent with population links.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
+    public PatchCellTissue(
+            PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
+        super(container, location, parameters, links);
     }
 
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
         divisions--;
+        int newPop = links == null ? pop : links.next(random);
         return new PatchCellContainer(
                 newID,
                 id,
-                pop,
+                newPop,
                 age,
                 divisions,
                 newState,

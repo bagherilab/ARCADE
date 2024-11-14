@@ -71,8 +71,9 @@ public final class PatchSeries extends Series {
     protected void initialize(HashMap<String, ArrayList<Box>> setupLists, Box parameters) {
         // Initialize populations.
         MiniBox populationDefaults = parameters.getIdValForTag("POPULATION");
+        MiniBox populationConversions = parameters.getIdValForTagAtt("POPULATION", "conversion");
         ArrayList<Box> populationsBox = setupLists.get("populations");
-        updatePopulations(populationsBox, populationDefaults, null);
+        updatePopulations(populationsBox, populationDefaults, populationConversions);
 
         // Initialize layers.
         MiniBox layerDefaults = parameters.getIdValForTag("LAYER");
@@ -176,6 +177,16 @@ public final class PatchSeries extends Series {
             MiniBox parameterValues = parameters.getIdValForTagAtt("PARAMETER", "value");
             MiniBox parameterScales = parameters.getIdValForTagAtt("PARAMETER", "scale");
 
+            // Apply conversion factors.
+            for (String convert : populationConversions.getKeys()) {
+                double conversion = parseConversion(populationConversions.get(convert), ds, dt);
+                if (parameterScales.contains(convert)) {
+                    parameterScales.put(convert, parameterScales.getDouble(convert) * conversion);
+                } else {
+                    parameterScales.put(convert, conversion);
+                }
+            }
+
             // Add in parameters. Start with value (if given) or default (if not
             // given). Then apply any scaling.
             for (String parameter : populationDefaults.getKeys()) {
@@ -187,10 +198,15 @@ public final class PatchSeries extends Series {
                         parameterScales);
             }
 
+            // Get list of links, if valid.
+            MiniBox links = box.filterBoxByTag("LINK").getIdValForTagAtt("LINK", "weight");
+            for (String link : links.getKeys()) {
+                population.put("(LINK)" + TAG_SEPARATOR + link, links.getDouble(link));
+            }
+
             // Extract process versions.
             Box processes = box.filterBoxByTag("PROCESS");
             MiniBox processVersions = processes.getIdValForTagAtt("PROCESS", "version");
-
             for (String process : processes.getKeys()) {
                 String version = processVersions.get(process);
                 population.put("(PROCESS)" + TAG_SEPARATOR + process, version);

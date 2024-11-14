@@ -6,12 +6,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
-import sim.util.distribution.Normal;
-import sim.util.distribution.Uniform;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.sim.PatchSeries;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.patch.util.PatchEnums.Domain;
@@ -23,12 +23,6 @@ import static arcade.patch.util.PatchEnums.State;
  * <p>For a given {@link Series}, the factory parses out parameter values into a series of maps from
  * population to the parameter values. These maps are then combined with a {@link
  * PatchCellContainer} to instantiate a {@link PatchCell} agent.
- *
- * <p>Cell volumes ({@code CELL_VOLUME_MEAN}, {@code CELL_VOLUME_STDEV}) and cell heights ({@code
- * CELL_HEIGHT_MEAN}, {@code CELL_HEIGHT_STDEV}) are drawn from normal distributions. Cell ages
- * ({@code CELL_AGE_MIN}, {@code CELL_AGE_MAX}) are drawn from a uniform distribution. Cell division
- * potential is initialized to {@code DIVISION_POTENTIAL}. Cell compression tolerance ({@code
- * COMPRESSION_TOLERANCE}) is added to the cell critical height.
  */
 public final class PatchCellFactory implements CellFactory {
     /** Logger for {@code PatchCellFactory}. */
@@ -37,26 +31,14 @@ public final class PatchCellFactory implements CellFactory {
     /** Random number generator instance. */
     MersenneTwisterFast random;
 
-    /** Map of population to critical volumes [um<sup>3</sup>]. */
-    HashMap<Integer, Normal> popToCriticalVolumes;
-
-    /** Map of population to critical heights [um]. */
-    HashMap<Integer, Normal> popToCriticalHeights;
-
     /** Map of population to parameters. */
-    HashMap<Integer, MiniBox> popToParameters;
+    final HashMap<Integer, MiniBox> popToParameters;
 
-    /** Map of population to ages [min]. */
-    HashMap<Integer, Uniform> popToAges;
-
-    /** Map of population to cell divisions. */
-    HashMap<Integer, Integer> popToDivisions;
-
-    /** Map of population to compression tolerance [um]. */
-    HashMap<Integer, Double> popToCompression;
+    /** Map of population to linked populations. */
+    final HashMap<Integer, GrabBag> popToLinks;
 
     /** Map of population to process versions. */
-    HashMap<Integer, EnumMap<Domain, String>> popToProcessVersions;
+    final HashMap<Integer, EnumMap<Domain, String>> popToProcessVersions;
 
     /** Map of population to list of ids. */
     public final HashMap<Integer, HashSet<Integer>> popToIDs;
@@ -67,12 +49,8 @@ public final class PatchCellFactory implements CellFactory {
     /** Creates a factory for making {@link PatchCell} instances. */
     public PatchCellFactory() {
         cells = new HashMap<>();
-        popToCriticalVolumes = new HashMap<>();
-        popToCriticalHeights = new HashMap<>();
         popToParameters = new HashMap<>();
-        popToAges = new HashMap<>();
-        popToDivisions = new HashMap<>();
-        popToCompression = new HashMap<>();
+        popToLinks = new HashMap<>();
         popToProcessVersions = new HashMap<>();
         popToIDs = new HashMap<>();
     }
@@ -86,6 +64,16 @@ public final class PatchCellFactory implements CellFactory {
         } else {
             createCells(series);
         }
+    }
+
+    @Override
+    public MiniBox getParameters(int pop) {
+        return popToParameters.get(pop);
+    }
+
+    @Override
+    public GrabBag getLinks(int pop) {
+        return popToLinks.get(pop);
     }
 
     /**
@@ -147,8 +135,8 @@ public final class PatchCellFactory implements CellFactory {
 
             for (int i = 0; i < init; i++) {
                 PatchCellContainer container = createCellForPopulation(id, pop);
-                cells.put(container.id, container);
-                popToIDs.get(pop).add(container.id);
+                cells.put(id, container);
+                popToIDs.get(pop).add(id);
                 id++;
             }
         }
@@ -162,16 +150,15 @@ public final class PatchCellFactory implements CellFactory {
      * @return the cell container
      */
     public PatchCellContainer createCellForPopulation(int id, int pop) {
-        Normal volumes = popToCriticalVolumes.get(pop);
-        Normal heights = popToCriticalHeights.get(pop);
-        Uniform ages = popToAges.get(pop);
+        MiniBox population = popToParameters.get(pop);
+        Parameters parameters = new Parameters(population, null, random);
 
-        int divisions = popToDivisions.get(pop);
-        double compression = popToCompression.get(pop);
+        int divisions = parameters.getInt("DIVISION_POTENTIAL");
+        double compression = parameters.getDouble("COMPRESSION_TOLERANCE");
 
-        double volume = volumes.nextDouble();
-        double height = heights.nextDouble();
-        int age = ages.nextInt();
+        double volume = parameters.getDouble("CELL_VOLUME");
+        double height = parameters.getDouble("CELL_HEIGHT");
+        int age = parameters.getInt("CELL_AGE");
 
         return new PatchCellContainer(
                 id,
@@ -187,20 +174,7 @@ public final class PatchCellFactory implements CellFactory {
     }
 
     /**
-     * Parses the population settings into maps to parameter value.
-     *
-     * <p>Loaded parameters include:
-     *
-     * <ul>
-     *   <li>{@code CELL_VOLUME_MEAN} = cell volume distribution average
-     *   <li>{@code CELL_VOLUME_STDEV} = cell volume distribution standard deviation
-     *   <li>{@code CELL_HEIGHT_MEAN} = cell height distribution average
-     *   <li>{@code CELL_HEIGHT_STDEV} = cell height distribution standard deviation
-     *   <li>{@code CELL_AGE_MIN} = minimum cell age
-     *   <li>{@code CELL_AGE_MAX} = maximum cell age
-     *   <li>{@code DIVISION_POTENTIAL} = maximum number of divisions
-     *   <li>{@code COMPRESSION_TOLERANCE} = maximum compression tolerance
-     * </ul>
+     * Parses population settings into maps from population to parameter value.
      *
      * @param series the simulation series
      */
@@ -211,27 +185,6 @@ public final class PatchCellFactory implements CellFactory {
             MiniBox population = series.populations.get(key);
             int pop = population.getInt("CODE");
             popToIDs.put(pop, new HashSet<>());
-
-            popToCriticalVolumes.put(
-                    pop,
-                    new Normal(
-                            population.getDouble("CELL_VOLUME_MEAN"),
-                            population.getDouble("CELL_VOLUME_STDEV"),
-                            random));
-            popToCriticalHeights.put(
-                    pop,
-                    new Normal(
-                            population.getDouble("CELL_HEIGHT_MEAN"),
-                            population.getDouble("CELL_HEIGHT_STDEV"),
-                            random));
-            popToAges.put(
-                    pop,
-                    new Uniform(
-                            population.getDouble("CELL_AGE_MIN"),
-                            population.getDouble("CELL_AGE_MAX"),
-                            random));
-            popToDivisions.put(pop, population.getInt("DIVISION_POTENTIAL"));
-            popToCompression.put(pop, population.getDouble("COMPRESSION_TOLERANCE"));
 
             // Set process versions if not specified.
             MiniBox parameters = series.populations.get(key);
@@ -247,6 +200,21 @@ public final class PatchCellFactory implements CellFactory {
             }
 
             popToParameters.put(pop, parameters);
+
+            // Get population links.
+            MiniBox linksBox = population.filter("(LINK)");
+            ArrayList<String> linkKeys = linksBox.getKeys();
+            GrabBag links = null;
+
+            if (linkKeys.size() > 0) {
+                links = new GrabBag();
+                for (String linkKey : linkKeys) {
+                    int popLink = series.populations.get(linkKey).getInt("CODE");
+                    links.add(popLink, linksBox.getDouble(linkKey));
+                }
+            }
+
+            popToLinks.put(pop, links);
         }
     }
 }

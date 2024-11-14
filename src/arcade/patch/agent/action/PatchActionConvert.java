@@ -88,7 +88,8 @@ public class PatchActionConvert implements Action {
                         oldCell.getHeight(),
                         oldCell.getCriticalVolume(),
                         oldCell.getCriticalHeight());
-        PatchCell newCell = (PatchCell) cellContainer.convert(sim.cellFactory, location);
+        PatchCell newCell =
+                (PatchCell) cellContainer.convert(sim.cellFactory, location, sim.random);
         grid.addObject(newCell, location);
         newCell.schedule(sim.getSchedule());
     }
