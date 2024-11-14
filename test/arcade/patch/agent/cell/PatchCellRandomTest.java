@@ -87,8 +87,6 @@ public class PatchCellRandomTest {
         cell.addCycle(5);
 
         // Test the values in the cell.cycles bag
-        System.out.println(cell.getCycles());
-        System.out.println(cell.getCycles().get(0));
         assertEquals(1, cell.getCycles().get(0));
         assertEquals(3, cell.getCycles().get(1));
         assertEquals(5, cell.getCycles().get(2));
