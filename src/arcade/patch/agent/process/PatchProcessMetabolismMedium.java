@@ -60,16 +60,13 @@ public class PatchProcessMetabolismMedium extends PatchProcessMetabolism {
      *   <li>{@code MINIMUM_MASS_FRACTION} = minimum viable cell mass fraction
      *   <li>{@code AUTOPHAGY_RATE} = rate of autophagy
      *   <li>{@code ATP_PRODUCTION_RATE} = rate of ATP production
+     *   <li>{@code INITIAL_GLUCOSE_CONCENTRATION} = initial cell internal glucose concentration
      * </ul>
      *
      * @param cell the {@link PatchCell} the process is associated with
      */
     public PatchProcessMetabolismMedium(PatchCell cell) {
         super(cell);
-
-        // Initial internal concentrations.
-        intAmts = new double[1];
-        intAmts[GLUCOSE] = extAmts[GLUCOSE];
 
         // Mapping for internal concentration access.
         String[] intNames = new String[1];
@@ -83,6 +80,10 @@ public class PatchProcessMetabolismMedium extends PatchProcessMetabolism {
         minimumMassFraction = parameters.getDouble("metabolism/MINIMUM_MASS_FRACTION");
         autophagyRate = parameters.getDouble("metabolism/AUTOPHAGY_RATE");
         atpProductionRate = parameters.getDouble("metabolism/ATP_PRODUCTION_RATE");
+
+        // Initial internal concentrations.
+        intAmts = new double[1];
+        intAmts[GLUCOSE] = parameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION");
     }
 
     @Override
