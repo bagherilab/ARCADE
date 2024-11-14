@@ -26,7 +26,7 @@ import static arcade.patch.util.PatchEnums.State;
  */
 public class PatchActionRadiation implements Action {
     /** TODO */
-    private final int radiationThreshold;
+    private final int radiationDose;
 
     /** TODO */
     private final int radiationDelay;
@@ -42,7 +42,7 @@ public class PatchActionRadiation implements Action {
      */
     public PatchActionRadiation(Series series, MiniBox parameters) {
         // Set loaded parameters.
-        radiationThreshold = parameters.getInt("RADIATION_THRESHOLD");
+        radiationDose = parameters.getInt("RADIATION_DOSE");
         radiationDelay = parameters.getInt("RADIATION_DELAY");
         radiationRadius = parameters.getInt("RADIATION_RADIUS");
         radiationDepth = ((PatchSeries) series).depth;
@@ -58,7 +58,6 @@ public class PatchActionRadiation implements Action {
 
     @Override
     public void step(SimState simstate) {
-        System.out.println("STEPPING");
         PatchSimulation sim = (PatchSimulation) simstate;
         PatchGrid grid = (PatchGrid) sim.getGrid();
 
@@ -66,8 +65,13 @@ public class PatchActionRadiation implements Action {
         ArrayList<Coordinate> coordinates =
                 sim.locationFactory.getCoordinates(radiationRadius, radiationDepth);
         
-        // Iterate through coordinates and apply apoptosis with probability p.
-        double p = 0.5;
+        double alphaH = 0.186;
+        double betaH = 0.0061;
+        double oerAlphaH = 2.63;
+        double oerBetaH = 2.63;
+        double survivalFrac = (alphaH * oerAlphaH * radiationDose) + (betaH * Math.pow((oerBetaH * radiationDose), 2));
+        double deathProb = 1 - Math.exp(-1 * survivalFrac);
+
         for (Coordinate coordinate : coordinates) {
             Bag bag = (Bag) grid.getObjectAt(coordinate.hashCode());
 
@@ -77,7 +81,7 @@ public class PatchActionRadiation implements Action {
 
             for (Object obj : bag) {
                 Cell cell = (Cell) obj;
-                if (sim.random.nextDouble() < p) {
+                if (sim.random.nextDouble() < deathProb) {
                     cell.setState(State.APOPTOTIC);
                 }
             }

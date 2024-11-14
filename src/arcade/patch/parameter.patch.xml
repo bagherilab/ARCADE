@@ -80,9 +80,10 @@
     <action class="convert" id="TIME_DELAY" value="0" units="min" description="time delay before calling the action" />
 
     <!-- radiation action parameters -->
-    <action class="radiation" id="RADIATION_THRESHOLD" value="5" units="Gy" description="radiation threshold before apoptosis"/>
-    <action class="radiation" id="RADIATION_DELAY" value="10" units="min" description="time delay before radiation" />
-    <action class="radiation" id="RADIATION_RADIUS" value="2" description="grid radius that cells are irradiated" />"
+    <action class="radiation" id="RADIATION_DOSE" value="4" units="Gy" description="radiation dose applied"/>
+    <!-- <action class="radiation" id="RADIATION_DELAY" value="10080" units="min" description="time delay before radiation" /> -->
+    <action class="radiation" id="RADIATION_DELAY" value="0" units="min" description="time delay before radiation" />
+    <action class="radiation" id="RADIATION_RADIUS" value="6" description="grid radius that cells are irradiated" />"
 
     <!-- COMPONENTS ======================================================== -->
 
