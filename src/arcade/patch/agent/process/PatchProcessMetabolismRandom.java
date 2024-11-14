@@ -58,6 +58,7 @@ public class PatchProcessMetabolismRandom extends PatchProcessMetabolism {
      * <ul>
      *   <li>{@code CELL_VOLUME} = cell volume
      *   <li>{@code INITIAL_GLUCOSE_CONCENTRATION} = initial cell internal glucose concentration
+     *   <li>{@code INITIAL_GLUCOSE_CONCENTRATION} = initial cell internal glucose concentration
      * </ul>
      *
      * @param cell the {@link PatchCell} the process is associated with
