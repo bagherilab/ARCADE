@@ -1,6 +1,5 @@
 package arcade.patch.agent.module;
 
-import sim.engine.SimState;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
@@ -51,6 +50,7 @@ public class PatchModuleProliferation extends PatchModule {
         // Calculate thresholds.
         targetVolume = 2 * cell.getCriticalVolume();
         maxHeight = cell.getCriticalHeight();
+        start = 0; // start ticking at the time of the creation of the module
         // Set loaded parameters.
         Parameters parameters = cell.getParameters();
         synthesisDuration = parameters.getInt("proliferation/SYNTHESIS_DURATION");
@@ -58,11 +58,10 @@ public class PatchModuleProliferation extends PatchModule {
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-        SimState simstate = (SimState) sim;
         Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocation(location);
         double totalVolume = PatchCell.calculateTotalVolume(bag);
         double currentHeight = totalVolume / location.getArea();
-
+        start++;
         // Check if cell is no longer able to proliferate due to (i) other
         // condition that has caused its type to no longer be proliferative,
         // (ii) cell no longer exists at a tolerable height, or (iii) no
@@ -79,8 +78,8 @@ public class PatchModuleProliferation extends PatchModule {
                 cell.setState(State.QUIESCENT);
             } else if (cell.getVolume() >= targetVolume) {
                 if (ticker > synthesisDuration) {
-                    // TODO: ADD CYCLE TIME TO TRACKER.
-                    cell.addCycle(simstate.schedule.getTime() - start);
+
+                    cell.addCycle(start);
                     // Reset current cell.
                     cell.setState(State.UNDEFINED);
 

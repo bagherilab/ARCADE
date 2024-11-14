@@ -357,7 +357,6 @@ public abstract class PatchCell implements Cell {
     @Override
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
-        double time = simstate.schedule.getTime();
         // Increase age of cell.
         age++;
 
@@ -397,10 +396,7 @@ public abstract class PatchCell implements Cell {
                 setState(State.PROLIFERATIVE);
             }
         }
-        if (module instanceof PatchModuleProliferation
-                && ((PatchModuleProliferation) module).getStart() == -1) {
-            ((PatchModuleProliferation) module).setStart(time);
-        }
+
         // Step the module for the cell state.
         if (module != null) {
             module.step(simstate.random, sim);
