@@ -40,20 +40,6 @@ jobs:
           _badges
           _coverage
 
-    - name: Extract project version
-      run: |
-        echo "VERSION=$(grep -oP 'version = "\K([0-9\.]+)(?=")' build.gradle)" >> $GITHUB_ENV
-
-    - name: Generate version badge
-      uses: knightdave/anybadge-action@v1.1.0
-      with:
-        file: docs/_badges/version.svg
-        label: version
-        value: v${{ env.VERSION }}
-        color: teal
-        template: docs/_badges/template.svg
-        overwrite: true
-
     - name: Generate license badge
       uses: knightdave/anybadge-action@v1.1.0
       with:

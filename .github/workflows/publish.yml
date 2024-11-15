@@ -1,0 +1,105 @@
+name: publish
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+jobs:
+  publish:
+    if: ${{ (startsWith(github.event.pull_request.head.ref, 'release/')) && (github.event.pull_request.merged == true) }}
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: write
+      pull-requests: read
+
+    steps:
+
+    - name: Checkout the repo
+      uses: actions/checkout@v4
+
+    - name: Extract version from branch name
+      run: |
+        BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+        VERSION=${BRANCH_NAME#release/}
+        echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
+
+    - name: Build changelog
+      id: build_changelog
+      uses: mikepenz/release-changelog-builder-action@v3.4.0
+      with:
+        configurationJson: |
+          {
+            "categories": [
+              {
+                "title": "## 🚀 Features",
+                "labels": ["type: feature"],
+                "exclude_labels": ["package: patch", "package: potts"]
+              },
+              {
+                "title": "### Features: `patch`",
+                "labels": ["type: feature", "package: patch"],
+                "exclude_labels": ["package: potts"],
+                "exhaustive": true
+              },
+              {
+                "title": "### Features: `potts`",
+                "labels": ["type: feature", "package: potts"],
+                "exclude_labels": ["package: patch"],
+                "exhaustive": true
+              },
+              {
+                "title": "## 🐛 Bug fixes",
+                "labels": ["type: bug"]
+              },
+              {
+                "title": "## 🧪 Tests",
+                "labels": ["type: test"]
+              },
+              {
+                "title": "## 📓 Documentation",
+                "labels": ["type: docs"]
+              },
+              {
+                "title": "## 📁 Admin",
+                "labels": ["type: admin"]
+              }
+            ],
+            "template": "#{{CHANGELOG}}---\n\n**Full Changelog**: https://github.com/${{ github.repository }}/compare/#{{FROM_TAG}}...${{ env.RELEASE_VERSION }}\n",
+            "pr_template": "- #{{TITLE}} by @#{{AUTHOR}} in #{{URL}}"
+          }
+        toTag: ${{ github.event.pull_request.merge_commit_sha }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create release
+      uses: ncipollo/release-action@v1
+      with:
+        commit: ${{ github.event.pull_request.merge_commit_sha }}
+        tag: ${{ env.RELEASE_VERSION }}
+        name: ${{ env.RELEASE_VERSION }}
+        body: ${{ steps.build_changelog.outputs.changelog }}
+
+    - name: Generate version badge
+      if: success()
+      uses: knightdave/anybadge-action@v1.1.0
+      with:
+        file: docs/_badges/version.svg
+        label: version
+        value: ${{ env.RELEASE_VERSION }}
+        color: teal
+        template: docs/_badges/template.svg
+        overwrite: true
+
+    - name: Publish badge
+      if: success()
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        branch: gh-pages
+        folder: docs/_badges
+        target-folder: _badges
+        clean: false
