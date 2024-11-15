@@ -165,6 +165,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
 
         setupAgents();
         setupEnvironment();
+        
         scheduleActions();
         scheduleComponents();
 
