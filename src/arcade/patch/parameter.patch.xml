@@ -82,7 +82,7 @@
     <!-- radiation action parameters -->
     <action class="radiation" id="RADIATION_DOSE" value="4" units="Gy" description="radiation dose applied"/>
     <action class="radiation" id="RADIATION_DELAY" value="10080" units="min" description="time delay before radiation" />
-    <action class="radiation" id="RADIATION_RADIUS" value="6" description="grid radius that cells are irradiated" />"
+    <action class="radiation" id="RADIATION_RADIUS" value="8" description="grid radius that cells are irradiated" />"
 
     <!-- COMPONENTS ======================================================== -->
 
