@@ -82,7 +82,7 @@ public final class PatchSimulationRect extends PatchSimulation {
             case "cycle":
                 return new PatchComponentCycle(series, parameters);
             case "degrade":
-                return new PatchComponentDegrade(series, parameters); 
+                return new PatchComponentDegrade(series, parameters);
             case "remodel":
                 return new PatchComponentRemodel(series, parameters);
             default:

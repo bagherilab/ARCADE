@@ -7,7 +7,7 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.env.grid.PatchGrid;
-import static arcade.patch.util.PatchEnums.State; 
+import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Implementation of {@link Process} for cell metabolism.

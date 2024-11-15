@@ -128,7 +128,7 @@ public class PatchGrid implements Grid {
                 continue;
             }
             for (Object object : temp) {
-                bag.add(object); 
+                bag.add(object);
             }
         }
         return bag;
