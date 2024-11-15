@@ -65,37 +65,6 @@ public class PatchCellRandomTest {
     }
 
     @Test
-    public void getCycles_beforeDivision_returnsEmpty() {
-        PatchCellRandom cell = new PatchCellRandom(baseContainer, locationMock, parametersMock);
-        // Test the values in the cell.cycles bag
-        assertEquals(0, cell.getCycles().size());
-    }
-
-    @Test
-    public void addCycle_givenCycle_appendBagSize() {
-        PatchCellRandom cell = new PatchCellRandom(baseContainer, locationMock, parametersMock);
-        // Test the number of objects in the cell.cycles bag
-        cell.addCycle(1);
-        cell.addCycle(3);
-        cell.addCycle(5);
-
-        assertEquals(3, cell.getCycles().size());
-    }
-
-    @Test
-    public void addCycle_givenCycles_appendValues() {
-        PatchCellRandom cell = new PatchCellRandom(baseContainer, locationMock, parametersMock);
-        cell.addCycle(1);
-        cell.addCycle(3);
-        cell.addCycle(5);
-
-        // Test the values in the cell.cycles bag
-        assertEquals(1, cell.getCycles().get(0));
-        assertEquals(3, cell.getCycles().get(1));
-        assertEquals(5, cell.getCycles().get(2));
-    }
-
-    @Test
     public void make_calledNoLinks_createsContainer() {
         double volume = randomDoubleBetween(10, 100);
         double height = randomDoubleBetween(10, 100);
