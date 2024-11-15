@@ -122,7 +122,7 @@ public class PatchModuleProliferation extends PatchModule {
                                 (PatchProcess) newCell.getProcess(Domain.SIGNALING);
                         signaling.update(cell.getProcess(Domain.SIGNALING));
                     }
-                    // TODO: Update environment generator sites.
+                    // TODO: Update environment generator sites. 
                 } else {
                     ticker++;
                 }

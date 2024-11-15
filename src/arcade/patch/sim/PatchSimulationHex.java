@@ -6,7 +6,7 @@ import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
 import arcade.patch.agent.action.PatchActionConvert;
 import arcade.patch.agent.action.PatchActionInsert;
-import arcade.patch.agent.action.PatchActionRemove;
+import arcade.patch.agent.action.PatchActionRemove; 
 import arcade.patch.agent.action.PatchActionTreat;
 import arcade.patch.agent.cell.PatchCellFactory;
 import arcade.patch.env.component.PatchComponentCycle;
