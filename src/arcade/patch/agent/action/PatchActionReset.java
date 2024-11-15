@@ -1,15 +1,12 @@
 package arcade.patch.agent.action;
 
 import arcade.core.agent.action.Action;
-import arcade.core.agent.process.ProcessDomain;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCellCART;
-import arcade.patch.agent.cell.PatchCellTissue;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.util.PatchEnums.AntigenFlag;
-import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.Ordering;
 import arcade.patch.util.PatchEnums.State;
 import ec.util.MersenneTwisterFast;
@@ -49,7 +46,7 @@ public class PatchActionReset implements Action {
 	 * @param target the {@link arcade.patch.agent.cell.PatchCellTissue} the CAR T-cell is bound to
 	 */
 
-     public PatchActionReset(PatchCellCART c, MersenneTwisterFast random, Series series, MiniBox parameters) { 
+     public PatchActionReset(PatchCellCART c, MersenneTwisterFast random, Series series, Parameters parameters) { 
 		this.c = c;
         double boundTime = parameters.getInt("BOUND_TIME");
         double boundRange = parameters.getInt("BOUND_RANGE");

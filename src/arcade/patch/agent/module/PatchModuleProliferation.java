@@ -53,7 +53,7 @@ public class PatchModuleProliferation extends PatchModule {
         maxHeight = cell.getCriticalHeight();
 
         // Set loaded parameters.
-        MiniBox parameters = cell.getParameters();
+        Parameters parameters = cell.getParameters();
         if (cell instanceof PatchCellCART) {
             synthesisDuration = parameters.getInt("proliferation/T_CELL_SYNTHESIS_DURATION");
         } else {

@@ -1,7 +1,7 @@
 package arcade.patch.agent.process;
 
 import arcade.core.agent.process.Process;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import ec.util.MersenneTwisterFast;
 import arcade.patch.agent.cell.PatchCellCART;
 import arcade.core.sim.Simulation;
@@ -29,7 +29,7 @@ public class PatchProcessInflammationCD8 extends PatchProcessInflammation {
 		super(c);
 		
 		// Set parameters.
-		MiniBox parameters = cell.getParameters();
+		Parameters parameters = cell.getParameters();
 		this.GRANZ_SYNTHESIS_DELAY =  parameters.getInt("inflammation/GRANZ_SYNTHESIS_DELAY");
 		this.priorIL2granz = 0;
 		

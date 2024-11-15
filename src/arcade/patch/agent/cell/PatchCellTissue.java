@@ -1,18 +1,24 @@
 package arcade.patch.agent.cell;
 
 import ec.util.MersenneTwisterFast;
+import sim.engine.SimState;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
+import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
+import arcade.patch.util.PatchEnums.AntigenFlag;
+import arcade.patch.util.PatchEnums.Domain;
+import arcade.patch.util.PatchEnums.Flag;
+import arcade.patch.util.PatchEnums.State;
 
 /** Extension of {@link PatchCell} for healthy tissue cells. */
 public class PatchCellTissue extends PatchCell {
-    /** Fraction of necrotic cells that become apoptotic. */
-    private final double necroticFraction;
+    // /** Fraction of necrotic cells that become apoptotic. */
+    // private final double necroticFraction;
     
-    /** Fraction of senescent cells that become apoptotic. */
-    private final double senescentFraction;
+    // /** Fraction of senescent cells that become apoptotic. */
+    // private final double senescentFraction;
 
     //these two variables are public bc I don't want to implement setter/getter methods for sims that do not use CART cells.
     
@@ -45,9 +51,11 @@ public class PatchCellTissue extends PatchCell {
      * @param parameters the dictionary of parameters
      * @param links the map of population links
      */
-    public PatchCellTissue(
-            PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
+    public PatchCellTissue(PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
+        carAntigens = parameters.getInt("CAR_ANTIGENS_HEALTHY");
+        selfTargets = parameters.getInt("SELF_TARGETS");
+        this.binding = AntigenFlag.UNDEFINED;
     }
 
     @Override

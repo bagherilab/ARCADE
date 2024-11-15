@@ -7,6 +7,8 @@ import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
+import arcade.patch.util.PatchEnums.State;
+
 import static arcade.patch.util.PatchEnums.State;
 
 /**
@@ -42,6 +44,7 @@ public class PatchCellCancer extends PatchCellTissue {
     public PatchCellCancer(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
+        super.carAntigens = parameters.getInt("CAR_ANTIGENS_CANCER");
     }
 
     /**

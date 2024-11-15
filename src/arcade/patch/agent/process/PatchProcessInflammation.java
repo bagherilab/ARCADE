@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import arcade.core.env.location.Location;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Solver.Equations;
 import ec.util.MersenneTwisterFast;
@@ -134,7 +134,7 @@ public abstract class PatchProcessInflammation extends PatchProcess{
 		this.activeTicker = 0;
      
 		// Set parameters.
-		MiniBox parameters = cell.getParameters();
+		Parameters parameters = cell.getParameters();
 		this.SHELL_THICKNESS = parameters.getDouble("inflammation/SHELL_THICKNESS");
 		this.IL2_RECEPTORS = parameters.getDouble("inflammation/IL2_RECEPTORS");
 		this.IL2_BINDING_ON_RATE_MIN = parameters.getDouble("inflammation/IL2_BINDING_ON_RATE_MIN");

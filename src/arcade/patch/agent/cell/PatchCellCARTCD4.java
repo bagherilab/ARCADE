@@ -2,7 +2,8 @@ package arcade.patch.agent.cell;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.GrabBag;
+import arcade.core.util.Parameters;
 import arcade.patch.agent.action.PatchActionReset;
 import arcade.patch.sim.PatchSimulation;
 import arcade.patch.util.PatchEnums.AntigenFlag;
@@ -36,14 +37,13 @@ public class PatchCellCARTCD4 extends PatchCellCART{
       * @param criticalHeight  the critical cell height
       */
 
-       public PatchCellCARTCD4(int id, int parent, int pop, CellState state, int age, int divisions,
-                            Location location, MiniBox parameters, double volume, double height,
-                            double criticalVolume, double criticalHeight) {
-            
-            super(id, parent, pop, state, age, divisions, location, parameters,
-                                volume, height, criticalVolume, criticalHeight);
-         
+       public PatchCellCARTCD4(PatchCellContainer container, Location location, Parameters parameters) {
+            this(container, location, parameters, null);
         }
+
+       public PatchCellCARTCD4(PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
+            super(container, location, parameters, links); 
+       }
 
         
         @Override

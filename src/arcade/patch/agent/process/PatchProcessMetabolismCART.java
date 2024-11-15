@@ -3,18 +3,11 @@ package arcade.patch.agent.process;
 import java.util.Arrays;
 import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.util.PatchEnums.Domain;
 import ec.util.MersenneTwisterFast;
-
-import sim.engine.SimState;
-
-
-
-
-
 
 public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
 
@@ -101,7 +94,7 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
         
         // Set loaded parameters.
         // TODO: pull metabolic preference from distribution
-        MiniBox parameters = cell.getParameters();
+        Parameters parameters = cell.getParameters();
         metaPref =  parameters.getDouble("metabolism/METABOLIC_PREFERENCE");
         conversionFraction = parameters.getDouble("metabolism/CONVERSION_FRACTION");
         fracMass = parameters.getDouble("metabolism/MINIMUM_MASS_FRACTION");

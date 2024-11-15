@@ -114,26 +114,11 @@ public final class PatchCellContainer implements CellContainer {
             case "cancer":
                 return new PatchCellCancer(this, location, parameters, links);
             case "cancer_stem":
-                return new PatchCellCancerStem(
-                    id,
-                    parent,
-                    pop,
-                    state,
-                    age,
-                    divisions,
-                    location,
-                    parameters,
-                    volume,
-                    height,
-                    criticalVolume,
-                    criticalHeight);
-            case "cart_cd4":
-                return new PatchCellCARTCD4(id, parent, pop, state, age, divisions, location,
-                            parameters, volume, height, criticalVolume, criticalHeight);
-            case "cart_cd8":
-                return new PatchCellCARTCD8(id, parent, pop, state, age, divisions, location,
-                                parameters, volume, height, criticalVolume, criticalHeight);
                 return new PatchCellCancerStem(this, location, parameters, links);
+            case "cart_cd4":
+                return new PatchCellCARTCD4(this, location, parameters, links);
+            case "cart_cd8":
+                return new PatchCellCARTCD8(this, location, parameters, links);
             case "random":
                 return new PatchCellRandom(this, location, parameters, links);
         }

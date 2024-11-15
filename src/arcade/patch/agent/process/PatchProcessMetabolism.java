@@ -144,9 +144,6 @@ public abstract class PatchProcessMetabolism extends PatchProcess {
         // Initialize external and uptake concentration arrays;
         extAmts = new double[2];
         upAmts = new double[2];
-
-        // Update extAmts with initial values
-        //updateExternal(cell.getSimulation());
     }
 
     /**

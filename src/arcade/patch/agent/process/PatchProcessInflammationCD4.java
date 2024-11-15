@@ -1,6 +1,6 @@
 package arcade.patch.agent.process;
 import arcade.core.agent.process.Process;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.core.sim.Simulation;
 import ec.util.MersenneTwisterFast;
 import arcade.patch.agent.cell.PatchCellCART;
@@ -42,7 +42,7 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
 		super(c);
 
 		// Set parameters.
-		MiniBox parameters = cell.getParameters();
+		Parameters parameters = cell.getParameters();
 		this.IL2_PROD_RATE_IL2 = parameters.getDouble( "inflammation/IL2_PROD_RATE_IL2");
 		this.IL2_PROD_RATE_ACTIVE = parameters.getDouble("inflammation/IL2_PROD_RATE_ACTIVE");
 		this.IL2_SYNTHESIS_DELAY = parameters.getInt("inflammation/IL2_SYNTHESIS_DELAY");

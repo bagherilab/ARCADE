@@ -6,7 +6,9 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.util.PatchEnums.AntigenFlag;
@@ -57,24 +59,18 @@ import static arcade.patch.util.PatchEnums.AntigenFlag;
 
 public abstract class PatchCellCART extends PatchCell {
 
-     /** Fraction of exhausted cells that become apoptotic. */
-     protected final double exhaustedFraction;
+    //  /** Fraction of exhausted cells that become apoptotic. */
+    //  protected final double exhaustedFraction;
     
-     /** Fraction of senescent cells that become apoptotic. */
-     protected final double senescentFraction;
+    //  /** Fraction of senescent cells that become apoptotic. */
+    //  protected final double senescentFraction;
 
-     /** Fraction of anergic cells that become apoptotic. */
-     protected final double anergicFraction;
+    //  /** Fraction of anergic cells that become apoptotic. */
+    //  protected final double anergicFraction;
 
-      /** Fraction of proliferative cells that become apoptotic. */
-     protected final double proliferativeFraction;
+    //   /** Fraction of proliferative cells that become apoptotic. */
+    //  protected final double proliferativeFraction;
  
-     /** Cell surface antigen count */
-     protected int carAntigens;
-     
-     /** Cell surface PDL1 count */
-     protected final int selfTargets;
-
      /** Cell binding flag */
      public AntigenFlag binding;
 
@@ -100,6 +96,18 @@ public abstract class PatchCellCART extends PatchCell {
      protected final int cars;
      protected int lastActiveTicker;
 
+    /** Fraction of exhausted cells that become apoptotic. */
+    protected final double exhaustedFraction;
+
+    /** Fraction of senescent cells that become apoptotic. */
+    protected final double senescentFraction;
+
+    /** Fraction of anergic cells that become apoptotic. */
+    protected final double anergicFraction;
+
+    /** Fraction of proliferative cells that become apoptotic. */
+    protected final double proliferativeFraction;
+    
      /**
       * Creates a tissue {@code PatchCellCART} agent.
       * * <p>
@@ -144,39 +152,46 @@ public abstract class PatchCellCART extends PatchCell {
       * @param criticalVolume  the critical cell volume
       * @param criticalHeight  the critical cell height
       */
-     public PatchCellCART(int id, int parent, int pop, CellState state, int age, int divisions,
-                            Location location, MiniBox parameters, double volume, double height,
-                            double criticalVolume, double criticalHeight) {
-         super(id, parent, pop, state, age, divisions, location, parameters,
-                 volume, height, criticalVolume, criticalHeight);
-         
-         //initialized non-loaded parameters
-         boundAntigensCount = 0;
-         boundSelfCount = 0;
-         lastActiveTicker = 0;
-         binding = AntigenFlag.UNDEFINED;
-         activated = true;
+      public PatchCellCART(PatchCellContainer container, Location location, Parameters parameters) {
+        this(container, location, parameters, null);
+    }
 
-         // Set loaded parameters.
-         exhaustedFraction = parameters.getDouble(  "EXHAU_FRAC");
-         senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
-         anergicFraction = parameters.getDouble("ANERGIC_FRACTION");
-         proliferativeFraction = parameters.getDouble("PROLIFERATIVE_FRACTION");
-         carAntigens = parameters.getInt("CAR_ANTIGENS");
-         selfTargets = parameters.getInt("SELF_TARGETS");
-         selfReceptors = parameters.getInt("SELF_RECEPTORS");
-         selfReceptorsStart = selfReceptors;
-         searchAbility = parameters.getDouble("SEARCH_ABILITY");
-         carAffinity = parameters.getDouble("CAR_AFFINITY");
-         carAlpha = parameters.getDouble("CAR_ALPHA");
-         carBeta = parameters.getDouble("CAR_BETA");
-         selfReceptorAffinity = parameters.getDouble("SELF_RECEPTOR_AFFINITY");
-         selfAlpha = parameters.getDouble("SELF_ALPHA");
-         selfBeta = parameters.getDouble("SELF_BETA");
-         contactFraction = parameters.getDouble("CONTACT_FRAC");
-         maxAntigenBinding = parameters.getInt("MAX_ANTIGEN_BINDING");
-         cars = parameters.getInt("CARS");
-     }
+    /**
+     * Creates a tissue {@code PatchCell} agent with population links.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
+    public PatchCellCART(PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
+        super(container, location, parameters, links);
+        //initialized non-loaded parameters
+        boundAntigensCount = 0;
+        boundSelfCount = 0;
+        lastActiveTicker = 0;
+        binding = AntigenFlag.UNDEFINED;
+        activated = true;
+
+        // Set loaded parameters.
+        exhaustedFraction = parameters.getDouble(  "EXHAU_FRAC");
+        senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
+        anergicFraction = parameters.getDouble("ANERGIC_FRACTION");
+        proliferativeFraction = parameters.getDouble("PROLIFERATIVE_FRACTION");
+        selfReceptors = parameters.getInt("SELF_RECEPTORS");
+        selfReceptorsStart = selfReceptors;
+        searchAbility = parameters.getDouble("SEARCH_ABILITY");
+        carAffinity = parameters.getDouble("CAR_AFFINITY");
+        carAlpha = parameters.getDouble("CAR_ALPHA");
+        carBeta = parameters.getDouble("CAR_BETA");
+        selfReceptorAffinity = parameters.getDouble("SELF_RECEPTOR_AFFINITY");
+        selfAlpha = parameters.getDouble("SELF_ALPHA");
+        selfBeta = parameters.getDouble("SELF_BETA");
+        contactFraction = parameters.getDouble("CONTACT_FRAC");
+        maxAntigenBinding = parameters.getInt("MAX_ANTIGEN_BINDING");
+        cars = parameters.getInt("CARS");
+    }
+    
 
     /* need to implement bindTarget equivalent here*/
     /**

@@ -1,18 +1,9 @@
 package arcade.patch.agent.action;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
-
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.util.Bag;
 import arcade.core.agent.action.Action;
-import arcade.core.agent.cell.Cell;
-import arcade.core.agent.cell.CellContainer;
-import arcade.core.env.component.Component;
-import arcade.core.env.grid.Grid;
-import arcade.core.env.lattice.Lattice;
 import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.Series;
@@ -21,7 +12,6 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Utilities;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.Coordinate;
-import arcade.patch.env.location.CoordinateUVWZ;
 import arcade.patch.env.location.CoordinateXYZ;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.env.location.PatchLocationContainer;
@@ -30,7 +20,9 @@ import arcade.patch.sim.PatchSimulation;
 import arcade.patch.env.component.PatchComponentSitesSource;
 import arcade.patch.env.component.PatchComponentSitesPattern;
 import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.cell.PatchCellContainer;
+import arcade.patch.agent.cell.PatchCellTissue;
 import arcade.patch.env.component.PatchComponentSites;
 import arcade.patch.env.component.PatchComponentSitesGraph;
 import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
@@ -62,12 +54,6 @@ public class PatchActionTreat implements Action {
 	
 	/** List of freaction of each population to treat with. CD4 to CD8 ratio */
 	private final double treatFrac;
-
-	 /** Grid radius that cells are inserted into. */
-	 private final int insertRadius;
-    
-	 /** Grid depth that cells are inserted into. */
-	 private final int insertDepth;
 
 	 /** Maximum damage value at which T-cells can spawn next to in source or pattern source */
 	 private double max_damage;
@@ -107,12 +93,6 @@ public class PatchActionTreat implements Action {
 		this.coord = ((PatchSeries) series).patch.get("GEOMETRY").equalsIgnoreCase("HEX") ? "Hex" : "Rect";
 		if (coord == "Hex") { latPositions = 9; }
 		if (coord == "Rect") { latPositions = 16;}
-
-
-
-		//Im assuming to just use the default here
-        this.insertRadius = ((PatchSeries) series).radius;
-        this.insertDepth = ((PatchSeries) series).height;
 
 		// Initialize population register.
         populations = new ArrayList<>();
@@ -283,7 +263,7 @@ private void insert(ArrayList<Location> coordinates, SimState simstate ){
 		PatchLocationContainer locationContainer = new PatchLocationContainer(id, coord);
 		PatchCellContainer cellContainer = sim.cellFactory.createCellForPopulation(id, pop);
 		Location location = locationContainer.convert(sim.locationFactory, cellContainer);
-		PatchCell cell = (PatchCell) cellContainer.convert(sim.cellFactory, location);
+		PatchCell cell = (PatchCell) cellContainer.convert(sim.cellFactory, location, sim.random);
 		grid.addObject(cell, location);
 		cell.schedule(sim.getSchedule());
 	}
@@ -310,14 +290,16 @@ protected boolean checkLocationSpace(Simulation sim, Location loc, PatchGrid gri
 		
 		for (Object cellObj : bag) {
 			PatchCell cell = (PatchCell)cellObj;
-			MiniBox cellParams = cell.getParameters();
-			String className = cellParams.get("CLASS");
-			if(className.equals("cart_cd4") || className.equals("cart_cd8")){
+			// MiniBox cellParams = cell.getParameters();
+			// String className = cellParams.get("CLASS");
+			// if(className.equals("cart_cd4") || className.equals("cart_cd8")){
+			if (cell instanceof PatchCellCART){
 				//totalVol = PatchCell.calculateTotalVolume(bag) + cell.getParameters().getDouble("T_CELL_VOL_AVG");
 				totalVol = PatchCell.calculateTotalVolume(bag) + parameters.getDouble("T_CELL_VOL_AVG");
 				currentHeight = totalVol/locArea;
 			}
-			if (className.equals("tissue") || className.equals("cancer") || className.equals("cancer_stem")) {
+			// if (className.equals("tissue") || className.equals("cancer") || className.equals("cancer_stem")) {
+			if (cell instanceof PatchCellTissue){
 				if (currentHeight > cell.getCriticalHeight()) { available = false; }
 			}
 		}

@@ -25,6 +25,11 @@ import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
+import arcade.patch.util.PatchEnums.Domain;
+import arcade.patch.util.PatchEnums.Flag;
+import arcade.patch.util.PatchEnums.Ordering;
+import arcade.patch.util.PatchEnums.State;
+
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.Flag;
 import static arcade.patch.util.PatchEnums.Ordering;
@@ -104,6 +109,9 @@ public abstract class PatchCell implements Cell {
     /** Cell state change flag. */
     Flag flag;
 
+    /** Variation in cell agent parameters. */
+    private final double heterogeneity;
+
     /** Fraction of necrotic cells that become apoptotic. */
     final double necroticFraction;
 
@@ -163,13 +171,13 @@ public abstract class PatchCell implements Cell {
         this.isStopped = false;
 
         setState(container.state);
-
-        // Set loaded parameters.
-        //heterogeneity = parameters.getDouble("HETEROGENEITY");
         this.links = links;
         necroticFraction = parameters.getDouble("NECROTIC_FRACTION");
         senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
+        heterogeneity = parameters.getDouble("HETEROGENEITY");
         energyThreshold = -parameters.getDouble("ENERGY_THRESHOLD");
+
+        // TODO: implement heterogeneity
 
         // Add cell processes.
         processes = new HashMap<>();
