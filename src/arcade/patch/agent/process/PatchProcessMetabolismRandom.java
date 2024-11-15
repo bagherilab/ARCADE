@@ -57,16 +57,13 @@ public class PatchProcessMetabolismRandom extends PatchProcessMetabolism {
      *
      * <ul>
      *   <li>{@code CELL_VOLUME} = cell volume
+     *   <li>{@code INITIAL_GLUCOSE_CONCENTRATION} = initial cell internal glucose concentration
      * </ul>
      *
      * @param cell the {@link PatchCell} the process is associated with
      */
     public PatchProcessMetabolismRandom(PatchCell cell) {
         super(cell);
-
-        // Initial internal concentrations.
-        intAmts = new double[1];
-        intAmts[GLUCOSE] = extAmts[GLUCOSE];
 
         // Mapping for internal concentration access.
         String[] intNames = new String[1];
@@ -76,6 +73,11 @@ public class PatchProcessMetabolismRandom extends PatchProcessMetabolism {
         // Set loaded parameters.
         Parameters parameters = cell.getParameters();
         averageCellVolume = parameters.getDouble("CELL_VOLUME");
+
+        // Initial internal concentrations.
+        intAmts = new double[1];
+        intAmts[GLUCOSE] =
+                parameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION") * volume;
     }
 
     @Override
