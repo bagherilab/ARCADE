@@ -2,21 +2,15 @@ package arcade.patch.agent.cell;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import ec.util.MersenneTwisterFast;
-import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
-import arcade.patch.agent.module.PatchModule;
-import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.env.location.PatchLocation;
-import arcade.patch.sim.PatchSimulation;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
-import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.State;
 
-public class PatchCellRandomTest {
+public class PatchCellTest {
     private static final double EPSILON = 1E-8;
 
     static PatchLocation locationMock;
