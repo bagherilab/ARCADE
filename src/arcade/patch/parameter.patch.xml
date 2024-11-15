@@ -47,6 +47,7 @@
     
     <!-- proliferation module parameters -->
     <population.module module="proliferation" id="SYNTHESIS_DURATION" value="637" units="min" description="time required for DNA synthesis" />
+    <population.module module="proliferation" id="T_CELL_SYNTHESIS_DURATION" value="360" units="min" description="time required for DNA synthesis" />
 
     <!-- migration module parameters -->
     <population.module module="migration" id="MIGRATION_RATE" value="0.24" unit="um/min" description="cell migration rate" />
@@ -79,7 +80,7 @@
     <population.process process="metabolism" id ="GLUC_UPTAKE_RATE_IL2" value="0.56" unit="fmol glucose/um^2 cell/min/M glucose" description="increase in glucose uptake rate due to IL-2" />
     <population.process process="metabolism" id ="GLUC_UPTAKE_RATE_ACTIVE" value="3.78" unit="fmol glucose/um^2 cell/min/M glucose" description="increase in glucose uptake rate due to antigen activation" />
     <population.process process="metabolism" id ="META_SWITCH_DELAY" value="60" unit="min" />
-        <population.process process="metabolism" id="INITIAL_GLUCOSE_CONCENTRATION" value="0.005" unit="fmol/um^3" description="initial cell internal glucose concentration"/>
+    <population.process process="metabolism" id="INITIAL_GLUCOSE_CONCENTRATION" value="0.005" unit="fmol/um^3" description="initial cell internal glucose concentration"/>
 
     <!-- signaling process parameters -->
     <population.process process="signaling" id="MIGRATORY_THRESHOLD" value="10" description="threshold fold change in PLCg for migration" />

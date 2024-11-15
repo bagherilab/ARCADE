@@ -15,7 +15,7 @@ import arcade.patch.env.location.PatchLocation;
  */
 public class PatchGrid implements Grid {
     /** Initial bag capacity. */
-    private static final int INITIAL_CAPACITY = 6;
+    private static final int INITIAL_CAPACITY = 54;
 
     /** Map of ID to object. */
     final HashMap<Integer, Object> objects;

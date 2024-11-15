@@ -73,6 +73,7 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
      *     <li>{@code LACTATE_RATE} = rate of lactate production</li>
      *     <li>{@code AUTOPHAGY_RATE} = rate of autophagy</li>
      *     <li>{@code GLUCOSE_UPTAKE_RATE} = rate of glucose uptake</li>
+     *     <li>{@code INITIAL_GLUCOSE_CONCENTRATION} = initial cell internal glucose concentration
      * </ul>
      * The process starts with energy at zero and assumes a constant ratio
      * between mass and volume (through density).
@@ -81,11 +82,6 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
      */
     public PatchProcessMetabolismCART(PatchCell cell) {
         super(cell);
-         // Initial internal concentrations.
-        intAmts = new double[2];
-        intAmts[GLUCOSE] = extAmts[GLUCOSE];
-        intAmts[PYRUVATE] = extAmts[GLUCOSE] * PYRU_PER_GLUC;
-        
         // Mapping for internal concentration access.
         String[] intNames = new String[2];
         intNames[GLUCOSE] = "glucose";
@@ -109,6 +105,12 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
         glucoseUptakeRate_active = parameters.getDouble("metabolism/GLUC_UPTAKE_RATE_ACTIVE");
         minimumMassFraction_active = parameters.getDouble("metabolism/FRAC_MASS_ACTIVE");
         timeDelay = (int) parameters.getDouble("metabolism/META_SWITCH_DELAY");
+
+        // Initial internal concentrations.
+        intAmts = new double[2];
+        intAmts[GLUCOSE] =
+                parameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION") * volume;
+        intAmts[PYRUVATE] = intAmts[GLUCOSE] * PYRU_PER_GLUC;
     }
 
      @Override
