@@ -46,114 +46,112 @@ public class PatchProcessMetabolismSimple extends PatchProcessMetabolism {
      *   &lt;li&gt;{@code CONSTANT_GLUCOSE_UPTAKE_RATE} = constant glucose uptake rate
      *   &lt;li&gt;{@code CONSTANT_ATP_PRODUCTION_RATE} = constant ATP production rate
      *   &lt;li&gt;{@code CONSTANT_VOLUME_GROWTH_RATE} = constant volume growth rate
-     *   &lt;li&gt;{@code INITIAL_GLUCOSE_CONCENTRATION} = initial cell internal glucose concentration
      * &lt;/ul&gt;
      *
      * @param cell the {@link PatchCell} the process is associated with
      */
     public PatchProcessMetabolismSimple(PatchCell cell) {
-<span class="nc" id="L55">        super(cell);</span>
-
-        // Mapping for internal concentration access.
-<span class="nc" id="L58">        String[] intNames = new String[1];</span>
-<span class="nc" id="L59">        intNames[GLUCOSE] = &quot;glucose&quot;;</span>
-<span class="nc" id="L60">        names = Arrays.asList(intNames);</span>
-
-        // Set loaded parameters.
-<span class="nc" id="L63">        Parameters parameters = cell.getParameters();</span>
-<span class="nc" id="L64">        averageCellVolume = parameters.getDouble(&quot;CELL_VOLUME&quot;);</span>
-<span class="nc" id="L65">        metabolicPreference = parameters.getDouble(&quot;metabolism/METABOLIC_PREFERENCE&quot;);</span>
-<span class="nc" id="L66">        glucoseUptakeRate = parameters.getDouble(&quot;metabolism/CONSTANT_GLUCOSE_UPTAKE_RATE&quot;);</span>
-<span class="nc" id="L67">        atpProductionRate = parameters.getDouble(&quot;metabolism/CONSTANT_ATP_PRODUCTION_RATE&quot;);</span>
-<span class="nc" id="L68">        volumeGrowthRate = parameters.getDouble(&quot;metabolism/CONSTANT_VOLUME_GROWTH_RATE&quot;);</span>
+<span class="nc" id="L54">        super(cell);</span>
 
         // Initial internal concentrations.
-<span class="nc" id="L71">        intAmts = new double[1];</span>
-<span class="nc" id="L72">        intAmts[GLUCOSE] =</span>
-<span class="nc" id="L73">                parameters.getDouble(&quot;metabolism/INITIAL_GLUCOSE_CONCENTRATION&quot;) * volume;</span>
-<span class="nc" id="L74">    }</span>
+<span class="nc" id="L57">        intAmts = new double[1];</span>
+<span class="nc" id="L58">        intAmts[GLUCOSE] = extAmts[GLUCOSE];</span>
+
+        // Mapping for internal concentration access.
+<span class="nc" id="L61">        String[] intNames = new String[1];</span>
+<span class="nc" id="L62">        intNames[GLUCOSE] = &quot;glucose&quot;;</span>
+<span class="nc" id="L63">        names = Arrays.asList(intNames);</span>
+
+        // Set loaded parameters.
+<span class="nc" id="L66">        Parameters parameters = cell.getParameters();</span>
+<span class="nc" id="L67">        averageCellVolume = parameters.getDouble(&quot;CELL_VOLUME&quot;);</span>
+<span class="nc" id="L68">        metabolicPreference = parameters.getDouble(&quot;metabolism/METABOLIC_PREFERENCE&quot;);</span>
+<span class="nc" id="L69">        glucoseUptakeRate = parameters.getDouble(&quot;metabolism/CONSTANT_GLUCOSE_UPTAKE_RATE&quot;);</span>
+<span class="nc" id="L70">        atpProductionRate = parameters.getDouble(&quot;metabolism/CONSTANT_ATP_PRODUCTION_RATE&quot;);</span>
+<span class="nc" id="L71">        volumeGrowthRate = parameters.getDouble(&quot;metabolism/CONSTANT_VOLUME_GROWTH_RATE&quot;);</span>
+<span class="nc" id="L72">    }</span>
 
     @Override
     public void stepProcess(MersenneTwisterFast random, Simulation sim) {
-<span class="nc" id="L78">        double glucInt = intAmts[GLUCOSE]; // [fmol]</span>
-<span class="nc" id="L79">        double glucExt = extAmts[GLUCOSE]; // [fmol]</span>
-<span class="nc" id="L80">        double oxyExt = extAmts[OXYGEN]; // [fmol]</span>
+<span class="nc" id="L76">        double glucInt = intAmts[GLUCOSE]; // [fmol]</span>
+<span class="nc" id="L77">        double glucExt = extAmts[GLUCOSE]; // [fmol]</span>
+<span class="nc" id="L78">        double oxyExt = extAmts[OXYGEN]; // [fmol]</span>
 
         // Calculate glucose uptake rate.
-<span class="nc" id="L83">        double glucGrad = (glucExt / location.getVolume()) - (glucInt / volume);</span>
-<span class="nc bnc" id="L84" title="All 2 branches missed.">        glucGrad *= glucGrad &lt; 1E-10 ? 0 : 1;</span>
-<span class="nc" id="L85">        double glucUptake = glucoseUptakeRate * glucGrad;</span>
-<span class="nc" id="L86">        glucInt += glucUptake;</span>
+<span class="nc" id="L81">        double glucGrad = (glucExt / location.getVolume()) - (glucInt / volume);</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        glucGrad *= glucGrad &lt; 1E-10 ? 0 : 1;</span>
+<span class="nc" id="L83">        double glucUptake = glucoseUptakeRate * glucGrad;</span>
+<span class="nc" id="L84">        glucInt += glucUptake;</span>
 
         // Determine glucose requirement and calculate oxygen required.
-<span class="nc" id="L89">        double energyGen = 0;</span>
-<span class="nc" id="L90">        double glucoseRequiredGlycolysis =</span>
+<span class="nc" id="L87">        double energyGen = 0;</span>
+<span class="nc" id="L88">        double glucoseRequiredGlycolysis =</span>
                 atpProductionRate * metabolicPreference / ENERGY_FROM_GLYC;
-<span class="nc" id="L92">        double glucoseRequiredOxPhos =</span>
+<span class="nc" id="L90">        double glucoseRequiredOxPhos =</span>
                 atpProductionRate * (1 - metabolicPreference) / ENERGY_FROM_OXPHOS / PYRU_PER_GLUC;
-<span class="nc" id="L94">        double oxyReq = glucoseRequiredOxPhos * PYRU_PER_GLUC * OXY_PER_PYRU;</span>
-<span class="nc" id="L95">        double oxyUptake = Math.min(oxyExt, oxyReq);</span>
-<span class="nc bnc" id="L96" title="All 2 branches missed.">        oxyUptake *= oxyUptake &lt; 1E-10 ? 0 : 1;</span>
+<span class="nc" id="L92">        double oxyReq = glucoseRequiredOxPhos * PYRU_PER_GLUC * OXY_PER_PYRU;</span>
+<span class="nc" id="L93">        double oxyUptake = Math.min(oxyExt, oxyReq);</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        oxyUptake *= oxyUptake &lt; 1E-10 ? 0 : 1;</span>
 
         // Generate energy from oxidative phosphorylation.
-<span class="nc" id="L99">        double oxyUptakeInGluc = oxyUptake / OXY_PER_PYRU / PYRU_PER_GLUC;</span>
-<span class="nc bnc" id="L100" title="All 2 branches missed.">        if (glucInt &gt; oxyUptakeInGluc) {</span>
-<span class="nc" id="L101">            energyGen += oxyUptakeInGluc * ENERGY_FROM_OXPHOS * PYRU_PER_GLUC;</span>
-<span class="nc" id="L102">            glucInt -= oxyUptakeInGluc;</span>
+<span class="nc" id="L97">        double oxyUptakeInGluc = oxyUptake / OXY_PER_PYRU / PYRU_PER_GLUC;</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        if (glucInt &gt; oxyUptakeInGluc) {</span>
+<span class="nc" id="L99">            energyGen += oxyUptakeInGluc * ENERGY_FROM_OXPHOS * PYRU_PER_GLUC;</span>
+<span class="nc" id="L100">            glucInt -= oxyUptakeInGluc;</span>
         } else {
-<span class="nc" id="L104">            energyGen += glucInt * ENERGY_FROM_OXPHOS * PYRU_PER_GLUC;</span>
-<span class="nc" id="L105">            oxyUptake = glucInt * OXY_PER_PYRU * PYRU_PER_GLUC;</span>
-<span class="nc" id="L106">            glucInt = 0.0;</span>
+<span class="nc" id="L102">            energyGen += glucInt * ENERGY_FROM_OXPHOS * PYRU_PER_GLUC;</span>
+<span class="nc" id="L103">            oxyUptake = glucInt * OXY_PER_PYRU * PYRU_PER_GLUC;</span>
+<span class="nc" id="L104">            glucInt = 0.0;</span>
         }
 
         // Generate energy from glycolysis.
-<span class="nc bnc" id="L110" title="All 2 branches missed.">        if (glucInt &gt; glucoseRequiredGlycolysis) {</span>
-<span class="nc" id="L111">            energyGen += glucoseRequiredGlycolysis * ENERGY_FROM_GLYC;</span>
-<span class="nc" id="L112">            glucInt -= glucoseRequiredGlycolysis;</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (glucInt &gt; glucoseRequiredGlycolysis) {</span>
+<span class="nc" id="L109">            energyGen += glucoseRequiredGlycolysis * ENERGY_FROM_GLYC;</span>
+<span class="nc" id="L110">            glucInt -= glucoseRequiredGlycolysis;</span>
         } else {
-<span class="nc" id="L114">            energyGen += glucInt * ENERGY_FROM_GLYC;</span>
-<span class="nc" id="L115">            glucInt = 0;</span>
+<span class="nc" id="L112">            energyGen += glucInt * ENERGY_FROM_GLYC;</span>
+<span class="nc" id="L113">            glucInt = 0;</span>
         }
 
         // Update energy.
-<span class="nc" id="L119">        energy += energyGen;</span>
-<span class="nc" id="L120">        energy -= energyCons / volume * averageCellVolume;</span>
-<span class="nc bnc" id="L121" title="All 2 branches missed.">        energy *= Math.abs(energy) &lt; 1E-10 ? 0 : 1;</span>
+<span class="nc" id="L117">        energy += energyGen;</span>
+<span class="nc" id="L118">        energy -= energyCons / volume * averageCellVolume;</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        energy *= Math.abs(energy) &lt; 1E-10 ? 0 : 1;</span>
 
         // Increase mass if dividing and less than double mass.
-<span class="nc bnc" id="L124" title="All 8 branches missed.">        if (energy &gt;= 0</span>
+<span class="nc bnc" id="L122" title="All 8 branches missed.">        if (energy &gt;= 0</span>
                 &amp;&amp; isProliferative
                 &amp;&amp; mass &lt; 2 * critMass
                 &amp;&amp; glucInt &gt; cellDensity * volumeGrowthRate * ratioGlucoseBiomass) {
-<span class="nc" id="L128">            mass += cellDensity * volumeGrowthRate;</span>
-<span class="nc" id="L129">            glucInt -= (cellDensity * volumeGrowthRate * ratioGlucoseBiomass);</span>
+<span class="nc" id="L126">            mass += cellDensity * volumeGrowthRate;</span>
+<span class="nc" id="L127">            glucInt -= (cellDensity * volumeGrowthRate * ratioGlucoseBiomass);</span>
         }
 
         // Update volume based on changes in mass.
-<span class="nc" id="L133">        volume = mass / cellDensity;</span>
+<span class="nc" id="L131">        volume = mass / cellDensity;</span>
 
         // Reset values.
-<span class="nc" id="L136">        intAmts[GLUCOSE] = glucInt;</span>
-<span class="nc" id="L137">        upAmts[GLUCOSE] = glucUptake;</span>
-<span class="nc" id="L138">        upAmts[OXYGEN] = oxyUptake;</span>
-<span class="nc" id="L139">    }</span>
+<span class="nc" id="L134">        intAmts[GLUCOSE] = glucInt;</span>
+<span class="nc" id="L135">        upAmts[GLUCOSE] = glucUptake;</span>
+<span class="nc" id="L136">        upAmts[OXYGEN] = oxyUptake;</span>
+<span class="nc" id="L137">    }</span>
 
     @Override
     public void update(Process process) {
-<span class="nc" id="L143">        PatchProcessMetabolismSimple metabolism = (PatchProcessMetabolismSimple) process;</span>
-<span class="nc" id="L144">        double split = this.cell.getVolume() / this.volume;</span>
+<span class="nc" id="L141">        PatchProcessMetabolismSimple metabolism = (PatchProcessMetabolismSimple) process;</span>
+<span class="nc" id="L142">        double split = this.cell.getVolume() / this.volume;</span>
 
         // Update this process as split of given process.
-<span class="nc" id="L147">        this.volume = this.cell.getVolume();</span>
-<span class="nc" id="L148">        this.energy = this.cell.getEnergy();</span>
-<span class="nc" id="L149">        this.mass = this.volume * cellDensity;</span>
-<span class="nc" id="L150">        this.intAmts[GLUCOSE] = metabolism.intAmts[GLUCOSE] * split;</span>
+<span class="nc" id="L145">        this.volume = this.cell.getVolume();</span>
+<span class="nc" id="L146">        this.energy = this.cell.getEnergy();</span>
+<span class="nc" id="L147">        this.mass = this.volume * cellDensity;</span>
+<span class="nc" id="L148">        this.intAmts[GLUCOSE] = metabolism.intAmts[GLUCOSE] * split;</span>
 
         // Update given process with remaining split.
-<span class="nc" id="L153">        metabolism.volume = metabolism.cell.getVolume();</span>
-<span class="nc" id="L154">        metabolism.energy = metabolism.cell.getEnergy();</span>
-<span class="nc" id="L155">        metabolism.mass = metabolism.volume * cellDensity;</span>
-<span class="nc" id="L156">        metabolism.intAmts[GLUCOSE] *= (1 - split);</span>
-<span class="nc" id="L157">    }</span>
+<span class="nc" id="L151">        metabolism.volume = metabolism.cell.getVolume();</span>
+<span class="nc" id="L152">        metabolism.energy = metabolism.cell.getEnergy();</span>
+<span class="nc" id="L153">        metabolism.mass = metabolism.volume * cellDensity;</span>
+<span class="nc" id="L154">        metabolism.intAmts[GLUCOSE] *= (1 - split);</span>
+<span class="nc" id="L155">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
