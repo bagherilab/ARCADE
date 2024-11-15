@@ -16,12 +16,6 @@ public abstract class PatchModule implements Module {
     /** The {@link PatchLocation} the module is associated with. */
     final PatchLocation location;
 
-    /** Tick the {@code Module} was started. */
-    int start;
-
-    /** Tick the {@code Module} was stopped. */
-    double stop;
-
     /**
      * Creates a module for a {@link PatchCell} state.
      *
