@@ -29,7 +29,6 @@ import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.Flag;
 import arcade.patch.util.PatchEnums.Ordering;
 import arcade.patch.util.PatchEnums.State;
-
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.Flag;
 import static arcade.patch.util.PatchEnums.Ordering;
@@ -90,7 +89,7 @@ public abstract class PatchCell implements Cell {
 
     /** Cell energy [fmol ATP]. */
     double energy;
-    
+
     /** Number of divisions. */
     int divisions;
 
@@ -120,7 +119,7 @@ public abstract class PatchCell implements Cell {
 
     /** Maximum energy deficit before necrosis. */
     final double energyThreshold;
-    
+
     /** Cell state module. */
     protected Module module;
 
@@ -133,9 +132,9 @@ public abstract class PatchCell implements Cell {
     /** Cell population links. */
     final GrabBag links;
 
-     /** If cell is stopped in the simulation */
-     private boolean isStopped;
-    
+    /** If cell is stopped in the simulation */
+    private boolean isStopped;
+
     /**
      * Creates a {@code PatchCell} agent.
      *
@@ -184,11 +183,11 @@ public abstract class PatchCell implements Cell {
         MiniBox processBox = parameters.filter("(PROCESS)");
         if (processBox != null) {
             for (String processKey : processBox.getKeys()) {
-            ProcessDomain domain = Domain.valueOf(processKey);
-            String version = processBox.get(processKey);
-            Process process = makeProcess(domain, version);
-            processes.put(domain, process);
-        }
+                ProcessDomain domain = Domain.valueOf(processKey);
+                String version = processBox.get(processKey);
+                Process process = makeProcess(domain, version);
+                processes.put(domain, process);
+            }
         }
     }
 
@@ -299,13 +298,15 @@ public abstract class PatchCell implements Cell {
     }
 
     @Override
-    public void stop() { 
-        stopper.stop(); 
+    public void stop() {
+        stopper.stop();
         isStopped = true;
     }
 
-    public boolean isStopped(){ return isStopped;}
-    
+    public boolean isStopped() {
+        return isStopped;
+    }
+
     @Override
     public void setState(CellState state) {
         this.state = state;
@@ -341,7 +342,7 @@ public abstract class PatchCell implements Cell {
             case SIGNALING:
                 return PatchProcessSignaling.make(this, version);
             case INFLAMMATION:
-                return PatchProcessInflammation.make(this,version);
+                return PatchProcessInflammation.make(this, version);
             case UNDEFINED:
             default:
                 return null;

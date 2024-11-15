@@ -95,7 +95,6 @@ public final class PatchSeries extends Series {
         MiniBox patchDefaults = parameters.getIdValForTag("PATCH");
         ArrayList<Box> patchBox = setupLists.get("patch");
         updatePatch(patchBox, patchDefaults);
-
     }
 
     /**

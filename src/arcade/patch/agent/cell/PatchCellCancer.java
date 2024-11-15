@@ -8,7 +8,6 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 import arcade.patch.util.PatchEnums.State;
-
 import static arcade.patch.util.PatchEnums.State;
 
 /**

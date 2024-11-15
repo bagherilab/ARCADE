@@ -310,7 +310,7 @@ class PatchColorMaps {
                             6. / 7 * tgfa,
                             tgfa,
                         });
-        
+
         double il2 = series.layers.get("IL-2").getDouble("INITIAL_CONCENTRATION");
 
         mapIL2 =

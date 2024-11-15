@@ -1,7 +1,7 @@
 package arcade.patch.agent.cell;
 
-import ec.util.MersenneTwisterFast;
 import sim.engine.SimState;
+import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
@@ -16,21 +16,21 @@ import arcade.patch.util.PatchEnums.State;
 public class PatchCellTissue extends PatchCell {
     // /** Fraction of necrotic cells that become apoptotic. */
     // private final double necroticFraction;
-    
+
     // /** Fraction of senescent cells that become apoptotic. */
     // private final double senescentFraction;
 
-    //these two variables are public bc I don't want to implement setter/getter methods for sims that do not use CART cells.
-    
+    // these two variables are public bc I don't want to implement setter/getter methods for sims
+    // that do not use CART cells.
+
     /** Cell surface antigen count */
-	int carAntigens;
-	
-	/** Cell surface PDL1 count */
-	int selfTargets;
+    int carAntigens;
+
+    /** Cell surface PDL1 count */
+    int selfTargets;
 
     /** Cell binding flag */
-     public AntigenFlag binding;
-
+    public AntigenFlag binding;
 
     /**
      * Creates a tissue {@code PatchCell} agent.
@@ -51,7 +51,8 @@ public class PatchCellTissue extends PatchCell {
      * @param parameters the dictionary of parameters
      * @param links the map of population links
      */
-    public PatchCellTissue(PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
+    public PatchCellTissue(
+            PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
         carAntigens = parameters.getInt("CAR_ANTIGENS_HEALTHY");
         selfTargets = parameters.getInt("SELF_TARGETS");
@@ -75,23 +76,20 @@ public class PatchCellTissue extends PatchCell {
                 criticalHeight);
     }
 
-    
-    
-
     /* consider making PatchCell parameters protected instead of private */
 
     @Override
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
-        
+
         // Increase age of cell.
         super.age++;
-        
+
         // TODO: check for death due to age
-        
+
         // Step metabolism process.
         super.processes.get(Domain.METABOLISM).step(simstate.random, sim);
-        
+
         // Check energy status. If cell has less energy than threshold, it will
         // necrose. If overall energy is negative, then cell enters quiescence.
         if (state != State.APOPTOTIC && energy < 0) {
@@ -105,10 +103,10 @@ public class PatchCellTissue extends PatchCell {
                 super.setState(State.QUIESCENT);
             }
         }
-        
+
         // Step signaling network process.
         super.processes.get(Domain.SIGNALING).step(simstate.random, sim);
-        
+
         // Change state from undefined.
         if (super.state == State.UNDEFINED) {
             if (super.flag == Flag.MIGRATORY) {
@@ -123,7 +121,7 @@ public class PatchCellTissue extends PatchCell {
                 super.setState(State.PROLIFERATIVE);
             }
         }
-        
+
         // Step the module for the cell state.
         if (super.module != null) {
             super.module.step(simstate.random, sim);

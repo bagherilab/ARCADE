@@ -114,10 +114,12 @@ public class PatchModuleProliferation extends PatchModule {
                     PatchProcess metabolism = (PatchProcess) newCell.getProcess(Domain.METABOLISM);
                     metabolism.update(cell.getProcess(Domain.METABOLISM));
                     if (cell instanceof PatchCellCART) {
-                        PatchProcess inflammation = (PatchProcess) newCell.getProcess(Domain.INFLAMMATION);
+                        PatchProcess inflammation =
+                                (PatchProcess) newCell.getProcess(Domain.INFLAMMATION);
                         inflammation.update(cell.getProcess(Domain.INFLAMMATION));
                     } else {
-                        PatchProcess signaling = (PatchProcess) newCell.getProcess(Domain.SIGNALING);
+                        PatchProcess signaling =
+                                (PatchProcess) newCell.getProcess(Domain.SIGNALING);
                         signaling.update(cell.getProcess(Domain.SIGNALING));
                     }
                     // TODO: Update environment generator sites.
