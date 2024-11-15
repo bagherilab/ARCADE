@@ -161,9 +161,6 @@ class PatchColorMaps {
     /** Color map for TGFa concentration. */
     final Colors mapTGFa;
 
-    /** Color map for IL2 concentration. */
-    final Colors mapIL2;
-
     /**
      * Creates {@code ColorMaps} for the given series.
      *
@@ -309,22 +306,6 @@ class PatchColorMaps {
                             5. / 7 * tgfa,
                             6. / 7 * tgfa,
                             tgfa,
-                        });
-
-        double il2 = series.layers.get("IL-2").getDouble("INITIAL_CONCENTRATION");
-
-        mapIL2 =
-                new Colors(
-                        DARK_MINT,
-                        new double[] {
-                            0,
-                            1. / 7 * il2,
-                            2. / 7 * il2,
-                            3. / 7 * il2,
-                            4. / 7 * il2,
-                            5. / 7 * il2,
-                            6. / 7 * il2,
-                            il2,
                         });
     }
 }
