@@ -56,9 +56,6 @@ public abstract class PatchSimulation extends SimState implements Simulation {
 
     /** Lattice factory instance for the simulation. */
     public final PatchLatticeFactory latticeFactory;
-
-    /** list of series cells lysed */
-    public ArrayList<String> lysedCells;
     
     /**
      * Simulation instance for a {@link Series} for given random seed.
@@ -168,10 +165,6 @@ public abstract class PatchSimulation extends SimState implements Simulation {
 
         setupAgents();
         setupEnvironment();
-        
-        // Create lysed cell list
-        this.lysedCells = new ArrayList<String>();
-        
         scheduleActions();
         scheduleComponents();
 
