@@ -16,7 +16,6 @@ import static arcade.core.ARCADETestUtilities.*;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.State;
 
-
 public class PatchCellCancerStemTest {
     static PatchSimulation simMock;
 
