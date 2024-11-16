@@ -43,7 +43,7 @@ public class PatchCellCancerStem extends PatchCellCancer {
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
 
-        // TODO: set death age
+        this.criticalAge = Double.MAX_VALUE;
     }
 
     /**
@@ -65,6 +65,7 @@ public class PatchCellCancerStem extends PatchCellCancer {
                 volume,
                 height,
                 criticalVolume,
-                criticalHeight);
+                criticalHeight,
+                criticalAge);
     }
 }

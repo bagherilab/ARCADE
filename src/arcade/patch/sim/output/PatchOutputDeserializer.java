@@ -73,6 +73,7 @@ public final class PatchOutputDeserializer {
             JsonArray criticals = jsonObject.get("criticals").getAsJsonArray();
             double criticalVolume = criticals.get(0).getAsDouble();
             double criticalHeight = criticals.get(1).getAsDouble();
+            double criticalAge = criticals.get(2).getAsDouble();
 
             return new PatchCellContainer(
                     id,
@@ -84,7 +85,8 @@ public final class PatchOutputDeserializer {
                     volume,
                     height,
                     criticalVolume,
-                    criticalHeight);
+                    criticalHeight,
+                    criticalAge);
         }
     }
 

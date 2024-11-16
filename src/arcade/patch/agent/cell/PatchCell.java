@@ -101,6 +101,9 @@ public abstract class PatchCell implements Cell {
     /** Critical height for cell [um]. */
     final double criticalHeight;
 
+    /** Critical age for cell [min] */
+    double criticalAge;
+
     /** Cell state change flag. */
     private Flag flag;
 
@@ -155,6 +158,7 @@ public abstract class PatchCell implements Cell {
         this.height = container.height;
         this.criticalVolume = container.criticalVolume;
         this.criticalHeight = container.criticalHeight;
+        this.criticalAge = container.criticalAge;
         this.flag = Flag.UNDEFINED;
         this.parameters = parameters;
         this.links = links;
@@ -245,6 +249,15 @@ public abstract class PatchCell implements Cell {
     @Override
     public double getCriticalHeight() {
         return criticalHeight;
+    }
+
+    /**
+     * Get the critical cell age for apoptosis
+     *
+     * @return the apoptosis age
+     */
+    public double getCriticalAge() {
+        return criticalAge;
     }
 
     /**
@@ -339,8 +352,9 @@ public abstract class PatchCell implements Cell {
 
         // Increase age of cell.
         age++;
-
-        // TODO: check for death due to age
+        if (age > criticalAge) {
+            setState(State.APOPTOTIC);
+        }
 
         // Step metabolism process.
         processes.get(Domain.METABOLISM).step(simstate.random, sim);
@@ -395,7 +409,8 @@ public abstract class PatchCell implements Cell {
                 volume,
                 height,
                 criticalVolume,
-                criticalHeight);
+                criticalHeight,
+                criticalAge);
     }
 
     /**

@@ -47,6 +47,9 @@ public final class PatchCellContainer implements CellContainer {
     /** Critical cell height [um]. */
     public final double criticalHeight;
 
+    /** Critical cell age [min] */
+    public final double criticalAge;
+
     /**
      * Creates a {@code PatchCellContainer} instance.
      *
@@ -71,7 +74,8 @@ public final class PatchCellContainer implements CellContainer {
             double volume,
             double height,
             double criticalVolume,
-            double criticalHeight) {
+            double criticalHeight,
+            double criticalAge) {
         this.id = id;
         this.parent = parent;
         this.pop = pop;
@@ -82,6 +86,7 @@ public final class PatchCellContainer implements CellContainer {
         this.height = height;
         this.criticalVolume = criticalVolume;
         this.criticalHeight = criticalHeight;
+        this.criticalAge = criticalAge;
     }
 
     @Override

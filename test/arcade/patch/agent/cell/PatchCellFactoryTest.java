@@ -49,6 +49,7 @@ public class PatchCellFactoryTest {
         int age = randomIntBetween(1, 100);
         int divisions = randomIntBetween(1, 100);
         double compression = randomDoubleBetween(1, 10);
+        double critAge = randomDoubleBetween(50, 150);
 
         MiniBox parameters = new MiniBox();
         parameters.put("CELL_VOLUME", volume);
@@ -56,6 +57,7 @@ public class PatchCellFactoryTest {
         parameters.put("CELL_AGE", age);
         parameters.put("DIVISION_POTENTIAL", divisions);
         parameters.put("COMPRESSION_TOLERANCE", compression);
+        parameters.put("APOPTOSIS_AGE", critAge);
 
         PatchCellFactory factory = new PatchCellFactory();
         factory.popToIDs.put(1, new HashSet<>());
@@ -71,6 +73,7 @@ public class PatchCellFactoryTest {
             assertEquals(height + compression, patchCellContainer.criticalHeight, EPSILON);
             assertEquals(age, patchCellContainer.age);
             assertEquals(divisions, patchCellContainer.divisions);
+            assertEquals(critAge, patchCellContainer.criticalAge);
         }
     }
 
@@ -89,6 +92,7 @@ public class PatchCellFactoryTest {
         int age = randomIntBetween(1, 100);
         int divisions = randomIntBetween(1, 100);
         double compression = randomDoubleBetween(1, 10);
+        double critAge = randomDoubleBetween(50, 150);
 
         MiniBox parameters = new MiniBox();
         parameters.put("CELL_VOLUME", volume);
@@ -96,6 +100,7 @@ public class PatchCellFactoryTest {
         parameters.put("CELL_AGE", age);
         parameters.put("DIVISION_POTENTIAL", divisions);
         parameters.put("COMPRESSION_TOLERANCE", compression);
+        parameters.put("APOPTOSIS_AGE", critAge);
 
         PatchCellFactory factory = new PatchCellFactory();
         factory.popToIDs.put(1, new HashSet<>());
@@ -111,6 +116,7 @@ public class PatchCellFactoryTest {
             assertEquals(height + compression, patchCellContainer.criticalHeight, EPSILON);
             assertEquals(age, patchCellContainer.age);
             assertEquals(divisions, patchCellContainer.divisions);
+            assertEquals(critAge, patchCellContainer.criticalAge);
         }
     }
 
@@ -128,6 +134,7 @@ public class PatchCellFactoryTest {
         int age = randomIntBetween(1, 100);
         int divisions = randomIntBetween(1, 100);
         double compression = randomDoubleBetween(1, 10);
+        double critAge = randomDoubleBetween(50, 150);
 
         MiniBox parameters = new MiniBox();
         parameters.put("CELL_VOLUME", volume);
@@ -135,6 +142,7 @@ public class PatchCellFactoryTest {
         parameters.put("CELL_AGE", age);
         parameters.put("DIVISION_POTENTIAL", divisions);
         parameters.put("COMPRESSION_TOLERANCE", compression);
+        parameters.put("APOPTOSIS_AGE", critAge);
 
         PatchCellFactory factory = new PatchCellFactory();
         factory.popToIDs.put(1, new HashSet<>());
@@ -150,6 +158,7 @@ public class PatchCellFactoryTest {
             assertEquals(height + compression, patchCellContainer.criticalHeight, EPSILON);
             assertEquals(age, patchCellContainer.age);
             assertEquals(divisions, patchCellContainer.divisions);
+            assertEquals(critAge, patchCellContainer.criticalAge);
         }
     }
 
@@ -194,6 +203,12 @@ public class PatchCellFactoryTest {
                     randomDoubleBetween(1, 10),
                     randomDoubleBetween(1, 10),
                 };
+        double[] apotosisAges =
+                new double[] {
+                    randomDoubleBetween(50, 150),
+                    randomDoubleBetween(50, 150),
+                    randomDoubleBetween(50, 150),
+                };
 
         MiniBox parameters1 = new MiniBox();
         parameters1.put("CELL_VOLUME", volumes[0]);
@@ -201,6 +216,7 @@ public class PatchCellFactoryTest {
         parameters1.put("CELL_AGE", ages[0]);
         parameters1.put("DIVISION_POTENTIAL", divisions[0]);
         parameters1.put("COMPRESSION_TOLERANCE", compressions[0]);
+        parameters1.put("APOPTOSIS_AGE", apotosisAges[0]);
 
         MiniBox parameters2 = new MiniBox();
         parameters2.put("CELL_VOLUME", volumes[1]);
@@ -208,6 +224,7 @@ public class PatchCellFactoryTest {
         parameters2.put("CELL_AGE", ages[1]);
         parameters2.put("DIVISION_POTENTIAL", divisions[1]);
         parameters2.put("COMPRESSION_TOLERANCE", compressions[1]);
+        parameters2.put("APOPTOSIS_AGE", apotosisAges[1]);
 
         MiniBox parameters3 = new MiniBox();
         parameters3.put("CELL_VOLUME", volumes[2]);
@@ -215,6 +232,7 @@ public class PatchCellFactoryTest {
         parameters3.put("CELL_AGE", ages[2]);
         parameters3.put("DIVISION_POTENTIAL", divisions[2]);
         parameters3.put("COMPRESSION_TOLERANCE", compressions[2]);
+        parameters3.put("APOPTOSIS_AGE", apotosisAges[2]);
 
         PatchCellFactory factory = new PatchCellFactory();
         factory.popToIDs.put(1, new HashSet<>());
@@ -237,6 +255,7 @@ public class PatchCellFactoryTest {
             assertEquals(heights[0] + compressions[0], patchCellContainer.criticalHeight, EPSILON);
             assertEquals(ages[0], patchCellContainer.age);
             assertEquals(divisions[0], patchCellContainer.divisions);
+            assertEquals(apotosisAges[0], patchCellContainer.criticalAge);
         }
         for (int i : factory.popToIDs.get(2)) {
             PatchCellContainer patchCellContainer = factory.cells.get(i);
@@ -244,6 +263,7 @@ public class PatchCellFactoryTest {
             assertEquals(heights[1] + compressions[1], patchCellContainer.criticalHeight, EPSILON);
             assertEquals(ages[1], patchCellContainer.age);
             assertEquals(divisions[1], patchCellContainer.divisions);
+            assertEquals(apotosisAges[1], patchCellContainer.criticalAge);
         }
         for (int i : factory.popToIDs.get(3)) {
             PatchCellContainer patchCellContainer = factory.cells.get(i);
@@ -251,6 +271,7 @@ public class PatchCellFactoryTest {
             assertEquals(heights[2] + compressions[2], patchCellContainer.criticalHeight, EPSILON);
             assertEquals(ages[2], patchCellContainer.age);
             assertEquals(divisions[2], patchCellContainer.divisions);
+            assertEquals(apotosisAges[2], patchCellContainer.criticalAge);
         }
     }
 }

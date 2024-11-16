@@ -11,6 +11,7 @@ import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.patch.util.PatchEnums.Domain;
@@ -41,6 +42,8 @@ public class PatchCellRandomTest {
 
     static double cellCriticalHeight = randomDoubleBetween(10, 100);
 
+    static double cellCriticalAge = randomDoubleBetween(900, 1100);
+
     static State cellState = State.QUIESCENT;
 
     static PatchCellContainer baseContainer =
@@ -54,7 +57,8 @@ public class PatchCellRandomTest {
                     cellVolume,
                     cellHeight,
                     cellCriticalVolume,
-                    cellCriticalHeight);
+                    cellCriticalHeight,
+                    cellCriticalAge);
 
     @BeforeAll
     public static void setupMocks() {
@@ -70,6 +74,7 @@ public class PatchCellRandomTest {
         double height = randomDoubleBetween(10, 100);
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
+        double criticalAge = randomDoubleBetween(1, 1000);
         State state1 = State.QUIESCENT;
         State state2 = State.PROLIFERATIVE;
 
@@ -84,7 +89,8 @@ public class PatchCellRandomTest {
                         volume,
                         height,
                         criticalVolume,
-                        criticalHeight);
+                        criticalHeight,
+                        criticalAge);
         PatchCellRandom cell =
                 new PatchCellRandom(cellContainer, locationMock, parametersMock, null);
 
@@ -109,6 +115,7 @@ public class PatchCellRandomTest {
         double height = randomDoubleBetween(10, 100);
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
+        double criticalAge = randomDoubleBetween(1, 1000);
         State state1 = State.QUIESCENT;
         State state2 = State.PROLIFERATIVE;
 
@@ -130,7 +137,8 @@ public class PatchCellRandomTest {
                         volume,
                         height,
                         criticalVolume,
-                        criticalHeight);
+                        criticalHeight,
+                        criticalAge);
 
         PatchCellRandom cell =
                 new PatchCellRandom(cellContainer, locationMock, parametersMock, links);

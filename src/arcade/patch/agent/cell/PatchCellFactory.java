@@ -159,6 +159,7 @@ public final class PatchCellFactory implements CellFactory {
         double volume = parameters.getDouble("CELL_VOLUME");
         double height = parameters.getDouble("CELL_HEIGHT");
         int age = parameters.getInt("CELL_AGE");
+        double apototicAge = parameters.getDouble("APOPTOSIS_AGE");
 
         return new PatchCellContainer(
                 id,
@@ -170,7 +171,8 @@ public final class PatchCellFactory implements CellFactory {
                 volume,
                 height,
                 volume,
-                height + compression);
+                height + compression,
+                apototicAge);
     }
 
     /**

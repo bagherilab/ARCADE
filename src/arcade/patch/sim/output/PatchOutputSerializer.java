@@ -143,6 +143,7 @@ public final class PatchOutputSerializer {
             JsonArray criticals = new JsonArray();
             criticals.add((int) (100 * src.criticalVolume) / 100.0);
             criticals.add((int) (100 * src.criticalHeight) / 100.0);
+            criticals.add((int) (100 * src.criticalAge) / 100.0);
             json.add("criticals", criticals);
 
             // TODO: add cycles
