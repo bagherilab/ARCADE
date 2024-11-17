@@ -9,8 +9,6 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
-import arcade.patch.util.PatchEnums.AntigenFlag;
-import arcade.patch.util.PatchEnums.State;
 import static arcade.patch.util.PatchEnums.AntigenFlag;
 import static arcade.patch.util.PatchEnums.State;
 
