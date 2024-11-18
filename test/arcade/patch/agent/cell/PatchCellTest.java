@@ -2,6 +2,9 @@ package arcade.patch.agent.cell;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import ec.util.MersenneTwisterFast;
+import arcade.core.agent.cell.CellState;
+import arcade.core.env.location.*;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.env.location.PatchLocation;
@@ -12,6 +15,8 @@ import static arcade.patch.util.PatchEnums.State;
 
 public class PatchCellTest {
     private static final double EPSILON = 1E-8;
+
+    private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast();
 
     static PatchLocation locationMock;
 
@@ -50,6 +55,27 @@ public class PatchCellTest {
                     cellCriticalVolume,
                     cellCriticalHeight);
 
+    static class PatchCellMock extends PatchCell {
+        PatchCellMock(PatchCellContainer container, Location location, Parameters parameters) {
+            super(container, location, parameters, null);
+        }
+
+        @Override
+        public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
+            return new PatchCellContainer(
+                    newID,
+                    id,
+                    pop,
+                    age,
+                    divisions,
+                    newState,
+                    volume,
+                    height,
+                    criticalVolume,
+                    criticalHeight);
+        }
+    }
+
     @BeforeAll
     public static void setupMocks() {
         locationMock = mock(PatchLocation.class);
@@ -60,14 +86,13 @@ public class PatchCellTest {
 
     @Test
     public void getCycles_whenCellInitialized_returnsEmpty() {
-        PatchCellRandom cell = new PatchCellRandom(baseContainer, locationMock, parametersMock);
-
+        PatchCell cell = new PatchCellMock(baseContainer, locationMock, parametersMock);
         assertEquals(0, cell.getCycles().size());
     }
 
     @Test
     public void addCycle_givenCycles_appendValues() {
-        PatchCellRandom cell = new PatchCellRandom(baseContainer, locationMock, parametersMock);
+        PatchCell cell = new PatchCellMock(baseContainer, locationMock, parametersMock);
         cell.addCycle(1);
         cell.addCycle(3);
         cell.addCycle(5);
