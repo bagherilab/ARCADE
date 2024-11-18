@@ -48,7 +48,12 @@ public class PatchProcessQuorumSensingSimple extends PatchProcessQuorumSensing {
         double totalReceptors = (cell.boundAntigensCount - cell.synNotchAntigensBound) / (6.022E23 * cell.getVolume());
         double synNotchReceptors = (cell.synNotchAntigensBound) / (6.022E23 * cell.getVolume());
         double auxinExpressed = auxinProductionRate * totalReceptors - auxinDegradationRate * synNotchReceptors;
-        sim.getLattice("AUXIN").setValue(location, auxinExpressed);
+        double auxinSecreted = auxinExpressed - auxUptake;
+        if (auxUptake > auxinExpressed) {
+            auxUptake = auxinExpressed;
+            auxinSecreted = 0;
+        }
+        sim.getLattice("AUXIN").setValue(location, auxinSecreted);
     }
 
     @Override
