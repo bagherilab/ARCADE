@@ -132,6 +132,9 @@ public final class PatchEnums {
         /** Code for inflammation domain. */
         INFLAMMATION,
 
+        /** Code for quorum sensing domain. */
+        QUORUM,
+
         /** Code for signaling domain. */
         SIGNALING;
 
