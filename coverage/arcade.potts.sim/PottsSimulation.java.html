@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PottsSimulation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.sim</a> &gt; <span class="el_source">PottsSimulation.java</span></div><h1>PottsSimulation.java</h1><pre class="source lang-java linenums">package arcade.potts.sim;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import sim.engine.Schedule;
+import sim.engine.SimState;
+import arcade.core.agent.action.Action;
+import arcade.core.agent.cell.Cell;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.cell.CellFactory;
+import arcade.core.env.component.Component;
+import arcade.core.env.grid.Grid;
+import arcade.core.env.lattice.Lattice;
+import arcade.core.env.location.Location;
+import arcade.core.env.location.LocationContainer;
+import arcade.core.env.location.LocationFactory;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
+import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.agent.cell.PottsCellFactory;
+import arcade.potts.env.grid.PottsGrid;
+import arcade.potts.env.location.PottsLocationFactory;
+import static arcade.potts.util.PottsEnums.Ordering;
+
+/** Abstract implementation for potts {@link Simulation} instances. */
+public abstract class PottsSimulation extends SimState implements Simulation {
+    /** {@link arcade.core.sim.Series} object containing this simulation. */
+    final PottsSeries series;
+
+    /** Random number generator seed for this simulation. */
+    final int seed;
+
+    /** {@link arcade.potts.sim.Potts} object for the simulation. */
+    Potts potts;
+
+    /** {@link arcade.core.env.grid.Grid} containing agents in the simulation. */
+    Grid grid;
+
+    /** Cell ID tracker. */
+    int id;
+
+    /** Cell factory instance for the simulation. */
+    public final PottsCellFactory cellFactory;
+
+    /** Location factory instance for the simulation. */
+    public final PottsLocationFactory locationFactory;
+
+    /**
+     * Simulation instance for a {@link Series} for given random seed.
+     *
+     * @param seed the random seed for random number generator
+     * @param series the simulation series
+     */
+    public PottsSimulation(long seed, Series series) {
+<span class="fc" id="L56">        super(seed);</span>
+<span class="fc" id="L57">        this.series = (PottsSeries) series;</span>
+<span class="fc" id="L58">        this.seed = (int) seed - Series.SEED_OFFSET;</span>
+
+<span class="fc" id="L60">        this.locationFactory = makeLocationFactory();</span>
+<span class="fc" id="L61">        this.cellFactory = makeCellFactory();</span>
+<span class="fc" id="L62">    }</span>
+
+    @Override
+    public final Series getSeries() {
+<span class="fc" id="L66">        return series;</span>
+    }
+
+    @Override
+    public final Schedule getSchedule() {
+<span class="fc" id="L71">        return schedule;</span>
+    }
+
+    @Override
+    public final int getSeed() {
+<span class="fc" id="L76">        return seed;</span>
+    }
+
+    @Override
+    public final int getID() {
+<span class="fc" id="L81">        return ++id;</span>
+    }
+
+    @Override
+    public final ArrayList&lt;CellContainer&gt; getCells() {
+<span class="fc" id="L86">        ArrayList&lt;CellContainer&gt; cellContainers = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        for (Object obj : grid.getAllObjects()) {</span>
+<span class="fc" id="L89">            Cell cell = (Cell) obj;</span>
+<span class="fc" id="L90">            cellContainers.add(cell.convert());</span>
+<span class="fc" id="L91">        }</span>
+
+<span class="fc" id="L93">        return cellContainers;</span>
+    }
+
+    @Override
+    public final ArrayList&lt;LocationContainer&gt; getLocations() {
+<span class="fc" id="L98">        ArrayList&lt;LocationContainer&gt; locationContainers = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        for (Object obj : grid.getAllObjects()) {</span>
+<span class="fc" id="L101">            Cell cell = (Cell) obj;</span>
+<span class="fc" id="L102">            locationContainers.add(cell.getLocation().convert(cell.getID()));</span>
+<span class="fc" id="L103">        }</span>
+
+<span class="fc" id="L105">        return locationContainers;</span>
+    }
+
+    @Override
+    public final CellFactory getCellFactory() {
+<span class="nc" id="L110">        return cellFactory;</span>
+    }
+
+    @Override
+    public final LocationFactory getLocationFactory() {
+<span class="nc" id="L115">        return locationFactory;</span>
+    }
+
+    @Override
+    public final Grid getGrid() {
+<span class="fc" id="L120">        return grid;</span>
+    }
+
+    @Override
+    public final Lattice getLattice(String key) {
+<span class="fc" id="L125">        return null;</span>
+    }
+
+    @Override
+    public final Action getAction(String key) {
+<span class="nc" id="L130">        return null;</span>
+    }
+
+    @Override
+    public final Component getComponent(String key) {
+<span class="nc" id="L135">        return null;</span>
+    }
+
+    /**
+     * Gets {@link Potts} instance for the simulation.
+     *
+     * @return the potts instance
+     */
+    public final Potts getPotts() {
+<span class="fc" id="L144">        return potts;</span>
+    }
+
+    /**
+     * Called at the start of the simulation to set up agents and environment and schedule actions
+     * and components as needed.
+     */
+    @Override
+    public void start() {
+<span class="fc" id="L153">        super.start();</span>
+
+        // Reset id.
+<span class="fc" id="L156">        id = 0;</span>
+
+        // Equip simulation to loader.
+<span class="fc bfc" id="L159" title="All 2 branches covered.">        if (series.loader != null) {</span>
+<span class="fc" id="L160">            series.loader.equip(this);</span>
+        }
+
+<span class="fc" id="L163">        setupPotts();</span>
+<span class="fc" id="L164">        setupAgents();</span>
+<span class="fc" id="L165">        setupEnvironment();</span>
+
+<span class="fc" id="L167">        scheduleActions();</span>
+<span class="fc" id="L168">        scheduleComponents();</span>
+
+        // Equip simulation to saver and schedule.
+<span class="fc bfc" id="L171" title="All 4 branches covered.">        if (series.saver != null &amp;&amp; !series.isVis) {</span>
+<span class="fc" id="L172">            series.saver.equip(this);</span>
+<span class="fc" id="L173">            doOutput(true);</span>
+        }
+<span class="fc" id="L175">    }</span>
+
+    /** Called at the end of the simulation. */
+    @Override
+    public void finish() {
+<span class="fc" id="L180">        super.finish();</span>
+
+        // Finalize saver.
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        if (!series.isVis) {</span>
+<span class="fc" id="L184">            doOutput(false);</span>
+        }
+<span class="fc" id="L186">    }</span>
+
+    /**
+     * Creates the {@link arcade.potts.sim.Potts} object for the simulation.
+     *
+     * @return a {@link arcade.potts.sim.Potts} object
+     */
+    abstract Potts makePotts();
+
+    /**
+     * Creates a factory for locations.
+     *
+     * @return a {@link arcade.core.env.location.Location} factory
+     */
+    public abstract PottsLocationFactory makeLocationFactory();
+
+    /**
+     * Creates a factory for cells.
+     *
+     * @return a {@link arcade.core.agent.cell.Cell} factory
+     */
+    public abstract PottsCellFactory makeCellFactory();
+
+    /** Sets up the potts layer for the simulation. */
+    public final void setupPotts() {
+<span class="fc" id="L211">        potts = makePotts();</span>
+<span class="fc" id="L212">        schedule.scheduleRepeating(1, Ordering.POTTS.ordinal(), potts);</span>
+<span class="fc" id="L213">    }</span>
+
+    @Override
+    public final void setupAgents() {
+        // Initialize grid for agents.
+<span class="fc" id="L218">        grid = new PottsGrid();</span>
+<span class="fc" id="L219">        potts.grid = grid;</span>
+
+        // Initialize factories.
+<span class="fc" id="L222">        locationFactory.initialize(series, random);</span>
+<span class="fc" id="L223">        cellFactory.initialize(series, random);</span>
+
+        // Iterate through each population to create agents.
+<span class="fc bfc" id="L226" title="All 2 branches covered.">        for (MiniBox population : series.populations.values()) {</span>
+<span class="fc" id="L227">            int pop = population.getInt(&quot;CODE&quot;);</span>
+<span class="fc" id="L228">            HashSet&lt;Integer&gt; ids = cellFactory.popToIDs.get(pop);</span>
+
+<span class="fc bfc" id="L230" title="All 2 branches covered.">            for (int i : ids) {</span>
+                // Get location and cell containers.
+<span class="fc" id="L232">                LocationContainer locationContainer = locationFactory.locations.get(i);</span>
+<span class="fc" id="L233">                CellContainer cellContainer = cellFactory.cells.get(i);</span>
+
+                // Check that we have enough containers.
+<span class="fc bfc" id="L236" title="All 4 branches covered.">                if (locationContainer == null || cellContainer == null) {</span>
+<span class="fc" id="L237">                    break;</span>
+                }
+
+                // Make the location and cell.
+<span class="fc" id="L241">                Location location = locationContainer.convert(locationFactory, cellContainer);</span>
+<span class="fc" id="L242">                PottsCell cell = (PottsCell) cellContainer.convert(cellFactory, location, random);</span>
+
+                // Add, initialize, and schedule the cell.
+<span class="fc" id="L245">                grid.addObject(cell, null);</span>
+<span class="fc" id="L246">                potts.register(cell);</span>
+<span class="fc" id="L247">                cell.initialize(potts.ids, potts.regions);</span>
+<span class="fc" id="L248">                cell.schedule(schedule);</span>
+
+                // Update id tracking.
+<span class="fc" id="L251">                id = Math.max(i, id);</span>
+<span class="fc" id="L252">            }</span>
+<span class="fc" id="L253">        }</span>
+<span class="fc" id="L254">    }</span>
+
+    @Override
+    public final void setupEnvironment() {
+        // TODO add environment setup (currently not needed)
+<span class="fc" id="L259">    }</span>
+
+    @Override
+    public final void scheduleActions() {
+        // TODO add action scheduling
+<span class="fc" id="L264">    }</span>
+
+    @Override
+    public final void scheduleComponents() {
+        // TODO add component scheduling
+<span class="fc" id="L269">    }</span>
+
+    /**
+     * Runs output methods.
+     *
+     * @param isScheduled {@code true} to schedule output, {@code false} otherwise
+     */
+    public void doOutput(boolean isScheduled) {
+<span class="fc bfc" id="L277" title="All 2 branches covered.">        if (isScheduled) {</span>
+<span class="fc" id="L278">            series.saver.schedule(schedule, series.getInterval());</span>
+        } else {
+<span class="fc" id="L280">            int tick = (int) schedule.getTime() + 1;</span>
+<span class="fc" id="L281">            series.saver.saveCells(tick);</span>
+<span class="fc" id="L282">            series.saver.saveLocations(tick);</span>
+        }
+<span class="fc" id="L284">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

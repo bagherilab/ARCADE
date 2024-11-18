@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchOutputSerializer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.sim.output</a> &gt; <span class="el_source">PatchOutputSerializer.java</span></div><h1>PatchOutputSerializer.java</h1><pre class="source lang-java linenums">package arcade.patch.sim.output;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.location.LocationContainer;
+import arcade.core.sim.Series;
+import arcade.core.sim.output.OutputSerializer;
+import arcade.patch.agent.cell.PatchCellContainer;
+import arcade.patch.env.location.Coordinate;
+import arcade.patch.env.location.CoordinateUVWZ;
+import arcade.patch.env.location.CoordinateXYZ;
+import arcade.patch.env.location.PatchLocationContainer;
+import arcade.patch.sim.PatchSeries;
+import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
+import static arcade.patch.util.PatchEnums.State;
+
+/**
+ * Container class for patch-specific object serializers.
+ *
+ * &lt;p&gt;Generic serializers include:
+ *
+ * &lt;ul&gt;
+ *   &lt;li&gt;{@link PatchSeriesSerializer} for serializing {@link PatchSeries}
+ *   &lt;li&gt;{@link PatchCellSerializer} for serializing {@link PatchCellContainer}
+ *   &lt;li&gt;{@link LocationListSerializer} for serializing {@link PatchLocationContainer} lists
+ *   &lt;li&gt;{@link CoordinateXYZSerializer} for serializing (x, y, z) {@link Coordinate}
+ *   &lt;li&gt;{@link CoordinateUVWZSerializer} for serializing (u, v, w, z) {@link Coordinate}
+ * &lt;/ul&gt;
+ */
+public final class PatchOutputSerializer {
+    /** Hidden utility class constructor. */
+<span class="nc" id="L41">    protected PatchOutputSerializer() {</span>
+<span class="nc" id="L42">        throw new UnsupportedOperationException();</span>
+    }
+
+    /**
+     * Creates a {@code Gson} with generic and implementation-specific adaptors.
+     *
+     * @return a {@code Gson} instance
+     */
+    static Gson makeGSON() {
+<span class="fc" id="L51">        GsonBuilder gsonBuilder = OutputSerializer.makeGSONBuilder();</span>
+<span class="fc" id="L52">        gsonBuilder.registerTypeAdapter(PatchSeries.class, new PatchSeriesSerializer());</span>
+<span class="fc" id="L53">        gsonBuilder.registerTypeAdapter(CellContainer.class, new CellSerializer());</span>
+<span class="fc" id="L54">        gsonBuilder.registerTypeAdapter(PatchCellContainer.class, new PatchCellSerializer());</span>
+<span class="fc" id="L55">        gsonBuilder.registerTypeAdapter(DEFAULT_LOCATION_TYPE, new LocationListSerializer());</span>
+<span class="fc" id="L56">        gsonBuilder.registerTypeAdapter(CoordinateXYZ.class, new CoordinateXYZSerializer());</span>
+<span class="fc" id="L57">        gsonBuilder.registerTypeAdapter(CoordinateUVWZ.class, new CoordinateUVWZSerializer());</span>
+<span class="fc" id="L58">        return gsonBuilder.create();</span>
+    }
+
+    /**
+     * Serializer for {@link PatchSeries} objects.
+     *
+     * &lt;p&gt;The object is first serialized using the generic {@link Series} and patch-specific
+     * contents are then appended:
+     *
+     * &lt;pre&gt;
+     *     ...
+     *     &quot;patch&quot;: {
+     *         &quot;(key)&quot; : (value),
+     *         &quot;(key)&quot; : (value),
+     *         ...
+     *     }
+     *     ...
+     * &lt;/pre&gt;
+     */
+<span class="fc" id="L77">    static class PatchSeriesSerializer implements JsonSerializer&lt;PatchSeries&gt; {</span>
+        @Override
+        public JsonElement serialize(
+                PatchSeries src, Type typeOfSrc, JsonSerializationContext context) {
+<span class="fc" id="L81">            JsonObject json = (JsonObject) context.serialize(src, Series.class);</span>
+
+            // Add additional sizing parameters.
+<span class="fc" id="L84">            JsonObject sizes = json.get(&quot;size&quot;).getAsJsonObject();</span>
+<span class="fc" id="L85">            sizes.addProperty(&quot;radius&quot;, src.radius);</span>
+<span class="fc" id="L86">            sizes.addProperty(&quot;depth&quot;, src.depth);</span>
+
+            // Add patch parameters.
+<span class="fc" id="L89">            JsonElement patch = context.serialize(src.patch);</span>
+<span class="fc" id="L90">            json.add(&quot;patch&quot;, patch);</span>
+
+<span class="fc" id="L92">            return json;</span>
+        }
+    }
+
+    /**
+     * Serializer for {@link CellContainer} objects.
+     *
+     * &lt;p&gt;Uses serialization for {@link PatchCellContainer}.
+     */
+<span class="fc" id="L101">    static class CellSerializer implements JsonSerializer&lt;CellContainer&gt; {</span>
+        @Override
+        public JsonElement serialize(
+                CellContainer src, Type typeOfSrc, JsonSerializationContext context) {
+<span class="nc" id="L105">            return context.serialize(src, PatchCellContainer.class);</span>
+        }
+    }
+
+    /**
+     * Serializer for {@link PatchCellContainer} objects.
+     *
+     * &lt;p&gt;The container object is formatted as:
+     *
+     * &lt;pre&gt;
+     *     {
+     *         &quot;id&quot;: (id),
+     *         &quot;parent&quot;: (parent),
+     *         &quot;pop&quot;: (pop),
+     *         &quot;age&quot;: (age),
+     *         &quot;divisions&quot;: (divisions),
+     *         &quot;state&quot;: (state),
+     *         &quot;volume&quot;: (volume),
+     *         &quot;height&quot;: (height),
+     *         &quot;criticals&quot;: [(critical volume), (critical height)],
+     *     }
+     * &lt;/pre&gt;
+     */
+<span class="fc" id="L128">    static class PatchCellSerializer implements JsonSerializer&lt;PatchCellContainer&gt; {</span>
+        @Override
+        public JsonElement serialize(
+                PatchCellContainer src, Type typeOfSrc, JsonSerializationContext context) {
+<span class="nc" id="L132">            JsonObject json = new JsonObject();</span>
+
+<span class="nc" id="L134">            json.addProperty(&quot;id&quot;, src.id);</span>
+<span class="nc" id="L135">            json.addProperty(&quot;parent&quot;, src.parent);</span>
+<span class="nc" id="L136">            json.addProperty(&quot;pop&quot;, src.pop);</span>
+<span class="nc" id="L137">            json.addProperty(&quot;age&quot;, src.age);</span>
+<span class="nc" id="L138">            json.addProperty(&quot;divisions&quot;, src.divisions);</span>
+<span class="nc" id="L139">            json.addProperty(&quot;state&quot;, ((State) src.state).name());</span>
+<span class="nc" id="L140">            json.addProperty(&quot;volume&quot;, src.volume);</span>
+<span class="nc" id="L141">            json.addProperty(&quot;height&quot;, src.height);</span>
+
+<span class="nc" id="L143">            JsonArray criticals = new JsonArray();</span>
+<span class="nc" id="L144">            criticals.add((int) (100 * src.criticalVolume) / 100.0);</span>
+<span class="nc" id="L145">            criticals.add((int) (100 * src.criticalHeight) / 100.0);</span>
+<span class="nc" id="L146">            json.add(&quot;criticals&quot;, criticals);</span>
+
+            // TODO: add cycles
+
+<span class="nc" id="L150">            return json;</span>
+        }
+    }
+
+    /**
+     * Serializer for list of {@link PatchLocationContainer} objects.
+     *
+     * &lt;p&gt;This serializer overrides the {@code LocationListSerializer} defined in {@link
+     * OutputSerializer}. The container object is formatted as:
+     *
+     * &lt;pre&gt;
+     *     [
+     *         {
+     *             &quot;coordinate&quot;: (coordinate of location),
+     *             &quot;ids&quot;: (list of ids of cells in the location),
+     *         },
+     *         {
+     *             &quot;coordinate&quot;: (coordinate of location),
+     *             &quot;ids&quot;: (list of ids of cells in the location),
+     *         },
+     *         ...
+     *     ]
+     * &lt;/pre&gt;
+     */
+<span class="fc" id="L174">    public static final class LocationListSerializer</span>
+            implements JsonSerializer&lt;ArrayList&lt;LocationContainer&gt;&gt; {
+        @Override
+        public JsonElement serialize(
+                ArrayList&lt;LocationContainer&gt; src,
+                Type typeOfSrc,
+                JsonSerializationContext context) {
+<span class="fc" id="L181">            JsonArray json = new JsonArray();</span>
+<span class="fc" id="L182">            HashMap&lt;Coordinate, ArrayList&lt;Integer&gt;&gt; containerMap = new HashMap&lt;&gt;();</span>
+
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">            for (LocationContainer locationContainer : src) {</span>
+<span class="nc" id="L185">                PatchLocationContainer container = (PatchLocationContainer) locationContainer;</span>
+<span class="nc" id="L186">                ArrayList&lt;Integer&gt; ids =</span>
+<span class="nc" id="L187">                        containerMap.computeIfAbsent(container.coordinate, k -&gt; new ArrayList&lt;&gt;());</span>
+<span class="nc" id="L188">                ids.add(container.id);</span>
+<span class="nc" id="L189">            }</span>
+
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">            for (Coordinate coordinate : containerMap.keySet()) {</span>
+<span class="nc" id="L192">                JsonObject location = new JsonObject();</span>
+<span class="nc" id="L193">                location.add(&quot;coordinate&quot;, context.serialize(coordinate));</span>
+<span class="nc" id="L194">                location.add(&quot;ids&quot;, context.serialize(containerMap.get(coordinate)));</span>
+<span class="nc" id="L195">                json.add(location);</span>
+<span class="nc" id="L196">            }</span>
+
+<span class="fc" id="L198">            return json;</span>
+        }
+    }
+
+    /**
+     * Serializer for {@link CoordinateXYZ} objects.
+     *
+     * &lt;p&gt;The coordinate object is formatted as:
+     *
+     * &lt;pre&gt;
+     *     [(x), (y), (z)]
+     * &lt;/pre&gt;
+     */
+<span class="fc" id="L211">    static class CoordinateXYZSerializer implements JsonSerializer&lt;CoordinateXYZ&gt; {</span>
+        @Override
+        public JsonElement serialize(
+                CoordinateXYZ src, Type typeOfSrc, JsonSerializationContext context) {
+<span class="nc" id="L215">            JsonArray json = new JsonArray();</span>
+<span class="nc" id="L216">            json.add(src.x);</span>
+<span class="nc" id="L217">            json.add(src.y);</span>
+<span class="nc" id="L218">            json.add(src.z);</span>
+<span class="nc" id="L219">            return json;</span>
+        }
+    }
+
+    /**
+     * Serializer for {@link CoordinateUVWZ} objects.
+     *
+     * &lt;p&gt;The coordinate object is formatted as:
+     *
+     * &lt;pre&gt;
+     *     [(u), (v), (w), (z)]
+     * &lt;/pre&gt;
+     */
+<span class="fc" id="L232">    static class CoordinateUVWZSerializer implements JsonSerializer&lt;CoordinateUVWZ&gt; {</span>
+        @Override
+        public JsonElement serialize(
+                CoordinateUVWZ src, Type typeOfSrc, JsonSerializationContext context) {
+<span class="nc" id="L236">            JsonArray json = new JsonArray();</span>
+<span class="nc" id="L237">            json.add(src.u);</span>
+<span class="nc" id="L238">            json.add(src.v);</span>
+<span class="nc" id="L239">            json.add(src.w);</span>
+<span class="nc" id="L240">            json.add(src.z);</span>
+<span class="nc" id="L241">            return json;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

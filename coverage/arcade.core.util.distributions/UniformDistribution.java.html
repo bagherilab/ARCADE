@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UniformDistribution.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.core.util.distributions</a> &gt; <span class="el_source">UniformDistribution.java</span></div><h1>UniformDistribution.java</h1><pre class="source lang-java linenums">package arcade.core.util.distributions;
+
+import sim.util.distribution.Uniform;
+import ec.util.MersenneTwisterFast;
+import arcade.core.util.MiniBox;
+
+/** Container class for uniform distribution. */
+public class UniformDistribution implements Distribution {
+    /** Minimum of the distribution. */
+    final double min;
+
+    /** Maximum of the distribution. */
+    final double max;
+
+    /** Value drawn from the distribution. */
+    final double value;
+
+    /** Uniform distribution. */
+    private final Uniform uniform;
+
+    /**
+     * Creates a uniform {@code Distribution} from parameters dictionary.
+     *
+     * @param name the distribution parameter name
+     * @param parameters the distribution parameters dictionary
+     * @param random the random number generator instance
+     */
+    public UniformDistribution(String name, MiniBox parameters, MersenneTwisterFast random) {
+<span class="fc" id="L29">        this(parameters.getDouble(name + &quot;_MIN&quot;), parameters.getDouble(name + &quot;_MAX&quot;), random);</span>
+<span class="fc" id="L30">    }</span>
+
+    /**
+     * Creates a uniform {@code Distribution} from parameters.
+     *
+     * @param min the minimum of the uniform distribution
+     * @param max the maximum of the uniform distribution
+     * @param random the random number generator instance
+     */
+<span class="fc" id="L39">    public UniformDistribution(double min, double max, MersenneTwisterFast random) {</span>
+<span class="fc" id="L40">        this.min = min;</span>
+<span class="fc" id="L41">        this.max = max;</span>
+<span class="fc" id="L42">        this.uniform = new Uniform(min, max, random);</span>
+<span class="fc" id="L43">        this.value = nextDouble();</span>
+<span class="fc" id="L44">    }</span>
+
+    @Override
+    public MiniBox getParameters() {
+<span class="fc" id="L48">        MiniBox parameters = new MiniBox();</span>
+<span class="fc" id="L49">        parameters.put(&quot;MIN&quot;, min);</span>
+<span class="fc" id="L50">        parameters.put(&quot;MAX&quot;, max);</span>
+<span class="fc" id="L51">        return parameters;</span>
+    }
+
+    @Override
+    public double getExpected() {
+<span class="fc" id="L56">        return (min + max) / 2.0;</span>
+    }
+
+    @Override
+    public double getDoubleValue() {
+<span class="fc" id="L61">        return value;</span>
+    }
+
+    @Override
+    public int getIntValue() {
+<span class="fc" id="L66">        return (int) Math.round(value);</span>
+    }
+
+    @Override
+    public double nextDouble() {
+<span class="fc" id="L71">        return uniform.nextDouble();</span>
+    }
+
+    @Override
+    public int nextInt() {
+<span class="fc" id="L76">        return (int) Math.round(nextDouble());</span>
+    }
+
+    @Override
+    public Distribution rebase(MersenneTwisterFast random) {
+<span class="fc" id="L81">        return new UniformDistribution(min, max, random);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

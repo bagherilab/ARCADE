@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchCellRandom.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.agent.cell</a> &gt; <span class="el_source">PatchCellRandom.java</span></div><h1>PatchCellRandom.java</h1><pre class="source lang-java linenums">package arcade.patch.agent.cell;
+
+import sim.engine.SimState;
+import ec.util.MersenneTwisterFast;
+import arcade.core.agent.cell.CellState;
+import arcade.core.env.location.Location;
+import arcade.core.sim.Simulation;
+import arcade.core.util.GrabBag;
+import arcade.core.util.Parameters;
+import static arcade.patch.util.PatchEnums.Domain;
+import static arcade.patch.util.PatchEnums.State;
+
+/**
+ * Extension of {@link PatchCell} for cells with randomly assigned states.
+ *
+ * &lt;p&gt;These agents will simulate their metabolism and signaling processes, like {@link
+ * PatchCellTissue}, but cell states are randomly selected from all possible states, rather than
+ * following specific rules that guide
+ */
+public class PatchCellRandom extends PatchCell {
+    /**
+     * Creates a random {@code PatchCell} agent.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     */
+    public PatchCellRandom(PatchCellContainer container, Location location, Parameters parameters) {
+<span class="fc" id="L29">        this(container, location, parameters, null);</span>
+<span class="fc" id="L30">    }</span>
+
+    /**
+     * Creates a random {@code PatchCell} agent with population links.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
+    public PatchCellRandom(
+            PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
+<span class="fc" id="L42">        super(container, location, parameters, links);</span>
+<span class="fc" id="L43">    }</span>
+
+    @Override
+    public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
+<span class="fc" id="L47">        divisions--;</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        int newPop = links == null ? pop : links.next(random);</span>
+<span class="fc" id="L49">        return new PatchCellContainer(</span>
+                newID,
+                id,
+                newPop,
+                age,
+                divisions,
+                newState,
+                volume,
+                height,
+                criticalVolume,
+                criticalHeight);
+    }
+
+    @Override
+    public void step(SimState simstate) {
+<span class="fc" id="L64">        Simulation sim = (Simulation) simstate;</span>
+
+        // Increase age of cell.
+<span class="fc" id="L67">        age++;</span>
+
+        // Randomly select a cell state.
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        if (state == State.UNDEFINED) {</span>
+<span class="fc" id="L71">            setState(State.random(simstate.random));</span>
+        }
+
+        // Step metabolism process.
+<span class="fc" id="L75">        processes.get(Domain.METABOLISM).step(simstate.random, sim);</span>
+
+        // Step signaling network process.
+<span class="fc" id="L78">        processes.get(Domain.SIGNALING).step(simstate.random, sim);</span>
+
+        // Step the module for the cell state.
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        if (module != null) {</span>
+<span class="fc" id="L82">            module.step(simstate.random, sim);</span>
+        }
+<span class="fc" id="L84">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

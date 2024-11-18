@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchComponentSites.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.component</a> &gt; <span class="el_source">PatchComponentSites.java</span></div><h1>PatchComponentSites.java</h1><pre class="source lang-java linenums">package arcade.patch.env.component;
+
+import java.util.ArrayList;
+import sim.engine.Schedule;
+import arcade.core.env.component.Component;
+import arcade.core.env.lattice.Lattice;
+import arcade.core.env.operation.Operation;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
+import arcade.patch.env.operation.PatchOperationGenerator;
+import static arcade.patch.util.PatchEnums.Category;
+import static arcade.patch.util.PatchEnums.Ordering;
+
+/**
+ * Abstract implementation of {@link Component} for patch sites.
+ *
+ * &lt;p&gt;The object defines the locations of sites from which molecules are generated and added into
+ * the environment. Multiple molecules generated from the same sites are tracked by a list of {@link
+ * SiteLayer} objects, which map the component to the correct environment lattices.
+ */
+public abstract class PatchComponentSites implements Component {
+    /** List of site layers. */
+    final ArrayList&lt;SiteLayer&gt; layers;
+
+    /** Height of the array (z direction). */
+    final int latticeHeight;
+
+    /** Length of the array (x direction). */
+    final int latticeLength;
+
+    /** Width of the array (y direction). */
+    final int latticeWidth;
+
+    /**
+     * Creates a {@code Component} object for representing sites.
+     *
+     * @param series the simulation series
+     */
+<span class="nc" id="L39">    public PatchComponentSites(Series series) {</span>
+<span class="nc" id="L40">        layers = new ArrayList&lt;&gt;();</span>
+
+<span class="nc" id="L42">        latticeLength = series.length;</span>
+<span class="nc" id="L43">        latticeWidth = series.width;</span>
+<span class="nc" id="L44">        latticeHeight = series.height;</span>
+<span class="nc" id="L45">    }</span>
+
+    /** Specification of arrays and parameters for {@link PatchComponentSites}. */
+    protected static class SiteLayer {
+        /** Unique name for layer. */
+        final String name;
+
+        /** Array holding current concentration values. */
+        final double[][][] current;
+
+        /** Array holding previous concentration values. */
+        final double[][][] previous;
+
+        /** Array holding changes in concentration values. */
+        final double[][][] delta;
+
+        /** Maximum concentration. */
+        double concentration;
+
+        /** Molecule permeability. */
+        double permeability;
+
+        /**
+         * Creates a {@code SiteLayer} object.
+         *
+         * @param name the name of the layer
+         * @param generator the associated generator operation instance
+         */
+<span class="nc" id="L73">        SiteLayer(String name, PatchOperationGenerator generator) {</span>
+<span class="nc" id="L74">            this.name = name;</span>
+<span class="nc" id="L75">            delta = generator.latticeDelta;</span>
+<span class="nc" id="L76">            previous = generator.latticePrevious;</span>
+<span class="nc" id="L77">            current = generator.latticeCurrent;</span>
+<span class="nc" id="L78">            concentration = generator.concentration;</span>
+<span class="nc" id="L79">            permeability = generator.permeability;</span>
+<span class="nc" id="L80">        }</span>
+    }
+
+    @Override
+    public void schedule(Schedule schedule) {
+<span class="nc" id="L85">        schedule.scheduleOnce(this, Ordering.FIRST.ordinal() - 1);</span>
+<span class="nc" id="L86">        schedule.scheduleRepeating(this, Ordering.COMPONENTS.ordinal(), 1);</span>
+<span class="nc" id="L87">    }</span>
+
+    @Override
+    public void register(Simulation sim, String layer) {
+<span class="nc" id="L91">        Lattice lattice = sim.getLattice(layer);</span>
+<span class="nc" id="L92">        Operation generator = lattice.getOperation(Category.GENERATOR);</span>
+<span class="nc" id="L93">        SiteLayer siteLayer = new SiteLayer(layer, (PatchOperationGenerator) generator);</span>
+<span class="nc" id="L94">        layers.add(siteLayer);</span>
+<span class="nc" id="L95">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

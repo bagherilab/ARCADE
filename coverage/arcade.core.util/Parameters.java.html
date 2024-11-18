@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Parameters.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.core.util</a> &gt; <span class="el_source">Parameters.java</span></div><h1>Parameters.java</h1><pre class="source lang-java linenums">package arcade.core.util;
+
+import java.security.InvalidParameterException;
+import java.util.HashMap;
+import java.util.HashSet;
+import ec.util.MersenneTwisterFast;
+import arcade.core.util.distributions.Distribution;
+
+/**
+ * Container for parameters and parameter distributions.
+ *
+ * &lt;p&gt;{@code Parameters} objects contain a {@link MiniBox} of population parameters along with
+ * parameter distributions. Utility methods are provided to return parameters as specific types.
+ */
+public class Parameters {
+    /** Population parameters. */
+    final MiniBox popParameters;
+
+    /** Map of parameter names to distributions. */
+    final HashMap&lt;String, Distribution&gt; distributions;
+
+    /**
+     * Creates a cell {@code Parameters} instance.
+     *
+     * &lt;p&gt;Parameters with distributions are tagged as {@code DISTRIBUTION} in the population
+     * parameters dictionary. Each of these parameters are converted to a {@link Distribution}
+     * instance. If a parent cell parameters is passed, the parent parameter distributions are used
+     * to generate the {@link Distribution} instance instead.
+     *
+     * @param popParameters the cell population parameters
+     * @param cellParameters the parent cell parameters
+     * @param random the random number generator
+     */
+    public Parameters(
+<span class="fc" id="L35">            MiniBox popParameters, Parameters cellParameters, MersenneTwisterFast random) {</span>
+<span class="fc" id="L36">        this.popParameters = popParameters;</span>
+<span class="fc" id="L37">        distributions = new HashMap&lt;&gt;();</span>
+
+<span class="fc" id="L39">        MiniBox distributionsBox = popParameters.filter(&quot;(DISTRIBUTION)&quot;);</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        for (String key : distributionsBox.getKeys()) {</span>
+            Distribution distribution;
+
+<span class="fc bfc" id="L43" title="All 4 branches covered.">            if (cellParameters != null &amp;&amp; cellParameters.distributions.containsKey(key)) {</span>
+<span class="fc" id="L44">                distribution = cellParameters.distributions.get(key).rebase(random);</span>
+            } else {
+<span class="fc" id="L46">                distribution = popParameters.getDistribution(key, random);</span>
+            }
+
+<span class="fc" id="L49">            distributions.put(key, distribution);</span>
+<span class="fc" id="L50">        }</span>
+<span class="fc" id="L51">    }</span>
+
+    /**
+     * Gets the parameter value as a double.
+     *
+     * &lt;p&gt;The parameter value is pulled from the distribution object, if it exists. Otherwise, the
+     * parameter is pulled from the population parameter dictionary.
+     *
+     * @param key the parameter key
+     * @return the parameter value as a double
+     */
+    public double getDouble(String key) {
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        if (distributions.containsKey(key)) {</span>
+<span class="fc" id="L64">            return distributions.get(key).getDoubleValue();</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        } else if (popParameters.contains(key)) {</span>
+<span class="fc" id="L66">            return popParameters.getDouble(key);</span>
+        } else {
+<span class="fc" id="L68">            throw new InvalidParameterException();</span>
+        }
+    }
+
+    /**
+     * Gets the parameter value as an integer.
+     *
+     * &lt;p&gt;The parameter value is pulled from the distribution object, if it exists. Otherwise, the
+     * parameter is pulled from the population parameter dictionary.
+     *
+     * @param key the parameter key
+     * @return the parameter value as an integer
+     */
+    public int getInt(String key) {
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        if (distributions.containsKey(key)) {</span>
+<span class="fc" id="L83">            return distributions.get(key).getIntValue();</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        } else if (popParameters.contains(key)) {</span>
+<span class="fc" id="L85">            return popParameters.getInt(key);</span>
+        } else {
+<span class="fc" id="L87">            throw new InvalidParameterException();</span>
+        }
+    }
+
+    /**
+     * Gets the parameter value as a distribution, if it exists.
+     *
+     * @param key the parameter key
+     * @return the parameter value as a distribution
+     */
+    public Distribution getDistribution(String key) {
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">        if (distributions.containsKey(key)) {</span>
+<span class="fc" id="L99">            return distributions.get(key);</span>
+        } else {
+<span class="nc" id="L101">            throw new InvalidParameterException();</span>
+        }
+    }
+
+    /**
+     * Filters parameters by the given code.
+     *
+     * @param code the code to filter by
+     * @return the filtered box
+     */
+    public MiniBox filter(String code) {
+<span class="fc" id="L112">        return popParameters.filter(code);</span>
+    }
+
+    /**
+     * Compares two {@code Parameters} instances.
+     *
+     * &lt;p&gt;Instances are equal if (1) both parameters have the same population parameters and (2)
+     * both parameters have the same distributions. Note that distributions are the same if they
+     * have the same distribution parameters; the value pulled from each distribution is ignored.
+     *
+     * @param parameters the {@code Parameters} to compare to
+     * @return {@code true} if contents match, {@code false} otherwise
+     */
+    public boolean compare(Parameters parameters) {
+<span class="fc" id="L126">        HashSet&lt;String&gt; allKeys = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L127">        allKeys.addAll(distributions.keySet());</span>
+<span class="fc" id="L128">        allKeys.addAll(parameters.distributions.keySet());</span>
+
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        for (String key : allKeys) {</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">            if (!distributions.containsKey(key)) {</span>
+<span class="fc" id="L132">                return false;</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">            } else if (!parameters.distributions.containsKey(key)) {</span>
+<span class="fc" id="L134">                return false;</span>
+<span class="fc" id="L135">            } else if (!distributions</span>
+<span class="fc" id="L136">                    .get(key)</span>
+<span class="fc" id="L137">                    .getParameters()</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">                    .compare(parameters.distributions.get(key).getParameters())) {</span>
+<span class="fc" id="L139">                return false;</span>
+            }
+<span class="fc" id="L141">        }</span>
+
+<span class="fc" id="L143">        return popParameters.compare(parameters.popParameters);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

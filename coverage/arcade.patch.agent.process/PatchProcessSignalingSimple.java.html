@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchProcessSignalingSimple.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.agent.process</a> &gt; <span class="el_source">PatchProcessSignalingSimple.java</span></div><h1>PatchProcessSignalingSimple.java</h1><pre class="source lang-java linenums">package arcade.patch.agent.process;
+
+import java.util.ArrayList;
+import ec.util.MersenneTwisterFast;
+import arcade.core.agent.process.Process;
+import arcade.core.sim.Simulation;
+import arcade.core.util.Parameters;
+import arcade.core.util.Solver;
+import arcade.core.util.Solver.Equations;
+import arcade.patch.agent.cell.PatchCell;
+import static arcade.patch.util.PatchEnums.Domain;
+import static arcade.patch.util.PatchEnums.Flag;
+
+/**
+ * Extension of {@link PatchProcessSignaling} for simple EGFR signaling.
+ *
+ * &lt;p&gt;{@code PatchModuleSignalingSimple} represents a 5-component signaling network spanning the
+ * cytoplasm. Migratory flag is set based on fold change in active PLCg using {@code
+ * MIGRATORY_THRESHOLD}. Derived from {@link PatchProcessSignalingMedium} using minimal components.
+ */
+public class PatchProcessSignalingSimple extends PatchProcessSignaling {
+    /** Number of components in signaling network. */
+    private static final int NUM_COMPONENTS = 5;
+
+    /** Constant total PLCg [nM]. */
+    private static final double PLCG = 1.0;
+
+    /** ID for Glucose, internal. */
+    private static final int G_INT = 0;
+
+    /** ID for TGFa, extracellular. */
+    private static final int T_EXT = 1;
+
+    /** ID for TGFa-EGFR complex, cytoplasmic. */
+    private static final int TE_CYTO = 2;
+
+    /** ID for PLCg, inactive. */
+    private static final int P_INACTIVE = 3;
+
+    /** ID for PLCg, active. */
+    private static final int P_ACTIVE = 4;
+
+    /** Rate of TGFa-EGFR complex formation [/sec]. */
+    private static final double K1 = 0.003;
+
+    /** Rate of membrane EGFR degradation (estimate) [/sec]. */
+    private static final double K2 = 0.0001;
+
+    /** Rate of extracellular TGFa degradation (estimate) [/sec]. */
+    private static final double K3 = 0.01;
+
+    /** Rate of activation of PLCg [/sec]. */
+    private static final double K4 = 0.1;
+
+    /** Rate of inactivation of PLCg [/sec]. */
+    private static final double K5 = 0.05;
+
+    /** Translation of TGFa RNA [nM/sec]. */
+    private static final double K6 = 5.0 / MOLEC_TO_NM / 60;
+
+    /** Weight of TGFa-EGFR phosphorylation regulation by glucose. */
+    private static final double WG = 200.0;
+
+    /** Weight of PLCg activation regulation by p-TGFa-EGFR. */
+    private static final double WP = 5.0;
+
+    /** Weight of TGFa-EGFR dephosphorylation regulation by active PLCg. */
+    private static final double WC = 1.0;
+
+    /** Threshold fold change in PLCg for migration. */
+    private final double migratoryThreshold;
+
+    /** Fold change in PLCg of previous time step. */
+<span class="nc" id="L74">    private double previous = 1.0;</span>
+
+    /** Fold change in PLCg for current time step. */
+<span class="nc" id="L77">    private double current = 1.0;</span>
+
+    /** List of internal concentrations. */
+    private double[] concs;
+
+    /**
+     * Creates a simple signaling {@code Process} for the given {@link PatchCell}.
+     *
+     * &lt;p&gt;Initial concentrations of all components in the network are assigned and molecule names
+     * are added.
+     *
+     * &lt;p&gt;Loaded parameters include:
+     *
+     * &lt;ul&gt;
+     *   &lt;li&gt;{@code MIGRATORY_THRESHOLD} = threshold fold change in PLCg for migration
+     * &lt;/ul&gt;
+     *
+     * @param cell the {@link PatchCell} the process is associated with
+     */
+    public PatchProcessSignalingSimple(PatchCell cell) {
+<span class="nc" id="L97">        super(cell);</span>
+
+        // Initial concentrations, all in nM (umol/m^3). Most are zeros.
+<span class="nc" id="L100">        concs = new double[NUM_COMPONENTS];</span>
+<span class="nc" id="L101">        concs[P_INACTIVE] = K5 / (K4 + K5) * PLCG;</span>
+<span class="nc" id="L102">        concs[P_ACTIVE] = K4 / (K4 + K5) * PLCG;</span>
+
+        // Molecule names.
+<span class="nc" id="L105">        names = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L106">        names.add(G_INT, &quot;glucose_internal&quot;);</span>
+<span class="nc" id="L107">        names.add(T_EXT, &quot;tgfa_extracellular&quot;);</span>
+<span class="nc" id="L108">        names.add(TE_CYTO, &quot;tgfa_egfr_cytoplasmic&quot;);</span>
+<span class="nc" id="L109">        names.add(P_INACTIVE, &quot;plcg_inactive&quot;);</span>
+<span class="nc" id="L110">        names.add(P_ACTIVE, &quot;plcg_active&quot;);</span>
+
+        // Set loaded parameters.
+<span class="nc" id="L113">        Parameters parameters = cell.getParameters();</span>
+<span class="nc" id="L114">        migratoryThreshold = parameters.getDouble(&quot;signaling/MIGRATORY_THRESHOLD&quot;);</span>
+<span class="nc" id="L115">    }</span>
+
+    /**
+     * System of ODEs for network.
+     *
+     * &lt;p&gt;Uses three regulatory weights:
+     *
+     * &lt;ul&gt;
+     *   &lt;li&gt;wG = increase in TGFa-EGFR by glucose
+     *   &lt;li&gt;wP = increase in PLCg activation by TGFa-EGFR
+     *   &lt;li&gt;wC = decrease in TGFa-EGFR by active PLCg
+     * &lt;/ul&gt;
+     */
+<span class="nc" id="L128">    Equations equations =</span>
+            (t, y) -&gt; {
+<span class="nc" id="L130">                double wG = 1 + y[G_INT] / (WG + y[G_INT]);</span>
+<span class="nc" id="L131">                double wP = 1 + y[TE_CYTO] / (WP + y[TE_CYTO]);</span>
+<span class="nc" id="L132">                double wC = 1 - y[P_ACTIVE] / (WC + y[P_ACTIVE]);</span>
+
+<span class="nc" id="L134">                double[] dydt = new double[NUM_COMPONENTS];</span>
+
+<span class="nc" id="L136">                dydt[G_INT] = 0;</span>
+<span class="nc" id="L137">                dydt[T_EXT] = K6 - K1 * y[T_EXT] * wG * wC - K3 * y[T_EXT];</span>
+<span class="nc" id="L138">                dydt[TE_CYTO] = K1 * y[T_EXT] * wG * wC - K2 * y[TE_CYTO];</span>
+<span class="nc" id="L139">                dydt[P_INACTIVE] = K5 * y[P_ACTIVE] - K4 * (PLCG - y[P_ACTIVE]) * wP;</span>
+<span class="nc" id="L140">                dydt[P_ACTIVE] = K4 * (PLCG - y[P_ACTIVE]) * wP - K5 * y[P_ACTIVE];</span>
+
+<span class="nc" id="L142">                return dydt;</span>
+            };
+
+    @Override
+    public void step(MersenneTwisterFast random, Simulation sim) {
+        // Get metabolism process from cell.
+<span class="nc" id="L148">        PatchProcessMetabolism metabolism =</span>
+<span class="nc" id="L149">                (PatchProcessMetabolism) cell.getProcess(Domain.METABOLISM);</span>
+
+        // Get concentration of external TGFa and internal glucose in nM.
+<span class="nc" id="L152">        concs[G_INT] = metabolism.intAmts[0] / cell.getVolume() * 1E9;</span>
+<span class="nc" id="L153">        concs[T_EXT] = sim.getLattice(&quot;TGFA&quot;).getAverageValue(location) / TGFA_MW;</span>
+
+        // Solve system of equations.
+<span class="nc" id="L156">        double pre = concs[P_ACTIVE];</span>
+<span class="nc" id="L157">        concs = Solver.euler(equations, 0, concs, 60, STEP_SIZE);</span>
+<span class="nc" id="L158">        double post = concs[P_ACTIVE];</span>
+
+        // Calculate fold change and set migratory or proliferative flag.
+<span class="nc bnc" id="L161" title="All 2 branches missed.">        current = ((pre &gt; post ? pre / post : post / pre) - 1);</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">        double delta = (current &gt; previous ? current / previous : previous / current);</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">        cell.setFlag(delta &gt; migratoryThreshold ? Flag.MIGRATORY : Flag.PROLIFERATIVE);</span>
+<span class="nc" id="L164">        previous = current;</span>
+
+        // Update environment.
+<span class="nc" id="L167">        sim.getLattice(&quot;TGFA&quot;).setValue(location, concs[T_EXT] * TGFA_MW);</span>
+<span class="nc" id="L168">    }</span>
+
+    @Override
+    public void update(Process process) {
+<span class="nc" id="L172">        PatchProcessSignalingSimple signaling = (PatchProcessSignalingSimple) process;</span>
+<span class="nc" id="L173">        this.concs = signaling.concs.clone();</span>
+<span class="nc" id="L174">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

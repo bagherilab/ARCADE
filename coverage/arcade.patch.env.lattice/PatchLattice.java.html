@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchLattice.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.lattice</a> &gt; <span class="el_source">PatchLattice.java</span></div><h1>PatchLattice.java</h1><pre class="source lang-java linenums">package arcade.patch.env.lattice;
+
+import java.util.HashMap;
+import java.util.Map;
+import sim.engine.Schedule;
+import sim.engine.SimState;
+import arcade.core.env.lattice.Lattice;
+import arcade.core.env.location.Location;
+import arcade.core.env.operation.Operation;
+import arcade.core.env.operation.OperationCategory;
+import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
+import arcade.patch.env.location.CoordinateXYZ;
+import arcade.patch.env.location.PatchLocation;
+import static arcade.patch.util.PatchEnums.Category;
+import static arcade.patch.util.PatchEnums.Ordering;
+
+/**
+ * Abstract implementation of {@link Lattice} for patch models.
+ *
+ * &lt;p&gt;{@code PatchLattice} agents can call two {@link Operation} categories: diffusers and
+ * generators. Diffusers diffuse values on the underlying array. Generators add values to the
+ * underlying array.
+ *
+ * &lt;p&gt;General order of rules for the {@code PatchLattice} step:
+ *
+ * &lt;ul&gt;
+ *   &lt;li&gt;step generator operation
+ *   &lt;li&gt;step diffuser operation
+ * &lt;/ul&gt;
+ */
+public abstract class PatchLattice implements Lattice {
+    /** Array containing lattice values. */
+    protected final double[][][] field;
+
+    /** Length of the array (x direction). */
+    private final int length;
+
+    /** Width of the array (y direction). */
+    private final int width;
+
+    /** Height of the array (z direction). */
+    private final int height;
+
+    /** Spatial conversion factor (um/voxel). */
+    protected final double ds;
+
+    /** Spatial conversion factor in z (um/voxel). */
+    protected final double dz;
+
+    /** Map of operation categories and {@link Operation} instance. */
+    protected final Map&lt;Category, Operation&gt; operations;
+
+    /** Lattice parameters. */
+    final MiniBox parameters;
+
+    /**
+     * Creates a {@code PatchLattice} environment.
+     *
+     * @param length the length of array (x direction)
+     * @param width the width of array (y direction)
+     * @param height the height of array (z direction)
+     * @param ds the spatial scaling (x and y directions)
+     * @param dz the spatial scaling (z direction)
+     * @param parameters the dictionary of parameters
+     */
+    public PatchLattice(
+<span class="nc" id="L68">            int length, int width, int height, double ds, double dz, MiniBox parameters) {</span>
+<span class="nc" id="L69">        this.length = length;</span>
+<span class="nc" id="L70">        this.width = width;</span>
+<span class="nc" id="L71">        this.height = height;</span>
+<span class="nc" id="L72">        this.ds = ds;</span>
+<span class="nc" id="L73">        this.dz = dz;</span>
+<span class="nc" id="L74">        this.parameters = parameters;</span>
+
+<span class="nc" id="L76">        field = new double[height][length][width];</span>
+
+        // Add lattice operations.
+<span class="nc" id="L79">        operations = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L80">        MiniBox operationBox = parameters.filter(&quot;(OPERATION)&quot;);</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        for (String operationKey : operationBox.getKeys()) {</span>
+<span class="nc" id="L82">            Category category = Category.valueOf(operationKey);</span>
+<span class="nc" id="L83">            String version = operationBox.get(operationKey);</span>
+<span class="nc" id="L84">            Operation operation = makeOperation(category, version);</span>
+<span class="nc" id="L85">            operations.put(category, operation);</span>
+<span class="nc" id="L86">        }</span>
+<span class="nc" id="L87">    }</span>
+
+    /**
+     * Makes the specified {@link Operation} object.
+     *
+     * @param category the operation category
+     * @param version the operation version
+     * @return the operation instance
+     */
+    public abstract Operation makeOperation(Category category, String version);
+
+    @Override
+    public double[][][] getField() {
+<span class="nc" id="L100">        return field;</span>
+    }
+
+    @Override
+    public int getLength() {
+<span class="nc" id="L105">        return length;</span>
+    }
+
+    @Override
+    public int getWidth() {
+<span class="nc" id="L110">        return width;</span>
+    }
+
+    @Override
+    public int getHeight() {
+<span class="nc" id="L115">        return height;</span>
+    }
+
+    @Override
+    public Operation getOperation(OperationCategory category) {
+<span class="nc" id="L120">        return operations.get(category);</span>
+    }
+
+    @Override
+    public MiniBox getParameters() {
+<span class="nc" id="L125">        return parameters;</span>
+    }
+
+    @Override
+    public void setField(double[][] values, int index) {
+<span class="nc bnc" id="L130" title="All 2 branches missed.">        for (int i = 0; i &lt; values.length; i++) {</span>
+<span class="nc" id="L131">            field[index][i] = values[i].clone();</span>
+        }
+<span class="nc" id="L133">    }</span>
+
+    @Override
+    public void setField(double[][][] values) {
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        for (int k = 0; k &lt; values.length; k++) {</span>
+<span class="nc" id="L138">            setField(values[k], k);</span>
+        }
+<span class="nc" id="L140">    }</span>
+
+    @Override
+    public void setField(double value) {
+<span class="nc bnc" id="L144" title="All 2 branches missed.">        for (int k = 0; k &lt; height; k++) {</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">            for (int i = 0; i &lt; length; i++) {</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">                for (int j = 0; j &lt; width; j++) {</span>
+<span class="nc" id="L147">                    field[k][i][j] = value;</span>
+                }
+            }
+        }
+<span class="nc" id="L151">    }</span>
+
+    @Override
+    public double getTotalValue(Location location) {
+<span class="nc" id="L155">        PatchLocation patchLocation = (PatchLocation) location;</span>
+<span class="nc" id="L156">        return patchLocation.getSubcoordinates().stream()</span>
+<span class="nc" id="L157">                .map(e -&gt; (CoordinateXYZ) e)</span>
+<span class="nc" id="L158">                .mapToDouble(c -&gt; field[c.z][c.x][c.y])</span>
+<span class="nc" id="L159">                .sum();</span>
+    }
+
+    @Override
+    public double getAverageValue(Location location) {
+<span class="nc" id="L164">        PatchLocation patchLocation = (PatchLocation) location;</span>
+<span class="nc" id="L165">        return patchLocation.getSubcoordinates().stream()</span>
+<span class="nc" id="L166">                        .map(e -&gt; (CoordinateXYZ) e)</span>
+<span class="nc" id="L167">                        .mapToDouble(c -&gt; field[c.z][c.x][c.y])</span>
+<span class="nc" id="L168">                        .sum()</span>
+<span class="nc" id="L169">                / patchLocation.getMaximum();</span>
+    }
+
+    @Override
+    public void updateValue(Location location, double fraction) {
+<span class="nc bnc" id="L174" title="All 2 branches missed.">        if (!Double.isNaN(fraction)) {</span>
+<span class="nc" id="L175">            PatchLocation patchLocation = (PatchLocation) location;</span>
+<span class="nc" id="L176">            patchLocation.getSubcoordinates().stream()</span>
+<span class="nc" id="L177">                    .map(e -&gt; (CoordinateXYZ) e)</span>
+<span class="nc" id="L178">                    .forEach(c -&gt; field[c.z][c.x][c.y] *= fraction);</span>
+        }
+<span class="nc" id="L180">    }</span>
+
+    @Override
+    public void incrementValue(Location location, double increment) {
+<span class="nc" id="L184">        PatchLocation patchLocation = (PatchLocation) location;</span>
+<span class="nc" id="L185">        patchLocation.getSubcoordinates().stream()</span>
+<span class="nc" id="L186">                .map(e -&gt; (CoordinateXYZ) e)</span>
+<span class="nc" id="L187">                .forEach(c -&gt; field[c.z][c.x][c.y] += increment);</span>
+<span class="nc" id="L188">    }</span>
+
+    @Override
+    public void setValue(Location location, double value) {
+<span class="nc" id="L192">        PatchLocation patchLocation = (PatchLocation) location;</span>
+<span class="nc" id="L193">        patchLocation.getSubcoordinates().stream()</span>
+<span class="nc" id="L194">                .map(e -&gt; (CoordinateXYZ) e)</span>
+<span class="nc" id="L195">                .forEach(c -&gt; field[c.z][c.x][c.y] = value);</span>
+<span class="nc" id="L196">    }</span>
+
+    @Override
+    public void schedule(Schedule schedule) {
+<span class="nc" id="L200">        schedule.scheduleOnce(this, Ordering.FIRST.ordinal());</span>
+<span class="nc" id="L201">        schedule.scheduleRepeating(this, Ordering.LATTICES.ordinal(), 1);</span>
+<span class="nc" id="L202">    }</span>
+
+    @Override
+    public void step(SimState simstate) {
+<span class="nc" id="L206">        Simulation sim = (Simulation) simstate;</span>
+
+        // Step generator operation, if it exists.
+<span class="nc bnc" id="L209" title="All 2 branches missed.">        if (operations.containsKey(Category.GENERATOR)) {</span>
+<span class="nc" id="L210">            operations.get(Category.GENERATOR).step(simstate.random, sim);</span>
+        }
+
+        // Step diffuser operation, if it exists.
+<span class="nc bnc" id="L214" title="All 2 branches missed.">        if (operations.containsKey(Category.DIFFUSER)) {</span>
+<span class="nc" id="L215">            operations.get(Category.DIFFUSER).step(simstate.random, sim);</span>
+        }
+<span class="nc" id="L217">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

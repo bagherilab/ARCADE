@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchInputBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.sim.input</a> &gt; <span class="el_source">PatchInputBuilder.java</span></div><h1>PatchInputBuilder.java</h1><pre class="source lang-java linenums">package arcade.patch.sim.input;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.xml.sax.Attributes;
+import arcade.core.sim.input.InputBuilder;
+import arcade.core.util.Box;
+import arcade.core.util.MiniBox;
+import arcade.patch.env.location.CoordinateUVWZ;
+import arcade.patch.env.location.CoordinateXYZ;
+import arcade.patch.env.location.PatchLocation;
+import arcade.patch.env.location.PatchLocationHex;
+import arcade.patch.env.location.PatchLocationRect;
+import arcade.patch.sim.PatchSeries;
+import static arcade.core.util.Box.KEY_SEPARATOR;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+
+/** Custom builder for patch-specific simulation setup XMLs. */
+public final class PatchInputBuilder extends InputBuilder {
+    /** Creates a {@code PatchInputBuilder} instance. */
+    public PatchInputBuilder() {
+<span class="fc" id="L22">        super();</span>
+<span class="fc" id="L23">    }</span>
+
+    /**
+     * Updates a {@link Box} dictionary with tagged attributes.
+     *
+     * &lt;p&gt;Attributes are added to the last entry in the list of dictionaries. One of the attributes
+     * must be &quot;id&quot; which is used as the id for the entry. Attributes &quot;tag&quot; and &quot;target&quot; are
+     * concatenated to the id as tag/id:target.
+     *
+     * @param list the list the box is in
+     * @param tag the entry tag
+     * @param atts the attributes to add
+     */
+    void updateBox(String list, String tag, Attributes atts) {
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        String listName = list + (list.equals(&quot;patch&quot;) ? &quot;&quot; : &quot;s&quot;);</span>
+<span class="nc" id="L38">        ArrayList&lt;Box&gt; lists = setupLists.get(listName);</span>
+<span class="nc" id="L39">        Box box = lists.get(lists.size() - 1);</span>
+
+<span class="nc" id="L41">        int numAtts = atts.getLength();</span>
+        String id;
+        String module;
+        String process;
+        String operation;
+
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        if (numAtts &gt; 0) {</span>
+            // Entry can have at most one of the following tags.
+<span class="nc bnc" id="L49" title="All 2 branches missed.">            boolean hasModule = atts.getValue(&quot;module&quot;) != null;</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">            boolean hasProcess = atts.getValue(&quot;process&quot;) != null;</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">            boolean hasOperation = atts.getValue(&quot;operation&quot;) != null;</span>
+<span class="nc bnc" id="L52" title="All 6 branches missed.">            if (hasModule ^ hasProcess ? hasOperation : hasModule) {</span>
+<span class="nc" id="L53">                return;</span>
+            }
+
+            // Get any tags (module or region or term) or target.
+            module =
+<span class="nc bnc" id="L58" title="All 2 branches missed.">                    (atts.getValue(&quot;module&quot;) == null</span>
+<span class="nc" id="L59">                            ? &quot;&quot;</span>
+<span class="nc" id="L60">                            : atts.getValue(&quot;module&quot;).toLowerCase() + TAG_SEPARATOR);</span>
+            process =
+<span class="nc bnc" id="L62" title="All 2 branches missed.">                    (atts.getValue(&quot;process&quot;) == null</span>
+<span class="nc" id="L63">                            ? &quot;&quot;</span>
+<span class="nc" id="L64">                            : atts.getValue(&quot;process&quot;).toLowerCase() + TAG_SEPARATOR);</span>
+            operation =
+<span class="nc bnc" id="L66" title="All 2 branches missed.">                    (atts.getValue(&quot;operation&quot;) == null</span>
+<span class="nc" id="L67">                            ? &quot;&quot;</span>
+<span class="nc" id="L68">                            : atts.getValue(&quot;operation&quot;).toLowerCase() + TAG_SEPARATOR);</span>
+
+            // Create id by combining tags and id.
+<span class="nc" id="L71">            id = operation + module + process + atts.getValue(&quot;id&quot;);</span>
+<span class="nc" id="L72">            box.addTag(id, tag.toUpperCase());</span>
+
+<span class="nc bnc" id="L74" title="All 2 branches missed.">            for (int i = 0; i &lt; numAtts; i++) {</span>
+<span class="nc" id="L75">                String name = atts.getQName(i);</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">                switch (name) {</span>
+                    case &quot;id&quot;:
+                    case &quot;module&quot;:
+                    case &quot;process&quot;:
+                    case &quot;operation&quot;:
+<span class="nc" id="L81">                        break;</span>
+                    default:
+<span class="nc" id="L83">                        box.addAtt(id, name, atts.getValue(i));</span>
+                }
+            }
+        }
+<span class="nc" id="L87">    }</span>
+
+    @Override
+    public void startElement(String uri, String local, String name, Attributes atts) {
+<span class="fc" id="L91">        LOGGER.fine(&quot;start element [ &quot; + name + &quot; ]&quot;);</span>
+
+<span class="pc bpc" id="L93" title="3 of 5 branches missed.">        switch (name) {</span>
+            case &quot;set&quot;:
+            case &quot;series&quot;:
+<span class="fc" id="L96">                MiniBox minibox = makeMiniBox(atts);</span>
+<span class="fc" id="L97">                setupDicts.put(name, minibox);</span>
+<span class="fc" id="L98">                break;</span>
+            case &quot;patch&quot;:
+<span class="fc" id="L100">                setupLists.put(name, new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L101">                setupLists.get(name).add(new Box());</span>
+<span class="fc" id="L102">                break;</span>
+            case &quot;populations&quot;:
+            case &quot;layers&quot;:
+            case &quot;actions&quot;:
+            case &quot;components&quot;:
+<span class="nc" id="L107">                setupLists.put(name, new ArrayList&lt;&gt;());</span>
+<span class="nc" id="L108">                break;</span>
+            case &quot;population&quot;:
+            case &quot;layer&quot;:
+            case &quot;action&quot;:
+            case &quot;component&quot;:
+<span class="nc" id="L113">                Box box = makeBox(atts);</span>
+<span class="nc" id="L114">                setupLists.get(name + &quot;s&quot;).add(box);</span>
+<span class="nc" id="L115">                break;</span>
+            default:
+                break;
+        }
+
+<span class="fc" id="L120">        String[] split = name.split(&quot;\\.&quot;);</span>
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">        if (split.length == 2) {</span>
+<span class="nc" id="L122">            updateBox(split[0], split[1], atts);</span>
+        }
+<span class="fc" id="L124">    }</span>
+
+    @Override
+    public void endElement(String uri, String local, String name) {
+<span class="fc" id="L128">        LOGGER.fine(&quot;end element [ &quot; + name + &quot; ]&quot;);</span>
+
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        if (&quot;series&quot;.equals(name)) {</span>
+<span class="fc" id="L131">            processSizing(setupDicts.get(&quot;series&quot;), parameters);</span>
+<span class="fc" id="L132">            processPatch(setupDicts.get(&quot;series&quot;), setupLists.get(&quot;patch&quot;).get(0), parameters);</span>
+<span class="fc" id="L133">            series.add(new PatchSeries(setupDicts, setupLists, path, parameters, isVis));</span>
+<span class="fc" id="L134">            MiniBox set = setupDicts.get(&quot;set&quot;);</span>
+<span class="fc" id="L135">            setupDicts = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L136">            setupLists = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L137">            setupDicts.put(&quot;set&quot;, set);</span>
+        }
+<span class="fc" id="L139">    }</span>
+
+    /**
+     * Processes sizing parameter.
+     *
+     * @param series the series parameters
+     * @param parameters the default parameters
+     */
+    private void processSizing(MiniBox series, Box parameters) {
+<span class="fc" id="L148">        MiniBox defaults = parameters.getIdValForTag(&quot;DEFAULT&quot;);</span>
+
+        // Get sizes based on default for selected dimension.
+<span class="fc" id="L151">        int radius = defaults.getInt(&quot;RADIUS&quot;);</span>
+<span class="fc" id="L152">        int depth = defaults.getInt(&quot;DEPTH&quot;);</span>
+<span class="fc" id="L153">        int margin = defaults.getInt(&quot;MARGIN&quot;);</span>
+
+        // Override sizes from specific flags.
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">        if (series.contains(&quot;radius&quot;)) {</span>
+<span class="nc" id="L157">            radius = series.getInt(&quot;radius&quot;);</span>
+        }
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">        if (series.contains(&quot;depth&quot;)) {</span>
+<span class="nc" id="L160">            depth = series.getInt(&quot;depth&quot;);</span>
+        }
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">        if (series.contains(&quot;margin&quot;)) {</span>
+<span class="nc" id="L163">            margin = series.getInt(&quot;margin&quot;);</span>
+        }
+
+        // Enforce that RADIUS and MARGIN are even, and DEPTH is odd.
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">        int radiusUpdated = ((radius &amp; 1) == 0 ? radius : radius + 1);</span>
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">        int depthUpdated = ((depth &amp; 1) == 1 ? depth : depth + 1);</span>
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">        int marginUpdated = ((margin &amp; 1) == 0 ? margin : margin + 1);</span>
+
+<span class="fc" id="L171">        series.put(&quot;radius&quot;, radiusUpdated);</span>
+<span class="fc" id="L172">        series.put(&quot;depth&quot;, depthUpdated);</span>
+<span class="fc" id="L173">        series.put(&quot;margin&quot;, marginUpdated);</span>
+<span class="fc" id="L174">    }</span>
+
+    /**
+     * Processes sizing based on patch geometry.
+     *
+     * @param series the series parameters
+     * @param patch the patch parameters
+     * @param parameters the default parameters
+     */
+    private void processPatch(MiniBox series, Box patch, Box parameters) {
+<span class="fc" id="L184">        MiniBox defaults = parameters.getIdValForTag(&quot;PATCH&quot;);</span>
+
+<span class="fc" id="L186">        int radius = series.getInt(&quot;radius&quot;);</span>
+<span class="fc" id="L187">        int depth = series.getInt(&quot;depth&quot;);</span>
+<span class="fc" id="L188">        int margin = series.getInt(&quot;margin&quot;);</span>
+
+<span class="fc" id="L190">        int radiusBounds = radius + margin;</span>
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">        int depthBounds = (depth == 1 ? 1 : depth + margin);</span>
+
+<span class="fc" id="L193">        series.put(&quot;radiusBounds&quot;, radiusBounds);</span>
+<span class="fc" id="L194">        series.put(&quot;depthBounds&quot;, depthBounds);</span>
+
+<span class="fc" id="L196">        String key = &quot;GEOMETRY&quot;;</span>
+        String geometry =
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">                patch.contains(key)</span>
+<span class="nc" id="L199">                        ? patch.getValue(key + KEY_SEPARATOR + &quot;value&quot;)</span>
+<span class="fc" id="L200">                        : defaults.get(key);</span>
+<span class="fc" id="L201">        geometry = geometry.toUpperCase();</span>
+
+        PatchLocation location;
+        int totalPatches;
+
+<span class="pc bpc" id="L206" title="1 of 2 branches missed.">        if (geometry.equals(&quot;RECT&quot;)) {</span>
+<span class="nc" id="L207">            series.put(&quot;length&quot;, 4 * radiusBounds - 2);</span>
+<span class="nc" id="L208">            series.put(&quot;width&quot;, 4 * radiusBounds - 2);</span>
+<span class="nc" id="L209">            series.put(&quot;height&quot;, 2 * depthBounds - 1);</span>
+<span class="nc" id="L210">            totalPatches = (2 * radius - 1) * (2 * radius - 1) * depth;</span>
+<span class="nc" id="L211">            CoordinateXYZ coordinate = new CoordinateXYZ(0, 0, 0);</span>
+<span class="nc" id="L212">            location = new PatchLocationRect(coordinate);</span>
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">        } else if (geometry.equals(&quot;HEX&quot;)) {</span>
+<span class="fc" id="L214">            series.put(&quot;length&quot;, 6 * radiusBounds - 3);</span>
+<span class="fc" id="L215">            series.put(&quot;width&quot;, 4 * radiusBounds - 2);</span>
+<span class="fc" id="L216">            series.put(&quot;height&quot;, 2 * depthBounds - 1);</span>
+<span class="fc" id="L217">            totalPatches = (1 + 3 * radius * (radius - 1)) * depth;</span>
+<span class="fc" id="L218">            CoordinateUVWZ coordinate = new CoordinateUVWZ(0, 0, 0, 0);</span>
+<span class="fc" id="L219">            location = new PatchLocationHex(coordinate);</span>
+<span class="fc" id="L220">        } else {</span>
+<span class="nc" id="L221">            return;</span>
+        }
+
+<span class="fc" id="L224">        series.put(&quot;ds&quot;, location.getSubcoordinateSize());</span>
+<span class="fc" id="L225">        series.put(&quot;dz&quot;, location.getHeight());</span>
+
+<span class="fc" id="L227">        patch.add(&quot;GRID_VOLUME&quot;, String.valueOf(location.getVolume()));</span>
+<span class="fc" id="L228">        patch.add(&quot;GRID_AREA&quot;, String.valueOf(location.getArea()));</span>
+<span class="fc" id="L229">        patch.add(&quot;LATTICE_VOLUME&quot;, String.valueOf(location.getVolume() / location.getMaximum()));</span>
+<span class="fc" id="L230">        patch.add(&quot;LATTICE_AREA&quot;, String.valueOf(location.getArea() / location.getMaximum()));</span>
+<span class="fc" id="L231">        patch.add(&quot;TOTAL_PATCHES&quot;, String.valueOf(totalPatches));</span>
+<span class="fc" id="L232">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

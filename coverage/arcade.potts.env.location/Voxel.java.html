@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Voxel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.env.location</a> &gt; <span class="el_source">Voxel.java</span></div><h1>Voxel.java</h1><pre class="source lang-java linenums">package arcade.potts.env.location;
+
+import java.util.Comparator;
+
+/**
+ * Representation of a voxel for locations.
+ *
+ * &lt;p&gt;Each voxel is defined by (x, y, z) coordinates. Two voxels objects are considered equal if
+ * they have matching (x, y, z) coordinates.
+ */
+public final class Voxel {
+    /** Comparator for voxels. */
+<span class="fc" id="L13">    public static final Comparator&lt;Voxel&gt; VOXEL_COMPARATOR =</span>
+            (v1, v2) -&gt;
+<span class="fc bfc" id="L15" title="All 2 branches covered.">                    v1.z != v2.z</span>
+<span class="fc" id="L16">                            ? Integer.compare(v1.z, v2.z)</span>
+<span class="fc bfc" id="L17" title="All 2 branches covered.">                            : v1.x != v2.x</span>
+<span class="fc" id="L18">                                    ? Integer.compare(v1.x, v2.x)</span>
+<span class="fc" id="L19">                                    : Integer.compare(v1.y, v2.y);</span>
+
+    /** Voxel x coordinate. */
+    public final int x;
+
+    /** Voxel y coordinate. */
+    public final int y;
+
+    /** Voxel z coordinate. */
+    public final int z;
+
+    /**
+     * Creates a {@code Voxel} at the given coordinates.
+     *
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     */
+<span class="fc" id="L37">    public Voxel(int x, int y, int z) {</span>
+<span class="fc" id="L38">        this.x = x;</span>
+<span class="fc" id="L39">        this.y = y;</span>
+<span class="fc" id="L40">        this.z = z;</span>
+<span class="fc" id="L41">    }</span>
+
+    /**
+     * Gets hash based on (x, y, z) coordinates.
+     *
+     * @return the hash
+     */
+    public int hashCode() {
+<span class="fc" id="L49">        return x + (y &lt;&lt; 8) + (z &lt;&lt; 16);</span>
+    }
+
+    /**
+     * Checks if two locations have the same (x, y, z) coordinates.
+     *
+     * @param obj the voxel to compare
+     * @return {@code true} if coordinates are the same, {@code false} otherwise
+     */
+    public boolean equals(Object obj) {
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (!(obj instanceof Voxel)) {</span>
+<span class="fc" id="L60">            return false;</span>
+        }
+<span class="fc" id="L62">        Voxel voxel = (Voxel) obj;</span>
+<span class="fc bfc" id="L63" title="All 6 branches covered.">        return voxel.x == x &amp;&amp; voxel.y == y &amp;&amp; voxel.z == z;</span>
+    }
+
+    /**
+     * Returns voxel as string.
+     *
+     * @return a string
+     */
+    public String toString() {
+<span class="fc" id="L72">        return String.format(&quot;[%d, %d, %d]&quot;, x, y, z);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

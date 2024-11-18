@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchLocation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.location</a> &gt; <span class="el_source">PatchLocation.java</span></div><h1>PatchLocation.java</h1><pre class="source lang-java linenums">package arcade.patch.env.location;
+
+import java.util.ArrayList;
+import arcade.core.env.location.Location;
+
+/**
+ * Abstract implementation of {@link Location} for patch models.
+ *
+ * &lt;p&gt;{@code PatchLocation} objects define where agents are within the {@link
+ * arcade.core.env.grid.Grid} (relative to other agents) and relative to the {@link
+ * arcade.core.env.lattice.Lattice} (local molecule concentrations). The&lt;em&gt;coordinate&lt;/em&gt; defines
+ * the location in the {@link arcade.core.env.grid.Grid} while the term &lt;em&gt;subcoordinate(s)&lt;/em&gt;
+ * defines the location(s) in the {@link arcade.core.env.lattice.Lattice}.
+ *
+ * &lt;p&gt;There may be multiple &lt;em&gt;subcoordinates&lt;/em&gt; associated with the same &lt;em&gt;coordinate&lt;/em&gt;
+ * (therefore there may be more than one agent per coordinate, but there can only be one agent for a
+ * given coordinate / subcoordinate pair). For example, in the hexagonal grid, each hexagon has a
+ * &lt;em&gt;coordinate&lt;/em&gt;. Within each hexagon there are six corresponding triangular lattice
+ * &lt;em&gt;subcoordinates&lt;/em&gt;. There may be multiple agents in a given hexagon, but each cell within
+ * that hexagon is associated with a specific unique triangle. Therefore, there can be no more than
+ * six agents per hexagonal patch.
+ *
+ * &lt;p&gt;Regardless of geometry, the center of the model should have {@link arcade.core.env.grid.Grid}
+ * location coordinate (0,0,0) or (0,0,0,0). {@link arcade.core.env.lattice.Lattice} arrays cannot
+ * have negative indices, so (0,0,0) is located at the top left of the 2D array and the bottom layer
+ * of the 3D stack.
+ */
+public abstract class PatchLocation implements Location {
+    /** Radius of the simulation environment. */
+    static int radius;
+
+    /** Depth of the simulation environment. */
+    static int depth;
+
+    /** Radius and margin of the simulation environment. */
+    static int radiusBounds;
+
+    /** Depth and margin of the simulation environment. */
+    static int depthBounds;
+
+    /** Height offset for different layers in the simulation. */
+    static int heightOffset;
+
+    /** Location patch coordinate. */
+    Coordinate coordinate;
+
+    /** Location subcoordinates. */
+    ArrayList&lt;Coordinate&gt; subcoordinates;
+
+    /** Location offset. */
+    byte offset;
+
+    /** Allowable movements. */
+    byte check;
+
+    /**
+     * Creates a {@code PatchLocation} object at given coordinate.
+     *
+     * @param coordinate the patch coordinate
+     * @param n the number of patch subcoordinates
+     */
+<span class="fc" id="L62">    public PatchLocation(Coordinate coordinate, int n) {</span>
+<span class="fc" id="L63">        this.coordinate = coordinate;</span>
+<span class="fc" id="L64">        this.subcoordinates = new ArrayList&lt;&gt;(n);</span>
+<span class="fc" id="L65">        calculateOffset();</span>
+<span class="fc" id="L66">        calculateSubcoordinates();</span>
+<span class="fc" id="L67">        calculateChecks();</span>
+<span class="fc" id="L68">    }</span>
+
+    /**
+     * Gets the area of the location.
+     *
+     * @return the location area
+     */
+    public abstract double getArea();
+
+    /**
+     * Gets the patch coordinate in the {@link arcade.core.env.grid.Grid}.
+     *
+     * &lt;p&gt;These are not necessarily the same as the {@link arcade.core.env.lattice.Lattice}
+     * coordinates.
+     *
+     * @return the coordinate
+     */
+    public Coordinate getCoordinate() {
+<span class="nc" id="L86">        return coordinate;</span>
+    }
+
+    /**
+     * Gets the patch subcoordinate in the {@link arcade.core.env.lattice.Lattice}.
+     *
+     * &lt;p&gt;These are not necessarily the same as the {@link arcade.core.env.grid.Grid} coordinates.
+     *
+     * @return the subcoordinate
+     */
+    public Coordinate getSubcoordinate() {
+<span class="nc" id="L97">        return subcoordinates.get(0);</span>
+    }
+
+    /**
+     * Gets all subcoordinates in the {@link arcade.core.env.lattice.Lattice} that correspond to the
+     * {@link arcade.core.env.grid.Grid} location.
+     *
+     * @return the array of subcoordinates
+     */
+    public ArrayList&lt;Coordinate&gt; getSubcoordinates() {
+<span class="nc" id="L107">        return subcoordinates;</span>
+    }
+
+    /**
+     * Gets the {@link arcade.core.env.grid.Grid} coordinate size in the xy plane.
+     *
+     * @return the coordinate size
+     */
+    public abstract double getCoordinateSize();
+
+    /**
+     * Gets the {@link arcade.core.env.lattice.Lattice} coordinate size in the xy plane.
+     *
+     * @return the subcoordinate size
+     */
+    public abstract double getSubcoordinateSize();
+
+    /**
+     * Gets the ratio of the {@link arcade.core.env.grid.Grid} z to xy sizes.
+     *
+     * @return the size ratio
+     */
+    public abstract double getRatio();
+
+    /**
+     * Gets the maximum occupancy of a location.
+     *
+     * @return the maximum occupancy
+     */
+    public abstract int getMaximum();
+
+    /**
+     * Gets the {@link arcade.core.env.grid.Grid} offset relative to the {@link
+     * arcade.core.env.lattice.Lattice}.
+     */
+    abstract void calculateOffset();
+
+    /** Calculates subcoordinates based on coordinate and offset. */
+    abstract void calculateSubcoordinates();
+
+    /** Updates the possible moves that can be made. */
+    abstract void calculateChecks();
+
+    /**
+     * Updates the location coordinates and subcoordinates.
+     *
+     * @param location the new location
+     */
+    public void update(PatchLocation location) {
+<span class="nc" id="L156">        this.coordinate = location.coordinate;</span>
+<span class="nc" id="L157">        this.subcoordinates = new ArrayList&lt;&gt;(location.subcoordinates);</span>
+<span class="nc" id="L158">        this.offset = location.offset;</span>
+<span class="nc" id="L159">        this.check = location.check;</span>
+<span class="nc" id="L160">    }</span>
+
+    /**
+     * Get unique hash based on location coordinate.
+     *
+     * @return the hash
+     */
+    public int hashCode() {
+<span class="nc" id="L168">        return coordinate.hashCode();</span>
+    }
+
+    /**
+     * Checks if two locations have the same coordinate.
+     *
+     * @param obj the location to compare
+     * @return {@code true} if coordinates are equal, {@code false} otherwise
+     */
+    public boolean equals(Object obj) {
+<span class="nc" id="L178">        return coordinate.equals(obj);</span>
+    }
+
+    /**
+     * Calculates the perimeter of a cell occupying the location.
+     *
+     * @param fraction the fraction of total volume
+     * @return the perimeter of the cell
+     */
+    public abstract double getPerimeter(double fraction);
+
+    /**
+     * Gets the location of the neighbors to the current location.
+     *
+     * @return the list of neighbor locations
+     */
+    public abstract ArrayList&lt;Location&gt; getNeighbors();
+
+    /**
+     * Performs a left circular offset on the first six bits in a byte.
+     *
+     * @param b the byte
+     * @param k the offset
+     * @return the offset byte
+     */
+    byte offsetByte(byte b, int k) {
+<span class="nc" id="L204">        int left = b &gt;&gt; 2 &amp; 0x3F; // left most 6 bits</span>
+<span class="nc" id="L205">        int right = b &amp; 0x3; // right most 2 bits</span>
+<span class="nc" id="L206">        int shifted = (left &lt;&lt; k &amp; 0x3F) | (left &gt;&gt;&gt; (6 - k) &amp; 0x3F);</span>
+<span class="nc" id="L207">        return (byte) (shifted &lt;&lt; 2 | right);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

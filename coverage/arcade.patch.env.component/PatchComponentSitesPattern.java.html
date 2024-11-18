@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchComponentSitesPattern.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.component</a> &gt; <span class="el_source">PatchComponentSitesPattern.java</span></div><h1>PatchComponentSitesPattern.java</h1><pre class="source lang-java linenums">package arcade.patch.env.component;
+
+import java.util.EnumMap;
+import sim.engine.SimState;
+import arcade.core.sim.Series;
+import arcade.core.util.MiniBox;
+
+/**
+ * Extension of {@link PatchComponentSites} for pattern sites.
+ *
+ * &lt;p&gt;A repeating pattern of lattice indices are assigned as sites, defined by tessellating the
+ * &quot;unit cell&quot; of the pattern across the entire lattice.
+ *
+ * &lt;p&gt;The amount of concentration added to each index is the difference between the concentration at
+ * the index and the source concentration of the molecule. Three hemodynamic factors can be
+ * optionally included ({@code RELATIVE_FRACTION}) with variable weights to reduce the amount of
+ * concentration added.
+ *
+ * &lt;ul&gt;
+ *   &lt;li&gt;{@code WEIGHT_FLOW} = consumption upstream of a given site
+ *   &lt;li&gt;{@code WEIGHT_LOCAL} = local cell consumption of the molecule at a given lattice site
+ *   &lt;li&gt;{@code WEIGHT_GRADIENT} = concentration difference between source and a given lattice site
+ * &lt;/ul&gt;
+ *
+ * &lt;p&gt;Sites can be damaged by setting the {@code DAMAGE_SCALING} parameter, which also reduces the
+ * amount of concentration added at each index.
+ */
+public abstract class PatchComponentSitesPattern extends PatchComponentSites {
+    /** Border directions. */
+<span class="nc" id="L30">    enum Border {</span>
+<span class="nc" id="L31">        LEFT,</span>
+<span class="nc" id="L32">        RIGHT,</span>
+<span class="nc" id="L33">        TOP,</span>
+<span class="nc" id="L34">        BOTTOM,</span>
+<span class="nc" id="L35">        UP,</span>
+<span class="nc" id="L36">        DOWN</span>
+    }
+
+    /** Array holding locations of patterns. */
+    protected final boolean[][][] patterns;
+
+    /** Array holding locations of pattern pair anchors. */
+    protected final boolean[][][] anchors;
+
+    /** Array of damage instances for each lattice index. */
+    protected final double[][][] damageSingle;
+
+    /** Array of damage instances averaged between site pairs. */
+    protected final double[][][] damageTotal;
+
+    /** Array of damage value multipliers. */
+    protected final double[][][] damageValues;
+
+    /** Pattern site damage scaling. */
+    private final double damageScaling;
+
+    /** Relative contribution of hemodynamic factors. */
+    private final double fraction;
+
+    /** Weight of gradient hemodynamic factor. */
+    private final double weightGradient;
+
+    /** Weight of flow hemodynamic factor. */
+    private final double weightFlow;
+
+    /** Weight of local hemodynamic factor. */
+    private final double weightLocal;
+
+    /** {@code true} if local factor is calculated, {@code false} otherwise. */
+    private final boolean calculateLocal;
+
+    /** {@code true} if flow factor is calculated, {@code false} otherwise. */
+    private final boolean calculateFlow;
+
+    /** {@code true} if damage is calculated, {@code false} otherwise. */
+    private final boolean calculateDamage;
+
+    /**
+     * Creates a {@link PatchComponentSites} using pattern sites.
+     *
+     * &lt;p&gt;Loaded parameters include:
+     *
+     * &lt;ul&gt;
+     *   &lt;li&gt;{@code RELATIVE_FRACTION} = relative contribution of hemodynamic factors
+     *   &lt;li&gt;{@code WEIGHT_GRADIENT} = weight of gradient hemodynamic factor
+     *   &lt;li&gt;{@code WEIGHT_LOCAL} = weight of local hemodynamic factor
+     *   &lt;li&gt;{@code WEIGHT_FLOW} = weight of flow hemodynamic factor
+     *   &lt;li&gt;{@code DAMAGE_SCALING} = pattern site damage scaling
+     * &lt;/ul&gt;
+     *
+     * @param series the simulation series
+     * @param parameters the component parameters dictionary
+     */
+    public PatchComponentSitesPattern(Series series, MiniBox parameters) {
+<span class="nc" id="L95">        super(series);</span>
+
+        // Set loaded parameters.
+<span class="nc" id="L98">        fraction = parameters.getDouble(&quot;RELATIVE_FRACTION&quot;);</span>
+<span class="nc" id="L99">        weightGradient = parameters.getDouble(&quot;WEIGHT_GRADIENT&quot;);</span>
+<span class="nc" id="L100">        weightLocal = parameters.getDouble(&quot;WEIGHT_LOCAL&quot;);</span>
+<span class="nc" id="L101">        weightFlow = parameters.getDouble(&quot;WEIGHT_FLOW&quot;);</span>
+<span class="nc" id="L102">        damageScaling = parameters.getDouble(&quot;DAMAGE_SCALING&quot;);</span>
+
+        // Set booleans.
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        calculateDamage = damageScaling != 0;</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">        calculateLocal = weightLocal &gt; 0;</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        calculateFlow = weightFlow &gt; 0;</span>
+
+        // Create and initialize arrays.
+<span class="nc" id="L110">        patterns = new boolean[latticeHeight][latticeLength][latticeWidth];</span>
+<span class="nc" id="L111">        anchors = new boolean[latticeHeight][latticeLength][latticeWidth];</span>
+<span class="nc" id="L112">        damageSingle = new double[latticeHeight][latticeLength][latticeWidth];</span>
+<span class="nc" id="L113">        damageTotal = new double[latticeHeight][latticeLength][latticeWidth];</span>
+<span class="nc" id="L114">        damageValues = new double[latticeHeight][latticeLength][latticeWidth];</span>
+
+<span class="nc" id="L116">        initializePatternArray();</span>
+<span class="nc" id="L117">        initializeDamageArrays();</span>
+<span class="nc" id="L118">    }</span>
+
+    /**
+     * Gets the underlying pattern sites array.
+     *
+     * @return the pattern sites array
+     */
+    public boolean[][][] getPatterns() {
+<span class="nc" id="L126">        return patterns;</span>
+    }
+
+    /**
+     * Gets the underlying pattern anchors array.
+     *
+     * @return the pattern sites array
+     */
+    public boolean[][][] getAnchors() {
+<span class="nc" id="L135">        return anchors;</span>
+    }
+
+    /**
+     * Gets the underlying pattern damage array.
+     *
+     * @return the pattern damage array
+     */
+    public double[][][] getDamage() {
+<span class="nc" id="L144">        return damageSingle;</span>
+    }
+
+    /**
+     * Calculates the average change in concentration between the two lattice indices bordering a
+     * capillary.
+     *
+     * @param i the index in the x direction
+     * @param j the index in the y direction
+     * @param k the index in the z direction
+     * @param delta the array of concentration changes
+     * @return the average concentration change
+     */
+    abstract double calculateAverage(int i, int j, int k, double[][] delta);
+
+    /**
+     * Calculates final change in concentration based on upstream capillaries.
+     *
+     * @param i the index in the x direction
+     * @param j the index in the y direction
+     * @param k the index in the z direction
+     * @param flow the array of cumulative concentration changes
+     * @param delta the array of concentration changes
+     * @param borders the map of border indicators
+     */
+    abstract void calculateFlow(
+            int i,
+            int j,
+            int k,
+            double[][] flow,
+            double[][] delta,
+            EnumMap&lt;Border, Boolean&gt; borders);
+
+    /**
+     * Calculates average damage between the two indices bordering a capillary.
+     *
+     * @param i the index in the x direction
+     * @param j the index in the y direction
+     * @param k the index in the z direction
+     */
+    abstract void calculateDamage(int i, int j, int k);
+
+    /**
+     * Initializes sites in pattern array.
+     *
+     * &lt;p&gt;Sites are defined by copying the pattern unit cell across the array. Values of 1 and 2
+     * indicate which the two lattice indices that border a capillary.
+     */
+    abstract void initializePatternArray();
+
+    /** Initializes damage array to 1.0 (no damage). */
+    void initializeDamageArrays() {
+<span class="nc bnc" id="L196" title="All 2 branches missed.">        for (int k = 0; k &lt; latticeHeight; k++) {</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">            for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="nc bnc" id="L198" title="All 2 branches missed.">                for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="nc" id="L199">                    damageValues[k][i][j] = 1.0;</span>
+                }
+            }
+        }
+<span class="nc" id="L203">    }</span>
+
+    @Override
+    public void step(SimState simstate) {
+        // Iterate through array to calculate damage, if needed.
+<span class="nc bnc" id="L208" title="All 2 branches missed.">        if (calculateDamage) {</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">            for (int k = 0; k &lt; latticeHeight; k++) {</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">                for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">                    for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">                        if (anchors[k][i][j]) {</span>
+<span class="nc" id="L213">                            calculateDamage(i, j, k);</span>
+                        }
+
+<span class="nc" id="L216">                        damageValues[k][i][j] =</span>
+<span class="nc" id="L217">                                1.0 / Math.exp(damageScaling * damageTotal[k][i][j]);</span>
+                    }
+                }
+            }
+        }
+
+<span class="nc" id="L223">        double[][][] accumulation = new double[latticeHeight][latticeLength][latticeWidth];</span>
+<span class="nc" id="L224">        double[][][] flow = new double[latticeHeight][latticeLength][latticeWidth];</span>
+<span class="nc" id="L225">        EnumMap&lt;Border, Boolean&gt; borders = new EnumMap&lt;&gt;(Border.class);</span>
+
+        // Iterate through each layer and each array to assign updates.
+<span class="nc bnc" id="L228" title="All 2 branches missed.">        for (SiteLayer layer : layers) {</span>
+<span class="nc" id="L229">            double[][][] delta = layer.delta;</span>
+<span class="nc" id="L230">            double[][][] current = layer.current;</span>
+<span class="nc" id="L231">            double[][][] previous = layer.previous;</span>
+<span class="nc" id="L232">            double concentration = layer.concentration;</span>
+<span class="nc" id="L233">            double total = 0;</span>
+
+            // Iterate to calculate accumulation.
+<span class="nc bnc" id="L236" title="All 4 branches missed.">            if (calculateLocal || calculateFlow) {</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">                for (int k = 0; k &lt; latticeHeight; k += 2) {</span>
+<span class="nc bnc" id="L238" title="All 2 branches missed.">                    for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="nc bnc" id="L239" title="All 2 branches missed.">                        for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">                            if (patterns[k][i][j]) {</span>
+<span class="nc" id="L241">                                accumulation[k][i][j] =</span>
+                                        (previous[k][i][j] - current[k][i][j]) / concentration;
+<span class="nc" id="L243">                                total += accumulation[k][i][j];</span>
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Iterate through every other layer.
+<span class="nc bnc" id="L251" title="All 2 branches missed.">            for (int k = 0; k &lt; latticeHeight; k += 2) {</span>
+                // Check if on up or down border of environment.
+<span class="nc bnc" id="L253" title="All 2 branches missed.">                borders.put(Border.UP, k == 0);</span>
+<span class="nc bnc" id="L254" title="All 2 branches missed.">                borders.put(Border.DOWN, k == latticeHeight - 1);</span>
+
+<span class="nc bnc" id="L256" title="All 2 branches missed.">                for (int i = 0; i &lt; latticeLength; i++) {</span>
+                    // Check if on left or right border of environment.
+<span class="nc bnc" id="L258" title="All 2 branches missed.">                    borders.put(Border.LEFT, i == 0);</span>
+<span class="nc bnc" id="L259" title="All 2 branches missed.">                    borders.put(Border.RIGHT, i == latticeLength - 1);</span>
+
+<span class="nc bnc" id="L261" title="All 2 branches missed.">                    for (int j = 0; j &lt; latticeWidth; j++) {</span>
+                        // Check if on top or bottom border of environment.
+<span class="nc bnc" id="L263" title="All 2 branches missed.">                        borders.put(Border.TOP, j == 0);</span>
+<span class="nc bnc" id="L264" title="All 2 branches missed.">                        borders.put(Border.BOTTOM, j == latticeWidth - 1);</span>
+
+<span class="nc bnc" id="L266" title="All 2 branches missed.">                        if (patterns[k][i][j]) {</span>
+                            // Calculate flow.
+<span class="nc bnc" id="L268" title="All 4 branches missed.">                            if (anchors[k][i][j] &amp;&amp; calculateFlow) {</span>
+<span class="nc" id="L269">                                calculateFlow(i, j, k, flow[k], accumulation[k], borders);</span>
+                            }
+
+                            // Calculate weight adjustments.
+<span class="nc" id="L273">                            double wg = 1 - current[k][i][j] / concentration;</span>
+<span class="nc" id="L274">                            double wl = accumulation[k][i][j];</span>
+<span class="nc bnc" id="L275" title="All 2 branches missed.">                            double wf = (total == 0 ? 0 : -flow[k][i][j] / total);</span>
+<span class="nc" id="L276">                            double w = weightGradient * wg + weightLocal * wl + weightFlow * wf;</span>
+<span class="nc" id="L277">                            double ww = 1.0 / (1.0 + Math.exp(-w));</span>
+
+                            // Calculate final change.
+<span class="nc" id="L280">                            delta[k][i][j] =</span>
+<span class="nc" id="L281">                                    Math.max(</span>
+                                            (concentration - previous[k][i][j])
+                                                    * (ww * fraction + 1 - fraction)
+                                                    * damageValues[k][i][j],
+                                            0);
+                        }
+                    }
+                }
+            }
+<span class="nc" id="L290">        }</span>
+<span class="nc" id="L291">    }</span>
+
+    // TODO add in damage increases for movement into and out of a location
+    //        if (sim.getAgents().getNumObjectsAtLocation(newLoc) &gt; 1) {
+    //            int zNew = newLoc.getLatZ();
+    //            for (int[] i : newLoc.getLatLocations()) { damageSingle[zNew][i[0]][i[1]]++; }
+    //            int zOld = oldLoc.getLatZ();
+    //            for (int[] i : oldLoc.getLatLocations()) { damageSingle[zOld][i[0]][i[1]]++; }
+    //        }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

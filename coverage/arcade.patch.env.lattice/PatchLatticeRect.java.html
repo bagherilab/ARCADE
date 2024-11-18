@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchLatticeRect.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.lattice</a> &gt; <span class="el_source">PatchLatticeRect.java</span></div><h1>PatchLatticeRect.java</h1><pre class="source lang-java linenums">package arcade.patch.env.lattice;
+
+import arcade.core.env.operation.Operation;
+import arcade.core.util.MiniBox;
+import arcade.patch.env.operation.PatchOperationDiffuserRect;
+import arcade.patch.env.operation.PatchOperationGenerator;
+import arcade.patch.util.PatchEnums.Category;
+
+/** Concrete implementation of {@link PatchLattice} for rectangular coordinates. */
+public class PatchLatticeRect extends PatchLattice {
+    /**
+     * Creates a rectangular {@code PatchLattice} environment.
+     *
+     * @param length the length of array (x direction)
+     * @param width the width of array (y direction)
+     * @param height the height of array (z direction)
+     * @param ds the spatial scaling (x and y directions)
+     * @param dz the spatial scaling (z direction)
+     * @param parameters the dictionary of parameters
+     */
+    public PatchLatticeRect(
+            int length, int width, int height, double ds, double dz, MiniBox parameters) {
+<span class="nc" id="L23">        super(length, width, height, ds, dz, parameters);</span>
+<span class="nc" id="L24">    }</span>
+
+    @Override
+    public Operation makeOperation(Category category, String version) {
+<span class="nc bnc" id="L28" title="All 3 branches missed.">        switch (category) {</span>
+            case DIFFUSER:
+<span class="nc" id="L30">                return new PatchOperationDiffuserRect(this, ds, dz);</span>
+            case GENERATOR:
+<span class="nc" id="L32">                return new PatchOperationGenerator(this);</span>
+            default:
+<span class="nc" id="L34">                return null;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

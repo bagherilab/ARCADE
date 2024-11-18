@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Solver.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.core.util</a> &gt; <span class="el_source">Solver.java</span></div><h1>Solver.java</h1><pre class="source lang-java linenums">package arcade.core.util;
+
+import java.util.ArrayList;
+import java.util.logging.Logger;
+import arcade.core.util.Matrix.Value;
+import static arcade.core.util.Matrix.*;
+
+/**
+ * Static utility class implementing various numerical solvers.
+ *
+ * &lt;p&gt;Implemented solvers include:
+ *
+ * &lt;ul&gt;
+ *   &lt;li&gt;&lt;em&gt;forward Euler&lt;/em&gt;: first-order method for ODEs
+ *   &lt;li&gt;&lt;em&gt;classic Runge–Kutta (RK4)&lt;/em&gt;: fourth-order method for ODEs
+ *   &lt;li&gt;&lt;em&gt;Cash–Karp&lt;/em&gt;: adaptive step size method for ODEs
+ *   &lt;li&gt;&lt;em&gt;successive over-relaxation (SOR)&lt;/em&gt;: variant of the Gauss–Seidel method for solving a
+ *       linear system of equations
+ * &lt;/ul&gt;
+ */
+public class Solver {
+    /** Logger for {@code Solver}. */
+<span class="fc" id="L23">    private static final Logger LOGGER = Logger.getLogger(Solver.class.getName());</span>
+
+    /** Error tolerance for Cash-Karp. */
+    private static final double ERROR = 1E-5;
+
+    /** Epsilon value for Cash-Karp. */
+    private static final double EPSILON = 1E-10;
+
+    /** Maximum number of steps for Cash-Karp. */
+    private static final int MAX_STEPS = 100;
+
+    /** Safety value for Cash-Karp. */
+    private static final double SAFETY = 0.9;
+
+    /** Relaxation factor for SOR. */
+    private static final double OMEGA = 1.4;
+
+    /** Maximum number of iterations. */
+    private static final int MAX_ITERS = 10000;
+
+    /** Error tolerance for SOR. */
+    private static final double TOLERANCE = 1E-8;
+
+    /** Convergence delta for bisection method. */
+    private static final double DELTA = 1E-5;
+
+    /** Matrix size threshold for dense representation. */
+    private static final int MATRIX_THRESHOLD = 100;
+
+    /** Defines ODE equations for numerical solvers. */
+    public interface Equations {
+        /**
+         * Applies equations to inputs.
+         *
+         * @param t the time step
+         * @param y the array of inputs
+         * @return the array of outputs
+         */
+        double[] dydt(double t, double[] y);
+    }
+
+    /** Defines a continuous function. */
+    public interface Function {
+        /**
+         * Applies function to input.
+         *
+         * @param x the input value
+         * @return the output value
+         */
+        double f(double x);
+    }
+
+    /** Hidden constructor for {@code Solver} utility class. */
+<span class="fc" id="L76">    protected Solver() {</span>
+<span class="fc" id="L77">        throw new UnsupportedOperationException();</span>
+    }
+
+    /**
+     * Solves a system of ODEs using forward Euler.
+     *
+     * @param eq the system of equations
+     * @param t0 the initial time
+     * @param y0 the array of initial values
+     * @param tf the final time
+     * @param h the time step
+     * @return the array of final values
+     */
+    public static double[] euler(Equations eq, double t0, double[] y0, double tf, double h) {
+<span class="fc" id="L91">        int n = y0.length;</span>
+<span class="fc" id="L92">        double t = t0;</span>
+<span class="fc" id="L93">        double[] dydt = new double[n];</span>
+<span class="fc" id="L94">        double[] y = y0.clone();</span>
+
+        // Adjust number of steps.
+<span class="fc" id="L97">        int nSteps = (int) ((tf - t0) / h);</span>
+<span class="fc" id="L98">        h = (tf - t0) / nSteps;</span>
+
+        // Iterate through steps.
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        for (int j = 0; j &lt; nSteps; j++) {</span>
+<span class="fc" id="L102">            t = t0 + j * h;</span>
+<span class="fc" id="L103">            dydt = eq.dydt(t, y);</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">            for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L105">                y[i] += h * dydt[i];</span>
+            }
+        }
+
+<span class="fc" id="L109">        return y;</span>
+    }
+
+    /**
+     * Solves a system of ODEs using classic Runge-Kutta.
+     *
+     * @param eq the system of equations
+     * @param t0 the initial time
+     * @param y0 the array of initial values
+     * @param tf the final time
+     * @param h the time step
+     * @return the array of final values
+     */
+    public static double[] rungeKutta(Equations eq, double t0, double[] y0, double tf, double h) {
+<span class="fc" id="L123">        int n = y0.length;</span>
+<span class="fc" id="L124">        double t = t0;</span>
+<span class="fc" id="L125">        double[] k1 = new double[n];</span>
+<span class="fc" id="L126">        double[] k2 = new double[n];</span>
+<span class="fc" id="L127">        double[] k3 = new double[n];</span>
+<span class="fc" id="L128">        double[] k4 = new double[n];</span>
+<span class="fc" id="L129">        double[] dydt = new double[n];</span>
+<span class="fc" id="L130">        double[] y = y0.clone();</span>
+<span class="fc" id="L131">        double[] w = new double[n];</span>
+
+        // Adjust number of steps.
+<span class="fc" id="L134">        int nSteps = (int) ((tf - t0) / h);</span>
+<span class="fc" id="L135">        h = (tf - t0) / nSteps;</span>
+
+        // Iterate through steps.
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        for (int j = 0; j &lt; nSteps; j++) {</span>
+<span class="fc" id="L139">            t = t0 + j * h;</span>
+
+<span class="fc" id="L141">            dydt = eq.dydt(t, y);</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">            for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L143">                k1[i] = h * dydt[i];</span>
+<span class="fc" id="L144">                w[i] = y[i] + k1[i] / 2;</span>
+            }
+
+<span class="fc" id="L147">            dydt = eq.dydt(t + h / 2, w);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">            for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L149">                k2[i] = h * dydt[i];</span>
+<span class="fc" id="L150">                w[i] = y[i] + k2[i] / 2;</span>
+            }
+
+<span class="fc" id="L153">            dydt = eq.dydt(t + h / 2, w);</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">            for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L155">                k3[i] = h * dydt[i];</span>
+<span class="fc" id="L156">                w[i] = y[i] + k3[i];</span>
+            }
+
+<span class="fc" id="L159">            dydt = eq.dydt(t + h, w);</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">            for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L161">                k4[i] = h * dydt[i];</span>
+<span class="fc" id="L162">                y[i] += k1[i] / 6 + k2[i] / 3 + k3[i] / 3 + k4[i] / 6;</span>
+            }
+        }
+
+<span class="fc" id="L166">        return y;</span>
+    }
+
+    /**
+     * Solves a system of ODEs using adaptive timestep Cash-Karp with default maximum steps.
+     *
+     * @param eq the system of equations
+     * @param t0 the initial time
+     * @param y0 the array of initial values
+     * @param tf the final time
+     * @param h the time step
+     * @return the array of final values
+     */
+    public static double[] cashKarp(Equations eq, double t0, double[] y0, double tf, double h) {
+<span class="fc" id="L180">        return cashKarp(eq, t0, y0, tf, h, MAX_STEPS);</span>
+    }
+
+    /**
+     * Solves a system of ODEs using adaptive timestep Cash-Karp.
+     *
+     * @param eq the system of equations
+     * @param t0 the initial time
+     * @param y0 the array of initial values
+     * @param tf the final time
+     * @param h the time step
+     * @param maxSteps the maximum number of steps
+     * @return the array of final values
+     */
+    public static double[] cashKarp(
+            Equations eq, double t0, double[] y0, double tf, double h, int maxSteps) {
+<span class="fc" id="L196">        int n = y0.length;</span>
+<span class="fc" id="L197">        int steps = 0;</span>
+<span class="fc" id="L198">        double t = t0;</span>
+<span class="fc" id="L199">        double[] k1 = new double[n];</span>
+<span class="fc" id="L200">        double[] k2 = new double[n];</span>
+<span class="fc" id="L201">        double[] k3 = new double[n];</span>
+<span class="fc" id="L202">        double[] k4 = new double[n];</span>
+<span class="fc" id="L203">        double[] k5 = new double[n];</span>
+<span class="fc" id="L204">        double[] k6 = new double[n];</span>
+        double[] dydt;
+<span class="fc" id="L206">        double[] y = y0.clone();</span>
+<span class="fc" id="L207">        double[] y5 = y0.clone();</span>
+<span class="fc" id="L208">        double[] y6 = y0.clone();</span>
+<span class="fc" id="L209">        double[] w = new double[n];</span>
+        double err;
+        double maxErr;
+        double tol;
+
+<span class="fc bfc" id="L214" title="All 4 branches covered.">        while (t &lt; tf &amp;&amp; steps &lt; maxSteps) {</span>
+<span class="fc" id="L215">            steps++;</span>
+
+<span class="fc" id="L217">            dydt = eq.dydt(t, y);</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">            for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L219">                k1[i] = h * dydt[i];</span>
+<span class="fc" id="L220">                w[i] = y[i] + k1[i] / 5.0;</span>
+            }
+
+<span class="fc" id="L223">            dydt = eq.dydt(t + h / 5.0, w);</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">            for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L225">                k2[i] = h * dydt[i];</span>
+<span class="fc" id="L226">                w[i] = y[i] + (3 * k1[i] + 9 * k2[i]) / 40.0;</span>
+            }
+
+<span class="fc" id="L229">            dydt = eq.dydt(t + 3 * h / 10.0, w);</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">            for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L231">                k3[i] = h * dydt[i];</span>
+<span class="fc" id="L232">                w[i] = y[i] + (3 * k1[i] - 9 * k2[i] + 12 * k3[i]) / 10.0;</span>
+            }
+
+<span class="fc" id="L235">            dydt = eq.dydt(t + 3 * h / 5.0, w);</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">            for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L237">                k4[i] = h * dydt[i];</span>
+<span class="fc" id="L238">                w[i] =</span>
+                        y[i]
+                                - 11 * k1[i] / 54.0
+                                + 5 * k2[i] / 2.0
+                                - 70 * k3[i] / 27.0
+                                + 35 * k4[i] / 27.0;
+            }
+
+<span class="fc" id="L246">            dydt = eq.dydt(t + h, w);</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">            for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L248">                k5[i] = h * dydt[i];</span>
+<span class="fc" id="L249">                w[i] =</span>
+                        y[i]
+                                + 1631 * k1[i] / 55296.0
+                                + 175 * k2[i] / 512.0
+                                + 575 * k3[i] / 13824.0
+                                + 44275 * k4[i] / 110592.0
+                                + 253 * k5[i] / 4096.0;
+            }
+
+<span class="fc" id="L258">            dydt = eq.dydt(t + 7 * h / 8.0, w);</span>
+<span class="fc" id="L259">            maxErr = 0.0;</span>
+<span class="fc bfc" id="L260" title="All 2 branches covered.">            for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L261">                k6[i] = h * dydt[i];</span>
+<span class="fc" id="L262">                y5[i] =</span>
+                        y[i]
+                                + 2825.0 * k1[i] / 27648.0
+                                + 18575.0 * k3[i] / 48384.0
+                                + 13525.0 * k4[i] / 55296.0
+                                + 277.0 * k5[i] / 14336.0
+                                + k6[i] / 4.0;
+<span class="fc" id="L269">                y6[i] =</span>
+                        y[i]
+                                + 37 * k1[i] / 378.0
+                                + 250.0 * k3[i] / 621.0
+                                + 125.0 * k4[i] / 594.0
+                                + 512.0 * k6[i] / 1771.0;
+<span class="fc" id="L275">                err = Math.abs(y6[i] - y5[i]);</span>
+<span class="fc" id="L276">                tol = Math.abs(y5[i]) * ERROR + EPSILON;</span>
+<span class="fc" id="L277">                maxErr = Math.max(maxErr, err / tol);</span>
+            }
+
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">            if (maxErr &gt; 1) { // reduce step size with max 10-fold reduction</span>
+<span class="nc" id="L281">                h *= Math.max(0.1, SAFETY * Math.pow(maxErr, -0.25));</span>
+            } else { // increase step size with max 5-fold increase
+<span class="fc" id="L283">                t += h;</span>
+<span class="fc" id="L284">                h *= Math.min(5.0, Math.max(SAFETY * Math.pow(maxErr, -0.2), 1.0));</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">                h = (t + h &gt; tf ? tf - t : h);</span>
+<span class="fc" id="L286">                y = y5.clone();</span>
+            }
+        }
+
+<span class="fc" id="L290">        return y;</span>
+    }
+
+    /**
+     * Solves a linear system of equations using successive over-relaxation with default sparse
+     * representation thresholding and maximum iterations.
+     *
+     * &lt;p&gt;Based on matrix size, the algorithm with use a dense or sparse approach.
+     *
+     * @param mat the matrix of coefficients
+     * @param vec the right-hand side vector
+     * @param x0 the initial guess for the left-hand side vector
+     * @return the vector of final values
+     */
+    public static double[] sor(double[][] mat, double[] vec, double[] x0) {
+<span class="fc" id="L305">        return sor(mat, vec, x0, MATRIX_THRESHOLD, MAX_ITERS, TOLERANCE);</span>
+    }
+
+    /**
+     * Solves a linear system of equations using successive over-relaxation.
+     *
+     * &lt;p&gt;Based on matrix size, the algorithm with use a dense or sparse approach.
+     *
+     * @param mat the matrix of coefficients
+     * @param vec the right-hand side vector
+     * @param x0 the initial guess for the left-hand side vector
+     * @param matrixThreshold the threshold for matrix size
+     * @param maxIters the maximum number of iterations
+     * @param tolerance the error tolerance
+     * @return the vector of final values
+     */
+    public static double[] sor(
+            double[][] mat,
+            double[] vec,
+            double[] x0,
+            int matrixThreshold,
+            int maxIters,
+            double tolerance) {
+<span class="fc" id="L328">        int n = mat.length;</span>
+<span class="fc bfc" id="L329" title="All 2 branches covered.">        if (n &lt; matrixThreshold) {</span>
+<span class="fc" id="L330">            return denseSOR(mat, vec, x0, maxIters, tolerance);</span>
+        } else {
+<span class="fc" id="L332">            return sparseSOR(mat, vec, x0, maxIters, tolerance);</span>
+        }
+    }
+
+    /**
+     * Solves linear system of equations using SOR with dense matrix representation.
+     *
+     * @param mat the matrix of coefficients
+     * @param vec the right-hand side vector
+     * @param x0 the initial guess for the left-hand side vector
+     * @param maxIters the maximum number of iterations
+     * @param tolerance the error tolerance
+     * @return the vector of final values
+     */
+    private static double[] denseSOR(
+            double[][] mat, double[] vec, double[] x0, int maxIters, double tolerance) {
+<span class="fc" id="L348">        int i = 0;</span>
+<span class="fc" id="L349">        double error = Double.POSITIVE_INFINITY;</span>
+
+        // Calculate iteration factors
+<span class="fc" id="L352">        double[] c = forwardSubstitution(mat, vec);</span>
+<span class="fc" id="L353">        double[][] t = forwardSubstitution(mat);</span>
+<span class="fc" id="L354">        t = scale(t, -1);</span>
+
+        // Set initial guess.
+<span class="fc" id="L357">        double[] xCurr = x0;</span>
+<span class="fc" id="L358">        double[] xPrev = x0;</span>
+
+        // Iterate until convergence.
+<span class="fc bfc" id="L361" title="All 4 branches covered.">        while (i &lt; maxIters &amp;&amp; error &gt; tolerance) {</span>
+            // Calculate new guess for x.
+<span class="fc" id="L363">            xCurr = add(scale(add(multiply(t, xPrev), c), OMEGA), scale(xPrev, 1 - OMEGA));</span>
+
+            // Set previous to copy of current and increment iteration count.
+<span class="fc" id="L366">            xPrev = xCurr;</span>
+<span class="fc" id="L367">            i++;</span>
+
+            // Calculate L2 norm of residuals to check for convergence.
+<span class="fc" id="L370">            double[] r = subtract(vec, multiply(mat, xCurr));</span>
+<span class="fc" id="L371">            error = normalize(r);</span>
+<span class="fc" id="L372">        }</span>
+
+<span class="fc" id="L374">        return xCurr;</span>
+    }
+
+    /**
+     * Solves linear system of equations using SOR with sparse matrix representation.
+     *
+     * @param mat the matrix of coefficients
+     * @param vec the right-hand side vector
+     * @param x0 the initial guess for the left-hand side vector
+     * @param maxIters the maximum number of iterations
+     * @param tolerance the error tolerance
+     * @return the vector of final values
+     */
+    private static double[] sparseSOR(
+            double[][] mat, double[] vec, double[] x0, int maxIters, double tolerance) {
+<span class="fc" id="L389">        int i = 0;</span>
+<span class="fc" id="L390">        double error = Double.POSITIVE_INFINITY;</span>
+
+        // Convert to sparse representation.
+<span class="fc" id="L393">        ArrayList&lt;Value&gt; sparseA = toSparse(mat);</span>
+
+        // Calculate iteration factors
+<span class="fc" id="L396">        double[] c = forwardSubstitution(sparseA, vec);</span>
+<span class="fc" id="L397">        ArrayList&lt;Value&gt; t = forwardSubstitution(sparseA);</span>
+<span class="fc" id="L398">        t = scale(t, -1);</span>
+
+        // Set initial guess.
+<span class="fc" id="L401">        double[] xCurr = x0;</span>
+<span class="fc" id="L402">        double[] xPrev = x0;</span>
+
+        // Iterate until convergence.
+<span class="fc bfc" id="L405" title="All 4 branches covered.">        while (i &lt; maxIters &amp;&amp; error &gt; tolerance) {</span>
+            // Calculate new guess for x.
+<span class="fc" id="L407">            xCurr = add(scale(add(multiply(t, xPrev), c), OMEGA), scale(xPrev, 1 - OMEGA));</span>
+
+            // Set previous to copy of current and increment iteration count.
+<span class="fc" id="L410">            xPrev = xCurr;</span>
+<span class="fc" id="L411">            i++;</span>
+
+            // Calculate L2 norm of residuals to check for convergence.
+<span class="fc" id="L414">            double[] r = subtract(vec, multiply(sparseA, xCurr));</span>
+<span class="fc" id="L415">            error = normalize(r);</span>
+<span class="fc" id="L416">        }</span>
+
+<span class="fc" id="L418">        return xCurr;</span>
+    }
+
+    /**
+     * Finds root using bisection method.
+     *
+     * &lt;p&gt;Root is found by repeatedly bisecting the interval and selecting the interval in which the
+     * function changes sign. If no root is found, the simulation will throw an ArithmeticException.
+     *
+     * @param func the function
+     * @param a the lower bound on the interval
+     * @param b the upper bound on the interval
+     * @param maxIters the maximum number of iterations
+     * @return the root of the function
+     */
+    public static double bisection(Function func, double a, double b, int maxIters) {
+        double c;
+        double fc;
+<span class="fc" id="L436">        int i = 0;</span>
+
+<span class="fc bfc" id="L438" title="All 2 branches covered.">        if (a &gt; b) {</span>
+<span class="fc" id="L439">            a = a + b;</span>
+<span class="fc" id="L440">            b = a - b;</span>
+<span class="fc" id="L441">            a = a - b;</span>
+        }
+
+        // Check that given bounds are opposite signs.
+<span class="fc bfc" id="L445" title="All 2 branches covered.">        if (Math.signum(func.f(a)) == Math.signum(func.f(b))) {</span>
+<span class="fc" id="L446">            throw new ArithmeticException(&quot;Bisection cannot find root with given bounds.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L449" title="All 2 branches covered.">        while (i &lt; maxIters) {</span>
+            // Calculate new midpoint.
+<span class="fc" id="L451">            c = (a + b) / 2;</span>
+<span class="fc" id="L452">            fc = func.f(c);</span>
+
+            // Check for exit conditions.
+<span class="pc bpc" id="L455" title="1 of 4 branches missed.">            if (fc == 0 || (b - a) / 2 &lt; DELTA) {</span>
+<span class="fc" id="L456">                return c;</span>
+            } else {
+<span class="fc bfc" id="L458" title="All 2 branches covered.">                if (Math.signum(fc) == Math.signum(func.f(a))) {</span>
+<span class="fc" id="L459">                    a = c;</span>
+                } else {
+<span class="fc" id="L461">                    b = c;</span>
+                }
+
+<span class="fc" id="L464">                i++;</span>
+            }
+        }
+
+<span class="fc" id="L468">        return Double.NaN;</span>
+    }
+
+    /**
+     * Finds root using bisection method with default maximum iterations.
+     *
+     * &lt;p&gt;Root is found by repeatedly bisecting the interval and selecting the interval in which the
+     * function changes sign. If no root is found, the simulation will throw an ArithmeticException.
+     *
+     * @param func the function
+     * @param a the lower bound on the interval
+     * @param b the upper bound on the interval
+     * @return the root of the function
+     */
+    public static double bisection(Function func, double a, double b) {
+<span class="fc" id="L483">        return bisection(func, a, b, MAX_ITERS);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

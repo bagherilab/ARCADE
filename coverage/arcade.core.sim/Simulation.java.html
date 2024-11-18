@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Simulation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.core.sim</a> &gt; <span class="el_source">Simulation.java</span></div><h1>Simulation.java</h1><pre class="source lang-java linenums">package arcade.core.sim;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import com.google.gson.reflect.TypeToken;
+import sim.engine.Schedule;
+import arcade.core.agent.action.Action;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.cell.CellFactory;
+import arcade.core.env.component.Component;
+import arcade.core.env.grid.Grid;
+import arcade.core.env.lattice.Lattice;
+import arcade.core.env.location.LocationContainer;
+import arcade.core.env.location.LocationFactory;
+
+/**
+ * A {@code Simulation} sets up agents and environments for a simulation.
+ *
+ * &lt;p&gt;A {@code Simulation} consists of stepping the model for a given random seed. At the start,
+ * agents and environments are added the instance and scheduled. Any additional steppables,
+ * including actions and components, are also scheduled.
+ *
+ * &lt;p&gt;A {@code Simulation} should also extend {@code SimState} from the &lt;a
+ * href=&quot;https://cs.gmu.edu/~eclab/projects/mason/&quot;&gt;MASON&lt;/a&gt; library. {@code SimState} manages the
+ * actual &quot;stepping&quot; of the model, while the {@code Simulation} interface ensures the model can
+ * interact with other interfaces and classes in the package.
+ */
+public interface Simulation {
+    /** Default type for cell container list. */
+<span class="fc" id="L30">    Type DEFAULT_CELL_TYPE = new TypeToken&lt;ArrayList&lt;CellContainer&gt;&gt;() {}.getType();</span>
+
+    /** Default type for location container list. */
+<span class="fc" id="L33">    Type DEFAULT_LOCATION_TYPE = new TypeToken&lt;ArrayList&lt;LocationContainer&gt;&gt;() {}.getType();</span>
+
+    /**
+     * Gets the {@link Series} object for the current simulation.
+     *
+     * &lt;p&gt;The {@link Series} object can be further queried for information on configuration and
+     * parameters.
+     *
+     * @return the {@link Series} instance
+     */
+    Series getSeries();
+
+    /**
+     * Gets the current schedule for the simulation.
+     *
+     * @return the schedule instance
+     */
+    Schedule getSchedule();
+
+    /**
+     * Gets the random number generator seed.
+     *
+     * @return the random seed
+     */
+    int getSeed();
+
+    /**
+     * Gets the next available ID in the simulation.
+     *
+     * @return the id
+     */
+    int getID();
+
+    /**
+     * Gets the list of {@link CellContainer} objects.
+     *
+     * @return a list of {@link CellContainer} objects
+     */
+    ArrayList&lt;CellContainer&gt; getCells();
+
+    /**
+     * Gets the list of {@link LocationContainer} objects.
+     *
+     * @return a list of {@link LocationContainer} objects
+     */
+    ArrayList&lt;LocationContainer&gt; getLocations();
+
+    /**
+     * Gets the initialized {@link CellFactory} for the simulation.
+     *
+     * @return the {@link CellFactory} object
+     */
+    CellFactory getCellFactory();
+
+    /**
+     * Gets the initialized {@link LocationFactory} for the simulation.
+     *
+     * @return the {@link LocationFactory} object
+     */
+    LocationFactory getLocationFactory();
+
+    /**
+     * Gets the {@link Grid} object.
+     *
+     * @return the {@link Grid} object
+     */
+    Grid getGrid();
+
+    /**
+     * Gets the {@link Lattice} object for a given key.
+     *
+     * @param key the name of the lattice
+     * @return the {@link Lattice} object
+     */
+    Lattice getLattice(String key);
+
+    /**
+     * Gets the {@link Action} object for a given key.
+     *
+     * @param key the name of the action
+     * @return the {@link Action} object
+     */
+    Action getAction(String key);
+
+    /**
+     * Gets the {@link Component} object for a given key.
+     *
+     * @param key the name of the component
+     * @return the {@link Component} object
+     */
+    Component getComponent(String key);
+
+    /**
+     * Sets up the agents in the grid for the simulation.
+     *
+     * &lt;p&gt;The concrete implementing class calls this and other setup methods from the MASON library
+     * {@code start()} method, which is called before the schedule starts stepping the simulation.
+     */
+    void setupAgents();
+
+    /**
+     * Sets up the environment using lattices for the simulation.
+     *
+     * &lt;p&gt;The concrete implementing class calls this and other setup methods from the MASON library
+     * {@code start()} method, which is called before the schedule starts stepping the simulation.
+     */
+    void setupEnvironment();
+
+    /**
+     * Schedules any {@link Action} instances.
+     *
+     * &lt;p&gt;The concrete implementing class calls this and other schedule methods from the MASON
+     * library {@code start()} method, which is called before the schedule starts stepping the
+     * simulation.
+     */
+    void scheduleActions();
+
+    /**
+     * Schedules any {@link Component} instances.
+     *
+     * &lt;p&gt;The concrete implementing class calls this and other schedule methods from the MASON
+     * library {@code start()} method, which is called before the schedule starts stepping the
+     * simulation.
+     */
+    void scheduleComponents();
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

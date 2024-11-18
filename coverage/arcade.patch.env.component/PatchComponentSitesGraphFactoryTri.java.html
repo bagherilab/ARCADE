@@ -1,0 +1,674 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchComponentSitesGraphFactoryTri.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.component</a> &gt; <span class="el_source">PatchComponentSitesGraphFactoryTri.java</span></div><h1>PatchComponentSitesGraphFactoryTri.java</h1><pre class="source lang-java linenums">package arcade.patch.env.component;
+
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import sim.util.Bag;
+import ec.util.MersenneTwisterFast;
+import arcade.core.sim.Series;
+import arcade.core.util.Graph;
+import arcade.core.util.Utilities;
+import static arcade.core.util.Graph.Node;
+import static arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
+import static arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.*;
+
+/**
+ * Concrete implementation of {@link PatchComponentSitesGraphFactory} for triangular geometry.
+ *
+ * &lt;p&gt;For pattern layout, the graph is given by:
+ *
+ * &lt;pre&gt;
+ *                         ___ ___
+ *                       /         \
+ *                      /           \
+ *             ___ ___ /             \ ___ ___
+ *           /         \             /         \
+ *          /           \           /           \
+ * ___ ___ /             \ ___ ___ /             \ ___ ___
+ *         \             /         \             /
+ *          \           /           \           /
+ *           \ ___ ___ /             \ ___ ___ /
+ *                     \             /
+ *                      \           /
+ *                       \ ___ ___ /
+ * &lt;/pre&gt;
+ *
+ * &lt;p&gt;For root layouts, each node has six possible orientations for the edge: left, right, up left,
+ * up right, down left, and down right. When initializing roots from a border, only certain
+ * orientations are possible:
+ *
+ * &lt;ul&gt;
+ *   &lt;li&gt;left border = right, up right, down right
+ *   &lt;li&gt;right border = left, up left, down left
+ *   &lt;li&gt;top border = down right, down left
+ *   &lt;li&gt;bottom border = up right, up left
+ * &lt;/ul&gt;
+ */
+public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraphFactory {
+    /** List of all possible edge directions. */
+<span class="nc" id="L50">    private static final EnumSet&lt;EdgeDirection&gt; EDGE_DIRECTIONS =</span>
+<span class="nc" id="L51">            EnumSet.of(</span>
+                    EdgeDirection.UP_LEFT,
+                    EdgeDirection.UP_RIGHT,
+                    EdgeDirection.RIGHT,
+                    EdgeDirection.DOWN_RIGHT,
+                    EdgeDirection.DOWN_LEFT,
+                    EdgeDirection.LEFT);
+
+    /** Map of edge directions to their reverse direction. */
+<span class="nc" id="L60">    private static final EnumMap&lt;EdgeDirection, EdgeDirection&gt; REVERSE_EDGE_DIRECTIONS =</span>
+<span class="nc" id="L61">            new EnumMap&lt;EdgeDirection, EdgeDirection&gt;(EdgeDirection.class) {</span>
+                {
+<span class="nc" id="L63">                    put(EdgeDirection.UP_LEFT, EdgeDirection.DOWN_RIGHT);</span>
+<span class="nc" id="L64">                    put(EdgeDirection.UP_RIGHT, EdgeDirection.DOWN_LEFT);</span>
+<span class="nc" id="L65">                    put(EdgeDirection.RIGHT, EdgeDirection.LEFT);</span>
+<span class="nc" id="L66">                    put(EdgeDirection.DOWN_RIGHT, EdgeDirection.UP_LEFT);</span>
+<span class="nc" id="L67">                    put(EdgeDirection.DOWN_LEFT, EdgeDirection.UP_RIGHT);</span>
+<span class="nc" id="L68">                    put(EdgeDirection.LEFT, EdgeDirection.RIGHT);</span>
+<span class="nc" id="L69">                }</span>
+            };
+
+    /** List of coordinate offsets for each direction. */
+<span class="nc" id="L73">    private static final EnumMap&lt;EdgeDirection, int[]&gt; OFFSETS =</span>
+<span class="nc" id="L74">            new EnumMap&lt;EdgeDirection, int[]&gt;(EdgeDirection.class) {</span>
+                {
+<span class="nc" id="L76">                    put(EdgeDirection.UP_LEFT, new int[] {-1, -1, 0});</span>
+<span class="nc" id="L77">                    put(EdgeDirection.UP_RIGHT, new int[] {1, -1, 0});</span>
+<span class="nc" id="L78">                    put(EdgeDirection.RIGHT, new int[] {2, 0, 0});</span>
+<span class="nc" id="L79">                    put(EdgeDirection.DOWN_RIGHT, new int[] {1, 1, 0});</span>
+<span class="nc" id="L80">                    put(EdgeDirection.DOWN_LEFT, new int[] {-1, 1, 0});</span>
+<span class="nc" id="L81">                    put(EdgeDirection.LEFT, new int[] {-2, 0, 0});</span>
+<span class="nc" id="L82">                }</span>
+            };
+
+    /** List of offset directions for root directions. */
+<span class="nc" id="L86">    private static final EnumMap&lt;EdgeDirection, EdgeDirection[]&gt; ROOT_OFFSETS =</span>
+<span class="nc" id="L87">            new EnumMap&lt;EdgeDirection, EdgeDirection[]&gt;(EdgeDirection.class) {</span>
+                {
+<span class="nc" id="L89">                    put(</span>
+                            EdgeDirection.UP_LEFT,
+                            new EdgeDirection[] {EdgeDirection.UP_RIGHT, EdgeDirection.LEFT});
+<span class="nc" id="L92">                    put(</span>
+                            EdgeDirection.UP_RIGHT,
+                            new EdgeDirection[] {EdgeDirection.RIGHT, EdgeDirection.UP_LEFT});
+<span class="nc" id="L95">                    put(</span>
+                            EdgeDirection.RIGHT,
+                            new EdgeDirection[] {EdgeDirection.DOWN_RIGHT, EdgeDirection.UP_RIGHT});
+<span class="nc" id="L98">                    put(</span>
+                            EdgeDirection.DOWN_RIGHT,
+                            new EdgeDirection[] {EdgeDirection.DOWN_LEFT, EdgeDirection.RIGHT});
+<span class="nc" id="L101">                    put(</span>
+                            EdgeDirection.DOWN_LEFT,
+                            new EdgeDirection[] {EdgeDirection.LEFT, EdgeDirection.DOWN_RIGHT});
+<span class="nc" id="L104">                    put(</span>
+                            EdgeDirection.LEFT,
+                            new EdgeDirection[] {EdgeDirection.UP_LEFT, EdgeDirection.DOWN_LEFT});
+<span class="nc" id="L107">                }</span>
+            };
+
+    /** Array positions for edge directions. */
+<span class="nc" id="L111">    private static final EdgeDirection[][] DIRS =</span>
+            new EdgeDirection[][] {
+                {
+                    EdgeDirection.UNDEFINED,
+                    EdgeDirection.UP_LEFT,
+                    EdgeDirection.UNDEFINED,
+                    EdgeDirection.UP_RIGHT,
+                    EdgeDirection.UNDEFINED
+                },
+                {
+                    EdgeDirection.LEFT,
+                    EdgeDirection.UNDEFINED,
+                    EdgeDirection.UNDEFINED,
+                    EdgeDirection.UNDEFINED,
+                    EdgeDirection.RIGHT
+                },
+                {
+                    EdgeDirection.UNDEFINED,
+                    EdgeDirection.DOWN_LEFT,
+                    EdgeDirection.UNDEFINED,
+                    EdgeDirection.DOWN_RIGHT,
+                    EdgeDirection.UNDEFINED,
+                }
+            };
+
+    /** Length of edge. */
+    private final double edgeLength;
+
+    /**
+     * Creates a {@link PatchComponentSitesGraph} for triangular geometry.
+     *
+     * @param series the simulation series
+     */
+    public PatchComponentSitesGraphFactoryTri(Series series) {
+<span class="nc" id="L145">        super(series);</span>
+<span class="nc" id="L146">        edgeLength = series.ds;</span>
+<span class="nc" id="L147">    }</span>
+
+    @Override
+    int[] getOffset(EdgeDirection offset) {
+<span class="nc" id="L151">        return OFFSETS.get(offset);</span>
+    }
+
+    @Override
+    int calcOffset(int k) {
+<span class="nc" id="L156">        return (latticeHeight - k / 2 - 1) % 3;</span>
+    }
+
+    @Override
+    int calcCol(int i, int offset) {
+<span class="nc" id="L161">        return (i + 6 * offset) % 9;</span>
+    }
+
+    @Override
+    int calcRow(int i, int j, int offset) {
+<span class="nc bnc" id="L166" title="All 2 branches missed.">        return (j + (((i + 6 * offset) / 9 &amp; 1) == 0 ? 0 : 3)) % 6;</span>
+    }
+
+    @Override
+    boolean checkNode(Node node) {
+<span class="nc" id="L171">        return checkNode(node.getX(), node.getY(), node.getZ());</span>
+    }
+
+    /**
+     * Checks if the given coordinates are outside bounds of the environment.
+     *
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     * @return {@code true} if within bounds, {@code false} otherwise
+     */
+    private boolean checkNode(int x, int y, int z) {
+<span class="nc bnc" id="L183" title="All 8 branches missed.">        return !(x &lt; 0 || x &gt; latticeLength + 1 || y &lt; 0 || y &gt; latticeWidth);</span>
+    }
+
+    @Override
+    double getLength(SiteEdge edge, EdgeLevel level) {
+<span class="nc" id="L188">        return level.scale * edgeLength;</span>
+    }
+
+    @Override
+    void createPattern(Graph graph) {
+<span class="nc" id="L193">        ArrayList&lt;int[]&gt; edges = new ArrayList&lt;&gt;();</span>
+
+        // Add edges using pattern match layout.
+<span class="nc bnc" id="L196" title="All 2 branches missed.">        for (int k = 0; k &lt; latticeHeight; k += 2) {</span>
+<span class="nc" id="L197">            int offset = calcOffset(k);</span>
+
+<span class="nc bnc" id="L199" title="All 2 branches missed.">            for (int i = 0; i &lt;= latticeLength; i++) {</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">                for (int j = 0; j &lt;= latticeWidth; j++) {</span>
+<span class="nc" id="L201">                    int col = calcCol(i, offset);</span>
+<span class="nc" id="L202">                    int row = calcRow(i, j, offset);</span>
+
+<span class="nc bnc" id="L204" title="All 4 branches missed.">                    if (col == 0 &amp;&amp; row == 4) {</span>
+<span class="nc" id="L205">                        edges.add(new int[] {i, j, k, i + 2, j, k});</span>
+<span class="nc bnc" id="L206" title="All 4 branches missed.">                    } else if (col == 5 &amp;&amp; row == 1) {</span>
+<span class="nc" id="L207">                        edges.add(new int[] {i, j, k, i + 2, j, k});</span>
+<span class="nc bnc" id="L208" title="All 4 branches missed.">                    } else if (col == 7 &amp;&amp; row == 1) {</span>
+<span class="nc" id="L209">                        edges.add(new int[] {i, j, k, i + 2, j, k});</span>
+<span class="nc bnc" id="L210" title="All 4 branches missed.">                    } else if (col == 3 &amp;&amp; row == 3) {</span>
+<span class="nc" id="L211">                        edges.add(new int[] {i, j, k, i + 1, j - 1, k});</span>
+<span class="nc bnc" id="L212" title="All 4 branches missed.">                    } else if (col == 4 &amp;&amp; row == 2) {</span>
+<span class="nc" id="L213">                        edges.add(new int[] {i, j, k, i + 1, j - 1, k});</span>
+<span class="nc bnc" id="L214" title="All 4 branches missed.">                    } else if (col == 3 &amp;&amp; row == 5) {</span>
+<span class="nc" id="L215">                        edges.add(new int[] {i, j, k, i + 1, j + 1, k});</span>
+<span class="nc bnc" id="L216" title="All 4 branches missed.">                    } else if (col == 4 &amp;&amp; row == 0) {</span>
+<span class="nc" id="L217">                        edges.add(new int[] {i, j, k, i + 1, j + 1, k});</span>
+<span class="nc bnc" id="L218" title="All 4 branches missed.">                    } else if (col == 2 &amp;&amp; row == 4) {</span>
+<span class="nc" id="L219">                        edges.add(new int[] {i, j, k, i + 1, j - 1, k});</span>
+<span class="nc" id="L220">                        edges.add(new int[] {i, j, k, i + 1, j + 1, k});</span>
+                    }
+                }
+            }
+        }
+
+        // Add all edges within bounds to graph.
+<span class="nc bnc" id="L227" title="All 2 branches missed.">        for (int[] e : edges) {</span>
+<span class="nc bnc" id="L228" title="All 4 branches missed.">            if (checkNode(e[0], e[1], e[2]) &amp;&amp; checkNode(e[3], e[4], e[5])) {</span>
+                // Calculate location of capillaries and adjust to make
+                // sure capillaries lie on a horizontal segment.
+<span class="nc" id="L231">                int offset = calcOffset(e[2]);</span>
+<span class="nc" id="L232">                int thresh = (latticeLength + 1) / 2;</span>
+<span class="nc" id="L233">                thresh += 3 - ((calcCol(thresh, offset) + 1) % 9 + 4) % 9;</span>
+
+                // Add edge to graph.
+<span class="nc" id="L236">                SiteNode from = new SiteNode(e[0], e[1], e[2]);</span>
+<span class="nc" id="L237">                SiteNode to = new SiteNode(e[3], e[4], e[5]);</span>
+                EdgeType type =
+<span class="nc bnc" id="L239" title="All 2 branches missed.">                        (e[0] == thresh</span>
+<span class="nc" id="L240">                                ? EdgeType.CAPILLARY</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">                                : (e[0] &lt; thresh ? EdgeType.ARTERY : EdgeType.VEIN));</span>
+<span class="nc" id="L242">                SiteEdge edge = new SiteEdge(from, to, type, EdgeLevel.VARIABLE);</span>
+<span class="nc" id="L243">                graph.addEdge(edge);</span>
+            }
+<span class="nc" id="L245">        }</span>
+
+        // Traverse graph from leftmost nodes to identify unnecessary edges.
+<span class="nc" id="L248">        int[] offsets = new int[] {0, 1, 0};</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">        for (int k = 0; k &lt; latticeHeight; k += 2) {</span>
+<span class="nc" id="L250">            int offset = calcOffset(k);</span>
+<span class="nc" id="L251">            int ro = offsets[offset];</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">            for (int j = 0; j &lt;= latticeWidth; j++) {</span>
+<span class="nc" id="L253">                SiteNode root = new SiteNode(ro, j, k);</span>
+<span class="nc" id="L254">                visit(graph, this, root, 2, 4);</span>
+            }
+        }
+<span class="nc" id="L257">    }</span>
+
+    @Override
+    Root createRoot(Border border, double percent, EdgeType type, EdgeLevel level) {
+<span class="nc" id="L261">        int scale = level.scale;</span>
+<span class="nc" id="L262">        int width = Math.floorDiv(latticeWidth, scale);</span>
+<span class="nc" id="L263">        int length = (latticeLength - 2 * scale + 3) / scale;</span>
+<span class="nc" id="L264">        int c = -1;</span>
+
+<span class="nc bnc" id="L266" title="All 3 branches missed.">        switch (border) {</span>
+            case LEFT:
+            case RIGHT:
+<span class="nc" id="L269">                c = Math.round(Math.round(width * percent));</span>
+<span class="nc" id="L270">                break;</span>
+            case TOP:
+            case BOTTOM:
+<span class="nc" id="L273">                c = Math.round(Math.round(length * percent));</span>
+<span class="nc" id="L274">                break;</span>
+            default:
+                break;
+        }
+
+<span class="nc bnc" id="L279" title="All 5 branches missed.">        switch (border) {</span>
+            case LEFT:
+<span class="nc bnc" id="L281" title="All 2 branches missed.">                return new Root((c % 2 == 0 ? 0 : scale), c * scale, type, EdgeDirection.RIGHT);</span>
+            case RIGHT:
+<span class="nc bnc" id="L283" title="All 6 branches missed.">                int off = (length % 2 == 0 ? (c % 2 == 0 ? 0 : scale) : (c % 2 == 0 ? scale : 0));</span>
+<span class="nc" id="L284">                return new Root(length * scale + off, c * scale, type, EdgeDirection.LEFT);</span>
+            case TOP:
+                // must be even number
+<span class="nc bnc" id="L287" title="All 2 branches missed.">                c = (c % 2 == 0 ? c : c + 1);</span>
+<span class="nc" id="L288">                return new Root(</span>
+                        c * scale,
+                        0,
+                        type,
+<span class="nc bnc" id="L292" title="All 2 branches missed.">                        (c &lt; (length + 1) / 2</span>
+<span class="nc" id="L293">                                ? EdgeDirection.DOWN_RIGHT</span>
+<span class="nc" id="L294">                                : EdgeDirection.DOWN_LEFT));</span>
+            case BOTTOM:
+                // must be even number if width is even, odd otherwise
+<span class="nc bnc" id="L297" title="All 6 branches missed.">                c = (width % 2 == 0 ? (c % 2 == 0 ? c : c + 1) : (c % 2 == 0 ? c + 1 : c));</span>
+<span class="nc" id="L298">                return new Root(</span>
+                        c * scale,
+                        width * scale,
+                        type,
+<span class="nc bnc" id="L302" title="All 2 branches missed.">                        (c &lt; (length + 1) / 2 ? EdgeDirection.UP_RIGHT : EdgeDirection.UP_LEFT));</span>
+            default:
+                break;
+        }
+
+<span class="nc" id="L307">        return null;</span>
+    }
+
+    @Override
+    EdgeDirection[] createRootOffsets(
+            Border border, double fraction, EdgeLevel level, MersenneTwisterFast random) {
+<span class="nc" id="L313">        int scale = level.scale;</span>
+<span class="nc" id="L314">        int width = Math.floorDiv(latticeWidth, scale);</span>
+<span class="nc" id="L315">        int length = (latticeLength - 2 * scale + 3) / scale;</span>
+<span class="nc" id="L316">        int numOffsets = 0;</span>
+
+<span class="nc bnc" id="L318" title="All 3 branches missed.">        switch (border) {</span>
+            case LEFT:
+            case RIGHT:
+<span class="nc" id="L321">                numOffsets = Math.round(Math.round(length * fraction / 2));</span>
+<span class="nc" id="L322">                break;</span>
+            case TOP:
+            case BOTTOM:
+<span class="nc" id="L325">                numOffsets = Math.round(Math.round(width * fraction));</span>
+<span class="nc" id="L326">                break;</span>
+            default:
+                break;
+        }
+
+<span class="nc" id="L331">        EdgeDirection[] directions = null;</span>
+<span class="nc" id="L332">        int index = -1;</span>
+
+        // Get direction list.
+<span class="nc bnc" id="L335" title="All 5 branches missed.">        switch (border) {</span>
+            case LEFT:
+<span class="nc" id="L337">                directions =</span>
+                        new EdgeDirection[] {
+                            EdgeDirection.UP_RIGHT, EdgeDirection.RIGHT, EdgeDirection.DOWN_RIGHT
+                        };
+<span class="nc" id="L341">                index = 1;</span>
+<span class="nc" id="L342">                break;</span>
+            case RIGHT:
+<span class="nc" id="L344">                directions =</span>
+                        new EdgeDirection[] {
+                            EdgeDirection.UP_LEFT, EdgeDirection.LEFT, EdgeDirection.DOWN_LEFT
+                        };
+<span class="nc" id="L348">                index = 1;</span>
+<span class="nc" id="L349">                break;</span>
+            case TOP:
+<span class="nc" id="L351">                directions =</span>
+                        new EdgeDirection[] {EdgeDirection.DOWN_RIGHT, EdgeDirection.DOWN_LEFT};
+<span class="nc" id="L353">                index = 0;</span>
+<span class="nc" id="L354">                break;</span>
+            case BOTTOM:
+<span class="nc" id="L356">                directions = new EdgeDirection[] {EdgeDirection.UP_RIGHT, EdgeDirection.UP_LEFT};</span>
+<span class="nc" id="L357">                index = 0;</span>
+<span class="nc" id="L358">                break;</span>
+            default:
+                break;
+        }
+
+<span class="nc" id="L363">        int deviation = 0;</span>
+<span class="nc" id="L364">        EdgeDirection offset = null;</span>
+<span class="nc" id="L365">        EdgeDirection[] offsets = new EdgeDirection[numOffsets];</span>
+
+        // Iterate through to fill up offsets.
+<span class="nc bnc" id="L368" title="All 2 branches missed.">        for (int i = 0; i &lt; numOffsets; i++) {</span>
+            // Select type of random number generator. Left and right borders
+            // have three options, while top and bottom borders only have two.
+<span class="nc bnc" id="L371" title="All 3 branches missed.">            switch (border) {</span>
+                case LEFT:
+                case RIGHT:
+<span class="nc bnc" id="L374" title="All 2 branches missed.">                    if (deviation &gt; 0) {</span>
+<span class="nc" id="L375">                        offset = directions[random.nextInt(2)];</span>
+<span class="nc bnc" id="L376" title="All 2 branches missed.">                    } else if (deviation &lt; 0) {</span>
+<span class="nc" id="L377">                        offset = directions[random.nextInt(2) + 1];</span>
+                    } else {
+<span class="nc" id="L379">                        offset = directions[random.nextInt(3)];</span>
+                    }
+<span class="nc" id="L381">                    break;</span>
+                case TOP:
+                case BOTTOM:
+<span class="nc bnc" id="L384" title="All 2 branches missed.">                    if (deviation &gt; 1) {</span>
+<span class="nc" id="L385">                        offset = directions[1];</span>
+<span class="nc bnc" id="L386" title="All 2 branches missed.">                    } else if (deviation &lt; -1) {</span>
+<span class="nc" id="L387">                        offset = directions[0];</span>
+                    } else {
+<span class="nc" id="L389">                        offset = directions[random.nextInt(2)];</span>
+                    }
+<span class="nc" id="L391">                    break;</span>
+                default:
+                    break;
+            }
+
+<span class="nc" id="L396">            offsets[i] = offset;</span>
+<span class="nc" id="L397">            deviation += OFFSETS.get(offset)[index];</span>
+        }
+
+<span class="nc" id="L400">        return offsets;</span>
+    }
+
+    @Override
+    EdgeDirection getDirection(int fromX, int fromY, int toX, int toY) {
+<span class="nc" id="L405">        int dx = (toX - fromX) + 2;</span>
+<span class="nc" id="L406">        int dy = (toY - fromY) + 1;</span>
+<span class="nc" id="L407">        return DIRS[dy][dx];</span>
+    }
+
+    @Override
+    Bag addRoot(
+            Graph graph,
+            SiteNode node0,
+            EdgeDirection dir,
+            EdgeType type,
+            EdgeDirection[] offsets,
+            MersenneTwisterFast random) {
+<span class="nc" id="L418">        Bag bag = new Bag();</span>
+<span class="nc" id="L419">        EdgeLevel level = EdgeLevel.LEVEL_1;</span>
+<span class="nc" id="L420">        SiteNode node1 = offsetNode(node0, dir, level);</span>
+<span class="nc" id="L421">        boolean checkNode0 = checkNode(node0);</span>
+<span class="nc" id="L422">        boolean checkNode1 = checkNode(node1);</span>
+
+        // Add initial edge in the specified direction. If unable to add it,
+        // then do not add the rest of the tripod.
+<span class="nc bnc" id="L426" title="All 4 branches missed.">        if (checkNode0</span>
+                &amp;&amp; checkNode1
+<span class="nc bnc" id="L428" title="All 2 branches missed.">                &amp;&amp; graph.getDegree(node0) == 0</span>
+<span class="nc bnc" id="L429" title="All 2 branches missed.">                &amp;&amp; graph.getDegree(node1) == 0) {</span>
+<span class="nc" id="L430">            SiteEdge edge = new SiteEdge(node0, node1, type, level);</span>
+<span class="nc" id="L431">            graph.addEdge(edge);</span>
+<span class="nc" id="L432">        } else {</span>
+<span class="nc" id="L433">            return bag;</span>
+        }
+
+        // Add the two leaves of the tripod if line is 0, otherwise add in the root line.
+<span class="nc bnc" id="L437" title="All 2 branches missed.">        if (offsets == null) {</span>
+<span class="nc bnc" id="L438" title="All 2 branches missed.">            for (EdgeDirection offset : ROOT_OFFSETS.get(dir)) {</span>
+<span class="nc" id="L439">                SiteNode node2 = offsetNode(node1, offset, level);</span>
+<span class="nc bnc" id="L440" title="All 4 branches missed.">                if (checkNode(node2) &amp;&amp; graph.getDegree(node2) == 0) {</span>
+<span class="nc" id="L441">                    SiteEdge edge = new SiteEdge(node1, node2, type, level);</span>
+<span class="nc" id="L442">                    graph.addEdge(edge);</span>
+<span class="nc" id="L443">                    bag.add(edge);</span>
+                }
+            }
+        } else {
+<span class="nc" id="L447">            SiteNode currNode = node1;</span>
+<span class="nc" id="L448">            ArrayList&lt;SiteEdge&gt; edges = new ArrayList&lt;&gt;();</span>
+
+            // Add segments for given list of offsets.
+<span class="nc bnc" id="L451" title="All 2 branches missed.">            for (EdgeDirection offset : offsets) {</span>
+<span class="nc" id="L452">                SiteNode nextNode = offsetNode(currNode, offset, level);</span>
+<span class="nc" id="L453">                boolean checkNext = checkNode(nextNode);</span>
+<span class="nc bnc" id="L454" title="All 4 branches missed.">                if (checkNext &amp;&amp; graph.getDegree(nextNode) == 0) {</span>
+<span class="nc" id="L455">                    SiteEdge edge = new SiteEdge(currNode, nextNode, type, level);</span>
+<span class="nc" id="L456">                    graph.addEdge(edge);</span>
+<span class="nc" id="L457">                    edges.add(edge);</span>
+<span class="nc" id="L458">                    currNode = nextNode;</span>
+                }
+            }
+
+            // Shuffle and add tripods off the offset line.
+<span class="nc" id="L463">            Utilities.shuffleList(edges, random);</span>
+<span class="nc bnc" id="L464" title="All 2 branches missed.">            for (SiteEdge edge : edges) {</span>
+<span class="nc" id="L465">                bag.addAll(</span>
+<span class="nc" id="L466">                        addMotif(graph, edge.getTo(), edge, type, level, EdgeMotif.TRIPLE, random));</span>
+<span class="nc" id="L467">            }</span>
+        }
+
+<span class="nc" id="L470">        return bag;</span>
+    }
+
+    @Override
+    Bag addMotif(
+            Graph graph,
+            SiteNode node0,
+            SiteEdge edge0,
+            EdgeType type,
+            EdgeLevel level,
+            EdgeMotif motif,
+            MersenneTwisterFast random) {
+        // Select new random direction.
+<span class="nc" id="L483">        EdgeDirection dir0 = getDirection(edge0, level);</span>
+<span class="nc" id="L484">        ArrayList&lt;EdgeDirection&gt; validDirections = new ArrayList&lt;&gt;(EDGE_DIRECTIONS);</span>
+<span class="nc" id="L485">        validDirections.remove(REVERSE_EDGE_DIRECTIONS.get(dir0));</span>
+<span class="nc" id="L486">        EdgeDirection dir = validDirections.get(random.nextInt(validDirections.size()));</span>
+
+        // Make tripod nodes.
+<span class="nc" id="L489">        SiteNode node1 = offsetNode(node0, dir, level);</span>
+<span class="nc" id="L490">        SiteNode node2 = offsetNode(node1, ROOT_OFFSETS.get(dir)[0], level);</span>
+<span class="nc" id="L491">        SiteNode node3 = offsetNode(node1, ROOT_OFFSETS.get(dir)[1], level);</span>
+
+        // Check nodes.
+<span class="nc" id="L494">        boolean checkNode0 = checkNode(node0);</span>
+<span class="nc" id="L495">        boolean checkNode1 = checkNode(node1);</span>
+<span class="nc" id="L496">        boolean checkNode2 = checkNode(node2);</span>
+<span class="nc" id="L497">        boolean checkNode3 = checkNode(node3);</span>
+
+<span class="nc" id="L499">        Bag bag = new Bag();</span>
+        SiteEdge edge;
+
+<span class="nc bnc" id="L502" title="All 4 branches missed.">        switch (motif) {</span>
+            case TRIPLE:
+<span class="nc bnc" id="L504" title="All 8 branches missed.">                if (checkNode0</span>
+                        &amp;&amp; checkNode1
+                        &amp;&amp; checkNode2
+                        &amp;&amp; checkNode3
+<span class="nc bnc" id="L508" title="All 2 branches missed.">                        &amp;&amp; graph.getDegree(node1) == 0</span>
+<span class="nc bnc" id="L509" title="All 2 branches missed.">                        &amp;&amp; graph.getDegree(node2) == 0</span>
+<span class="nc bnc" id="L510" title="All 2 branches missed.">                        &amp;&amp; graph.getDegree(node3) == 0) {</span>
+<span class="nc" id="L511">                    edge = new SiteEdge(node0, node1, type, level);</span>
+<span class="nc" id="L512">                    graph.addEdge(edge);</span>
+
+<span class="nc" id="L514">                    edge = new SiteEdge(node1, node2, type, level);</span>
+<span class="nc" id="L515">                    graph.addEdge(edge);</span>
+<span class="nc" id="L516">                    bag.add(edge);</span>
+
+<span class="nc" id="L518">                    edge = new SiteEdge(node1, node3, type, level);</span>
+<span class="nc" id="L519">                    graph.addEdge(edge);</span>
+<span class="nc" id="L520">                    bag.add(edge);</span>
+                } else {
+<span class="nc" id="L522">                    bag.add(edge0);</span>
+                }
+<span class="nc" id="L524">                break;</span>
+            case DOUBLE:
+<span class="nc bnc" id="L526" title="All 6 branches missed.">                if (checkNode0 &amp;&amp; checkNode1 &amp;&amp; graph.getDegree(node1) == 0) {</span>
+<span class="nc" id="L527">                    ArrayList&lt;SiteNode&gt; options = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L529" title="All 4 branches missed.">                    if (checkNode2 &amp;&amp; graph.getDegree(node2) == 0) {</span>
+<span class="nc" id="L530">                        options.add(node2);</span>
+                    }
+<span class="nc bnc" id="L532" title="All 4 branches missed.">                    if (checkNode3 &amp;&amp; graph.getDegree(node3) == 0) {</span>
+<span class="nc" id="L533">                        options.add(node3);</span>
+                    }
+
+<span class="nc" id="L536">                    Utilities.shuffleList(options, random);</span>
+
+<span class="nc bnc" id="L538" title="All 2 branches missed.">                    if (options.size() &gt; 0) {</span>
+<span class="nc" id="L539">                        edge = new SiteEdge(node0, node1, type, level);</span>
+<span class="nc" id="L540">                        graph.addEdge(edge);</span>
+<span class="nc" id="L541">                        edge = new SiteEdge(node1, options.get(0), type, level);</span>
+<span class="nc" id="L542">                        graph.addEdge(edge);</span>
+<span class="nc" id="L543">                        bag.add(edge);</span>
+                    } else {
+<span class="nc" id="L545">                        bag.add(edge0);</span>
+                    }
+<span class="nc" id="L547">                } else {</span>
+<span class="nc" id="L548">                    bag.add(edge0);</span>
+                }
+<span class="nc" id="L550">                break;</span>
+            case SINGLE:
+<span class="nc bnc" id="L552" title="All 6 branches missed.">                if (checkNode0 &amp;&amp; checkNode1 &amp;&amp; graph.getDegree(node1) == 0) {</span>
+<span class="nc" id="L553">                    edge = new SiteEdge(node0, node1, type, level);</span>
+<span class="nc" id="L554">                    graph.addEdge(edge);</span>
+<span class="nc" id="L555">                    bag.add(edge);</span>
+                } else {
+<span class="nc" id="L557">                    bag.add(edge0);</span>
+                }
+<span class="nc" id="L559">                break;</span>
+            default:
+                break;
+        }
+
+<span class="nc" id="L564">        return bag;</span>
+    }
+
+    @Override
+    void addSegment(
+            Graph graph,
+            SiteNode node0,
+            EdgeDirection dir,
+            EdgeLevel level,
+            MersenneTwisterFast random) {
+<span class="nc" id="L574">        ArrayList&lt;SiteNode&gt; options = new ArrayList&lt;&gt;();</span>
+
+        // Iterate through all five direction options.
+<span class="nc bnc" id="L577" title="All 2 branches missed.">        for (EdgeDirection offset : EDGE_DIRECTIONS) {</span>
+<span class="nc bnc" id="L578" title="All 2 branches missed.">            if (offset == REVERSE_EDGE_DIRECTIONS.get(dir)) {</span>
+<span class="nc" id="L579">                continue;</span>
+            }
+
+<span class="nc" id="L582">            SiteNode node1 = offsetNode(node0, offset, level);</span>
+<span class="nc bnc" id="L583" title="All 2 branches missed.">            if (!checkNode(node1)) {</span>
+<span class="nc" id="L584">                continue;</span>
+            }
+
+<span class="nc" id="L587">            SiteEdge edgeOut = null;</span>
+<span class="nc" id="L588">            SiteEdge edgeIn = null;</span>
+
+            // Check edges in and out of proposed node.
+<span class="nc bnc" id="L591" title="All 2 branches missed.">            if (graph.getOutDegree(node1) == 1) {</span>
+<span class="nc" id="L592">                edgeOut = (SiteEdge) graph.getEdgesOut(node1).objs[0];</span>
+<span class="nc bnc" id="L593" title="All 4 branches missed.">                if (edgeOut.type != EdgeType.VEIN</span>
+                        || edgeOut.radius &gt; MAXIMUM_CAPILLARY_RADIUS
+<span class="nc bnc" id="L595" title="All 2 branches missed.">                        || edgeOut.getFrom().isRoot) {</span>
+<span class="nc" id="L596">                    edgeOut = null;</span>
+                }
+            }
+<span class="nc bnc" id="L599" title="All 2 branches missed.">            if (graph.getInDegree(node1) == 1) {</span>
+<span class="nc" id="L600">                edgeIn = (SiteEdge) graph.getEdgesIn(node1).objs[0];</span>
+<span class="nc bnc" id="L601" title="All 4 branches missed.">                if (edgeIn.type != EdgeType.VEIN</span>
+                        || edgeIn.radius &gt; MAXIMUM_CAPILLARY_RADIUS
+<span class="nc bnc" id="L603" title="All 2 branches missed.">                        || edgeIn.getTo().isRoot) {</span>
+<span class="nc" id="L604">                    edgeIn = null;</span>
+                }
+            }
+
+<span class="nc bnc" id="L608" title="All 4 branches missed.">            if (edgeOut != null || edgeIn != null) {</span>
+<span class="nc" id="L609">                options.add(node1);</span>
+            }
+<span class="nc" id="L611">        }</span>
+
+<span class="nc" id="L613">        Utilities.shuffleList(options, random);</span>
+
+<span class="nc bnc" id="L615" title="All 2 branches missed.">        for (SiteNode node1 : options) {</span>
+<span class="nc" id="L616">            SiteEdge e = new SiteEdge(node0, node1, EdgeType.CAPILLARY, level);</span>
+<span class="nc bnc" id="L617" title="All 4 branches missed.">            if (graph.getDegree(node0) &lt; 3 &amp;&amp; graph.getDegree(node1) &lt; 3) {</span>
+<span class="nc" id="L618">                graph.addEdge(e);</span>
+            }
+<span class="nc" id="L620">        }</span>
+<span class="nc" id="L621">    }</span>
+
+    @Override
+    void addConnection(
+            Graph graph,
+            SiteNode node0,
+            EdgeDirection dir,
+            EdgeType type,
+            EdgeLevel level,
+            MersenneTwisterFast random) {
+<span class="nc" id="L631">        ArrayList&lt;SiteNode&gt; options = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L632" title="All 2 branches missed.">        EdgeType connType = (type == EdgeType.ARTERY ? EdgeType.ARTERIOLE : EdgeType.VENULE);</span>
+
+        // Iterate through all five direction options.
+<span class="nc bnc" id="L635" title="All 2 branches missed.">        for (EdgeDirection offset : EDGE_DIRECTIONS) {</span>
+<span class="nc bnc" id="L636" title="All 2 branches missed.">            if (offset == REVERSE_EDGE_DIRECTIONS.get(dir)) {</span>
+<span class="nc" id="L637">                continue;</span>
+            }
+
+<span class="nc" id="L640">            SiteNode node1 = offsetNode(node0, offset, level);</span>
+<span class="nc bnc" id="L641" title="All 2 branches missed.">            if (!checkNode(node1)) {</span>
+<span class="nc" id="L642">                continue;</span>
+            }
+
+            // Check edges in and out of proposed node.
+<span class="nc bnc" id="L646" title="All 4 branches missed.">            if (graph.getOutDegree(node1) == 1 &amp;&amp; graph.getInDegree(node1) == 1) {</span>
+<span class="nc" id="L647">                SiteEdge edgeOut = (SiteEdge) graph.getEdgesOut(node1).objs[0];</span>
+<span class="nc" id="L648">                SiteEdge edgeIn = (SiteEdge) graph.getEdgesIn(node1).objs[0];</span>
+
+<span class="nc bnc" id="L650" title="All 8 branches missed.">                if (edgeOut.type == type</span>
+                        &amp;&amp; edgeIn.type == type
+                        &amp;&amp; edgeOut.radius &lt;= MAXIMUM_CAPILLARY_RADIUS
+                        &amp;&amp; edgeIn.radius &lt;= MAXIMUM_CAPILLARY_RADIUS) {
+<span class="nc" id="L654">                    path(graph, node1, node0);</span>
+<span class="nc bnc" id="L655" title="All 2 branches missed.">                    if (node0.prev == null) {</span>
+<span class="nc" id="L656">                        options.add(node1);</span>
+                    }
+                }
+            }
+<span class="nc" id="L660">        }</span>
+
+<span class="nc" id="L662">        Utilities.shuffleList(options, random);</span>
+
+<span class="nc bnc" id="L664" title="All 2 branches missed.">        for (SiteNode node1 : options) {</span>
+<span class="nc" id="L665">            SiteEdge e = new SiteEdge(node0, node1, connType, level);</span>
+<span class="nc bnc" id="L666" title="All 2 branches missed.">            if (graph.getDegree(node0) &lt; 3</span>
+<span class="nc bnc" id="L667" title="All 2 branches missed.">                    &amp;&amp; graph.getDegree(node1) &lt; 3</span>
+<span class="nc bnc" id="L668" title="All 2 branches missed.">                    &amp;&amp; !graph.hasEdge(node0, node1)) {</span>
+<span class="nc" id="L669">                graph.addEdge(e);</span>
+            }
+<span class="nc" id="L671">        }</span>
+<span class="nc" id="L672">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

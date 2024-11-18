@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchLocationFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.location</a> &gt; <span class="el_source">PatchLocationFactory.java</span></div><h1>PatchLocationFactory.java</h1><pre class="source lang-java linenums">package arcade.patch.env.location;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import ec.util.MersenneTwisterFast;
+import arcade.core.env.location.LocationContainer;
+import arcade.core.env.location.LocationFactory;
+import arcade.core.sim.Series;
+import arcade.core.util.Utilities;
+import arcade.patch.sim.PatchSeries;
+
+/** Implementation of {@link LocationFactory} for {@link PatchLocation} objects. */
+public abstract class PatchLocationFactory implements LocationFactory {
+    /** Random number generator instance. */
+    MersenneTwisterFast random;
+
+    /** Map of id to location. */
+    public final HashMap&lt;Integer, PatchLocationContainer&gt; locations;
+
+    /** Creates a factory for making {@link PatchLocation} instances. */
+<span class="fc" id="L23">    public PatchLocationFactory() {</span>
+<span class="fc" id="L24">        locations = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L25">    }</span>
+
+    /**
+     * {@inheritDoc}
+     *
+     * &lt;p&gt;For series with no loader, a list of available patches are created based on population
+     * settings. For series with a loader, the specified file is loaded into the factory.
+     */
+    @Override
+    public void initialize(Series series, MersenneTwisterFast random) {
+<span class="fc" id="L35">        this.random = random;</span>
+<span class="pc bpc" id="L36" title="3 of 4 branches missed.">        if (series.loader != null &amp;&amp; series.loader.loadLocations) {</span>
+<span class="nc" id="L37">            loadLocations(series);</span>
+        } else {
+<span class="fc" id="L39">            createLocations(series);</span>
+        }
+<span class="fc" id="L41">    }</span>
+
+    /**
+     * {@inheritDoc}
+     *
+     * &lt;p&gt;Loaded locations are mapped by their id.
+     */
+    @Override
+    public void loadLocations(Series series) {
+        // Load locations.
+<span class="nc" id="L51">        ArrayList&lt;LocationContainer&gt; containers = series.loader.loadLocations();</span>
+
+        // Map loaded container to factory.
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        for (LocationContainer container : containers) {</span>
+<span class="nc" id="L55">            PatchLocationContainer locationContainer = (PatchLocationContainer) container;</span>
+<span class="nc" id="L56">            locations.put(locationContainer.id, locationContainer);</span>
+<span class="nc" id="L57">        }</span>
+<span class="nc" id="L58">    }</span>
+
+    @Override
+    public void createLocations(Series series) {
+<span class="fc" id="L62">        PatchSeries patchSeries = (PatchSeries) series;</span>
+
+        // Get all valid coordinates.
+<span class="fc" id="L65">        ArrayList&lt;Coordinate&gt; coordinates = getCoordinates(patchSeries.radius, patchSeries.depth);</span>
+<span class="fc" id="L66">        Utilities.shuffleList(coordinates, random);</span>
+
+        // Sort coordinates by distance if initialization scheme is not random.
+        // For &quot;outward&quot; initialization, locations with distances closer to the
+        // center are filled first. For &quot;inward&quot; initialization, locations with
+        // distances further from the center are filled first.
+<span class="fc" id="L72">        String initialization = patchSeries.patch.get(&quot;INITIALIZATION&quot;);</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">        if (!initialization.equalsIgnoreCase(&quot;random&quot;)) {</span>
+<span class="fc" id="L74">            coordinates.sort(Comparator.comparingDouble(Coordinate::calculateDistance));</span>
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">            if (initialization.equalsIgnoreCase(&quot;inward&quot;)) {</span>
+<span class="nc" id="L76">                Collections.reverse(coordinates);</span>
+            }
+        }
+
+        // Create containers for each coordinate.
+<span class="fc" id="L81">        int id = 1;</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        for (Coordinate coordinate : coordinates) {</span>
+<span class="fc" id="L83">            PatchLocationContainer container = new PatchLocationContainer(id, coordinate);</span>
+<span class="fc" id="L84">            locations.put(id, container);</span>
+<span class="fc" id="L85">            id++;</span>
+<span class="fc" id="L86">        }</span>
+<span class="fc" id="L87">    }</span>
+
+    /**
+     * Gets all coordinates for the given range.
+     *
+     * @param radius the bound on the radius
+     * @param depth the bound on the depth
+     * @return a list of location coordinates
+     */
+    public abstract ArrayList&lt;Coordinate&gt; getCoordinates(int radius, int depth);
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

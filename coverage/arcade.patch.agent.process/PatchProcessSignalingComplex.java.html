@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchProcessSignalingComplex.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.agent.process</a> &gt; <span class="el_source">PatchProcessSignalingComplex.java</span></div><h1>PatchProcessSignalingComplex.java</h1><pre class="source lang-java linenums">package arcade.patch.agent.process;
+
+import java.util.ArrayList;
+import ec.util.MersenneTwisterFast;
+import arcade.core.agent.process.Process;
+import arcade.core.sim.Simulation;
+import arcade.core.util.Parameters;
+import arcade.core.util.Solver;
+import arcade.core.util.Solver.Equations;
+import arcade.patch.agent.cell.PatchCell;
+import static arcade.patch.util.PatchEnums.Domain;
+import static arcade.patch.util.PatchEnums.Flag;
+
+/**
+ * Extension of {@link PatchProcessSignaling} for complex EGFR signaling.
+ *
+ * &lt;p&gt;{@code PatchProcessSignalingComplex} represents a 13-component signaling network spanning the
+ * nucleus, cytoplasm, and cell membrane. Migratory flag is set based on fold change in active PLCg
+ * using {@code MIGRATORY_THRESHOLD}.
+ *
+ * &lt;p&gt;Network structure and parameters are derived from L. Zhang, C. A. Athale, and T. S. Deisboeck.
+ * (2007). Development of a three-dimensional multiscale agent-based tumor model: Simulating
+ * gene-protein interaction profiles, cell phenotypes and multicellular patterns in brain cancer.
+ * &lt;em&gt;Journal of Theoretical Biology&lt;/em&gt;, 244(1), 96-107.
+ */
+public class PatchProcessSignalingComplex extends PatchProcessSignaling {
+    /** Number of components in signaling network. */
+    private static final int NUM_COMPONENTS = 13;
+
+    /** Initial membrane concentration [nM]. */
+    private static final double MEMBRANE = 25.0;
+
+    /** Initial cytoplasm concentration [nM]. */
+    private static final double CYTOPLASM = 5.0;
+
+    /** Constant total PLCg [nM]. */
+    private static final double PLCG = 1.0;
+
+    /** Nucelotide pool [nM]. */
+    private static final double NUCLEOTIDES = 5.0;
+
+    /** ID for Glucose, internal. */
+    private static final int G_INT = 0;
+
+    /** ID for TGFa, extracellular. */
+    private static final int T_EXT = 1;
+
+    /** ID for EGFR, membrane. */
+    private static final int E_MEM = 2;
+
+    /** ID for TGFa-EGFR complex, membrane, active. */
+    private static final int TE_MEM = 3;
+
+    /** ID for TGFa-EGFR complex, membrane, active. */
+    private static final int TE_MEM_P = 4;
+
+    /** ID for TGFa-EGFR complex, cytoplasmic. */
+    private static final int TE_CYTO = 5;
+
+    /** ID for EGFR, cytoplasmic. */
+    private static final int E_CYTO = 6;
+
+    /** ID for TGFa, cytoplasmic. */
+    private static final int T_CYTO = 7;
+
+    /** ID for EGFR RNA. */
+    private static final int E_RNA = 8;
+
+    /** ID for TGFa RNA. */
+    private static final int T_RNA = 9;
+
+    /** ID for PLCg, inactive. */
+    private static final int P_INACTIVE = 10;
+
+    /** ID for PLCg, active. */
+    private static final int P_ACTIVE = 11;
+
+    /** ID for nucleotide pool. */
+    private static final int POOL = 12;
+
+    /** Rate of TGFa-EGFR complex formation [/nM/sec]. */
+    private static final double K1 = 0.003;
+
+    /** Rate of TGFa-EGFR complex dissociation [/sec]. */
+    private static final double K_1 = 0.0038;
+
+    /** Rate of TGFa-EGFR phosphorylation [/sec]. */
+    private static final double K2 = 0.001;
+
+    /** Rate of p-TGFa-EGFR dephosphorylation [/sec]. */
+    private static final double K_2 = 0.000001;
+
+    /** Rate of membrane TGFa-EGFR internalization [/sec]. */
+    private static final double K3 = 0.00005;
+
+    /** Rate of membrane p-TGFa-EGFR internalization [/sec]. */
+    private static final double K4 = 0.00005;
+
+    /** Rate of cytoplasmic TGFa-EGFR dissociation [/sec]. */
+    private static final double K5 = 0.01;
+
+    /** Rate of cytoplasmic TGFa-EGFR association [/nM/sec]. */
+    private static final double K_5 = 0.000014;
+
+    /** Rate of cytoplasmic EGFR protein degradation [/sec ]. */
+    private static final double K6 = 0.000167;
+
+    /** Rate of cytoplasmic TGFa protein degradation [/sec]. */
+    private static final double K7 = 0.000167;
+
+    /** Rate of cytoplasmic EGFR insertion [/sec]. */
+    private static final double K8 = 0.005;
+
+    /** Rate of membrane EGFR internalization [/sec]. */
+    private static final double K_8 = 0.00005;
+
+    /** Rate of TGFa insertion + secretion [/sec]. */
+    private static final double K9 = 1.0;
+
+    /** Rate of membrane EGFR degradation (estimate) [/sec]. */
+    private static final double K10 = 0.0001;
+
+    /** Rate of extracellular TGFa degradation (estimate) [/sec]. */
+    private static final double K11 = 0.01;
+
+    /** Rate of activation of PLCg [/sec]. */
+    private static final double K12 = 0.1;
+
+    /** Rate of inactivation of PLCg [/sec]. */
+    private static final double K13 = 0.05;
+
+    /** Rate of translation of EGFR RNA [/sec]. */
+    private static final double K14 = 5.0 / MOLEC_TO_NM / 60 / NUCLEOTIDES;
+
+    /** Rate of translation of TGFa RNA [/sec]. */
+    private static final double K15 = 5.0 / MOLEC_TO_NM / 60 / NUCLEOTIDES;
+
+    /** Rate of transcription of EGFR RNA [/sec]. */
+    private static final double K16 = 2.17 / MOLEC_TO_NM / 60 / NUCLEOTIDES;
+
+    /** Rate of transcription of TGFa RNA [/sec]. */
+    private static final double K17 = 12.0 / MOLEC_TO_NM / 60 / NUCLEOTIDES;
+
+    /** Rate of EGFR RNA degradation [/sec]. */
+    private static final double K18 = 0.0012 / MOLEC_TO_NM / 60 / NUCLEOTIDES;
+
+    /** Rate of TGFa RNA degradation [/sec]. */
+    private static final double K19 = 0.0012 / MOLEC_TO_NM / 60 / NUCLEOTIDES;
+
+    /** Weight of TGFa-EGFR phosphorylation regulation by glucose. */
+    private static final double WG = 200.0;
+
+    /** Weight of EGFR translation regulation by p-TGFa-EGFR. */
+    private static final double WE = 2.0;
+
+    /** Weight of TGFa translation regulation by p-TGFa-EGFR. */
+    private static final double WT = 2.0;
+
+    /** Weight of PLCg activation regulation by p-TGFa-EGFR. */
+    private static final double WP = 5.0;
+
+    /** Weight of TGFa-EGFR dephosphorylation regulation by active PLCg. */
+    private static final double WC = 1.0;
+
+    /** Threshold fold change in PLCg for migration. */
+    private final double migratoryThreshold;
+
+    /** Fold change in PLCg of previous time step. */
+<span class="nc" id="L169">    private double previous = 1.0;</span>
+
+    /** Fold change in PLCg for current time step. */
+<span class="nc" id="L172">    private double current = 1.0;</span>
+
+    /** List of internal concentrations. */
+    private double[] concs;
+
+    /**
+     * Creates a complex signaling {@code Process} for the given {@link PatchCell}.
+     *
+     * &lt;p&gt;Initial concentrations of all components in the network are assigned and molecule names
+     * are added.
+     *
+     * &lt;p&gt;Loaded parameters include:
+     *
+     * &lt;ul&gt;
+     *   &lt;li&gt;{@code MIGRATORY_THRESHOLD} = threshold fold change in PLCg for migration
+     * &lt;/ul&gt;
+     *
+     * @param cell the {@link PatchCell} the process is associated with
+     */
+    public PatchProcessSignalingComplex(PatchCell cell) {
+<span class="nc" id="L192">        super(cell);</span>
+
+        // Initial concentrations, all in nM (umol/m^3). Most are zeros.
+<span class="nc" id="L195">        concs = new double[NUM_COMPONENTS];</span>
+<span class="nc" id="L196">        concs[E_MEM] = MEMBRANE;</span>
+<span class="nc" id="L197">        concs[T_CYTO] = CYTOPLASM;</span>
+<span class="nc" id="L198">        concs[E_CYTO] = CYTOPLASM;</span>
+<span class="nc" id="L199">        concs[E_RNA] = NUCLEOTIDES / 2;</span>
+<span class="nc" id="L200">        concs[T_RNA] = NUCLEOTIDES / 2;</span>
+<span class="nc" id="L201">        concs[P_INACTIVE] = K13 / (K12 + K13) * PLCG;</span>
+<span class="nc" id="L202">        concs[P_ACTIVE] = K12 / (K12 + K13) * PLCG;</span>
+<span class="nc" id="L203">        concs[POOL] = NUCLEOTIDES;</span>
+
+        // Molecule names.
+<span class="nc" id="L206">        names = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L207">        names.add(G_INT, &quot;glucose_internal&quot;);</span>
+<span class="nc" id="L208">        names.add(T_EXT, &quot;tgfa_extracellular&quot;);</span>
+<span class="nc" id="L209">        names.add(E_MEM, &quot;egfr_membrane&quot;);</span>
+<span class="nc" id="L210">        names.add(TE_MEM, &quot;tgfa_egfr_membrane_inactive&quot;);</span>
+<span class="nc" id="L211">        names.add(TE_MEM_P, &quot;tgfa_egfr_membrane_active&quot;);</span>
+<span class="nc" id="L212">        names.add(TE_CYTO, &quot;tgfa_egfr_cytoplasmic&quot;);</span>
+<span class="nc" id="L213">        names.add(E_CYTO, &quot;egfr_cytoplasmic&quot;);</span>
+<span class="nc" id="L214">        names.add(T_CYTO, &quot;tgfa_cytoplasmic&quot;);</span>
+<span class="nc" id="L215">        names.add(E_RNA, &quot;egfr_rna&quot;);</span>
+<span class="nc" id="L216">        names.add(T_RNA, &quot;tgfa_rna&quot;);</span>
+<span class="nc" id="L217">        names.add(P_INACTIVE, &quot;plcg_inactive&quot;);</span>
+<span class="nc" id="L218">        names.add(P_ACTIVE, &quot;plcg_active&quot;);</span>
+<span class="nc" id="L219">        names.add(POOL, &quot;nucleotide_pool&quot;);</span>
+
+        // Set loaded parameters.
+<span class="nc" id="L222">        Parameters parameters = cell.getParameters();</span>
+<span class="nc" id="L223">        migratoryThreshold = parameters.getDouble(&quot;signaling/MIGRATORY_THRESHOLD&quot;);</span>
+<span class="nc" id="L224">    }</span>
+
+    /**
+     * System of ODEs for network.
+     *
+     * &lt;p&gt;Uses five regulatory weights:
+     *
+     * &lt;ul&gt;
+     *   &lt;li&gt;wG = increase in TGFa-EGFR phosphorylation by glucose
+     *   &lt;li&gt;wE = decrease in EGFR translation by p-TGFa-EGFR
+     *   &lt;li&gt;wT = increase in TGFa translation by p-TGFa-EGFR
+     *   &lt;li&gt;wP = increase in PLCg activation by p-TGFa-EGFR
+     *   &lt;li&gt;wC = increase in TGFa-EGFR dephosphorylation by active PLCg
+     * &lt;/ul&gt;
+     */
+<span class="nc" id="L239">    Equations equations =</span>
+            (t, y) -&gt; {
+                // Calculate weighting factors.
+<span class="nc" id="L242">                double wG = 1 + y[G_INT] / (WG + y[G_INT]);</span>
+<span class="nc" id="L243">                double wE = 1 - y[TE_MEM_P] / (WE + y[TE_MEM_P]);</span>
+<span class="nc" id="L244">                double wT = 1 + y[TE_MEM_P] / (WT + y[TE_MEM_P]);</span>
+<span class="nc" id="L245">                double wP = 1 + y[TE_MEM_P] / (WP + y[TE_MEM_P]);</span>
+<span class="nc" id="L246">                double wC = 1 + y[P_ACTIVE] / (WC + y[P_ACTIVE]);</span>
+
+<span class="nc" id="L248">                double[] dydt = new double[NUM_COMPONENTS];</span>
+
+<span class="nc" id="L250">                dydt[G_INT] = 0;</span>
+<span class="nc" id="L251">                dydt[T_EXT] =</span>
+                        K_1 * y[TE_MEM]
+                                - K1 * y[T_EXT] * y[E_MEM]
+                                + K9 * y[T_CYTO]
+                                - K11 * y[T_EXT];
+<span class="nc" id="L256">                dydt[E_MEM] =</span>
+                        K_1 * y[TE_MEM]
+                                - K1 * y[T_EXT] * y[E_MEM]
+                                + K8 * y[E_CYTO]
+                                - K_8 * y[E_MEM]
+                                - K10 * y[E_MEM];
+<span class="nc" id="L262">                dydt[TE_MEM] =</span>
+                        2 * K1 * y[T_EXT] * y[E_MEM]
+                                - 2 * K_1 * y[TE_MEM]
+                                - K2 * y[TE_MEM] * wG
+                                + K_2 * y[TE_MEM_P] * wC
+                                - K3 * y[TE_MEM];
+<span class="nc" id="L268">                dydt[TE_MEM_P] = K2 * y[TE_MEM] * wG - K_2 * y[TE_MEM_P] * wC - K4 * y[TE_MEM_P];</span>
+<span class="nc" id="L269">                dydt[TE_CYTO] =</span>
+                        K3 * y[TE_MEM]
+                                + K4 * y[TE_MEM_P]
+                                + 2 * K_5 * y[E_CYTO] * y[T_CYTO]
+                                - 2 * K5 * y[TE_CYTO];
+<span class="nc" id="L274">                dydt[E_CYTO] =</span>
+                        K5 * y[TE_CYTO]
+                                - K_5 * y[E_CYTO] * y[T_CYTO]
+                                + K14 * y[E_RNA]
+                                - K6 * y[E_CYTO]
+                                - K8 * y[E_CYTO]
+                                + K_8 * y[E_MEM];
+<span class="nc" id="L281">                dydt[T_CYTO] =</span>
+                        K5 * y[TE_CYTO]
+                                - K_5 * y[E_CYTO] * y[T_CYTO]
+                                + K15 * y[T_RNA]
+                                - K7 * y[T_CYTO]
+                                - K9 * y[T_CYTO];
+<span class="nc" id="L287">                dydt[E_RNA] = K16 * y[POOL] * wE - K18 * y[E_RNA];</span>
+<span class="nc" id="L288">                dydt[T_RNA] = K17 * y[POOL] * wT - K19 * y[T_RNA];</span>
+<span class="nc" id="L289">                dydt[P_INACTIVE] = K13 * y[P_ACTIVE] - K12 * (PLCG - y[P_ACTIVE]) * wP;</span>
+<span class="nc" id="L290">                dydt[P_ACTIVE] = K12 * (PLCG - y[P_ACTIVE]) * wP - K13 * y[P_ACTIVE];</span>
+<span class="nc" id="L291">                dydt[POOL] =</span>
+                        -K16 * y[POOL] * wE - K17 * y[POOL] * wT + K18 * y[E_RNA] + K19 * y[T_RNA];
+
+<span class="nc" id="L294">                return dydt;</span>
+            };
+
+    @Override
+    public void step(MersenneTwisterFast random, Simulation sim) {
+        // Get metabolism process from cell.
+<span class="nc" id="L300">        PatchProcessMetabolism metabolism =</span>
+<span class="nc" id="L301">                (PatchProcessMetabolism) cell.getProcess(Domain.METABOLISM);</span>
+
+        // Get concentration of external TGFa and internal glucose in nM.
+<span class="nc" id="L304">        concs[G_INT] = metabolism.intAmts[0] / cell.getVolume() * 1E9;</span>
+<span class="nc" id="L305">        concs[T_EXT] = sim.getLattice(&quot;TGFA&quot;).getAverageValue(location) / TGFA_MW;</span>
+
+        // Solve system of equations.
+<span class="nc" id="L308">        double pre = concs[P_ACTIVE];</span>
+<span class="nc" id="L309">        concs = Solver.euler(equations, 0, concs, 60, STEP_SIZE);</span>
+<span class="nc" id="L310">        double post = concs[P_ACTIVE];</span>
+
+        // Calculate fold change and set migratory or proliferative flag.
+<span class="nc bnc" id="L313" title="All 2 branches missed.">        current = ((pre &gt; post ? pre / post : post / pre) - 1);</span>
+<span class="nc bnc" id="L314" title="All 2 branches missed.">        double delta = (current &gt; previous ? current / previous : previous / current);</span>
+<span class="nc bnc" id="L315" title="All 2 branches missed.">        cell.setFlag(delta &gt; migratoryThreshold ? Flag.MIGRATORY : Flag.PROLIFERATIVE);</span>
+<span class="nc" id="L316">        previous = current;</span>
+
+        // Update environment.
+<span class="nc" id="L319">        sim.getLattice(&quot;TGFA&quot;).setValue(location, concs[T_EXT] * TGFA_MW);</span>
+<span class="nc" id="L320">    }</span>
+
+    @Override
+    public void update(Process process) {
+<span class="nc" id="L324">        PatchProcessSignalingComplex signaling = (PatchProcessSignalingComplex) process;</span>
+<span class="nc" id="L325">        this.concs = signaling.concs.clone();</span>
+<span class="nc" id="L326">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

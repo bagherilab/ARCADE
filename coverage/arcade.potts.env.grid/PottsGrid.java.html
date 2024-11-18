@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PottsGrid.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.env.grid</a> &gt; <span class="el_source">PottsGrid.java</span></div><h1>PottsGrid.java</h1><pre class="source lang-java linenums">package arcade.potts.env.grid;
+
+import java.util.HashMap;
+import sim.util.Bag;
+import arcade.core.agent.cell.Cell;
+import arcade.core.env.grid.Grid;
+import arcade.core.env.location.Location;
+
+/**
+ * Implementation of {@link Grid} for potts models.
+ *
+ * &lt;p&gt;{@code PottsGrid} uses the cell id as the index to map to agents. Index 0 is reserved for a
+ * {@code null} object representing non-cell voxels in the potts layer.
+ */
+public final class PottsGrid implements Grid {
+    /** Map of ID to object. */
+    final HashMap&lt;Integer, Object&gt; objects;
+
+    /** Collection of all objects in the grid. */
+    final Bag allObjects;
+
+    /** Creates a {@link arcade.core.env.grid.Grid} for potts. */
+<span class="fc" id="L23">    public PottsGrid() {</span>
+<span class="fc" id="L24">        objects = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L25">        allObjects = new Bag();</span>
+<span class="fc" id="L26">        objects.put(0, null);</span>
+<span class="fc" id="L27">    }</span>
+
+    @Override
+    public Bag getAllObjects() {
+<span class="fc" id="L31">        return allObjects;</span>
+    }
+
+    @Override
+    public void addObject(Object object, Location location) {
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        if (object == null) {</span>
+<span class="fc" id="L37">            return;</span>
+        }
+<span class="fc" id="L39">        int index = ((Cell) object).getID();</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        if (objects.containsKey(index)) {</span>
+<span class="fc" id="L41">            return;</span>
+        }
+<span class="fc" id="L43">        allObjects.add(object);</span>
+<span class="fc" id="L44">        objects.put(index, object);</span>
+<span class="fc" id="L45">    }</span>
+
+    @Override
+    public void removeObject(Object object, Location location) {
+<span class="fc" id="L49">        int index = ((Cell) object).getID();</span>
+<span class="fc" id="L50">        allObjects.remove(object);</span>
+<span class="fc" id="L51">        objects.remove(index);</span>
+<span class="fc" id="L52">    }</span>
+
+    @Override
+<span class="fc" id="L55">    public void moveObject(Object object, Location fromLocation, Location toLocation) {}</span>
+
+    @Override
+    public Object getObjectAt(int index) {
+<span class="fc" id="L59">        return objects.get(index);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

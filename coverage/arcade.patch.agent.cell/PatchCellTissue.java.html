@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchCellTissue.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.agent.cell</a> &gt; <span class="el_source">PatchCellTissue.java</span></div><h1>PatchCellTissue.java</h1><pre class="source lang-java linenums">package arcade.patch.agent.cell;
+
+import ec.util.MersenneTwisterFast;
+import arcade.core.agent.cell.CellState;
+import arcade.core.env.location.Location;
+import arcade.core.util.GrabBag;
+import arcade.core.util.Parameters;
+
+/** Extension of {@link PatchCell} for healthy tissue cells. */
+public class PatchCellTissue extends PatchCell {
+    /**
+     * Creates a tissue {@code PatchCell} agent.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     */
+    public PatchCellTissue(PatchCellContainer container, Location location, Parameters parameters) {
+<span class="nc" id="L19">        this(container, location, parameters, null);</span>
+<span class="nc" id="L20">    }</span>
+
+    /**
+     * Creates a tissue {@code PatchCell} agent with population links.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
+    public PatchCellTissue(
+            PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
+<span class="nc" id="L32">        super(container, location, parameters, links);</span>
+<span class="nc" id="L33">    }</span>
+
+    @Override
+    public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
+<span class="nc" id="L37">        divisions--;</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">        int newPop = links == null ? pop : links.next(random);</span>
+<span class="nc" id="L39">        return new PatchCellContainer(</span>
+                newID,
+                id,
+                newPop,
+                age,
+                divisions,
+                newState,
+                volume,
+                height,
+                criticalVolume,
+                criticalHeight);
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

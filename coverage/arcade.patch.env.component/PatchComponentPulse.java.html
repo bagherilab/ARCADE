@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchComponentPulse.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.component</a> &gt; <span class="el_source">PatchComponentPulse.java</span></div><h1>PatchComponentPulse.java</h1><pre class="source lang-java linenums">package arcade.patch.env.component;
+
+import java.util.ArrayList;
+import sim.engine.Schedule;
+import sim.engine.SimState;
+import arcade.core.env.component.Component;
+import arcade.core.env.lattice.Lattice;
+import arcade.core.env.operation.Operation;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
+import arcade.patch.env.operation.PatchOperationGenerator;
+import arcade.patch.sim.PatchSeries;
+import static arcade.patch.env.component.PatchComponentSites.SiteLayer;
+import static arcade.patch.util.PatchEnums.Category;
+import static arcade.patch.util.PatchEnums.Ordering;
+
+/**
+ * Implementation of {@link Component} for pulsing sources.
+ *
+ * &lt;p&gt;This component can only be used with {@link PatchComponentSitesSource}. Multiple pulsed
+ * molecules are tracked by a list of {@link PulseLayer} objects.
+ *
+ * &lt;p&gt;The amount of media ({@code MEDIA_AMOUNT}) is used to determine the total amount of molecule
+ * available given total simulation area. The molecule concentration is updated each step as the
+ * molecule is consumed or otherwise removed from the environment. At the specified pulse interval
+ * ({@code PULSE_INTERVAL}), a &quot;pulse&quot; of media is introduced, updating the total amount of molecule
+ * available.
+ */
+public class PatchComponentPulse implements Component {
+    /** List of pulse layers. */
+    private final ArrayList&lt;PulseLayer&gt; layers;
+
+    /** Height of the array (z direction). */
+    private final int latticeHeight;
+
+    /** Length of the array (x direction). */
+    private final int latticeLength;
+
+    /** Width of the array (y direction). */
+    private final int latticeWidth;
+
+    /** Interval between pulses [min]. */
+    private final double pulseInterval;
+
+    /** Media volume per area [um&lt;sup&gt;3&lt;/sup&gt;/um&lt;sup&gt;2&lt;/sup&gt;]. */
+    private final double mediaAmount;
+
+    /** Total media volume [um&lt;sup&gt;3&lt;/sup&gt;]. */
+    private final double mediaVolume;
+
+    /** Volume of individual lattice patch [um&lt;sup&gt;3&lt;/sup&gt;]. */
+    private final double latticePatchVolume;
+
+    /** Area of individual lattice patch [um&lt;sup&gt;2&lt;/sup&gt;]. */
+    private final double latticePatchArea;
+
+    /**
+     * Creates a {@code Component} object for representing source site pulses.
+     *
+     * &lt;p&gt;Loaded parameters include:
+     *
+     * &lt;ul&gt;
+     *   &lt;li&gt;{@code PULSE_INTERVAL} = interval between pulses
+     *   &lt;li&gt;{@code MEDIA_AMOUNT} = media volume per area
+     * &lt;/ul&gt;
+     *
+     * @param series the simulation series
+     * @param parameters the component parameters dictionary
+     */
+<span class="nc" id="L71">    public PatchComponentPulse(Series series, MiniBox parameters) {</span>
+<span class="nc" id="L72">        layers = new ArrayList&lt;&gt;();</span>
+
+<span class="nc" id="L74">        latticeLength = series.length;</span>
+<span class="nc" id="L75">        latticeWidth = series.width;</span>
+<span class="nc" id="L76">        latticeHeight = series.height;</span>
+
+        // Set loaded parameters.
+<span class="nc" id="L79">        pulseInterval = parameters.getDouble(&quot;PULSE_INTERVAL&quot;);</span>
+<span class="nc" id="L80">        mediaAmount = parameters.getDouble(&quot;MEDIA_AMOUNT&quot;);</span>
+
+        // Set patch parameters.
+<span class="nc" id="L83">        MiniBox patch = ((PatchSeries) series).patch;</span>
+<span class="nc" id="L84">        latticePatchVolume = patch.getDouble(&quot;LATTICE_VOLUME&quot;);</span>
+<span class="nc" id="L85">        latticePatchArea = patch.getDouble(&quot;LATTICE_AREA&quot;);</span>
+
+        // Calculate media volume.
+<span class="nc" id="L88">        mediaVolume = latticePatchArea * latticeLength * latticeWidth * mediaAmount;</span>
+<span class="nc" id="L89">    }</span>
+
+    /** Specification of arrays and parameters for {@link PatchComponentPulse}. */
+    protected static class PulseLayer {
+        /** Unique name for layer. */
+        final String name;
+
+        /** Array holding current concentration values. */
+        final double[][][] current;
+
+        /** Array holding previous concentration values. */
+        final double[][][] previous;
+
+        /** Corresponding site layer instance. */
+        final SiteLayer siteLayer;
+
+        /** Initial concentration. */
+        final double initialConcentration;
+
+        /** Current amount. */
+        double currentAmount;
+
+        /**
+         * Creates a {@code PulseLayer} object.
+         *
+         * @param name the layer name
+         * @param siteLayer the associated site layer instance
+         * @param generator the associated generator operation instance
+         */
+<span class="nc" id="L118">        PulseLayer(String name, SiteLayer siteLayer, PatchOperationGenerator generator) {</span>
+<span class="nc" id="L119">            this.name = name;</span>
+<span class="nc" id="L120">            this.siteLayer = siteLayer;</span>
+<span class="nc" id="L121">            previous = generator.latticePrevious;</span>
+<span class="nc" id="L122">            current = generator.latticeCurrent;</span>
+<span class="nc" id="L123">            initialConcentration = generator.concentration;</span>
+<span class="nc" id="L124">            currentAmount = 0;</span>
+<span class="nc" id="L125">        }</span>
+    }
+
+    @Override
+    public void schedule(Schedule schedule) {
+<span class="nc" id="L130">        schedule.scheduleOnce(this, Ordering.FIRST.ordinal() - 2);</span>
+<span class="nc" id="L131">        schedule.scheduleRepeating(this, Ordering.FIRST_COMPONENT.ordinal(), 1);</span>
+<span class="nc" id="L132">    }</span>
+
+    @Override
+    public void register(Simulation sim, String layer) {
+<span class="nc" id="L136">        String[] layerSplit = layer.split(&quot;:&quot;);</span>
+<span class="nc" id="L137">        Lattice lattice = sim.getLattice(layerSplit[1]);</span>
+<span class="nc" id="L138">        Operation generator = lattice.getOperation(Category.GENERATOR);</span>
+<span class="nc" id="L139">        Component component = sim.getComponent(layerSplit[0]);</span>
+
+<span class="nc bnc" id="L141" title="All 2 branches missed.">        if (!(component instanceof PatchComponentSitesSource)) {</span>
+<span class="nc" id="L142">            return;</span>
+        }
+
+<span class="nc" id="L145">        PatchComponentSitesSource sites = (PatchComponentSitesSource) component;</span>
+<span class="nc" id="L146">        SiteLayer siteLayer =</span>
+<span class="nc" id="L147">                sites.layers.stream()</span>
+<span class="nc" id="L148">                        .filter(sl -&gt; sl.name.equalsIgnoreCase(layerSplit[1]))</span>
+<span class="nc" id="L149">                        .findFirst()</span>
+<span class="nc" id="L150">                        .orElse(null);</span>
+
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        if (siteLayer != null) {</span>
+<span class="nc" id="L153">            PulseLayer pulseLayer =</span>
+                    new PulseLayer(layer, siteLayer, (PatchOperationGenerator) generator);
+<span class="nc" id="L155">            layers.add(pulseLayer);</span>
+        }
+<span class="nc" id="L157">    }</span>
+
+    @Override
+    public void step(SimState simstate) {
+<span class="nc" id="L161">        double tick = simstate.schedule.getTime();</span>
+
+<span class="nc bnc" id="L163" title="All 2 branches missed.">        for (PulseLayer layer : layers) {</span>
+<span class="nc" id="L164">            double[][][] previous = layer.previous;</span>
+<span class="nc" id="L165">            double[][][] current = layer.current;</span>
+<span class="nc" id="L166">            double delta = 0;</span>
+
+            // Get total consumption.
+<span class="nc bnc" id="L169" title="All 2 branches missed.">            for (int k = 0; k &lt; latticeHeight; k++) {</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">                for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">                    for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="nc" id="L172">                        delta += (previous[k][i][j] - current[k][i][j]) * latticePatchVolume;</span>
+                    }
+                }
+            }
+
+            // Update available concentrations.
+<span class="nc" id="L178">            layer.currentAmount = Math.max(0, layer.currentAmount - delta);</span>
+<span class="nc" id="L179">            layer.siteLayer.concentration = layer.currentAmount / mediaVolume;</span>
+
+            // Pulse returns concentration to initial value.
+<span class="nc bnc" id="L182" title="All 2 branches missed.">            if (tick % pulseInterval == 0) {</span>
+<span class="nc" id="L183">                layer.currentAmount = layer.initialConcentration * mediaVolume;</span>
+<span class="nc" id="L184">                layer.siteLayer.concentration = layer.initialConcentration;</span>
+            }
+<span class="nc" id="L186">        }</span>
+<span class="nc" id="L187">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

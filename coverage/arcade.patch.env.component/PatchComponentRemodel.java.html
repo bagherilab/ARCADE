@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchComponentRemodel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.component</a> &gt; <span class="el_source">PatchComponentRemodel.java</span></div><h1>PatchComponentRemodel.java</h1><pre class="source lang-java linenums">package arcade.patch.env.component;
+
+import sim.engine.Schedule;
+import sim.engine.SimState;
+import sim.util.Bag;
+import arcade.core.env.component.Component;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
+import arcade.core.util.Graph;
+import arcade.core.util.MiniBox;
+import arcade.patch.env.location.CoordinateXYZ;
+import static arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MAXIMUM_WALL_RADIUS_FRACTION;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MINIMUM_CAPILLARY_RADIUS;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MINIMUM_WALL_THICKNESS;
+import static arcade.patch.util.PatchEnums.Ordering;
+
+/**
+ * Implementation of {@link Component} for remodeling edges.
+ *
+ * &lt;p&gt;This component can only be used with {@link PatchComponentSitesGraph}. The component is
+ * stepped every {@code REMODELING_INTERVAL} ticks. The radius and wall thickness of edges are
+ * remodeled as a function of shear stress ({@code SCALE_SHEAR}), circumferential stress ({@code
+ * SCALE_CIRCUM}), flow rate ({@code SCALE_FLOW}), and metabolic demand ({@code SCALE_METABOLIC}).
+ * The scaling based on shear (tau) and circumferential (sigma) stress mainly affect radius mid and
+ * area mass, respectively, but can also affect the other term ({@code SCALE_SIGMA} and {@code
+ * SCALE_TAU}). Edges that are below a minimum wall thickness or radius are removed from the graph.
+ * All hemodynamic properties are recalculated at the end of the step.
+ */
+public class PatchComponentRemodel implements Component {
+    /** Interval between remodeling steps [min]. */
+    private final int remodelingInterval;
+
+    /** Shear stress scaling. */
+    private final double scaleShear;
+
+    /** Circumferential stress scaling. */
+    private final double scaleCircum;
+
+    /** Flow rate scaling. */
+    private final double scaleFlow;
+
+    /** Metabolic demand scaling. */
+    private final double scaleMetabolic;
+
+    /** Shear stress contribution to area mass scaling. */
+    private final double scaleTau;
+
+    /** Circumferential stress contribution to radius scaling. */
+    private final double scaleSigma;
+
+    /** Reference shear stress. */
+    private double shearReference;
+
+    /** Reference circumferential stress. */
+    private double circumReference;
+
+    /** Reference flow rate. */
+    private double flowReference;
+
+    /** The associated {@link PatchComponentSitesGraph} object. */
+    private PatchComponentSitesGraph sites;
+
+    /** The {@link Graph} object representing the sites. */
+    private Graph graph;
+
+    /**
+     * Creates a {@link arcade.core.env.component.Component} object for remodeling.
+     *
+     * &lt;p&gt;Loaded parameters include:
+     *
+     * &lt;ul&gt;
+     *   &lt;li&gt;{@code REMODELING_INTERVAL} = interval between remodeling steps
+     *   &lt;li&gt;{@code SCALE_SHEAR} = shear stress scaling
+     *   &lt;li&gt;{@code SCALE_CIRCUM} = circumferential stress scaling
+     *   &lt;li&gt;{@code SCALE_FLOW} = flow rate scaling
+     *   &lt;li&gt;{@code SCALE_METABOLIC} = metabolic demand scaling
+     *   &lt;li&gt;{@code SCALE_TAU} = shear stress contribution to area mass scaling
+     *   &lt;li&gt;{@code SCALE_SIGMA} = circumferential stress contribution to radius scaling
+     * &lt;/ul&gt;
+     *
+     * @param series the simulation series
+     * @param parameters the component parameters dictionary
+     */
+<span class="nc" id="L85">    public PatchComponentRemodel(Series series, MiniBox parameters) {</span>
+        // Set loaded parameters.
+<span class="nc" id="L87">        remodelingInterval = parameters.getInt(&quot;REMODELING_INTERVAL&quot;);</span>
+<span class="nc" id="L88">        scaleShear = parameters.getDouble(&quot;SCALE_SHEAR&quot;);</span>
+<span class="nc" id="L89">        scaleCircum = parameters.getDouble(&quot;SCALE_CIRCUM&quot;);</span>
+<span class="nc" id="L90">        scaleFlow = parameters.getDouble(&quot;SCALE_FLOW&quot;);</span>
+<span class="nc" id="L91">        scaleMetabolic = parameters.getDouble(&quot;SCALE_METABOLIC&quot;);</span>
+<span class="nc" id="L92">        scaleTau = parameters.getDouble(&quot;SCALE_TAU&quot;);</span>
+<span class="nc" id="L93">        scaleSigma = parameters.getDouble(&quot;SCALE_SIGMA&quot;);</span>
+<span class="nc" id="L94">    }</span>
+
+    @Override
+    public void schedule(Schedule schedule) {
+<span class="nc" id="L98">        schedule.scheduleRepeating(this, Ordering.LAST_COMPONENT.ordinal(), remodelingInterval);</span>
+<span class="nc" id="L99">    }</span>
+
+    @Override
+    public void register(Simulation sim, String layer) {
+<span class="nc" id="L103">        Component component = sim.getComponent(layer);</span>
+
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        if (!(component instanceof PatchComponentSitesGraph)) {</span>
+<span class="nc" id="L106">            return;</span>
+        }
+
+<span class="nc" id="L109">        sites = (PatchComponentSitesGraph) component;</span>
+<span class="nc" id="L110">        graph = sites.graph;</span>
+<span class="nc" id="L111">    }</span>
+
+    @Override
+    public void step(SimState state) {
+<span class="nc" id="L115">        Simulation sim = (Simulation) state;</span>
+<span class="nc" id="L116">        double[][][] oxygen = sim.getLattice(&quot;OXYGEN&quot;).getField();</span>
+<span class="nc" id="L117">        calculateReferences();</span>
+<span class="nc" id="L118">        boolean removed = false;</span>
+        double oxygenExternal;
+        double oxygenInternal;
+
+<span class="nc bnc" id="L122" title="All 2 branches missed.">        for (Object edgeObj : new Bag(graph.getAllEdges())) {</span>
+<span class="nc" id="L123">            SiteEdge edge = (SiteEdge) edgeObj;</span>
+
+            // Get oxygen partial pressures.
+<span class="nc" id="L126">            oxygenExternal = 0;</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">            for (CoordinateXYZ coordinate : edge.span) {</span>
+<span class="nc" id="L128">                oxygenExternal += oxygen[coordinate.z][coordinate.x][coordinate.y];</span>
+<span class="nc" id="L129">            }</span>
+<span class="nc" id="L130">            oxygenExternal /= edge.span.size();</span>
+<span class="nc" id="L131">            oxygenInternal = (edge.getFrom().oxygen + edge.getTo().oxygen) / 2;</span>
+
+<span class="nc bnc" id="L133" title="All 2 branches missed.">            if (oxygenInternal == 0) {</span>
+<span class="nc" id="L134">                continue;</span>
+            }
+
+            // Calculate weights based on reference value.
+<span class="nc" id="L138">            double sTau = scaleShear * Math.log10(edge.shear / shearReference);</span>
+<span class="nc" id="L139">            double sSigma = scaleCircum * Math.log10(edge.circum / circumReference);</span>
+<span class="nc" id="L140">            double sFlow = scaleFlow * Math.log10(flowReference / edge.flow);</span>
+<span class="nc" id="L141">            double sMetabolic =</span>
+                    scaleMetabolic
+<span class="nc bnc" id="L143" title="All 2 branches missed.">                            * (oxygenExternal == 0</span>
+<span class="nc" id="L144">                                    ? 1</span>
+<span class="nc" id="L145">                                    : Math.log10(oxygenInternal / oxygenExternal));</span>
+<span class="nc" id="L146">            double sWall = (1 + Math.log10(edge.wall / MINIMUM_WALL_THICKNESS));</span>
+
+            // Calculate radius mid and area mass values.
+<span class="nc" id="L149">            double rm = edge.radius + edge.wall / 2;</span>
+<span class="nc" id="L150">            double am = edge.wall * rm;</span>
+
+            // Update radius mid and area mass values with scaling factors.
+<span class="nc" id="L153">            double rmNew = rm + rm * (sTau + sFlow + sMetabolic - scaleSigma * sSigma) / sWall;</span>
+<span class="nc" id="L154">            double amNew = am + am * (sSigma - scaleTau * sTau) / sWall;</span>
+
+            // Update radius and wall thickness.
+<span class="nc" id="L157">            edge.radius = rmNew - (amNew / rmNew) / 2;</span>
+<span class="nc" id="L158">            edge.wall = amNew / rmNew;</span>
+
+            // Check if ratio is too high.
+<span class="nc bnc" id="L161" title="All 2 branches missed.">            if (edge.wall / edge.radius &gt; MAXIMUM_WALL_RADIUS_FRACTION) {</span>
+<span class="nc" id="L162">                edge.wall = edge.radius * MAXIMUM_WALL_RADIUS_FRACTION;</span>
+            }
+
+<span class="nc bnc" id="L165" title="All 4 branches missed.">            if (edge.radius &lt; MINIMUM_CAPILLARY_RADIUS</span>
+                    || edge.wall &lt; MINIMUM_WALL_THICKNESS
+<span class="nc bnc" id="L167" title="All 2 branches missed.">                    || Double.isNaN(edge.radius)) {</span>
+<span class="nc" id="L168">                graph.removeEdge(edge);</span>
+<span class="nc" id="L169">                edge.getFrom().pressure = Double.NaN;</span>
+<span class="nc" id="L170">                edge.getTo().pressure = Double.NaN;</span>
+<span class="nc" id="L171">                removed = true;</span>
+            }
+<span class="nc" id="L173">        }</span>
+
+        // If any edges are removed, update the graph edges that are ignored.
+        // Otherwise, recalculate pressure, flow, and stresses.
+<span class="nc bnc" id="L177" title="All 2 branches missed.">        if (removed) {</span>
+<span class="nc" id="L178">            PatchComponentSitesGraphUtilities.updateGraph(graph);</span>
+        } else {
+<span class="nc" id="L180">            PatchComponentSitesGraphUtilities.calculatePressures(graph);</span>
+<span class="nc" id="L181">            boolean reversed = PatchComponentSitesGraphUtilities.reversePressures(graph);</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">            if (reversed) {</span>
+<span class="nc" id="L183">                PatchComponentSitesGraphUtilities.calculatePressures(graph);</span>
+            }
+<span class="nc" id="L185">            PatchComponentSitesGraphUtilities.calculateFlows(graph);</span>
+<span class="nc" id="L186">            PatchComponentSitesGraphUtilities.calculateStresses(graph);</span>
+        }
+<span class="nc" id="L188">    }</span>
+
+    /** Calculates reference values of shear and circumferential stress. */
+    private void calculateReferences() {
+<span class="nc" id="L192">        shearReference = 0;</span>
+<span class="nc" id="L193">        circumReference = 0;</span>
+<span class="nc" id="L194">        flowReference = 0;</span>
+<span class="nc" id="L195">        int count = 0;</span>
+
+<span class="nc bnc" id="L197" title="All 2 branches missed.">        for (Object obj : graph.getAllEdges()) {</span>
+<span class="nc" id="L198">            SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">            if (edge.getFrom().isRoot) {</span>
+<span class="nc" id="L200">                shearReference += edge.shear;</span>
+<span class="nc" id="L201">                circumReference += edge.circum;</span>
+<span class="nc" id="L202">                flowReference += edge.flow;</span>
+<span class="nc" id="L203">                count++;</span>
+            }
+<span class="nc" id="L205">        }</span>
+
+<span class="nc" id="L207">        shearReference /= count;</span>
+<span class="nc" id="L208">        circumReference /= count;</span>
+<span class="nc" id="L209">        flowReference /= count;</span>
+<span class="nc" id="L210">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
