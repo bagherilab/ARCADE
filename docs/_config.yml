@@ -6,7 +6,7 @@ theme: just-the-docs
 
 url: https://bagherilab.github.io/ARCADE/
 
-baseurl: ""
+baseurl: ARCADE
 
 repository: bagherilab/ARCADE
 
