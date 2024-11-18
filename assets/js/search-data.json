@@ -2,189 +2,189 @@
     "doc": "Changelog",
     "title": "v3.1.4 - 2024-02-26",
     "content": "Compare with v3.1.3 . ",
-    "url": "/changelog.html#v314---2024-02-26",
+    "url": "/ARCADE/changelog.html#v314---2024-02-26",
     
     "relUrl": "/changelog.html#v314---2024-02-26"
   },"1": {
     "doc": "Changelog",
     "title": "v3.1.3 - 2024-02-05",
     "content": "Compare with v3.1.2 . Features . | Add version to output files by @jessicasyu in #7 | . Bug fixes . | Swap voxel update order by @jessicasyu in #8 | . ",
-    "url": "/changelog.html#v313---2024-02-05",
+    "url": "/ARCADE/changelog.html#v313---2024-02-05",
     
     "relUrl": "/changelog.html#v313---2024-02-05"
   },"2": {
     "doc": "Changelog",
     "title": "v3.1.2 - 2023-11-14",
     "content": "Compare with v3.1.1 . Features . | Convert core enums to use interfaces by @jessicasyu in #3 | Update minibox to load simple fractions by @jessicasyu in #5 | . Bug fixes . | Update size checkpoints in potts modules by @jessicasyu in #2 | . Tests . | Update region adhesion unit tests by @jessicasyu in #6 | . Admin . | Update version handling in gradle build by @jessicasyu in #4 | . ",
-    "url": "/changelog.html#v312---2023-11-14",
+    "url": "/ARCADE/changelog.html#v312---2023-11-14",
     
     "relUrl": "/changelog.html#v312---2023-11-14"
   },"3": {
     "doc": "Changelog",
     "title": "v3.1.1 - 2023-10-03",
     "content": "Compare with v3.1.0 . ",
-    "url": "/changelog.html#v311---2023-10-03",
+    "url": "/ARCADE/changelog.html#v311---2023-10-03",
     
     "relUrl": "/changelog.html#v311---2023-10-03"
   },"4": {
     "doc": "Changelog",
     "title": "v3.1.0 - 2023-03-01",
     "content": "Compare with v3.0.1 . ",
-    "url": "/changelog.html#v310---2023-03-01",
+    "url": "/ARCADE/changelog.html#v310---2023-03-01",
     
     "relUrl": "/changelog.html#v310---2023-03-01"
   },"5": {
     "doc": "Changelog",
     "title": "v3.0.1 - 2023-10-03",
     "content": "Compare with v3.0.0 . ",
-    "url": "/changelog.html#v301---2023-10-03",
+    "url": "/ARCADE/changelog.html#v301---2023-10-03",
     
     "relUrl": "/changelog.html#v301---2023-10-03"
   },"6": {
     "doc": "Changelog",
     "title": "v3.0.0 - 2023-01-31",
     "content": "Compare with v2.4 . ",
-    "url": "/changelog.html#v300---2023-01-31",
+    "url": "/ARCADE/changelog.html#v300---2023-01-31",
     
     "relUrl": "/changelog.html#v300---2023-01-31"
   },"7": {
     "doc": "Changelog",
     "title": "Changelog",
     "content": " ",
-    "url": "/changelog.html",
+    "url": "/ARCADE/changelog.html",
     
     "relUrl": "/changelog.html"
   },"8": {
     "doc": "Overview",
     "title": "ARCADE: Agent-based Representation of Cells And Dynamic Environments",
     "content": "ARCADE is a flexible, extensible, interface-based Java framework for agent-based modeling of biological systems. Get the latest release on GitHub . ARCADE is a lightweight agent-based modeling framework that uses the MASON library for multi-agent scheduling and simulation. Existing implementations of the core interfaces can be used to run simulations via highly configurable setup files. ARCADE currently has two major implementation: . | patch represents one or more agents in each environmental patch location | potts represents agents as a collection of connected voxels (Cellular Potts modeling) | . New implementations of these interfaces can be easily integrated with existing functionality to develop models for different biological systems or questions of interest. The ARCADE v3 patch implementation is actively under development and not yet at parity with ARCADE v2. You can track progress using the migration: v2 to v3 tag. ",
-    "url": "/#arcade-agent-based-representation-of-cells-and-dynamic-environments",
+    "url": "/ARCADE/#arcade-agent-based-representation-of-cells-and-dynamic-environments",
     
     "relUrl": "/#arcade-agent-based-representation-of-cells-and-dynamic-environments"
   },"9": {
     "doc": "Overview",
     "title": "What’s new in v3.1.4 - 2024-02-26",
     "content": "Compare with v3.1.3 . ",
-    "url": "/#whats-new-in-v314---2024-02-26",
+    "url": "/ARCADE/#whats-new-in-v314---2024-02-26",
     
     "relUrl": "/#whats-new-in-v314---2024-02-26"
   },"10": {
     "doc": "Overview",
     "title": "Getting started",
     "content": "Coming soon! . ",
-    "url": "/#getting-started",
+    "url": "/ARCADE/#getting-started",
     
     "relUrl": "/#getting-started"
   },"11": {
     "doc": "Overview",
     "title": "About the project",
     "content": "ARCADE v2 is © 2020-2023 Bagheri Lab at Northwestern University. ARCADE v3 is © 2022-2024, Bagheri Lab at the University of Washington Seattle and Jessica S. Yu at the Allen Institute for Cell Science. License . ARCADE v2 is distributed under a GPL 3 license. ARCADE v3 is distributed under a BSD 3-Clause license. Contributors . | | | | | . ",
-    "url": "/#about-the-project",
+    "url": "/ARCADE/#about-the-project",
     
     "relUrl": "/#about-the-project"
   },"12": {
     "doc": "Overview",
     "title": "Overview",
     "content": " ",
-    "url": "/",
+    "url": "/ARCADE/",
     
     "relUrl": "/"
   },"13": {
     "doc": "v3.0.0",
     "title": "v3.0.0 - 2023-01-31",
     "content": "Compare with v2.4 . ",
-    "url": "/changelog/v3.0.0.html#v300---2023-01-31",
+    "url": "/ARCADE/changelog/v3.0.0.html#v300---2023-01-31",
     
     "relUrl": "/changelog/v3.0.0.html#v300---2023-01-31"
   },"14": {
     "doc": "v3.0.0",
     "title": "v3.0.0",
     "content": " ",
-    "url": "/changelog/v3.0.0.html",
+    "url": "/ARCADE/changelog/v3.0.0.html",
     
     "relUrl": "/changelog/v3.0.0.html"
   },"15": {
     "doc": "v3.0.1",
     "title": "v3.0.1 - 2023-10-03",
     "content": "Compare with v3.0.0 . ",
-    "url": "/changelog/v3.0.1.html#v301---2023-10-03",
+    "url": "/ARCADE/changelog/v3.0.1.html#v301---2023-10-03",
     
     "relUrl": "/changelog/v3.0.1.html#v301---2023-10-03"
   },"16": {
     "doc": "v3.0.1",
     "title": "v3.0.1",
     "content": " ",
-    "url": "/changelog/v3.0.1.html",
+    "url": "/ARCADE/changelog/v3.0.1.html",
     
     "relUrl": "/changelog/v3.0.1.html"
   },"17": {
     "doc": "v3.1.0",
     "title": "v3.1.0 - 2023-03-01",
     "content": "Compare with v3.0.1 . ",
-    "url": "/changelog/v3.1.0.html#v310---2023-03-01",
+    "url": "/ARCADE/changelog/v3.1.0.html#v310---2023-03-01",
     
     "relUrl": "/changelog/v3.1.0.html#v310---2023-03-01"
   },"18": {
     "doc": "v3.1.0",
     "title": "v3.1.0",
     "content": " ",
-    "url": "/changelog/v3.1.0.html",
+    "url": "/ARCADE/changelog/v3.1.0.html",
     
     "relUrl": "/changelog/v3.1.0.html"
   },"19": {
     "doc": "v3.1.1",
     "title": "v3.1.1 - 2023-10-03",
     "content": "Compare with v3.1.0 . ",
-    "url": "/changelog/v3.1.1.html#v311---2023-10-03",
+    "url": "/ARCADE/changelog/v3.1.1.html#v311---2023-10-03",
     
     "relUrl": "/changelog/v3.1.1.html#v311---2023-10-03"
   },"20": {
     "doc": "v3.1.1",
     "title": "v3.1.1",
     "content": " ",
-    "url": "/changelog/v3.1.1.html",
+    "url": "/ARCADE/changelog/v3.1.1.html",
     
     "relUrl": "/changelog/v3.1.1.html"
   },"21": {
     "doc": "v3.1.2",
     "title": "v3.1.2 - 2023-11-14",
     "content": "Compare with v3.1.1 . Features . | Convert core enums to use interfaces by @jessicasyu in #3 | Update minibox to load simple fractions by @jessicasyu in #5 | . Bug fixes . | Update size checkpoints in potts modules by @jessicasyu in #2 | . Tests . | Update region adhesion unit tests by @jessicasyu in #6 | . Admin . | Update version handling in gradle build by @jessicasyu in #4 | . ",
-    "url": "/changelog/v3.1.2.html#v312---2023-11-14",
+    "url": "/ARCADE/changelog/v3.1.2.html#v312---2023-11-14",
     
     "relUrl": "/changelog/v3.1.2.html#v312---2023-11-14"
   },"22": {
     "doc": "v3.1.2",
     "title": "v3.1.2",
     "content": " ",
-    "url": "/changelog/v3.1.2.html",
+    "url": "/ARCADE/changelog/v3.1.2.html",
     
     "relUrl": "/changelog/v3.1.2.html"
   },"23": {
     "doc": "v3.1.3",
     "title": "v3.1.3 - 2024-02-05",
     "content": "Compare with v3.1.2 . Features . | Add version to output files by @jessicasyu in #7 | . Bug fixes . | Swap voxel update order by @jessicasyu in #8 | . ",
-    "url": "/changelog/v3.1.3.html#v313---2024-02-05",
+    "url": "/ARCADE/changelog/v3.1.3.html#v313---2024-02-05",
     
     "relUrl": "/changelog/v3.1.3.html#v313---2024-02-05"
   },"24": {
     "doc": "v3.1.3",
     "title": "v3.1.3",
     "content": " ",
-    "url": "/changelog/v3.1.3.html",
+    "url": "/ARCADE/changelog/v3.1.3.html",
     
     "relUrl": "/changelog/v3.1.3.html"
   },"25": {
     "doc": "v3.1.4",
     "title": "v3.1.4 - 2024-02-26",
     "content": "Compare with v3.1.3 . ",
-    "url": "/changelog/v3.1.4.html#v314---2024-02-26",
+    "url": "/ARCADE/changelog/v3.1.4.html#v314---2024-02-26",
     
     "relUrl": "/changelog/v3.1.4.html#v314---2024-02-26"
   },"26": {
     "doc": "v3.1.4",
     "title": "v3.1.4",
     "content": " ",
-    "url": "/changelog/v3.1.4.html",
+    "url": "/ARCADE/changelog/v3.1.4.html",
     
     "relUrl": "/changelog/v3.1.4.html"
   }
