@@ -8,8 +8,24 @@ on:
       - closed
 
 jobs:
-  publish:
+  get-release-version:
     if: ${{ (startsWith(github.event.pull_request.head.ref, 'release/')) && (github.event.pull_request.merged == true) }}
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
+
+    steps:
+
+    - name: Extract version from branch name
+      id: release-version
+      run: |
+        BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+        echo "RELEASE_VERSION=${BRANCH_NAME#release/}" >> $GITHUB_OUTPUT
+
+  publish-release-to-github:
+    needs: get-release-version
 
     runs-on: ubuntu-latest
 
@@ -23,11 +39,9 @@ jobs:
     - name: Checkout the repo
       uses: actions/checkout@v4
 
-    - name: Extract version from branch name
+    - name: Get release version
       run: |
-        BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
-        VERSION=${BRANCH_NAME#release/}
-        echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
+        echo "RELEASE_VERSION=${{ needs.get-release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
 
     - name: Build changelog
       id: build_changelog
@@ -84,15 +98,29 @@ jobs:
         name: ${{ env.RELEASE_VERSION }}
         body: ${{ steps.build_changelog.outputs.changelog }}
 
+  update-version-badge:
+    needs: get-release-version
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout the repo
+      uses: actions/checkout@v4
+
+    - name: Get release version
+      run: |
+        echo "RELEASE_VERSION=${{ needs.get-release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
+
     - name: Generate version badge
       if: success()
       uses: knightdave/anybadge-action@v1.1.0
       with:
-        file: docs/_badges/version.svg
+        file: docs/badges/version.svg
         label: version
         value: ${{ env.RELEASE_VERSION }}
         color: teal
-        template: docs/_badges/template.svg
+        template: docs/badges/template.svg
         overwrite: true
 
     - name: Publish badge
@@ -100,6 +128,6 @@ jobs:
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         branch: gh-pages
-        folder: docs/_badges
-        target-folder: _badges
+        folder: docs/badges
+        target-folder: badges
         clean: false

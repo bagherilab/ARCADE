@@ -6,11 +6,11 @@ on:
       - 'release/*'
 
 jobs:
-  check:
-    outputs:
-      status: ${{ steps.current_pr.outputs.pr_found }}
-
+  check-existing-release:
     runs-on: ubuntu-latest
+
+    outputs:
+      RELEASE_EXISTS: ${{ steps.current-pr.outputs.pr_found }}
 
     permissions:
       pull-requests: read
@@ -19,12 +19,28 @@ jobs:
 
     - name: Get current PR
       uses: 8BitJonny/gh-get-current-pr@3.0.0
-      id: current_pr
+      id: current-pr
 
-  release:
-    needs: check
+  get-release-version:
+    needs: check-existing-release
 
-    if: needs.check.outputs.status == 'false'
+    if: needs.check-existing-release.outputs.RELEASE_EXISTS == 'false'
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
+
+    steps:
+
+    - name: Extract version from branch name
+      id: release-version
+      run: |
+        VERSION=${GITHUB_REF##*/}
+        echo "RELEASE_VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+  create-release-pr:
+    needs: get-release-version
 
     runs-on: ubuntu-latest
 
@@ -38,15 +54,13 @@ jobs:
         private-key: ${{ secrets.PRIVATE_KEY }}
 
     - name: Checkout the repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         token: ${{ steps.app-token.outputs.token }}
 
-    - name: Extract version from branch name
+    - name: Get release version
       run: |
-        BRANCH_NAME="${{ github.event.push.ref }}"
-        VERSION=${GITHUB_REF##*/}
-        echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
+        echo "RELEASE_VERSION=${{ needs.get-release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
 
     - name: Get current date
       run: |
@@ -101,14 +115,18 @@ jobs:
 
     - name: Update changelog
       run: |
-        printf "%s%s\n" "${{ steps.build_changelog.outputs.changelog }}" "$(cat CHANGELOG.md)" > CHANGELOG.md
+        export CHANGELOG=docs/_changelog/${{ env.RELEASE_VERSION }}.md
+        printf -- "---\ntitle: ${{ env.RELEASE_VERSION}}\n---\n\n" > $CHANGELOG
+        printf "${{ steps.build_changelog.outputs.changelog }}" >> $CHANGELOG
+        a=$(< $CHANGELOG); printf '%s\n' "$a" > $CHANGELOG
 
-    - uses: EndBug/add-and-commit@v9
+    - name: Commit changelog
+      uses: EndBug/add-and-commit@v9
       with:
-          add: "CHANGELOG.md"
+          add: docs/_changelog/${{ env.RELEASE_VERSION}}.md
           author_name: bagheri-lab-bot[bot]
           author_email: bagheri-lab-bot[bot]@users.noreply.github.com
-          message: "Update CHANGELOG.md for ${{ env.RELEASE_VERSION }}"
+          message: "Add changelog for ${{ env.RELEASE_VERSION }}"
           default_author: github_actor
           push: 'origin ${{ github.event.push.ref }}'
 
