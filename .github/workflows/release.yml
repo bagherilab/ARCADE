@@ -79,13 +79,13 @@ jobs:
                 "exclude_labels": ["package: patch", "package: potts"]
               },
               {
-                "title": "#### Features: `patch`",
+                "title": "#### Features: \`patch\`",
                 "labels": ["type: feature", "package: patch"],
                 "exclude_labels": ["package: potts"],
                 "exhaustive": true
               },
               {
-                "title": "#### Features: `potts`",
+                "title": "#### Features: \`potts\`",
                 "labels": ["type: feature", "package: potts"],
                 "exclude_labels": ["package: patch"],
                 "exhaustive": true
