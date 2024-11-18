@@ -186,7 +186,7 @@ public final class PatchEnums {
         BOUND_ANTIGEN_CELL_RECEPTOR,
 
         /** Code for cell bound to self and SynNotch. */
-        BOUND_CELL_RECEPTOR_SYNNOTCH,
+        BOUND_CELL_SYNNOTCH_RECEPTOR,
 
         /** Code for cell bound to antigen and SynNotch. */
         BOUND_ANTIGEN_SYNNOTCH_RECEPTOR,
