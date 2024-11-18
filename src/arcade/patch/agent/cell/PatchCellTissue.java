@@ -23,11 +23,14 @@ public class PatchCellTissue extends PatchCell {
     // these two variables are public bc I don't want to implement setter/getter methods for sims
     // that do not use CART cells.
 
-    /** Cell surface antigen count */
+    /** Cell surface CAR antigen count */
     int carAntigens;
 
     /** Cell surface PDL1 count */
     int selfTargets;
+
+    /** Cell surface SynNotch antigen count */
+    int synNotchAntigens;
 
     /** Cell binding flag */
     public AntigenFlag binding;
@@ -56,6 +59,7 @@ public class PatchCellTissue extends PatchCell {
         super(container, location, parameters, links);
         carAntigens = parameters.getInt("CAR_ANTIGENS_HEALTHY");
         selfTargets = parameters.getInt("SELF_TARGETS");
+        synNotchAntigens = parameters.getInt("SYNNOTCH_ANTIGENS");
         this.binding = AntigenFlag.UNDEFINED;
     }
 
