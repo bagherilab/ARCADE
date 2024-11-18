@@ -1,0 +1,32 @@
+title: ARCADE
+
+description: Agent-based Representation of Cells And Dynamic Environments
+
+theme: just-the-docs
+
+url: https://bagherilab.github.io/ARCADE/
+
+baseurl: ""
+
+repository: bagherilab/ARCADE
+
+math: mathjax
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: "default"
+
+collections:
+  changelog:
+    output: false
+
+just_the_docs:
+  collections:
+    changelog:
+      name: Changelog
+      nav_exclude: true
+
+plugins:
+  - jekyll-github-metadata
