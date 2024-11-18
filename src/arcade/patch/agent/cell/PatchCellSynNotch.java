@@ -279,7 +279,8 @@ public class PatchCellSynNotch extends PatchCellCART {
             // Cell attempts to bind to a target
             PatchCellTissue target = super.bindTarget(sim, location, simstate.random);
 
-            //TODO: step recruiting module 
+            // Step inflammation process.
+            super.processes.get(Domain.QUORUM).step(simstate.random, sim);
 
             // If cell is bound to target antigen and/or SynNotch, the cell
             // can potentially become properly activated.
