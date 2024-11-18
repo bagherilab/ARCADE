@@ -68,7 +68,7 @@ public abstract class PatchCellCART extends PatchCell {
     protected int selfReceptors;
 
     protected int selfReceptorsStart;
-    protected int boundAntigensCount;
+    public int boundAntigensCount;
     protected int boundSelfCount;
 
     /** lack of documentation so these loaded parameters are TBD */
