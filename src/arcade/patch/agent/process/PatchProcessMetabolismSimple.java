@@ -4,7 +4,7 @@ import java.util.Arrays;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 
 /**
@@ -41,11 +41,12 @@ public class PatchProcessMetabolismSimple extends PatchProcessMetabolism {
      * <p>Loaded parameters include:
      *
      * <ul>
-     *   <li>{@code CELL_VOLUME_MEAN} = average cell volume
+     *   <li>{@code CELL_VOLUME} = cell volume
      *   <li>{@code METABOLIC_PREFERENCE} = preference for glycolysis over oxidative phosphorylation
      *   <li>{@code CONSTANT_GLUCOSE_UPTAKE_RATE} = constant glucose uptake rate
      *   <li>{@code CONSTANT_ATP_PRODUCTION_RATE} = constant ATP production rate
      *   <li>{@code CONSTANT_VOLUME_GROWTH_RATE} = constant volume growth rate
+     *   <li>{@code INITIAL_GLUCOSE_CONCENTRATION} = initial cell internal glucose concentration
      * </ul>
      *
      * @param cell the {@link PatchCell} the process is associated with
@@ -53,23 +54,23 @@ public class PatchProcessMetabolismSimple extends PatchProcessMetabolism {
     public PatchProcessMetabolismSimple(PatchCell cell) {
         super(cell);
 
-        // Initial internal concentrations.
-        intAmts = new double[1];
-        intAmts[GLUCOSE] = extAmts[GLUCOSE];
-
         // Mapping for internal concentration access.
         String[] intNames = new String[1];
         intNames[GLUCOSE] = "glucose";
         names = Arrays.asList(intNames);
 
         // Set loaded parameters.
-        // TODO: pull metabolic preference from distribution
-        MiniBox parameters = cell.getParameters();
-        averageCellVolume = parameters.getDouble("CELL_VOLUME_MEAN");
+        Parameters parameters = cell.getParameters();
+        averageCellVolume = parameters.getDouble("CELL_VOLUME");
         metabolicPreference = parameters.getDouble("metabolism/METABOLIC_PREFERENCE");
         glucoseUptakeRate = parameters.getDouble("metabolism/CONSTANT_GLUCOSE_UPTAKE_RATE");
         atpProductionRate = parameters.getDouble("metabolism/CONSTANT_ATP_PRODUCTION_RATE");
         volumeGrowthRate = parameters.getDouble("metabolism/CONSTANT_VOLUME_GROWTH_RATE");
+
+        // Initial internal concentrations.
+        intAmts = new double[1];
+        intAmts[GLUCOSE] =
+                parameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION") * volume;
     }
 
     @Override

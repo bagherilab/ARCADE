@@ -30,7 +30,7 @@ import static arcade.potts.util.PottsEnums.State;
 public class PottsOutputDeserializerTest {
     private static final double EPSILON = 1E-10;
 
-    private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast(randomSeed());
+    private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast();
 
     static final JsonDeserializationContext CELL_CONTEXT =
             new JsonDeserializationContext() {

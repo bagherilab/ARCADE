@@ -10,12 +10,9 @@
     <!-- POPULATIONS ======================================================= -->
 
     <!-- default parameters for populations -->
-    <population id="CELL_VOLUME_MEAN" value="2250.0" unit="um^3" description="cell volume distribution average" />
-    <population id="CELL_VOLUME_STDEV" value="200.0" unit="um^3" description="cell volume distribution standard deviation" />
-    <population id="CELL_HEIGHT_MEAN" value="8.7" unit="um" description="cell height distribution average" />
-    <population id="CELL_HEIGHT_STDEV" value="0" unit="um"  description="cell height distribution standard deviation" />
-    <population id="CELL_AGE_MIN" value="0" unit="min" description="minimum cell age (0 weeks)" />
-    <population id="CELL_AGE_MAX" value="120960" unit="min" description="maximum cell age (12 weeks)" />
+    <population id="CELL_VOLUME" value="NORMAL(MU=2250,SIGMA=200)" unit="um^3" description="cell volume distribution" />
+    <population id="CELL_HEIGHT" value="NORMAL(MU=8.7,SIGMA=0)" unit="um" description="cell height distribution" />
+    <population id="CELL_AGE" value="UNIFORM(MIN=0,MAX=120960)" unit="min" description="cell age distribution" />
     <population id="DIVISION_POTENTIAL" value="50" description="maximum number of divisions" />
     <population id="COMPRESSION_TOLERANCE" value="0" units="um" description="maximum compression tolerance" />
     <population id="HETEROGENEITY" value="0.0" description="variation in cell agent parameters" />
@@ -51,6 +48,7 @@
     <population.process process="metabolism" id="CONSTANT_GLUCOSE_UPTAKE_RATE" value="929.88" unit="fmol glucose/min/M glucose" description="constant glucose uptake rate" />
     <population.process process="metabolism" id="CONSTANT_ATP_PRODUCTION_RATE" value="4.9817" unit="fmol ATP/cell/min" description="constant ATP production rate" />
     <population.process process="metabolism" id="CONSTANT_VOLUME_GROWTH_RATE" value="2.819" unit="um^3/min" description="constant volume growth rate"/>
+    <population.process process="metabolism" id="INITIAL_GLUCOSE_CONCENTRATION" value="0.005" unit="fmol/um^3" description="initial cell internal glucose concentration"/>
 
     <!-- signaling process parameters -->
     <population.process process="signaling" id="MIGRATORY_THRESHOLD" value="10" description="threshold fold change in PLCg for migration" />

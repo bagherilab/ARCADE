@@ -3,6 +3,12 @@ package arcade.core.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import ec.util.MersenneTwisterFast;
+import arcade.core.util.distributions.Distribution;
+import arcade.core.util.distributions.NormalDistribution;
+import arcade.core.util.distributions.NormalFractionalDistribution;
+import arcade.core.util.distributions.NormalTruncatedDistribution;
+import arcade.core.util.distributions.UniformDistribution;
 
 /**
  * Container that maps a key to a value.
@@ -61,6 +67,31 @@ public class MiniBox {
     }
 
     /**
+     * Gets the value for given key converted to a distribution.
+     *
+     * @param id the key
+     * @param random the random number generator
+     * @return the distribution instance
+     */
+    public Distribution getDistribution(String id, MersenneTwisterFast random) {
+        String s = contents.get("(DISTRIBUTION)" + TAG_SEPARATOR + id);
+
+        if (s == null) {
+            return null;
+        } else if (s.equals("UNIFORM")) {
+            return new UniformDistribution(id, this, random);
+        } else if (s.equals("TRUNCATED_NORMAL")) {
+            return new NormalTruncatedDistribution(id, this, random);
+        } else if (s.equals("FRACTIONAL_NORMAL")) {
+            return new NormalFractionalDistribution(id, this, random);
+        } else if (s.equals("NORMAL")) {
+            return new NormalDistribution(id, this, random);
+        }
+
+        return null;
+    }
+
+    /**
      * Gets the value for given key converted to a double.
      *
      * @param id the key
@@ -76,6 +107,8 @@ public class MiniBox {
             double denominator =
                     (!split[1].matches(NUMBER_REGEX) ? Double.NaN : Double.parseDouble(split[1]));
             return (denominator == 0 ? Double.NaN : numerator / denominator);
+        } else if (contents.containsKey("(DISTRIBUTION)" + TAG_SEPARATOR + id)) {
+            return getDistribution(id, new MersenneTwisterFast()).getExpected();
         }
 
         return (s == null || !s.matches(NUMBER_REGEX) ? Double.NaN : Double.parseDouble(s));
@@ -159,9 +192,7 @@ public class MiniBox {
         for (String key : allKeys) {
             if (!contents.containsKey(key)) {
                 return false;
-            }
-
-            if (!box.contents.containsKey(key)) {
+            } else if (!box.contents.containsKey(key)) {
                 return false;
             } else if (!contents.get(key).equals(box.get(key))) {
                 return false;

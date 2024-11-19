@@ -6,7 +6,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellFactory;
 import arcade.core.env.grid.Grid;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.env.location.PottsLocation;
@@ -19,7 +19,7 @@ import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
 
 public class PottsModuleProliferationTest {
-    static MersenneTwisterFast randomMock = new MersenneTwisterFast(randomSeed());
+    static MersenneTwisterFast randomMock = new MersenneTwisterFast();
 
     static PottsSimulation simMock = mock(PottsSimulation.class);
 
@@ -144,9 +144,9 @@ public class PottsModuleProliferationTest {
     @Test
     public void addCell_called_addsObject() {
         PottsCell cell = mock(PottsCell.class);
-        MiniBox box = mock(MiniBox.class);
-        doReturn(0.).when(box).getDouble(anyString());
-        doReturn(box).when(cell).getParameters();
+        Parameters parameters = mock(Parameters.class);
+        doReturn(0.).when(parameters).getDouble(anyString());
+        doReturn(parameters).when(cell).getParameters();
 
         PottsLocation location = mock(PottsLocation.class);
         Potts potts = mock(Potts.class);
@@ -170,7 +170,9 @@ public class PottsModuleProliferationTest {
         PottsCell newCell = mock(PottsCell.class);
 
         doReturn(newContainer).when(cell).make(eq(id), any(State.class), eq(randomMock));
-        doReturn(newCell).when(newContainer).convert(eq(cellFactory), eq(newLocation));
+        doReturn(newCell)
+                .when(newContainer)
+                .convert(eq(cellFactory), eq(newLocation), eq(randomMock), eq(parameters));
         doReturn(location).when(cell).getLocation();
         doReturn(newLocation).when(location).split(randomMock);
         doNothing().when(cell).reset(any(), any());

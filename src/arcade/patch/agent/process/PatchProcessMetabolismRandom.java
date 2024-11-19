@@ -4,7 +4,7 @@ import java.util.Arrays;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 
 /**
@@ -56,7 +56,8 @@ public class PatchProcessMetabolismRandom extends PatchProcessMetabolism {
      * <p>Loaded parameters include:
      *
      * <ul>
-     *   <li>{@code CELL_VOLUME_MEAN} = average cell volume
+     *   <li>{@code CELL_VOLUME} = cell volume
+     *   <li>{@code INITIAL_GLUCOSE_CONCENTRATION} = initial cell internal glucose concentration
      * </ul>
      *
      * @param cell the {@link PatchCell} the process is associated with
@@ -64,18 +65,19 @@ public class PatchProcessMetabolismRandom extends PatchProcessMetabolism {
     public PatchProcessMetabolismRandom(PatchCell cell) {
         super(cell);
 
-        // Initial internal concentrations.
-        intAmts = new double[1];
-        intAmts[GLUCOSE] = extAmts[GLUCOSE];
-
         // Mapping for internal concentration access.
         String[] intNames = new String[1];
         intNames[GLUCOSE] = "glucose";
         names = Arrays.asList(intNames);
 
         // Set loaded parameters.
-        MiniBox parameters = cell.getParameters();
-        averageCellVolume = parameters.getDouble("CELL_VOLUME_MEAN");
+        Parameters parameters = cell.getParameters();
+        averageCellVolume = parameters.getDouble("CELL_VOLUME");
+
+        // Initial internal concentrations.
+        intAmts = new double[1];
+        intAmts[GLUCOSE] =
+                parameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION") * volume;
     }
 
     @Override

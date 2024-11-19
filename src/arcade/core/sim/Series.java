@@ -4,11 +4,14 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import sim.display.GUIState;
 import sim.engine.SimState;
 import arcade.core.sim.output.*;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 /**
  * Abstract simulation manager for {@link Simulation} objects, differing only in random seed.
@@ -29,6 +32,10 @@ public abstract class Series {
 
     /** Regular expression for fractions. */
     private static final String FRACTION_REGEX = "^(([0]*(\\.\\d*|))|(1[\\.0]*))$";
+
+    /** Regular expression for distributions. */
+    public static final String DISTRIBUTION_REGEX =
+            "^([A-Z\\_]+)\\(([A-Z]+)=([\\d\\.]+)(?:,([A-Z]+)=([\\d\\.]+))*\\)$";
 
     /** Offset of random seed to avoid using seed of 0. */
     public static final int SEED_OFFSET = 1000;
@@ -305,14 +312,20 @@ public abstract class Series {
             String defaultParameter,
             MiniBox values,
             MiniBox scales) {
-        box.put(parameter, defaultParameter);
+        String value = values.contains(parameter) ? values.get(parameter) : defaultParameter;
+        Matcher match = Pattern.compile(DISTRIBUTION_REGEX).matcher(value);
 
-        if (values.get(parameter) != null) {
-            box.put(parameter, values.get(parameter));
-        }
-
-        if (scales.get(parameter) != null) {
-            box.put(parameter, box.getDouble(parameter) * scales.getDouble(parameter));
+        if (match.find()) {
+            box.put("(DISTRIBUTION)" + TAG_SEPARATOR + parameter, match.group(1).toUpperCase());
+            for (int i = 0; i < (match.groupCount() - 1) / 2; i++) {
+                int index = 2 * (i + 1);
+                box.put(parameter + "_" + match.group(index), match.group(index + 1));
+            }
+        } else {
+            box.put(parameter, value);
+            if (scales.contains(parameter)) {
+                box.put(parameter, box.getDouble(parameter) * scales.getDouble(parameter));
+            }
         }
     }
 

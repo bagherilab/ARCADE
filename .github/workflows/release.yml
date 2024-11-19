@@ -1,0 +1,138 @@
+name: release
+
+on:
+  push:
+    branches:
+      - 'release/*'
+
+jobs:
+  check-existing-release:
+    runs-on: ubuntu-latest
+
+    outputs:
+      RELEASE_EXISTS: ${{ steps.current-pr.outputs.pr_found }}
+
+    permissions:
+      pull-requests: read
+
+    steps:
+
+    - name: Get current PR
+      uses: 8BitJonny/gh-get-current-pr@3.0.0
+      id: current-pr
+
+  get-release-version:
+    needs: check-existing-release
+
+    if: needs.check-existing-release.outputs.RELEASE_EXISTS == 'false'
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
+
+    steps:
+
+    - name: Extract version from branch name
+      id: release-version
+      run: |
+        VERSION=${GITHUB_REF##*/}
+        echo "RELEASE_VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+  create-release-pr:
+    needs: get-release-version
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Get app token
+      uses: actions/create-github-app-token@v1
+      id: app-token
+      with:
+        app-id: ${{ vars.APP_ID }}
+        private-key: ${{ secrets.PRIVATE_KEY }}
+
+    - name: Checkout the repo
+      uses: actions/checkout@v4
+      with:
+        token: ${{ steps.app-token.outputs.token }}
+
+    - name: Get release version
+      run: |
+        echo "RELEASE_VERSION=${{ needs.get-release-version.outputs.RELEASE_VERSION }}" >> $GITHUB_ENV
+
+    - name: Get current date
+      run: |
+        echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
+    - name: Build changelog
+      id: build_changelog
+      uses: mikepenz/release-changelog-builder-action@v4
+      with:
+        configurationJson: |
+          {
+            "categories": [
+              {
+                "title": "### Features",
+                "labels": ["type: feature"],
+                "exclude_labels": ["package: patch", "package: potts"]
+              },
+              {
+                "title": "#### Features: \\x60patch\\x60",
+                "labels": ["type: feature", "package: patch"],
+                "exclude_labels": ["package: potts"],
+                "exhaustive": true
+              },
+              {
+                "title": "#### Features: \\x60potts\\x60",
+                "labels": ["type: feature", "package: potts"],
+                "exclude_labels": ["package: patch"],
+                "exhaustive": true
+              },
+              {
+                "title": "### Bug fixes",
+                "labels": ["type: bug"]
+              },
+              {
+                "title": "### Tests",
+                "labels": ["type: test"]
+              },
+              {
+                "title": "### Documentation",
+                "labels": ["type: docs"]
+              },
+              {
+                "title": "### Admin",
+                "labels": ["type: admin"]
+              }
+            ],
+            "template": "# [${{ env.RELEASE_VERSION }}](https://github.com/${{ github.repository }}/releases/tag/${{ env.RELEASE_VERSION }}) - ${{ env.CURRENT_DATE }}\n\n> Compare with [#{{FROM_TAG}}](https://github.com/${{ github.repository }}/compare/#{{FROM_TAG}}...${{ env.RELEASE_VERSION }})\n\n#{{CHANGELOG}}",
+            "pr_template": "- #{{TITLE}} by [@#{{AUTHOR}}](https://github.com/#{{AUTHOR}}) in [##{{NUMBER}}](#{{URL}})"
+          }
+        toTag: ${{ github.sha }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Update changelog
+      run: |
+        export CHANGELOG=docs/_changelog/${{ env.RELEASE_VERSION }}.md
+        printf -- "---\ntitle: ${{ env.RELEASE_VERSION}}\n---\n\n" > $CHANGELOG
+        printf "${{ steps.build_changelog.outputs.changelog }}" >> $CHANGELOG
+        a=$(< $CHANGELOG); printf '%s\n' "$a" > $CHANGELOG
+
+    - name: Commit changelog
+      uses: EndBug/add-and-commit@v9
+      with:
+          add: docs/_changelog/${{ env.RELEASE_VERSION}}.md
+          author_name: bagheri-lab-bot[bot]
+          author_email: bagheri-lab-bot[bot]@users.noreply.github.com
+          message: "Add changelog for ${{ env.RELEASE_VERSION }}"
+          default_author: github_actor
+          push: 'origin ${{ github.event.push.ref }}'
+
+    - name: Create pull request
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+      shell: bash -l {0}
+      run: |
+        gh pr create --title "Release ${{ env.RELEASE_VERSION }}" --body ""

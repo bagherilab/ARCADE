@@ -104,7 +104,8 @@ public class PatchActionInsert implements Action {
                 PatchCellContainer cellContainer = sim.cellFactory.createCellForPopulation(id, pop);
 
                 Location location = locationContainer.convert(sim.locationFactory, cellContainer);
-                PatchCell cell = (PatchCell) cellContainer.convert(sim.cellFactory, location);
+                PatchCell cell =
+                        (PatchCell) cellContainer.convert(sim.cellFactory, location, sim.random);
 
                 grid.addObject(cell, location);
                 cell.schedule(sim.getSchedule());

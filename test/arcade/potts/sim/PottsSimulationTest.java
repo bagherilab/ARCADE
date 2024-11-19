@@ -226,7 +226,7 @@ public class PottsSimulationTest {
                 doReturn(id).when(cell).getID();
                 doReturn(pop.getInt("CODE")).when(cell).getPop();
                 doReturn(loc).when(cell).getLocation();
-                doReturn(cell).when(container).convert(factory, loc);
+                doReturn(cell).when(container).convert(factory, loc, random);
             }
 
             factory.popToIDs.put(pop.getInt("CODE"), ids);

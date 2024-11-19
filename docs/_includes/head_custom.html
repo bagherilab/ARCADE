@@ -1,0 +1,27 @@
+{%- comment -%}
+  When you include the following code in `_includes/head_custom.html`, you can
+  render TeX/LaTeX math formula in web pages using KaTeX or MathJax.
+  
+  To render math using KaTeX on individual pages, set `math: katex` in their
+  front matter.
+
+  To add a preamble (defining new commands and environments) for some pages,
+  set `layout: katex` (instead of `math: katex`) in their front matter, and
+  insert the preamble in `_layouts/katex.html`.
+
+  To render math using KaTeX on all pages, either set `math: katex` in
+  `_config.yml`, or use front-matter defaults for `math: katex` or `layout: katex`.
+  
+  To render math using MathJax instead of KaTeX, set to `mathjax` instead of `katex`.
+  
+  You can use KaTeX and MathJax on different pages (but not on the same page).
+{%- endcomment -%}
+
+{% assign math = page.math | default: layout.math | default: site.math %}
+
+{% case math %}
+  {% when "katex" %}
+    {% include katex.html %}
+  {% when "mathjax" %}
+    {% include mathjax.html %}
+{% endcase %}

@@ -2,6 +2,8 @@ package arcade.core.agent.cell;
 
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Series;
+import arcade.core.util.GrabBag;
+import arcade.core.util.MiniBox;
 
 /**
  * Factory class for {@link Cell} objects.
@@ -21,6 +23,22 @@ public interface CellFactory {
      * @param random the random number generator
      */
     void initialize(Series series, MersenneTwisterFast random);
+
+    /**
+     * Gets the population parameters.
+     *
+     * @param pop the population code
+     * @return the population parameters
+     */
+    MiniBox getParameters(int pop);
+
+    /**
+     * Gets the population links.
+     *
+     * @param pop the population code
+     * @return the bag of population links
+     */
+    GrabBag getLinks(int pop);
 
     /**
      * Loads cell containers into the factory container.

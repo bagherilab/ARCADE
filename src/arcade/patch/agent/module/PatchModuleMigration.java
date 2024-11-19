@@ -2,7 +2,7 @@ package arcade.patch.agent.module;
 
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.env.location.PatchLocation;
 import static arcade.patch.util.PatchEnums.State;
@@ -39,7 +39,7 @@ public class PatchModuleMigration extends PatchModule {
         super(cell);
 
         // Set loaded parameters.
-        MiniBox parameters = cell.getParameters();
+        Parameters parameters = cell.getParameters();
         migrationRate = parameters.getDouble("migration/MIGRATION_RATE");
         movementDuration = Math.round(location.getCoordinateSize() / migrationRate);
     }

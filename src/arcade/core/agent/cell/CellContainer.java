@@ -1,6 +1,8 @@
 package arcade.core.agent.cell;
 
+import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
+import arcade.core.util.Parameters;
 
 /**
  * Container class for {@link Cell} objects.
@@ -22,7 +24,23 @@ public interface CellContainer {
      *
      * @param factory the cell factory instance
      * @param location the cell location
+     * @param random the random number generator
      * @return a {@link Cell} instance
      */
-    Cell convert(CellFactory factory, Location location);
+    Cell convert(CellFactory factory, Location location, MersenneTwisterFast random);
+
+    /**
+     * Converts the cell container into a {@link Cell}.
+     *
+     * @param factory the cell factory instance
+     * @param location the cell location
+     * @param random the random number generator
+     * @param parameters the base parameters
+     * @return a {@link Cell} instance
+     */
+    Cell convert(
+            CellFactory factory,
+            Location location,
+            MersenneTwisterFast random,
+            Parameters parameters);
 }

@@ -969,6 +969,31 @@ public class PottsSeriesTest {
     }
 
     @Test
+    public void updatePopulation_withConversionAndScale_convertsValue() {
+        MiniBox conversion = new MiniBox();
+        int i = randomIntBetween(0, POPULATION_PARAMETER_NAMES.length);
+        String convertedParameter = POPULATION_PARAMETER_NAMES[i];
+        conversion.put(convertedParameter, "DS");
+
+        double scale = randomDoubleBetween(1, 100);
+
+        Box[] boxes = new Box[] {new Box()};
+        boxes[0].add("id", POPULATION_ID_1);
+        boxes[0].addAtt(convertedParameter, "scale", "" + scale);
+        boxes[0].addTag(convertedParameter, "PARAMETER");
+        PottsSeries series = makeSeriesForPopulation(boxes, conversion);
+        MiniBox box = series.populations.get(POPULATION_ID_1);
+
+        for (String parameter : POPULATION_PARAMETER_NAMES) {
+            double expected = POPULATION.getDouble(parameter);
+            if (parameter.equals(convertedParameter)) {
+                expected *= DS * scale;
+            }
+            assertEquals(expected, box.getDouble(parameter), EPSILON);
+        }
+    }
+
+    @Test
     public void getSimClass_given2D_returnsClass() {
         String className = PottsSimulation2D.class.getName();
         PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
