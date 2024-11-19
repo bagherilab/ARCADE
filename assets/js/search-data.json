@@ -1,191 +1,212 @@
 {"0": {
     "doc": "Changelog",
+    "title": "v3.2.0 - 2024-11-18",
+    "content": "Compare with v3.1.4 . Features . | Update cell make method to return container by @jessicasyu in #74 | Update cell constructors to use container by @jessicasyu in #75 | Add support for linked populations in setup file by @jessicasyu in #76 | Add support for parameter distributions by @jessicasyu in #85 | . Features: patch . | Add support for initialization by percentage by @jessicasyu in #53 | Add patch cell agent with random state rules by @jessicasyu in #56 | Add support for different patch initialization schemes by @jessicasyu in #81 | Pass initial glucose concentration as parameter for metabolism modules by @allison-li-1016 in #96 | . Features: potts . | Added class key for potts populations by @Jannetty in #11 | Make necessary PottsCell fields public, prepare for abstract setModule() function by @Jannetty in #12 | Convert PottsCell to abstract class by @Jannetty in #13 | Add support for splits with offset, direction, and split probability by @Jannetty in #16 | Add custom plane splitvoxels by @Jannetty in #46 | Refactor plane constructor to take Double3D instead of Int3D by @Jannetty in #83 | . Bug fixes . | Remove apoptosis checkpoint for potts cells by @jessicasyu in #18 | Replace instance of wildcard import of Module to prevent clash in Java 9 by @cainja in #65 | Fix passing in initial glucose as a parameter value by @allison-li-1016 in #99 | . Tests . | Remove unnecessary mocking in potts cell stem tests by @jessicasyu in #57 | Unit tests for core utilities Colors class by @cainja in #63 | Adding tests for core utilities Solver class by @cainja in #69 | Improved tests for core utilities Color class by @cainja in #73 | Adding tests for core utilities Graph class by @cainja in #64 | Adding tests for core utilities Parameter class by @cainja in #71 | . Admin . | Update workflows conditions for main and develop branches by @jessicasyu in #10 | Change source compatibility from 1.8 to 1.11 by @jessicasyu in #66 | Migrate to JUnit 5 by @jessicasyu in #67 | Add spotless autoformatter by @jessicasyu in #68 | Update workflows for changelog releases and Jekyll docs by @jessicasyu in #100 | . ",
+    "url": "/ARCADE/changelog.html#v320---2024-11-18",
+    
+    "relUrl": "/changelog.html#v320---2024-11-18"
+  },"1": {
+    "doc": "Changelog",
     "title": "v3.1.4 - 2024-02-26",
     "content": "Compare with v3.1.3 . ",
     "url": "/ARCADE/changelog.html#v314---2024-02-26",
     
     "relUrl": "/changelog.html#v314---2024-02-26"
-  },"1": {
+  },"2": {
     "doc": "Changelog",
     "title": "v3.1.3 - 2024-02-05",
     "content": "Compare with v3.1.2 . Features . | Add version to output files by @jessicasyu in #7 | . Bug fixes . | Swap voxel update order by @jessicasyu in #8 | . ",
     "url": "/ARCADE/changelog.html#v313---2024-02-05",
     
     "relUrl": "/changelog.html#v313---2024-02-05"
-  },"2": {
+  },"3": {
     "doc": "Changelog",
     "title": "v3.1.2 - 2023-11-14",
     "content": "Compare with v3.1.1 . Features . | Convert core enums to use interfaces by @jessicasyu in #3 | Update minibox to load simple fractions by @jessicasyu in #5 | . Bug fixes . | Update size checkpoints in potts modules by @jessicasyu in #2 | . Tests . | Update region adhesion unit tests by @jessicasyu in #6 | . Admin . | Update version handling in gradle build by @jessicasyu in #4 | . ",
     "url": "/ARCADE/changelog.html#v312---2023-11-14",
     
     "relUrl": "/changelog.html#v312---2023-11-14"
-  },"3": {
+  },"4": {
     "doc": "Changelog",
     "title": "v3.1.1 - 2023-10-03",
     "content": "Compare with v3.1.0 . ",
     "url": "/ARCADE/changelog.html#v311---2023-10-03",
     
     "relUrl": "/changelog.html#v311---2023-10-03"
-  },"4": {
+  },"5": {
     "doc": "Changelog",
     "title": "v3.1.0 - 2023-03-01",
     "content": "Compare with v3.0.1 . ",
     "url": "/ARCADE/changelog.html#v310---2023-03-01",
     
     "relUrl": "/changelog.html#v310---2023-03-01"
-  },"5": {
+  },"6": {
     "doc": "Changelog",
     "title": "v3.0.1 - 2023-10-03",
     "content": "Compare with v3.0.0 . ",
     "url": "/ARCADE/changelog.html#v301---2023-10-03",
     
     "relUrl": "/changelog.html#v301---2023-10-03"
-  },"6": {
+  },"7": {
     "doc": "Changelog",
     "title": "v3.0.0 - 2023-01-31",
     "content": "Compare with v2.4 . ",
     "url": "/ARCADE/changelog.html#v300---2023-01-31",
     
     "relUrl": "/changelog.html#v300---2023-01-31"
-  },"7": {
+  },"8": {
     "doc": "Changelog",
     "title": "Changelog",
     "content": " ",
     "url": "/ARCADE/changelog.html",
     
     "relUrl": "/changelog.html"
-  },"8": {
+  },"9": {
     "doc": "Overview",
     "title": "ARCADE: Agent-based Representation of Cells And Dynamic Environments",
     "content": "ARCADE is a flexible, extensible, interface-based Java framework for agent-based modeling of biological systems. Get the latest release on GitHub . ARCADE is a lightweight agent-based modeling framework that uses the MASON library for multi-agent scheduling and simulation. Existing implementations of the core interfaces can be used to run simulations via highly configurable setup files. ARCADE currently has two major implementation: . | patch represents one or more agents in each environmental patch location | potts represents agents as a collection of connected voxels (Cellular Potts modeling) | . New implementations of these interfaces can be easily integrated with existing functionality to develop models for different biological systems or questions of interest. The ARCADE v3 patch implementation is actively under development and not yet at parity with ARCADE v2. You can track progress using the migration: v2 to v3 tag. ",
     "url": "/ARCADE/#arcade-agent-based-representation-of-cells-and-dynamic-environments",
     
     "relUrl": "/#arcade-agent-based-representation-of-cells-and-dynamic-environments"
-  },"9": {
+  },"10": {
     "doc": "Overview",
     "title": "What’s new in v3.1.4 - 2024-02-26",
     "content": "Compare with v3.1.3 . ",
     "url": "/ARCADE/#whats-new-in-v314---2024-02-26",
     
     "relUrl": "/#whats-new-in-v314---2024-02-26"
-  },"10": {
+  },"11": {
     "doc": "Overview",
     "title": "Getting started",
     "content": "Coming soon! . ",
     "url": "/ARCADE/#getting-started",
     
     "relUrl": "/#getting-started"
-  },"11": {
+  },"12": {
     "doc": "Overview",
     "title": "About the project",
-    "content": "ARCADE v2 is © 2020-2023 Bagheri Lab at Northwestern University. ARCADE v3 is © 2022-2024, Bagheri Lab at the University of Washington Seattle and Jessica S. Yu at the Allen Institute for Cell Science. License . ARCADE v2 is distributed under a GPL 3 license. ARCADE v3 is distributed under a BSD 3-Clause license. Contributors . | | | | | . ",
+    "content": "ARCADE v2 is © 2020-2023 Bagheri Lab at Northwestern University. ARCADE v3 is © 2022-2024, Bagheri Lab at the University of Washington Seattle and Jessica S. Yu at the Allen Institute for Cell Science. License . ARCADE v2 is distributed under a GPL 3 license. ARCADE v3 is distributed under a BSD 3-Clause license. Contributors . | | | | | | . ",
     "url": "/ARCADE/#about-the-project",
     
     "relUrl": "/#about-the-project"
-  },"12": {
+  },"13": {
     "doc": "Overview",
     "title": "Overview",
     "content": " ",
     "url": "/ARCADE/",
     
     "relUrl": "/"
-  },"13": {
+  },"14": {
     "doc": "v3.0.0",
     "title": "v3.0.0 - 2023-01-31",
     "content": "Compare with v2.4 . ",
     "url": "/ARCADE/changelog/v3.0.0.html#v300---2023-01-31",
     
     "relUrl": "/changelog/v3.0.0.html#v300---2023-01-31"
-  },"14": {
+  },"15": {
     "doc": "v3.0.0",
     "title": "v3.0.0",
     "content": " ",
     "url": "/ARCADE/changelog/v3.0.0.html",
     
     "relUrl": "/changelog/v3.0.0.html"
-  },"15": {
+  },"16": {
     "doc": "v3.0.1",
     "title": "v3.0.1 - 2023-10-03",
     "content": "Compare with v3.0.0 . ",
     "url": "/ARCADE/changelog/v3.0.1.html#v301---2023-10-03",
     
     "relUrl": "/changelog/v3.0.1.html#v301---2023-10-03"
-  },"16": {
+  },"17": {
     "doc": "v3.0.1",
     "title": "v3.0.1",
     "content": " ",
     "url": "/ARCADE/changelog/v3.0.1.html",
     
     "relUrl": "/changelog/v3.0.1.html"
-  },"17": {
+  },"18": {
     "doc": "v3.1.0",
     "title": "v3.1.0 - 2023-03-01",
     "content": "Compare with v3.0.1 . ",
     "url": "/ARCADE/changelog/v3.1.0.html#v310---2023-03-01",
     
     "relUrl": "/changelog/v3.1.0.html#v310---2023-03-01"
-  },"18": {
+  },"19": {
     "doc": "v3.1.0",
     "title": "v3.1.0",
     "content": " ",
     "url": "/ARCADE/changelog/v3.1.0.html",
     
     "relUrl": "/changelog/v3.1.0.html"
-  },"19": {
+  },"20": {
     "doc": "v3.1.1",
     "title": "v3.1.1 - 2023-10-03",
     "content": "Compare with v3.1.0 . ",
     "url": "/ARCADE/changelog/v3.1.1.html#v311---2023-10-03",
     
     "relUrl": "/changelog/v3.1.1.html#v311---2023-10-03"
-  },"20": {
+  },"21": {
     "doc": "v3.1.1",
     "title": "v3.1.1",
     "content": " ",
     "url": "/ARCADE/changelog/v3.1.1.html",
     
     "relUrl": "/changelog/v3.1.1.html"
-  },"21": {
+  },"22": {
     "doc": "v3.1.2",
     "title": "v3.1.2 - 2023-11-14",
     "content": "Compare with v3.1.1 . Features . | Convert core enums to use interfaces by @jessicasyu in #3 | Update minibox to load simple fractions by @jessicasyu in #5 | . Bug fixes . | Update size checkpoints in potts modules by @jessicasyu in #2 | . Tests . | Update region adhesion unit tests by @jessicasyu in #6 | . Admin . | Update version handling in gradle build by @jessicasyu in #4 | . ",
     "url": "/ARCADE/changelog/v3.1.2.html#v312---2023-11-14",
     
     "relUrl": "/changelog/v3.1.2.html#v312---2023-11-14"
-  },"22": {
+  },"23": {
     "doc": "v3.1.2",
     "title": "v3.1.2",
     "content": " ",
     "url": "/ARCADE/changelog/v3.1.2.html",
     
     "relUrl": "/changelog/v3.1.2.html"
-  },"23": {
+  },"24": {
     "doc": "v3.1.3",
     "title": "v3.1.3 - 2024-02-05",
     "content": "Compare with v3.1.2 . Features . | Add version to output files by @jessicasyu in #7 | . Bug fixes . | Swap voxel update order by @jessicasyu in #8 | . ",
     "url": "/ARCADE/changelog/v3.1.3.html#v313---2024-02-05",
     
     "relUrl": "/changelog/v3.1.3.html#v313---2024-02-05"
-  },"24": {
+  },"25": {
     "doc": "v3.1.3",
     "title": "v3.1.3",
     "content": " ",
     "url": "/ARCADE/changelog/v3.1.3.html",
     
     "relUrl": "/changelog/v3.1.3.html"
-  },"25": {
+  },"26": {
     "doc": "v3.1.4",
     "title": "v3.1.4 - 2024-02-26",
     "content": "Compare with v3.1.3 . ",
     "url": "/ARCADE/changelog/v3.1.4.html#v314---2024-02-26",
     
     "relUrl": "/changelog/v3.1.4.html#v314---2024-02-26"
-  },"26": {
+  },"27": {
     "doc": "v3.1.4",
     "title": "v3.1.4",
     "content": " ",
     "url": "/ARCADE/changelog/v3.1.4.html",
     
     "relUrl": "/changelog/v3.1.4.html"
+  },"28": {
+    "doc": "v3.2.0",
+    "title": "v3.2.0 - 2024-11-18",
+    "content": "Compare with v3.1.4 . Features . | Update cell make method to return container by @jessicasyu in #74 | Update cell constructors to use container by @jessicasyu in #75 | Add support for linked populations in setup file by @jessicasyu in #76 | Add support for parameter distributions by @jessicasyu in #85 | . Features: patch . | Add support for initialization by percentage by @jessicasyu in #53 | Add patch cell agent with random state rules by @jessicasyu in #56 | Add support for different patch initialization schemes by @jessicasyu in #81 | Pass initial glucose concentration as parameter for metabolism modules by @allison-li-1016 in #96 | . Features: potts . | Added class key for potts populations by @Jannetty in #11 | Make necessary PottsCell fields public, prepare for abstract setModule() function by @Jannetty in #12 | Convert PottsCell to abstract class by @Jannetty in #13 | Add support for splits with offset, direction, and split probability by @Jannetty in #16 | Add custom plane splitvoxels by @Jannetty in #46 | Refactor plane constructor to take Double3D instead of Int3D by @Jannetty in #83 | . Bug fixes . | Remove apoptosis checkpoint for potts cells by @jessicasyu in #18 | Replace instance of wildcard import of Module to prevent clash in Java 9 by @cainja in #65 | Fix passing in initial glucose as a parameter value by @allison-li-1016 in #99 | . Tests . | Remove unnecessary mocking in potts cell stem tests by @jessicasyu in #57 | Unit tests for core utilities Colors class by @cainja in #63 | Adding tests for core utilities Solver class by @cainja in #69 | Improved tests for core utilities Color class by @cainja in #73 | Adding tests for core utilities Graph class by @cainja in #64 | Adding tests for core utilities Parameter class by @cainja in #71 | . Admin . | Update workflows conditions for main and develop branches by @jessicasyu in #10 | Change source compatibility from 1.8 to 1.11 by @jessicasyu in #66 | Migrate to JUnit 5 by @jessicasyu in #67 | Add spotless autoformatter by @jessicasyu in #68 | Update workflows for changelog releases and Jekyll docs by @jessicasyu in #100 | . ",
+    "url": "/ARCADE/changelog/v3.2.0.html#v320---2024-11-18",
+    
+    "relUrl": "/changelog/v3.2.0.html#v320---2024-11-18"
+  },"29": {
+    "doc": "v3.2.0",
+    "title": "v3.2.0",
+    "content": " ",
+    "url": "/ARCADE/changelog/v3.2.0.html",
+    
+    "relUrl": "/changelog/v3.2.0.html"
   }
 }
