@@ -80,19 +80,22 @@ public class PatchCellTest {
     public static void setupMocks() {
         locationMock = mock(PatchLocation.class);
         parametersMock = spy(new Parameters(new MiniBox(), null, null));
-        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
-        doReturn(0).when(parametersMock).getInt(any(String.class));
     }
 
     @Test
     public void getCycles_whenCellInitialized_returnsEmpty() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
         PatchCell cell = new PatchCellMock(baseContainer, locationMock, parametersMock);
         assertEquals(0, cell.getCycles().size());
     }
 
     @Test
     public void addCycle_givenCycles_appendValues() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
         PatchCell cell = new PatchCellMock(baseContainer, locationMock, parametersMock);
+
         cell.addCycle(1);
         cell.addCycle(3);
         cell.addCycle(5);
