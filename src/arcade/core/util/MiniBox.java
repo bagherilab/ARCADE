@@ -171,7 +171,7 @@ public class MiniBox {
         MiniBox results = new MiniBox();
         for (String key : keys) {
             String[] split = key.split(TAG_SEPARATOR);
-            if (split.length > 1 && split[0].equals(code)) {
+            if (split.length >= 1 && split[0].equals(code)) {
                 StringBuilder resultsBuilder = new StringBuilder();
                 for (int i = 1; i < split.length; i++) {
                     resultsBuilder.append(split[i]);

@@ -6,7 +6,6 @@ import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class PlaneTest {
     private static final double EPSILON = 1E-10;
@@ -172,12 +171,11 @@ public class PlaneTest {
     }
 
     @Test
-    public void probablisticallyRotateNormalVector_zeroStDev_returnsInputVector() {
+    public void rotateNormalVector_zeroDegrees_returnsInputVector() {
         Double3D unRotatedNormal = new Double3D(1.0, 0.0, 0.0);
-        double stDevDegrees = 0.0;
+        double thetaDegrees = 0.0;
 
-        Double3D rotatedNormal =
-                Plane.probablisticallyRotateNormalVector(unRotatedNormal, stDevDegrees, random);
+        Double3D rotatedNormal = Plane.rotateNormalVector(unRotatedNormal, thetaDegrees);
 
         assertEquals(unRotatedNormal.x, rotatedNormal.x, EPSILON);
         assertEquals(unRotatedNormal.y, rotatedNormal.y, EPSILON);
@@ -185,16 +183,11 @@ public class PlaneTest {
     }
 
     @Test
-    public void probablisticallyRotateNormalVector_called45Degrees_rotatesNormalVector() {
+    public void rotateNormalVector_called45Degrees_rotatesNormalVector() {
         Double3D unRotatedNormal = new Double3D(1.0, 0.0, 0.0);
-        double stDevDegrees = 50;
+        double thetaDegrees = 45.0;
 
-        // Mock the random.nextGaussian() to return the known value
-        when(random.nextGaussian()).thenReturn(.9);
-        // 50 * .9 = 45, so this will yield a 45 degree rotation
-
-        Double3D rotatedNormal =
-                Plane.probablisticallyRotateNormalVector(unRotatedNormal, stDevDegrees, random);
+        Double3D rotatedNormal = Plane.rotateNormalVector(unRotatedNormal, thetaDegrees);
 
         // length of vector will remain 1, and 45 degree rotation will make x = y, so by pythagorean
         // theorem, 2x^2 = 1, or x = y = sqrt(1/2)
@@ -206,16 +199,11 @@ public class PlaneTest {
     }
 
     @Test
-    public void probablisticallyRotateNormalVector_calledneg45Degrees_rotatesNormalVector() {
+    public void rotateNormalVector_calledneg45Degrees_rotatesNormalVector() {
         Double3D unRotatedNormal = new Double3D(1.0, 0.0, 0.0);
-        double stDevDegrees = 50;
+        double thetaDegrees = -45;
 
-        // Mock the random.nextGaussian() to return the known value
-        when(random.nextGaussian()).thenReturn(-.9);
-        // 50 * -.9 = -45, so this will yield a -45 degree rotation
-
-        Double3D rotatedNormal =
-                Plane.probablisticallyRotateNormalVector(unRotatedNormal, stDevDegrees, random);
+        Double3D rotatedNormal = Plane.rotateNormalVector(unRotatedNormal, thetaDegrees);
 
         // length of vector will remain 1, and 45 degree rotation will make |x| = |y|, so by
         // pythagorean theorem, 2x^2 = 1, or |x| = |y| = sqrt(1/2)

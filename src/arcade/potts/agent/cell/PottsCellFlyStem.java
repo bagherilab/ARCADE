@@ -59,7 +59,7 @@ public class PottsCellFlyStem extends PottsCell {
             PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
         MiniBox stemTypeMiniBox = parameters.filter("CLASS");
-        String stemTypeString = stemTypeMiniBox.get("CLASS");
+        String stemTypeString = stemTypeMiniBox.get("");
         switch (stemTypeString) {
             case "flystem-wt":
                 stemType = StemType.WT;
