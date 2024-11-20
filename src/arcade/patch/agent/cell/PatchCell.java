@@ -125,6 +125,9 @@ public abstract class PatchCell implements Cell {
     /** Cell population links. */
     final GrabBag links;
 
+    /** List of cell cycle lengths (in minutes). */
+    private final Bag cycles = new Bag();
+
     /**
      * Creates a {@code PatchCell} agent.
      *
@@ -283,6 +286,24 @@ public abstract class PatchCell implements Cell {
         this.energy = energy;
     }
 
+    /**
+     * Adds a completed cell cycle length [min] to the list of lengths.
+     *
+     * @param val the cell cycle length
+     */
+    public void addCycle(int val) {
+        cycles.add(val);
+    }
+
+    /**
+     * Gets the list of cell cycle lengths.
+     *
+     * @return the list of cell cycle lengths
+     */
+    public Bag getCycles() {
+        return cycles;
+    }
+
     @Override
     public void stop() {
         stopper.stop();
@@ -336,7 +357,6 @@ public abstract class PatchCell implements Cell {
     @Override
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
-
         // Increase age of cell.
         age++;
 
