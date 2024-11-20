@@ -36,7 +36,9 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
     public PottsModuleProliferationFlyStem(PottsCellFlyStem cell) {
         super(cell); // Reuse the logic from PottsModuleProliferationSimple
         Parameters parameters = cell.getParameters();
-        splitDirectionDistribution = (NormalDistribution) parameters.getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION");
+        splitDirectionDistribution =
+                (NormalDistribution)
+                        parameters.getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION");
     }
 
     public static Voxel getCellSplitLocation(PottsCellFlyStem cell) {
@@ -90,7 +92,8 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         // Create and schedule new cell
         int newID = sim.getID();
         CellContainer newContainer = cell.make(newID, State.PROLIFERATIVE, random);
-        PottsCell newCell = (PottsCell) newContainer.convert(sim.getCellFactory(), newLocation, random);
+        PottsCell newCell =
+                (PottsCell) newContainer.convert(sim.getCellFactory(), newLocation, random);
         sim.getGrid().addObject(newCell, null);
         potts.register(newCell);
         newCell.reset(potts.ids, potts.regions);
