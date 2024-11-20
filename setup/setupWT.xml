@@ -33,6 +33,7 @@
                     <population.parameter id="CRITICAL_VOLUME_STDEV" value="0" units="um^3" conversion="DS^-3" />
                     <population.parameter id="proliferation/CELL_GROWTH_RATE" value="80"/>
                     <population.parameter id="proliferation/BASAL_APOPTOSIS_RATE" value="0"/>
+                    <population.parameter id="proliferation/DIV_ROTATION_DISTRIBUTION" value="NORMAL(MU=0,SIGMA=30)" />
                 </population>
                 <population id="flygmc" class="flygmc" init="0">
                     <population.link id="flyneuron" weight="1"/>

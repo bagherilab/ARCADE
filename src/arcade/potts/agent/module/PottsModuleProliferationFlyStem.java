@@ -6,6 +6,8 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
+import arcade.core.util.Parameters;
+import arcade.core.util.distributions.NormalDistribution;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellFlyStem;
 import arcade.potts.agent.cell.PottsCellFlyStem.StemType;
@@ -15,6 +17,7 @@ import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
+import arcade.potts.util.PottsEnums.State;
 import static arcade.potts.util.PottsEnums.State;
 
 /**
@@ -22,6 +25,9 @@ import static arcade.potts.util.PottsEnums.State;
  * cell behavior.
  */
 public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSimple {
+
+    final NormalDistribution splitDirectionDistribution;
+
     /**
      * Creates a simple proliferation {@code Module} for the given {@link PottsCellFlyStem}.
      *
@@ -29,6 +35,8 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
      */
     public PottsModuleProliferationFlyStem(PottsCellFlyStem cell) {
         super(cell); // Reuse the logic from PottsModuleProliferationSimple
+        Parameters parameters = cell.getParameters();
+        splitDirectionDistribution = (NormalDistribution) parameters.getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION");
     }
 
     public static Voxel getCellSplitLocation(PottsCellFlyStem cell) {
@@ -82,8 +90,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         // Create and schedule new cell
         int newID = sim.getID();
         CellContainer newContainer = cell.make(newID, State.PROLIFERATIVE, random);
-        PottsCell newCell =
-                (PottsCell) newContainer.convert(sim.getCellFactory(), newLocation, random);
+        PottsCell newCell = (PottsCell) newContainer.convert(sim.getCellFactory(), newLocation, random);
         sim.getGrid().addObject(newCell, null);
         potts.register(newCell);
         newCell.reset(potts.ids, potts.regions);
