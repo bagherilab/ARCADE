@@ -48,6 +48,7 @@
     <population.process process="metabolism" id="CONSTANT_GLUCOSE_UPTAKE_RATE" value="929.88" unit="fmol glucose/min/M glucose" description="constant glucose uptake rate" />
     <population.process process="metabolism" id="CONSTANT_ATP_PRODUCTION_RATE" value="4.9817" unit="fmol ATP/cell/min" description="constant ATP production rate" />
     <population.process process="metabolism" id="CONSTANT_VOLUME_GROWTH_RATE" value="2.819" unit="um^3/min" description="constant volume growth rate"/>
+    <population.process process="metabolism" id="INITIAL_GLUCOSE_CONCENTRATION" value="0.005" unit="fmol/um^3" description="initial cell internal glucose concentration"/>
 
     <!-- signaling process parameters -->
     <population.process process="signaling" id="MIGRATORY_THRESHOLD" value="10" description="threshold fold change in PLCg for migration" />
