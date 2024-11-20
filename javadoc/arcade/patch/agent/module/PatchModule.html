@@ -27,12 +27,6 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10};
-var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
-var altColor = "altColor";
-var rowColor = "rowColor";
-var tableTab = "tableTab";
-var activeTableTab = "activeTableTab";
 var pathtoroot = "../../../../";
 var useModuleDirectories = true;
 loadScripts(document, 'script');</script>
@@ -96,7 +90,7 @@ loadScripts(document, 'script');</script>
 <li>Detail:&nbsp;</li>
 <li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
-<li><a href="#method.detail">Method</a></li>
+<li>Method</li>
 </ul>
 </div>
 <a id="skip.navbar.top">
@@ -178,20 +172,6 @@ implements <a href="../../../core/agent/module/Module.html" title="interface in 
 <div class="block">The <a href="../../env/location/PatchLocation.html" title="class in arcade.patch.env.location"><code>PatchLocation</code></a> the module is associated with.</div>
 </td>
 </tr>
-<tr class="altColor">
-<td class="colFirst"><code>(package private) double</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#start">start</a></span></code></th>
-<td class="colLast">
-<div class="block">Tick the <code>Module</code> was started.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>(package private) double</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#stop">stop</a></span></code></th>
-<td class="colLast">
-<div class="block">Tick the <code>Module</code> was stopped.</div>
-</td>
-</tr>
 </table>
 </li>
 </ul>
@@ -226,28 +206,6 @@ implements <a href="../../../core/agent/module/Module.html" title="interface in 
 <!--   -->
 </a>
 <h3>Method Summary</h3>
-<table class="memberSummary">
-<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Method</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-<tr id="i0" class="altColor">
-<td class="colFirst"><code>double</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getStart()">getStart</a></span>()</code></th>
-<td class="colLast">
-<div class="block">Gets the module start tick.</div>
-</td>
-</tr>
-<tr id="i1" class="rowColor">
-<td class="colFirst"><code>double</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getStop()">getStop</a></span>()</code></th>
-<td class="colLast">
-<div class="block">Gets the module start tick.</div>
-</td>
-</tr>
-</table>
 <ul class="blockList">
 <li class="blockList"><a id="methods.inherited.from.class.java.lang.Object">
 <!--   -->
@@ -291,31 +249,11 @@ implements <a href="../../../core/agent/module/Module.html" title="interface in 
 <a id="location">
 <!--   -->
 </a>
-<ul class="blockList">
+<ul class="blockListLast">
 <li class="blockList">
 <h4>location</h4>
 <pre>final&nbsp;<a href="../../env/location/PatchLocation.html" title="class in arcade.patch.env.location">PatchLocation</a> location</pre>
 <div class="block">The <a href="../../env/location/PatchLocation.html" title="class in arcade.patch.env.location"><code>PatchLocation</code></a> the module is associated with.</div>
-</li>
-</ul>
-<a id="start">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>start</h4>
-<pre>double start</pre>
-<div class="block">Tick the <code>Module</code> was started.</div>
-</li>
-</ul>
-<a id="stop">
-<!--   -->
-</a>
-<ul class="blockListLast">
-<li class="blockList">
-<h4>stop</h4>
-<pre>double stop</pre>
-<div class="block">Tick the <code>Module</code> was stopped.</div>
 </li>
 </ul>
 </li>
@@ -339,44 +277,6 @@ implements <a href="../../../core/agent/module/Module.html" title="interface in 
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>cell</code> - the <a href="../cell/PatchCell.html" title="class in arcade.patch.agent.cell"><code>PatchCell</code></a> the module is associated with</dd>
-</dl>
-</li>
-</ul>
-</li>
-</ul>
-</section>
-<!-- ============ METHOD DETAIL ========== -->
-<section>
-<ul class="blockList">
-<li class="blockList"><a id="method.detail">
-<!--   -->
-</a>
-<h3>Method Detail</h3>
-<a id="getStart()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getStart</h4>
-<pre class="methodSignature">public&nbsp;double&nbsp;getStart()</pre>
-<div class="block">Gets the module start tick.</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>the module start</dd>
-</dl>
-</li>
-</ul>
-<a id="getStop()">
-<!--   -->
-</a>
-<ul class="blockListLast">
-<li class="blockList">
-<h4>getStop</h4>
-<pre class="methodSignature">public&nbsp;double&nbsp;getStop()</pre>
-<div class="block">Gets the module start tick.</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>the module start</dd>
 </dl>
 </li>
 </ul>
@@ -439,7 +339,7 @@ implements <a href="../../../core/agent/module/Module.html" title="interface in 
 <li>Detail:&nbsp;</li>
 <li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
-<li><a href="#method.detail">Method</a></li>
+<li>Method</li>
 </ul>
 </div>
 <a id="skip.navbar.bottom">
