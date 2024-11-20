@@ -160,9 +160,9 @@ public class MiniBox {
     /**
      * Filters entries with keys matching "code/...".
      *
-     * <p>Returns a MiniBox containing entries where the keys start with "code/" followed by any number of subkeys.
-     * The keys in the returned MiniBox exclude the initial "code/" prefix and consist only of the subkeys
-     * and the corresponding values.
+     * <p>Returns a MiniBox containing entries where the keys start with "code/" followed by any
+     * number of subkeys. The keys in the returned MiniBox exclude the initial "code/" prefix and
+     * consist only of the subkeys and the corresponding values.
      *
      * @param code the code to filter by
      * @return the filtered box
