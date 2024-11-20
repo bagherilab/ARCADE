@@ -68,7 +68,7 @@ public abstract class PatchCellCART extends PatchCell {
     protected int selfReceptors;
 
     protected int selfReceptorsStart;
-    public int boundAntigensCount;
+    protected int boundAntigensCount;
     protected int boundSelfCount;
 
     /** lack of documentation so these loaded parameters are TBD */
@@ -82,7 +82,7 @@ public abstract class PatchCellCART extends PatchCell {
     protected final double selfBeta;
     protected final double contactFraction;
     protected final int maxAntigenBinding;
-    protected final int cars;
+    public final int cars;
     protected int lastActiveTicker;
 
     /** Fraction of exhausted cells that become apoptotic. */
