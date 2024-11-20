@@ -5,6 +5,7 @@ import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.potts.agent.module.*;
 import arcade.potts.util.PottsEnums.Direction;
 import arcade.potts.util.PottsEnums.State;
@@ -55,13 +56,10 @@ public class PottsCellFlyStem extends PottsCell {
     public final StemType stemType;
 
     public PottsCellFlyStem(
-            PottsCellContainer container,
-            Location location,
-            MiniBox parameters,
-            boolean hasRegions,
-            GrabBag links) {
-        super(container, location, parameters, hasRegions, links);
-        String stemTypeString = parameters.get("CLASS");
+            PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
+        super(container, location, parameters, links);
+        MiniBox stemTypeMiniBox = parameters.filter("CLASS");
+        String stemTypeString = stemTypeMiniBox.get("CLASS");
         switch (stemTypeString) {
             case "flystem-wt":
                 stemType = StemType.WT;

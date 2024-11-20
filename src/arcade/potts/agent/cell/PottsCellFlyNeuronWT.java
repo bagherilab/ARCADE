@@ -4,7 +4,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.potts.agent.module.*;
 import arcade.potts.util.PottsEnums.State;
 
@@ -28,12 +28,8 @@ public final class PottsCellFlyNeuronWT extends PottsCell {
      * @param hasRegions {@code true} if cell has regions, {@code false} otherwise
      */
     public PottsCellFlyNeuronWT(
-            PottsCellContainer container,
-            Location location,
-            MiniBox parameters,
-            boolean hasRegions,
-            GrabBag links) {
-        super(container, location, parameters, hasRegions, links);
+            PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
+        super(container, location, parameters, links);
         System.out.println("Making PottsCellFlyNeuron cell");
     }
 

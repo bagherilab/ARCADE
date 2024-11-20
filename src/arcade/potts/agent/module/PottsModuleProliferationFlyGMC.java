@@ -31,7 +31,8 @@ public class PottsModuleProliferationFlyGMC extends PottsModuleProliferationSimp
         // Create and schedule new cell
         int newID = sim.getID();
         CellContainer newContainer = cell.make(newID, State.PROLIFERATIVE, random);
-        PottsCell newCell = (PottsCell) newContainer.convert(sim.getCellFactory(), newLocation);
+        PottsCell newCell =
+                (PottsCell) newContainer.convert(sim.getCellFactory(), newLocation, random);
         sim.getGrid().addObject(newCell, null);
         potts.register(newCell);
         newCell.reset(potts.ids, potts.regions);
@@ -67,7 +68,7 @@ public class PottsModuleProliferationFlyGMC extends PottsModuleProliferationSimp
                         oldCell.getCriticalRegionHeights());
         PottsCellFlyNeuronWT differentiatedGMC =
                 (PottsCellFlyNeuronWT)
-                        differentiatedGMCContainer.convert(sim.getCellFactory(), location);
+                        differentiatedGMCContainer.convert(sim.getCellFactory(), location, random);
         sim.getGrid().addObject(differentiatedGMC, location);
         potts.register(differentiatedGMC);
         differentiatedGMC.reset(potts.ids, potts.regions);

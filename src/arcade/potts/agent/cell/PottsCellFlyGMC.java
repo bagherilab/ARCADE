@@ -5,19 +5,15 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.potts.agent.module.*;
 import arcade.potts.util.PottsEnums.Region;
 import arcade.potts.util.PottsEnums.State;
 
 public class PottsCellFlyGMC extends PottsCell {
     public PottsCellFlyGMC(
-            PottsCellContainer container,
-            Location location,
-            MiniBox parameters,
-            boolean hasRegions,
-            GrabBag links) {
-        super(container, location, parameters, hasRegions, links);
+            PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
+        super(container, location, parameters, links);
         System.out.println("Making PottsCellFlyGMC cell");
     }
 
