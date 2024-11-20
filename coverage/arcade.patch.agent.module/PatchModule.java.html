@@ -16,38 +16,14 @@ public abstract class PatchModule implements Module {
     /** The {@link PatchLocation} the module is associated with. */
     final PatchLocation location;
 
-    /** Tick the {@code Module} was started. */
-    double start;
-
-    /** Tick the {@code Module} was stopped. */
-    double stop;
-
     /**
      * Creates a module for a {@link PatchCell} state.
      *
      * @param cell the {@link PatchCell} the module is associated with
      */
-<span class="nc" id="L30">    public PatchModule(PatchCell cell) {</span>
-<span class="nc" id="L31">        this.cell = cell;</span>
-<span class="nc" id="L32">        this.location = (PatchLocation) cell.getLocation();</span>
-<span class="nc" id="L33">    }</span>
-
-    /**
-     * Gets the module start tick.
-     *
-     * @return the module start
-     */
-    public double getStart() {
-<span class="nc" id="L41">        return start;</span>
-    }
-
-    /**
-     * Gets the module start tick.
-     *
-     * @return the module start
-     */
-    public double getStop() {
-<span class="nc" id="L50">        return stop;</span>
-    }
+<span class="nc" id="L24">    public PatchModule(PatchCell cell) {</span>
+<span class="nc" id="L25">        this.cell = cell;</span>
+<span class="nc" id="L26">        this.location = (PatchLocation) cell.getLocation();</span>
+<span class="nc" id="L27">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
