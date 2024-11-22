@@ -55,8 +55,8 @@ public class PatchActionKill implements Action {
             Parameters parameters) {
         this.c = c;
         this.target = target;
-        this.inflammation = (PatchProcessInflammation) c.getProcess(Domain.INFLAMMATION);
-        this.granzyme = inflammation.getInternal("granzyme");
+        // this.inflammation = (PatchProcessInflammation) c.getProcess(Domain.INFLAMMATION);
+        // this.granzyme = inflammation.getInternal("granzyme");
         timeDelay = 0;
     }
 
@@ -87,7 +87,7 @@ public class PatchActionKill implements Action {
             return;
         }
 
-        if (granzyme >= 1) {
+        // if (granzyme >= 1) {
 
             // Kill bound target cell.
             PatchCellTissue tissueCell = (PatchCellTissue) target;
@@ -95,8 +95,8 @@ public class PatchActionKill implements Action {
             tissueCell.getModule().step(state.random, sim);
 
             // Use up some granzyme in the process.
-            granzyme--;
-            inflammation.setInternal("granzyme", granzyme);
-        }
+            // granzyme--;
+            // inflammation.setInternal("granzyme", granzyme);
+        // }
     }
 }
