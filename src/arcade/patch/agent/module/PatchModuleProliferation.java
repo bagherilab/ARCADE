@@ -7,9 +7,12 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellCART;
+import arcade.patch.agent.cell.PatchCellSynNotch;
 import arcade.patch.agent.process.PatchProcess;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
+import arcade.patch.vis.PatchDrawerHex.PatchCells;
+
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -113,7 +116,11 @@ public class PatchModuleProliferation extends PatchModule {
                     // Update processes.
                     PatchProcess metabolism = (PatchProcess) newCell.getProcess(Domain.METABOLISM);
                     metabolism.update(cell.getProcess(Domain.METABOLISM));
-                    if (cell instanceof PatchCellCART) {
+                    if (cell instanceof PatchCellSynNotch) {
+                        PatchProcess quorum =
+                                (PatchProcess) newCell.getProcess(Domain.QUORUM);
+                        quorum.update(cell.getProcess(Domain.QUORUM));
+                    } else if (cell instanceof PatchCellCART) {
                         PatchProcess inflammation =
                                 (PatchProcess) newCell.getProcess(Domain.INFLAMMATION);
                         inflammation.update(cell.getProcess(Domain.INFLAMMATION));
