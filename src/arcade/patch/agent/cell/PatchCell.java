@@ -364,7 +364,7 @@ public abstract class PatchCell implements Cell {
         // Increase age of cell.
         age++;
 
-        if (age > apoptosisAge) {
+        if (state != State.APOPTOTIC && age > apoptosisAge) {
             setState(State.APOPTOTIC);
         }
 
