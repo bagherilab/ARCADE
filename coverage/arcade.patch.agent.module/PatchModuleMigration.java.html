@@ -36,13 +36,13 @@ public class PatchModuleMigration extends PatchModule {
      * @param cell the {@link PatchCell} the module is associated with
      */
     public PatchModuleMigration(PatchCell cell) {
-<span class="nc" id="L39">        super(cell);</span>
+<span class="fc" id="L39">        super(cell);</span>
 
         // Set loaded parameters.
-<span class="nc" id="L42">        Parameters parameters = cell.getParameters();</span>
-<span class="nc" id="L43">        migrationRate = parameters.getDouble(&quot;migration/MIGRATION_RATE&quot;);</span>
-<span class="nc" id="L44">        movementDuration = Math.round(location.getCoordinateSize() / migrationRate);</span>
-<span class="nc" id="L45">    }</span>
+<span class="fc" id="L42">        Parameters parameters = cell.getParameters();</span>
+<span class="fc" id="L43">        migrationRate = parameters.getDouble(&quot;migration/MIGRATION_RATE&quot;);</span>
+<span class="fc" id="L44">        movementDuration = Math.round(location.getCoordinateSize() / migrationRate);</span>
+<span class="fc" id="L45">    }</span>
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {

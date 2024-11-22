@@ -41,8 +41,8 @@ public class PatchCellCancer extends PatchCellTissue {
      */
     public PatchCellCancer(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
-<span class="nc" id="L44">        super(container, location, parameters, links);</span>
-<span class="nc" id="L45">    }</span>
+<span class="fc" id="L44">        super(container, location, parameters, links);</span>
+<span class="fc" id="L45">    }</span>
 
     /**
      * {@inheritDoc}
@@ -51,11 +51,11 @@ public class PatchCellCancer extends PatchCellTissue {
      */
     @Override
     public void step(SimState simstate) {
-<span class="nc bnc" id="L54" title="All 2 branches missed.">        if (state == State.QUIESCENT) {</span>
-<span class="nc" id="L55">            checkNeighborhood(simstate, this);</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if (state == State.QUIESCENT) {</span>
+<span class="fc" id="L55">            checkNeighborhood(simstate, this);</span>
         }
-<span class="nc" id="L57">        super.step(simstate);</span>
-<span class="nc" id="L58">    }</span>
+<span class="fc" id="L57">        super.step(simstate);</span>
+<span class="fc" id="L58">    }</span>
 
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
@@ -83,10 +83,10 @@ public class PatchCellCancer extends PatchCellTissue {
      * @param cell the reference cell
      */
     private static void checkNeighborhood(SimState simstate, PatchCell cell) {
-<span class="nc" id="L86">        Simulation sim = (Simulation) simstate;</span>
-<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (PatchCell.findFreeLocations(sim, cell.location, cell.volume, cell.height).size() &gt; 0) {</span>
+<span class="fc" id="L86">        Simulation sim = (Simulation) simstate;</span>
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">        if (PatchCell.findFreeLocations(sim, cell.location, cell.volume, cell.height).size() &gt; 0) {</span>
 <span class="nc" id="L88">            cell.setState(State.UNDEFINED);</span>
         }
-<span class="nc" id="L90">    }</span>
+<span class="fc" id="L90">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

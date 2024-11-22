@@ -35,12 +35,12 @@ public class PatchModuleApoptosis extends PatchModule {
      * @param cell the {@link PatchCell} the module is associated with
      */
     public PatchModuleApoptosis(PatchCell cell) {
-<span class="nc" id="L38">        super(cell);</span>
+<span class="fc" id="L38">        super(cell);</span>
 
         // Set loaded parameters.
-<span class="nc" id="L41">        Parameters parameters = cell.getParameters();</span>
-<span class="nc" id="L42">        deathDuration = parameters.getInt(&quot;apoptosis/DEATH_DURATION&quot;);</span>
-<span class="nc" id="L43">    }</span>
+<span class="fc" id="L41">        Parameters parameters = cell.getParameters();</span>
+<span class="fc" id="L42">        deathDuration = parameters.getInt(&quot;apoptosis/DEATH_DURATION&quot;);</span>
+<span class="fc" id="L43">    }</span>
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
