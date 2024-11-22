@@ -56,9 +56,6 @@ public class PatchProcessQuorumSensingSimple extends PatchProcessQuorumSensing {
     /** concentration of car receptors on cell surface. */
     protected double boundCarConcentration;
 
-    /** List of amounts of each species */
-    protected double[] concs;
-
     /** List of internal names */
     protected List<String> names;
 
@@ -78,16 +75,16 @@ public class PatchProcessQuorumSensingSimple extends PatchProcessQuorumSensing {
     private static final double K_AUX_DEGRADE = 1e-3 / STEP_DIVIDER;
 
     /** Rate of CAR expression[/sec/step/divider] */
-    private static final double K_CAR_EXPRESS = 1e-3 / STEP_DIVIDER;
+    private static final double K_CAR_EXPRESS = 1e-4 / STEP_DIVIDER;
 
     /** Rate of degradation of CAR [/sec/step/divider] */
-    private static final double K_CAR_DEGRADE = 1e-3 / STEP_DIVIDER;
+    private static final double K_CAR_DEGRADE = 1e-4 / STEP_DIVIDER;
 
     /** Rate of active biomarker expression[/sec/step/divider] */
-    private static final double K_ACTIVE_EXPRESS = 1e-3 / STEP_DIVIDER;
+    private static final double K_ACTIVE_EXPRESS = 1e-5 / STEP_DIVIDER;
 
     /** Rate of degradation of active biomarker [/sec/step/divider] */
-    private static final double K_ACTIVE_DEGRADE = 1e-3 / STEP_DIVIDER;
+    private static final double K_ACTIVE_DEGRADE = 1e-5 / STEP_DIVIDER;
 
     /** Step size for module (in seconds) */
     static final double STEP_SIZE = 1.0 / STEP_DIVIDER;
@@ -100,20 +97,16 @@ public class PatchProcessQuorumSensingSimple extends PatchProcessQuorumSensing {
         this.volume = cell.getVolume();
         this.loc = cell.getLocation();
         this.activeTicker = 0;
-        this.boundSynNotchConcentration = this.cell.synNotchAntigensBound;
-        this.boundCarConcentration = this.cell.returnBoundCars();
-
-        concs = new double[NUM_COMPONENTS];
 
         // set parameters
         Parameters parameters = cell.getParameters();
         this.ACTIVATION_THRESHOLD = parameters.getDouble("quorum/ACTIVATION_THRESHOLD");
 
         // Initial amounts of each species, all in molecules/cell.
-        concs = new double[NUM_COMPONENTS];
+        this.concs = new double[NUM_COMPONENTS];
         concs[AUXIN] = 0;
-        concs[SYNNOTCH] = this.cell.synnotchs;
-        concs[CAR] = this.cell.cars;
+        concs[SYNNOTCH] = parameters.getDouble("CARS");
+        concs[CAR] = parameters.getDouble("SYNNOTCHS");
         concs[ACTIVATION] = 0;
 
         // Molecule names.
@@ -145,6 +138,8 @@ public class PatchProcessQuorumSensingSimple extends PatchProcessQuorumSensing {
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
+        this.boundSynNotchConcentration = this.cell.synNotchAntigensBound;
+        this.boundCarConcentration = this.cell.returnBoundCars();
         // Check cell state.
         isActive = ((PatchCellCART) cell).getActivationStatus();
 
