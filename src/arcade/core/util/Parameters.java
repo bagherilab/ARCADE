@@ -89,6 +89,20 @@ public class Parameters {
     }
 
     /**
+     * Gets the parameter value as a string.
+     *
+     * @param key the parameter key
+     * @return the parameter value as a string
+     */
+    public String getString(String key) {
+        if (popParameters.contains(key)) {
+            return popParameters.get(key);
+        } else {
+            throw new InvalidParameterException();
+        }
+    }
+
+    /**
      * Gets the parameter value as a distribution, if it exists.
      *
      * @param key the parameter key
