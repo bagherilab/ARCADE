@@ -362,6 +362,22 @@ public class MiniBoxTest {
     }
 
     @Test
+    void filter_codeNotFirst_returnsEmpty() {
+        MiniBox box = new MiniBox();
+        String code1 = randomString();
+        String subcode = randomString();
+        String value1 = randomString();
+
+        box.put(code1 + TAG_SEPARATOR + subcode, value1);
+        ArrayList<String> filteredKeys = new ArrayList<>();
+        HashMap<String, String> filteredMap = new HashMap<>();
+
+        MiniBox filtered = box.filter(subcode);
+        assertEquals(filteredKeys, filtered.keys);
+        assertEquals(filteredMap, filtered.contents);
+    }
+
+    @Test
     public void compare_sameContents_returnsTrue() {
         MiniBox boxA = new MiniBox();
         MiniBox boxB = new MiniBox();
