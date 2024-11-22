@@ -240,7 +240,5 @@ public class PatchCellTest {
         cell.step(simMock);
 
         verify(cell, times(0)).setState(any(State.class));
-
     }
-
 }
