@@ -11,7 +11,6 @@ import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.cell.PatchCellTissue;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.util.PatchEnums.AntigenFlag;
-import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.Ordering;
 import arcade.patch.util.PatchEnums.State;
 
@@ -89,14 +88,14 @@ public class PatchActionKill implements Action {
 
         // if (granzyme >= 1) {
 
-            // Kill bound target cell.
-            PatchCellTissue tissueCell = (PatchCellTissue) target;
-            tissueCell.setState(State.APOPTOTIC);
-            tissueCell.getModule().step(state.random, sim);
+        // Kill bound target cell.
+        PatchCellTissue tissueCell = (PatchCellTissue) target;
+        tissueCell.setState(State.APOPTOTIC);
+        tissueCell.getModule().step(state.random, sim);
 
-            // Use up some granzyme in the process.
-            // granzyme--;
-            // inflammation.setInternal("granzyme", granzyme);
+        // Use up some granzyme in the process.
+        // granzyme--;
+        // inflammation.setInternal("granzyme", granzyme);
         // }
     }
 }

@@ -225,9 +225,9 @@ public class PatchCellSynNotch extends PatchCellCART {
                                         ((double) selfReceptorsStart
                                                 * (0.95 + random.nextDouble() / 10));
                         return tissueCell;
-                    }  else if (logSynNotch >= randomSynNotch
-                    && logCAR >= randomAntigen
-                    && logSelf < randomSelf) {
+                    } else if (logSynNotch >= randomSynNotch
+                            && logCAR >= randomAntigen
+                            && logSelf < randomSelf) {
                         binding = AntigenFlag.BOUND_ANTIGEN_SYNNOTCH_RECEPTOR;
                         synNotchAntigensBound++;
                         boundAntigensCount++;
