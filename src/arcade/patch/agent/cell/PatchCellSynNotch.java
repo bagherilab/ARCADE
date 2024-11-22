@@ -225,6 +225,13 @@ public class PatchCellSynNotch extends PatchCellCART {
                                         ((double) selfReceptorsStart
                                                 * (0.95 + random.nextDouble() / 10));
                         return tissueCell;
+                    }  else if (logSynNotch >= randomSynNotch
+                    && logCAR >= randomAntigen
+                    && logSelf < randomSelf) {
+                        binding = AntigenFlag.BOUND_ANTIGEN_SYNNOTCH_RECEPTOR;
+                        synNotchAntigensBound++;
+                        boundAntigensCount++;
+                        return tissueCell;
                     } else if (logSynNotch >= randomSynNotch
                             && logSelf >= randomSelf
                             && logCAR >= randomAntigen) {
@@ -286,9 +293,9 @@ public class PatchCellSynNotch extends PatchCellCART {
         super.processes.get(Domain.QUORUM).step(simstate.random, sim);
 
         // Change state from undefined.
-        if (super.state == State.UNDEFINED) {
+        if (super.state == State.UNDEFINED || super.state == State.QUIESCENT) {
             // Cell attempts to bind to a target
-            PatchCellTissue target = super.bindTarget(sim, location, simstate.random);
+            PatchCellTissue target = this.bindTarget(sim, location, simstate.random);
 
             // If cell is bound to target antigen and/or SynNotch, the cell
             // can potentially become properly activated.
@@ -303,7 +310,7 @@ public class PatchCellSynNotch extends PatchCellCART {
                         super.setState(State.EXHAUSTED);
                     }
                     super.setAntigenFlag(AntigenFlag.UNBOUND);
-                } else if (binding == AntigenFlag.BOUND_ANTIGEN_SYNNOTCH_RECEPTOR) {
+                } else if (this.activated) {
                     // if CD4 cell is properly activated, it can be cytotoxic
                     super.setState(State.CYTOTOXIC);
                     // need to call kill
