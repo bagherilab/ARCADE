@@ -378,6 +378,20 @@ public class MiniBoxTest {
     }
 
     @Test
+    void filter_noTagSeparator_returnsEmpty() {
+        MiniBox box = new MiniBox();
+        String key = randomString();
+        String value = randomString();
+        box.put(key, value);
+        ArrayList<String> filteredKeys = new ArrayList<>();
+        HashMap<String, String> filteredMap = new HashMap<>();
+
+        MiniBox filtered = box.filter(key);
+        assertEquals(filteredKeys, filtered.keys);
+        assertEquals(filteredMap, filtered.contents);
+    }
+
+    @Test
     public void compare_sameContents_returnsTrue() {
         MiniBox boxA = new MiniBox();
         MiniBox boxB = new MiniBox();
