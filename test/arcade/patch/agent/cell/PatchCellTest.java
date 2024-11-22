@@ -124,7 +124,7 @@ public class PatchCellTest {
         doReturn(0.0).when(parametersMock).getDouble(any(String.class));
         doReturn(0).when(parametersMock).getInt(any(String.class));
         doReturn(10.0).when(parametersMock).getDouble("APOPTOSIS_AGE");
-
+        int age = 11;
         ArrayList<State> relevantStates = new ArrayList<>();
         relevantStates.add(State.QUIESCENT);
         relevantStates.add(State.MIGRATORY);
@@ -136,7 +136,7 @@ public class PatchCellTest {
                             cellID,
                             cellParent,
                             cellPop,
-                            11,
+                            age,
                             cellDivisions,
                             state,
                             cellVolume,
@@ -162,12 +162,12 @@ public class PatchCellTest {
     }
 
     @Test
-    public void step_calledWhenAgeLessThanApoptosisAge_doesNotSet() {
+    public void step_calledWhenAgeLessThanApoptosisAge_doesNotSetState() {
         PatchModule module = mock(PatchModule.class);
         doReturn(0.0).when(parametersMock).getDouble(any(String.class));
         doReturn(0).when(parametersMock).getInt(any(String.class));
         doReturn(10.0).when(parametersMock).getDouble("APOPTOSIS_AGE");
-
+        int age = 9;
         ArrayList<State> relevantStates = new ArrayList<>();
         relevantStates.add(State.QUIESCENT);
         relevantStates.add(State.MIGRATORY);
@@ -179,7 +179,7 @@ public class PatchCellTest {
                             cellID,
                             cellParent,
                             cellPop,
-                            9,
+                            age,
                             cellDivisions,
                             state,
                             cellVolume,
@@ -203,4 +203,44 @@ public class PatchCellTest {
             assertEquals(state, cell.getState());
         }
     }
+
+    @Test
+    public void step_calledApoptoticStateAndApoptoticAge_doesNotResetState() {
+        PatchModule module = mock(PatchModule.class);
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(10.0).when(parametersMock).getDouble("APOPTOSIS_AGE");
+        int age = 12;
+        State state = State.APOPTOTIC;
+
+        PatchCellContainer container =
+                new PatchCellContainer(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        age,
+                        cellDivisions,
+                        state,
+                        cellVolume,
+                        cellHeight,
+                        cellCriticalVolume,
+                        cellCriticalHeight);
+        PatchCell cell = spy(new PatchCellMock(container, locationMock, parametersMock));
+        cell.processes.put(Domain.METABOLISM, metabolismMock);
+        cell.processes.put(Domain.SIGNALING, signalingMock);
+        cell.module = module;
+        doAnswer(
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            return null;
+                        })
+                .when(cell)
+                .setState(any(State.class));
+
+        cell.step(simMock);
+
+        verify(cell, times(0)).setState(any(State.class));
+
+    }
+
 }

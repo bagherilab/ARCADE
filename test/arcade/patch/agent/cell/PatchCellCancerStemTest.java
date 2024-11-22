@@ -66,7 +66,7 @@ public class PatchCellCancerStemTest {
         doReturn(0.).when(parametersMock).getDouble(anyString());
         doReturn(0).when(parametersMock).getInt(anyString());
         doReturn(10.0).when(parametersMock).getDouble("APOPTOSIS_AGE");
-
+        int age = 11;
         ArrayList<State> relevantStates = new ArrayList<>();
         relevantStates.add(State.QUIESCENT);
         relevantStates.add(State.MIGRATORY);
@@ -78,7 +78,7 @@ public class PatchCellCancerStemTest {
                             cellID,
                             cellParent,
                             cellPop,
-                            11,
+                            age,
                             cellDivisions,
                             state,
                             cellVolume,
