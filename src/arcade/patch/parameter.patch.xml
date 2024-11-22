@@ -50,7 +50,7 @@
     <population id="SYNNOTCH_BETA" value="0.01" description="fitting factor in CAR binding function" />
     <population id="SYNNOTCH_RECEPTOR_AFFINITY" value="1E-7" unit="M" description="affinity of SynNotch receptor for target antigen" />
     <population id="SYNNOTCHS" value="50000" description="average number of SynNotch receptors on a SynNotch T-cell" />
-    <population id="SYNNOTCH_ANTIGENS" value="1000" description="average number of SynNotch antigens on a SynNotch T cell" />
+    <population id="SYNNOTCH_ANTIGENS" value="1000" description="average number of SynNotch antigens on a tissue cancer cell" />
 
     <!-- proliferation module parameters -->
     <population.module module="proliferation" id="SYNTHESIS_DURATION" value="637" units="min" description="time required for DNA synthesis" />
