@@ -364,17 +364,15 @@ public class MiniBoxTest {
     @Test
     void filter_codeNotFirst_returnsEmpty() {
         MiniBox box = new MiniBox();
-        String code1 = randomString();
+        String code = randomString();
         String subcode = randomString();
-        String value1 = randomString();
+        String value = randomString();
 
-        box.put(code1 + TAG_SEPARATOR + subcode, value1);
-        ArrayList<String> filteredKeys = new ArrayList<>();
-        HashMap<String, String> filteredMap = new HashMap<>();
+        box.put(code + TAG_SEPARATOR + subcode, value);
 
         MiniBox filtered = box.filter(subcode);
-        assertEquals(filteredKeys, filtered.keys);
-        assertEquals(filteredMap, filtered.contents);
+        assertTrue(filtered.keys.isEmpty());
+        assertTrue(filtered.contents.isEmpty());
     }
 
     @Test
@@ -383,12 +381,10 @@ public class MiniBoxTest {
         String key = randomString();
         String value = randomString();
         box.put(key, value);
-        ArrayList<String> filteredKeys = new ArrayList<>();
-        HashMap<String, String> filteredMap = new HashMap<>();
 
         MiniBox filtered = box.filter(key);
-        assertEquals(filteredKeys, filtered.keys);
-        assertEquals(filteredMap, filtered.contents);
+        assertTrue(filtered.keys.isEmpty());
+        assertTrue(filtered.contents.isEmpty());
     }
 
     @Test
