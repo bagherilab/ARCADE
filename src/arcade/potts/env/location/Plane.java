@@ -106,19 +106,17 @@ public final class Plane {
     }
 
     /**
-     * Rotates a unit normal vector around an axis by a given angle.
+     * Rotates a given vector around a given axis by a given angle.
      *
-     * <p>Rotation is performed using Rodrigues' rotation formula. Any non-unit normal vector
-     * provided is scaled to a unit vector before rotation.
+     * <p>Rotation is performed using Rodrigues' rotation formula.
      *
-     * @param normalVector the normal vector
+     * @param vector the vector
      * @param axis the axis of rotation
      * @param thetaDegrees the angle of rotation in degrees
-     * @return the rotated normal vector
+     * @return the rotated vector scaled to unit length
      */
-    public static Double3D rotateUnitVectorAroundAxis(
+    public static Double3D rotateVectorAroundAxis(
             Double3D vector, Direction axis, double thetaDegrees) {
-        Double3D unitVector = scaleVector(vector);
         double thetaRadians = Math.toRadians(thetaDegrees);
 
         // Normalize the axis vector
@@ -131,20 +129,20 @@ public final class Plane {
         double sinTheta = Math.sin(thetaRadians);
 
         // Compute the dot product (k • v)
-        double dotProduct = uX * unitVector.x + uY * unitVector.y + uZ * unitVector.z;
+        double dotProduct = uX * vector.x + uY * vector.y + uZ * vector.z;
 
         // Compute the cross product (k × v)
-        double crossX = uY * unitVector.z - uZ * unitVector.y;
-        double crossY = uZ * unitVector.x - uX * unitVector.z;
-        double crossZ = uX * unitVector.y - uY * unitVector.x;
+        double crossX = uY * vector.z - uZ * vector.y;
+        double crossY = uZ * vector.x - uX * vector.z;
+        double crossZ = uX * vector.y - uY * vector.x;
 
         // Compute the rotated Normal vector components
         double rotatedX =
-                unitVector.x * cosTheta + crossX * sinTheta + uX * dotProduct * (1 - cosTheta);
+        vector.x * cosTheta + crossX * sinTheta + uX * dotProduct * (1 - cosTheta);
         double rotatedY =
-                unitVector.y * cosTheta + crossY * sinTheta + uY * dotProduct * (1 - cosTheta);
+        vector.y * cosTheta + crossY * sinTheta + uY * dotProduct * (1 - cosTheta);
         double rotatedZ =
-                unitVector.z * cosTheta + crossZ * sinTheta + uZ * dotProduct * (1 - cosTheta);
+        vector.z * cosTheta + crossZ * sinTheta + uZ * dotProduct * (1 - cosTheta);
 
         return new Double3D(rotatedX, rotatedY, rotatedZ);
     }
