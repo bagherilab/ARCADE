@@ -171,6 +171,9 @@ public class PlaneTest {
         Double3D rotatedVector = Plane.rotateVectorAroundAxis(normalVector, axis, thetaDegrees);
 
         double magnitude = Plane.getVectorMagnitude(rotatedVector);
+        assertEquals(0.0, rotatedVector.x, EPSILON);
+        assertEquals(5.0, rotatedVector.y, EPSILON);
+        assertEquals(0.0, rotatedVector.z, EPSILON);
         assertEquals(5, magnitude);
     }
 
