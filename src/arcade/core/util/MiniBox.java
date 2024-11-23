@@ -158,7 +158,7 @@ public class MiniBox {
     }
 
     /**
-     * Filters entries with keys matching "code/...".
+     * Filters entries for keys starting with given code.
      *
      * <p>Returns a MiniBox containing entries where the keys start with "code/" followed by any
      * number of subkeys. The keys in the returned MiniBox exclude the initial "code/" prefix and
