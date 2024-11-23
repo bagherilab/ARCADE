@@ -16,12 +16,6 @@ public abstract class PatchModule implements Module {
     /** The {@link PatchLocation} the module is associated with. */
     final PatchLocation location;
 
-    /** Tick the {@code Module} was started. */
-    double start;
-
-    /** Tick the {@code Module} was stopped. */
-    double stop;
-
     /**
      * Creates a module for a {@link PatchCell} state.
      *
@@ -30,23 +24,5 @@ public abstract class PatchModule implements Module {
     public PatchModule(PatchCell cell) {
         this.cell = cell;
         this.location = (PatchLocation) cell.getLocation();
-    }
-
-    /**
-     * Gets the module start tick.
-     *
-     * @return the module start
-     */
-    public double getStart() {
-        return start;
-    }
-
-    /**
-     * Gets the module start tick.
-     *
-     * @return the module start
-     */
-    public double getStop() {
-        return stop;
     }
 }

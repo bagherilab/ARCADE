@@ -33,6 +33,9 @@ public class PatchModuleProliferation extends PatchModule {
     /** Time required for DNA synthesis [min]. */
     private final double synthesisDuration;
 
+    /** Tick the {@code Module} was started. */
+    int duration;
+
     /**
      * Creates a proliferation {@link PatchModule} for the given cell.
      *
@@ -50,7 +53,7 @@ public class PatchModuleProliferation extends PatchModule {
         // Calculate thresholds.
         targetVolume = 2 * cell.getCriticalVolume();
         maxHeight = cell.getCriticalHeight();
-
+        duration = 0;
         // Set loaded parameters.
         Parameters parameters = cell.getParameters();
         synthesisDuration = parameters.getInt("proliferation/SYNTHESIS_DURATION");
@@ -61,7 +64,7 @@ public class PatchModuleProliferation extends PatchModule {
         Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocation(location);
         double totalVolume = PatchCell.calculateTotalVolume(bag);
         double currentHeight = totalVolume / location.getArea();
-
+        duration++;
         // Check if cell is no longer able to proliferate due to (i) other
         // condition that has caused its type to no longer be proliferative,
         // (ii) cell no longer exists at a tolerable height, or (iii) no
@@ -78,8 +81,8 @@ public class PatchModuleProliferation extends PatchModule {
                 cell.setState(State.QUIESCENT);
             } else if (cell.getVolume() >= targetVolume) {
                 if (ticker > synthesisDuration) {
-                    // TODO: ADD CYCLE TIME TO TRACKER.
 
+                    cell.addCycle(duration);
                     // Reset current cell.
                     cell.setState(State.UNDEFINED);
 

@@ -362,6 +362,32 @@ public class MiniBoxTest {
     }
 
     @Test
+    void filter_codeNotFirst_returnsEmpty() {
+        MiniBox box = new MiniBox();
+        String code = randomString();
+        String subcode = randomString();
+        String value = randomString();
+
+        box.put(code + TAG_SEPARATOR + subcode, value);
+
+        MiniBox filtered = box.filter(subcode);
+        assertTrue(filtered.keys.isEmpty());
+        assertTrue(filtered.contents.isEmpty());
+    }
+
+    @Test
+    void filter_noTagSeparator_returnsEmpty() {
+        MiniBox box = new MiniBox();
+        String key = randomString();
+        String value = randomString();
+        box.put(key, value);
+
+        MiniBox filtered = box.filter(key);
+        assertTrue(filtered.keys.isEmpty());
+        assertTrue(filtered.contents.isEmpty());
+    }
+
+    @Test
     public void compare_sameContents_returnsTrue() {
         MiniBox boxA = new MiniBox();
         MiniBox boxB = new MiniBox();
