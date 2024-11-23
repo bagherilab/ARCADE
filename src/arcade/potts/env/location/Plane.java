@@ -19,7 +19,7 @@ public final class Plane {
      */
     public Plane(Voxel voxel, Double3D normalVector) {
         this.referencePoint = voxel;
-        this.unitNormalVector = scaleNormalVector(normalVector);
+        this.unitNormalVector = scaleVector(normalVector);
     }
 
     /**
@@ -33,29 +33,29 @@ public final class Plane {
     }
 
     /**
-     * Determines the magnitude of the normal vector.
+     * Determines the magnitude of the provided vector.
      *
-     * @param normalVector the normal vector
+     * @param vector the vector
      * @return the magnitude of the normal vector
      */
-    static double getNormalVectorMagnitude(Double3D normalVector) {
+    static double getVectorMagnitude(Double3D vector) {
         return Math.sqrt(
-                normalVector.getX() * normalVector.getX()
-                        + normalVector.getY() * normalVector.getY()
-                        + normalVector.getZ() * normalVector.getZ());
+                vector.getX() * vector.getX()
+                        + vector.getY() * vector.getY()
+                        + vector.getZ() * vector.getZ());
     }
 
     /**
-     * Scales the normal vector to a unit vector.
+     * Scales the provided vector to a unit vector.
      *
-     * @param normalVector the normal vector
+     * @param vector the normal vector
      * @return the unit normal vector
      */
-    static Double3D scaleNormalVector(Double3D normalVector) {
-        double magnitude = getNormalVectorMagnitude(normalVector);
-        double scaledX = normalVector.getX() / magnitude;
-        double scaledY = normalVector.getY() / magnitude;
-        double scaledZ = normalVector.getZ() / magnitude;
+    static Double3D scaleVector(Double3D vector) {
+        double magnitude = getVectorMagnitude(vector);
+        double scaledX = vector.getX() / magnitude;
+        double scaledY = vector.getY() / magnitude;
+        double scaledZ = vector.getZ() / magnitude;
         return new Double3D(scaledX, scaledY, scaledZ);
     }
 
@@ -103,5 +103,49 @@ public final class Plane {
         hash = 31 * hash + Double.hashCode(unitNormalVector.getY());
         hash = 31 * hash + Double.hashCode(unitNormalVector.getZ());
         return hash;
+    }
+
+    /**
+     * Rotates a unit normal vector around an axis by a given angle.
+     *
+     * <p>Rotation is performed using Rodrigues' rotation formula. Any non-unit normal vector
+     * provided is scaled to a unit vector before rotation.
+     *
+     * @param normalVector the normal vector
+     * @param axis the axis of rotation
+     * @param thetaDegrees the angle of rotation in degrees
+     * @return the rotated normal vector
+     */
+    public static Double3D rotateUnitVectorAroundAxis(
+            Double3D vector, Direction axis, double thetaDegrees) {
+        Double3D unitVector = scaleVector(vector);
+        double thetaRadians = Math.toRadians(thetaDegrees);
+
+        // Normalize the axis vector
+        Double3D unitAxisVector = scaleVector(axis.vector);
+        double uX = unitAxisVector.getX();
+        double uY = unitAxisVector.getY();
+        double uZ = unitAxisVector.getZ();
+
+        double cosTheta = Math.cos(thetaRadians);
+        double sinTheta = Math.sin(thetaRadians);
+
+        // Compute the dot product (k • v)
+        double dotProduct = uX * unitVector.x + uY * unitVector.y + uZ * unitVector.z;
+
+        // Compute the cross product (k × v)
+        double crossX = uY * unitVector.z - uZ * unitVector.y;
+        double crossY = uZ * unitVector.x - uX * unitVector.z;
+        double crossZ = uX * unitVector.y - uY * unitVector.x;
+
+        // Compute the rotated Normal vector components
+        double rotatedX =
+                unitVector.x * cosTheta + crossX * sinTheta + uX * dotProduct * (1 - cosTheta);
+        double rotatedY =
+                unitVector.y * cosTheta + crossY * sinTheta + uY * dotProduct * (1 - cosTheta);
+        double rotatedZ =
+                unitVector.z * cosTheta + crossZ * sinTheta + uZ * dotProduct * (1 - cosTheta);
+
+        return new Double3D(rotatedX, rotatedY, rotatedZ);
     }
 }

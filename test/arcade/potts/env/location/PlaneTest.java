@@ -3,6 +3,7 @@ package arcade.potts.env.location;
 import org.junit.jupiter.api.Test;
 import sim.util.Double3D;
 import static org.junit.jupiter.api.Assertions.*;
+import static arcade.potts.util.PottsEnums.Direction;
 
 public class PlaneTest {
     static final double EPSILON = 0.0001;
@@ -48,26 +49,26 @@ public class PlaneTest {
 
     @Test
     public void getNormalVectorMagnitude_givenNormalVector_returnsCorrectMagnitude() {
-        double magnitude = Plane.getNormalVectorMagnitude(new Double3D(1, 2, 2));
+        double magnitude = Plane.getVectorMagnitude(new Double3D(1, 2, 2));
         assertEquals(3, magnitude, EPSILON);
     }
 
     @Test
     public void getNormalVectorMagnitude_givenUnitVector_returnsOne() {
-        double magnitude = Plane.getNormalVectorMagnitude(new Double3D(1, 0, 0));
+        double magnitude = Plane.getVectorMagnitude(new Double3D(1, 0, 0));
         assertEquals(1, magnitude, EPSILON);
     }
 
     @Test
     public void scaleNormalVector_givenUnitVector_returnsSameVector() {
         Double3D normalVector = new Double3D(1, 0, 0);
-        Double3D unitNormalVector = Plane.scaleNormalVector(normalVector);
+        Double3D unitNormalVector = Plane.scaleVector(normalVector);
         assertEquals(normalVector, unitNormalVector);
     }
 
     @Test
     public void scaleNormalVector_givenNonUnitVector_returnsUnitVector() {
-        Double3D unitNormalVector = Plane.scaleNormalVector(new Double3D(1, 2, 2));
+        Double3D unitNormalVector = Plane.scaleVector(new Double3D(1, 2, 2));
         Double x = 1.0 / 3.0;
         Double y = 2.0 / 3.0;
         Double z = 2.0 / 3.0;
@@ -158,5 +159,142 @@ public class PlaneTest {
         Plane plane2 = new Plane(point, normalVector);
 
         assertEquals(plane1.hashCode(), plane2.hashCode());
+    }
+
+    @Test
+    public void rotateNormalAroundAxis_Called_returnVectorUnit() {
+        Double3D normalVector = new Double3D(5, 0, 0);
+        Direction axis = Direction.XY_PLANE;
+        double thetaDegrees = 90.0;
+
+        Double3D rotatedVector = Plane.rotateUnitVectorAroundAxis(normalVector, axis, thetaDegrees);
+
+        double magnitude = Plane.getVectorMagnitude(rotatedVector);
+        assertEquals(1, magnitude);
+    }
+
+    @Test
+    public void rotateNormalAroundAxis_thetaZero_returnsSameVector() {
+        Double3D normalVector = new Double3D(1, 0, 0);
+        Direction axis = Direction.XY_PLANE;
+        double thetaDegrees = 0.0;
+        Double3D rotatedVector = Plane.rotateUnitVectorAroundAxis(normalVector, axis, thetaDegrees);
+        assertEquals(normalVector, rotatedVector);
+    }
+
+    @Test
+    public void rotateNormalAroundAxis_xAxis_returnsCorrectRotation() {
+        Double3D normalVector = new Double3D(0.0, 1.0, 0.0);
+        Direction axis = Direction.YZ_PLANE;
+        double thetaDegrees = 90.0;
+
+        Double3D rotatedVector = Plane.rotateUnitVectorAroundAxis(normalVector, axis, thetaDegrees);
+        assertEquals(0.0, rotatedVector.x, EPSILON);
+        assertEquals(0.0, rotatedVector.y, EPSILON);
+        assertEquals(1.0, rotatedVector.z, EPSILON);
+    }
+
+    @Test
+    public void rotateNormalAroundAxis_yAxis_returnsCorrectRotation() {
+        Double3D normalVector = new Double3D(1.0, 0.0, 0.0);
+        Direction axis = Direction.ZX_PLANE;
+        double thetaDegrees = 90.0;
+
+        Double3D rotatedVector = Plane.rotateUnitVectorAroundAxis(normalVector, axis, thetaDegrees);
+
+        assertEquals(0.0, rotatedVector.x, EPSILON);
+        assertEquals(0.0, rotatedVector.y, EPSILON);
+        assertEquals(-1.0, rotatedVector.z, EPSILON);
+    }
+
+    @Test
+    public void rotateNormalAroundAxis_zAxis_returnsCorrectRotation() {
+        Double3D normalVector = new Double3D(1.0, 0.0, 0.0);
+        Direction axis = Direction.XY_PLANE;
+        double thetaDegrees = 90.0;
+
+        Double3D rotatedVector = Plane.rotateUnitVectorAroundAxis(normalVector, axis, thetaDegrees);
+
+        assertEquals(0.0, rotatedVector.x, EPSILON);
+        assertEquals(1.0, rotatedVector.y, EPSILON);
+        assertEquals(0.0, rotatedVector.z, EPSILON);
+    }
+
+    @Test
+    public void rotateNormalAroundAxis_positiveXY_returnsCorrectRotation() {
+        Double3D normalVector = new Double3D(1.0, 0.0, 0.0);
+        Direction axis = Direction.POSITIVE_XY;
+        double thetaDegrees = 90.0;
+
+        Double3D rotatedVector = Plane.rotateUnitVectorAroundAxis(normalVector, axis, thetaDegrees);
+
+        assertEquals(0.5, rotatedVector.x, EPSILON);
+        assertEquals(-0.5, rotatedVector.y, EPSILON);
+        assertEquals(-1 / Math.sqrt(2), rotatedVector.z, EPSILON);
+    }
+
+    @Test
+    public void rotateNormalAroundAxis_negativeXY_returnsCorrectRotation() {
+        Double3D normalVector = new Double3D(1.0, 0.0, 0.0);
+        Direction axis = Direction.NEGATIVE_XY;
+        double thetaDegrees = 90.0;
+
+        Double3D rotatedVector = Plane.rotateUnitVectorAroundAxis(normalVector, axis, thetaDegrees);
+
+        assertEquals(0.5, rotatedVector.x, EPSILON);
+        assertEquals(0.5, rotatedVector.y, EPSILON);
+        assertEquals(1 / Math.sqrt(2), rotatedVector.z, EPSILON);
+    }
+
+    @Test
+    public void rotateNormalAroundAxis_positiveYZ_returnsCorrectRotation() {
+        Double3D normalVector = new Double3D(1.0, 0.0, 0.0);
+        Direction axis = Direction.POSITIVE_YZ;
+        double thetaDegrees = 90.0;
+
+        Double3D rotatedVector = Plane.rotateUnitVectorAroundAxis(normalVector, axis, thetaDegrees);
+
+        assertEquals(0.0, rotatedVector.x, EPSILON);
+        assertEquals(1 / Math.sqrt(2), rotatedVector.y, EPSILON);
+        assertEquals(1 / Math.sqrt(2), rotatedVector.z, EPSILON);
+    }
+
+    @Test
+    public void rotateNormalAroundAxis_negativeYZ_returnsCorrectRotation() {
+        Double3D normalVector = new Double3D(1.0, 0.0, 0.0);
+        Direction axis = Direction.NEGATIVE_YZ;
+        double thetaDegrees = 90.0;
+
+        Double3D rotatedVector = Plane.rotateUnitVectorAroundAxis(normalVector, axis, thetaDegrees);
+
+        assertEquals(0.0, rotatedVector.x, EPSILON);
+        assertEquals(-1 / Math.sqrt(2), rotatedVector.y, EPSILON);
+        assertEquals(1 / Math.sqrt(2), rotatedVector.z, EPSILON);
+    }
+
+    @Test
+    public void rotateNormalAroundAxis_positiveZX_returnsCorrectRotation() {
+        Double3D normalVector = new Double3D(0.0, 1.0, 0.0);
+        Direction axis = Direction.POSITIVE_ZX;
+        double thetaDegrees = 90.0;
+
+        Double3D rotatedVector = Plane.rotateUnitVectorAroundAxis(normalVector, axis, thetaDegrees);
+
+        assertEquals(1 / Math.sqrt(2), rotatedVector.x, EPSILON);
+        assertEquals(0.0, rotatedVector.y, EPSILON);
+        assertEquals(1 / Math.sqrt(2), rotatedVector.z, EPSILON);
+    }
+
+    @Test
+    public void rotateNormalAroundAxis_negativeZX_returnsCorrectRotation() {
+        Double3D normalVector = new Double3D(0.0, 1.0, 0.0);
+        Direction axis = Direction.NEGATIVE_ZX;
+        double thetaDegrees = 90.0;
+
+        Double3D rotatedVector = Plane.rotateUnitVectorAroundAxis(normalVector, axis, thetaDegrees);
+
+        assertEquals(1 / Math.sqrt(2), rotatedVector.x, EPSILON);
+        assertEquals(0.0, rotatedVector.y, EPSILON);
+        assertEquals(-1 / Math.sqrt(2), rotatedVector.z, EPSILON);
     }
 }
