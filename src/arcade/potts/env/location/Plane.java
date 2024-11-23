@@ -9,7 +9,7 @@ public final class Plane {
     public final Voxel referencePoint;
 
     /** The unit normal vector to the plane. */
-    public final Double3D unitNormalVector;
+    public Double3D unitNormalVector;
 
     /**
      * Creates a plane from a point and a vector.
@@ -19,7 +19,7 @@ public final class Plane {
      */
     public Plane(Voxel voxel, Double3D normalVector) {
         this.referencePoint = voxel;
-        this.unitNormalVector = scaleNormalVector(normalVector);
+        this.unitNormalVector = scaleVectorToUnitVector(normalVector);
     }
 
     /**
@@ -38,7 +38,7 @@ public final class Plane {
      * @param normalVector the normal vector
      * @return the magnitude of the normal vector
      */
-    static double getNormalVectorMagnitude(Double3D normalVector) {
+    static double getVectorMagnitude(Double3D normalVector) {
         return Math.sqrt(
                 normalVector.getX() * normalVector.getX()
                         + normalVector.getY() * normalVector.getY()
@@ -51,8 +51,8 @@ public final class Plane {
      * @param normalVector the normal vector
      * @return the unit normal vector
      */
-    static Double3D scaleNormalVector(Double3D normalVector) {
-        double magnitude = getNormalVectorMagnitude(normalVector);
+    static Double3D scaleVectorToUnitVector(Double3D normalVector) {
+        double magnitude = getVectorMagnitude(normalVector);
         double scaledX = normalVector.getX() / magnitude;
         double scaledY = normalVector.getY() / magnitude;
         double scaledZ = normalVector.getZ() / magnitude;
@@ -105,19 +105,49 @@ public final class Plane {
         return hash;
     }
 
-    public static Double3D rotateNormalVector(Double3D unRotatedNormal, double thetaDegrees) {
-        double thetaRadians = Math.toRadians(thetaDegrees); // Convert to radians
+    public static Double3D rotateUnitNormalAroundAxis(
+            Double3D normalVector, Direction axis, double thetaDegrees) {
 
-        // Rotate the normal vector around the Z-axis by thetaRadians
+        Double3D unitNormalVector = scaleVectorToUnitVector(normalVector);
+
+        double thetaRadians = Math.toRadians(thetaDegrees);
+
+        // Normalize the axis vector
+        double axisLength =
+                Math.sqrt(
+                        axis.vector.getX() * axis.vector.getX()
+                                + axis.vector.getY() * axis.vector.getY()
+                                + axis.vector.getZ() * axis.vector.getZ());
+        double uX = axis.vector.getX() / axisLength;
+        double uY = axis.vector.getY() / axisLength;
+        double uZ = axis.vector.getZ() / axisLength;
+
+        double cosTheta = Math.cos(thetaRadians);
+        double sinTheta = Math.sin(thetaRadians);
+
+        // Compute the dot product (k • v)
+        double dotProduct =
+                uX * unitNormalVector.x + uY * unitNormalVector.y + uZ * unitNormalVector.z;
+
+        // Compute the cross product (k × v)
+        double crossX = uY * unitNormalVector.z - uZ * unitNormalVector.y;
+        double crossY = uZ * unitNormalVector.x - uX * unitNormalVector.z;
+        double crossZ = uX * unitNormalVector.y - uY * unitNormalVector.x;
+
+        // Compute the rotated Normal vector components
         double rotatedX =
-                unRotatedNormal.x * Math.cos(thetaRadians)
-                        - unRotatedNormal.y * Math.sin(thetaRadians);
+                unitNormalVector.x * cosTheta
+                        + crossX * sinTheta
+                        + uX * dotProduct * (1 - cosTheta);
         double rotatedY =
-                unRotatedNormal.x * Math.sin(thetaRadians)
-                        + unRotatedNormal.y * Math.cos(thetaRadians);
-        double rotatedZ = unRotatedNormal.z;
+                unitNormalVector.y * cosTheta
+                        + crossY * sinTheta
+                        + uY * dotProduct * (1 - cosTheta);
+        double rotatedZ =
+                unitNormalVector.z * cosTheta
+                        + crossZ * sinTheta
+                        + uZ * dotProduct * (1 - cosTheta);
 
-        // return rotated normal vector
         return new Double3D(rotatedX, rotatedY, rotatedZ);
     }
 }
