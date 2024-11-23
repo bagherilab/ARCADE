@@ -138,11 +138,11 @@ public final class Plane {
 
         // Compute the rotated Normal vector components
         double rotatedX =
-        vector.x * cosTheta + crossX * sinTheta + uX * dotProduct * (1 - cosTheta);
+                vector.x * cosTheta + crossX * sinTheta + uX * dotProduct * (1 - cosTheta);
         double rotatedY =
-        vector.y * cosTheta + crossY * sinTheta + uY * dotProduct * (1 - cosTheta);
+                vector.y * cosTheta + crossY * sinTheta + uY * dotProduct * (1 - cosTheta);
         double rotatedZ =
-        vector.z * cosTheta + crossZ * sinTheta + uZ * dotProduct * (1 - cosTheta);
+                vector.z * cosTheta + crossZ * sinTheta + uZ * dotProduct * (1 - cosTheta);
 
         return new Double3D(rotatedX, rotatedY, rotatedZ);
     }

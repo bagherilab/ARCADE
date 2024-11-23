@@ -1,8 +1,8 @@
 package arcade.potts.env.location;
 
 import org.junit.jupiter.api.Test;
-import arcade.potts.util.PottsEnums.Direction;
 import sim.util.Double3D;
+import arcade.potts.util.PottsEnums.Direction;
 import static org.junit.jupiter.api.Assertions.*;
 import static arcade.potts.util.PottsEnums.Direction;
 
