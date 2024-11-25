@@ -89,16 +89,30 @@ public class Parameters {
     }
 
     /**
+     * Gets the parameter value as a string.
+     *
+     * @param key the parameter key
+     * @return the parameter value as a string
+     */
+    public String getString(String key) {
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (popParameters.contains(key)) {</span>
+<span class="fc" id="L99">            return popParameters.get(key);</span>
+        } else {
+<span class="fc" id="L101">            throw new InvalidParameterException();</span>
+        }
+    }
+
+    /**
      * Gets the parameter value as a distribution, if it exists.
      *
      * @param key the parameter key
      * @return the parameter value as a distribution
      */
     public Distribution getDistribution(String key) {
-<span class="pc bpc" id="L98" title="1 of 2 branches missed.">        if (distributions.containsKey(key)) {</span>
-<span class="fc" id="L99">            return distributions.get(key);</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        if (distributions.containsKey(key)) {</span>
+<span class="fc" id="L113">            return distributions.get(key);</span>
         } else {
-<span class="nc" id="L101">            throw new InvalidParameterException();</span>
+<span class="nc" id="L115">            throw new InvalidParameterException();</span>
         }
     }
 
@@ -109,7 +123,7 @@ public class Parameters {
      * @return the filtered box
      */
     public MiniBox filter(String code) {
-<span class="fc" id="L112">        return popParameters.filter(code);</span>
+<span class="fc" id="L126">        return popParameters.filter(code);</span>
     }
 
     /**
@@ -123,24 +137,24 @@ public class Parameters {
      * @return {@code true} if contents match, {@code false} otherwise
      */
     public boolean compare(Parameters parameters) {
-<span class="fc" id="L126">        HashSet&lt;String&gt; allKeys = new HashSet&lt;&gt;();</span>
-<span class="fc" id="L127">        allKeys.addAll(distributions.keySet());</span>
-<span class="fc" id="L128">        allKeys.addAll(parameters.distributions.keySet());</span>
+<span class="fc" id="L140">        HashSet&lt;String&gt; allKeys = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L141">        allKeys.addAll(distributions.keySet());</span>
+<span class="fc" id="L142">        allKeys.addAll(parameters.distributions.keySet());</span>
 
-<span class="fc bfc" id="L130" title="All 2 branches covered.">        for (String key : allKeys) {</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">            if (!distributions.containsKey(key)) {</span>
-<span class="fc" id="L132">                return false;</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">            } else if (!parameters.distributions.containsKey(key)) {</span>
-<span class="fc" id="L134">                return false;</span>
-<span class="fc" id="L135">            } else if (!distributions</span>
-<span class="fc" id="L136">                    .get(key)</span>
-<span class="fc" id="L137">                    .getParameters()</span>
-<span class="fc bfc" id="L138" title="All 2 branches covered.">                    .compare(parameters.distributions.get(key).getParameters())) {</span>
-<span class="fc" id="L139">                return false;</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">        for (String key : allKeys) {</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">            if (!distributions.containsKey(key)) {</span>
+<span class="fc" id="L146">                return false;</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">            } else if (!parameters.distributions.containsKey(key)) {</span>
+<span class="fc" id="L148">                return false;</span>
+<span class="fc" id="L149">            } else if (!distributions</span>
+<span class="fc" id="L150">                    .get(key)</span>
+<span class="fc" id="L151">                    .getParameters()</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">                    .compare(parameters.distributions.get(key).getParameters())) {</span>
+<span class="fc" id="L153">                return false;</span>
             }
-<span class="fc" id="L141">        }</span>
+<span class="fc" id="L155">        }</span>
 
-<span class="fc" id="L143">        return popParameters.compare(parameters.popParameters);</span>
+<span class="fc" id="L157">        return popParameters.compare(parameters.popParameters);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
