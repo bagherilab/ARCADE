@@ -95,6 +95,9 @@ public abstract class PatchCell implements Cell {
     /** Cell height [um]. */
     double height;
 
+    /** Death age due to apoptosis [min]. */
+    double apoptosisAge;
+
     /** Critical volume for cell [um<sup>3</sup>]. */
     final double criticalVolume;
 
@@ -124,6 +127,9 @@ public abstract class PatchCell implements Cell {
 
     /** Cell population links. */
     final GrabBag links;
+
+    /** List of cell cycle lengths (in minutes). */
+    private final Bag cycles = new Bag();
 
     /**
      * Creates a {@code PatchCell} agent.
@@ -165,6 +171,7 @@ public abstract class PatchCell implements Cell {
         necroticFraction = parameters.getDouble("NECROTIC_FRACTION");
         senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
         energyThreshold = -parameters.getDouble("ENERGY_THRESHOLD");
+        apoptosisAge = parameters.getDouble("APOPTOSIS_AGE");
 
         // Add cell processes.
         processes = new HashMap<>();
@@ -283,6 +290,24 @@ public abstract class PatchCell implements Cell {
         this.energy = energy;
     }
 
+    /**
+     * Adds a completed cell cycle length [min] to the list of lengths.
+     *
+     * @param val the cell cycle length
+     */
+    public void addCycle(int val) {
+        cycles.add(val);
+    }
+
+    /**
+     * Gets the list of cell cycle lengths.
+     *
+     * @return the list of cell cycle lengths
+     */
+    public Bag getCycles() {
+        return cycles;
+    }
+
     @Override
     public void stop() {
         stopper.stop();
@@ -336,11 +361,12 @@ public abstract class PatchCell implements Cell {
     @Override
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
-
         // Increase age of cell.
         age++;
 
-        // TODO: check for death due to age
+        if (state != State.APOPTOTIC && age > apoptosisAge) {
+            setState(State.APOPTOTIC);
+        }
 
         // Step metabolism process.
         processes.get(Domain.METABOLISM).step(simstate.random, sim);
