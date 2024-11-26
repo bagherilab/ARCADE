@@ -1,66 +1,66 @@
 {"0": {
     "doc": "Changelog",
+    "title": "Changelog",
+    "content": " ",
+    "url": "/ARCADE/changelog.html",
+    
+    "relUrl": "/changelog.html"
+  },"1": {
+    "doc": "Changelog",
     "title": "v3.2.0 - 2024-11-18",
     "content": "Compare with v3.1.4 . Features . | Update cell make method to return container by @jessicasyu in #74 | Update cell constructors to use container by @jessicasyu in #75 | Add support for linked populations in setup file by @jessicasyu in #76 | Add support for parameter distributions by @jessicasyu in #85 | . Features: patch . | Add support for initialization by percentage by @jessicasyu in #53 | Add patch cell agent with random state rules by @jessicasyu in #56 | Add support for different patch initialization schemes by @jessicasyu in #81 | Pass initial glucose concentration as parameter for metabolism modules by @allison-li-1016 in #96 | . Features: potts . | Added class key for potts populations by @Jannetty in #11 | Make necessary PottsCell fields public, prepare for abstract setModule() function by @Jannetty in #12 | Convert PottsCell to abstract class by @Jannetty in #13 | Add support for splits with offset, direction, and split probability by @Jannetty in #16 | Add custom plane splitvoxels by @Jannetty in #46 | Refactor plane constructor to take Double3D instead of Int3D by @Jannetty in #83 | . Bug fixes . | Remove apoptosis checkpoint for potts cells by @jessicasyu in #18 | Replace instance of wildcard import of Module to prevent clash in Java 9 by @cainja in #65 | Fix passing in initial glucose as a parameter value by @allison-li-1016 in #99 | . Tests . | Remove unnecessary mocking in potts cell stem tests by @jessicasyu in #57 | Unit tests for core utilities Colors class by @cainja in #63 | Adding tests for core utilities Solver class by @cainja in #69 | Improved tests for core utilities Color class by @cainja in #73 | Adding tests for core utilities Graph class by @cainja in #64 | Adding tests for core utilities Parameter class by @cainja in #71 | . Admin . | Update workflows conditions for main and develop branches by @jessicasyu in #10 | Change source compatibility from 1.8 to 1.11 by @jessicasyu in #66 | Migrate to JUnit 5 by @jessicasyu in #67 | Add spotless autoformatter by @jessicasyu in #68 | Update workflows for changelog releases and Jekyll docs by @jessicasyu in #100 | . ",
     "url": "/ARCADE/changelog.html#v320---2024-11-18",
     
     "relUrl": "/changelog.html#v320---2024-11-18"
-  },"1": {
+  },"2": {
     "doc": "Changelog",
     "title": "v3.1.4 - 2024-02-26",
     "content": "Compare with v3.1.3 . ",
     "url": "/ARCADE/changelog.html#v314---2024-02-26",
     
     "relUrl": "/changelog.html#v314---2024-02-26"
-  },"2": {
+  },"3": {
     "doc": "Changelog",
     "title": "v3.1.3 - 2024-02-05",
     "content": "Compare with v3.1.2 . Features . | Add version to output files by @jessicasyu in #7 | . Bug fixes . | Swap voxel update order by @jessicasyu in #8 | . ",
     "url": "/ARCADE/changelog.html#v313---2024-02-05",
     
     "relUrl": "/changelog.html#v313---2024-02-05"
-  },"3": {
+  },"4": {
     "doc": "Changelog",
     "title": "v3.1.2 - 2023-11-14",
     "content": "Compare with v3.1.1 . Features . | Convert core enums to use interfaces by @jessicasyu in #3 | Update minibox to load simple fractions by @jessicasyu in #5 | . Bug fixes . | Update size checkpoints in potts modules by @jessicasyu in #2 | . Tests . | Update region adhesion unit tests by @jessicasyu in #6 | . Admin . | Update version handling in gradle build by @jessicasyu in #4 | . ",
     "url": "/ARCADE/changelog.html#v312---2023-11-14",
     
     "relUrl": "/changelog.html#v312---2023-11-14"
-  },"4": {
+  },"5": {
     "doc": "Changelog",
     "title": "v3.1.1 - 2023-10-03",
     "content": "Compare with v3.1.0 . ",
     "url": "/ARCADE/changelog.html#v311---2023-10-03",
     
     "relUrl": "/changelog.html#v311---2023-10-03"
-  },"5": {
+  },"6": {
     "doc": "Changelog",
     "title": "v3.1.0 - 2023-03-01",
     "content": "Compare with v3.0.1 . ",
     "url": "/ARCADE/changelog.html#v310---2023-03-01",
     
     "relUrl": "/changelog.html#v310---2023-03-01"
-  },"6": {
+  },"7": {
     "doc": "Changelog",
     "title": "v3.0.1 - 2023-10-03",
     "content": "Compare with v3.0.0 . ",
     "url": "/ARCADE/changelog.html#v301---2023-10-03",
     
     "relUrl": "/changelog.html#v301---2023-10-03"
-  },"7": {
+  },"8": {
     "doc": "Changelog",
     "title": "v3.0.0 - 2023-01-31",
     "content": "Compare with v2.4 . ",
     "url": "/ARCADE/changelog.html#v300---2023-01-31",
     
     "relUrl": "/changelog.html#v300---2023-01-31"
-  },"8": {
-    "doc": "Changelog",
-    "title": "Changelog",
-    "content": " ",
-    "url": "/ARCADE/changelog.html",
-    
-    "relUrl": "/changelog.html"
   },"9": {
     "doc": "Overview",
     "title": "ARCADE: Agent-based Representation of Cells And Dynamic Environments",
@@ -97,116 +97,46 @@
     
     "relUrl": "/"
   },"14": {
-    "doc": "v3.0.0",
-    "title": "v3.0.0 - 2023-01-31",
-    "content": "Compare with v2.4 . ",
-    "url": "/ARCADE/changelog/v3.0.0.html#v300---2023-01-31",
+    "doc": "Publications",
+    "title": "Publications",
+    "content": " ",
+    "url": "/ARCADE/publications.html",
     
-    "relUrl": "/changelog/v3.0.0.html#v300---2023-01-31"
+    "relUrl": "/publications.html"
   },"15": {
-    "doc": "v3.0.0",
-    "title": "v3.0.0",
-    "content": " ",
-    "url": "/ARCADE/changelog/v3.0.0.html",
+    "doc": "Publications",
+    "title": "4D hybrid model interrogates agent-level rules and parameters driving hiPS cell colony dynamics",
+    "content": "JS Yu, B Lyons, SM Rafelski, JA Theriot, N Bagheri, GT Johnson. bioRxiv. DOI: 10.1101/2024.08.12.607546 . Iterating between data-driven research and generative computational models is a powerful approach for emulating biological systems, testing hypotheses, and gaining a deeper understanding of these systems. We developed a hybrid agent-based model (ABM) that integrates a Cellular Potts Model (CPM) designed to investigate cell shape and colony dynamics in human induced pluripotent stem cell (hiPS cell) colonies. This model aimed to first mimic and then explore the dynamics observed in real-world hiPS cell cultures. Initial outputs showed great potential, seeming to mimic small colony behaviors relatively well. However, longer simulations and quantitative comparisons revealed limitations, particularly with the CPM component, which lacked long-range interactions that might be necessary for accurate simulations. This challenge led us to thoroughly examine the hybrid model’s potential and limitations, providing insights and recommendations for systems where cell-wide mechanics play significant roles. The CPM supports 2D and 3D cell shapes using a Monte Carlo algorithm to prevent cell fragmentation. Basic “out of the box” CPM Hamiltonian terms of volume and adhesion were insufficient to match live cell imaging of hiPS cell cultures. Adding substrate adhesion resulted in flatter colonies, highlighting the need to consider environmental context in modeling. High-throughput parameter sweeps identified regimes that produced consistent simulated shapes and demonstrated the impact of specific model decisions on emergent dynamics. Full-scale simulations showed that while certain agent rules could form a hiPS cell monolayer in 3D, they could not maintain it over time. Our study underscores that “out of the box” 3D CPMs, which do not natively incorporate long-range cell mechanics like elasticity, may be insufficient for accurately simulating hiPS cell and colony dynamics. To address this limitation, future work could add mechanical constraints to the CPM Hamiltonian or integrate global agent rules. Alternatively, replacing the CPM with a methodology that directly represents cell mechanics might be necessary. Documenting and sharing our model development process fosters open team science and supports the broader research community in developing computational models of complex biological systems. | Model release: https://github.com/bagherilab/ARCADE/releases/tag/v3.1.4 | Supporting code: https://github.com/allen-cell-animated/cell-abm-pipeline | . ",
+    "url": "/ARCADE/publications.html#4d-hybrid-model-interrogates-agent-level-rules-and-parameters-driving-hips-cell-colony-dynamics",
     
-    "relUrl": "/changelog/v3.0.0.html"
+    "relUrl": "/publications.html#4d-hybrid-model-interrogates-agent-level-rules-and-parameters-driving-hips-cell-colony-dynamics"
   },"16": {
-    "doc": "v3.0.1",
-    "title": "v3.0.1 - 2023-10-03",
-    "content": "Compare with v3.0.0 . ",
-    "url": "/ARCADE/changelog/v3.0.1.html#v301---2023-10-03",
+    "doc": "Publications",
+    "title": "Model design choices impact biological insight: Unpacking the broad landscape of spatial-temporal model development decisions",
+    "content": "JS Yu, N Bagheri. PLOS Computational Biology. DOI: 10.1371/journal.pcbi.1011917 . Computational models enable scientists to understand observed dynamics, uncover rules underlying behaviors, predict experimental outcomes, and generate new hypotheses. There are countless modeling approaches that can be used to characterize biological systems, further multiplied when accounting for the variety of model design choices. Many studies focus on the impact of model parameters on model output and performance; fewer studies investigate the impact of model design choices on biological insight. Here we demonstrate why model design choices should be deliberate and intentional in context of the specific research system and question. In this study, we analyze agnostic and broadly applicable modeling choices at three levels—system, cell, and environment—within the same agent-based modeling framework to interrogate their impact on temporal, spatial, and single-cell emergent dynamics. We identify key considerations when making these modeling choices, including the (i) differences between qualitative vs. quantitative results driven by choices in system representation, (ii) impact of cell-to-cell variability choices on cell-level and temporal trends, and (iii) relationship between emergent outcomes and choices of nutrient dynamics in the environment. This generalizable investigation can help guide the choices made when developing biological models that aim to characterize spatial-temporal dynamics. | Model release: https://github.com/bagherilab/ARCADE/releases/tag/v2.4 | Supporting code: https://github.com/bagherilab/arcade_modeling_choices | . ",
+    "url": "/ARCADE/publications.html#model-design-choices-impact-biological-insight-unpacking-the-broad-landscape-of-spatial-temporal-model-development-decisions",
     
-    "relUrl": "/changelog/v3.0.1.html#v301---2023-10-03"
+    "relUrl": "/publications.html#model-design-choices-impact-biological-insight-unpacking-the-broad-landscape-of-spatial-temporal-model-development-decisions"
   },"17": {
-    "doc": "v3.0.1",
-    "title": "v3.0.1",
-    "content": " ",
-    "url": "/ARCADE/changelog/v3.0.1.html",
+    "doc": "Publications",
+    "title": "Mapping CAR T-cell design space using agent-based models",
+    "content": "AN Prybutok, JS Yu, JN Leonard, N Bagheri. Frontiers in Molecular Biosciences. DOI: 10.3389/fmolb.2022.849363 . Chimeric antigen receptor (CAR) T-cell therapy shows promise for treating liquid cancers and increasingly for solid tumors as well. While potential design strategies exist to address translational challenges, including the lack of unique tumor antigens and the presence of an immunosuppressive tumor microenvironment, testing all possible design choices in vitro and in vivo is prohibitively expensive, time consuming, and laborious. To address this gap, we extended the modeling framework ARCADE (Agent-based Representation of Cells And Dynamic Environments) to include CAR T-cell agents (CAR T-cell ARCADE, or CARCADE). We conducted in silico experiments to investigate how clinically relevant design choices and inherent tumor features—CAR T-cell dose, CD4+:CD8+ CAR T-cell ratio, CAR-antigen affinity, cancer and healthy cell antigen expression—individually and collectively impact treatment outcomes. Our analysis revealed that tuning CAR affinity modulates IL-2 production by balancing CAR T-cell proliferation and effector function. It also identified a novel multi-feature tuned treatment strategy for balancing selectivity and efficacy and provided insights into how spatial effects can impact relative treatment performance in different contexts. CARCADE facilitates deeper biological understanding of treatment design and could ultimately enable identification of promising treatment strategies to accelerate solid tumor CAR T-cell design-build-test cycles. | Model release: https://github.com/bagherilab/CARCADE | Supporting code: https://github.com/bagherilab/carcade_mapping_design_space | . ",
+    "url": "/ARCADE/publications.html#mapping-car-t-cell-design-space-using-agent-based-models",
     
-    "relUrl": "/changelog/v3.0.1.html"
+    "relUrl": "/publications.html#mapping-car-t-cell-design-space-using-agent-based-models"
   },"18": {
-    "doc": "v3.1.0",
-    "title": "v3.1.0 - 2023-03-01",
-    "content": "Compare with v3.0.1 . ",
-    "url": "/ARCADE/changelog/v3.1.0.html#v310---2023-03-01",
+    "doc": "Publications",
+    "title": "Modular microenvironment components reproduce vascular dynamics de novo in a multi-scale agent-based model",
+    "content": "JS Yu, N Bagheri. Cell Systems. DOI: 10.1016/j.cels.2021.05.007 . Cells do not exist in isolation; they continuously act within and react to their environment. And this environment is not static; it continuously adapts and responds to cells. Here, we investigate how vascular structure and function impact emergent cell population behavior using an agent-based model (ABM). Our ABM enables researchers to “mix and match” cell agents, subcellular modules, and microenvironment components ranging from simple nutrient sources to complex, realistic vascular architectures that accurately capture hemodynamics. We use this ABM to highlight the bilateral relationship between cells and nearby vasculature, demonstrate the effect of vascular structure on environmental heterogeneity, and emphasize the non-linear, non-intuitive relationship between vascular function and the behavior of cell populations over time. Our ABM is well suited to characterizing in vitro and in vivo studies, with applications from basic science to translational synthetic biology and medicine. | Model release: https://github.com/bagherilab/ARCADE/releases/tag/v2.3 | Supporting code: https://github.com/bagherilab/arcade_vascular_dynamics | . ",
+    "url": "/ARCADE/publications.html#modular-microenvironment-components-reproduce-vascular-dynamics-de-novo-in-a-multi-scale-agent-based-model",
     
-    "relUrl": "/changelog/v3.1.0.html#v310---2023-03-01"
+    "relUrl": "/publications.html#modular-microenvironment-components-reproduce-vascular-dynamics-de-novo-in-a-multi-scale-agent-based-model"
   },"19": {
-    "doc": "v3.1.0",
-    "title": "v3.1.0",
-    "content": " ",
-    "url": "/ARCADE/changelog/v3.1.0.html",
+    "doc": "Publications",
+    "title": "Agent-based models predict emergent behavior of heterogeneous cell populations in dynamic microenvironments",
+    "content": "JS Yu, N Bagheri. Frontiers in Bioengineering and Biotechnology. DOI: 10.3389/fbioe.2020.00249 . Computational models are most impactful when they explain and characterize biological phenomena that are non-intuitive, unexpected, or difficult to study experimentally. Countless equation-based models have been built for these purposes, but we have yet to realize the extent to which rules-based models offer an intuitive framework that encourages computational and experimental collaboration. We develop ARCADE, a multi-scale agent-based model to interrogate emergent behavior of heterogeneous cell agents within dynamic microenvironments and demonstrate how complexity of intracellular metabolism and signaling modules impacts emergent dynamics. We perform in silico case studies on context, competition, and heterogeneity to demonstrate the utility of our model for gaining computational and experimental insight. Notably, there exist (i) differences in emergent behavior between colony and tissue contexts, (ii) linear, non-linear, and multimodal consequences of parameter variation on competition in simulated co-cultures, and (iii) variable impact of cell and population heterogeneity on emergent outcomes. Our extensible framework is easily modified to explore numerous biological systems, from tumor microenvironments to microbiomes. | Model release: https://github.com/bagherilab/ARCADE/releases/tag/v2.2 | Supporting code: https://github.com/bagherilab/arcade_emergent_behavior | . ",
+    "url": "/ARCADE/publications.html#agent-based-models-predict-emergent-behavior-of-heterogeneous-cell-populations-in-dynamic-microenvironments",
     
-    "relUrl": "/changelog/v3.1.0.html"
-  },"20": {
-    "doc": "v3.1.1",
-    "title": "v3.1.1 - 2023-10-03",
-    "content": "Compare with v3.1.0 . ",
-    "url": "/ARCADE/changelog/v3.1.1.html#v311---2023-10-03",
-    
-    "relUrl": "/changelog/v3.1.1.html#v311---2023-10-03"
-  },"21": {
-    "doc": "v3.1.1",
-    "title": "v3.1.1",
-    "content": " ",
-    "url": "/ARCADE/changelog/v3.1.1.html",
-    
-    "relUrl": "/changelog/v3.1.1.html"
-  },"22": {
-    "doc": "v3.1.2",
-    "title": "v3.1.2 - 2023-11-14",
-    "content": "Compare with v3.1.1 . Features . | Convert core enums to use interfaces by @jessicasyu in #3 | Update minibox to load simple fractions by @jessicasyu in #5 | . Bug fixes . | Update size checkpoints in potts modules by @jessicasyu in #2 | . Tests . | Update region adhesion unit tests by @jessicasyu in #6 | . Admin . | Update version handling in gradle build by @jessicasyu in #4 | . ",
-    "url": "/ARCADE/changelog/v3.1.2.html#v312---2023-11-14",
-    
-    "relUrl": "/changelog/v3.1.2.html#v312---2023-11-14"
-  },"23": {
-    "doc": "v3.1.2",
-    "title": "v3.1.2",
-    "content": " ",
-    "url": "/ARCADE/changelog/v3.1.2.html",
-    
-    "relUrl": "/changelog/v3.1.2.html"
-  },"24": {
-    "doc": "v3.1.3",
-    "title": "v3.1.3 - 2024-02-05",
-    "content": "Compare with v3.1.2 . Features . | Add version to output files by @jessicasyu in #7 | . Bug fixes . | Swap voxel update order by @jessicasyu in #8 | . ",
-    "url": "/ARCADE/changelog/v3.1.3.html#v313---2024-02-05",
-    
-    "relUrl": "/changelog/v3.1.3.html#v313---2024-02-05"
-  },"25": {
-    "doc": "v3.1.3",
-    "title": "v3.1.3",
-    "content": " ",
-    "url": "/ARCADE/changelog/v3.1.3.html",
-    
-    "relUrl": "/changelog/v3.1.3.html"
-  },"26": {
-    "doc": "v3.1.4",
-    "title": "v3.1.4 - 2024-02-26",
-    "content": "Compare with v3.1.3 . ",
-    "url": "/ARCADE/changelog/v3.1.4.html#v314---2024-02-26",
-    
-    "relUrl": "/changelog/v3.1.4.html#v314---2024-02-26"
-  },"27": {
-    "doc": "v3.1.4",
-    "title": "v3.1.4",
-    "content": " ",
-    "url": "/ARCADE/changelog/v3.1.4.html",
-    
-    "relUrl": "/changelog/v3.1.4.html"
-  },"28": {
-    "doc": "v3.2.0",
-    "title": "v3.2.0 - 2024-11-18",
-    "content": "Compare with v3.1.4 . Features . | Update cell make method to return container by @jessicasyu in #74 | Update cell constructors to use container by @jessicasyu in #75 | Add support for linked populations in setup file by @jessicasyu in #76 | Add support for parameter distributions by @jessicasyu in #85 | . Features: patch . | Add support for initialization by percentage by @jessicasyu in #53 | Add patch cell agent with random state rules by @jessicasyu in #56 | Add support for different patch initialization schemes by @jessicasyu in #81 | Pass initial glucose concentration as parameter for metabolism modules by @allison-li-1016 in #96 | . Features: potts . | Added class key for potts populations by @Jannetty in #11 | Make necessary PottsCell fields public, prepare for abstract setModule() function by @Jannetty in #12 | Convert PottsCell to abstract class by @Jannetty in #13 | Add support for splits with offset, direction, and split probability by @Jannetty in #16 | Add custom plane splitvoxels by @Jannetty in #46 | Refactor plane constructor to take Double3D instead of Int3D by @Jannetty in #83 | . Bug fixes . | Remove apoptosis checkpoint for potts cells by @jessicasyu in #18 | Replace instance of wildcard import of Module to prevent clash in Java 9 by @cainja in #65 | Fix passing in initial glucose as a parameter value by @allison-li-1016 in #99 | . Tests . | Remove unnecessary mocking in potts cell stem tests by @jessicasyu in #57 | Unit tests for core utilities Colors class by @cainja in #63 | Adding tests for core utilities Solver class by @cainja in #69 | Improved tests for core utilities Color class by @cainja in #73 | Adding tests for core utilities Graph class by @cainja in #64 | Adding tests for core utilities Parameter class by @cainja in #71 | . Admin . | Update workflows conditions for main and develop branches by @jessicasyu in #10 | Change source compatibility from 1.8 to 1.11 by @jessicasyu in #66 | Migrate to JUnit 5 by @jessicasyu in #67 | Add spotless autoformatter by @jessicasyu in #68 | Update workflows for changelog releases and Jekyll docs by @jessicasyu in #100 | . ",
-    "url": "/ARCADE/changelog/v3.2.0.html#v320---2024-11-18",
-    
-    "relUrl": "/changelog/v3.2.0.html#v320---2024-11-18"
-  },"29": {
-    "doc": "v3.2.0",
-    "title": "v3.2.0",
-    "content": " ",
-    "url": "/ARCADE/changelog/v3.2.0.html",
-    
-    "relUrl": "/changelog/v3.2.0.html"
+    "relUrl": "/publications.html#agent-based-models-predict-emergent-behavior-of-heterogeneous-cell-populations-in-dynamic-microenvironments"
   }
 }
