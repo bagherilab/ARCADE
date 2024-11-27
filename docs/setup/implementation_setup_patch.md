@@ -23,7 +23,7 @@ Nested tags include `patch.parameter` for parameters.
 </patch>
 ```
 
-## Patch implementation: Parameters
+## Implementation parameters
 
 The `patch.parameter` tag defines patch implementation parameters.
 Unless modified, default values are used for all parameters.
@@ -38,13 +38,17 @@ Defaults are listed in [parameter.patch.xml](https://github.com/bagherilab/ARCAD
 | `value`   | New parameter value                       |
 | `scale`   | Scaling factor applied to parameter value |
 
-### Example: Changing model geometry to hexagonal
+### Example: Changing model geometry
+
+_Specifies a hexagonal model geometry._
 
 ```xml
 <patch.parameter id="GEOMETRY" value="hex" />
 ```
 
-### Example: Changing model initialization strategy to random
+### Example: Changing model initialization strategy
+
+_Specifies the random initialization strategy._
 
 ```xml
 <patch.parameter id="INITIALIZATION" value="random" />

@@ -26,7 +26,7 @@ Nested tags include `potts.term` for Hamiltonian terms and `potts.parameter` for
 </potts>
 ```
 
-## Potts implementation: Hamiltonian terms
+## Hamiltonian terms
 
 The `potts.term` tag is used to specify the terms used in the CPM Hamiltonian.
 Valid options include:
@@ -42,12 +42,14 @@ Valid options include:
 
 ### Example: Including volume and adhesion Hamiltonian terms
 
+_Specifies a Hamiltonian with the volume and adhesion terms._
+
 ```xml
 <potts.term id="volume" />
 <potts.term id="adhesion" />
 ```
 
-## Potts implementation: Parameters
+## Implementation parameters
 
 The `potts.parameter` tag defines CPM implementation parameters.
 Unless modified, default values are used for all parameters.
@@ -59,31 +61,34 @@ Defaults are listed in [parameter.potts.xml](https://github.com/bagherilab/ARCAD
 
 | ATTRIBUTE | DESCRIPTION                               |
 | --------- | ----------------------------------------- |
-| `id`      | Parameter name                            |
-| `value`   | New parameter value                       |
-| `scale`   | Scaling factor applied to parameter value |
+| `id`      | parameter name                            |
+| `value`   | new parameter value                       |
+| `scale`   | scaling factor applied to parameter value |
 | `term`    | Hamiltonian term the parameter applies to |
-| `target`  | Target populations ids for the parameter  |
+| `target`  | target populations ids for the parameter  |
 
 ### Example: Modifying global potts parameters
 
+_The MCS parameter is set to the new value of 3._
+
 ```xml
-<potts.parameter id="MCS" value="[VALUE]"  />
+<potts.parameter id="MCS" value="3" />
 ```
 
 ### Example: Modifying term-specific potts parameters
 
+_The lambda parameter in the volume term is set to the new value of 20._
+
 ```xml
-<potts.parameter term="volume" id="LAMBDA" value="[SCALE]" />
+<potts.parameter term="volume" id="LAMBDA" value="20" />
 ```
 
 ### Example: Modifying term-specific potts parameters with target
 
+_The lambda parameter in the volume term is scaled by 2 for population A. The adhesion between population A and population B is set to the new value of 20. The adhesion between population A and the media (*) is set to the new value of 30._
+
 ```xml
-<!-- Modifies LAMBDA parameter in volume term for population A -->
-<potts.parameter term="volume" id="LAMBDA" scale="[SCALE]" target="A" />
-<!-- Modifies ADHESION parameter in adhesion term between population A and population B -->
-<potts.parameter term="adhesion" id="ADHESION" value="[VALUE]" target="A:B" />
-<!-- Modifies ADHESION parameter in adhesion term between population A and media -->
-<potts.parameter term="adhesion" id="ADHESION" value="[VALUE]" target="A:*" />
+<potts.parameter term="volume" id="LAMBDA" scale="2" target="A" />
+<potts.parameter term="adhesion" id="ADHESION" value="20" target="A:B" />
+<potts.parameter term="adhesion" id="ADHESION" value="30" target="A:*" />
 ```
