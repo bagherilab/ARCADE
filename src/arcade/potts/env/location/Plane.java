@@ -19,7 +19,7 @@ public final class Plane {
      */
     public Plane(Voxel voxel, Double3D normalVector) {
         this.referencePoint = voxel;
-        this.unitNormalVector = scaleNormalVector(normalVector);
+        this.unitNormalVector = scaleVector(normalVector);
     }
 
     /**
@@ -33,29 +33,29 @@ public final class Plane {
     }
 
     /**
-     * Determines the magnitude of the normal vector.
+     * Determines the magnitude of the provided vector.
      *
-     * @param normalVector the normal vector
+     * @param vector the vector
      * @return the magnitude of the normal vector
      */
-    static double getNormalVectorMagnitude(Double3D normalVector) {
+    static double getVectorMagnitude(Double3D vector) {
         return Math.sqrt(
-                normalVector.getX() * normalVector.getX()
-                        + normalVector.getY() * normalVector.getY()
-                        + normalVector.getZ() * normalVector.getZ());
+                vector.getX() * vector.getX()
+                        + vector.getY() * vector.getY()
+                        + vector.getZ() * vector.getZ());
     }
 
     /**
-     * Scales the normal vector to a unit vector.
+     * Scales the provided vector to a unit vector.
      *
-     * @param normalVector the normal vector
+     * @param vector the normal vector
      * @return the unit normal vector
      */
-    static Double3D scaleNormalVector(Double3D normalVector) {
-        double magnitude = getNormalVectorMagnitude(normalVector);
-        double scaledX = normalVector.getX() / magnitude;
-        double scaledY = normalVector.getY() / magnitude;
-        double scaledZ = normalVector.getZ() / magnitude;
+    static Double3D scaleVector(Double3D vector) {
+        double magnitude = getVectorMagnitude(vector);
+        double scaledX = vector.getX() / magnitude;
+        double scaledY = vector.getY() / magnitude;
+        double scaledZ = vector.getZ() / magnitude;
         return new Double3D(scaledX, scaledY, scaledZ);
     }
 
@@ -103,5 +103,47 @@ public final class Plane {
         hash = 31 * hash + Double.hashCode(unitNormalVector.getY());
         hash = 31 * hash + Double.hashCode(unitNormalVector.getZ());
         return hash;
+    }
+
+    /**
+     * Rotates a given vector around a given axis by a given angle.
+     *
+     * <p>Rotation is performed using Rodrigues' rotation formula.
+     *
+     * @param vector the vector
+     * @param axis the axis of rotation
+     * @param thetaDegrees the angle of rotation in degrees
+     * @return the rotated vector scaled to unit length
+     */
+    public static Double3D rotateVectorAroundAxis(
+            Double3D vector, Direction axis, double thetaDegrees) {
+        double thetaRadians = Math.toRadians(thetaDegrees);
+
+        // Normalize the axis vector
+        Double3D unitAxisVector = scaleVector(axis.vector);
+        double uX = unitAxisVector.getX();
+        double uY = unitAxisVector.getY();
+        double uZ = unitAxisVector.getZ();
+
+        double cosTheta = Math.cos(thetaRadians);
+        double sinTheta = Math.sin(thetaRadians);
+
+        // Compute the dot product (k • v)
+        double dotProduct = uX * vector.x + uY * vector.y + uZ * vector.z;
+
+        // Compute the cross product (k × v)
+        double crossX = uY * vector.z - uZ * vector.y;
+        double crossY = uZ * vector.x - uX * vector.z;
+        double crossZ = uX * vector.y - uY * vector.x;
+
+        // Compute the rotated Normal vector components
+        double rotatedX =
+                vector.x * cosTheta + crossX * sinTheta + uX * dotProduct * (1 - cosTheta);
+        double rotatedY =
+                vector.y * cosTheta + crossY * sinTheta + uY * dotProduct * (1 - cosTheta);
+        double rotatedZ =
+                vector.z * cosTheta + crossZ * sinTheta + uZ * dotProduct * (1 - cosTheta);
+
+        return new Double3D(rotatedX, rotatedY, rotatedZ);
     }
 }
