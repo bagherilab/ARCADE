@@ -4,7 +4,7 @@ The `action` tag attributes are used to create the action.
 
 - Each action must have a unique `id`
 
-Valid options for actions include:
+Valid options for classes include:
 
 {% if include.implementation == "patch" %}
 `insert`

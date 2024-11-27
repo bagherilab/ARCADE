@@ -85,10 +85,20 @@ _The lambda parameter in the volume term is set to the new value of 20._
 
 ### Example: Modifying term-specific potts parameters with target
 
-_The lambda parameter in the volume term is scaled by 2 for population A. The adhesion between population A and population B is set to the new value of 20. The adhesion between population A and the media (*) is set to the new value of 30._
+_The lambda parameter in the volume term is scaled by 2 for population A._
 
 ```xml
 <potts.parameter term="volume" id="LAMBDA" scale="2" target="A" />
+```
+
+_The adhesion between population A and population B is set to the new value of 20._
+
+```xml
 <potts.parameter term="adhesion" id="ADHESION" value="20" target="A:B" />
+```
+
+_The adhesion between population A and the media (*) is set to the new value of 30._
+
+```xml
 <potts.parameter term="adhesion" id="ADHESION" value="30" target="A:*" />
 ```
