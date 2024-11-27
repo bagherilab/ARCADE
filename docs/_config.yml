@@ -26,3 +26,8 @@ collections:
 
 plugins:
   - jekyll-github-metadata
+
+callouts:
+  warning:
+    title: Warning
+    color: red

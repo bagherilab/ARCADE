@@ -42,7 +42,7 @@ Valid distributions include:
 
 ### Example: Modifying population parameters
 
-_The critical volume parameter is set to the new value 2000. The default value of the critical height parameter is scaled by 2. The parameter cell age is set to the new value 10 * 2 = 20._
+_The critical volume parameter is set to the new value 2000. The default value of the critical height parameter is scaled by 2. The cell age parameter is set to the new value 10 * 2 = 20._
 
 ```xml
 <population.parameter id="CRITICAL_VOLUME" value="2000" />
