@@ -243,7 +243,7 @@ extends java.lang.Object</pre>
 <td class="colFirst"><code><a href="MiniBox.html" title="class in arcade.core.util">MiniBox</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#filter(java.lang.String)">filter</a></span>&#8203;(java.lang.String&nbsp;code)</code></th>
 <td class="colLast">
-<div class="block">Filters keys by the given code.</div>
+<div class="block">Filters entries for keys starting with given code.</div>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
@@ -566,11 +566,11 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>filter</h4>
 <pre class="methodSignature">public&nbsp;<a href="MiniBox.html" title="class in arcade.core.util">MiniBox</a>&nbsp;filter&#8203;(java.lang.String&nbsp;code)</pre>
-<div class="block">Filters keys by the given code.
+<div class="block">Filters entries for keys starting with given code.
 
- <p>Entries in the form "key = value" where key = code/subkey can be filtered. The returned
- box contains all entries in the form "subkey = value" for all entries where the code matches
- the given code.</div>
+ <p>Returns a MiniBox containing entries where the keys start with "code/" followed by any
+ number of subkeys. The keys in the returned MiniBox exclude the initial "code/" prefix and
+ consist only of the subkeys. The values are the same as the original MiniBox.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>code</code> - the code to filter by</dd>
