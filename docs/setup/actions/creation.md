@@ -3,6 +3,7 @@
 The `action` tag attributes are used to create the action.
 
 - Each action must have a unique `id`
+- Each action must specify a `class`
 
 Valid options for classes include:
 
