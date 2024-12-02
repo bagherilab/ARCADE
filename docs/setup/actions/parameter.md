@@ -15,20 +15,20 @@ Defaults are listed in [parameter.{{ include.implementation }}.xml](https://gith
 
 ### Example: Modifying action parameters
 
-_The time delay parameter is set to the new value 2000._
+_The insert radius parameter is set to the new value 2000._
 
 ```xml
-<action.parameter id="TIME_DELAY" value="2000" />
+<action.parameter id="INSERT_RADIUS" value="2000" />
 ```
 
-_The default value of the time delay parameter is scaled by 2._
+_The default value of the insert radius parameter is scaled by 2._
 
 ```xml
-<action.parameter id="TIME_DELAY" scale="2" />
+<action.parameter id="INSERT_RADIUS" scale="2" />
 ```
 
-_The time delay parameter is set to the new value 10 * 2 = 20._
+_The insert radius parameter is set to the new value 10 * 2 = 20._
 
 ```xml
-<action.parameter id="TIME_DELAY" value="10" scale="2" />
+<action.parameter id=T"INSERT_RADIUS" value="10" scale="2" />
 ```

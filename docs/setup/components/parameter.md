@@ -15,20 +15,20 @@ Defaults are listed in [parameter.{{ include.implementation }}.xml](https://gith
 
 ### Example: Modifying component parameters
 
-_The damage scaling parameter is set to the new value 2000._
+_The degradation rate parameter is set to the new value 2000._
 
 ```xml
-<component.parameter id="DAMAGE_SCALING" value="2000" />
+<component.parameter id="DEGRADATION_RATE" value="2000" />
 ```
 
-_The default value of the damage scaling parameter is scaled by 2._
+_The default value of the degradation rate parameter is scaled by 2._
 
 ```xml
-<component.parameter id="DAMAGE_SCALING" scale="2" />
+<component.parameter id="DEGRADATION_RATE" scale="2" />
 ```
 
-_The damage scaling parameter is set to the new value 10 * 2 = 20._
+_The degradation rate parameter is set to the new value 10 * 2 = 20._
 
 ```xml
-<component.parameter id="DAMAGE_SCALING" value="10" scale="2" />
+<component.parameter id="DEGRADATION_RATE" value="10" scale="2" />
 ```

@@ -1,6 +1,6 @@
 ## Action creation
 
-The `action` tag attributes are used to create the action.
+The `action` tag attributes are used to create an action.
 
 - Each action must have a unique `id`
 - Each action must specify a `class`

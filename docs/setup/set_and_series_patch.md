@@ -28,8 +28,8 @@ A `set` can include multiple `series` tags.
 | `name`     | name of the simulation series for output files | string                   |         |
 | `start`    | starting random seed                           | integer                  | 0       |
 | `end`      | ending random seed                             | integer                  | 0       |
-| `radius`   | radius of the simulation environment           | integer                  | 100     |
-| `depth`    | depth of the simulation environment            | integer                  | 100     |
+| `radius`   | radius of the simulation environment           | integer                  | 1       |
+| `depth`    | depth of the simulation environment            | integer                  | 1       |
 | `margin`   | simulation environment margin                  | integer                  | 0       |
 | `ticks`    | total number of simulation ticks               | integer                  | 100     |
 | `interval` | number of ticks between snapshots              | integer                  | 50      |
