@@ -1,22 +1,12 @@
 package arcade.potts.env.location;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sim.util.Double3D;
-import ec.util.MersenneTwisterFast;
-import arcade.potts.util.PottsEnums.Direction;
 import static org.junit.jupiter.api.Assertions.*;
 import static arcade.potts.util.PottsEnums.Direction;
 
 public class PlaneTest {
-    private static final double EPSILON = 1E-10;
-    static MersenneTwisterFast random;
-    ;
-
-    @BeforeAll
-    public static void setupMocks() {
-        random = mock(MersenneTwisterFast.class);
-    }
+    static final double EPSILON = 0.0001;
 
     @Test
     public void constructor_givenPointAndUnitVector_returnsCorrectPlane() {
@@ -175,6 +165,8 @@ public class PlaneTest {
     public void rotateVectorAroundAxis_called_vectorMagnitudePreserved() {
         Double3D normalVector = new Double3D(5, 0, 0);
         Direction axis = Direction.XY_PLANE;
+        double thetaDegrees = 90.0;
+
         Double3D rotatedVector = Plane.rotateVectorAroundAxis(normalVector, axis, thetaDegrees);
 
         double magnitude = Plane.getVectorMagnitude(rotatedVector);
@@ -198,6 +190,7 @@ public class PlaneTest {
         Double3D normalVector = new Double3D(0.0, 1.0, 0.0);
         Direction axis = Direction.YZ_PLANE;
         double thetaDegrees = 90.0;
+
         Double3D rotatedVector = Plane.rotateVectorAroundAxis(normalVector, axis, thetaDegrees);
         assertEquals(0.0, rotatedVector.x, EPSILON);
         assertEquals(0.0, rotatedVector.y, EPSILON);
@@ -209,6 +202,7 @@ public class PlaneTest {
         Double3D normalVector = new Double3D(1.0, 0.0, 0.0);
         Direction axis = Direction.ZX_PLANE;
         double thetaDegrees = 90.0;
+
         Double3D rotatedVector = Plane.rotateVectorAroundAxis(normalVector, axis, thetaDegrees);
 
         assertEquals(0.0, rotatedVector.x, EPSILON);

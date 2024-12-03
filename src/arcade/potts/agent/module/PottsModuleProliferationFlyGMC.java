@@ -14,6 +14,7 @@ import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.State;
 
 public class PottsModuleProliferationFlyGMC extends PottsModuleProliferationSimple {
+
     public PottsModuleProliferationFlyGMC(PottsCellFlyGMC cell) {
         super(cell);
     }

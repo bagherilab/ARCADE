@@ -13,14 +13,14 @@ public class PottsCellFlyStem extends PottsCell {
 
     /** Enum outlining parameters for each cell type */
     public enum StemType {
-        WT(50, 75, Direction.ZX_PLANE, 1.0),
-        MUDMUT1_RANDOM(50, 50, Direction.YZ_PLANE, 0.5),
-        MUDMUT1_LEFT(50, 50, Direction.YZ_PLANE, 1.0),
-        MUDMUT2_RANDOM(50, 50, Direction.YZ_PLANE, 0.5),
-        INVERT1_BASAL(50, 33, Direction.ZX_PLANE, 0.0),
-        INVERT2BASAL_OR_BOTH(50, 33, Direction.ZX_PLANE, 0.0),
-        SYMMETRIC1_APICAL(50, 50, Direction.ZX_PLANE, 1.0),
-        SYMMETRIC2APICAL_OR_BOTH(50, 50, Direction.ZX_PLANE, 1.0);
+        WT(50, 75, Direction.ZX_PLANE, 1.0, 0.5),
+        MUDMUT1_RANDOM(50, 50, Direction.YZ_PLANE, 0.5, 0.5),
+        MUDMUT1_LEFT(50, 50, Direction.YZ_PLANE, 1.0, 0.5),
+        MUDMUT2_RANDOM(50, 50, Direction.YZ_PLANE, 0.5, 0.5),
+        INVERT1_BASAL(50, 33, Direction.ZX_PLANE, 0.0, 0.5),
+        INVERT2BASAL_OR_BOTH(50, 33, Direction.ZX_PLANE, 0.0, 0.5),
+        SYMMETRIC1_APICAL(50, 50, Direction.ZX_PLANE, 1.0, 0.5),
+        SYMMETRIC2APICAL_OR_BOTH(50, 50, Direction.ZX_PLANE, 1.0, 0.5);
 
         /** Percentage x offset from cell edge where division will occur */
         public final int splitOffsetPercentX;
@@ -39,16 +39,24 @@ public class PottsCellFlyStem extends PottsCell {
          */
         public final double splitSelectionProbability;
 
+        /**
+         * The proportion of the stem cell's critical volume that will be the daughter cell's
+         * critical volume.
+         */
+        public final double daughterCellCriticalVolumeProportion;
+
         // Constructor
         StemType(
                 int splitOffsetPercentX,
                 int splitOffsetPercentY,
                 Direction splitDirection,
-                double voxelGroupSelectionProbability) {
+                double voxelGroupSelectionProbability,
+                double daughterCellCriticalVolumeProportion) {
             this.splitOffsetPercentX = splitOffsetPercentX;
             this.splitOffsetPercentY = splitOffsetPercentY;
             this.splitDirection = splitDirection;
             this.splitSelectionProbability = voxelGroupSelectionProbability;
+            this.daughterCellCriticalVolumeProportion = daughterCellCriticalVolumeProportion;
         }
     }
 
@@ -94,6 +102,9 @@ public class PottsCellFlyStem extends PottsCell {
 
         int newPop = links == null ? pop : links.next(random);
 
+        double daughterCellCriticalVolume =
+                criticalVolume * stemType.daughterCellCriticalVolumeProportion;
+
         return new PottsCellContainer(
                 newID,
                 id,
@@ -104,7 +115,7 @@ public class PottsCellFlyStem extends PottsCell {
                 null,
                 0,
                 null,
-                criticalVolume,
+                daughterCellCriticalVolume,
                 criticalHeight,
                 criticalRegionVolumes,
                 criticalRegionHeights);

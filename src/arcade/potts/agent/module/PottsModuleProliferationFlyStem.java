@@ -18,7 +18,6 @@ import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.Direction;
-import arcade.potts.util.PottsEnums.State;
 import static arcade.potts.util.PottsEnums.State;
 
 /**
@@ -52,18 +51,14 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
     }
 
     public Plane getDivisionPlaneWithRotationalVariance(PottsCellFlyStem cell) {
-
-        // Get original split direction
         Double3D plainSplitNormal = cell.stemType.splitDirection.vector;
-
-        // Create and return the new Plane
-        return new Plane(
-                getCellSplitLocation(cell),
-                Plane.rotateUnitNormalAroundAxis(
-                        plainSplitNormal, Direction.ZX_PLANE, getDivisionPlaneRotationOffset()));
+        Double3D rotatedNormalVector =
+                Plane.rotateVectorAroundAxis(
+                        plainSplitNormal, Direction.XY_PLANE, getDivisionPlaneRotationOffset());
+        return new Plane(getCellSplitLocation(cell), rotatedNormalVector);
     }
 
-    Plane getDivisionPlaneDeterministic(PottsCellFlyStem cell, MersenneTwisterFast random) {
+    Plane getDivisionPlaneDeterministic(PottsCellFlyStem cell) {
         return new Plane(getCellSplitLocation(cell), cell.stemType.splitDirection);
     }
 
