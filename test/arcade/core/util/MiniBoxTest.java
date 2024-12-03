@@ -367,10 +367,8 @@ public class MiniBoxTest {
         String code = randomString();
         String subcode = randomString();
         String value = randomString();
-
-        box.put(code + TAG_SEPARATOR + subcode, value);
-
-        MiniBox filtered = box.filter(subcode);
+        box.put(subcode + TAG_SEPARATOR + code, value);
+        MiniBox filtered = box.filter(code);
         assertTrue(filtered.keys.isEmpty());
         assertTrue(filtered.contents.isEmpty());
     }

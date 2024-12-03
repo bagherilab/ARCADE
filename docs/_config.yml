@@ -19,14 +19,10 @@ defaults:
       layout: "default"
 
 collections:
+  publications:
+    output: false
   changelog:
     output: false
-
-just_the_docs:
-  collections:
-    changelog:
-      name: Changelog
-      nav_exclude: true
 
 plugins:
   - jekyll-github-metadata
