@@ -13,7 +13,7 @@ public class PottsCellFlyStem extends PottsCell {
 
     /** Enum outlining parameters for each cell type */
     public enum StemType {
-        WT(50, 75, Direction.ZX_PLANE, 1.0, 0.5),
+        WT(50, 75, Direction.ZX_PLANE, 1.0, 0.2),
         MUDMUT1_RANDOM(50, 50, Direction.YZ_PLANE, 0.5, 0.5),
         MUDMUT1_LEFT(50, 50, Direction.YZ_PLANE, 1.0, 0.5),
         MUDMUT2_RANDOM(50, 50, Direction.YZ_PLANE, 0.5, 0.5),
