@@ -158,11 +158,11 @@ public class MiniBox {
     }
 
     /**
-     * Filters keys by the given code.
+     * Filters entries for keys starting with given code.
      *
-     * <p>Entries in the form "key = value" where key = code/subkey can be filtered. The returned
-     * box contains all entries in the form "subkey = value" for all entries where the code matches
-     * the given code.
+     * <p>Returns a MiniBox containing entries where the keys start with "code/" followed by any
+     * number of subkeys. The keys in the returned MiniBox exclude the initial "code/" prefix and
+     * consist only of the subkeys. The values are the same as the original MiniBox.
      *
      * @param code the code to filter by
      * @return the filtered box
@@ -170,7 +170,7 @@ public class MiniBox {
     public MiniBox filter(String code) {
         MiniBox results = new MiniBox();
         for (String key : keys) {
-            String[] split = key.split(TAG_SEPARATOR);
+            String[] split = key.split(TAG_SEPARATOR, 2);
             if (split.length == 2 && split[0].equals(code)) {
                 results.put(split[1], contents.get(key));
             }
