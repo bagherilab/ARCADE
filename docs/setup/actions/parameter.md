@@ -30,5 +30,5 @@ _The default value of the insert radius parameter is scaled by 2._
 _The insert radius parameter is set to the new value 10 * 2 = 20._
 
 ```xml
-<action.parameter id=T"INSERT_RADIUS" value="10" scale="2" />
+<action.parameter id="INSERT_RADIUS" value="10" scale="2" />
 ```
