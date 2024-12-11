@@ -34,11 +34,20 @@ Valid options include:
 `volume`
 : Target area (2D) or volume (3D) constraint
 
+`surface`
+: Target perimeter (2D) or surface area (3D) constraint
+
+`height`
+: Target height constraint (3D only)
+
 `adhesion`
 : Adhesion contact energy (2D and 3D)
 
 `substrate`
 : Differential substrate adhesion contact energy (3D only)
+
+`persistence`
+: Persistence energy (2D and 3D)
 
 ### Example: Including volume and adhesion Hamiltonian terms
 
