@@ -15,6 +15,8 @@ Valid options include:
 | `id`      | process option id                         |
 | `version` | process version                           |
 
+To modify process parameters, use the [`population.parameter`](#population-parameters) tag with the corresponding `process` attribute.
+
 ### Example: Including process versions
 
 _Specifies a population with complex metabolism and simple signaling processes._

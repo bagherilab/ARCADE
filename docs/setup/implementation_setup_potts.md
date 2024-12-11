@@ -49,6 +49,8 @@ Valid options include:
 `persistence`
 : Persistence energy (2D and 3D)
 
+To modify Hamiltonian term parameters, use the [`potts.parameter`](#implementation-parameters) tag with the corresponding `term` attribute.
+
 ### Example: Including volume and adhesion Hamiltonian terms
 
 _Specifies a Hamiltonian with the volume and adhesion terms._

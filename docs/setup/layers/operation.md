@@ -7,11 +7,13 @@ Valid options include:
 : Operation for generating the quantity in the lattice
 
 `DIFFUSER`
-: Operation for diffusion the quantity in the lattice
+: Operation for diffusing the quantity in the lattice
 
 | ATTRIBUTE | DESCRIPTION                               |
 | --------- | ----------------------------------------- |
 | `id`      | operation option id                       |
+
+To modify operation parameters, use the [`layer.parameter`](#layer-parameters) tag with the corresponding `operation` attribute.
 
 ### Example: Including operation versions
 
