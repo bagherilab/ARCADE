@@ -45,3 +45,5 @@ For 2D simulations, `length` and `width` must be at least 3 for valid simulation
 For 3D simulations, `length`, `width`, and `height` must be at least 3 for valid simulations.
 
 The initialization `margin` defines the number of voxels in the x and y directions that are not used when initializing cells.
+
+{% include_relative set_and_series_examples.md %}

@@ -39,3 +39,5 @@ Values for `radius` and `margin` must be even and `depth` must be odd; if not, g
 
 Spatial scaling `ds` and `dz` are automatically set based on simulation geometry.
 Temporal scaling `dt` is assumed to be 1 min/tick.
+
+{% include_relative set_and_series_examples.md %}
