@@ -107,6 +107,8 @@ jobs:
           coverage
 
   update-documentation-badges:
+    if: ${{ always() && github.ref == 'refs/heads/main' }}
+
     runs-on: ubuntu-latest
 
     needs: deploy-github-pages
@@ -125,6 +127,14 @@ jobs:
         color: yellowgreen
         template: docs/badges/template.svg
         overwrite: true
+
+    - name: Get build result
+      run: |
+        if [[ ${{ needs.deploy-github-pages.result }} == "success" ]]; then
+          exit 0
+        else
+          exit 1
+        fi
 
     - name: Generate passing badge
       if: success()
