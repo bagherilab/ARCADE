@@ -3,6 +3,7 @@ package arcade.core.sim.input;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 
@@ -237,6 +238,38 @@ public class InputParser {
                     + (shortFlag == null ? "" : String.format(format, "[short]", shortFlag))
                     + (longFlag == null ? "" : String.format(format, "[long]", longFlag));
         }
+    }
+
+    /**
+     * Render help message.
+     *
+     * @param program the command for running the program
+     * @return the help message
+     */
+    public String help(String program) {
+        String usage =
+                allCommands.stream()
+                        .filter(command -> command.type == POSITION)
+                        .map(Command::toUsage)
+                        .collect(Collectors.joining(""));
+
+        String arguments =
+                allCommands.stream()
+                        .filter(command -> command.type == POSITION)
+                        .map(Command::toDescription)
+                        .collect(Collectors.joining(""));
+
+        String options =
+                allCommands.stream()
+                        .filter(command -> command.type != POSITION)
+                        .map(Command::toDescription)
+                        .collect(Collectors.joining(""));
+
+        return String.format("\nUsage:\n  %s%s [options]", program, usage)
+                + String.format("\n  %s (-h | --help)", program)
+                + String.format("\n  %s --version\n", program)
+                + String.format("\nArguments:\n%s", arguments)
+                + String.format("\nOptions:\n%s", options);
     }
 
     /**
