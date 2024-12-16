@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Scanner;
@@ -101,6 +102,18 @@ public abstract class ARCADE {
             throw new InvalidParameterException();
         }
 
+        // Display current model version and exit.
+        if (args[0].equals("--version")) {
+            System.out.println(loadVersion());
+            System.exit(0);
+        }
+
+        // Display help message if any help flags exist and exit.
+        if (Arrays.stream(args).anyMatch(s -> s.equals("-h") || s.equals("--help"))) {
+            System.out.println(renderHelp());
+            System.exit(0);
+        }
+
         // Extract ARCADE type.
         ARCADE arcade;
 
@@ -168,6 +181,18 @@ public abstract class ARCADE {
         } catch (Exception e) {
             return "<undefined>";
         }
+    }
+
+    /**
+     * Render help message.
+     *
+     * @return the help message
+     */
+    static String renderHelp() throws IOException, SAXException {
+        InputLoader loader = new InputLoader();
+        Box commands = loader.load(ARCADE.class.getResource("command.xml").toString());
+        InputParser parser = new InputParser(commands);
+        return parser.help("java -jar arcade-X.X.X.jar");
     }
 
     /**
