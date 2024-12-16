@@ -7609,4 +7609,77 @@ div.opaque {
   background-color: #27262b;
 }
 
+p.warning, blockquote.warning {
+  background: rgba(221, 46, 46, 0.2);
+  border-left: 4px solid #f77e7e;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 3px 10px rgba(0, 0, 0, 0.08);
+  padding: 0.8rem;
+}
+p.warning::before, blockquote.warning::before {
+  color: #f77e7e;
+  content: "Warning";
+  display: block;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.75em;
+  padding-bottom: 0.125rem;
+}
+p.warning > .warning-title, blockquote.warning > .warning-title {
+  color: #f77e7e;
+  display: block;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.75em;
+  padding-bottom: 0.125rem;
+}
+
+p.warning-title, blockquote.warning-title {
+  background: rgba(221, 46, 46, 0.2);
+  border-left: 4px solid #f77e7e;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 3px 10px rgba(0, 0, 0, 0.08);
+  padding: 0.8rem;
+}
+p.warning-title > p:first-child, blockquote.warning-title > p:first-child {
+  margin-top: 0;
+  margin-bottom: 0;
+  color: #f77e7e;
+  display: block;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.75em;
+  padding-bottom: 0.125rem;
+}
+
+blockquote.warning {
+  margin-left: 0;
+  margin-right: 0;
+}
+blockquote.warning > p:first-child {
+  margin-top: 0;
+}
+blockquote.warning > p:last-child {
+  margin-bottom: 0;
+}
+
+blockquote.warning-title {
+  margin-left: 0;
+  margin-right: 0;
+}
+blockquote.warning-title > p:nth-child(2) {
+  margin-top: 0;
+}
+blockquote.warning-title > p:last-child {
+  margin-bottom: 0;
+}
+
+#markdown-toc > li > a {
+  font-weight: bold;
+}
+
+#markdown-toc > li > ul > li > ul > li > a {
+  font-style: italic;
+}
+
 /*# sourceMappingURL=just-the-docs-dark.css.map */
