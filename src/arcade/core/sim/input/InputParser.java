@@ -184,6 +184,46 @@ public class InputParser {
         }
 
         /**
+         * Convert command to usage.
+         *
+         * <p>Usage depends on the command type.
+         *
+         * @return the command usage
+         */
+        public String toUsage() {
+            if (type == POSITION) {
+                return String.format(" %s", id);
+            } else if (type == OPTION) {
+                return String.format(" [--%s <%s>]", longFlag, id.toLowerCase());
+            } else if (type == SWITCH) {
+                return String.format(" [(-%s|--%s)]", shortFlag, longFlag);
+            } else {
+                return "";
+            }
+        }
+
+        /**
+         * Convert command to description.
+         *
+         * <p>Description depends on the command type.
+         *
+         * @return the command description.
+         */
+        public String toDescription() {
+            String description = "";
+
+            if (type == POSITION) {
+                description = id;
+            } else if (type == OPTION) {
+                description = String.format("--%s <%s>", longFlag, id.toLowerCase());
+            } else if (type == SWITCH) {
+                description = String.format("-%s --%s", shortFlag, longFlag);
+            }
+
+            return String.format("  %-23s  %s.\n", description, help);
+        }
+
+        /**
          * Formats command as a string.
          *
          * @return a string representation of the command
