@@ -127,7 +127,10 @@ public abstract class ARCADE {
                 arcade = new PottsARCADE();
                 break;
             default:
-                logger.warning("ARCADE [ " + args[0] + " ] does not exist");
+                logger.warning(
+                        "ARCADE implementation [ "
+                                + args[0]
+                                + " ] does not exist. Valid implementations: patch | potts");
                 throw new InvalidParameterException();
         }
 

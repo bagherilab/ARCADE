@@ -41,6 +41,9 @@ public class InputParser {
     /** Logger for {@code InputParser}. */
     private static final Logger LOGGER = Logger.getLogger(InputParser.class.getName());
 
+    /** Help message shown when invalid arguments are passed. */
+    private static final String HELP_MESSAGE = " Run with -h or --help for usage instructions.";
+
     /** ID for position commands. */
     static final int POSITION = 0;
 
@@ -286,7 +289,7 @@ public class InputParser {
         parseArguments(args);
 
         if (positionIndex != positionCommands.size()) {
-            LOGGER.severe("missing position arguments");
+            LOGGER.severe("Missing positional arguments." + HELP_MESSAGE);
             throw new IllegalArgumentException();
         } else {
             LOGGER.config("successfully parsed commands\n\n" + parsed.toString());
@@ -342,6 +345,11 @@ public class InputParser {
      * @return the next argument index
      */
     int parseFlaggedArgument(String[] args, int index, Command cmd) {
+        if (cmd == null) {
+            LOGGER.severe("Invalid command [ " + args[index] + " ]." + HELP_MESSAGE);
+            throw new IllegalArgumentException();
+        }
+
         if (cmd.type == SWITCH) {
             parsed.put(cmd.id, "");
         } else {
