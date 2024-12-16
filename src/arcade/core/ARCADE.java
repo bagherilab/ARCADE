@@ -266,16 +266,16 @@ public abstract class ARCADE {
      */
     ArrayList<Series> buildSeries(Box parameters, MiniBox settings)
             throws IOException, SAXException {
-        String xml = settings.get("XML");
-        String path = settings.get("PATH");
+        String setupFile = settings.get("SETUP_FILE");
+        String snapshotPath = settings.get("SNAPSHOT_PATH");
         boolean isVis = settings.contains("VIS");
 
         InputBuilder builder = this.getBuilder();
-        builder.path = path.endsWith("/") ? path : (path + "/");
+        builder.path = snapshotPath.endsWith("/") ? snapshotPath : (snapshotPath + "/");
         builder.parameters = parameters;
         builder.isVis = isVis;
 
-        return builder.build(xml);
+        return builder.build(setupFile);
     }
 
     /**
@@ -289,9 +289,9 @@ public abstract class ARCADE {
      */
     void runSeries(ArrayList<Series> series, MiniBox settings) throws Exception {
         boolean isVis = settings.contains("VIS");
-        String loadPath = settings.get("LOADPATH");
-        boolean loadCells = settings.contains("LOADCELLS");
-        boolean loadLocations = settings.contains("LOADLOCATIONS");
+        String loadPath = settings.get("LOAD_PATH");
+        boolean loadCells = settings.contains("LOAD_CELLS");
+        boolean loadLocations = settings.contains("LOADL_OCATIONS");
 
         // Iterate through each series and run.
         for (Series s : series) {

@@ -20,9 +20,9 @@ import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 
 public class ARCADETest {
-    private static final String XML = randomString();
+    private static final String SETUP_FILE = randomString();
 
-    private static final String PATH = randomString();
+    private static final String SNAPSHOT_PATH = randomString();
 
     private static final String IMPLEMENTATION = randomString();
 
@@ -61,7 +61,7 @@ public class ARCADETest {
                                     return seriesList;
                                 })
                         .when(builder)
-                        .build(eq(XML));
+                        .build(eq(SETUP_FILE));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -157,8 +157,8 @@ public class ARCADETest {
     public void buildSeries_noVis_returnsList() throws IOException, SAXException {
         Box parameters = new Box();
         MiniBox settings = new MiniBox();
-        settings.put("XML", XML);
-        settings.put("PATH", PATH);
+        settings.put("SETUP_FILE", SETUP_FILE);
+        settings.put("SNAPSHOT_PATH", SNAPSHOT_PATH);
 
         ARCADE arcade = new MockARCADE();
         ArrayList<Series> series = arcade.buildSeries(parameters, settings);
@@ -171,8 +171,8 @@ public class ARCADETest {
     public void buildSeries_withVis_returnsList() throws IOException, SAXException {
         Box parameters = new Box();
         MiniBox settings = new MiniBox();
-        settings.put("XML", XML);
-        settings.put("PATH", PATH);
+        settings.put("SETUP_FILE", SETUP_FILE);
+        settings.put("SNAPSHOT_PATH", SNAPSHOT_PATH);
         settings.put("VIS", "");
 
         ARCADE arcade = new MockARCADE();
@@ -186,8 +186,8 @@ public class ARCADETest {
     public void buildSeries_withPathSeparator_returnsList() throws IOException, SAXException {
         Box parameters = new Box();
         MiniBox settings = new MiniBox();
-        settings.put("XML", XML);
-        settings.put("PATH", PATH + "/");
+        settings.put("SETUP_FILE", SETUP_FILE);
+        settings.put("SNAPSHOT_PATH", SNAPSHOT_PATH + "/");
 
         ARCADE arcade = new MockARCADE();
         ArrayList<Series> series = arcade.buildSeries(parameters, settings);
@@ -327,7 +327,7 @@ public class ARCADETest {
         series.add(mock(Series.class));
 
         MiniBox settings = new MiniBox();
-        settings.put("LOADCELLS", "");
+        settings.put("LOAD_CELLS", "");
 
         ARCADE arcade = new MockARCADE();
         arcade.runSeries(series, settings);
@@ -342,7 +342,7 @@ public class ARCADETest {
         series.add(mock(Series.class));
 
         MiniBox settings = new MiniBox();
-        settings.put("LOADLOCATIONS", "");
+        settings.put("LOAD_LOCATIONS", "");
 
         ARCADE arcade = new MockARCADE();
         arcade.runSeries(series, settings);
@@ -357,8 +357,8 @@ public class ARCADETest {
         series.add(mock(Series.class));
 
         MiniBox settings = new MiniBox();
-        settings.put("LOADCELLS", "");
-        settings.put("LOADLOCATIONS", "");
+        settings.put("LOAD_CELLS", "");
+        settings.put("LOAD_LOCATIONS", "");
 
         ARCADE arcade = new MockARCADE();
         arcade.runSeries(series, settings);
