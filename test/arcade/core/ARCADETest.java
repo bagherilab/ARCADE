@@ -108,7 +108,7 @@ public class ARCADETest {
         ARCADE arcade = new MockARCADE(path);
         Box commands = arcade.loadCommands(IMPLEMENTATION);
 
-        assertEquals("POSITION", commands.getTag("ARCADE"));
+        assertEquals("POSITION", commands.getTag("IMPLEMENTATION_TYPE"));
         assertEquals("SWITCH", commands.getTag("MOCK"));
     }
 

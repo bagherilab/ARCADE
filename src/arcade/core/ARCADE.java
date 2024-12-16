@@ -291,7 +291,7 @@ public abstract class ARCADE {
         boolean isVis = settings.contains("VIS");
         String loadPath = settings.get("LOAD_PATH");
         boolean loadCells = settings.contains("LOAD_CELLS");
-        boolean loadLocations = settings.contains("LOADL_OCATIONS");
+        boolean loadLocations = settings.contains("LOAD_LOCATIONS");
 
         // Iterate through each series and run.
         for (Series s : series) {
