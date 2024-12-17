@@ -3,6 +3,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 
@@ -38,7 +39,10 @@ import arcade.core.util.MiniBox;
  */
 public class InputParser {
     /** Logger for {@code InputParser}. */
-<span class="fc" id="L41">    private static final Logger LOGGER = Logger.getLogger(InputParser.class.getName());</span>
+<span class="fc" id="L42">    private static final Logger LOGGER = Logger.getLogger(InputParser.class.getName());</span>
+
+    /** Help message shown when invalid arguments are passed. */
+    private static final String HELP_MESSAGE = &quot; Run with -h or --help for usage instructions.&quot;;
 
     /** ID for position commands. */
     static final int POSITION = 0;
@@ -72,77 +76,77 @@ public class InputParser {
      *
      * @param options the map of command line options
      */
-<span class="fc" id="L75">    public InputParser(Box options) {</span>
+<span class="fc" id="L79">    public InputParser(Box options) {</span>
         // Initialize maps to commands.
-<span class="fc" id="L77">        allCommands = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L78">        shortToCommand = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L79">        longToCommand = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L80">        positionCommands = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L81">        allCommands = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L82">        shortToCommand = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L83">        longToCommand = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L84">        positionCommands = new ArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L82">        LOGGER.config(&quot;configuring parser&quot;);</span>
+<span class="fc" id="L86">        LOGGER.config(&quot;configuring parser&quot;);</span>
 
         // Create a Command object for each entry.
-<span class="fc bfc" id="L85" title="All 2 branches covered.">        for (String id : options.getKeys()) {</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        for (String id : options.getKeys()) {</span>
             // Create appropriate command type object.
             Command cmd;
-<span class="fc bfc" id="L88" title="All 4 branches covered.">            switch (options.getTag(id)) {</span>
+<span class="fc bfc" id="L92" title="All 4 branches covered.">            switch (options.getTag(id)) {</span>
                 case &quot;POSITION&quot;:
-<span class="fc" id="L90">                    cmd = new Command(id, POSITION);</span>
-<span class="fc" id="L91">                    break;</span>
+<span class="fc" id="L94">                    cmd = new Command(id, POSITION);</span>
+<span class="fc" id="L95">                    break;</span>
                 case &quot;OPTION&quot;:
-<span class="fc" id="L93">                    cmd = new Command(id, OPTION);</span>
-<span class="fc" id="L94">                    break;</span>
+<span class="fc" id="L97">                    cmd = new Command(id, OPTION);</span>
+<span class="fc" id="L98">                    break;</span>
                 case &quot;SWITCH&quot;:
-<span class="fc" id="L96">                    cmd = new Command(id, SWITCH);</span>
-<span class="fc" id="L97">                    break;</span>
+<span class="fc" id="L100">                    cmd = new Command(id, SWITCH);</span>
+<span class="fc" id="L101">                    break;</span>
                 default:
-<span class="fc" id="L99">                    continue;</span>
+<span class="fc" id="L103">                    continue;</span>
             }
 
             // Modify selected attributes.
-<span class="fc" id="L103">            MiniBox atts = options.getAttValForId(id);</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">            for (String att : atts.getKeys()) {</span>
-<span class="fc" id="L105">                String val = atts.get(att);</span>
+<span class="fc" id="L107">            MiniBox atts = options.getAttValForId(id);</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">            for (String att : atts.getKeys()) {</span>
+<span class="fc" id="L109">                String val = atts.get(att);</span>
 
-<span class="fc bfc" id="L107" title="All 5 branches covered.">                switch (att) {</span>
+<span class="fc bfc" id="L111" title="All 5 branches covered.">                switch (att) {</span>
                     case &quot;help&quot;:
-<span class="fc" id="L109">                        cmd.help = val;</span>
-<span class="fc" id="L110">                        break;</span>
+<span class="fc" id="L113">                        cmd.help = val;</span>
+<span class="fc" id="L114">                        break;</span>
                     case &quot;default&quot;:
-<span class="fc bfc" id="L112" title="All 4 branches covered.">                        if (cmd.type != POSITION &amp;&amp; cmd.type != SWITCH) {</span>
-<span class="fc" id="L113">                            cmd.defaults = val;</span>
+<span class="fc bfc" id="L116" title="All 4 branches covered.">                        if (cmd.type != POSITION &amp;&amp; cmd.type != SWITCH) {</span>
+<span class="fc" id="L117">                            cmd.defaults = val;</span>
                         }
                         break;
                     case &quot;short&quot;:
-<span class="fc bfc" id="L117" title="All 2 branches covered.">                        if (cmd.type != POSITION) {</span>
-<span class="fc" id="L118">                            cmd.shortFlag = val;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">                        if (cmd.type != POSITION) {</span>
+<span class="fc" id="L122">                            cmd.shortFlag = val;</span>
                         }
                         break;
                     case &quot;long&quot;:
-<span class="fc bfc" id="L122" title="All 2 branches covered.">                        if (cmd.type != POSITION) {</span>
-<span class="fc" id="L123">                            cmd.longFlag = val;</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">                        if (cmd.type != POSITION) {</span>
+<span class="fc" id="L127">                            cmd.longFlag = val;</span>
                         }
                         break;
                     default:
                         break;
                 }
-<span class="fc" id="L129">            }</span>
+<span class="fc" id="L133">            }</span>
 
-<span class="fc" id="L131">            allCommands.add(cmd);</span>
-<span class="fc bfc" id="L132" title="All 2 branches covered.">            if (cmd.type != POSITION) {</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">                if (cmd.shortFlag != null) {</span>
-<span class="fc" id="L134">                    shortToCommand.put(cmd.shortFlag, cmd);</span>
+<span class="fc" id="L135">            allCommands.add(cmd);</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">            if (cmd.type != POSITION) {</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">                if (cmd.shortFlag != null) {</span>
+<span class="fc" id="L138">                    shortToCommand.put(cmd.shortFlag, cmd);</span>
                 }
-<span class="fc bfc" id="L136" title="All 2 branches covered.">                if (cmd.longFlag != null) {</span>
-<span class="fc" id="L137">                    longToCommand.put(cmd.longFlag, cmd);</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">                if (cmd.longFlag != null) {</span>
+<span class="fc" id="L141">                    longToCommand.put(cmd.longFlag, cmd);</span>
                 }
             } else {
-<span class="fc" id="L140">                positionCommands.add(cmd);</span>
+<span class="fc" id="L144">                positionCommands.add(cmd);</span>
             }
-<span class="fc" id="L142">        }</span>
+<span class="fc" id="L146">        }</span>
 
-<span class="fc" id="L144">        LOGGER.config(&quot;successfully configured command line parser\n\n&quot; + this.toString());</span>
-<span class="fc" id="L145">    }</span>
+<span class="fc" id="L148">        LOGGER.config(&quot;successfully configured command line parser\n\n&quot; + this.toString());</span>
+<span class="fc" id="L149">    }</span>
 
     /**
      * Container class for arguments of a command.
@@ -152,7 +156,7 @@ public class InputParser {
      */
     static class Command {
         /** Format string. */
-<span class="fc" id="L155">        String format = &quot;\t%20s %s\n&quot;;</span>
+<span class="fc" id="L159">        String format = &quot;\t%20s %s\n&quot;;</span>
 
         /** Command type. */
         int type;
@@ -178,10 +182,50 @@ public class InputParser {
          * @param id the unique id of the command
          * @param type the command type
          */
-<span class="fc" id="L181">        Command(String id, int type) {</span>
-<span class="fc" id="L182">            this.id = id;</span>
-<span class="fc" id="L183">            this.type = type;</span>
-<span class="fc" id="L184">        }</span>
+<span class="fc" id="L185">        Command(String id, int type) {</span>
+<span class="fc" id="L186">            this.id = id;</span>
+<span class="fc" id="L187">            this.type = type;</span>
+<span class="fc" id="L188">        }</span>
+
+        /**
+         * Convert command to usage.
+         *
+         * &lt;p&gt;Usage depends on the command type.
+         *
+         * @return the command usage
+         */
+        public String toUsage() {
+<span class="nc bnc" id="L198" title="All 2 branches missed.">            if (type == POSITION) {</span>
+<span class="nc" id="L199">                return String.format(&quot; %s&quot;, id);</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">            } else if (type == OPTION) {</span>
+<span class="nc" id="L201">                return String.format(&quot; [--%s &lt;%s&gt;]&quot;, longFlag, id.toLowerCase());</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">            } else if (type == SWITCH) {</span>
+<span class="nc" id="L203">                return String.format(&quot; [(-%s|--%s)]&quot;, shortFlag, longFlag);</span>
+            } else {
+<span class="nc" id="L205">                return &quot;&quot;;</span>
+            }
+        }
+
+        /**
+         * Convert command to description.
+         *
+         * &lt;p&gt;Description depends on the command type.
+         *
+         * @return the command description.
+         */
+        public String toDescription() {
+<span class="nc" id="L217">            String description = &quot;&quot;;</span>
+
+<span class="nc bnc" id="L219" title="All 2 branches missed.">            if (type == POSITION) {</span>
+<span class="nc" id="L220">                description = id;</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">            } else if (type == OPTION) {</span>
+<span class="nc" id="L222">                description = String.format(&quot;--%s &lt;%s&gt;&quot;, longFlag, id.toLowerCase());</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">            } else if (type == SWITCH) {</span>
+<span class="nc" id="L224">                description = String.format(&quot;-%s --%s&quot;, shortFlag, longFlag);</span>
+            }
+
+<span class="nc" id="L227">            return String.format(&quot;  %-23s  %s.\n&quot;, description, help);</span>
+        }
 
         /**
          * Formats command as a string.
@@ -189,14 +233,46 @@ public class InputParser {
          * @return a string representation of the command
          */
         public String toString() {
-<span class="fc" id="L192">            return &quot;\t&quot;</span>
-<span class="fc" id="L193">                    + id.toUpperCase()</span>
+<span class="fc" id="L236">            return &quot;\t&quot;</span>
+<span class="fc" id="L237">                    + id.toUpperCase()</span>
                     + &quot;\n&quot;
-<span class="fc bfc" id="L195" title="All 2 branches covered.">                    + (help == null ? &quot;&quot; : String.format(format, &quot;[help]&quot;, help))</span>
-<span class="fc bfc" id="L196" title="All 2 branches covered.">                    + (defaults == null ? &quot;&quot; : String.format(format, &quot;[default]&quot;, defaults))</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">                    + (shortFlag == null ? &quot;&quot; : String.format(format, &quot;[short]&quot;, shortFlag))</span>
-<span class="fc bfc" id="L198" title="All 2 branches covered.">                    + (longFlag == null ? &quot;&quot; : String.format(format, &quot;[long]&quot;, longFlag));</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">                    + (help == null ? &quot;&quot; : String.format(format, &quot;[help]&quot;, help))</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">                    + (defaults == null ? &quot;&quot; : String.format(format, &quot;[default]&quot;, defaults))</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">                    + (shortFlag == null ? &quot;&quot; : String.format(format, &quot;[short]&quot;, shortFlag))</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">                    + (longFlag == null ? &quot;&quot; : String.format(format, &quot;[long]&quot;, longFlag));</span>
         }
+    }
+
+    /**
+     * Render help message.
+     *
+     * @param program the command for running the program
+     * @return the help message
+     */
+    public String help(String program) {
+<span class="nc" id="L253">        String usage =</span>
+<span class="nc" id="L254">                allCommands.stream()</span>
+<span class="nc bnc" id="L255" title="All 2 branches missed.">                        .filter(command -&gt; command.type == POSITION)</span>
+<span class="nc" id="L256">                        .map(Command::toUsage)</span>
+<span class="nc" id="L257">                        .collect(Collectors.joining(&quot;&quot;));</span>
+
+<span class="nc" id="L259">        String arguments =</span>
+<span class="nc" id="L260">                allCommands.stream()</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">                        .filter(command -&gt; command.type == POSITION)</span>
+<span class="nc" id="L262">                        .map(Command::toDescription)</span>
+<span class="nc" id="L263">                        .collect(Collectors.joining(&quot;&quot;));</span>
+
+<span class="nc" id="L265">        String options =</span>
+<span class="nc" id="L266">                allCommands.stream()</span>
+<span class="nc bnc" id="L267" title="All 2 branches missed.">                        .filter(command -&gt; command.type != POSITION)</span>
+<span class="nc" id="L268">                        .map(Command::toDescription)</span>
+<span class="nc" id="L269">                        .collect(Collectors.joining(&quot;&quot;));</span>
+
+<span class="nc" id="L271">        return String.format(&quot;\nUsage:\n  %s%s [options]&quot;, program, usage)</span>
+<span class="nc" id="L272">                + String.format(&quot;\n  %s (-h | --help)&quot;, program)</span>
+<span class="nc" id="L273">                + String.format(&quot;\n  %s --version\n&quot;, program)</span>
+<span class="nc" id="L274">                + String.format(&quot;\nArguments:\n%s&quot;, arguments)</span>
+<span class="nc" id="L275">                + String.format(&quot;\nOptions:\n%s&quot;, options);</span>
     }
 
     /**
@@ -206,20 +282,20 @@ public class InputParser {
      * @return a dictionary of parsed commands
      */
     public MiniBox parse(String[] args) {
-<span class="fc" id="L209">        LOGGER.config(&quot;parsing command line arguments&quot;);</span>
-<span class="fc" id="L210">        parsed = new MiniBox();</span>
+<span class="fc" id="L285">        LOGGER.config(&quot;parsing command line arguments&quot;);</span>
+<span class="fc" id="L286">        parsed = new MiniBox();</span>
 
-<span class="fc" id="L212">        addDefaults();</span>
-<span class="fc" id="L213">        parseArguments(args);</span>
+<span class="fc" id="L288">        addDefaults();</span>
+<span class="fc" id="L289">        parseArguments(args);</span>
 
-<span class="fc bfc" id="L215" title="All 2 branches covered.">        if (positionIndex != positionCommands.size()) {</span>
-<span class="fc" id="L216">            LOGGER.severe(&quot;missing position arguments&quot;);</span>
-<span class="fc" id="L217">            throw new IllegalArgumentException();</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">        if (positionIndex != positionCommands.size()) {</span>
+<span class="fc" id="L292">            LOGGER.severe(&quot;Missing positional arguments.&quot; + HELP_MESSAGE);</span>
+<span class="fc" id="L293">            throw new IllegalArgumentException();</span>
         } else {
-<span class="fc" id="L219">            LOGGER.config(&quot;successfully parsed commands\n\n&quot; + parsed.toString());</span>
+<span class="fc" id="L295">            LOGGER.config(&quot;successfully parsed commands\n\n&quot; + parsed.toString());</span>
         }
 
-<span class="fc" id="L222">        return parsed;</span>
+<span class="fc" id="L298">        return parsed;</span>
     }
 
     /**
@@ -228,12 +304,12 @@ public class InputParser {
      * &lt;p&gt;Switches are assumed to be {@code false} if not present.
      */
     void addDefaults() {
-<span class="fc bfc" id="L231" title="All 2 branches covered.">        for (Command cmd : allCommands) {</span>
-<span class="fc bfc" id="L232" title="All 2 branches covered.">            if (cmd.defaults != null) {</span>
-<span class="fc" id="L233">                parsed.put(cmd.id, cmd.defaults);</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">        for (Command cmd : allCommands) {</span>
+<span class="fc bfc" id="L308" title="All 2 branches covered.">            if (cmd.defaults != null) {</span>
+<span class="fc" id="L309">                parsed.put(cmd.id, cmd.defaults);</span>
             }
-<span class="fc" id="L235">        }</span>
-<span class="fc" id="L236">    }</span>
+<span class="fc" id="L311">        }</span>
+<span class="fc" id="L312">    }</span>
 
     /**
      * Parses a list of arguments.
@@ -241,24 +317,24 @@ public class InputParser {
      * @param args the list of arguments
      */
     void parseArguments(String[] args) {
-<span class="fc" id="L244">        positionIndex = 0;</span>
-<span class="fc" id="L245">        int currentIndex = 0;</span>
-<span class="fc" id="L246">        int argCount = args.length;</span>
+<span class="fc" id="L320">        positionIndex = 0;</span>
+<span class="fc" id="L321">        int currentIndex = 0;</span>
+<span class="fc" id="L322">        int argCount = args.length;</span>
 
-<span class="fc bfc" id="L248" title="All 2 branches covered.">        while (currentIndex &lt; argCount) {</span>
-<span class="fc" id="L249">            String arg = args[currentIndex];</span>
+<span class="fc bfc" id="L324" title="All 2 branches covered.">        while (currentIndex &lt; argCount) {</span>
+<span class="fc" id="L325">            String arg = args[currentIndex];</span>
 
-<span class="fc bfc" id="L251" title="All 2 branches covered.">            if (arg.startsWith(&quot;--&quot;)) {</span>
-<span class="fc" id="L252">                Command cmd = longToCommand.get(args[currentIndex].substring(2));</span>
-<span class="fc" id="L253">                currentIndex = parseFlaggedArgument(args, currentIndex, cmd);</span>
-<span class="fc bfc" id="L254" title="All 2 branches covered.">            } else if (arg.startsWith(&quot;-&quot;)) {</span>
-<span class="fc" id="L255">                Command cmd = shortToCommand.get(args[currentIndex].substring(1));</span>
-<span class="fc" id="L256">                currentIndex = parseFlaggedArgument(args, currentIndex, cmd);</span>
-<span class="fc" id="L257">            } else {</span>
-<span class="fc" id="L258">                currentIndex = parsePositionArgument(args, currentIndex);</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">            if (arg.startsWith(&quot;--&quot;)) {</span>
+<span class="fc" id="L328">                Command cmd = longToCommand.get(args[currentIndex].substring(2));</span>
+<span class="fc" id="L329">                currentIndex = parseFlaggedArgument(args, currentIndex, cmd);</span>
+<span class="fc bfc" id="L330" title="All 2 branches covered.">            } else if (arg.startsWith(&quot;-&quot;)) {</span>
+<span class="fc" id="L331">                Command cmd = shortToCommand.get(args[currentIndex].substring(1));</span>
+<span class="fc" id="L332">                currentIndex = parseFlaggedArgument(args, currentIndex, cmd);</span>
+<span class="fc" id="L333">            } else {</span>
+<span class="fc" id="L334">                currentIndex = parsePositionArgument(args, currentIndex);</span>
             }
-<span class="fc" id="L260">        }</span>
-<span class="fc" id="L261">    }</span>
+<span class="fc" id="L336">        }</span>
+<span class="fc" id="L337">    }</span>
 
     /**
      * Parses a flagged (either option or switch) argument.
@@ -269,12 +345,17 @@ public class InputParser {
      * @return the next argument index
      */
     int parseFlaggedArgument(String[] args, int index, Command cmd) {
-<span class="fc bfc" id="L272" title="All 2 branches covered.">        if (cmd.type == SWITCH) {</span>
-<span class="fc" id="L273">            parsed.put(cmd.id, &quot;&quot;);</span>
-        } else {
-<span class="fc" id="L275">            parsed.put(cmd.id, args[++index]);</span>
+<span class="fc bfc" id="L348" title="All 2 branches covered.">        if (cmd == null) {</span>
+<span class="fc" id="L349">            LOGGER.severe(&quot;Invalid command [ &quot; + args[index] + &quot; ].&quot; + HELP_MESSAGE);</span>
+<span class="fc" id="L350">            throw new IllegalArgumentException();</span>
         }
-<span class="fc" id="L277">        return ++index;</span>
+
+<span class="fc bfc" id="L353" title="All 2 branches covered.">        if (cmd.type == SWITCH) {</span>
+<span class="fc" id="L354">            parsed.put(cmd.id, &quot;&quot;);</span>
+        } else {
+<span class="fc" id="L356">            parsed.put(cmd.id, args[++index]);</span>
+        }
+<span class="fc" id="L358">        return ++index;</span>
     }
 
     /**
@@ -285,9 +366,9 @@ public class InputParser {
      * @return the next argument index
      */
     int parsePositionArgument(String[] args, int index) {
-<span class="fc" id="L288">        parsed.put(positionCommands.get(positionIndex).id, args[index]);</span>
-<span class="fc" id="L289">        positionIndex++;</span>
-<span class="fc" id="L290">        return ++index;</span>
+<span class="fc" id="L369">        parsed.put(positionCommands.get(positionIndex).id, args[index]);</span>
+<span class="fc" id="L370">        positionIndex++;</span>
+<span class="fc" id="L371">        return ++index;</span>
     }
 
     /**
@@ -296,11 +377,11 @@ public class InputParser {
      * @return a string representation of the parser
      */
     public String toString() {
-<span class="fc" id="L299">        StringBuilder s = new StringBuilder();</span>
-<span class="fc bfc" id="L300" title="All 2 branches covered.">        for (Command cmd : allCommands) {</span>
-<span class="fc" id="L301">            s.append(cmd.toString());</span>
-<span class="fc" id="L302">        }</span>
-<span class="fc" id="L303">        return s.toString();</span>
+<span class="fc" id="L380">        StringBuilder s = new StringBuilder();</span>
+<span class="fc bfc" id="L381" title="All 2 branches covered.">        for (Command cmd : allCommands) {</span>
+<span class="fc" id="L382">            s.append(cmd.toString());</span>
+<span class="fc" id="L383">        }</span>
+<span class="fc" id="L384">        return s.toString();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
