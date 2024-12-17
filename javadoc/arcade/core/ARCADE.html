@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":6,"i2":6,"i3":6,"i4":6,"i5":10,"i6":10,"i7":9,"i8":9,"i9":10,"i10":10,"i11":9};
+var data = {"i0":10,"i1":6,"i2":6,"i3":6,"i4":6,"i5":10,"i6":10,"i7":9,"i8":9,"i9":10,"i10":9,"i11":10,"i12":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -302,6 +302,13 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr id="i10" class="altColor">
+<td class="colFirst"><code>(package private) static java.lang.String</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#renderHelp()">renderHelp</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Render help message.</div>
+</td>
+</tr>
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runSeries(java.util.ArrayList,arcade.core.util.MiniBox)">runSeries</a></span>&#8203;(java.util.ArrayList&lt;<a href="sim/Series.html" title="class in arcade.core.sim">Series</a>&gt;&nbsp;series,
          <a href="util/MiniBox.html" title="class in arcade.core.util">MiniBox</a>&nbsp;settings)</code></th>
@@ -309,7 +316,7 @@ extends java.lang.Object</pre>
 <div class="block">Runs simulations for each <a href="sim/Series.html" title="class in arcade.core.sim"><code>Series</code></a>.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>static void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateLogger()">updateLogger</a></span>()</code></th>
 <td class="colLast">
@@ -482,6 +489,25 @@ extends java.lang.Object</pre>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the version number</dd>
+</dl>
+</li>
+</ul>
+<a id="renderHelp()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>renderHelp</h4>
+<pre class="methodSignature">static&nbsp;java.lang.String&nbsp;renderHelp()
+                            throws java.io.IOException,
+                                   org.xml.sax.SAXException</pre>
+<div class="block">Render help message.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the help message</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd>
+<dd><code>org.xml.sax.SAXException</code></dd>
 </dl>
 </li>
 </ul>

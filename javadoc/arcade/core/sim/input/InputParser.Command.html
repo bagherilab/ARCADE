@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10};
+var data = {"i0":10,"i1":10,"i2":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -253,9 +253,23 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toDescription()">toDescription</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Convert command to description.</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
+<td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toString()">toString</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Formats command as a string.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toUsage()">toUsage</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Convert command to usage.</div>
 </td>
 </tr>
 </table>
@@ -388,6 +402,38 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
+<a id="toUsage()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>toUsage</h4>
+<pre class="methodSignature">public&nbsp;java.lang.String&nbsp;toUsage()</pre>
+<div class="block">Convert command to usage.
+
+ <p>Usage depends on the command type.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the command usage</dd>
+</dl>
+</li>
+</ul>
+<a id="toDescription()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>toDescription</h4>
+<pre class="methodSignature">public&nbsp;java.lang.String&nbsp;toDescription()</pre>
+<div class="block">Convert command to description.
+
+ <p>Description depends on the command type.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the command description.</dd>
+</dl>
+</li>
+</ul>
 <a id="toString()">
 <!--   -->
 </a>

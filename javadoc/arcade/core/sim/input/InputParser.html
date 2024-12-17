@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -212,62 +212,69 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>private static java.lang.String</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#HELP_MESSAGE">HELP_MESSAGE</a></span></code></th>
+<td class="colLast">
+<div class="block">Help message shown when invalid arguments are passed.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>private static java.util.logging.Logger</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#LOGGER">LOGGER</a></span></code></th>
 <td class="colLast">
 <div class="block">Logger for <code>InputParser</code>.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>(package private) java.util.HashMap&lt;java.lang.String,&#8203;<a href="InputParser.Command.html" title="class in arcade.core.sim.input">InputParser.Command</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#longToCommand">longToCommand</a></span></code></th>
 <td class="colLast">
 <div class="block">Map of long flags to command.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>(package private) static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#OPTION">OPTION</a></span></code></th>
 <td class="colLast">
 <div class="block">ID for option commands.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>(package private) <a href="../../util/MiniBox.html" title="class in arcade.core.util">MiniBox</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#parsed">parsed</a></span></code></th>
 <td class="colLast">
 <div class="block">Dictionary of parsed commands.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>(package private) static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#POSITION">POSITION</a></span></code></th>
 <td class="colLast">
 <div class="block">ID for position commands.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>(package private) java.util.ArrayList&lt;<a href="InputParser.Command.html" title="class in arcade.core.sim.input">InputParser.Command</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#positionCommands">positionCommands</a></span></code></th>
 <td class="colLast">
 <div class="block">List of position commands.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>(package private) int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#positionIndex">positionIndex</a></span></code></th>
 <td class="colLast">
 <div class="block">Current index for position arguments.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>(package private) java.util.HashMap&lt;java.lang.String,&#8203;<a href="InputParser.Command.html" title="class in arcade.core.sim.input">InputParser.Command</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#shortToCommand">shortToCommand</a></span></code></th>
 <td class="colLast">
 <div class="block">Map of short flags to command.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>(package private) static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SWITCH">SWITCH</a></span></code></th>
 <td class="colLast">
@@ -323,20 +330,27 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#help(java.lang.String)">help</a></span>&#8203;(java.lang.String&nbsp;program)</code></th>
+<td class="colLast">
+<div class="block">Render help message.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
 <td class="colFirst"><code><a href="../../util/MiniBox.html" title="class in arcade.core.util">MiniBox</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#parse(java.lang.String%5B%5D)">parse</a></span>&#8203;(java.lang.String[]&nbsp;args)</code></th>
 <td class="colLast">
 <div class="block">Parse the given arguments into a dictionary.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#parseArguments(java.lang.String%5B%5D)">parseArguments</a></span>&#8203;(java.lang.String[]&nbsp;args)</code></th>
 <td class="colLast">
 <div class="block">Parses a list of arguments.</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>(package private) int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#parseFlaggedArgument(java.lang.String%5B%5D,int,arcade.core.sim.input.InputParser.Command)">parseFlaggedArgument</a></span>&#8203;(java.lang.String[]&nbsp;args,
                     int&nbsp;index,
@@ -345,7 +359,7 @@ extends java.lang.Object</pre>
 <div class="block">Parses a flagged (either option or switch) argument.</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>(package private) int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#parsePositionArgument(java.lang.String%5B%5D,int)">parsePositionArgument</a></span>&#8203;(java.lang.String[]&nbsp;args,
                      int&nbsp;index)</code></th>
@@ -353,7 +367,7 @@ extends java.lang.Object</pre>
 <div class="block">Parses a position argument.</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toString()">toString</a></span>()</code></th>
 <td class="colLast">
@@ -392,6 +406,20 @@ extends java.lang.Object</pre>
 <h4>LOGGER</h4>
 <pre>private static final&nbsp;java.util.logging.Logger LOGGER</pre>
 <div class="block">Logger for <code>InputParser</code>.</div>
+</li>
+</ul>
+<a id="HELP_MESSAGE">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>HELP_MESSAGE</h4>
+<pre>private static final&nbsp;java.lang.String HELP_MESSAGE</pre>
+<div class="block">Help message shown when invalid arguments are passed.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../constant-values.html#arcade.core.sim.input.InputParser.HELP_MESSAGE">Constant Field Values</a></dd>
+</dl>
 </li>
 </ul>
 <a id="POSITION">
@@ -530,6 +558,22 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
+<a id="help(java.lang.String)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>help</h4>
+<pre class="methodSignature">public&nbsp;java.lang.String&nbsp;help&#8203;(java.lang.String&nbsp;program)</pre>
+<div class="block">Render help message.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>program</code> - the command for running the program</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the help message</dd>
+</dl>
+</li>
+</ul>
 <a id="parse(java.lang.String[])">
 <!--   -->
 </a>
