@@ -1,7 +1,6 @@
 package arcade.patch.agent.cell;
 
 import java.util.ArrayList;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sim.util.Bag;
@@ -13,7 +12,6 @@ import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -66,7 +64,6 @@ public class PatchCellTissueTest {
         doReturn(gridMock).when(simMock).getGrid();
     }
 
-
     public Bag createCellsWithVolumeAndCriticalHeight(int n, double volume, double critHeight) {
         Bag bag = new Bag();
         for (int i = 0; i < n; i++) {
@@ -106,17 +103,17 @@ public class PatchCellTissueTest {
         doReturn(neighborLocations).when(locationMock).getNeighbors();
 
         PatchCellContainer container =
-        new PatchCellContainer(
-                cellID,
-                cellParent,
-                cellPop,
-                cellAge,
-                cellDivisions,
-                cellState,
-                cellVolume,
-                cellHeight,
-                cellCriticalVolume,
-                cellCriticalHeight);
+                new PatchCellContainer(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellAge,
+                        cellDivisions,
+                        cellState,
+                        cellVolume,
+                        cellHeight,
+                        cellCriticalVolume,
+                        cellCriticalHeight);
         PatchCell cell = new PatchCellTissue(container, locationMock, parametersMock);
 
         Bag freeLocations = cell.findFreeLocations(simMock, false);
@@ -125,5 +122,4 @@ public class PatchCellTissueTest {
         assertTrue(freeLocations.contains(locationMock));
         assertFalse(freeLocations.contains(notFreeLocation));
     }
-
 }

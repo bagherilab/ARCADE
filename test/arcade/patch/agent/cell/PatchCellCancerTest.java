@@ -1,7 +1,6 @@
 package arcade.patch.agent.cell;
 
 import java.util.ArrayList;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sim.util.Bag;
@@ -13,13 +12,11 @@ import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.patch.util.PatchEnums.State;
-
 
 public class PatchCellCancerTest {
     static PatchSimulation simMock;
@@ -107,17 +104,17 @@ public class PatchCellCancerTest {
         doReturn(neighborLocations).when(locationMock).getNeighbors();
 
         PatchCellContainer container =
-        new PatchCellContainer(
-                cellID,
-                cellParent,
-                cellPop,
-                cellAge,
-                cellDivisions,
-                cellState,
-                cellVolume,
-                cellHeight,
-                cellCriticalVolume,
-                cellCriticalHeight);
+                new PatchCellContainer(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellAge,
+                        cellDivisions,
+                        cellState,
+                        cellVolume,
+                        cellHeight,
+                        cellCriticalVolume,
+                        cellCriticalHeight);
         PatchCell cell = new PatchCellCancer(container, locationMock, parametersMock);
 
         Bag freeLocations = cell.findFreeLocations(simMock, false);

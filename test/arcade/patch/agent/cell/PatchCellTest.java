@@ -16,7 +16,6 @@ import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
 import arcade.patch.util.PatchEnums.Domain;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -404,7 +403,6 @@ public class PatchCellTest {
         assertEquals(false, actual);
     }
 
-
     @Test
     public void findFreeLocations_whenOnlyOneNeighborIsFree_returnsCurrentAndOpenLocation() {
         doReturn(0.0).when(parametersMock).getDouble(any(String.class));
@@ -430,17 +428,17 @@ public class PatchCellTest {
         doReturn(neighborLocations).when(locationMock).getNeighbors();
 
         PatchCellContainer container =
-        new PatchCellContainer(
-                cellID,
-                cellParent,
-                cellPop,
-                cellAge,
-                cellDivisions,
-                cellState,
-                cellVolume,
-                cellHeight,
-                cellCriticalVolume,
-                cellCriticalHeight);
+                new PatchCellContainer(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellAge,
+                        cellDivisions,
+                        cellState,
+                        cellVolume,
+                        cellHeight,
+                        cellCriticalVolume,
+                        cellCriticalHeight);
         PatchCell cell = new PatchCellMock(container, locationMock, parametersMock);
 
         Bag freeLocations = cell.findFreeLocations(simMock, false);

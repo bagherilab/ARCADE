@@ -454,9 +454,7 @@ public abstract class PatchCell implements Cell {
      * @param random the random number generator
      * @return the best location
      */
-    public PatchLocation selectBestLocation(
-            Simulation sim,
-            MersenneTwisterFast random) {
+    public PatchLocation selectBestLocation(Simulation sim, MersenneTwisterFast random) {
         return selectBestLocation(sim, random, false);
     }
 
@@ -475,9 +473,7 @@ public abstract class PatchCell implements Cell {
      * @return the best location
      */
     public PatchLocation selectBestLocation(
-            Simulation sim,
-            MersenneTwisterFast random,
-            boolean proliferative) {
+            Simulation sim, MersenneTwisterFast random, boolean proliferative) {
         Bag locs = findFreeLocations(sim, proliferative);
         locs.shuffle(random);
         return (locs.size() > 0 ? (PatchLocation) locs.get(0) : null);
@@ -493,9 +489,7 @@ public abstract class PatchCell implements Cell {
      * @param add true if an additional cell is being added
      * @return a list of free locations
      */
-    public Bag findFreeLocations(
-            Simulation sim,
-            boolean add) {
+    public Bag findFreeLocations(Simulation sim, boolean add) {
         Bag freeLocations = new Bag();
 
         PatchLocation currentLocation = this.location;
@@ -506,14 +500,22 @@ public abstract class PatchCell implements Cell {
             targetVolume = this.getVolume();
         }
 
-        if (checkLocation(sim, currentLocation, 0, getCriticalHeight(), getPop(), MAX_DENSITY, add)) {
+        if (checkLocation(
+                sim, currentLocation, 0, getCriticalHeight(), getPop(), MAX_DENSITY, add)) {
             freeLocations.add(currentLocation);
         }
 
         for (Location neighborLocation : currentLocation.getNeighbors()) {
             PatchLocation neighbor = (PatchLocation) neighborLocation;
 
-            if (checkLocation(sim, neighbor, targetVolume, getCriticalHeight(), getPop(), MAX_DENSITY, true)) {
+            if (checkLocation(
+                    sim,
+                    neighbor,
+                    targetVolume,
+                    getCriticalHeight(),
+                    getPop(),
+                    MAX_DENSITY,
+                    true)) {
                 freeLocations.add(neighborLocation);
             }
         }
@@ -566,7 +568,6 @@ public abstract class PatchCell implements Cell {
                         return false;
                     }
                 }
-
             }
             return true;
         }
