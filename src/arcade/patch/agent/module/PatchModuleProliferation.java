@@ -74,8 +74,8 @@ public class PatchModuleProliferation extends PatchModule {
             cell.setState(State.QUIESCENT);
         } else {
             PatchLocation newLocation =
-                    PatchCell.selectBestLocation(
-                            sim, location, cell.getVolume() * 0.5, maxHeight, random);
+                    cell.selectBestLocation(
+                            sim, random, true);
 
             if (newLocation == null) {
                 cell.setState(State.QUIESCENT);

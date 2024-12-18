@@ -77,6 +77,9 @@ public abstract class PatchCell implements Cell {
     /** Cell population index. */
     final int pop;
 
+    /** Maximum number of cells from its population allowed in a {@link Location} */
+    int MAX_DENSITY = Integer.MAX_VALUE;
+
     /** Cell state. */
     CellState state;
 
@@ -439,69 +442,22 @@ public abstract class PatchCell implements Cell {
     }
 
     /**
-     * Find free locations in the patch neighborhood.
+     * Selects the best location for a cell to be added or move into, assuming no proliferation.
+     *
+     * <p>Each free location is scored based on glucose availability and distance from the center of
+     * the simulation.
      *
      * @param sim the simulation instance
-     * @param currentLocation the current location
-     * @param targetVolume the target volume of the cell to add or move
-     * @param targetHeight the target height of the cell to add or move
-     * @return a list of free locations
+     * @param location the current location
+     * @param volume the target volume of cell to add or move
+     * @param height the target height of the cell to add or move
+     * @param random the random number generator
+     * @return the best location
      */
-    static Bag findFreeLocations(
+    public PatchLocation selectBestLocation(
             Simulation sim,
-            PatchLocation currentLocation,
-            double targetVolume,
-            double targetHeight) {
-        Bag freeLocations = new Bag();
-        int locationMax = currentLocation.getMaximum();
-        double locationVolume = currentLocation.getVolume();
-        double locationArea = currentLocation.getArea();
-        PatchGrid grid = (PatchGrid) sim.getGrid();
-
-        // Iterate through each neighbor location and check if cell is able
-        // to move into it based on if it does not increase volume above hex
-        // volume and that each agent exists at tolerable height.
-        locationCheck:
-        for (Location neighborLocation : currentLocation.getNeighbors()) {
-            Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));
-            int n = bag.numObjs; // number of agents in location
-
-            if (n == 0) {
-                freeLocations.add(neighborLocation); // no other cells in new location
-            } else if (n == locationMax) {
-                continue; // location already full
-            } else {
-                double totalVolume = calculateTotalVolume(bag) + targetVolume;
-                double currentHeight = totalVolume / locationArea;
-
-                // Check if total volume of cells with addition does not exceed
-                // volume of the hexagonal location.
-                if (totalVolume > locationVolume) {
-                    continue;
-                }
-
-                // Check if proposed cell can exist at a tolerable height.
-                if (currentHeight > targetHeight) {
-                    continue;
-                }
-
-                // Check if neighbor cells can exist at a tolerable height.
-                for (Object obj : bag) {
-                    if (currentHeight > ((Cell) obj).getCriticalHeight()) {
-                        continue locationCheck;
-                    }
-                }
-
-                // TODO: ADD CHECK FOR MORE THAN ONE HEALTHY CELL AGENT.
-
-                // Add location to list of free locations.
-                freeLocations.add(neighborLocation);
-            }
-        }
-
-        // TODO: ADD CURRENT LOCATION
-
-        return freeLocations;
+            MersenneTwisterFast random) {
+        return selectBestLocation(sim, random, false);
     }
 
     /**
@@ -515,16 +471,104 @@ public abstract class PatchCell implements Cell {
      * @param volume the target volume of cell to add or move
      * @param height the target height of the cell to add or move
      * @param random the random number generator
+     * @param proliferative whether the cell is a result of proliferation
      * @return the best location
      */
-    public static PatchLocation selectBestLocation(
+    public PatchLocation selectBestLocation(
             Simulation sim,
-            PatchLocation location,
-            double volume,
-            double height,
-            MersenneTwisterFast random) {
-        Bag locs = findFreeLocations(sim, location, volume, height);
+            MersenneTwisterFast random,
+            boolean proliferative) {
+        Bag locs = findFreeLocations(sim, proliferative);
         locs.shuffle(random);
         return (locs.size() > 0 ? (PatchLocation) locs.get(0) : null);
+    }
+
+    /**
+     * Find free locations in the patch neighborhood.
+     *
+     * @param sim the simulation instance
+     * @param currentLocation the current location
+     * @param targetVolume the target volume of the cell to add or move
+     * @param targetHeight the target height of the cell to add or move
+     * @param add true if an additional cell is being added
+     * @return a list of free locations
+     */
+    public Bag findFreeLocations(
+            Simulation sim,
+            boolean add) {
+        Bag freeLocations = new Bag();
+
+        PatchLocation currentLocation = this.location;
+        double targetVolume;
+        if (add) {
+            targetVolume = this.getVolume() * 0.5;
+        } else {
+            targetVolume = this.getVolume();
+        }
+
+        if (checkLocation(sim, currentLocation, 0, getCriticalHeight(), getPop(), MAX_DENSITY, add)) {
+            freeLocations.add(currentLocation);
+        }
+
+        for (Location neighborLocation : currentLocation.getNeighbors()) {
+            PatchLocation neighbor = (PatchLocation) neighborLocation;
+
+            if (checkLocation(sim, neighbor, targetVolume, getCriticalHeight(), getPop(), MAX_DENSITY, true)) {
+                freeLocations.add(neighborLocation);
+            }
+        }
+        return freeLocations;
+    }
+
+    /**
+     * Determine if a patch location is free.
+     *
+     * @param sim the simulation instance
+     * @param currentLocation the current location
+     * @param targetVolume the target volume of the cell to add or move
+     * @param targetHeight the target height of the cell to add or move
+     * @param add true if an additional cell is being added
+     * @return a list of free locations
+     */
+    static boolean checkLocation(
+            Simulation sim,
+            PatchLocation loc,
+            double targetVolume,
+            double targetHeight,
+            int population,
+            int maxDensity,
+            boolean add) {
+        double locationVolume = loc.getVolume();
+        double locationArea = loc.getArea();
+        PatchGrid grid = (PatchGrid) sim.getGrid();
+
+        Bag bag = new Bag(grid.getObjectsAtLocation(loc));
+
+        if (bag.numObjs == 0) {
+            return true;
+        } else {
+            double proposedVolume = calculateTotalVolume(bag) + targetVolume;
+            double proposedHeight = proposedVolume / locationArea;
+
+            if (proposedVolume > locationVolume || proposedHeight > targetHeight) {
+                return false;
+            }
+
+            int count = 0;
+            for (Object obj : bag) {
+                PatchCell cell = (PatchCell) obj;
+                if (proposedHeight > cell.getCriticalHeight()) {
+                    return false;
+                }
+                if (cell.getPop() == population) {
+                    count++;
+                    if (count + (add ? 1 : 0) > maxDensity) {
+                        return false;
+                    }
+                }
+
+            }
+            return true;
+        }
     }
 }
