@@ -77,7 +77,7 @@ public abstract class PatchCell implements Cell {
     /** Cell population index. */
     final int pop;
 
-    /** Maximum number of cells from its population allowed in a {@link Location} */
+    /** Maximum number of cells from its population allowed in a {@link Location}. */
     int MAX_DENSITY = Integer.MAX_VALUE;
 
     /** Cell state. */
@@ -517,7 +517,7 @@ public abstract class PatchCell implements Cell {
      * Determine if a patch location is free.
      *
      * @param sim the simulation instance
-     * @param currentLocation the current location
+     * @param loc the location
      * @param targetVolume the target volume of the cell to add or move
      * @param targetHeight the target height of the cell to add or move
      * @param population the population index
