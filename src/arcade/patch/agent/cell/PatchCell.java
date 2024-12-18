@@ -448,9 +448,6 @@ public abstract class PatchCell implements Cell {
      * the simulation.
      *
      * @param sim the simulation instance
-     * @param location the current location
-     * @param volume the target volume of cell to add or move
-     * @param height the target height of the cell to add or move
      * @param random the random number generator
      * @return the best location
      */
@@ -465,9 +462,6 @@ public abstract class PatchCell implements Cell {
      * the simulation.
      *
      * @param sim the simulation instance
-     * @param location the current location
-     * @param volume the target volume of cell to add or move
-     * @param height the target height of the cell to add or move
      * @param random the random number generator
      * @param proliferative whether the cell is a result of proliferation
      * @return the best location
@@ -480,12 +474,9 @@ public abstract class PatchCell implements Cell {
     }
 
     /**
-     * Find free locations in the patch neighborhood.
+     * Find free locations in the neighborhood of the cell.
      *
      * @param sim the simulation instance
-     * @param currentLocation the current location
-     * @param targetVolume the target volume of the cell to add or move
-     * @param targetHeight the target height of the cell to add or move
      * @param add true if an additional cell is being added
      * @return a list of free locations
      */
@@ -529,6 +520,8 @@ public abstract class PatchCell implements Cell {
      * @param currentLocation the current location
      * @param targetVolume the target volume of the cell to add or move
      * @param targetHeight the target height of the cell to add or move
+     * @param population the population index
+     * @param maxDensity the maximum density of population in the location
      * @param add true if an additional cell is being added
      * @return a list of free locations
      */
