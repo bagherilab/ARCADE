@@ -1,11 +1,13 @@
 package arcade.patch.agent.cell;
 
 import java.util.ArrayList;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import sim.util.Bag;
+import arcade.core.env.location.*;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
-import arcade.patch.agent.module.PatchModule;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
@@ -13,14 +15,12 @@ import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
-import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.State;
 
-public class PatchCellCancerStemTest {
+public class PatchCellTissueTest {
     static PatchSimulation simMock;
 
     static PatchLocation locationMock;
@@ -66,49 +66,64 @@ public class PatchCellCancerStemTest {
         doReturn(gridMock).when(simMock).getGrid();
     }
 
-    @Test
-    public void step_calledWhenAgeGreaterThanApoptosisAge_doesNotSetApoptoticState() {
-        PatchModule module = mock(PatchModule.class);
-        doReturn(0.).when(parametersMock).getDouble(anyString());
-        doReturn(0).when(parametersMock).getInt(anyString());
-        doReturn(10.0).when(parametersMock).getDouble("APOPTOSIS_AGE");
 
-        int age = 11;
-        ArrayList<State> relevantStates = new ArrayList<>();
-        relevantStates.add(State.QUIESCENT);
-        relevantStates.add(State.MIGRATORY);
-        relevantStates.add(State.PROLIFERATIVE);
-        relevantStates.add(State.UNDEFINED);
-
-        for (State state : relevantStates) {
+    public Bag createCellsWithVolumeAndCriticalHeight(int n, double volume, double critHeight) {
+        Bag bag = new Bag();
+        for (int i = 0; i < n; i++) {
             PatchCellContainer container =
                     new PatchCellContainer(
-                            cellID,
+                            cellID + i,
                             cellParent,
                             cellPop,
-                            age,
+                            cellAge,
                             cellDivisions,
-                            state,
-                            cellVolume,
+                            cellState,
+                            volume,
                             cellHeight,
                             cellCriticalVolume,
-                            cellCriticalHeight);
-            PatchCell cell = spy(new PatchCellCancerStem(container, locationMock, parametersMock));
-            cell.module = module;
-            cell.processes.put(Domain.METABOLISM, metabolismMock);
-            cell.processes.put(Domain.SIGNALING, signalingMock);
-            doAnswer(
-                            invocationOnMock -> {
-                                cell.state = invocationOnMock.getArgument(0);
-                                cell.module = module;
-                                return null;
-                            })
-                    .when(cell)
-                    .setState(any(State.class));
-
-            cell.step(simMock);
-
-            assertNotEquals(State.APOPTOTIC, cell.getState());
+                            critHeight);
+            PatchCell cell = new PatchCellTissue(container, locationMock, parametersMock);
+            bag.add(cell);
         }
+        return bag;
     }
+
+    @Test
+    public void findFreeLocations_roomForMultipleCancerCells_returnsCurrentAndOpenLocation() {
+        doReturn(0.0).when(parametersMock).getDouble(anyString());
+        doReturn(0).when(parametersMock).getInt(anyString());
+
+        doReturn(1000.).when(locationMock).getVolume();
+        doReturn(100.).when(locationMock).getArea();
+
+        PatchLocation notFreeLocation = mock(PatchLocation.class);
+        Bag notFreeBag = createCellsWithVolumeAndCriticalHeight(1, 200, 10);
+        doReturn(notFreeBag).when(gridMock).getObjectsAtLocation(notFreeLocation);
+        doReturn(1000.).when(notFreeLocation).getVolume();
+        doReturn(100.).when(notFreeLocation).getArea();
+        ArrayList<Location> neighborLocations = new ArrayList<>();
+        neighborLocations.add(notFreeLocation);
+        doReturn(neighborLocations).when(locationMock).getNeighbors();
+
+        PatchCellContainer container =
+        new PatchCellContainer(
+                cellID,
+                cellParent,
+                cellPop,
+                cellAge,
+                cellDivisions,
+                cellState,
+                cellVolume,
+                cellHeight,
+                cellCriticalVolume,
+                cellCriticalHeight);
+        PatchCell cell = new PatchCellTissue(container, locationMock, parametersMock);
+
+        Bag freeLocations = cell.findFreeLocations(simMock, false);
+
+        assertEquals(1, freeLocations.size());
+        assertTrue(freeLocations.contains(locationMock));
+        assertFalse(freeLocations.contains(notFreeLocation));
+    }
+
 }

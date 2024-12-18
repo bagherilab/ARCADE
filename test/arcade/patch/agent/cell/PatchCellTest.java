@@ -3,6 +3,7 @@ package arcade.patch.agent.cell;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.*;
@@ -11,9 +12,11 @@ import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModule;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
+import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
 import arcade.patch.util.PatchEnums.Domain;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -30,6 +33,8 @@ public class PatchCellTest {
     static PatchProcessMetabolism metabolismMock;
 
     static PatchProcessSignaling signalingMock;
+
+    static PatchGrid gridMock;
 
     static int cellID = randomIntBetween(1, 10);
 
@@ -92,6 +97,8 @@ public class PatchCellTest {
         parametersMock = spy(new Parameters(new MiniBox(), null, null));
         metabolismMock = mock(PatchProcessMetabolism.class);
         signalingMock = mock(PatchProcessSignaling.class);
+        gridMock = mock(PatchGrid.class);
+        doReturn(gridMock).when(simMock).getGrid();
     }
 
     @Test
@@ -240,5 +247,207 @@ public class PatchCellTest {
         cell.step(simMock);
 
         verify(cell, times(0)).setState(any(State.class));
+    }
+
+    @Test
+    public void checkLocation_locationEmpty_returnTrue() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+
+        doReturn(1000.).when(locationMock).getVolume();
+        doReturn(100.).when(locationMock).getArea();
+
+        doReturn(new Bag()).when(gridMock).getObjectsAtLocation(locationMock);
+
+        boolean actual = PatchCell.checkLocation(simMock, locationMock, 500, 2.5, 0, 2, true);
+
+        assertEquals(true, actual);
+    }
+
+    public Bag createCellsWithVolumeAndCriticalHeight(int n, double volume, double critHeight) {
+        Bag bag = new Bag();
+        for (int i = 0; i < n; i++) {
+            PatchCellContainer container =
+                    new PatchCellContainer(
+                            cellID + i,
+                            cellParent,
+                            cellPop,
+                            cellAge,
+                            cellDivisions,
+                            cellState,
+                            volume,
+                            cellHeight,
+                            cellCriticalVolume,
+                            critHeight);
+            PatchCell cell = new PatchCellMock(container, locationMock, parametersMock);
+            bag.add(cell);
+        }
+        return bag;
+    }
+
+    @Test
+    public void checkLocation_locationWouldExceedMaxNumber_returnFalse() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+
+        doReturn(1000.).when(locationMock).getVolume();
+        doReturn(100.).when(locationMock).getArea();
+
+        Bag testBag = createCellsWithVolumeAndCriticalHeight(2, 10, 12.5);
+
+        doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
+
+        boolean actual = PatchCell.checkLocation(simMock, locationMock, 10, 2.5, cellPop, 2, true);
+
+        assertEquals(false, actual);
+    }
+
+    @Test
+    public void checkLocation_noNewCellAtFullLocation_returnTrue() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+
+        doReturn(1000.).when(locationMock).getVolume();
+        doReturn(100.).when(locationMock).getArea();
+
+        Bag testBag = createCellsWithVolumeAndCriticalHeight(2, 500, 12.5);
+
+        doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
+
+        boolean actual = PatchCell.checkLocation(simMock, locationMock, 0, 10, 0, 2, false);
+
+        assertEquals(true, actual);
+    }
+
+    @Test
+    public void checkLocation_newVolumeWouldNotExceedMaxVolume_returnTrue() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+
+        doReturn(1000.).when(locationMock).getVolume();
+        doReturn(100.).when(locationMock).getArea();
+
+        Bag testBag = createCellsWithVolumeAndCriticalHeight(1, 500, 10);
+
+        doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
+
+        boolean actual = PatchCell.checkLocation(simMock, locationMock, 499, 10, 0, 2, false);
+
+        assertEquals(true, actual);
+    }
+
+    @Test
+    public void checkLocation_newVolumeWouldExceedMaxVolume_returnFalse() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+
+        doReturn(1000.).when(locationMock).getVolume();
+        doReturn(100.).when(locationMock).getArea();
+
+        Bag testBag = createCellsWithVolumeAndCriticalHeight(1, 500, 10);
+
+        doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
+
+        boolean actual = PatchCell.checkLocation(simMock, locationMock, 501, 10, 0, 2, false);
+
+        assertEquals(false, actual);
+    }
+
+    @Test
+    public void checkLocation_newVolumeWouldExceedCriticalVolume_returnFalse() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+
+        doReturn(1000.).when(locationMock).getVolume();
+        doReturn(100.).when(locationMock).getArea();
+
+        Bag testBag = createCellsWithVolumeAndCriticalHeight(1, 500, 5);
+
+        doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
+
+        boolean actual = PatchCell.checkLocation(simMock, locationMock, 501, 10, 0, 2, false);
+
+        assertEquals(false, actual);
+    }
+
+    @Test
+    public void checkLocation_newVolumeWouldExceedTargetHeight_returnFalse() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+
+        doReturn(1000.).when(locationMock).getVolume();
+        doReturn(100.).when(locationMock).getArea();
+
+        Bag testBag = createCellsWithVolumeAndCriticalHeight(1, 500, 10);
+
+        doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
+
+        boolean actual = PatchCell.checkLocation(simMock, locationMock, 500, 7, 0, 2, false);
+
+        assertEquals(false, actual);
+    }
+
+    @Test
+    public void checkLocation_newVolumeWouldExceedOtherCellCriticalHeight_returnFalse() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+
+        doReturn(1000.).when(locationMock).getVolume();
+        doReturn(100.).when(locationMock).getArea();
+
+        Bag testBag = createCellsWithVolumeAndCriticalHeight(1, 500, 5);
+
+        doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
+
+        boolean actual = PatchCell.checkLocation(simMock, locationMock, 500, 10, 0, 2, false);
+
+        assertEquals(false, actual);
+    }
+
+
+    @Test
+    public void findFreeLocations_whenOnlyOneNeighborIsFree_returnsCurrentAndOpenLocation() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+
+        doReturn(1000.).when(locationMock).getVolume();
+        doReturn(100.).when(locationMock).getArea();
+
+        PatchLocation freeLocation = mock(PatchLocation.class);
+        doReturn(new Bag()).when(gridMock).getObjectsAtLocation(freeLocation);
+        doReturn(1000.).when(freeLocation).getVolume();
+        doReturn(100.).when(freeLocation).getArea();
+
+        PatchLocation notFreeLocation = mock(PatchLocation.class);
+        Bag notFreeBag = createCellsWithVolumeAndCriticalHeight(2, 500, 10);
+        doReturn(notFreeBag).when(gridMock).getObjectsAtLocation(notFreeLocation);
+        doReturn(1000.).when(notFreeLocation).getVolume();
+        doReturn(100.).when(notFreeLocation).getArea();
+
+        ArrayList<Location> neighborLocations = new ArrayList<>();
+        neighborLocations.add(freeLocation);
+        neighborLocations.add(notFreeLocation);
+        doReturn(neighborLocations).when(locationMock).getNeighbors();
+
+        PatchCellContainer container =
+        new PatchCellContainer(
+                cellID,
+                cellParent,
+                cellPop,
+                cellAge,
+                cellDivisions,
+                cellState,
+                cellVolume,
+                cellHeight,
+                cellCriticalVolume,
+                cellCriticalHeight);
+        PatchCell cell = new PatchCellMock(container, locationMock, parametersMock);
+
+        Bag freeLocations = cell.findFreeLocations(simMock, false);
+
+        assertEquals(2, freeLocations.size());
+        assertTrue(freeLocations.contains(freeLocation));
+        assertTrue(freeLocations.contains(locationMock));
+        assertFalse(freeLocations.contains(notFreeLocation));
     }
 }
