@@ -29,7 +29,6 @@ public class PatchCellCancer extends PatchCellTissue {
      */
     public PatchCellCancer(PatchCellContainer container, Location location, Parameters parameters) {
         this(container, location, parameters, null);
-        MAX_DENSITY = Integer.MAX_VALUE;
     }
 
     /**

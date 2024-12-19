@@ -25,6 +25,7 @@ import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
+
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.Flag;
 import static arcade.patch.util.PatchEnums.Ordering;
@@ -78,7 +79,7 @@ public abstract class PatchCell implements Cell {
     final int pop;
 
     /** Maximum number of cells from its population allowed in a {@link Location}. */
-    int MAX_DENSITY = Integer.MAX_VALUE;
+    final int maxDensity;
 
     /** Cell state. */
     CellState state;
@@ -175,6 +176,9 @@ public abstract class PatchCell implements Cell {
         senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
         energyThreshold = -parameters.getDouble("ENERGY_THRESHOLD");
         apoptosisAge = parameters.getDouble("APOPTOSIS_AGE");
+
+        int densityInput = parameters.getInt("MAX_DENSITY");
+        maxDensity = (densityInput >= 0 ? densityInput : Integer.MAX_VALUE);
 
         // Add cell processes.
         processes = new HashMap<>();
@@ -449,7 +453,7 @@ public abstract class PatchCell implements Cell {
      *
      * @param sim the simulation instance
      * @param random the random number generator
-     * @return the best location
+     * @return the best location or null if no valid locations
      */
     public PatchLocation selectBestLocation(Simulation sim, MersenneTwisterFast random) {
         return selectBestLocation(sim, random, false);
@@ -463,12 +467,12 @@ public abstract class PatchCell implements Cell {
      *
      * @param sim the simulation instance
      * @param random the random number generator
-     * @param proliferative whether the cell is a result of proliferation
-     * @return the best location
+     * @param proliferationFlag whether the cell is a result of proliferation
+     * @return the best location or null if no valid locations
      */
     public PatchLocation selectBestLocation(
-            Simulation sim, MersenneTwisterFast random, boolean proliferative) {
-        Bag locs = findFreeLocations(sim, proliferative);
+            Simulation sim, MersenneTwisterFast random, boolean proliferationFlag) {
+        Bag locs = findFreeLocations(sim, proliferationFlag);
         locs.shuffle(random);
         return (locs.size() > 0 ? (PatchLocation) locs.get(0) : null);
     }
@@ -477,36 +481,29 @@ public abstract class PatchCell implements Cell {
      * Find free locations in the neighborhood of the cell.
      *
      * @param sim the simulation instance
-     * @param add true if an additional cell is being added
+     * @param proliferationFlag true if an additional cell is being added
      * @return a list of free locations
      */
-    public Bag findFreeLocations(Simulation sim, boolean add) {
+    public Bag findFreeLocations(Simulation sim, boolean proliferationFlag) {
         Bag freeLocations = new Bag();
-
         PatchLocation currentLocation = this.location;
-        double targetVolume;
-        if (add) {
-            targetVolume = this.getVolume() * 0.5;
-        } else {
-            targetVolume = this.getVolume();
-        }
+        double targetVolume = proliferationFlag ? volume * 0.5 : volume;
+        int densityAdjustment = proliferationFlag ? 1 : 0;
 
         if (checkLocation(
-                sim, currentLocation, 0, getCriticalHeight(), getPop(), MAX_DENSITY, add)) {
+                sim, currentLocation, 0, criticalHeight, pop, maxDensity - densityAdjustment)) {
             freeLocations.add(currentLocation);
         }
 
         for (Location neighborLocation : currentLocation.getNeighbors()) {
             PatchLocation neighbor = (PatchLocation) neighborLocation;
-
             if (checkLocation(
                     sim,
                     neighbor,
                     targetVolume,
-                    getCriticalHeight(),
-                    getPop(),
-                    MAX_DENSITY,
-                    true)) {
+                    criticalHeight,
+                    pop,
+                    maxDensity)) {
                 freeLocations.add(neighborLocation);
             }
         }
@@ -514,7 +511,8 @@ public abstract class PatchCell implements Cell {
     }
 
     /**
-     * Determine if a patch location is free.
+     * Determine if a patch location is free. A location is free if the proposed cell volume can fit in the
+     * location without exceeding the max volume of a location, exceeding constuents' critical heights, and exceeding the population density is below the maximum.
      *
      * @param sim the simulation instance
      * @param loc the location
@@ -522,30 +520,26 @@ public abstract class PatchCell implements Cell {
      * @param targetHeight the target height of the cell to add or move
      * @param population the population index
      * @param maxDensity the maximum density of population in the location
-     * @param add true if an additional cell is being added
      * @return a list of free locations
      */
     static boolean checkLocation(
             Simulation sim,
             PatchLocation loc,
-            double targetVolume,
-            double targetHeight,
+            double addedVolume,
+            double maxHeight,
             int population,
-            int maxDensity,
-            boolean add) {
+            int maxDensity) {
         double locationVolume = loc.getVolume();
         double locationArea = loc.getArea();
         PatchGrid grid = (PatchGrid) sim.getGrid();
 
         Bag bag = new Bag(grid.getObjectsAtLocation(loc));
 
-        if (bag.numObjs == 0) {
-            return true;
-        } else {
-            double proposedVolume = calculateTotalVolume(bag) + targetVolume;
+        if (bag.numObjs != 0) {
+            double proposedVolume = calculateTotalVolume(bag) + addedVolume;
             double proposedHeight = proposedVolume / locationArea;
 
-            if (proposedVolume > locationVolume || proposedHeight > targetHeight) {
+            if (proposedVolume > locationVolume || proposedHeight > maxHeight) {
                 return false;
             }
 
@@ -557,12 +551,12 @@ public abstract class PatchCell implements Cell {
                 }
                 if (cell.getPop() == population) {
                     count++;
-                    if (count + (add ? 1 : 0) > maxDensity) {
+                    if (count >= maxDensity) {
                         return false;
                     }
                 }
             }
-            return true;
         }
+        return true;
     }
 }

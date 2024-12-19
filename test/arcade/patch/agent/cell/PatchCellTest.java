@@ -258,7 +258,7 @@ public class PatchCellTest {
 
         doReturn(new Bag()).when(gridMock).getObjectsAtLocation(locationMock);
 
-        boolean actual = PatchCell.checkLocation(simMock, locationMock, 500, 2.5, 0, 2, true);
+        boolean actual = PatchCell.checkLocation(simMock, locationMock, 500, 2.5, 0, 2);
 
         assertEquals(true, actual);
     }
@@ -296,7 +296,7 @@ public class PatchCellTest {
 
         doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
 
-        boolean actual = PatchCell.checkLocation(simMock, locationMock, 10, 2.5, cellPop, 2, true);
+        boolean actual = PatchCell.checkLocation(simMock, locationMock, 10, 2.5, cellPop, 2);
 
         assertEquals(false, actual);
     }
@@ -313,7 +313,7 @@ public class PatchCellTest {
 
         doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
 
-        boolean actual = PatchCell.checkLocation(simMock, locationMock, 0, 10, 0, 2, false);
+        boolean actual = PatchCell.checkLocation(simMock, locationMock, 0, 10, 0, 2);
 
         assertEquals(true, actual);
     }
@@ -330,7 +330,7 @@ public class PatchCellTest {
 
         doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
 
-        boolean actual = PatchCell.checkLocation(simMock, locationMock, 499, 10, 0, 2, false);
+        boolean actual = PatchCell.checkLocation(simMock, locationMock, 499, 10, 0, 2);
 
         assertEquals(true, actual);
     }
@@ -347,7 +347,7 @@ public class PatchCellTest {
 
         doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
 
-        boolean actual = PatchCell.checkLocation(simMock, locationMock, 501, 10, 0, 2, false);
+        boolean actual = PatchCell.checkLocation(simMock, locationMock, 501, 10, 0, 2);
 
         assertEquals(false, actual);
     }
@@ -364,7 +364,7 @@ public class PatchCellTest {
 
         doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
 
-        boolean actual = PatchCell.checkLocation(simMock, locationMock, 501, 10, 0, 2, false);
+        boolean actual = PatchCell.checkLocation(simMock, locationMock, 501, 10, 0, 2);
 
         assertEquals(false, actual);
     }
@@ -381,7 +381,7 @@ public class PatchCellTest {
 
         doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
 
-        boolean actual = PatchCell.checkLocation(simMock, locationMock, 500, 7, 0, 2, false);
+        boolean actual = PatchCell.checkLocation(simMock, locationMock, 500, 7, 0, 2);
 
         assertEquals(false, actual);
     }
@@ -398,7 +398,7 @@ public class PatchCellTest {
 
         doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
 
-        boolean actual = PatchCell.checkLocation(simMock, locationMock, 500, 10, 0, 2, false);
+        boolean actual = PatchCell.checkLocation(simMock, locationMock, 500, 10, 0, 2);
 
         assertEquals(false, actual);
     }
@@ -407,6 +407,7 @@ public class PatchCellTest {
     public void findFreeLocations_whenOnlyOneNeighborIsFree_returnsCurrentAndOpenLocation() {
         doReturn(0.0).when(parametersMock).getDouble(any(String.class));
         doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(-1).when(parametersMock).getInt("MAX_DENSITY");
 
         doReturn(1000.).when(locationMock).getVolume();
         doReturn(100.).when(locationMock).getArea();
@@ -441,11 +442,66 @@ public class PatchCellTest {
                         cellCriticalHeight);
         PatchCell cell = new PatchCellMock(container, locationMock, parametersMock);
 
+        Bag currentBag = new Bag();
+        currentBag.add(cell);
+        doReturn(currentBag).when(gridMock).getObjectsAtLocation(locationMock);
+
         Bag freeLocations = cell.findFreeLocations(simMock, false);
 
         assertEquals(2, freeLocations.size());
         assertTrue(freeLocations.contains(freeLocation));
         assertTrue(freeLocations.contains(locationMock));
+        assertFalse(freeLocations.contains(notFreeLocation));
+    }
+
+    @Test
+    public void findFreeLocations_proliferatingAndDensityExceedsMaxDensity_returnsOnlyOpenLocation() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(1).when(parametersMock).getInt("MAX_DENSITY");
+
+        doReturn(1000.).when(locationMock).getVolume();
+        doReturn(100.).when(locationMock).getArea();
+
+        PatchLocation freeLocation = mock(PatchLocation.class);
+        doReturn(new Bag()).when(gridMock).getObjectsAtLocation(freeLocation);
+        doReturn(1000.).when(freeLocation).getVolume();
+        doReturn(100.).when(freeLocation).getArea();
+
+        PatchLocation notFreeLocation = mock(PatchLocation.class);
+        Bag notFreeBag = createPatchCellsWithVolumeAndCriticalHeight(2, 250, 10);
+        doReturn(notFreeBag).when(gridMock).getObjectsAtLocation(notFreeLocation);
+        doReturn(1000.).when(notFreeLocation).getVolume();
+        doReturn(100.).when(notFreeLocation).getArea();
+
+        ArrayList<Location> neighborLocations = new ArrayList<>();
+        neighborLocations.add(freeLocation);
+        neighborLocations.add(notFreeLocation);
+        doReturn(neighborLocations).when(locationMock).getNeighbors();
+
+        PatchCellContainer container =
+                new PatchCellContainer(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellAge,
+                        cellDivisions,
+                        cellState,
+                        cellVolume,
+                        cellHeight,
+                        cellCriticalVolume,
+                        cellCriticalHeight);
+        PatchCell cell = new PatchCellMock(container, locationMock, parametersMock);
+
+        Bag currentBag = new Bag();
+        currentBag.add(cell);
+        doReturn(currentBag).when(gridMock).getObjectsAtLocation(locationMock);
+
+        Bag freeLocations = cell.findFreeLocations(simMock, true);
+
+        // assertEquals(1, freeLocations.size());
+        assertTrue(freeLocations.contains(freeLocation));
+        assertFalse(freeLocations.contains(locationMock));
         assertFalse(freeLocations.contains(notFreeLocation));
     }
 }

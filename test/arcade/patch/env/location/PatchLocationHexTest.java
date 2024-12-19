@@ -6,6 +6,7 @@ import arcade.core.env.location.Location;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PatchLocationHexTest {
+
     @Test
     public void getNeighbors_called_returnsNeighbors() {
         CoordinateUVWZ coord = new CoordinateUVWZ(3, -2, -1, 8);
