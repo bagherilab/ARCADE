@@ -64,7 +64,7 @@ public class PatchCellTissueTest {
         doReturn(gridMock).when(simMock).getGrid();
     }
 
-    private static Bag createPatchTissueCellsWithVolumeAndCriticalHeight(
+    final Bag createPatchTissueCellsWithVolumeAndCriticalHeight(
             int n, double volume, double critHeight) {
         Bag bag = new Bag();
         for (int i = 0; i < n; i++) {

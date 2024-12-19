@@ -263,7 +263,7 @@ public class PatchCellTest {
         assertEquals(true, actual);
     }
 
-    public Bag createPatchCellsWithVolumeAndCriticalHeight(
+    final Bag createPatchCellsWithVolumeAndCriticalHeight(
             int n, double volume, double critHeight) {
         Bag bag = new Bag();
         for (int i = 0; i < n; i++) {
