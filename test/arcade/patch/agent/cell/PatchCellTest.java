@@ -263,7 +263,8 @@ public class PatchCellTest {
         assertEquals(true, actual);
     }
 
-    public Bag createCellsWithVolumeAndCriticalHeight(int n, double volume, double critHeight) {
+    public Bag createPatchCellsWithVolumeAndCriticalHeight(
+            int n, double volume, double critHeight) {
         Bag bag = new Bag();
         for (int i = 0; i < n; i++) {
             PatchCellContainer container =
@@ -292,7 +293,7 @@ public class PatchCellTest {
         doReturn(1000.).when(locationMock).getVolume();
         doReturn(100.).when(locationMock).getArea();
 
-        Bag testBag = createCellsWithVolumeAndCriticalHeight(2, 10, 12.5);
+        Bag testBag = createPatchCellsWithVolumeAndCriticalHeight(2, 10, 12.5);
 
         doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
 
@@ -309,7 +310,7 @@ public class PatchCellTest {
         doReturn(1000.).when(locationMock).getVolume();
         doReturn(100.).when(locationMock).getArea();
 
-        Bag testBag = createCellsWithVolumeAndCriticalHeight(2, 500, 12.5);
+        Bag testBag = createPatchCellsWithVolumeAndCriticalHeight(2, 500, 12.5);
 
         doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
 
@@ -326,7 +327,7 @@ public class PatchCellTest {
         doReturn(1000.).when(locationMock).getVolume();
         doReturn(100.).when(locationMock).getArea();
 
-        Bag testBag = createCellsWithVolumeAndCriticalHeight(1, 500, 10);
+        Bag testBag = createPatchCellsWithVolumeAndCriticalHeight(1, 500, 10);
 
         doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
 
@@ -343,7 +344,7 @@ public class PatchCellTest {
         doReturn(1000.).when(locationMock).getVolume();
         doReturn(100.).when(locationMock).getArea();
 
-        Bag testBag = createCellsWithVolumeAndCriticalHeight(1, 500, 10);
+        Bag testBag = createPatchCellsWithVolumeAndCriticalHeight(1, 500, 10);
 
         doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
 
@@ -360,7 +361,7 @@ public class PatchCellTest {
         doReturn(1000.).when(locationMock).getVolume();
         doReturn(100.).when(locationMock).getArea();
 
-        Bag testBag = createCellsWithVolumeAndCriticalHeight(1, 500, 5);
+        Bag testBag = createPatchCellsWithVolumeAndCriticalHeight(1, 500, 5);
 
         doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
 
@@ -377,7 +378,7 @@ public class PatchCellTest {
         doReturn(1000.).when(locationMock).getVolume();
         doReturn(100.).when(locationMock).getArea();
 
-        Bag testBag = createCellsWithVolumeAndCriticalHeight(1, 500, 10);
+        Bag testBag = createPatchCellsWithVolumeAndCriticalHeight(1, 500, 10);
 
         doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
 
@@ -394,7 +395,7 @@ public class PatchCellTest {
         doReturn(1000.).when(locationMock).getVolume();
         doReturn(100.).when(locationMock).getArea();
 
-        Bag testBag = createCellsWithVolumeAndCriticalHeight(1, 500, 5);
+        Bag testBag = createPatchCellsWithVolumeAndCriticalHeight(1, 500, 5);
 
         doReturn(testBag).when(gridMock).getObjectsAtLocation(locationMock);
 
@@ -417,7 +418,7 @@ public class PatchCellTest {
         doReturn(100.).when(freeLocation).getArea();
 
         PatchLocation notFreeLocation = mock(PatchLocation.class);
-        Bag notFreeBag = createCellsWithVolumeAndCriticalHeight(2, 500, 10);
+        Bag notFreeBag = createPatchCellsWithVolumeAndCriticalHeight(2, 500, 10);
         doReturn(notFreeBag).when(gridMock).getObjectsAtLocation(notFreeLocation);
         doReturn(1000.).when(notFreeLocation).getVolume();
         doReturn(100.).when(notFreeLocation).getArea();

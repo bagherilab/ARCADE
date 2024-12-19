@@ -64,7 +64,8 @@ public class PatchCellCancerTest {
         doReturn(gridMock).when(simMock).getGrid();
     }
 
-    public Bag createCellsWithVolumeAndCriticalHeight(int n, double volume, double critHeight) {
+    private static Bag createCancerCellsWithVolumeAndCriticalHeight(
+            int n, double volume, double critHeight) {
         Bag bag = new Bag();
         for (int i = 0; i < n; i++) {
             PatchCellContainer container =
@@ -94,7 +95,7 @@ public class PatchCellCancerTest {
         doReturn(100.).when(locationMock).getArea();
 
         PatchLocation freeLocation = mock(PatchLocation.class);
-        Bag freeBag = createCellsWithVolumeAndCriticalHeight(2, 200, 10);
+        Bag freeBag = createCancerCellsWithVolumeAndCriticalHeight(2, 200, 10);
         doReturn(1000.).when(freeLocation).getVolume();
         doReturn(100.).when(freeLocation).getArea();
         doReturn(freeBag).when(gridMock).getObjectsAtLocation(freeLocation);
