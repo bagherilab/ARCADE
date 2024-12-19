@@ -29,6 +29,7 @@ public class PatchCellCancer extends PatchCellTissue {
      */
     public PatchCellCancer(PatchCellContainer container, Location location, Parameters parameters) {
         this(container, location, parameters, null);
+        MAX_DENSITY = Integer.MAX_VALUE;
     }
 
     /**
@@ -82,9 +83,9 @@ public class PatchCellCancer extends PatchCellTissue {
      * @param simstate the MASON simulation state
      * @param cell the reference cell
      */
-    private static void checkNeighborhood(SimState simstate, PatchCell cell) {
+    private void checkNeighborhood(SimState simstate, PatchCell cell) {
         Simulation sim = (Simulation) simstate;
-        if (PatchCell.findFreeLocations(sim, cell.location, cell.volume, cell.height).size() > 0) {
+        if (findFreeLocations(sim, false).size() > 0) {
             cell.setState(State.UNDEFINED);
         }
     }

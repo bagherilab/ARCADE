@@ -1,8 +1,10 @@
 package arcade.patch.agent.module;
 
+import java.util.ArrayList;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.Cell;
+import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
@@ -46,7 +48,10 @@ public class PatchModuleApoptosis extends PatchModule {
     public void step(MersenneTwisterFast random, Simulation sim) {
         if (ticker > deathDuration) {
             // Induce one neighboring quiescent cell to proliferate.
-            Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocations(location.getNeighbors());
+            ArrayList<Location> neighborhood = location.getNeighbors();
+            neighborhood.add(location);
+            Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocations(neighborhood);
+
             bag.shuffle(random);
             for (Object obj : bag) {
                 Cell neighbor = (Cell) obj;

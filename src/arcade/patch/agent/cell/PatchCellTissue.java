@@ -30,6 +30,7 @@ public class PatchCellTissue extends PatchCell {
     public PatchCellTissue(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
+        MAX_DENSITY = 1;
     }
 
     @Override

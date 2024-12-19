@@ -133,7 +133,7 @@ public abstract class PatchLocation implements Location {
      *
      * @return the maximum occupancy
      */
-    public abstract int getMaximum();
+    public abstract int getNumSubcoordinates();
 
     /**
      * Gets the {@link arcade.core.env.grid.Grid} offset relative to the {@link

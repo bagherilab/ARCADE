@@ -136,7 +136,7 @@ public final class PatchLocationRect extends PatchLocation {
     }
 
     @Override
-    public int getMaximum() {
+    public int getNumSubcoordinates() {
         return NUM_SUBCOORDINATES;
     }
 
@@ -212,7 +212,7 @@ public final class PatchLocationRect extends PatchLocation {
      * {@inheritDoc}
      *
      * <p>We check if a neighbor location is valid by comparing the movement checks byte with the
-     * neighbor location byte. Neighbor list includes the current location.
+     * neighbor location byte.
      */
     @Override
     public ArrayList<Location> getNeighbors() {
@@ -238,9 +238,6 @@ public final class PatchLocationRect extends PatchLocation {
                                 rect.z + (b >> 1 & 1) - (b >> 0 & 1)));
             }
         }
-
-        // Add current location.
-        neighbors.add(new PatchLocationRect(rect));
 
         return neighbors;
     }
