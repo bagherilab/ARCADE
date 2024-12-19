@@ -175,7 +175,10 @@ public abstract class PatchLocation implements Location {
      * @return {@code true} if coordinates are equal, {@code false} otherwise
      */
     public boolean equals(Object obj) {
-        return coordinate.equals(obj);
+        if (obj instanceof PatchLocation) {
+            return coordinate.equals(((PatchLocation) obj).getCoordinate());
+        }
+        return false;
     }
 
     /**
