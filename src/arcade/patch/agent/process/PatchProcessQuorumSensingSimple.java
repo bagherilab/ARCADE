@@ -65,23 +65,25 @@ public class PatchProcessQuorumSensingSimple extends PatchProcessQuorumSensing {
     /** Distance outward from surface a cell can sense */
     protected final double ACTIVATION_THRESHOLD;
 
+    protected double activation_scaled;
+
     /** Number of steps per second to take in ODE */
-    private static final double STEP_DIVIDER = 3.0;
+    private static final double STEP_DIVIDER = 10.0;
 
     /** Rate of auxin expression[/sec/step/divider] */
     private static final double K_AUX_EXPRESS = 1e-3 / STEP_DIVIDER;
 
     /** Rate of degradation of auxin [/sec/step/divider] */
-    private static final double K_AUX_DEGRADE = 1e-3 / STEP_DIVIDER;
+    private static final double K_AUX_DEGRADE = 1e-5 / STEP_DIVIDER;
 
     /** Rate of CAR expression[/sec/step/divider] */
-    private static final double K_CAR_EXPRESS = 1e-4 / STEP_DIVIDER;
+    private static final double K_CAR_EXPRESS = 1e-3 / STEP_DIVIDER;
 
     /** Rate of degradation of CAR [/sec/step/divider] */
-    private static final double K_CAR_DEGRADE = 1e-4 / STEP_DIVIDER;
+    private static final double K_CAR_DEGRADE = 1e-5 / STEP_DIVIDER;
 
     /** Rate of active biomarker expression[/sec/step/divider] */
-    private static final double K_ACTIVE_EXPRESS = 1e-5 / STEP_DIVIDER;
+    private static final double K_ACTIVE_EXPRESS = 1e-3 / STEP_DIVIDER;
 
     /** Rate of degradation of active biomarker [/sec/step/divider] */
     private static final double K_ACTIVE_DEGRADE = 1e-5 / STEP_DIVIDER;
@@ -101,13 +103,14 @@ public class PatchProcessQuorumSensingSimple extends PatchProcessQuorumSensing {
         // set parameters
         Parameters parameters = cell.getParameters();
         this.ACTIVATION_THRESHOLD = parameters.getDouble("quorum/ACTIVATION_THRESHOLD");
+        this.activation_scaled = this.ACTIVATION_THRESHOLD;
 
         // Initial amounts of each species, all in molecules/cell.
         this.concs = new double[NUM_COMPONENTS];
+        concs[SYNNOTCH] = parameters.getDouble("SYNNOTCHS");
+        concs[CAR] = parameters.getDouble("CARS");
+        concs[ACTIVATION] = parameters.getDouble("quorum/INITIAL_ACTIVATION");
         concs[AUXIN] = 0;
-        concs[SYNNOTCH] = parameters.getDouble("CARS");
-        concs[CAR] = parameters.getDouble("SYNNOTCHS");
-        concs[ACTIVATION] = 0;
 
         // Molecule names.
         names = new ArrayList<String>();
@@ -124,22 +127,20 @@ public class PatchProcessQuorumSensingSimple extends PatchProcessQuorumSensing {
                         double[] dydt = new double[NUM_COMPONENTS];
 
                         dydt[ACTIVATION] =
-                                K_ACTIVE_EXPRESS * (y[CAR] - boundSynNotchConcentration)
+                        isBound * K_ACTIVE_EXPRESS * (boundCarConcentration)
                                         - K_ACTIVE_DEGRADE * y[ACTIVATION];
 
                         dydt[CAR] = K_CAR_EXPRESS * (y[AUXIN]) - K_CAR_DEGRADE * (y[CAR]);
 
                         dydt[AUXIN] =
-                                isBound * K_AUX_EXPRESS * (y[SYNNOTCH] - boundSynNotchConcentration)
-                                        - K_AUX_DEGRADE * (y[SYNNOTCH]);
+                                isBound * K_AUX_EXPRESS * (boundSynNotchConcentration)
+                                        - K_AUX_DEGRADE * (y[AUXIN]);
 
                         return dydt;
                     };
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-        this.boundSynNotchConcentration = this.cell.synNotchAntigensBound;
-        this.boundCarConcentration = this.cell.returnBoundCars();
         // Check cell state.
         isActive = ((PatchCellCART) cell).getActivationStatus();
 
@@ -152,24 +153,38 @@ public class PatchProcessQuorumSensingSimple extends PatchProcessQuorumSensing {
         this.isBound =
                 (boundStatus == AntigenFlag.BOUND_SYNNOTCH
                                 || boundStatus == AntigenFlag.BOUND_CELL_SYNNOTCH_RECEPTOR
-                                || boundStatus == AntigenFlag.BOUND_ANTIGEN_SYNNOTCH_RECEPTOR)
+                                || boundStatus == AntigenFlag.BOUND_ANTIGEN_SYNNOTCH_RECEPTOR
+                                || boundStatus == AntigenFlag.BOUND_ANTIGEN_CELL_SYNNOTCH_RECEPTOR)
                         ? 1
                         : 0;
+        
+        preventOverflow();
+        double scale = rescaleConcentrations();
+
+        this.boundSynNotchConcentration = this.cell.synNotchAntigensBound/scale;
+        this.boundCarConcentration = this.cell.returnBoundCars()/scale;
 
         // Solve system of equations.
-        concs = Solver.euler(dydt, 0, concs, 60, STEP_SIZE);
-
+        concs = Solver.rungeKutta(dydt, 0, concs, 60, STEP_SIZE);
+        
         // update cell state
-        if (concs[ACTIVATION] < ACTIVATION_THRESHOLD) {
+        if (concs[ACTIVATION] < activation_scaled) {
             cell.setActivationStatus(false);
         } else {
             cell.setActivationStatus(true);
             cell.resetLastActiveTicker();
         }
 
-        // TODO: decide if we want to update CARS receptor amounts, or just keep it internally for
-        // sake of auxin module
-        // cell.cars = (int) Math.round(concs[CAR]);
+        // if (random.nextDouble() < 0.5) {
+        //     cell.setActivationStatus(false);
+        // } else {
+        //     cell.setActivationStatus(true);
+        //     cell.resetLastActiveTicker();
+        // }
+
+        // cell.setActivationStatus(true);
+        // concs[ACTIVATION] = 6000;
+        cell.cars = (int) Math.round(concs[CAR] * scale);
     }
 
     @Override
@@ -186,5 +201,52 @@ public class PatchProcessQuorumSensingSimple extends PatchProcessQuorumSensing {
         quorum.concs[AUXIN] *= quorum.concs[AUXIN] * (1 - split);
         quorum.concs[CAR] *= quorum.concs[CAR] * (1 - split);
         quorum.concs[ACTIVATION] *= quorum.concs[ACTIVATION] * (1 - split);
+    }
+
+
+    /**
+     * Rescales the concentrations array if any two values are more than 1e4 times apart.
+     * The rescaling ensures that all values are in a comparable range.
+     */
+    private double rescaleConcentrations() {
+        // Find the maximum and minimum non-zero values
+        double maxConcentration = Double.NEGATIVE_INFINITY;
+        double minConcentration = Double.POSITIVE_INFINITY;
+    
+        for (double conc : concs) {
+            if (conc > 0) { // Ignore zero or negative concentrations
+                maxConcentration = Math.max(maxConcentration, conc);
+                minConcentration = Math.min(minConcentration, conc);
+            }
+        }
+    
+        // Check if the range exceeds 1e4
+        if (maxConcentration / minConcentration > 1e4) {
+            // Calculate a scaling factor to keep values in a manageable range
+            double scalingFactor = Math.sqrt(maxConcentration * minConcentration);
+    
+            // Avoid zeroing out small values; use a minimum scaling threshold
+            double minimumThreshold = 1e-6;
+            scalingFactor = Math.max(scalingFactor, minimumThreshold);
+    
+            // Scale concentrations
+            for (int i = 0; i < concs.length; i++) {
+                concs[i] /= scalingFactor;
+            }
+    
+            // Adjust activation_scaled proportionally
+            activation_scaled /= scalingFactor;
+            return scalingFactor;
+        }
+        return 1;
+    }
+
+    //rescale if numbers are too small
+    public void preventOverflow() {
+        for (int i = 0; i < concs.length; i++) {
+            if (Math.abs(concs[i]) < 1e-12) {
+                concs[i] = 0.0; // Avoid numerical underflow
+            }
+        }
     }
 }
