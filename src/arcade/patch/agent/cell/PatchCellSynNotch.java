@@ -178,7 +178,7 @@ public class PatchCellSynNotch extends PatchCellCART {
                             && logSelf < randomSelf
                             && logSynNotch < randomSynNotch) {
                         // cell binds to antigen receptor
-                        binding = AntigenFlag.BOUND_ANTIGEN;
+                        super.setAntigenFlag(AntigenFlag.BOUND_ANTIGEN);
                         boundAntigensCount++;
                         selfReceptors +=
                                 (int)
@@ -189,7 +189,7 @@ public class PatchCellSynNotch extends PatchCellCART {
                             && logSelf >= randomSelf
                             && logSynNotch < randomSynNotch) {
                         // cell binds to antigen receptor and self
-                        binding = AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR;
+                        super.setAntigenFlag(AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR);
                         boundAntigensCount++;
                         boundSelfCount++;
                         selfReceptors +=
@@ -201,13 +201,13 @@ public class PatchCellSynNotch extends PatchCellCART {
                             && logSelf >= randomSelf
                             && logSynNotch < randomSynNotch) {
                         // cell binds to self
-                        binding = AntigenFlag.BOUND_CELL_RECEPTOR;
+                        super.setAntigenFlag(AntigenFlag.BOUND_CELL_RECEPTOR);
                         boundSelfCount++;
                         return tissueCell;
                     } else if (logSynNotch >= randomSynNotch
                             && logSelf < randomSelf
                             && logCAR < randomAntigen) {
-                        binding = AntigenFlag.BOUND_SYNNOTCH;
+                        super.setAntigenFlag(AntigenFlag.BOUND_SYNNOTCH);
                         synNotchAntigensBound++;
                         selfReceptors +=
                                 (int)
@@ -217,7 +217,7 @@ public class PatchCellSynNotch extends PatchCellCART {
                     } else if (logSynNotch >= randomSynNotch
                             && logSelf >= randomSelf
                             && logCAR < randomAntigen) {
-                        binding = AntigenFlag.BOUND_CELL_SYNNOTCH_RECEPTOR;
+                        super.setAntigenFlag(AntigenFlag.BOUND_CELL_SYNNOTCH_RECEPTOR);
                         synNotchAntigensBound++;
                         boundSelfCount++;
                         selfReceptors +=
@@ -228,14 +228,14 @@ public class PatchCellSynNotch extends PatchCellCART {
                     } else if (logSynNotch >= randomSynNotch
                             && logCAR >= randomAntigen
                             && logSelf < randomSelf) {
-                        binding = AntigenFlag.BOUND_ANTIGEN_SYNNOTCH_RECEPTOR;
+                        super.setAntigenFlag(AntigenFlag.BOUND_ANTIGEN_SYNNOTCH_RECEPTOR);
                         synNotchAntigensBound++;
                         boundAntigensCount++;
                         return tissueCell;
                     } else if (logSynNotch >= randomSynNotch
                             && logSelf >= randomSelf
                             && logCAR >= randomAntigen) {
-                        binding = AntigenFlag.BOUND_ANTIGEN_CELL_SYNNOTCH_RECEPTOR;
+                        super.setAntigenFlag(AntigenFlag.BOUND_ANTIGEN_CELL_SYNNOTCH_RECEPTOR);
                         synNotchAntigensBound++;
                         boundAntigensCount++;
                         boundSelfCount++;
@@ -246,11 +246,11 @@ public class PatchCellSynNotch extends PatchCellCART {
                         return tissueCell;
                     } else {
                         // cell doesn't bind to anything
-                        binding = AntigenFlag.UNBOUND;
+                        super.setAntigenFlag(AntigenFlag.UNBOUND);
                     }
                 }
             }
-            binding = AntigenFlag.UNBOUND;
+            super.setAntigenFlag(AntigenFlag.UNBOUND);
         }
         return null;
     }
@@ -336,7 +336,7 @@ public class PatchCellSynNotch extends PatchCellCART {
                 // Check activation status. If cell has been activated before,
                 // it will proliferate. If not, it will migrate.
                 if (activated) {
-                    super.setState(State.PROLIFERATIVE);
+                    super.setState(State.PROLIFERATIVE_ACTIVE);
                 } else {
                     if (simstate.random.nextDouble() > super.proliferativeFraction) {
                         super.setState(State.MIGRATORY);
