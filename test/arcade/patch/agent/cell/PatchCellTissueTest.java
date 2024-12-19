@@ -87,7 +87,7 @@ public class PatchCellTissueTest {
     }
 
     @Test
-    public void findFreeLocations_roomForMultipleCancerCells_returnsCurrentAndOpenLocation() {
+    public void findFreeLocations_exceedsMaxDensitys_returnsOnlyCurrentLocation() {
         doReturn(0.0).when(parametersMock).getDouble(anyString());
         doReturn(0).when(parametersMock).getInt(anyString());
 
@@ -122,5 +122,43 @@ public class PatchCellTissueTest {
         assertEquals(1, freeLocations.size());
         assertTrue(freeLocations.contains(locationMock));
         assertFalse(freeLocations.contains(notFreeLocation));
+    }
+
+    @Test
+    public void findFreeLocations_containsAnotherPopulation_returnsFreeAndCurrentLocation() {
+        doReturn(0.0).when(parametersMock).getDouble(anyString());
+        doReturn(0).when(parametersMock).getInt(anyString());
+
+        doReturn(1000.).when(locationMock).getVolume();
+        doReturn(100.).when(locationMock).getArea();
+
+        PatchLocation notFreeLocation = mock(PatchLocation.class);
+        Bag notFreeBag = createPatchTissueCellsWithVolumeAndCriticalHeight(1, 200, 10);
+        doReturn(notFreeBag).when(gridMock).getObjectsAtLocation(notFreeLocation);
+        doReturn(1000.).when(notFreeLocation).getVolume();
+        doReturn(100.).when(notFreeLocation).getArea();
+        ArrayList<Location> neighborLocations = new ArrayList<>();
+        neighborLocations.add(notFreeLocation);
+        doReturn(neighborLocations).when(locationMock).getNeighbors();
+
+        PatchCellContainer container =
+                new PatchCellContainer(
+                        cellID,
+                        cellParent,
+                        cellPop - 1,
+                        cellAge,
+                        cellDivisions,
+                        cellState,
+                        cellVolume,
+                        cellHeight,
+                        cellCriticalVolume,
+                        cellCriticalHeight);
+        PatchCell cell = new PatchCellTissue(container, locationMock, parametersMock);
+
+        Bag freeLocations = cell.findFreeLocations(simMock, false);
+
+        assertEquals(2, freeLocations.size());
+        assertTrue(freeLocations.contains(locationMock));
+        assertTrue(freeLocations.contains(notFreeLocation));
     }
 }
