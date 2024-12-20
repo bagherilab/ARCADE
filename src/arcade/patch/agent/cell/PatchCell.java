@@ -505,7 +505,7 @@ public abstract class PatchCell implements Cell {
      * @param sim the simulation instance
      * @param loc the location
      * @param addedVolume the volume added to the location
-     * @param maxHeight the target height of the cell to add or move
+     * @param maxHeight the maximum height tolerance
      * @param population the population index
      * @param maxDensity the maximum density of population in the location
      * @return a list of free locations
