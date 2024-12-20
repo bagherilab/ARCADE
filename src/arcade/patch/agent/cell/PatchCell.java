@@ -449,7 +449,6 @@ public abstract class PatchCell implements Cell {
      *
      * @param sim the simulation instance
      * @param random the random number generator
-     * @param proliferationFlag whether the cell is a result of proliferation
      * @return the best location or null if no valid locations
      */
     public PatchLocation selectBestLocation(Simulation sim, MersenneTwisterFast random) {
