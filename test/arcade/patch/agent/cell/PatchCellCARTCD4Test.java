@@ -9,7 +9,7 @@ import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
-import arcade.core.util.Parameters;          
+import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModule;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
