@@ -25,7 +25,6 @@ import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
-
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.Flag;
 import static arcade.patch.util.PatchEnums.Ordering;
@@ -497,13 +496,7 @@ public abstract class PatchCell implements Cell {
 
         for (Location neighborLocation : currentLocation.getNeighbors()) {
             PatchLocation neighbor = (PatchLocation) neighborLocation;
-            if (checkLocation(
-                    sim,
-                    neighbor,
-                    targetVolume,
-                    criticalHeight,
-                    pop,
-                    maxDensity)) {
+            if (checkLocation(sim, neighbor, targetVolume, criticalHeight, pop, maxDensity)) {
                 freeLocations.add(neighborLocation);
             }
         }
@@ -511,8 +504,9 @@ public abstract class PatchCell implements Cell {
     }
 
     /**
-     * Determine if a patch location is free. A location is free if the proposed cell volume can fit in the
-     * location without exceeding the max volume of a location, exceeding constuents' critical heights, and exceeding the population density is below the maximum.
+     * Determine if a patch location is free. A location is free if the proposed cell volume can fit
+     * in the location without exceeding the max volume of a location, exceeding constuents'
+     * critical heights, and exceeding the population density is below the maximum.
      *
      * @param sim the simulation instance
      * @param loc the location

@@ -455,7 +455,8 @@ public class PatchCellTest {
     }
 
     @Test
-    public void findFreeLocations_proliferatingAndDensityExceedsMaxDensity_returnsOnlyOpenLocation() {
+    public void
+            findFreeLocations_proliferatingAndDensityExceedsMaxDensity_returnsOnlyOpenLocation() {
         doReturn(0.0).when(parametersMock).getDouble(any(String.class));
         doReturn(0).when(parametersMock).getInt(any(String.class));
         doReturn(1).when(parametersMock).getInt("MAX_DENSITY");
@@ -499,7 +500,7 @@ public class PatchCellTest {
 
         Bag freeLocations = cell.findFreeLocations(simMock, true);
 
-        // assertEquals(1, freeLocations.size());
+        assertEquals(1, freeLocations.size());
         assertTrue(freeLocations.contains(freeLocation));
         assertFalse(freeLocations.contains(locationMock));
         assertFalse(freeLocations.contains(notFreeLocation));

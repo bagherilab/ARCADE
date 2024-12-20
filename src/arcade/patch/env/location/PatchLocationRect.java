@@ -187,13 +187,15 @@ public final class PatchLocationRect extends PatchLocation {
     void calculateChecks() {
         CoordinateXYZ rect = (CoordinateXYZ) coordinate;
         check =
-                (byte)
-                        ((rect.x == radius - 1 ? 0 : 1 << 5)
-                                + (rect.x == 1 - radius ? 0 : 1 << 4)
-                                + (rect.y == radius - 1 ? 0 : 1 << 3)
-                                + (rect.y == 1 - radius ? 0 : 1 << 2)
-                                + (rect.z == depth - 1 ? 0 : 1 << 1)
-                                + (rect.z == 1 - depth ? 0 : 1 << 0));
+                radius == 0 || depth == 0
+                        ? 0
+                        : (byte)
+                                ((rect.x == radius - 1 ? 0 : 1 << 5)
+                                        + (rect.x == 1 - radius ? 0 : 1 << 4)
+                                        + (rect.y == radius - 1 ? 0 : 1 << 3)
+                                        + (rect.y == 1 - radius ? 0 : 1 << 2)
+                                        + (rect.z == depth - 1 ? 0 : 1 << 1)
+                                        + (rect.z == 1 - depth ? 0 : 1 << 0));
     }
 
     /**

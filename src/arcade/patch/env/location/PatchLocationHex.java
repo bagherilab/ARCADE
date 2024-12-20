@@ -194,15 +194,17 @@ public final class PatchLocationHex extends PatchLocation {
     void calculateChecks() {
         CoordinateUVWZ hex = (CoordinateUVWZ) coordinate;
         check =
-                (byte)
-                        ((hex.u == radius - 1 ? 0 : 1 << 7)
-                                + (hex.u == 1 - radius ? 0 : 1 << 6)
-                                + (hex.v == radius - 1 ? 0 : 1 << 5)
-                                + (hex.v == 1 - radius ? 0 : 1 << 4)
-                                + (hex.w == radius - 1 ? 0 : 1 << 3)
-                                + (hex.w == 1 - radius ? 0 : 1 << 2)
-                                + (hex.z == depth - 1 ? 0 : 1 << 1)
-                                + (hex.z == 1 - depth ? 0 : 1 << 0));
+                radius == 0 || depth == 0
+                        ? 0
+                        : (byte)
+                                ((hex.u == radius - 1 ? 0 : 1 << 7)
+                                        + (hex.u == 1 - radius ? 0 : 1 << 6)
+                                        + (hex.v == radius - 1 ? 0 : 1 << 5)
+                                        + (hex.v == 1 - radius ? 0 : 1 << 4)
+                                        + (hex.w == radius - 1 ? 0 : 1 << 3)
+                                        + (hex.w == 1 - radius ? 0 : 1 << 2)
+                                        + (hex.z == depth - 1 ? 0 : 1 << 1)
+                                        + (hex.z == 1 - depth ? 0 : 1 << 0));
     }
 
     /**
