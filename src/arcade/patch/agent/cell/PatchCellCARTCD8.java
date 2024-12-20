@@ -1,5 +1,7 @@
 package arcade.patch.agent.cell;
 
+import sim.engine.SimState;
+import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
@@ -11,36 +13,34 @@ import arcade.patch.sim.PatchSimulation;
 import arcade.patch.util.PatchEnums.AntigenFlag;
 import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.State;
-import ec.util.MersenneTwisterFast;
-import sim.engine.SimState;
 
 public class PatchCellCARTCD8 extends PatchCellCART {
     /**
-      * Creates a tissue {@code PatchCellCARTCD8} agent.
-      * * <p>
-      * Loaded parameters include:
-      * <ul>
-      *     <li>{@code CYTOTOXIC_FRACTION} = fraction of cytotoxic cells that
-      *         become apoptotic</li>
-      * </ul>
-      *
-      * @param id  the cell ID
-      * @param parent  the parent ID
-      * @param pop  the cell population index
-      * @param state  the cell state
-      * @param age  the cell age
-      * @param divisions  the number of cell divisions
-      * @param location  the {@link Location} of the cell
-      * @param parameters  the dictionary of parameters
-      * @param volume  the cell volume
-      * @param height  the cell height
-      * @param criticalVolume  the critical cell volume
-      * @param criticalHeight  the critical cell height
-      */
-
-      public PatchCellCARTCD8(PatchCellContainer container, Location location, Parameters parameters) {
-            this(container, location, parameters, null);
-        }
+     * Creates a tissue {@code PatchCellCARTCD8} agent. *
+     *
+     * <p>Loaded parameters include:
+     *
+     * <ul>
+     *   <li>{@code CYTOTOXIC_FRACTION} = fraction of cytotoxic cells that become apoptotic
+     * </ul>
+     *
+     * @param id the cell ID
+     * @param parent the parent ID
+     * @param pop the cell population index
+     * @param state the cell state
+     * @param age the cell age
+     * @param divisions the number of cell divisions
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param volume the cell volume
+     * @param height the cell height
+     * @param criticalVolume the critical cell volume
+     * @param criticalHeight the critical cell height
+     */
+    public PatchCellCARTCD8(
+            PatchCellContainer container, Location location, Parameters parameters) {
+        this(container, location, parameters, null);
+    }
 
     public PatchCellCARTCD8(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
