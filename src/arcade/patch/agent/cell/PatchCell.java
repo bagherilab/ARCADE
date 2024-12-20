@@ -445,10 +445,7 @@ public abstract class PatchCell implements Cell {
     }
 
     /**
-     * Selects the best location for a cell to be added or move into, assuming no proliferation.
-     *
-     * <p>Each free location is scored based on glucose availability and distance from the center of
-     * the simulation.
+     * Selects a random location for a cell to be added or move into, assuming no proliferation.
      *
      * @param sim the simulation instance
      * @param random the random number generator
@@ -459,10 +456,7 @@ public abstract class PatchCell implements Cell {
     }
 
     /**
-     * Selects the best location for a cell to be added or move into.
-     *
-     * <p>Each free location is scored based on glucose availability and distance from the center of
-     * the simulation.
+     * Selects a random location for a cell to be added or move into.
      *
      * @param sim the simulation instance
      * @param random the random number generator
@@ -510,8 +504,8 @@ public abstract class PatchCell implements Cell {
      *
      * @param sim the simulation instance
      * @param loc the location
-     * @param targetVolume the target volume of the cell to add or move
-     * @param targetHeight the target height of the cell to add or move
+     * @param addedVolume the target volume of the cell to add or move
+     * @param maxHeight the target height of the cell to add or move
      * @param population the population index
      * @param maxDensity the maximum density of population in the location
      * @return a list of free locations

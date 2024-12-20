@@ -77,14 +77,14 @@ public class PatchCellCancer extends PatchCellTissue {
     /**
      * Checks neighborhood for free locations.
      *
-     * <p>If there is at least one free location, cell state becomes undefined.
+     * <p>If there is at least one free location for proliferation, cell state becomes undefined.
      *
      * @param simstate the MASON simulation state
      * @param cell the reference cell
      */
     private void checkNeighborhood(SimState simstate, PatchCell cell) {
         Simulation sim = (Simulation) simstate;
-        if (findFreeLocations(sim, false).size() > 0) {
+        if (findFreeLocations(sim, true).size() > 0) {
             cell.setState(State.UNDEFINED);
         }
     }

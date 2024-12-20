@@ -129,9 +129,9 @@ public abstract class PatchLocation implements Location {
     public abstract double getRatio();
 
     /**
-     * Gets the maximum occupancy of a location.
+     * Gets the number of subcoordinates in a location.
      *
-     * @return the maximum occupancy
+     * @return the number of subcoordinates
      */
     public abstract int getNumSubcoordinates();
 
