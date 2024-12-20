@@ -215,11 +215,11 @@ public class PatchCellCARTCD4Test {
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    cell.module = module;
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            cell.module = module;
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
         doReturn(new PatchCellTissue(container, location, parameters))
@@ -245,11 +245,11 @@ public class PatchCellCARTCD4Test {
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    cell.module = module;
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            cell.module = module;
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
         doReturn(new PatchCellTissue(container, location, parameters))
@@ -261,7 +261,7 @@ public class PatchCellCARTCD4Test {
         sim.random = random;
         cell.setState(State.UNDEFINED);
 
-        cell.setEnergy(-1 * randomIntBetween(1,5));
+        cell.setEnergy(-1 * randomIntBetween(1, 5));
         cell.step(sim);
 
         assertEquals(State.APOPTOTIC, cell.getState());
@@ -279,11 +279,11 @@ public class PatchCellCARTCD4Test {
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    cell.module = module;
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            cell.module = module;
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
         doReturn(new PatchCellTissue(container, location, parameters))
@@ -312,11 +312,11 @@ public class PatchCellCARTCD4Test {
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    cell.module = module;
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            cell.module = module;
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
         doReturn(new PatchCellTissue(container, location, parameters))
@@ -344,12 +344,12 @@ public class PatchCellCARTCD4Test {
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    cell.divisions = 0;
-                    cell.module = module;
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            cell.divisions = 0;
+                            cell.module = module;
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
         doReturn(new PatchCellTissue(container, location, parameters))
@@ -378,11 +378,11 @@ public class PatchCellCARTCD4Test {
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    cell.module = module;
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            cell.module = module;
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
         doReturn(new PatchCellTissue(container, location, parameters))
@@ -451,12 +451,12 @@ public class PatchCellCARTCD4Test {
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    cell.activated = true;
-                    cell.module = module;
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            cell.activated = true;
+                            cell.module = module;
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
         doReturn(new PatchCellTissue(container, location, parameters))
@@ -483,12 +483,12 @@ public class PatchCellCARTCD4Test {
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    cell.activated = false;
-                    cell.module = module;
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            cell.activated = false;
+                            cell.module = module;
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
         doReturn(new PatchCellTissue(container, location, parameters))
@@ -515,12 +515,12 @@ public class PatchCellCARTCD4Test {
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    cell.boundAntigensCount = cell.maxAntigenBinding + 1;
-                    cell.module = module;
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            cell.boundAntigensCount = cell.maxAntigenBinding + 1;
+                            cell.module = module;
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
         doReturn(new PatchCellTissue(container, location, parameters))
