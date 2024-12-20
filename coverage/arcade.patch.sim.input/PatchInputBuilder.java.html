@@ -226,9 +226,13 @@ public final class PatchInputBuilder extends InputBuilder {
 
 <span class="fc" id="L227">        patch.add(&quot;GRID_VOLUME&quot;, String.valueOf(location.getVolume()));</span>
 <span class="fc" id="L228">        patch.add(&quot;GRID_AREA&quot;, String.valueOf(location.getArea()));</span>
-<span class="fc" id="L229">        patch.add(&quot;LATTICE_VOLUME&quot;, String.valueOf(location.getVolume() / location.getMaximum()));</span>
-<span class="fc" id="L230">        patch.add(&quot;LATTICE_AREA&quot;, String.valueOf(location.getArea() / location.getMaximum()));</span>
-<span class="fc" id="L231">        patch.add(&quot;TOTAL_PATCHES&quot;, String.valueOf(totalPatches));</span>
-<span class="fc" id="L232">    }</span>
+<span class="fc" id="L229">        patch.add(</span>
+                &quot;LATTICE_VOLUME&quot;,
+<span class="fc" id="L231">                String.valueOf(location.getVolume() / location.getNumSubcoordinates()));</span>
+<span class="fc" id="L232">        patch.add(</span>
+                &quot;LATTICE_AREA&quot;,
+<span class="fc" id="L234">                String.valueOf(location.getArea() / location.getNumSubcoordinates()));</span>
+<span class="fc" id="L235">        patch.add(&quot;TOTAL_PATCHES&quot;, String.valueOf(totalPatches));</span>
+<span class="fc" id="L236">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

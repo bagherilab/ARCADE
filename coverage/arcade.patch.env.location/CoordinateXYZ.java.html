@@ -43,11 +43,11 @@ public final class CoordinateXYZ extends Coordinate {
 
     @Override
     public boolean equals(Object obj) {
-<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (!(obj instanceof CoordinateXYZ)) {</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">        if (!(obj instanceof CoordinateXYZ)) {</span>
 <span class="nc" id="L47">            return false;</span>
         }
-<span class="nc" id="L49">        CoordinateXYZ coordinate = (CoordinateXYZ) obj;</span>
-<span class="nc bnc" id="L50" title="All 6 branches missed.">        return coordinate.x == x &amp;&amp; coordinate.y == y &amp;&amp; coordinate.z == z;</span>
+<span class="fc" id="L49">        CoordinateXYZ coordinate = (CoordinateXYZ) obj;</span>
+<span class="fc bfc" id="L50" title="All 6 branches covered.">        return coordinate.x == x &amp;&amp; coordinate.y == y &amp;&amp; coordinate.z == z;</span>
     }
 
     /**

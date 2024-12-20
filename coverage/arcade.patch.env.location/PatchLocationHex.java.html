@@ -95,8 +95,8 @@ public final class PatchLocationHex extends PatchLocation {
      * @param z the coordinate in z direction
      */
     public PatchLocationHex(int u, int v, int w, int z) {
-<span class="nc" id="L98">        this(new CoordinateUVWZ(u, v, w, z));</span>
-<span class="nc" id="L99">    }</span>
+<span class="fc" id="L98">        this(new CoordinateUVWZ(u, v, w, z));</span>
+<span class="fc" id="L99">    }</span>
 
     /**
      * Creates a {@code PatchLocationHex} object at given coordinate.
@@ -143,7 +143,7 @@ public final class PatchLocationHex extends PatchLocation {
     }
 
     @Override
-    public int getMaximum() {
+    public int getNumSubcoordinates() {
 <span class="fc" id="L147">        return NUM_SUBCOORDINATES;</span>
     }
 
@@ -174,8 +174,8 @@ public final class PatchLocationHex extends PatchLocation {
 <span class="fc" id="L174">        CoordinateUVWZ hex = (CoordinateUVWZ) coordinate;</span>
 
         // Calculate coordinate of top center triangle.
-<span class="pc bpc" id="L177" title="1 of 2 branches missed.">        int x = 3 * (hex.u + radiusBounds) - 2 + (offset == 2 ? -1 : offset);</span>
-<span class="pc bpc" id="L178" title="1 of 2 branches missed.">        int y = (hex.w - hex.v) + 2 * radiusBounds - 2 + (offset == 0 ? 0 : 1);</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">        int x = 3 * (hex.u + radiusBounds) - 2 + (offset == 2 ? -1 : offset);</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">        int y = (hex.w - hex.v) + 2 * radiusBounds - 2 + (offset == 0 ? 0 : 1);</span>
 <span class="fc" id="L179">        int z = depthBounds + hex.z - 1;</span>
 
         // Set coordinates of triangles clockwise from top center.
@@ -194,16 +194,18 @@ public final class PatchLocationHex extends PatchLocation {
     void calculateChecks() {
 <span class="fc" id="L195">        CoordinateUVWZ hex = (CoordinateUVWZ) coordinate;</span>
 <span class="fc" id="L196">        check =</span>
-                (byte)
-<span class="pc bpc" id="L198" title="1 of 2 branches missed.">                        ((hex.u == radius - 1 ? 0 : 1 &lt;&lt; 7)</span>
-<span class="pc bpc" id="L199" title="1 of 2 branches missed.">                                + (hex.u == 1 - radius ? 0 : 1 &lt;&lt; 6)</span>
-<span class="pc bpc" id="L200" title="1 of 2 branches missed.">                                + (hex.v == radius - 1 ? 0 : 1 &lt;&lt; 5)</span>
-<span class="pc bpc" id="L201" title="1 of 2 branches missed.">                                + (hex.v == 1 - radius ? 0 : 1 &lt;&lt; 4)</span>
-<span class="pc bpc" id="L202" title="1 of 2 branches missed.">                                + (hex.w == radius - 1 ? 0 : 1 &lt;&lt; 3)</span>
-<span class="pc bpc" id="L203" title="1 of 2 branches missed.">                                + (hex.w == 1 - radius ? 0 : 1 &lt;&lt; 2)</span>
-<span class="fc bfc" id="L204" title="All 2 branches covered.">                                + (hex.z == depth - 1 ? 0 : 1 &lt;&lt; 1)</span>
-<span class="fc bfc" id="L205" title="All 2 branches covered.">                                + (hex.z == 1 - depth ? 0 : 1 &lt;&lt; 0));</span>
-<span class="fc" id="L206">    }</span>
+<span class="fc bfc" id="L197" title="All 4 branches covered.">                radius == 0 || depth == 0</span>
+<span class="fc" id="L198">                        ? 0</span>
+                        : (byte)
+<span class="fc bfc" id="L200" title="All 2 branches covered.">                                ((hex.u == radius - 1 ? 0 : 1 &lt;&lt; 7)</span>
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">                                        + (hex.u == 1 - radius ? 0 : 1 &lt;&lt; 6)</span>
+<span class="pc bpc" id="L202" title="1 of 2 branches missed.">                                        + (hex.v == radius - 1 ? 0 : 1 &lt;&lt; 5)</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">                                        + (hex.v == 1 - radius ? 0 : 1 &lt;&lt; 4)</span>
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">                                        + (hex.w == radius - 1 ? 0 : 1 &lt;&lt; 3)</span>
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">                                        + (hex.w == 1 - radius ? 0 : 1 &lt;&lt; 2)</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">                                        + (hex.z == depth - 1 ? 0 : 1 &lt;&lt; 1)</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">                                        + (hex.z == 1 - depth ? 0 : 1 &lt;&lt; 0));</span>
+<span class="fc" id="L208">    }</span>
 
     /**
      * {@inheritDoc}
@@ -214,33 +216,33 @@ public final class PatchLocationHex extends PatchLocation {
      */
     @Override
     public double getPerimeter(double f) {
-<span class="nc bnc" id="L217" title="All 2 branches missed.">        return f * HEX_PERIMETER + (f == 1 ? 0 : 2 * HEX_SIDE);</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">        return f * HEX_PERIMETER + (f == 1 ? 0 : 2 * HEX_SIDE);</span>
     }
 
     /**
      * {@inheritDoc}
      *
      * &lt;p&gt;We check if a neighbor location is valid by comparing the movement checks byte with the
-     * neighbor location byte. Neighbor list includes the current location.
+     * neighbor location byte.
      */
     @Override
     public ArrayList&lt;Location&gt; getNeighbors() {
-<span class="nc" id="L228">        CoordinateUVWZ hex = (CoordinateUVWZ) coordinate;</span>
-<span class="nc" id="L229">        ArrayList&lt;Location&gt; neighbors = new ArrayList&lt;&gt;(MOVES.length + 1);</span>
+<span class="fc" id="L230">        CoordinateUVWZ hex = (CoordinateUVWZ) coordinate;</span>
+<span class="fc" id="L231">        ArrayList&lt;Location&gt; neighbors = new ArrayList&lt;&gt;(MOVES.length + 1);</span>
         byte b;
 
         // Add neighbor locations.
-<span class="nc bnc" id="L233" title="All 2 branches missed.">        for (int i = 0; i &lt; MOVES.length; i++) {</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">        for (int i = 0; i &lt; MOVES.length; i++) {</span>
             // Adjust byte for vertical offset.
-<span class="nc bnc" id="L235" title="All 2 branches missed.">            if (i &gt; 7) {</span>
-<span class="nc" id="L236">                b = offsetByte(MOVES[i], 2 * offset);</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">            if (i &gt; 7) {</span>
+<span class="fc" id="L238">                b = offsetByte(MOVES[i], 2 * offset);</span>
             } else {
-<span class="nc" id="L238">                b = MOVES[i];</span>
+<span class="fc" id="L240">                b = MOVES[i];</span>
             }
 
             // Add location if possible to move there.
-<span class="nc bnc" id="L242" title="All 2 branches missed.">            if ((b &amp; check ^ b) == 0) {</span>
-<span class="nc" id="L243">                neighbors.add(</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">            if ((b &amp; check ^ b) == 0) {</span>
+<span class="fc" id="L245">                neighbors.add(</span>
                         new PatchLocationHex(
                                 hex.u + (b &gt;&gt; 7 &amp; 1) - (b &gt;&gt; 6 &amp; 1),
                                 hex.v + (b &gt;&gt; 5 &amp; 1) - (b &gt;&gt; 4 &amp; 1),
@@ -249,15 +251,12 @@ public final class PatchLocationHex extends PatchLocation {
             }
         }
 
-        // Add current location.
-<span class="nc" id="L253">        neighbors.add(new PatchLocationHex(hex));</span>
-
-<span class="nc" id="L255">        return neighbors;</span>
+<span class="fc" id="L254">        return neighbors;</span>
     }
 
     @Override
     public LocationContainer convert(int id) {
-<span class="nc" id="L260">        return new PatchLocationContainer(id, coordinate);</span>
+<span class="nc" id="L259">        return new PatchLocationContainer(id, coordinate);</span>
     }
 
     /**
@@ -268,23 +267,23 @@ public final class PatchLocationHex extends PatchLocation {
      * @return the corresponding hexagonal coordinate
      */
     public static CoordinateUVWZ translate(CoordinateXYZ coordinate) {
-<span class="nc" id="L271">        int z = coordinate.z - depthBounds + 1;</span>
-<span class="nc" id="L272">        int zo = (byte) ((Math.abs(heightOffset + z)) % 3);</span>
+<span class="nc" id="L270">        int z = coordinate.z - depthBounds + 1;</span>
+<span class="nc" id="L271">        int zo = (byte) ((Math.abs(heightOffset + z)) % 3);</span>
 
         // Calculate u coordinate.
-<span class="nc bnc" id="L275" title="All 2 branches missed.">        double uu = (coordinate.x - (zo == 2 ? -1 : zo) + 2) / 3.0 - radiusBounds;</span>
-<span class="nc" id="L276">        int u = Math.round(Math.round(uu));</span>
+<span class="nc bnc" id="L274" title="All 2 branches missed.">        double uu = (coordinate.x - (zo == 2 ? -1 : zo) + 2) / 3.0 - radiusBounds;</span>
+<span class="nc" id="L275">        int u = Math.round(Math.round(uu));</span>
 
         // Calculate v and w coordinates based on u.
-<span class="nc bnc" id="L279" title="All 2 branches missed.">        int vw = coordinate.y - 2 * radiusBounds + 2 - (zo == 0 ? 0 : 1);</span>
-<span class="nc" id="L280">        int v = -(int) Math.floor((vw + u) / 2.0);</span>
-<span class="nc" id="L281">        int w = -(u + v);</span>
+<span class="nc bnc" id="L278" title="All 2 branches missed.">        int vw = coordinate.y - 2 * radiusBounds + 2 - (zo == 0 ? 0 : 1);</span>
+<span class="nc" id="L279">        int v = -(int) Math.floor((vw + u) / 2.0);</span>
+<span class="nc" id="L280">        int w = -(u + v);</span>
 
         // Check if out of bounds.
-<span class="nc bnc" id="L284" title="All 4 branches missed.">        if (Math.abs(v) &gt;= radius || Math.abs(w) &gt;= radius) {</span>
-<span class="nc" id="L285">            return null;</span>
+<span class="nc bnc" id="L283" title="All 4 branches missed.">        if (Math.abs(v) &gt;= radius || Math.abs(w) &gt;= radius) {</span>
+<span class="nc" id="L284">            return null;</span>
         }
-<span class="nc" id="L287">        return new CoordinateUVWZ(u, v, w, z);</span>
+<span class="nc" id="L286">        return new CoordinateUVWZ(u, v, w, z);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

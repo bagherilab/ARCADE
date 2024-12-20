@@ -166,7 +166,7 @@ public abstract class PatchLattice implements Lattice {
 <span class="nc" id="L166">                        .map(e -&gt; (CoordinateXYZ) e)</span>
 <span class="nc" id="L167">                        .mapToDouble(c -&gt; field[c.z][c.x][c.y])</span>
 <span class="nc" id="L168">                        .sum()</span>
-<span class="nc" id="L169">                / patchLocation.getMaximum();</span>
+<span class="nc" id="L169">                / patchLocation.getNumSubcoordinates();</span>
     }
 
     @Override

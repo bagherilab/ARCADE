@@ -73,53 +73,51 @@ public class PatchModuleProliferation extends PatchModule {
 <span class="nc bnc" id="L73" title="All 2 branches missed.">        if (currentHeight &gt; maxHeight) {</span>
 <span class="nc" id="L74">            cell.setState(State.QUIESCENT);</span>
         } else {
-<span class="nc" id="L76">            PatchLocation newLocation =</span>
-<span class="nc" id="L77">                    PatchCell.selectBestLocation(</span>
-<span class="nc" id="L78">                            sim, location, cell.getVolume() * 0.5, maxHeight, random);</span>
+<span class="nc" id="L76">            PatchLocation newLocation = cell.selectBestLocation(sim, random);</span>
 
-<span class="nc bnc" id="L80" title="All 2 branches missed.">            if (newLocation == null) {</span>
-<span class="nc" id="L81">                cell.setState(State.QUIESCENT);</span>
-<span class="nc bnc" id="L82" title="All 2 branches missed.">            } else if (cell.getVolume() &gt;= targetVolume) {</span>
-<span class="nc bnc" id="L83" title="All 2 branches missed.">                if (ticker &gt; synthesisDuration) {</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">            if (newLocation == null) {</span>
+<span class="nc" id="L79">                cell.setState(State.QUIESCENT);</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">            } else if (cell.getVolume() &gt;= targetVolume) {</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">                if (ticker &gt; synthesisDuration) {</span>
 
-<span class="nc" id="L85">                    cell.addCycle(duration);</span>
+<span class="nc" id="L83">                    cell.addCycle(duration);</span>
                     // Reset current cell.
-<span class="nc" id="L87">                    cell.setState(State.UNDEFINED);</span>
+<span class="nc" id="L85">                    cell.setState(State.UNDEFINED);</span>
 
                     // Create and schedule new cell.
-<span class="nc" id="L90">                    int newID = sim.getID();</span>
-<span class="nc" id="L91">                    CellContainer newContainer = cell.make(newID, State.UNDEFINED, random);</span>
-<span class="nc" id="L92">                    PatchCell newCell =</span>
+<span class="nc" id="L88">                    int newID = sim.getID();</span>
+<span class="nc" id="L89">                    CellContainer newContainer = cell.make(newID, State.UNDEFINED, random);</span>
+<span class="nc" id="L90">                    PatchCell newCell =</span>
                             (PatchCell)
-<span class="nc" id="L94">                                    newContainer.convert(</span>
-<span class="nc" id="L95">                                            sim.getCellFactory(),</span>
+<span class="nc" id="L92">                                    newContainer.convert(</span>
+<span class="nc" id="L93">                                            sim.getCellFactory(),</span>
                                             newLocation,
                                             random,
-<span class="nc" id="L98">                                            cell.getParameters());</span>
-<span class="nc" id="L99">                    sim.getGrid().addObject(newCell, newLocation);</span>
-<span class="nc" id="L100">                    newCell.schedule(sim.getSchedule());</span>
+<span class="nc" id="L96">                                            cell.getParameters());</span>
+<span class="nc" id="L97">                    sim.getGrid().addObject(newCell, newLocation);</span>
+<span class="nc" id="L98">                    newCell.schedule(sim.getSchedule());</span>
 
                     // Update cell volume and energy based on split.
-<span class="nc" id="L103">                    double split = (random.nextDouble() / 10 + 0.45);</span>
-<span class="nc" id="L104">                    double volume = cell.getVolume();</span>
-<span class="nc" id="L105">                    double energy = cell.getEnergy();</span>
-<span class="nc" id="L106">                    cell.setVolume(volume * split);</span>
-<span class="nc" id="L107">                    cell.setEnergy(energy * split);</span>
-<span class="nc" id="L108">                    newCell.setVolume(volume * (1 - split));</span>
-<span class="nc" id="L109">                    newCell.setEnergy(energy * (1 - split));</span>
+<span class="nc" id="L101">                    double split = (random.nextDouble() / 10 + 0.45);</span>
+<span class="nc" id="L102">                    double volume = cell.getVolume();</span>
+<span class="nc" id="L103">                    double energy = cell.getEnergy();</span>
+<span class="nc" id="L104">                    cell.setVolume(volume * split);</span>
+<span class="nc" id="L105">                    cell.setEnergy(energy * split);</span>
+<span class="nc" id="L106">                    newCell.setVolume(volume * (1 - split));</span>
+<span class="nc" id="L107">                    newCell.setEnergy(energy * (1 - split));</span>
 
                     // Update processes.
-<span class="nc" id="L112">                    PatchProcess metabolism = (PatchProcess) newCell.getProcess(Domain.METABOLISM);</span>
-<span class="nc" id="L113">                    metabolism.update(cell.getProcess(Domain.METABOLISM));</span>
-<span class="nc" id="L114">                    PatchProcess signaling = (PatchProcess) newCell.getProcess(Domain.SIGNALING);</span>
-<span class="nc" id="L115">                    signaling.update(cell.getProcess(Domain.SIGNALING));</span>
+<span class="nc" id="L110">                    PatchProcess metabolism = (PatchProcess) newCell.getProcess(Domain.METABOLISM);</span>
+<span class="nc" id="L111">                    metabolism.update(cell.getProcess(Domain.METABOLISM));</span>
+<span class="nc" id="L112">                    PatchProcess signaling = (PatchProcess) newCell.getProcess(Domain.SIGNALING);</span>
+<span class="nc" id="L113">                    signaling.update(cell.getProcess(Domain.SIGNALING));</span>
 
                     // TODO: Update environment generator sites.
-<span class="nc" id="L118">                } else {</span>
-<span class="nc" id="L119">                    ticker++;</span>
+<span class="nc" id="L116">                } else {</span>
+<span class="nc" id="L117">                    ticker++;</span>
                 }
             }
         }
-<span class="nc" id="L123">    }</span>
+<span class="nc" id="L121">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

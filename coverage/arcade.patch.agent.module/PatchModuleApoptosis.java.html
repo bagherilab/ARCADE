@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchModuleApoptosis.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.agent.module</a> &gt; <span class="el_source">PatchModuleApoptosis.java</span></div><h1>PatchModuleApoptosis.java</h1><pre class="source lang-java linenums">package arcade.patch.agent.module;
 
+import java.util.ArrayList;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.Cell;
+import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
@@ -35,33 +37,36 @@ public class PatchModuleApoptosis extends PatchModule {
      * @param cell the {@link PatchCell} the module is associated with
      */
     public PatchModuleApoptosis(PatchCell cell) {
-<span class="fc" id="L38">        super(cell);</span>
+<span class="fc" id="L40">        super(cell);</span>
 
         // Set loaded parameters.
-<span class="fc" id="L41">        Parameters parameters = cell.getParameters();</span>
-<span class="fc" id="L42">        deathDuration = parameters.getInt(&quot;apoptosis/DEATH_DURATION&quot;);</span>
-<span class="fc" id="L43">    }</span>
+<span class="fc" id="L43">        Parameters parameters = cell.getParameters();</span>
+<span class="fc" id="L44">        deathDuration = parameters.getInt(&quot;apoptosis/DEATH_DURATION&quot;);</span>
+<span class="fc" id="L45">    }</span>
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-<span class="nc bnc" id="L47" title="All 2 branches missed.">        if (ticker &gt; deathDuration) {</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        if (ticker &gt; deathDuration) {</span>
             // Induce one neighboring quiescent cell to proliferate.
-<span class="nc" id="L49">            Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocations(location.getNeighbors());</span>
-<span class="nc" id="L50">            bag.shuffle(random);</span>
-<span class="nc bnc" id="L51" title="All 2 branches missed.">            for (Object obj : bag) {</span>
-<span class="nc" id="L52">                Cell neighbor = (Cell) obj;</span>
-<span class="nc bnc" id="L53" title="All 2 branches missed.">                if (neighbor.getState() == State.QUIESCENT) {</span>
-<span class="nc" id="L54">                    neighbor.setState(State.PROLIFERATIVE);</span>
-<span class="nc" id="L55">                    break;</span>
+<span class="nc" id="L51">            ArrayList&lt;Location&gt; neighborhood = location.getNeighbors();</span>
+<span class="nc" id="L52">            neighborhood.add(location);</span>
+<span class="nc" id="L53">            Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocations(neighborhood);</span>
+
+<span class="nc" id="L55">            bag.shuffle(random);</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">            for (Object obj : bag) {</span>
+<span class="nc" id="L57">                Cell neighbor = (Cell) obj;</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">                if (neighbor.getState() == State.QUIESCENT) {</span>
+<span class="nc" id="L59">                    neighbor.setState(State.PROLIFERATIVE);</span>
+<span class="nc" id="L60">                    break;</span>
                 }
-<span class="nc" id="L57">            }</span>
+<span class="nc" id="L62">            }</span>
 
             // Remove current cell from simulation and schedule.
-<span class="nc" id="L60">            sim.getGrid().removeObject(cell, location);</span>
-<span class="nc" id="L61">            cell.stop();</span>
-<span class="nc" id="L62">        } else {</span>
-<span class="nc" id="L63">            ticker++;</span>
+<span class="nc" id="L65">            sim.getGrid().removeObject(cell, location);</span>
+<span class="nc" id="L66">            cell.stop();</span>
+<span class="nc" id="L67">        } else {</span>
+<span class="nc" id="L68">            ticker++;</span>
         }
-<span class="nc" id="L65">    }</span>
+<span class="nc" id="L70">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

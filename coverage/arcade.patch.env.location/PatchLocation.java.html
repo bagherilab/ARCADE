@@ -83,7 +83,7 @@ public abstract class PatchLocation implements Location {
      * @return the coordinate
      */
     public Coordinate getCoordinate() {
-<span class="nc" id="L86">        return coordinate;</span>
+<span class="fc" id="L86">        return coordinate;</span>
     }
 
     /**
@@ -129,11 +129,11 @@ public abstract class PatchLocation implements Location {
     public abstract double getRatio();
 
     /**
-     * Gets the maximum occupancy of a location.
+     * Gets the number of subcoordinates in a location.
      *
-     * @return the maximum occupancy
+     * @return the number of subcoordinates
      */
-    public abstract int getMaximum();
+    public abstract int getNumSubcoordinates();
 
     /**
      * Gets the {@link arcade.core.env.grid.Grid} offset relative to the {@link
@@ -175,7 +175,10 @@ public abstract class PatchLocation implements Location {
      * @return {@code true} if coordinates are equal, {@code false} otherwise
      */
     public boolean equals(Object obj) {
-<span class="nc" id="L178">        return coordinate.equals(obj);</span>
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">        if (obj instanceof PatchLocation) {</span>
+<span class="fc" id="L179">            return coordinate.equals(((PatchLocation) obj).getCoordinate());</span>
+        }
+<span class="nc" id="L181">        return false;</span>
     }
 
     /**
@@ -201,10 +204,10 @@ public abstract class PatchLocation implements Location {
      * @return the offset byte
      */
     byte offsetByte(byte b, int k) {
-<span class="nc" id="L204">        int left = b &gt;&gt; 2 &amp; 0x3F; // left most 6 bits</span>
-<span class="nc" id="L205">        int right = b &amp; 0x3; // right most 2 bits</span>
-<span class="nc" id="L206">        int shifted = (left &lt;&lt; k &amp; 0x3F) | (left &gt;&gt;&gt; (6 - k) &amp; 0x3F);</span>
-<span class="nc" id="L207">        return (byte) (shifted &lt;&lt; 2 | right);</span>
+<span class="fc" id="L207">        int left = b &gt;&gt; 2 &amp; 0x3F; // left most 6 bits</span>
+<span class="fc" id="L208">        int right = b &amp; 0x3; // right most 2 bits</span>
+<span class="fc" id="L209">        int shifted = (left &lt;&lt; k &amp; 0x3F) | (left &gt;&gt;&gt; (6 - k) &amp; 0x3F);</span>
+<span class="fc" id="L210">        return (byte) (shifted &lt;&lt; 2 | right);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
