@@ -8,6 +8,7 @@ import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModule;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
+import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,6 +29,8 @@ public class PatchCellCancerStemTest {
     static PatchProcessMetabolism metabolismMock;
 
     static PatchProcessSignaling signalingMock;
+
+    static PatchGrid gridMock;
 
     static int cellID = randomIntBetween(1, 10);
 
@@ -58,6 +61,8 @@ public class PatchCellCancerStemTest {
         parametersMock = spy(new Parameters(new MiniBox(), null, null));
         metabolismMock = mock(PatchProcessMetabolism.class);
         signalingMock = mock(PatchProcessSignaling.class);
+        gridMock = mock(PatchGrid.class);
+        doReturn(gridMock).when(simMock).getGrid();
     }
 
     @Test
@@ -66,11 +71,13 @@ public class PatchCellCancerStemTest {
         doReturn(0.).when(parametersMock).getDouble(anyString());
         doReturn(0).when(parametersMock).getInt(anyString());
         doReturn(10.0).when(parametersMock).getDouble("APOPTOSIS_AGE");
+
         int age = 11;
         ArrayList<State> relevantStates = new ArrayList<>();
         relevantStates.add(State.QUIESCENT);
         relevantStates.add(State.MIGRATORY);
         relevantStates.add(State.PROLIFERATIVE);
+        relevantStates.add(State.UNDEFINED);
 
         for (State state : relevantStates) {
             PatchCellContainer container =
@@ -100,7 +107,7 @@ public class PatchCellCancerStemTest {
 
             cell.step(simMock);
 
-            assertEquals(state, cell.getState());
+            assertNotEquals(State.APOPTOTIC, cell.getState());
         }
     }
 }

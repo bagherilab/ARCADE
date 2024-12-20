@@ -129,11 +129,11 @@ public abstract class PatchLocation implements Location {
     public abstract double getRatio();
 
     /**
-     * Gets the maximum occupancy of a location.
+     * Gets the number of subcoordinates in a location.
      *
-     * @return the maximum occupancy
+     * @return the number of subcoordinates
      */
-    public abstract int getMaximum();
+    public abstract int getNumSubcoordinates();
 
     /**
      * Gets the {@link arcade.core.env.grid.Grid} offset relative to the {@link
@@ -175,7 +175,10 @@ public abstract class PatchLocation implements Location {
      * @return {@code true} if coordinates are equal, {@code false} otherwise
      */
     public boolean equals(Object obj) {
-        return coordinate.equals(obj);
+        if (obj instanceof PatchLocation) {
+            return coordinate.equals(((PatchLocation) obj).getCoordinate());
+        }
+        return false;
     }
 
     /**
