@@ -81,7 +81,7 @@ public class PatchLocationHexTest {
     }
 
     @Test
-    public void getNeighbors_calledatBoundary_returnsValidNeighbors() {
+    public void getNeighbors_calledAtBoundary_returnsValidNeighbors() {
         PatchLocation.radius = 4;
         PatchLocation.depth = 1;
         CoordinateUVWZ coord = new CoordinateUVWZ(3, -2, -1, 0);
