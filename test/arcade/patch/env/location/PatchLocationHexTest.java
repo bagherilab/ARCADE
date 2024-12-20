@@ -79,4 +79,22 @@ public class PatchLocationHexTest {
         assertEquals(expected.size(), actual.size());
         assertTrue(expected.containsAll(actual) && actual.containsAll(expected));
     }
+
+    @Test
+    public void getNeighbors_calledatBoundary_returnsValidNeighbors() {
+        PatchLocation.radius = 4;
+        PatchLocation.depth = 1;
+        CoordinateUVWZ coord = new CoordinateUVWZ(3, -2, -1, 0);
+        PatchLocationHex location = new PatchLocationHex(coord);
+
+        ArrayList<Location> actual = location.getNeighbors();
+
+        ArrayList<Location> expected = new ArrayList<>();
+        expected.add(new PatchLocationHex(new CoordinateUVWZ(3, -1, -2, 0)));
+        expected.add(new PatchLocationHex(new CoordinateUVWZ(2, -1, -1, 0)));
+        expected.add(new PatchLocationHex(new CoordinateUVWZ(2, -2, 0, 0)));
+        expected.add(new PatchLocationHex(new CoordinateUVWZ(3, -3, -0, 0)));
+        assertEquals(expected.size(), actual.size());
+        assertTrue(expected.containsAll(actual) && actual.containsAll(expected));
+    }
 }

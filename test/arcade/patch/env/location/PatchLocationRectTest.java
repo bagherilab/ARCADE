@@ -79,4 +79,23 @@ public class PatchLocationRectTest {
             assertTrue(actual.contains(expected.get(i)));
         }
     }
+
+    @Test
+    public void getNeighbors_calledAtBoundary_returnsValidNeighbors() {
+        PatchLocation.radius = 5;
+        PatchLocation.depth = 1;
+        CoordinateXYZ coord = new CoordinateXYZ(2, 4, 0);
+        PatchLocationRect location = new PatchLocationRect(coord);
+        ArrayList<Location> actual = location.getNeighbors();
+
+        ArrayList<Location> expected = new ArrayList<>();
+        expected.add(new PatchLocationRect(new CoordinateXYZ(1, 4, 0)));
+        expected.add(new PatchLocationRect(new CoordinateXYZ(3, 4, 0)));
+        expected.add(new PatchLocationRect(new CoordinateXYZ(2, 3, 0)));
+
+        assertEquals(expected.size(), actual.size());
+        for (int i = 0; i < expected.size(); i++) {
+            assertTrue(actual.contains(expected.get(i)));
+        }
+    }
 }
