@@ -14,15 +14,6 @@ import arcade.patch.util.PatchEnums.State;
 
 /** Extension of {@link PatchCell} for healthy tissue cells. */
 public class PatchCellTissue extends PatchCell {
-    // /** Fraction of necrotic cells that become apoptotic. */
-    // private final double necroticFraction;
-
-    // /** Fraction of senescent cells that become apoptotic. */
-    // private final double senescentFraction;
-
-    // these two variables are public bc I don't want to implement setter/getter methods for sims
-    // that do not use CART cells.
-
     /** Cell surface antigen count */
     int carAntigens;
 
@@ -75,8 +66,6 @@ public class PatchCellTissue extends PatchCell {
                 criticalVolume,
                 criticalHeight);
     }
-
-    /* consider making PatchCell parameters protected instead of private */
 
     @Override
     public void step(SimState simstate) {

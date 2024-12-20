@@ -16,32 +16,25 @@ import arcade.patch.util.PatchEnums.State;
 public class PatchCellCARTCD4 extends PatchCellCART {
 
     /**
-     * Creates a tissue {@code PatchCellCARTCD4} agent. *
+     * Creates a T cell {@code PatchCellCARTCD4} agent. *
      *
-     * <p>Loaded parameters include:
-     *
-     * <ul>
-     *   <li>{@code STIMULATORY_FRACTION} = fraction of stimulatory cells that become apoptotic
-     * </ul>
-     *
-     * @param id the cell ID
-     * @param parent the parent ID
-     * @param pop the cell population index
-     * @param state the cell state
-     * @param age the cell age
-     * @param divisions the number of cell divisions
+     * @param container the cell container
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
-     * @param volume the cell volume
-     * @param height the cell height
-     * @param criticalVolume the critical cell volume
-     * @param criticalHeight the critical cell height
      */
     public PatchCellCARTCD4(
             PatchCellContainer container, Location location, Parameters parameters) {
         this(container, location, parameters, null);
     }
 
+    /**
+     * Creates a T cell {@code PatchCellCARTCD4} agent. *
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
     public PatchCellCARTCD4(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
@@ -146,7 +139,6 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                     } else {
                         // if CD4 cell is properly activated, it can stimulate
                         super.setState(State.STIMULATORY);
-                        // reset the cell
                         this.lastActiveTicker = 0;
                         this.activated = true;
                         if (target.isStopped()) {
@@ -154,7 +146,7 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                         }
                         target.setState(State.QUIESCENT);
                         this.binding = AntigenFlag.UNBOUND;
-                        // need to reset
+                        // reset the cell
                         PatchActionReset reset =
                                 new PatchActionReset(
                                         this,

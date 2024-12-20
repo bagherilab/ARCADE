@@ -13,11 +13,11 @@ import static arcade.patch.util.PatchEnums.AntigenFlag;
 import static arcade.patch.util.PatchEnums.State;
 
 /**
- * Implementation of {@link Cell} for generic CART cell.
+ * Implementation of {@link PatchCell} for generic CART cell.
  *
  * <p>{@code PatchCellCART} agents exist in one of thirteen states: neutral, apoptotic, migratory,
  * proliferative, senescent, cytotoxic (CD8), stimulatory (CD4), exhausted, anergic, starved, or
- * paused. The neutral state is an transition state for "undecided" cells, and does not have any
+ * paused. The neutral state is a transition state for "undecided" cells, and does not have any
  * biological analog.
  *
  * <p>{@code PatchCellCART} agents have two required {@link Process} domains: metabolism and
@@ -64,25 +64,49 @@ public abstract class PatchCellCART extends PatchCell {
     /** Cell activation flag */
     protected boolean activated;
 
-    /** lack of documentation so these parameters are TBD */
+    /** number of current PDL-1 receptors on CART cell */
     protected int selfReceptors;
 
+    /** initial number of PDL-1 receptors on CART cell */
     protected int selfReceptorsStart;
+
+    /** number of bound CAR antigens */
     protected int boundAntigensCount;
+
+    /** number of bound PDL-1 antigens */
     protected int boundSelfCount;
 
-    /** lack of documentation so these loaded parameters are TBD */
+    /** number of neighbors that T cell is able to search through */
     protected final double searchAbility;
 
+    /** binding affinity for CAR receptor */
     protected final double carAffinity;
+
+    /** tuning factor for CAR binding */
     protected final double carAlpha;
+
+    /** tuning factor for CAR binding */
     protected final double carBeta;
+
+    /** binding affinity for PDL-1 receptor */
     protected final double selfReceptorAffinity;
+
+    /** tuning factor for PDL-1 receptor binding */
     protected final double selfAlpha;
+
+    /** tuning factor for PDL-1 receptor binding */
     protected final double selfBeta;
+
+    /** fraction of cell surface that contacts when binding */
     protected final double contactFraction;
+
+    /** max antigens threshold for T cell exhaustion */
     protected final int maxAntigenBinding;
+
+    /** number of CARs on T cell surface */
     protected final int cars;
+
+    /** simulation time since T cell was last activated */
     protected int lastActiveTicker;
 
     /** Fraction of exhausted cells that become apoptotic. */
@@ -98,52 +122,38 @@ public abstract class PatchCellCART extends PatchCell {
     protected final double proliferativeFraction;
 
     /**
-     * Creates a tissue {@code PatchCellCART} agent. *
+     * Creates a {@code PatchCellCART} agent. *
      *
-     * <p>Loaded parameters include:
-     *
-     * <ul>
-     *   <li>{@code EXHAUSTED_FRACTION} = fraction of exhausted cells that become apoptotic
-     *   <li>{@code SENESCENT_FRACTION} = fraction of senescent cells that become apoptotic
-     *   <li>{@code ANERGIC_FRACTION} = fraction of anergic cells that become apoptotic
-     *   <li>{@code PROLIFERATIVE_FRACTION} = fraction of proliferative cells that become apoptotic
-     *   <li>{@code CAR_ANTIGENS} = Cell surface antigen count
-     *   <li>{@code SELF_TARGETS} = Cell surface PDL1 count
-     *   <li>{@code SEARCH_ABILITY} = TBD
-     *   <li>{@code CAR_AFFINITY} = TBD
-     *   <li>{@code CAR_ALPHA} = TBD
-     *   <li>{@code CAR_BETA} = TBD
-     *   <li>{@code SELF_RECEPTOR_AFFINITY} = TBD
-     *   <li>{@code SELF_ALPHA} = TBD
-     *   <li>{@code SELF_BETA} = TBD
-     *   <li>{@code CONTACT_FRACTION} = TBD
-     *   <li>{@code MAX_ANTIGEN_BINDING} = TBD
-     *   <li>{@code CARS} = TBD
-     *   <li>{@code SELF_RECEPTORS} = TBD
-     *   <li>{@code SELF_RECEPTORS_START} = TBD
-     * </ul>
-     *
-     * < THERE IS A LACK OF DOCUMENTATION FOR THE REST OF THE LOADED PARAMS SO THEY ARE TBD>
-     *
-     * @param id the cell ID
-     * @param parent the parent ID
-     * @param pop the cell population index
-     * @param state the cell state
-     * @param age the cell age
-     * @param divisions the number of cell divisions
+     * @param container the cell container
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
-     * @param volume the cell volume
-     * @param height the cell height
-     * @param criticalVolume the critical cell volume
-     * @param criticalHeight the critical cell height
      */
     public PatchCellCART(PatchCellContainer container, Location location, Parameters parameters) {
         this(container, location, parameters, null);
     }
 
     /**
-     * Creates a tissue {@code PatchCell} agent with population links.
+     * Creates a {@code PatchCellCART} agent. *
+     *
+     * <p>Loaded parameters include:
+     *
+     * <ul>
+     *   <li>{@code EXHAU_FRACTION} = fraction of exhausted cells that become apoptotic
+     *   <li>{@code SENESCENT_FRACTION} = fraction of senescent cells that become apoptotic
+     *   <li>{@code ANERGIC_FRACTION} = fraction of anergic cells that become apoptotic
+     *   <li>{@code PROLIFERATIVE_FRACTION} = fraction of proliferative cells that become apoptotic
+     *   <li>{@code SELF_RECEPTORS} = current number of PDL-1 receptors on cell surface
+     *   <li>{@code SEARCH_ABILITY} = number of neighbors that T cell can search through
+     *   <li>{@code CAR_AFFINITY} = CAR receptor binding affinity
+     *   <li>{@code CAR_ALPHA} = tuning factor for CAR binding
+     *   <li>{@code CAR_BETA} = tuning factor for CAR binding
+     *   <li>{@code SELF_RECEPTOR_AFFINITY} = PDL-1 receptor binding affinity
+     *   <li>{@code SELF_ALPHA} = tuning factor for PDL-1 receptor binding
+     *   <li>{@code SELF_BETA} = tuning factor for PDL-1 receptor binding
+     *   <li>{@code CONTACT_FRAC} = fraction of surface area that contacts target cell when binding
+     *   <li>{@code MAX_ANTIGEN_BINDING} = maximum bound antigen count for T cell exhaustion
+     *   <li>{@code CARS} = number of CAR receptors on the cell
+     * </ul>
      *
      * @param container the cell container
      * @param location the {@link Location} of the cell
@@ -179,7 +189,6 @@ public abstract class PatchCellCART extends PatchCell {
         cars = parameters.getInt("CARS");
     }
 
-    /* need to implement bindTarget equivalent here*/
     /**
      * Determines if CAR T cell agent is bound to neighbor through receptor-target binding.
      *
@@ -187,7 +196,7 @@ public abstract class PatchCellCART extends PatchCell {
      * antigen and self receptors, compares values to random variable. Sets flags accordingly and
      * returns a target cell if one was bound by antigen or self receptor.
      *
-     * @param state the MASON simulation state
+     * @param sim the MASON simulation
      * @param loc the location of the CAR T-cell
      * @param random random seed
      */
@@ -297,7 +306,7 @@ public abstract class PatchCellCART extends PatchCell {
     /**
      * Sets the cell binding flag.
      *
-     * @param antigenFlag the target cell antigen binding state
+     * @param flag the target cell antigen binding state
      */
     public void setAntigenFlag(AntigenFlag flag) {
         this.binding = flag;
@@ -312,7 +321,11 @@ public abstract class PatchCellCART extends PatchCell {
         return this.binding;
     }
 
-    /** Returns activation status */
+    /**
+     * Returns the cell activation status
+     *
+     * @return the activation status
+     */
     public boolean getActivationStatus() {
         return this.activated;
     }
