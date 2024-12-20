@@ -67,6 +67,7 @@ public class PatchCellCARTCD8 extends PatchCellCART {
 
         @Override
         public void step(SimState simstate) {
+            // return;
             Simulation sim = (Simulation) simstate;
             
             // Increase age of cell.
