@@ -445,17 +445,6 @@ public abstract class PatchCell implements Cell {
     }
 
     /**
-     * Selects a random location for a cell to be added or move into, assuming no proliferation.
-     *
-     * @param sim the simulation instance
-     * @param random the random number generator
-     * @return the best location or null if no valid locations
-     */
-    public PatchLocation selectBestLocation(Simulation sim, MersenneTwisterFast random) {
-        return selectBestLocation(sim, random, false);
-    }
-
-    /**
      * Selects a random location for a cell to be added or move into.
      *
      * @param sim the simulation instance
@@ -463,9 +452,8 @@ public abstract class PatchCell implements Cell {
      * @param proliferationFlag whether the cell is a result of proliferation
      * @return the best location or null if no valid locations
      */
-    public PatchLocation selectBestLocation(
-            Simulation sim, MersenneTwisterFast random, boolean proliferationFlag) {
-        Bag locs = findFreeLocations(sim, proliferationFlag);
+    public PatchLocation selectBestLocation(Simulation sim, MersenneTwisterFast random) {
+        Bag locs = findFreeLocations(sim);
         locs.shuffle(random);
         return (locs.size() > 0 ? (PatchLocation) locs.get(0) : null);
     }
@@ -474,14 +462,13 @@ public abstract class PatchCell implements Cell {
      * Find free locations in the neighborhood of the cell.
      *
      * @param sim the simulation instance
-     * @param proliferationFlag true if an additional cell is being added
      * @return a list of free locations
      */
-    public Bag findFreeLocations(Simulation sim, boolean proliferationFlag) {
+    public Bag findFreeLocations(Simulation sim) {
         Bag freeLocations = new Bag();
         PatchLocation currentLocation = this.location;
-        double targetVolume = proliferationFlag ? volume * 0.5 : volume;
-        int densityAdjustment = proliferationFlag ? 1 : 0;
+        double targetVolume = (state == State.PROLIFERATIVE) ? volume * 0.5 : volume;
+        int densityAdjustment = (state == State.PROLIFERATIVE) ? 1 : 0;
 
         if (checkLocation(
                 sim, currentLocation, 0, criticalHeight, pop, maxDensity - densityAdjustment)) {
@@ -500,9 +487,9 @@ public abstract class PatchCell implements Cell {
     /**
      * Determine if a patch location is free.
      *
-     * <p> A location is free if the proposed cell volume can fit
-     * in the location without exceeding the max volume of a location, exceeding constituents'
-     * critical heights, and exceeding the population density is below the maximum.
+     * <p>A location is free if the proposed cell volume can fit in the location without exceeding
+     * the max volume of a location, exceeding constituents' critical heights, and exceeding the
+     * population density is below the maximum.
      *
      * @param sim the simulation instance
      * @param loc the location

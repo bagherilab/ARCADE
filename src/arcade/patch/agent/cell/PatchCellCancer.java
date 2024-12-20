@@ -84,7 +84,7 @@ public class PatchCellCancer extends PatchCellTissue {
      */
     private void checkNeighborhood(SimState simstate, PatchCell cell) {
         Simulation sim = (Simulation) simstate;
-        if (findFreeLocations(sim, true).size() > 0) {
+        if (findFreeLocations(sim).size() > 0) {
             cell.setState(State.UNDEFINED);
         }
     }

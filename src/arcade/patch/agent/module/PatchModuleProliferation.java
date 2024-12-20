@@ -73,7 +73,7 @@ public class PatchModuleProliferation extends PatchModule {
         if (currentHeight > maxHeight) {
             cell.setState(State.QUIESCENT);
         } else {
-            PatchLocation newLocation = cell.selectBestLocation(sim, random, true);
+            PatchLocation newLocation = cell.selectBestLocation(sim, random);
 
             if (newLocation == null) {
                 cell.setState(State.QUIESCENT);

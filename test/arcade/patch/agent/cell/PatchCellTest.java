@@ -435,7 +435,7 @@ public class PatchCellTest {
                         cellPop,
                         cellAge,
                         cellDivisions,
-                        cellState,
+                        State.MIGRATORY,
                         cellVolume,
                         cellHeight,
                         cellCriticalVolume,
@@ -446,7 +446,7 @@ public class PatchCellTest {
         currentBag.add(cell);
         doReturn(currentBag).when(gridMock).getObjectsAtLocation(locationMock);
 
-        Bag freeLocations = cell.findFreeLocations(simMock, false);
+        Bag freeLocations = cell.findFreeLocations(simMock);
 
         assertEquals(2, freeLocations.size());
         assertTrue(freeLocations.contains(freeLocation));
@@ -487,7 +487,7 @@ public class PatchCellTest {
                         cellPop,
                         cellAge,
                         cellDivisions,
-                        cellState,
+                        State.PROLIFERATIVE,
                         cellVolume,
                         cellHeight,
                         cellCriticalVolume,
@@ -498,7 +498,7 @@ public class PatchCellTest {
         currentBag.add(cell);
         doReturn(currentBag).when(gridMock).getObjectsAtLocation(locationMock);
 
-        Bag freeLocations = cell.findFreeLocations(simMock, true);
+        Bag freeLocations = cell.findFreeLocations(simMock);
 
         assertEquals(1, freeLocations.size());
         assertTrue(freeLocations.contains(freeLocation));
