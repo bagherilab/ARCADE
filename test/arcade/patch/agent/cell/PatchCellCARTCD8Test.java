@@ -261,7 +261,7 @@ public class PatchCellCARTCD8Test {
         sim.random = random;
         cell.setState(State.UNDEFINED);
 
-        cell.setEnergy(-1 * randomIntBetween(1, 5));
+        cell.setEnergy(-1 * randomIntBetween(2, 5));
         cell.step(sim);
 
         assertEquals(State.APOPTOTIC, cell.getState());
