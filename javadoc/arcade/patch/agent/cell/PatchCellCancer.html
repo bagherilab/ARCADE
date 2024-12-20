@@ -27,8 +27,8 @@
     catch(err) {
     }
 //-->
-var data = {"i0":9,"i1":10,"i2":10};
-var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var data = {"i0":10,"i1":10,"i2":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -180,7 +180,7 @@ extends <a href="PatchCellTissue.html" title="class in arcade.patch.agent.cell">
 <!--   -->
 </a>
 <h3>Fields inherited from class&nbsp;arcade.patch.agent.cell.<a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a></h3>
-<code><a href="PatchCell.html#age">age</a>, <a href="PatchCell.html#apoptosisAge">apoptosisAge</a>, <a href="PatchCell.html#criticalHeight">criticalHeight</a>, <a href="PatchCell.html#criticalVolume">criticalVolume</a>, <a href="PatchCell.html#divisions">divisions</a>, <a href="PatchCell.html#height">height</a>, <a href="PatchCell.html#id">id</a>, <a href="PatchCell.html#links">links</a>, <a href="PatchCell.html#location">location</a>, <a href="PatchCell.html#module">module</a>, <a href="PatchCell.html#parameters">parameters</a>, <a href="PatchCell.html#parent">parent</a>, <a href="PatchCell.html#pop">pop</a>, <a href="PatchCell.html#processes">processes</a>, <a href="PatchCell.html#state">state</a>, <a href="PatchCell.html#stopper">stopper</a>, <a href="PatchCell.html#volume">volume</a></code></li>
+<code><a href="PatchCell.html#age">age</a>, <a href="PatchCell.html#apoptosisAge">apoptosisAge</a>, <a href="PatchCell.html#criticalHeight">criticalHeight</a>, <a href="PatchCell.html#criticalVolume">criticalVolume</a>, <a href="PatchCell.html#divisions">divisions</a>, <a href="PatchCell.html#height">height</a>, <a href="PatchCell.html#id">id</a>, <a href="PatchCell.html#links">links</a>, <a href="PatchCell.html#location">location</a>, <a href="PatchCell.html#maxDensity">maxDensity</a>, <a href="PatchCell.html#module">module</a>, <a href="PatchCell.html#parameters">parameters</a>, <a href="PatchCell.html#parent">parent</a>, <a href="PatchCell.html#pop">pop</a>, <a href="PatchCell.html#processes">processes</a>, <a href="PatchCell.html#state">state</a>, <a href="PatchCell.html#stopper">stopper</a>, <a href="PatchCell.html#volume">volume</a></code></li>
 </ul>
 </li>
 </ul>
@@ -227,14 +227,14 @@ extends <a href="PatchCellTissue.html" title="class in arcade.patch.agent.cell">
 </a>
 <h3>Method Summary</h3>
 <table class="memberSummary">
-<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t1" class="tableTab"><span><a href="javascript:show(1);">Static Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
 <th class="colSecond" scope="col">Method</th>
 <th class="colLast" scope="col">Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code>private static void</code></td>
+<td class="colFirst"><code>private void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#checkNeighborhood(sim.engine.SimState,arcade.patch.agent.cell.PatchCell)">checkNeighborhood</a></span>&#8203;(sim.engine.SimState&nbsp;simstate,
                  <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a>&nbsp;cell)</code></th>
 <td class="colLast">
@@ -260,7 +260,7 @@ extends <a href="PatchCellTissue.html" title="class in arcade.patch.agent.cell">
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;arcade.patch.agent.cell.<a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a></h3>
-<code><a href="PatchCell.html#addCycle(int)">addCycle</a>, <a href="PatchCell.html#calculateTotalVolume(sim.util.Bag)">calculateTotalVolume</a>, <a href="PatchCell.html#convert()">convert</a>, <a href="PatchCell.html#findFreeLocations(arcade.core.sim.Simulation,arcade.patch.env.location.PatchLocation,double,double)">findFreeLocations</a>, <a href="PatchCell.html#getAge()">getAge</a>, <a href="PatchCell.html#getCriticalHeight()">getCriticalHeight</a>, <a href="PatchCell.html#getCriticalVolume()">getCriticalVolume</a>, <a href="PatchCell.html#getCycles()">getCycles</a>, <a href="PatchCell.html#getDivisions()">getDivisions</a>, <a href="PatchCell.html#getEnergy()">getEnergy</a>, <a href="PatchCell.html#getHeight()">getHeight</a>, <a href="PatchCell.html#getID()">getID</a>, <a href="PatchCell.html#getLocation()">getLocation</a>, <a href="PatchCell.html#getModule()">getModule</a>, <a href="PatchCell.html#getParameters()">getParameters</a>, <a href="PatchCell.html#getParent()">getParent</a>, <a href="PatchCell.html#getPop()">getPop</a>, <a href="PatchCell.html#getProcess(arcade.core.agent.process.ProcessDomain)">getProcess</a>, <a href="PatchCell.html#getState()">getState</a>, <a href="PatchCell.html#getVolume()">getVolume</a>, <a href="PatchCell.html#makeProcess(arcade.core.agent.process.ProcessDomain,java.lang.String)">makeProcess</a>, <a href="PatchCell.html#schedule(sim.engine.Schedule)">schedule</a>, <a href="PatchCell.html#selectBestLocation(arcade.core.sim.Simulation,arcade.patch.env.location.PatchLocation,double,double,ec.util.MersenneTwisterFast)">selectBestLocation</a>, <a href="PatchCell.html#setEnergy(double)">setEnergy</a>, <a href="PatchCell.html#setFlag(arcade.patch.util.PatchEnums.Flag)">setFlag</a>, <a href="PatchCell.html#setState(arcade.core.agent.cell.CellState)">setState</a>, <a href="PatchCell.html#setVolume(double)">setVolume</a>, <a href="PatchCell.html#stop()">stop</a></code></li>
+<code><a href="PatchCell.html#addCycle(int)">addCycle</a>, <a href="PatchCell.html#calculateTotalVolume(sim.util.Bag)">calculateTotalVolume</a>, <a href="PatchCell.html#checkLocation(arcade.core.sim.Simulation,arcade.patch.env.location.PatchLocation,double,double,int,int)">checkLocation</a>, <a href="PatchCell.html#convert()">convert</a>, <a href="PatchCell.html#findFreeLocations(arcade.core.sim.Simulation)">findFreeLocations</a>, <a href="PatchCell.html#getAge()">getAge</a>, <a href="PatchCell.html#getCriticalHeight()">getCriticalHeight</a>, <a href="PatchCell.html#getCriticalVolume()">getCriticalVolume</a>, <a href="PatchCell.html#getCycles()">getCycles</a>, <a href="PatchCell.html#getDivisions()">getDivisions</a>, <a href="PatchCell.html#getEnergy()">getEnergy</a>, <a href="PatchCell.html#getHeight()">getHeight</a>, <a href="PatchCell.html#getID()">getID</a>, <a href="PatchCell.html#getLocation()">getLocation</a>, <a href="PatchCell.html#getModule()">getModule</a>, <a href="PatchCell.html#getParameters()">getParameters</a>, <a href="PatchCell.html#getParent()">getParent</a>, <a href="PatchCell.html#getPop()">getPop</a>, <a href="PatchCell.html#getProcess(arcade.core.agent.process.ProcessDomain)">getProcess</a>, <a href="PatchCell.html#getState()">getState</a>, <a href="PatchCell.html#getVolume()">getVolume</a>, <a href="PatchCell.html#makeProcess(arcade.core.agent.process.ProcessDomain,java.lang.String)">makeProcess</a>, <a href="PatchCell.html#schedule(sim.engine.Schedule)">schedule</a>, <a href="PatchCell.html#selectBestLocation(arcade.core.sim.Simulation,ec.util.MersenneTwisterFast)">selectBestLocation</a>, <a href="PatchCell.html#setEnergy(double)">setEnergy</a>, <a href="PatchCell.html#setFlag(arcade.patch.util.PatchEnums.Flag)">setFlag</a>, <a href="PatchCell.html#setState(arcade.core.agent.cell.CellState)">setState</a>, <a href="PatchCell.html#setVolume(double)">setVolume</a>, <a href="PatchCell.html#stop()">stop</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a id="methods.inherited.from.class.java.lang.Object">
@@ -382,11 +382,11 @@ extends <a href="PatchCellTissue.html" title="class in arcade.patch.agent.cell">
 <ul class="blockListLast">
 <li class="blockList">
 <h4>checkNeighborhood</h4>
-<pre class="methodSignature">private static&nbsp;void&nbsp;checkNeighborhood&#8203;(sim.engine.SimState&nbsp;simstate,
-                                      <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a>&nbsp;cell)</pre>
+<pre class="methodSignature">private&nbsp;void&nbsp;checkNeighborhood&#8203;(sim.engine.SimState&nbsp;simstate,
+                               <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a>&nbsp;cell)</pre>
 <div class="block">Checks neighborhood for free locations.
 
- <p>If there is at least one free location, cell state becomes undefined.</div>
+ <p>If there is at least one free location for proliferation, cell state becomes undefined.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>simstate</code> - the MASON simulation state</dd>

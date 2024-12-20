@@ -370,17 +370,17 @@ extends <a href="PatchLocation.html" title="class in arcade.patch.env.location">
 </td>
 </tr>
 <tr id="i7" class="rowColor">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMaximum()">getMaximum</a></span>()</code></th>
-<td class="colLast">
-<div class="block">Gets the maximum occupancy of a location.</div>
-</td>
-</tr>
-<tr id="i8" class="altColor">
 <td class="colFirst"><code>java.util.ArrayList&lt;<a href="../../../core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getNeighbors()">getNeighbors</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the location of the neighbors to the current location.</div>
+</td>
+</tr>
+<tr id="i8" class="altColor">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getNumSubcoordinates()">getNumSubcoordinates</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Gets the number of subcoordinates in a location.</div>
 </td>
 </tr>
 <tr id="i9" class="rowColor">
@@ -785,20 +785,20 @@ extends <a href="PatchLocation.html" title="class in arcade.patch.env.location">
 </dl>
 </li>
 </ul>
-<a id="getMaximum()">
+<a id="getNumSubcoordinates()">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>getMaximum</h4>
-<pre class="methodSignature">public&nbsp;int&nbsp;getMaximum()</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="PatchLocation.html#getMaximum()">PatchLocation</a></code></span></div>
-<div class="block">Gets the maximum occupancy of a location.</div>
+<h4>getNumSubcoordinates</h4>
+<pre class="methodSignature">public&nbsp;int&nbsp;getNumSubcoordinates()</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="PatchLocation.html#getNumSubcoordinates()">PatchLocation</a></code></span></div>
+<div class="block">Gets the number of subcoordinates in a location.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="PatchLocation.html#getMaximum()">getMaximum</a></code>&nbsp;in class&nbsp;<code><a href="PatchLocation.html" title="class in arcade.patch.env.location">PatchLocation</a></code></dd>
+<dd><code><a href="PatchLocation.html#getNumSubcoordinates()">getNumSubcoordinates</a></code>&nbsp;in class&nbsp;<code><a href="PatchLocation.html" title="class in arcade.patch.env.location">PatchLocation</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the maximum occupancy</dd>
+<dd>the number of subcoordinates</dd>
 </dl>
 </li>
 </ul>
@@ -899,7 +899,7 @@ extends <a href="PatchLocation.html" title="class in arcade.patch.env.location">
 <div class="block">Gets the location of the neighbors to the current location.
 
  <p>We check if a neighbor location is valid by comparing the movement checks byte with the
- neighbor location byte. Neighbor list includes the current location.</div>
+ neighbor location byte.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="PatchLocation.html#getNeighbors()">getNeighbors</a></code>&nbsp;in class&nbsp;<code><a href="PatchLocation.html" title="class in arcade.patch.env.location">PatchLocation</a></code></dd>
