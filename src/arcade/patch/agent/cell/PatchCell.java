@@ -498,8 +498,10 @@ public abstract class PatchCell implements Cell {
     }
 
     /**
-     * Determine if a patch location is free. A location is free if the proposed cell volume can fit
-     * in the location without exceeding the max volume of a location, exceeding constuents'
+     * Determine if a patch location is free.
+     *
+     * <p> A location is free if the proposed cell volume can fit
+     * in the location without exceeding the max volume of a location, exceeding constituents'
      * critical heights, and exceeding the population density is below the maximum.
      *
      * @param sim the simulation instance
