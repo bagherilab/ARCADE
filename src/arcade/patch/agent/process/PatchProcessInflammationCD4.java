@@ -33,12 +33,11 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
     private double priorIL2prod;
 
     /**
-     * Creates a CD4 {@link arcade.agent.module.Inflammation} module.
+     * Creates a CD4 {@link PatchProcessInflammation} module.
      *
      * <p>IL-2 production rate parameters set.
      *
-     * @param c the {@link arcade.agent.cell.CARTCell} the module is associated with
-     * @param sim the simulation instance
+     * @param c the {@link PatchCellCART} the module is associated with
      */
     public PatchProcessInflammationCD4(PatchCellCART c) {
         super(c);

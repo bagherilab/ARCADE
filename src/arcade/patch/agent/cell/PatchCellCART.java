@@ -45,19 +45,6 @@ import static arcade.patch.util.PatchEnums.State;
  * specified amount of heterogeneity ({@code HETEROGENEITY}).
  */
 public abstract class PatchCellCART extends PatchCell {
-
-    //  /** Fraction of exhausted cells that become apoptotic. */
-    //  protected final double exhaustedFraction;
-
-    //  /** Fraction of senescent cells that become apoptotic. */
-    //  protected final double senescentFraction;
-
-    //  /** Fraction of anergic cells that become apoptotic. */
-    //  protected final double anergicFraction;
-
-    //   /** Fraction of proliferative cells that become apoptotic. */
-    //  protected final double proliferativeFraction;
-
     /** Cell binding flag */
     public AntigenFlag binding;
 

@@ -17,12 +17,11 @@ public class PatchProcessInflammationCD8 extends PatchProcessInflammation {
     private double priorIL2granz;
 
     /**
-     * Creates a CD8 {@link arcade.agent.module.Inflammation} module.
+     * Creates a CD8 {@link PatchProcessInflammation} module.
      *
      * <p>Initial amount of internal granzyme is set. Granzyme production parameters set.
      *
-     * @param c the {@link arcade.agent.cell.CARTCell} the module is associated with
-     * @param sim the simulation instance
+     * @param c the {@link PatchCellCART} the module is associated with
      */
     public PatchProcessInflammationCD8(PatchCellCART c) {
         super(c);
@@ -65,7 +64,6 @@ public class PatchProcessInflammationCD8 extends PatchProcessInflammation {
         double split = (this.cell.getVolume() / this.volume);
 
         // Update daughter cell inflammation as a fraction of parent.
-        // this.volume = this.cell.getVolume();
         this.amts[IL2Rbga] = inflammation.amts[IL2Rbga] * split;
         this.amts[IL2_IL2Rbg] = inflammation.amts[IL2_IL2Rbg] * split;
         this.amts[IL2_IL2Rbga] = inflammation.amts[IL2_IL2Rbga] * split;

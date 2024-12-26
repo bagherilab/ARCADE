@@ -14,8 +14,8 @@ import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.env.lattice.PatchLattice;
 
 /**
- * Implementation of {@link arcade.patch.agent.process.Process} for inflammation type modules in
- * which IL-2 is taken up and cytotoxic/stimulatory functions are modified.
+ * Implementation of {@link Process} for inflammation type modules in which IL-2 is taken up and
+ * cytotoxic/stimulatory functions are modified.
  *
  * <p>The {@code Inflammation} module represents an 8-component signaling network.
  */
@@ -52,21 +52,21 @@ public abstract class PatchProcessInflammation extends PatchProcess {
     private static final double STEP_DIVIDER = 3.0;
 
     /**
-     * Rate of conversion of IL-2R two-chian complex to IL-2R three chian complex [/sec/step
+     * Rate of conversion of IL-2R two-chain complex to IL-2R three chain complex [/sec/step
      * divider]
      */
     private static final double K_CONVERT = 1e-3 / STEP_DIVIDER;
 
     /**
-     * Rate of recycling of recptor complexes back to IL-2 receptor two chain complex [/sec/step
+     * Rate of recycling of receptor complexes back to IL-2 receptor two chain complex [/sec/step
      * divider]
      */
     private static final double K_REC = 1e-5 / STEP_DIVIDER;
 
-    /** Rate of IL-2 binding to two-chain IL-2 recpetor complex [um^3/molecules IL-2/min] */
+    /** Rate of IL-2 binding to two-chain IL-2 receptor complex [um^3/molecules IL-2/min] */
     private double IL2_BINDING_ON_RATE_MIN = 3.8193E-2;
 
-    /** Rate of IL-2 binding to three-chain IL-2 recpetor complex [um^3/molecules IL-2/min] */
+    /** Rate of IL-2 binding to three-chain IL-2 receptor complex [um^3/molecules IL-2/min] */
     private double IL2_BINDING_ON_RATE_MAX = 3.155;
 
     /** Rate of unbinding of IL-2 from two- or three- chain IL-2 receptor complex [/min] */
@@ -118,15 +118,13 @@ public abstract class PatchProcessInflammation extends PatchProcess {
     protected final double IL2_RECEPTORS;
 
     /**
-     * Creates an {@code Inflammation} module for the given {@link
-     * arcade.patch.agent.PatchCell.PatchCellCART}.
+     * Creates an {@code Inflammation} module for the given {@link PatchCellCART}.
      *
      * <p>Module parameters are specific for the cell population. The module starts with no IL-2
      * bound and no three-chain receptors. Daughter cells split amounts of bound IL-2 and
      * three-chain receptors upon dividing.
      *
-     * @param c the {@link arcade.patch.agent.PatchCell.PatchCellCART} the module is associated with
-     * @param sim the simulation instance
+     * @param c the {@link PatchCellCART} the module is associated with
      */
     public PatchProcessInflammation(PatchCellCART c) {
         super(c);
@@ -146,8 +144,6 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         this.IL2_BINDING_ON_RATE_MAX = parameters.getDouble("inflammation/IL2_BINDING_ON_RATE_MAX");
         this.IL2_BINDING_OFF_RATE = parameters.getDouble("inflammation/IL2_BINDING_OFF_RATE");
 
-        // Set external concentrations.
-        // updateExternal(sim);
         extIL2 = 0;
 
         // Initial amounts of each species, all in molecules/cell.
@@ -249,13 +245,6 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         return amts[names.indexOf(key)];
     }
 
-    /**
-     * Steps the inflammation module.
-     *
-     * @param sim the simulation instance
-     */
-    // abstract void stepInflammationModule(Simulation sim);
-
     public void setInternal(String key, double val) {
         amts[names.indexOf(key)] = val;
     }
@@ -321,8 +310,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
     /**
      * Creates a {@code PatchProcessInflammation} for given version.
      *
-     * @param cell the {@link arcade.patch.agent.PatchCell.PatchCellCART} the process is associated
-     *     with
+     * @param cell the {@link PatchCellCART} the process is associated with
      * @param version the process version
      * @return the process instance
      */
