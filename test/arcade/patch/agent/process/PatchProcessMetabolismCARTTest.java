@@ -18,6 +18,7 @@ public class PatchProcessMetabolismCARTTest {
     private Parameters mockParameters;
     private PatchProcessMetabolismCART metabolism;
     private PatchLocation mockLocation;
+    private double cellVolume;
 
     @BeforeEach
     public void setUp() {
@@ -28,7 +29,8 @@ public class PatchProcessMetabolismCARTTest {
         when(mockCell.getParameters()).thenReturn(mockParameters);
         when(mockParameters.getDouble(anyString())).thenReturn(1.0);
         when(mockCell.getLocation()).thenReturn(mockLocation);
-        when(mockCell.getVolume()).thenReturn(randomDoubleBetween(165, 180));
+        cellVolume = randomDoubleBetween(165, 180);
+        when(mockCell.getVolume()).thenReturn(cellVolume);
         when(mockLocation.getPerimeter(anyDouble()))
                 .thenReturn(randomDoubleBetween(0, 1.0) * 6 * 30 / Math.sqrt(3));
         when(mockLocation.getArea()).thenReturn(3.0 / 2.0 / Math.sqrt(3.0) * 30 * 30);
@@ -315,5 +317,31 @@ public class PatchProcessMetabolismCARTTest {
 
         double expectedMinimumMassFraction = 1.0 + 1.0; // base + active
         assertEquals(expectedMinimumMassFraction, metabolism.getFinalMinimumMassFraction());
+    }
+
+    @Test
+    public void testUpdate() {
+        metabolism = new PatchProcessMetabolismCART(mockCell);
+        PatchProcessMetabolismCART parentProcess = new PatchProcessMetabolismCART(mockCell);
+        parentProcess.intAmts[PatchProcessMetabolismCART.GLUCOSE] = 100;
+        when(mockCell.getVolume()).thenReturn(cellVolume / 2);
+
+        metabolism.update(parentProcess);
+
+        assertEquals(50, metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE]);
+        assertEquals(50, parentProcess.intAmts[PatchProcessMetabolismCART.GLUCOSE]);
+    }
+
+    @Test
+    public void testUpdateZeroVolumeParent() {
+        metabolism = new PatchProcessMetabolismCART(mockCell);
+        PatchProcessMetabolismCART parentProcess = new PatchProcessMetabolismCART(mockCell);
+        parentProcess.intAmts[PatchProcessMetabolismCART.GLUCOSE] = 100;
+        when(mockCell.getVolume()).thenReturn(0.0);
+
+        metabolism.update(parentProcess);
+
+        assertEquals(0, metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE]);
+        assertEquals(100, parentProcess.intAmts[PatchProcessMetabolismCART.GLUCOSE]);
     }
 }
