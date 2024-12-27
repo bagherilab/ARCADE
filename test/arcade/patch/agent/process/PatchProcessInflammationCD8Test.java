@@ -87,7 +87,7 @@ public class PatchProcessInflammationCD8Test {
         inflammation.active = false;
         inflammation.activeTicker = 10;
         inflammation.IL2Ticker = 10;
-        inflammation.boundArray = new double[] {0, 0, 0, 0, 100};
+        inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 10000);
 
         Field receptors = PatchProcessInflammation.class.getDeclaredField("IL2_RECEPTORS");
@@ -107,7 +107,7 @@ public class PatchProcessInflammationCD8Test {
         inflammation.active = true;
         inflammation.activeTicker = 3;
         inflammation.IL2Ticker = 10;
-        inflammation.boundArray = new double[] {0, 0, 0, 0, 100};
+        inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 10000);
 
         Field receptors = PatchProcessInflammation.class.getDeclaredField("IL2_RECEPTORS");
