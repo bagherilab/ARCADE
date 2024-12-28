@@ -32,6 +32,9 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
     /** Amount of IL-2 bound in past being used for current IL-2 production calculation */
     private double priorIL2prod;
 
+    /** External IL-2 sent into environment after each step. Used for testing only */
+    private double IL2EnvTesting;
+
     /**
      * Creates a CD4 {@link PatchProcessInflammation} module.
      *
@@ -75,6 +78,10 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
         // then convert units back to molecules/cm^3.
         double IL2Env =
                 (((extIL2 - (extIL2 * f - amts[IL2_EXT])) + IL2Produced) * 1E12 / loc.getVolume());
+
+        // update IL2 env variable for testing
+        IL2EnvTesting = IL2Env;
+
         sim.getLattice("IL-2").setValue(loc, IL2Env);
     }
 
@@ -107,5 +114,14 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
                 inflammation.amts[IL2_IL2Rbg] + inflammation.amts[IL2_IL2Rbga];
         inflammation.amts[IL2R_TOTAL] = inflammation.amts[IL2Rbg] + inflammation.amts[IL2Rbga];
         inflammation.volume *= (1 - split);
+    }
+
+    /**
+     * Returns final value of external IL2 after stepping process. Exists for testing purposes only
+     *
+     * @return final value of external IL2
+     */
+    public double getIL2EnvTesting() {
+        return IL2EnvTesting;
     }
 }
