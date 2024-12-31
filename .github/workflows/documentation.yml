@@ -4,9 +4,16 @@ on:
   push:
     branches:
       - main
+  release:
+    types:
+      - published
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
-  documentation:
+  build-gradle-javadoc:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,7 +22,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up JDK 1.11
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: '11'
         distribution: 'corretto'
@@ -24,66 +31,131 @@ jobs:
       uses: gradle/wrapper-validation-action@v1
 
     - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2
+      uses: gradle/actions/setup-gradle@v3
 
     - name: Generate javadoc
       run: |
         ./gradlew javadoc
-        touch docs/javadoc/.nojekyll
+        rm docs/javadoc/*.zip
+
+    - name: Upload Gradle javadoc artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: gradle-javadoc
+        path: docs/javadoc
+
+  build-jekyll-site:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: docs
+
+    steps:
+
+    - name: Checkout the repo
+      uses: actions/checkout@v4
+
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3'
+        bundler-cache: true
+        cache-version: 0
+        working-directory: '${{ github.workspace }}/docs'
+
+    - name: Build with Jekyll
+      run: bundle exec jekyll build
+      env:
+        JEKYLL_ENV: production
+
+    - name: Upload Jekyll site artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: jekyll-site
+        path: docs/_site
+
+  deploy-github-pages:
+    runs-on: ubuntu-latest
+
+    needs: [build-gradle-javadoc, build-jekyll-site]
+
+    steps:
+
+    - name: Checkout the repo
+      uses: actions/checkout@v4
+
+    - name: Download Gradle javadoc artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: gradle-javadoc
+        path: pages/javadoc
+
+    - name: Download Jekyll site artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: jekyll-site
+        path: pages/
 
     - name: Publish docs
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         branch: gh-pages
-        folder: docs/javadoc
+        folder: pages/
         clean-exclude: |
-          _badges
-          _coverage
+          badges
+          coverage
 
-    - name: Extract project version
-      run: |
-        echo "VERSION=$(grep -oP 'version = "\K([0-9\.]+)(?=")' build.gradle)" >> $GITHUB_ENV
+  update-documentation-badges:
+    if: ${{ always() && github.ref == 'refs/heads/main' }}
 
-    - name: Generate version badge
-      uses: knightdave/anybadge-action@v1.1.0
-      with:
-        file: docs/_badges/version.svg
-        label: version
-        value: v${{ env.VERSION }}
-        color: teal
-        template: docs/_badges/template.svg
-        overwrite: true
+    runs-on: ubuntu-latest
+
+    needs: deploy-github-pages
+
+    steps:
+
+    - name: Checkout the repo
+      uses: actions/checkout@v4
 
     - name: Generate license badge
       uses: knightdave/anybadge-action@v1.1.0
       with:
-        file: docs/_badges/license.svg
+        file: docs/badges/license.svg
         label: license
         value: BSD-3-Clause
         color: yellowgreen
-        template: docs/_badges/template.svg
+        template: docs/badges/template.svg
         overwrite: true
+
+    - name: Get build result
+      run: |
+        if [[ ${{ needs.deploy-github-pages.result }} == "success" ]]; then
+          exit 0
+        else
+          exit 1
+        fi
 
     - name: Generate passing badge
       if: success()
       uses: knightdave/anybadge-action@v1.1.0
       with:
-        file: docs/_badges/documentation.svg
+        file: docs/badges/documentation.svg
         label: docs
         value: passing
         color: green
-        template: docs/_badges/template.svg
+        template: docs/badges/template.svg
         overwrite: true
 
     - name: Generate failing badge
       if: failure()
       uses: knightdave/anybadge-action@v1.1.0
       with:
-        file: docs/_badges/documentation.svg
+        file: docs/badges/documentation.svg
         label: docs
         value: failing
         color: red
-        template: docs/_badges/template.svg
+        template: docs/badges/template.svg
         overwrite: true
 
     - name: Publish badge
@@ -91,6 +163,6 @@ jobs:
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         branch: gh-pages
-        folder: docs/_badges
-        target-folder: _badges
+        folder: docs/badges
+        target-folder: badges
         clean: false

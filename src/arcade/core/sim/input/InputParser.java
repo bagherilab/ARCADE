@@ -3,6 +3,7 @@ package arcade.core.sim.input;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 
@@ -39,6 +40,9 @@ import arcade.core.util.MiniBox;
 public class InputParser {
     /** Logger for {@code InputParser}. */
     private static final Logger LOGGER = Logger.getLogger(InputParser.class.getName());
+
+    /** Help message shown when invalid arguments are passed. */
+    private static final String HELP_MESSAGE = " Run with -h or --help for usage instructions.";
 
     /** ID for position commands. */
     static final int POSITION = 0;
@@ -184,6 +188,46 @@ public class InputParser {
         }
 
         /**
+         * Convert command to usage.
+         *
+         * <p>Usage depends on the command type.
+         *
+         * @return the command usage
+         */
+        public String toUsage() {
+            if (type == POSITION) {
+                return String.format(" %s", id);
+            } else if (type == OPTION) {
+                return String.format(" [--%s <%s>]", longFlag, id.toLowerCase());
+            } else if (type == SWITCH) {
+                return String.format(" [(-%s|--%s)]", shortFlag, longFlag);
+            } else {
+                return "";
+            }
+        }
+
+        /**
+         * Convert command to description.
+         *
+         * <p>Description depends on the command type.
+         *
+         * @return the command description.
+         */
+        public String toDescription() {
+            String description = "";
+
+            if (type == POSITION) {
+                description = id;
+            } else if (type == OPTION) {
+                description = String.format("--%s <%s>", longFlag, id.toLowerCase());
+            } else if (type == SWITCH) {
+                description = String.format("-%s --%s", shortFlag, longFlag);
+            }
+
+            return String.format("  %-23s  %s.\n", description, help);
+        }
+
+        /**
          * Formats command as a string.
          *
          * @return a string representation of the command
@@ -200,6 +244,38 @@ public class InputParser {
     }
 
     /**
+     * Render help message.
+     *
+     * @param program the command for running the program
+     * @return the help message
+     */
+    public String help(String program) {
+        String usage =
+                allCommands.stream()
+                        .filter(command -> command.type == POSITION)
+                        .map(Command::toUsage)
+                        .collect(Collectors.joining(""));
+
+        String arguments =
+                allCommands.stream()
+                        .filter(command -> command.type == POSITION)
+                        .map(Command::toDescription)
+                        .collect(Collectors.joining(""));
+
+        String options =
+                allCommands.stream()
+                        .filter(command -> command.type != POSITION)
+                        .map(Command::toDescription)
+                        .collect(Collectors.joining(""));
+
+        return String.format("\nUsage:\n  %s%s [options]", program, usage)
+                + String.format("\n  %s (-h | --help)", program)
+                + String.format("\n  %s --version\n", program)
+                + String.format("\nArguments:\n%s", arguments)
+                + String.format("\nOptions:\n%s", options);
+    }
+
+    /**
      * Parse the given arguments into a dictionary.
      *
      * @param args the list of arguments from command line
@@ -213,7 +289,7 @@ public class InputParser {
         parseArguments(args);
 
         if (positionIndex != positionCommands.size()) {
-            LOGGER.severe("missing position arguments");
+            LOGGER.severe("Missing positional arguments." + HELP_MESSAGE);
             throw new IllegalArgumentException();
         } else {
             LOGGER.config("successfully parsed commands\n\n" + parsed.toString());
@@ -269,6 +345,11 @@ public class InputParser {
      * @return the next argument index
      */
     int parseFlaggedArgument(String[] args, int index, Command cmd) {
+        if (cmd == null) {
+            LOGGER.severe("Invalid command [ " + args[index] + " ]." + HELP_MESSAGE);
+            throw new IllegalArgumentException();
+        }
+
         if (cmd.type == SWITCH) {
             parsed.put(cmd.id, "");
         } else {

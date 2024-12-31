@@ -333,26 +333,58 @@ public class MiniBoxTest {
         MiniBox box = new MiniBox();
         String code1 = randomString();
         String code2 = randomString();
+        String subcode = randomString();
         String key1 = randomString();
         String key2 = randomString();
         String key3 = randomString();
+        String key4 = randomString();
         String value1 = randomString();
         String value2 = randomString();
         String value3 = randomString();
+        String value4 = randomString();
 
         box.put(key1, value1);
         box.put(code1 + TAG_SEPARATOR + key2, value2);
         box.put(code2 + TAG_SEPARATOR + key3, value3);
+        box.put(code2 + TAG_SEPARATOR + subcode + TAG_SEPARATOR + key4, value4);
 
         ArrayList<String> filteredKeys = new ArrayList<>();
         filteredKeys.add(key3);
+        filteredKeys.add(subcode + TAG_SEPARATOR + key4);
 
         HashMap<String, String> filteredMap = new HashMap<>();
         filteredMap.put(key3, value3);
+        filteredMap.put(subcode + TAG_SEPARATOR + key4, value4);
 
         MiniBox filtered = box.filter(code2);
         assertEquals(filteredKeys, filtered.keys);
         assertEquals(filteredMap, filtered.contents);
+    }
+
+    @Test
+    void filter_codeNotFirst_returnsEmpty() {
+        MiniBox box = new MiniBox();
+        String code = randomString();
+        String subcode = randomString();
+        String value = randomString();
+
+        box.put(subcode + TAG_SEPARATOR + code, value);
+
+        MiniBox filtered = box.filter(code);
+        assertTrue(filtered.keys.isEmpty());
+        assertTrue(filtered.contents.isEmpty());
+    }
+
+    @Test
+    void filter_noTagSeparator_returnsEmpty() {
+        MiniBox box = new MiniBox();
+        String key = randomString();
+        String value = randomString();
+        box.put(key, value);
+
+        MiniBox filtered = box.filter(key);
+        assertTrue(filtered.keys.isEmpty());
+        assertTrue(filtered.contents.isEmpty());
     }
 
     @Test
