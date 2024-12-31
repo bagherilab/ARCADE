@@ -1,5 +1,6 @@
 package arcade.patch.agent.cell;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,16 +33,17 @@ public class PatchCellCARTCD4Test {
     private Parameters parameters;
     private PatchLocation location;
     private PatchCellContainer container;
+    private PatchCellCARTCD4 cell;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
         parameters = mock(Parameters.class);
         location = mock(PatchLocation.class);
 
         int id = 1;
         int parentId = 1;
         int pop = 1;
-        int age = randomIntBetween(1, 100800);
+        int age = randomIntBetween(1, 120950);
         int divisions = 10;
         double volume = randomDoubleBetween(100, 200);
         double height = randomDoubleBetween(4, 10);
@@ -87,7 +89,18 @@ public class PatchCellCARTCD4Test {
         when(parameters.getInt("MAX_ANTIGEN_BINDING")).thenReturn(10);
         when(parameters.getInt("CARS")).thenReturn(50000);
 
+        when(parameters.getInt("APOPTOSIS_AGE")).thenReturn(120960);
+        when(parameters.getInt("MAX_DENSITY")).thenReturn(54);
+
         patchCellCART = new PatchCellCARTCD4(container, location, parameters);
+        cell = spy(new PatchCellCARTCD4(container, location, parameters));
+        Field apoptosisAge = PatchCell.class.getDeclaredField("apoptosisAge");
+        apoptosisAge.setAccessible(true);
+        apoptosisAge.set(cell, 120958);
+
+        Field maxDensity = PatchCell.class.getDeclaredField("maxDensity");
+        maxDensity.setAccessible(true);
+        maxDensity.set(cell, 54);
     }
 
     @Test
@@ -208,7 +221,6 @@ public class PatchCellCARTCD4Test {
     @Test
     public void testStepIncreasesAge() {
         PatchSimulation sim = mock(PatchSimulation.class);
-        PatchCellCARTCD4 cell = spy(new PatchCellCARTCD4(container, location, parameters));
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
         cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
@@ -238,7 +250,6 @@ public class PatchCellCARTCD4Test {
     @Test
     public void testStepSetsStateToApoptoticWhenEnergyIsLow() {
         PatchSimulation sim = mock(PatchSimulation.class);
-        PatchCellCARTCD4 cell = spy(new PatchCellCARTCD4(container, location, parameters));
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
         cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
@@ -272,7 +283,6 @@ public class PatchCellCARTCD4Test {
     @Test
     public void testStepSetsStateToStarvedWhenEnergyIsNegativeAndMoreThanThreshold() {
         PatchSimulation sim = mock(PatchSimulation.class);
-        PatchCellCARTCD4 cell = spy(new PatchCellCARTCD4(container, location, parameters));
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
         cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
@@ -305,7 +315,6 @@ public class PatchCellCARTCD4Test {
     @Test
     public void testStepSetsStateToApoptoticWhenEnergyIsNegativeAndLessThanThreshold() {
         PatchSimulation sim = mock(PatchSimulation.class);
-        PatchCellCARTCD4 cell = spy(new PatchCellCARTCD4(container, location, parameters));
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
         cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
@@ -337,7 +346,6 @@ public class PatchCellCARTCD4Test {
     @Test
     public void testStepSetsStateToSenescentWhenDivisionsAreZero() {
         PatchSimulation sim = mock(PatchSimulation.class);
-        PatchCellCARTCD4 cell = spy(new PatchCellCARTCD4(container, location, parameters));
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
         cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
@@ -371,7 +379,6 @@ public class PatchCellCARTCD4Test {
     @Test
     public void testStepSetsStateToAnergicWhenBoundToBothAntigenAndSelf() {
         PatchSimulation sim = mock(PatchSimulation.class);
-        PatchCellCARTCD4 cell = spy(new PatchCellCARTCD4(container, location, parameters));
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
         cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
@@ -405,7 +412,6 @@ public class PatchCellCARTCD4Test {
     @Test
     public void testStepSetsStateToCytotoxicWhenBoundToAntigen() {
         PatchSimulation sim = mock(PatchSimulation.class);
-        PatchCellCARTCD4 cell = spy(new PatchCellCARTCD4(container, location, parameters));
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
         cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
@@ -444,7 +450,6 @@ public class PatchCellCARTCD4Test {
     @Test
     public void testStepSetsStateToProliferativeWhenActivated() {
         PatchSimulation sim = mock(PatchSimulation.class);
-        PatchCellCARTCD4 cell = spy(new PatchCellCARTCD4(container, location, parameters));
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
         cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
@@ -476,7 +481,6 @@ public class PatchCellCARTCD4Test {
     @Test
     public void testStepSetsStateToMigratoryWhenNotActivated() {
         PatchSimulation sim = mock(PatchSimulation.class);
-        PatchCellCARTCD4 cell = spy(new PatchCellCARTCD4(container, location, parameters));
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
         cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
@@ -508,7 +512,6 @@ public class PatchCellCARTCD4Test {
     @Test
     public void testStepSetsStatetoExhaustedWhenOverstimulated() {
         PatchSimulation sim = mock(PatchSimulation.class);
-        PatchCellCARTCD4 cell = spy(new PatchCellCARTCD4(container, location, parameters));
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
         cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
