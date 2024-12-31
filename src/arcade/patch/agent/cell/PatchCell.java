@@ -3,7 +3,6 @@ package arcade.patch.agent.cell;
 import java.util.HashMap;
 import java.util.Map;
 import sim.engine.Schedule;
-import sim.engine.SimState;
 import sim.engine.Stoppable;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
@@ -193,11 +192,13 @@ public abstract class PatchCell implements Cell {
         // Add cell processes.
         processes = new HashMap<>();
         MiniBox processBox = parameters.filter("(PROCESS)");
-        for (String processKey : processBox.getKeys()) {
-            ProcessDomain domain = Domain.valueOf(processKey);
-            String version = processBox.get(processKey);
-            Process process = makeProcess(domain, version);
-            processes.put(domain, process);
+        if (processBox != null) {
+            for (String processKey : processBox.getKeys()) {
+                ProcessDomain domain = Domain.valueOf(processKey);
+                String version = processBox.get(processKey);
+                Process process = makeProcess(domain, version);
+                processes.put(domain, process);
+            }
         }
     }
 

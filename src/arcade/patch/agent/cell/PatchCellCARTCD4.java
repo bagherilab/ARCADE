@@ -63,7 +63,11 @@ public class PatchCellCARTCD4 extends PatchCellCART {
         // Increase age of cell.
         super.age++;
 
-        // TODO: check for death due to age
+        if (state != State.APOPTOTIC && age > apoptosisAge) {
+            setState(State.APOPTOTIC);
+            super.setAntigenFlag(AntigenFlag.UNBOUND);
+            this.activated = false;
+        }
 
         // Increase time since last active ticker
         super.lastActiveTicker++;
