@@ -278,7 +278,6 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         double radShell = radCell + SHELL_THICKNESS;
         double volShell =
                 volume * (((radShell * radShell * radShell) / (radCell * radCell * radCell)) - 1.0);
-        // this f might be the actual fraction instead of split
         f = volShell / loc.getVolume();
         updateExternal(sim);
 
