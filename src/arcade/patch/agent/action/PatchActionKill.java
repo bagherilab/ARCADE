@@ -41,11 +41,10 @@ public class PatchActionKill implements Action {
     private final int timeDelay;
 
     /**
-     * Creates a {@code PatchActionKill} for the given {@link
-     * arcade.patch.agent.cell.PatchCellCART}.
+     * Creates a {@code PatchActionKill} for the given {@link PatchCellCART}.
      *
-     * @param c the {@link arcade.patch.agent.cell.PatchCellCART} the helper is associated with
-     * @param target the {@link arcade.patch.agent.cell.PatchCellTissue} the CAR T-cell is bound to
+     * @param c the {@link PatchCellCART} the helper is associated with
+     * @param target the {@link PatchCellTissue} the CAR T-cell is bound to
      */
     public PatchActionKill(
             PatchCellCART c,
