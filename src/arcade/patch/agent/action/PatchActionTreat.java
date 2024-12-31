@@ -56,19 +56,25 @@ public class PatchActionTreat implements Action {
     private double max_damage;
 
     /** Minimum radius value at which T- cells can spawn next to in graph source */
-    private double min_damage_radius;
+    private final double min_damage_radius;
 
     /** Number of agent positions per lattice site */
     private int latPositions;
 
     /** Coordinate system used for simulation */
-    private String coord;
+    private final String coord;
 
     /** List of populations. */
     private final ArrayList<MiniBox> populations;
 
     /** parameters */
     MiniBox parameters;
+
+    /** Maximum confluency of cells in any location */
+    final int maxConfluency;
+
+    /** location of available places to insert T cells. For testing purposes only */
+    private ArrayList<Location> siteLocations;
 
     /**
      * Creates an {@code Action} to add agents after a delay.
@@ -83,6 +89,7 @@ public class PatchActionTreat implements Action {
         this.treatFrac = parameters.getDouble("RATIO");
         this.max_damage = parameters.getDouble("MAX_DAMAGE_SEED");
         this.min_damage_radius = parameters.getDouble("MIN_RADIUS_SEED");
+        this.maxConfluency = parameters.getInt("MAX_DENSITY");
         this.parameters = parameters;
 
         this.coord =
@@ -211,7 +218,7 @@ public class PatchActionTreat implements Action {
         siteLocs.addAll(siteLocs2);
         siteLocs.addAll(siteLocs1);
         siteLocs.addAll(siteLocs0);
-        // insert(siteLocs, sim, grid);
+        siteLocations = (ArrayList<Location>) siteLocs.clone();
         insert(siteLocs, simstate);
     }
 
@@ -280,7 +287,7 @@ public class PatchActionTreat implements Action {
             Coordinate coord = loc.getCoordinate();
 
             // find available location space
-            while (!coordinates.isEmpty() && !checkLocationSpace(sim, loc, grid)) {
+            while (!coordinates.isEmpty() && !checkLocationSpace(loc, grid)) {
                 loc = (PatchLocation) coordinates.remove(0);
             }
 
@@ -298,9 +305,9 @@ public class PatchActionTreat implements Action {
         }
     }
 
-    protected boolean checkLocationSpace(Simulation sim, Location loc, PatchGrid grid) {
+    protected boolean checkLocationSpace(Location loc, PatchGrid grid) {
         boolean available;
-        int locMax = ((PatchLocation) loc).getMaximum();
+        int locMax = this.maxConfluency;
         double locVolume = ((PatchLocation) loc).getVolume();
         double locArea = ((PatchLocation) loc).getArea();
 
@@ -339,5 +346,23 @@ public class PatchActionTreat implements Action {
         }
 
         return available;
+    }
+
+    /**
+     * Returns registered populations for the action. Exists for testing purposes only
+     *
+     * @return registered populations for the action
+     */
+    public ArrayList<MiniBox> getPopulations() {
+        return populations;
+    }
+
+    /**
+     * Returns locations of sites available for insertion. Exists for testing purposes only
+     *
+     * @return Returns locations of sites available for insertion
+     */
+    public ArrayList<Location> getSiteLocs() {
+        return siteLocations;
     }
 }
