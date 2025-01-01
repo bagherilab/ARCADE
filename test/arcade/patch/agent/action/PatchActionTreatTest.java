@@ -161,9 +161,7 @@ public class PatchActionTreatTest {
 
     @Test
     public void testCheckLocationSpace() throws NoSuchFieldException, IllegalAccessException {
-        when(parameters.getInt("MAX_DENSITY")).thenReturn(54);
         action = new PatchActionTreat(series, parameters);
-
         ArrayList<MiniBox> populations = new ArrayList<>();
         MiniBox populationMock = mock(MiniBox.class);
         when(populationMock.getInt("CODE")).thenReturn(4);
@@ -184,8 +182,10 @@ public class PatchActionTreatTest {
 
     @Test
     public void testMaxConfluency() throws NoSuchFieldException, IllegalAccessException {
-        when(parameters.getInt("MAX_DENSITY")).thenReturn(1);
         action = new PatchActionTreat(series, parameters);
+        Field density = PatchActionTreat.class.getDeclaredField("maxConfluency");
+        density.setAccessible(true);
+        density.set(action, 1);
 
         ArrayList<MiniBox> populations = new ArrayList<>();
         MiniBox populationMock = mock(MiniBox.class);

@@ -71,7 +71,7 @@ public class PatchActionTreat implements Action {
     MiniBox parameters;
 
     /** Maximum confluency of cells in any location */
-    final int maxConfluency = 54;
+    final int maxConfluency;
 
     /** location of available places to insert T cells. For testing purposes only */
     private ArrayList<Location> siteLocations;
@@ -89,6 +89,7 @@ public class PatchActionTreat implements Action {
         this.treatFrac = parameters.getDouble("RATIO");
         this.max_damage = parameters.getDouble("MAX_DAMAGE_SEED");
         this.min_damage_radius = parameters.getDouble("MIN_RADIUS_SEED");
+        this.maxConfluency = 54;
         this.parameters = parameters;
 
         this.coord =
