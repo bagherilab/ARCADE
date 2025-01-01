@@ -89,6 +89,24 @@ public final class PatchEnums {
         /** Code for necrotic cells. */
         NECROTIC,
 
+        /** Code for stimulatory cells. */
+        STIMULATORY,
+
+        /** Code for cytotoxic cells. */
+        CYTOTOXIC,
+
+        /** Code for paused cells. */
+        PAUSED,
+
+        /** Code for exhausted cells. */
+        EXHAUSTED,
+
+        /** Code for anergic cells. */
+        ANERGIC,
+
+        /** Code for starved cells. */
+        STARVED,
+
         /** Code for senescent cells. */
         SENESCENT;
 
@@ -110,6 +128,9 @@ public final class PatchEnums {
 
         /** Code for metabolism domain. */
         METABOLISM,
+
+        /** Code for inflammation domain. */
+        INFLAMMATION,
 
         /** Code for signaling domain. */
         SIGNALING;
@@ -143,6 +164,34 @@ public final class PatchEnums {
          * @return a random {@code Flag}
          */
         public static Flag random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
+        }
+    }
+
+    /** Antigen binding for CART simulations. */
+    public enum AntigenFlag {
+        /** Code for undefined flag. */
+        UNDEFINED,
+
+        /** Code for cell bound to antigen. */
+        BOUND_ANTIGEN,
+
+        /** Code for cell bound to self. */
+        BOUND_CELL_RECEPTOR,
+
+        /** Code for cell bound to self and antigen. */
+        BOUND_ANTIGEN_CELL_RECEPTOR,
+
+        /** Code for cell bound to nothing. */
+        UNBOUND;
+
+        /**
+         * Randomly selects a {@code AntigenFlag}.
+         *
+         * @param rng the random number generator
+         * @return a random {@code AntigenFlag}
+         */
+        public static AntigenFlag random(MersenneTwisterFast rng) {
             return values()[rng.nextInt(values().length - 1) + 1];
         }
     }

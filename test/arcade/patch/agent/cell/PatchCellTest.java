@@ -68,7 +68,7 @@ public class PatchCellTest {
                     cellCriticalVolume,
                     cellCriticalHeight);
 
-    static class PatchCellMock extends PatchCell {
+    static class PatchCellMock extends PatchCellTissue {
         PatchCellMock(PatchCellContainer container, Location location, Parameters parameters) {
             super(container, location, parameters, null);
         }

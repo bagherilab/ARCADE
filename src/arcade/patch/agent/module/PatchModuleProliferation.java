@@ -6,6 +6,7 @@ import arcade.core.agent.cell.CellContainer;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.process.PatchProcess;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
@@ -56,7 +57,11 @@ public class PatchModuleProliferation extends PatchModule {
         duration = 0;
         // Set loaded parameters.
         Parameters parameters = cell.getParameters();
-        synthesisDuration = parameters.getInt("proliferation/SYNTHESIS_DURATION");
+        if (cell instanceof PatchCellCART) {
+            synthesisDuration = parameters.getInt("proliferation/T_CELL_SYNTHESIS_DURATION");
+        } else {
+            synthesisDuration = parameters.getInt("proliferation/SYNTHESIS_DURATION");
+        }
     }
 
     @Override
@@ -109,9 +114,15 @@ public class PatchModuleProliferation extends PatchModule {
                     // Update processes.
                     PatchProcess metabolism = (PatchProcess) newCell.getProcess(Domain.METABOLISM);
                     metabolism.update(cell.getProcess(Domain.METABOLISM));
-                    PatchProcess signaling = (PatchProcess) newCell.getProcess(Domain.SIGNALING);
-                    signaling.update(cell.getProcess(Domain.SIGNALING));
-
+                    if (cell instanceof PatchCellCART) {
+                        PatchProcess inflammation =
+                                (PatchProcess) newCell.getProcess(Domain.INFLAMMATION);
+                        inflammation.update(cell.getProcess(Domain.INFLAMMATION));
+                    } else {
+                        PatchProcess signaling =
+                                (PatchProcess) newCell.getProcess(Domain.SIGNALING);
+                        signaling.update(cell.getProcess(Domain.SIGNALING));
+                    }
                     // TODO: Update environment generator sites.
                 } else {
                     ticker++;
