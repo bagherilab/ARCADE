@@ -464,8 +464,8 @@ public abstract class PatchCell implements Cell {
      */
     public PatchLocation selectBestLocation(Simulation sim, MersenneTwisterFast random) {
         Bag locs = findFreeLocations(sim);
-        MiniBox parameters = sim.getLattice("GLUCOSE").getParameters();
-        double maxGlucose = parameters.getDouble("generator/CONCENTRATION");
+        double maxGlucose =
+                sim.getLattice("GLUCOSE").getParameters().getDouble("generator/CONCENTRATION");
         int currZ = location.getZ();
         double currR = location.calculateDistance();
         int[] inds = new int[3];
