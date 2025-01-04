@@ -453,7 +453,10 @@ public abstract class PatchCell implements Cell {
     }
 
     /**
-     * Selects a random location for a cell to be added or move into.
+     * Selects best location for a cell to be added or move into.
+     *
+     * <p>Each free location is scored based on glucose availability and distance from the center of
+     * the simulation.
      *
      * @param sim the simulation instance
      * @param random the random number generator
