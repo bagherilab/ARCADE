@@ -25,6 +25,10 @@ import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
+import arcade.patch.util.PatchEnums.Domain;
+import arcade.patch.util.PatchEnums.Flag;
+import arcade.patch.util.PatchEnums.Ordering;
+import arcade.patch.util.PatchEnums.State;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.Flag;
 import static arcade.patch.util.PatchEnums.Ordering;
@@ -119,10 +123,10 @@ public abstract class PatchCell implements Cell {
     /** Maximum energy deficit before necrosis. */
     private final double energyThreshold;
 
-    /** Accuracy to pick best location. */
+    /** Accuracy in detecting concentration when selecting best location. */
     private final double accuracy;
 
-    /** Affinity to center of simulation. */
+    /** Affinity to prefer locations towards the center of simulation. */
     private final double affinity;
 
     /** Cell state module. */
