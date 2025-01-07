@@ -91,7 +91,7 @@ public abstract class PatchLocation implements Location {
      *
      * @return the distance to center
      */
-    public double calculateDistance() {
+    public double getPlanarDistance() {
         return coordinate.calculateDistance();
     }
 
@@ -100,7 +100,7 @@ public abstract class PatchLocation implements Location {
      *
      * @return the z coordinate
      */
-    public int getZ() {
+    public int getPlanarIndex() {
         return coordinate.z;
     }
 

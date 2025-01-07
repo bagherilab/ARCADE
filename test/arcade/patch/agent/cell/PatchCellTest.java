@@ -526,15 +526,15 @@ public class PatchCellTest {
         PatchLocation betterLocation = mock(PatchLocation.class);
         PatchLocation closerLocation = mock(PatchLocation.class);
 
-        doReturn(1).when(locationMock).getZ();
-        doReturn(1).when(betterLocation).getZ();
-        doReturn(1).when(closerLocation).getZ();
+        doReturn(1).when(locationMock).getPlanarIndex();
+        doReturn(1).when(betterLocation).getPlanarIndex();
+        doReturn(1).when(closerLocation).getPlanarIndex();
         doReturn(50.).when(latticeMock).getAverageValue(locationMock);
         doReturn(75.).when(latticeMock).getAverageValue(betterLocation);
         doReturn(25.).when(latticeMock).getAverageValue(closerLocation);
-        doReturn(5.0).when(locationMock).calculateDistance();
-        doReturn(6.0).when(betterLocation).calculateDistance();
-        doReturn(4.0).when(closerLocation).calculateDistance();
+        doReturn(5.0).when(locationMock).getPlanarDistance();
+        doReturn(6.0).when(betterLocation).getPlanarDistance();
+        doReturn(4.0).when(closerLocation).getPlanarDistance();
 
         Bag locations = new Bag();
         locations.add(betterLocation);
@@ -562,15 +562,15 @@ public class PatchCellTest {
         PatchLocation betterLocation = mock(PatchLocation.class);
         PatchLocation closerLocation = mock(PatchLocation.class);
 
-        doReturn(1).when(locationMock).getZ();
-        doReturn(1).when(betterLocation).getZ();
-        doReturn(1).when(closerLocation).getZ();
+        doReturn(1).when(locationMock).getPlanarIndex();
+        doReturn(1).when(betterLocation).getPlanarIndex();
+        doReturn(1).when(closerLocation).getPlanarIndex();
         doReturn(50.).when(latticeMock).getAverageValue(locationMock);
         doReturn(75.).when(latticeMock).getAverageValue(betterLocation);
         doReturn(25.).when(latticeMock).getAverageValue(closerLocation);
-        doReturn(5.0).when(locationMock).calculateDistance();
-        doReturn(6.0).when(betterLocation).calculateDistance();
-        doReturn(4.0).when(closerLocation).calculateDistance();
+        doReturn(5.0).when(locationMock).getPlanarDistance();
+        doReturn(6.0).when(betterLocation).getPlanarDistance();
+        doReturn(4.0).when(closerLocation).getPlanarDistance();
 
         Bag locations = new Bag();
         locations.add(betterLocation);
@@ -589,7 +589,7 @@ public class PatchCellTest {
         doReturn(0).when(parametersMock).getInt(any(String.class));
         doReturn(1.0).when(parametersMock).getDouble("AFFINITY");
         doReturn(0.0).when(parametersMock).getDouble("ACCURACY");
-        doReturn(1).when(locationMock).getZ();
+        doReturn(1).when(locationMock).getPlanarIndex();
         doReturn(0.5).when(randomMock).nextDouble();
         PatchLattice latticeMock = mock(PatchLattice.class);
         MiniBox boxMock = mock(MiniBox.class);
@@ -598,7 +598,7 @@ public class PatchCellTest {
         doReturn(100.).when(boxMock).getDouble("generator/CONCENTRATION");
         PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
         doReturn(50.).when(latticeMock).getAverageValue(locationMock);
-        doReturn(5.0).when(locationMock).calculateDistance();
+        doReturn(5.0).when(locationMock).getPlanarDistance();
 
         Bag locations = new Bag();
         doReturn(locations).when(cell).findFreeLocations(simMock);
@@ -626,14 +626,14 @@ public class PatchCellTest {
         PatchLocation higherLocation = mock(PatchLocation.class);
         PatchLocation lowerLocation = mock(PatchLocation.class);
 
-        doReturn(2).when(locationMock).getZ();
-        doReturn(3).when(higherLocation).getZ();
-        doReturn(1).when(lowerLocation).getZ();
+        doReturn(2).when(locationMock).getPlanarIndex();
+        doReturn(3).when(higherLocation).getPlanarIndex();
+        doReturn(1).when(lowerLocation).getPlanarIndex();
         doReturn(50.).when(latticeMock).getAverageValue(locationMock);
         doReturn(25.).when(latticeMock).getAverageValue(higherLocation);
-        doReturn(5.0).when(locationMock).calculateDistance();
-        doReturn(4.0).when(higherLocation).calculateDistance();
-        doReturn(4.0).when(lowerLocation).calculateDistance();
+        doReturn(5.0).when(locationMock).getPlanarDistance();
+        doReturn(4.0).when(higherLocation).getPlanarDistance();
+        doReturn(4.0).when(lowerLocation).getPlanarDistance();
 
         Bag locations = new Bag();
         locations.add(higherLocation);
@@ -648,13 +648,13 @@ public class PatchCellTest {
     }
 
     @Test
-    public void selectBestLocation_calledWithNoHigherLocations_returnsExpectedLocation() {
+    public void selectBestLocation_calledWithNoHigherFreeLocations_returnsExpectedLocation() {
         doReturn(0.0).when(parametersMock).getDouble(any(String.class));
         doReturn(0).when(parametersMock).getInt(any(String.class));
         doReturn(1.0).when(parametersMock).getDouble("AFFINITY");
         doReturn(0.0).when(parametersMock).getDouble("ACCURACY");
 
-        doReturn(1.0).when(randomMock).nextDouble();
+        doReturn(0.75).when(randomMock).nextDouble();
 
         PatchLattice latticeMock = mock(PatchLattice.class);
         MiniBox boxMock = mock(MiniBox.class);
@@ -665,12 +665,12 @@ public class PatchCellTest {
         PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
         PatchLocation lowerLocation = mock(PatchLocation.class);
 
-        doReturn(2).when(locationMock).getZ();
-        doReturn(1).when(lowerLocation).getZ();
+        doReturn(2).when(locationMock).getPlanarIndex();
+        doReturn(1).when(lowerLocation).getPlanarIndex();
         doReturn(50.).when(latticeMock).getAverageValue(locationMock);
         doReturn(25.).when(latticeMock).getAverageValue(lowerLocation);
-        doReturn(5.0).when(locationMock).calculateDistance();
-        doReturn(4.0).when(lowerLocation).calculateDistance();
+        doReturn(5.0).when(locationMock).getPlanarDistance();
+        doReturn(4.0).when(lowerLocation).getPlanarDistance();
 
         Bag locations = new Bag();
         locations.add(lowerLocation);
@@ -684,13 +684,13 @@ public class PatchCellTest {
     }
 
     @Test
-    public void selectBestLocation_calledWithNoLowerLocations_returnsExpectedLocation() {
+    public void selectBestLocation_calledWithNoLowerFreeLocations_returnsExpectedLocation() {
         doReturn(0.0).when(parametersMock).getDouble(any(String.class));
         doReturn(0).when(parametersMock).getInt(any(String.class));
         doReturn(1.0).when(parametersMock).getDouble("AFFINITY");
         doReturn(0.0).when(parametersMock).getDouble("ACCURACY");
 
-        doReturn(1.0).when(randomMock).nextDouble();
+        doReturn(0.75).when(randomMock).nextDouble();
 
         PatchLattice latticeMock = mock(PatchLattice.class);
         MiniBox boxMock = mock(MiniBox.class);
@@ -701,16 +701,55 @@ public class PatchCellTest {
         PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
         PatchLocation higherLocation = mock(PatchLocation.class);
 
-        doReturn(2).when(locationMock).getZ();
-        doReturn(3).when(higherLocation).getZ();
+        doReturn(2).when(locationMock).getPlanarIndex();
+        doReturn(3).when(higherLocation).getPlanarIndex();
         doReturn(50.).when(latticeMock).getAverageValue(locationMock);
         doReturn(25.).when(latticeMock).getAverageValue(higherLocation);
-        doReturn(5.0).when(locationMock).calculateDistance();
-        doReturn(4.0).when(higherLocation).calculateDistance();
+        doReturn(5.0).when(locationMock).getPlanarDistance();
+        doReturn(4.0).when(higherLocation).getPlanarDistance();
 
         Bag locations = new Bag();
         locations.add(higherLocation);
         locations.add(locationMock);
+
+        doReturn(locations).when(cell).findFreeLocations(simMock);
+
+        PatchLocation bestLocation = cell.selectBestLocation(simMock, randomMock);
+
+        assertEquals(bestLocation, higherLocation);
+    }
+
+    @Test
+    public void selectBestLocation_calledWithNoFreeLocationsOnSamePlane_returnsExpectedLocation() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(1.0).when(parametersMock).getDouble("AFFINITY");
+        doReturn(0.0).when(parametersMock).getDouble("ACCURACY");
+
+        doReturn(0.25).when(randomMock).nextDouble();
+
+        PatchLattice latticeMock = mock(PatchLattice.class);
+        MiniBox boxMock = mock(MiniBox.class);
+        doReturn(boxMock).when(latticeMock).getParameters();
+        doReturn(latticeMock).when(simMock).getLattice("GLUCOSE");
+        doReturn(100.).when(boxMock).getDouble("generator/CONCENTRATION");
+
+        PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
+        PatchLocation higherLocation = mock(PatchLocation.class);
+        PatchLocation lowerLocation = mock(PatchLocation.class);
+
+        doReturn(2).when(locationMock).getPlanarIndex();
+        doReturn(3).when(higherLocation).getPlanarIndex();
+        doReturn(1).when(lowerLocation).getPlanarIndex();
+        doReturn(50.).when(latticeMock).getAverageValue(locationMock);
+        doReturn(25.).when(latticeMock).getAverageValue(higherLocation);
+        doReturn(5.0).when(locationMock).getPlanarDistance();
+        doReturn(4.0).when(higherLocation).getPlanarDistance();
+        doReturn(4.0).when(lowerLocation).getPlanarDistance();
+
+        Bag locations = new Bag();
+        locations.add(higherLocation);
+        locations.add(lowerLocation);
 
         doReturn(locations).when(cell).findFreeLocations(simMock);
 

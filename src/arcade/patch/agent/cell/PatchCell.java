@@ -466,8 +466,8 @@ public abstract class PatchCell implements Cell {
         Bag locs = findFreeLocations(sim);
         double maxGlucose =
                 sim.getLattice("GLUCOSE").getParameters().getDouble("generator/CONCENTRATION");
-        int currZ = location.getZ();
-        double currR = location.calculateDistance();
+        int currZ = location.getPlanarIndex();
+        double currR = location.getPlanarDistance();
         int[] inds = new int[3];
         double[] scores = new double[3];
 
@@ -480,35 +480,31 @@ public abstract class PatchCell implements Cell {
                 // and adding affinity to move toward center.
                 double normConc = sim.getLattice("GLUCOSE").getAverageValue(location) / maxGlucose;
                 double gluc = (accuracy * normConc + (1 - accuracy) * random.nextDouble());
-                double dist = ((currR - loc.calculateDistance()) + 1) / 2.0;
+                double dist = ((currR - loc.getPlanarDistance()) + 1) / 2.0;
                 double score = affinity * dist + (1 - affinity) * gluc;
 
                 // Determine index for z position of location.
                 // 0: same z, 1: z + 1, 2: z - 1
-                int k = loc.getZ() == currZ ? 0 : loc.getZ() == currZ + 1 ? 1 : 2;
+                int k =
+                        loc.getPlanarIndex() == currZ
+                                ? 0
+                                : loc.getPlanarIndex() == currZ + 1 ? 1 : 2;
 
-                // Check if location is more desirable than current best location in z slice.
+                // Check if location is more desirable than current best location in z plane.
                 if (score > scores[k]) {
                     scores[k] = score;
                     inds[k] = i;
                 }
             }
 
-            // Randomly select vertical direction, handle boundaries, and return selected location.
-            int rand = 0;
-            if (scores[1] != 0 || scores[2] != 0) {
-                int count = 0;
-                for (int i = 0; i < 3; i++) {
-                    if (scores[i] != 0) {
-                        count++;
-                    }
-                }
-                rand = (int) (random.nextDouble() * count);
-                if (count == 2 && scores[2] != 0 && rand == 1) {
-                    rand = 2;
+            // Randomly grab a location from the 3 possible z locations.
+            GrabBag options = new GrabBag();
+            for (int i = 0; i < 3; i++) {
+                if (scores[i] != 0) {
+                    options.add(inds[i], 1);
                 }
             }
-            return (PatchLocation) (locs.get(inds[rand]));
+            return (PatchLocation) locs.get(options.next(random));
         } else {
             return null;
         }
