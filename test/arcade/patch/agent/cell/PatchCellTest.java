@@ -68,7 +68,7 @@ public class PatchCellTest {
                     cellCriticalVolume,
                     cellCriticalHeight);
 
-    static class PatchCellMock extends PatchCell {
+    static class PatchCellMock extends PatchCellTissue {
         PatchCellMock(PatchCellContainer container, Location location, Parameters parameters) {
             super(container, location, parameters, null);
         }
@@ -154,10 +154,10 @@ public class PatchCellTest {
             cell.processes.put(Domain.SIGNALING, signalingMock);
             cell.module = module;
             doAnswer(
-                            invocationOnMock -> {
-                                cell.state = invocationOnMock.getArgument(0);
-                                return null;
-                            })
+                    invocationOnMock -> {
+                        cell.state = invocationOnMock.getArgument(0);
+                        return null;
+                    })
                     .when(cell)
                     .setState(any(State.class));
 
@@ -197,10 +197,10 @@ public class PatchCellTest {
             cell.processes.put(Domain.SIGNALING, signalingMock);
             cell.module = module;
             doAnswer(
-                            invocationOnMock -> {
-                                cell.state = invocationOnMock.getArgument(0);
-                                return null;
-                            })
+                    invocationOnMock -> {
+                        cell.state = invocationOnMock.getArgument(0);
+                        return null;
+                    })
                     .when(cell)
                     .setState(any(State.class));
 
@@ -236,10 +236,10 @@ public class PatchCellTest {
         cell.processes.put(Domain.SIGNALING, signalingMock);
         cell.module = module;
         doAnswer(
-                        invocationOnMock -> {
-                            cell.state = invocationOnMock.getArgument(0);
-                            return null;
-                        })
+                invocationOnMock -> {
+                    cell.state = invocationOnMock.getArgument(0);
+                    return null;
+                })
                 .when(cell)
                 .setState(any(State.class));
 
@@ -456,7 +456,7 @@ public class PatchCellTest {
 
     @Test
     public void
-            findFreeLocations_proliferatingAndDensityExceedsMaxDensity_returnsOnlyOpenLocation() {
+    findFreeLocations_proliferatingAndDensityExceedsMaxDensity_returnsOnlyOpenLocation() {
         doReturn(0.0).when(parametersMock).getDouble(any(String.class));
         doReturn(0).when(parametersMock).getInt(any(String.class));
         doReturn(1).when(parametersMock).getInt("MAX_DENSITY");

@@ -3,7 +3,6 @@ package arcade.patch.agent.cell;
 import java.util.HashMap;
 import java.util.Map;
 import sim.engine.Schedule;
-import sim.engine.SimState;
 import sim.engine.Stoppable;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
@@ -21,6 +20,7 @@ import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModuleApoptosis;
 import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleProliferation;
+import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
@@ -87,7 +87,7 @@ public abstract class PatchCell implements Cell {
     int age;
 
     /** Cell energy [fmol ATP]. */
-    private double energy;
+    protected double energy;
 
     /** Number of divisions. */
     int divisions;
@@ -108,16 +108,16 @@ public abstract class PatchCell implements Cell {
     final double criticalHeight;
 
     /** Cell state change flag. */
-    private Flag flag;
+    protected Flag flag;
 
     /** Fraction of necrotic cells that become apoptotic. */
-    private final double necroticFraction;
+    protected final double necroticFraction;
 
     /** Fraction of senescent cells that become apoptotic. */
-    private final double senescentFraction;
+    protected final double senescentFraction;
 
     /** Maximum energy deficit before necrosis. */
-    private final double energyThreshold;
+    protected final double energyThreshold;
 
     /** Cell state module. */
     protected Module module;
@@ -134,6 +134,9 @@ public abstract class PatchCell implements Cell {
     /** List of cell cycle lengths (in minutes). */
     private final Bag cycles = new Bag();
 
+    /** If cell is stopped in the simulation */
+    private boolean isStopped;
+
     /**
      * Creates a {@code PatchCell} agent.
      *
@@ -143,7 +146,6 @@ public abstract class PatchCell implements Cell {
      *   <li>{@code NECROTIC_FRACTION} = fraction of necrotic cells that become apoptotic
      *   <li>{@code SENESCENT_FRACTION} = fraction of senescent cells that become apoptotic
      *   <li>{@code ENERGY_THRESHOLD} = maximum energy deficit before necrosis
-     *   <li>{@code HETEROGENEITY} = variation in cell agent parameters
      * </ul>
      *
      * @param container the cell container
@@ -166,6 +168,7 @@ public abstract class PatchCell implements Cell {
         this.criticalHeight = container.criticalHeight;
         this.flag = Flag.UNDEFINED;
         this.parameters = parameters;
+        this.isStopped = false;
         this.links = links;
 
         setState(container.state);
@@ -182,11 +185,13 @@ public abstract class PatchCell implements Cell {
         // Add cell processes.
         processes = new HashMap<>();
         MiniBox processBox = parameters.filter("(PROCESS)");
-        for (String processKey : processBox.getKeys()) {
-            ProcessDomain domain = Domain.valueOf(processKey);
-            String version = processBox.get(processKey);
-            Process process = makeProcess(domain, version);
-            processes.put(domain, process);
+        if (processBox != null) {
+            for (String processKey : processBox.getKeys()) {
+                ProcessDomain domain = Domain.valueOf(processKey);
+                String version = processBox.get(processKey);
+                Process process = makeProcess(domain, version);
+                processes.put(domain, process);
+            }
         }
     }
 
@@ -317,6 +322,11 @@ public abstract class PatchCell implements Cell {
     @Override
     public void stop() {
         stopper.stop();
+        isStopped = true;
+    }
+
+    public boolean isStopped() {
+        return isStopped;
     }
 
     @Override
@@ -353,6 +363,8 @@ public abstract class PatchCell implements Cell {
                 return PatchProcessMetabolism.make(this, version);
             case SIGNALING:
                 return PatchProcessSignaling.make(this, version);
+            case INFLAMMATION:
+                return PatchProcessInflammation.make(this, version);
             case UNDEFINED:
             default:
                 return null;
@@ -362,57 +374,6 @@ public abstract class PatchCell implements Cell {
     @Override
     public void schedule(Schedule schedule) {
         stopper = schedule.scheduleRepeating(this, Ordering.CELLS.ordinal(), 1);
-    }
-
-    @Override
-    public void step(SimState simstate) {
-        Simulation sim = (Simulation) simstate;
-        // Increase age of cell.
-        age++;
-
-        if (state != State.APOPTOTIC && age > apoptosisAge) {
-            setState(State.APOPTOTIC);
-        }
-
-        // Step metabolism process.
-        processes.get(Domain.METABOLISM).step(simstate.random, sim);
-
-        // Check energy status. If cell has less energy than threshold, it will
-        // necrose. If overall energy is negative, then cell enters quiescence.
-        if (state != State.APOPTOTIC && energy < 0) {
-            if (energy < energyThreshold) {
-                if (simstate.random.nextDouble() > necroticFraction) {
-                    setState(State.APOPTOTIC);
-                } else {
-                    setState(State.NECROTIC);
-                }
-            } else if (state != State.QUIESCENT && state != State.SENESCENT) {
-                setState(State.QUIESCENT);
-            }
-        }
-
-        // Step signaling network process.
-        processes.get(Domain.SIGNALING).step(simstate.random, sim);
-
-        // Change state from undefined.
-        if (state == State.UNDEFINED) {
-            if (flag == Flag.MIGRATORY) {
-                setState(State.MIGRATORY);
-            } else if (divisions == 0) {
-                if (simstate.random.nextDouble() > senescentFraction) {
-                    setState(State.APOPTOTIC);
-                } else {
-                    setState(State.SENESCENT);
-                }
-            } else {
-                setState(State.PROLIFERATIVE);
-            }
-        }
-
-        // Step the module for the cell state.
-        if (module != null) {
-            module.step(simstate.random, sim);
-        }
     }
 
     @Override
