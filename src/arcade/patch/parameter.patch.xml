@@ -22,6 +22,8 @@
     <population id="ENERGY_THRESHOLD" value="1000.0" description="maximum energy deficit before necrosis" />
     <population id="SYMMETRIC_FRACTION" value="0.05" description="fraction of divisions that are symmetric" />
     <population id="MAX_DENSITY" value="-1" description="maximum amount of cells in location, -1 means no limit" />
+    <population id="ACCURACY" value="0.8" description="accuracy to select highest glucose concentration in future location" />
+    <population id="AFFINITY" value="0.5" description="movement toward center affinity when selecting future location" />
 
     <!-- proliferation module parameters -->
     <population.module module="proliferation" id="SYNTHESIS_DURATION" value="637" units="min" description="time required for DNA synthesis" />
