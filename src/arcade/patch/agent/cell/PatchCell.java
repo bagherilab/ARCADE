@@ -108,19 +108,16 @@ public abstract class PatchCell implements Cell {
     final double criticalHeight;
 
     /** Cell state change flag. */
-    Flag flag;
-
-    /** Variation in cell agent parameters. */
-    private final double heterogeneity;
+    protected Flag flag;
 
     /** Fraction of necrotic cells that become apoptotic. */
-    final double necroticFraction;
+    protected final double necroticFraction;
 
     /** Fraction of senescent cells that become apoptotic. */
-    final double senescentFraction;
+    protected final double senescentFraction;
 
     /** Maximum energy deficit before necrosis. */
-    final double energyThreshold;
+    protected final double energyThreshold;
 
     /** Cell state module. */
     protected Module module;
@@ -149,7 +146,6 @@ public abstract class PatchCell implements Cell {
      *   <li>{@code NECROTIC_FRACTION} = fraction of necrotic cells that become apoptotic
      *   <li>{@code SENESCENT_FRACTION} = fraction of senescent cells that become apoptotic
      *   <li>{@code ENERGY_THRESHOLD} = maximum energy deficit before necrosis
-     *   <li>{@code HETEROGENEITY} = variation in cell agent parameters
      * </ul>
      *
      * @param container the cell container
@@ -180,14 +176,11 @@ public abstract class PatchCell implements Cell {
         // Set loaded parameters.
         necroticFraction = parameters.getDouble("NECROTIC_FRACTION");
         senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
-        heterogeneity = parameters.getDouble("HETEROGENEITY");
         energyThreshold = -parameters.getDouble("ENERGY_THRESHOLD");
         apoptosisAge = parameters.getDouble("APOPTOSIS_AGE");
 
         int densityInput = parameters.getInt("MAX_DENSITY");
         maxDensity = (densityInput >= 0 ? densityInput : Integer.MAX_VALUE);
-
-        // TODO: implement heterogeneity
 
         // Add cell processes.
         processes = new HashMap<>();
