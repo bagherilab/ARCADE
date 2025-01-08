@@ -497,7 +497,6 @@ public abstract class PatchCell implements Cell {
                 }
             }
 
-            // Randomly grab a location from the 3 possible z locations.
             GrabBag options = new GrabBag();
             for (int i = 0; i < 3; i++) {
                 if (scores[i] != 0) {
