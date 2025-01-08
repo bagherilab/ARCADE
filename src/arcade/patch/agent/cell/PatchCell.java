@@ -87,7 +87,7 @@ public abstract class PatchCell implements Cell {
     int age;
 
     /** Cell energy [fmol ATP]. */
-    double energy;
+    protected double energy;
 
     /** Number of divisions. */
     int divisions;
