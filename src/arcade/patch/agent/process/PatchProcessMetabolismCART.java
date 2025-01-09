@@ -9,6 +9,41 @@ import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.util.PatchEnums.Domain;
 
+/**
+ * Extension of {@link PatchProcessMetabolism} for CAR T-cell metabolism.
+ * <p>
+ * {@code MetabolismCART} is adapted from {@code MetabolismComplex} and thus
+ * this module explicitly includes pyruvate intermediate between
+ * glycolysis and oxidative phosphorylation and glucose uptake is based on cell
+ * surface area.
+ * Metabolic preference between glycolysis and oxidative phosphorylation is
+ * controlled by the {@code META_PREF} parameter.
+ * The glycolysis pathway will compensate if there is not enough oxygen to meet
+ * energetic requirements through the oxidative phosphorylation pathway given
+ * the specified metabolic preference.
+ * The preference for glycolysis can be further increased due to IL-2 bound to the
+ * cell surface by a maximum of {@code META_PREF_IL2} parameter and by the T-cell's
+ * antigen-induced activation state by the {@code META_PREF_ACTIVE} parameter.
+ * The antigen-induced activation state can also increase the rate of uptake of
+ * glucose by the {@code GLUC_UPTAKE_RATE_ACTIVE} parameter and the fraction of
+ * glucose being used to make cell mass by the {@code FRAC_MASS_ACTIVE} parameter.
+ * The amount of IL-2 bound to the cell surface can also incrase the uptake rate of
+ * glucose by a max of the {@code GLUC_UPTAKE_RATE_IL2} parameter.
+ * <p>
+ * {@code PatchProcessMetabolismCART} will increase cell mass (using specified fractions
+ * of internal glucose and pyruvate) if:
+ * <ul>
+ *     <li>cell is dividing and less than double in size</li>
+ *     <li>cell is below critical mass for maintenance</li>
+ * </ul>
+ * {@code PatchProcessMetabolismCART } will decrease cell mass if:
+ * <ul>
+ *     <li>cell has negative energy levels indicating insufficient nutrients</li>
+ *     <li>cell is above critical mass for maintenance</li>
+ * </ul>
+ * <p>
+ * Internal pyruvate is removed through conversion to lactate.
+ */
 public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
 
     /** ID for pyruvate */
