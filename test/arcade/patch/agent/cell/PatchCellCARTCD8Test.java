@@ -1,4 +1,3 @@
-
 package arcade.patch.agent.cell;
 
 import java.lang.reflect.Field;
@@ -228,11 +227,11 @@ public class PatchCellCARTCD8Test {
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    cell.module = module;
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            cell.module = module;
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
         doReturn(new PatchCellTissue(container, location, parameters))
@@ -257,11 +256,11 @@ public class PatchCellCARTCD8Test {
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    cell.module = module;
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            cell.module = module;
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
         doReturn(new PatchCellTissue(container, location, parameters))
@@ -290,11 +289,11 @@ public class PatchCellCARTCD8Test {
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    cell.module = module;
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            cell.module = module;
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
         doReturn(new PatchCellTissue(container, location, parameters))
@@ -322,11 +321,11 @@ public class PatchCellCARTCD8Test {
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    cell.module = module;
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            cell.module = module;
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
         doReturn(new PatchCellTissue(container, location, parameters))
@@ -353,12 +352,12 @@ public class PatchCellCARTCD8Test {
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    cell.divisions = 0;
-                    cell.module = module;
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            cell.divisions = 0;
+                            cell.module = module;
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
         doReturn(new PatchCellTissue(container, location, parameters))
@@ -386,11 +385,11 @@ public class PatchCellCARTCD8Test {
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    cell.module = module;
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            cell.module = module;
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
         doReturn(new PatchCellTissue(container, location, parameters))
@@ -419,12 +418,12 @@ public class PatchCellCARTCD8Test {
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    cell.boundAntigensCount = 0;
-                    cell.module = module;
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            cell.boundAntigensCount = 0;
+                            cell.module = module;
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
         doReturn(new PatchCellTissue(container, location, parameters))
@@ -455,12 +454,12 @@ public class PatchCellCARTCD8Test {
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    cell.activated = true;
-                    cell.module = module;
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            cell.activated = true;
+                            cell.module = module;
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
         doReturn(new PatchCellTissue(container, location, parameters))
@@ -486,12 +485,12 @@ public class PatchCellCARTCD8Test {
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    cell.activated = false;
-                    cell.module = module;
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            cell.activated = false;
+                            cell.module = module;
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
         doReturn(new PatchCellTissue(container, location, parameters))
@@ -517,12 +516,12 @@ public class PatchCellCARTCD8Test {
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    cell.boundAntigensCount = cell.maxAntigenBinding + 1;
-                    cell.module = module;
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            cell.boundAntigensCount = cell.maxAntigenBinding + 1;
+                            cell.module = module;
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
         doReturn(new PatchCellTissue(container, location, parameters))
