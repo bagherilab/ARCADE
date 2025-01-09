@@ -91,7 +91,6 @@ public class PatchActionKill implements Action {
             // Kill bound target cell.
             PatchCellTissue tissueCell = (PatchCellTissue) target;
             tissueCell.setState(State.APOPTOTIC);
-            tissueCell.getModule().step(state.random, sim);
 
             // Use up some granzyme in the process.
             granzyme--;
