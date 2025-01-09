@@ -16,6 +16,7 @@ import arcade.core.env.operation.OperationCategory;
  *   <li>{@code Domain} defining domain for a given process
  *   <li>{@code Flag} defining state change flags
  *   <li>{@code Category} defining operation categories
+ *   <li>{@code AntigenFlag} defining cell antigen binding status
  * </ul>
  */
 public final class PatchEnums {
