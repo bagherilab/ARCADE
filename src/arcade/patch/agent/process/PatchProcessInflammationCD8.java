@@ -6,6 +6,12 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCellCART;
 
+/**
+ * Extension of {@link PatchProcessInflammation} for CD8 CAR T-cells
+ * <p>
+ * {@code InflammationCD8} determines granzyme amounts produced for cytotoxic effector
+ * functions as a function of IL-2 bound and antigen-induced activation state.
+ */
 public class PatchProcessInflammationCD8 extends PatchProcessInflammation {
     /** Moles of granzyme produced per moles IL-2 [mol granzyme/mol IL-2] */
     private static final double GRANZ_PER_IL2 = 0.005;
