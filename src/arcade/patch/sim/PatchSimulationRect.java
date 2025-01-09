@@ -1,4 +1,3 @@
-
 package arcade.patch.sim;
 
 import arcade.core.agent.action.Action;
