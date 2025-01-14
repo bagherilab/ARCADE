@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
+import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCellCART;
@@ -19,6 +20,18 @@ public class PatchProcessMetabolismCARTTest {
     private PatchProcessMetabolismCART metabolism;
     private PatchLocation mockLocation;
     private double cellVolume;
+
+    static class inflammationMock extends PatchProcessInflammation {
+        public inflammationMock(PatchCellCART c) {
+            super(c);
+        }
+
+        @Override
+        void stepProcess(MersenneTwisterFast random, Simulation sim) {}
+
+        @Override
+        public void update(Process process) {}
+    }
 
     @BeforeEach
     public void setUp() {
@@ -121,7 +134,7 @@ public class PatchProcessMetabolismCARTTest {
         Simulation sim = mock(Simulation.class);
 
         // mock inflammation process
-        PatchProcessInflammation inflammation = spy(new PatchProcessInflammationCD4(mockCell));
+        PatchProcessInflammation inflammation = new inflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
         when(mockCell.getActivationStatus()).thenReturn(true);
 
@@ -143,7 +156,7 @@ public class PatchProcessMetabolismCARTTest {
         Simulation sim = mock(Simulation.class);
 
         // mock inflammation process
-        PatchProcessInflammation inflammation = spy(new PatchProcessInflammationCD4(mockCell));
+        PatchProcessInflammation inflammation = new inflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
         when(mockCell.getActivationStatus()).thenReturn(true);
 
@@ -165,7 +178,7 @@ public class PatchProcessMetabolismCARTTest {
         Simulation sim = mock(Simulation.class);
 
         // mock inflammation process
-        PatchProcessInflammation inflammation = spy(new PatchProcessInflammationCD4(mockCell));
+        PatchProcessInflammation inflammation = new inflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
         when(mockCell.getActivationStatus()).thenReturn(true);
 
@@ -186,7 +199,7 @@ public class PatchProcessMetabolismCARTTest {
         Simulation sim = mock(Simulation.class);
 
         // mock inflammation process
-        PatchProcessInflammation inflammation = spy(new PatchProcessInflammationCD4(mockCell));
+        PatchProcessInflammation inflammation = new inflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
         when(mockCell.getActivationStatus()).thenReturn(true);
 
@@ -207,7 +220,7 @@ public class PatchProcessMetabolismCARTTest {
         Simulation sim = mock(Simulation.class);
 
         // mock inflammation process
-        PatchProcessInflammation inflammation = spy(new PatchProcessInflammationCD4(mockCell));
+        PatchProcessInflammation inflammation = new inflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
         when(mockCell.getActivationStatus()).thenReturn(true);
 
@@ -230,7 +243,7 @@ public class PatchProcessMetabolismCARTTest {
         Simulation sim = mock(Simulation.class);
 
         // mock inflammation process
-        PatchProcessInflammation inflammation = spy(new PatchProcessInflammationCD4(mockCell));
+        PatchProcessInflammation inflammation = new inflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
         when(mockCell.getActivationStatus()).thenReturn(true);
 
@@ -254,7 +267,7 @@ public class PatchProcessMetabolismCARTTest {
         Simulation sim = mock(Simulation.class);
 
         // mock inflammation process
-        PatchProcessInflammation inflammation = spy(new PatchProcessInflammationCD4(mockCell));
+        PatchProcessInflammation inflammation = new inflammationMock(mockCell);
         Field activeTicker = PatchProcessInflammation.class.getDeclaredField("activeTicker");
         activeTicker.setAccessible(true);
         activeTicker.set(inflammation, 1);
@@ -280,7 +293,7 @@ public class PatchProcessMetabolismCARTTest {
         Simulation sim = mock(Simulation.class);
 
         // mock inflammation process
-        PatchProcessInflammation inflammation = spy(new PatchProcessInflammationCD4(mockCell));
+        PatchProcessInflammation inflammation = new inflammationMock(mockCell);
         Field activeTicker = PatchProcessInflammation.class.getDeclaredField("activeTicker");
         activeTicker.setAccessible(true);
         activeTicker.set(inflammation, 1);
@@ -306,7 +319,7 @@ public class PatchProcessMetabolismCARTTest {
         Simulation sim = mock(Simulation.class);
 
         // mock inflammation process
-        PatchProcessInflammation inflammation = spy(new PatchProcessInflammationCD4(mockCell));
+        PatchProcessInflammation inflammation = new inflammationMock(mockCell);
         Field activeTicker = PatchProcessInflammation.class.getDeclaredField("activeTicker");
         activeTicker.setAccessible(true);
         activeTicker.set(inflammation, 1);
