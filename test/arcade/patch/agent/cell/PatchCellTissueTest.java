@@ -3,7 +3,6 @@ package arcade.patch.agent.cell;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.*;
@@ -115,10 +114,10 @@ public class PatchCellTissueTest {
             cell.processes.put(Domain.SIGNALING, signalingMock);
             cell.module = module;
             doAnswer(
-                    invocationOnMock -> {
-                        cell.state = invocationOnMock.getArgument(0);
-                        return null;
-                    })
+                            invocationOnMock -> {
+                                cell.state = invocationOnMock.getArgument(0);
+                                return null;
+                            })
                     .when(cell)
                     .setState(any(State.class));
 
@@ -158,10 +157,10 @@ public class PatchCellTissueTest {
             cell.processes.put(Domain.SIGNALING, signalingMock);
             cell.module = module;
             doAnswer(
-                    invocationOnMock -> {
-                        cell.state = invocationOnMock.getArgument(0);
-                        return null;
-                    })
+                            invocationOnMock -> {
+                                cell.state = invocationOnMock.getArgument(0);
+                                return null;
+                            })
                     .when(cell)
                     .setState(any(State.class));
 
@@ -197,10 +196,10 @@ public class PatchCellTissueTest {
         cell.processes.put(Domain.SIGNALING, signalingMock);
         cell.module = module;
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
 
