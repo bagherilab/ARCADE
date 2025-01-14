@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import ec.util.MersenneTwisterFast;
+import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCellCART;
@@ -22,6 +23,18 @@ public class PatchProcessInflammationTest {
     private Simulation mockSimulation;
     private MersenneTwisterFast mockRandom;
 
+    static class inflammationMock extends PatchProcessInflammation {
+        public inflammationMock(PatchCellCART c) {
+            super(c);
+        }
+
+        @Override
+        void stepProcess(MersenneTwisterFast random, Simulation sim) {}
+
+        @Override
+        public void update(Process process) {}
+    }
+
     @BeforeEach
     public void setUp() {
         mockCell = Mockito.mock(PatchCellCART.class);
@@ -39,8 +52,7 @@ public class PatchProcessInflammationTest {
         Mockito.when(mockParameters.getInt(anyString())).thenReturn(1);
         Mockito.when(mockSimulation.getLattice(anyString())).thenReturn(mockLattice);
         doNothing().when(mockLattice).setValue(any(PatchLocation.class), anyDouble());
-
-        inflammation = new PatchProcessInflammationCD8(mockCell);
+        inflammation = new inflammationMock(mockCell);
     }
 
     @Test
