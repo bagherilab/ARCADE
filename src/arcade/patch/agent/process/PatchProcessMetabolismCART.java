@@ -1,4 +1,3 @@
-
 package arcade.patch.agent.process;
 
 import java.util.Arrays;
@@ -224,7 +223,7 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
             mass +=
                     conversionFraction
                             * (ratioGlucosePyruvate * glucInt
-                            + (1 - ratioGlucosePyruvate) * pyruInt / PYRU_PER_GLUC)
+                                    + (1 - ratioGlucosePyruvate) * pyruInt / PYRU_PER_GLUC)
                             / ratioGlucoseBiomass;
             glucInt *= (1 - conversionFraction * ratioGlucosePyruvate);
             pyruInt *= (1 - conversionFraction * (1 - ratioGlucosePyruvate));

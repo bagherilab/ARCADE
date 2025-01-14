@@ -114,10 +114,10 @@ public class PatchCellTissueTest {
             cell.processes.put(Domain.SIGNALING, signalingMock);
             cell.module = module;
             doAnswer(
-                    invocationOnMock -> {
-                        cell.state = invocationOnMock.getArgument(0);
-                        return null;
-                    })
+                            invocationOnMock -> {
+                                cell.state = invocationOnMock.getArgument(0);
+                                return null;
+                            })
                     .when(cell)
                     .setState(any(State.class));
 
@@ -157,10 +157,10 @@ public class PatchCellTissueTest {
             cell.processes.put(Domain.SIGNALING, signalingMock);
             cell.module = module;
             doAnswer(
-                    invocationOnMock -> {
-                        cell.state = invocationOnMock.getArgument(0);
-                        return null;
-                    })
+                            invocationOnMock -> {
+                                cell.state = invocationOnMock.getArgument(0);
+                                return null;
+                            })
                     .when(cell)
                     .setState(any(State.class));
 
@@ -196,10 +196,10 @@ public class PatchCellTissueTest {
         cell.processes.put(Domain.SIGNALING, signalingMock);
         cell.module = module;
         doAnswer(
-                invocationOnMock -> {
-                    cell.state = invocationOnMock.getArgument(0);
-                    return null;
-                })
+                        invocationOnMock -> {
+                            cell.state = invocationOnMock.getArgument(0);
+                            return null;
+                        })
                 .when(cell)
                 .setState(any(State.class));
 

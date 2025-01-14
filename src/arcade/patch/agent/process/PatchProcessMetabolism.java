@@ -184,8 +184,8 @@ public abstract class PatchProcessMetabolism extends PatchProcess {
         energyCons =
                 volume
                         * (basalEnergy
-                        + (isProliferative ? proliferationEnergy : 0)
-                        + (isMigratory ? migrationEnergy : 0));
+                                + (isProliferative ? proliferationEnergy : 0)
+                                + (isMigratory ? migrationEnergy : 0));
         energyReq = energyCons - energy;
 
         // Modify energy and volume.

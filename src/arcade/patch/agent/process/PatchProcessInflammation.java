@@ -200,28 +200,28 @@ public abstract class PatchProcessInflammation extends PatchProcess {
                                 kon_2 * y[IL2Rbg] * y[IL2_EXT]
                                         - koff * y[IL2_IL2Rbg]
                                         - K_CONVERT
-                                        * (y[IL2_IL2Rbg] + y[IL2_IL2Rbga])
-                                        * y[IL2_IL2Rbg]
+                                                * (y[IL2_IL2Rbg] + y[IL2_IL2Rbga])
+                                                * y[IL2_IL2Rbg]
                                         - K_REC * y[IL2_IL2Rbg];
                         dydt[IL2_IL2Rbga] =
                                 kon_3 * y[IL2Rbga] * y[IL2_EXT]
                                         - koff * y[IL2_IL2Rbga]
                                         + K_CONVERT
-                                        * (y[IL2_IL2Rbg] + y[IL2_IL2Rbga])
-                                        * y[IL2_IL2Rbg]
+                                                * (y[IL2_IL2Rbg] + y[IL2_IL2Rbga])
+                                                * y[IL2_IL2Rbg]
                                         - K_REC * y[IL2_IL2Rbga];
                         dydt[IL2_INT_TOTAL] =
                                 kon_2 * y[IL2Rbg] * y[IL2_EXT]
                                         - koff * y[IL2_IL2Rbg]
                                         - K_CONVERT
-                                        * (y[IL2_IL2Rbg] + y[IL2_IL2Rbga])
-                                        * y[IL2_IL2Rbg]
+                                                * (y[IL2_IL2Rbg] + y[IL2_IL2Rbga])
+                                                * y[IL2_IL2Rbg]
                                         - K_REC * y[IL2_IL2Rbg]
                                         + kon_3 * y[IL2Rbga] * y[IL2_EXT]
                                         - koff * y[IL2_IL2Rbga]
                                         + K_CONVERT
-                                        * (y[IL2_IL2Rbg] + y[IL2_IL2Rbga])
-                                        * y[IL2_IL2Rbg]
+                                                * (y[IL2_IL2Rbg] + y[IL2_IL2Rbga])
+                                                * y[IL2_IL2Rbg]
                                         - K_REC * y[IL2_IL2Rbga];
                         dydt[IL2R_TOTAL] =
                                 koff * y[IL2_IL2Rbg]
@@ -316,11 +316,11 @@ public abstract class PatchProcessInflammation extends PatchProcess {
     public static PatchProcess make(PatchCell cell, String version) {
         switch (version.toUpperCase()) {
             case "CD4":
-                //TODO: upload class specific inflammation modules
-//                return new PatchProcessInflammationCD4((PatchCellCART) cell);
+                // TODO: upload class specific inflammation modules
+                //                return new PatchProcessInflammationCD4((PatchCellCART) cell);
             case "CD8":
-                //TODO: upload class specific inflammation modules
-//                return new PatchProcessInflammationCD8((PatchCellCART) cell);
+                // TODO: upload class specific inflammation modules
+                //                return new PatchProcessInflammationCD8((PatchCellCART) cell);
             default:
                 return null;
         }
