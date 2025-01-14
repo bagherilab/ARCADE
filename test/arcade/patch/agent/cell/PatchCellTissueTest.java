@@ -53,21 +53,6 @@ public class PatchCellTissueTest {
 
     static double cellCriticalHeight = randomDoubleBetween(10, 100);
 
-    static State cellState = State.QUIESCENT;
-
-    static PatchCellContainer baseContainer =
-            new PatchCellContainer(
-                    cellID,
-                    cellParent,
-                    cellPop,
-                    cellAge,
-                    cellDivisions,
-                    cellState,
-                    cellVolume,
-                    cellHeight,
-                    cellCriticalVolume,
-                    cellCriticalHeight);
-
     static class PatchCellMock extends PatchCellTissue {
         PatchCellMock(PatchCellContainer container, Location location, Parameters parameters) {
             super(container, location, parameters, null);
