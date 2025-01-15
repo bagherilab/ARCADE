@@ -411,6 +411,7 @@ public class PatchCellTest {
 
         doReturn(1000.).when(locationMock).getVolume();
         doReturn(100.).when(locationMock).getArea();
+        doReturn(locationMock).when(locationMock).getClone();
 
         PatchLocation freeLocation = mock(PatchLocation.class);
         doReturn(new Bag()).when(gridMock).getObjectsAtLocation(freeLocation);

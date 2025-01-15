@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 import arcade.core.env.location.Location;
 import static org.junit.jupiter.api.Assertions.*;
+import static arcade.core.ARCADETestUtilities.randomIntBetween;
 
 public class PatchLocationRectTest {
     @Test
@@ -97,5 +98,24 @@ public class PatchLocationRectTest {
         for (int i = 0; i < expected.size(); i++) {
             assertTrue(actual.contains(expected.get(i)));
         }
+    }
+
+    @Test
+    public void getClone_called_cloneUpdatesIndependently() {
+        int x1 = randomIntBetween(-10, 10);
+        int y1 = randomIntBetween(-10, 10);
+        int z1 = randomIntBetween(0, 10);
+        int x2 = randomIntBetween(-10, 10);
+        int y2 = randomIntBetween(-10, 10);
+        int z2 = randomIntBetween(0, 10);
+
+        PatchLocationRect originalLocation = new PatchLocationRect(x1, y1, z1);
+        PatchLocationRect updateLocation = new PatchLocationRect(x2, y2, z2);
+
+        PatchLocationRect locationClone = originalLocation.getClone();
+        locationClone.update(updateLocation);
+
+        assertEquals(locationClone, updateLocation);
+        assertNotEquals(locationClone, originalLocation);
     }
 }
