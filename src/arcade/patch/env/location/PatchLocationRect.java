@@ -140,6 +140,11 @@ public final class PatchLocationRect extends PatchLocation {
         return NUM_SUBCOORDINATES;
     }
 
+    @Override
+    public PatchLocationRect getClone() {
+        return new PatchLocationRect((CoordinateXYZ) getCoordinate());
+    }
+
     /**
      * Updates static configuration variables.
      *

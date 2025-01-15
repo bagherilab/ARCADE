@@ -75,6 +75,13 @@ public abstract class PatchLocation implements Location {
     public abstract double getArea();
 
     /**
+     * Gets a shallow copy of the location.
+     *
+     * @return a new instance of location
+     */
+    public abstract PatchLocation getClone();
+
+    /**
      * Gets the patch coordinate in the {@link arcade.core.env.grid.Grid}.
      *
      * <p>These are not necessarily the same as the {@link arcade.core.env.lattice.Lattice}
