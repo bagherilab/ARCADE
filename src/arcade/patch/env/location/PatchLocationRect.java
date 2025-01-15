@@ -142,7 +142,7 @@ public final class PatchLocationRect extends PatchLocation {
 
     @Override
     public PatchLocationRect getClone() {
-        return new PatchLocationRect((CoordinateXYZ) getCoordinate());
+        return new PatchLocationRect((CoordinateXYZ) this.coordinate);
     }
 
     /**
