@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":6,"i1":6,"i2":6,"i3":10,"i4":6,"i5":10,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":10,"i12":10,"i13":6,"i14":10,"i15":10,"i16":10};
+var data = {"i0":6,"i1":6,"i2":6,"i3":10,"i4":6,"i5":10,"i6":6,"i7":6,"i8":6,"i9":6,"i10":10,"i11":10,"i12":6,"i13":10,"i14":10,"i15":6,"i16":10,"i17":10,"i18":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -355,20 +355,34 @@ implements <a href="../../../core/env/location/Location.html" title="interface i
 </td>
 </tr>
 <tr id="i10" class="altColor">
+<td class="colFirst"><code>double</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPlanarDistance()">getPlanarDistance</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Calculate the distance to center of simulation.</div>
+</td>
+</tr>
+<tr id="i11" class="rowColor">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPlanarIndex()">getPlanarIndex</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Gets the z coordinate.</div>
+</td>
+</tr>
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>abstract double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRatio()">getRatio</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the ratio of the <a href="../../../core/env/grid/Grid.html" title="interface in arcade.core.env.grid"><code>Grid</code></a> z to xy sizes.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code><a href="Coordinate.html" title="class in arcade.patch.env.location">Coordinate</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSubcoordinate()">getSubcoordinate</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the patch subcoordinate in the <a href="../../../core/env/lattice/Lattice.html" title="interface in arcade.core.env.lattice"><code>Lattice</code></a>.</div>
 </td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code>java.util.ArrayList&lt;<a href="Coordinate.html" title="class in arcade.patch.env.location">Coordinate</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSubcoordinates()">getSubcoordinates</a></span>()</code></th>
 <td class="colLast">
@@ -376,21 +390,21 @@ implements <a href="../../../core/env/location/Location.html" title="interface i
  <a href="../../../core/env/grid/Grid.html" title="interface in arcade.core.env.grid"><code>Grid</code></a> location.</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code>abstract double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSubcoordinateSize()">getSubcoordinateSize</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the <a href="../../../core/env/lattice/Lattice.html" title="interface in arcade.core.env.lattice"><code>Lattice</code></a> coordinate size in the xy plane.</div>
 </td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#hashCode()">hashCode</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get unique hash based on location coordinate.</div>
 </td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i17" class="rowColor">
 <td class="colFirst"><code>(package private) byte</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#offsetByte(byte,int)">offsetByte</a></span>&#8203;(byte&nbsp;b,
           int&nbsp;k)</code></th>
@@ -398,7 +412,7 @@ implements <a href="../../../core/env/location/Location.html" title="interface i
 <div class="block">Performs a left circular offset on the first six bits in a byte.</div>
 </td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i18" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#update(arcade.patch.env.location.PatchLocation)">update</a></span>&#8203;(<a href="PatchLocation.html" title="class in arcade.patch.env.location">PatchLocation</a>&nbsp;location)</code></th>
 <td class="colLast">
@@ -590,6 +604,34 @@ implements <a href="../../../core/env/location/Location.html" title="interface i
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the coordinate</dd>
+</dl>
+</li>
+</ul>
+<a id="getPlanarDistance()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getPlanarDistance</h4>
+<pre class="methodSignature">public&nbsp;double&nbsp;getPlanarDistance()</pre>
+<div class="block">Calculate the distance to center of simulation.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the distance to center</dd>
+</dl>
+</li>
+</ul>
+<a id="getPlanarIndex()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getPlanarIndex</h4>
+<pre class="methodSignature">public&nbsp;int&nbsp;getPlanarIndex()</pre>
+<div class="block">Gets the z coordinate.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the z coordinate</dd>
 </dl>
 </li>
 </ul>

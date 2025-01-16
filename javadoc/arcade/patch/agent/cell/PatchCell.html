@@ -195,6 +195,20 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <th class="colLast" scope="col">Description</th>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>private double</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#accuracy">accuracy</a></span></code></th>
+<td class="colLast">
+<div class="block">Accuracy in detecting concentration when selecting best location.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private double</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#affinity">affinity</a></span></code></th>
+<td class="colLast">
+<div class="block">Affinity to prefer locations towards the center of simulation.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>(package private) int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#age">age</a></span></code></th>
 <td class="colLast">
@@ -578,7 +592,7 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#selectBestLocation(arcade.core.sim.Simulation,ec.util.MersenneTwisterFast)">selectBestLocation</a></span>&#8203;(<a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim,
                   ec.util.MersenneTwisterFast&nbsp;random)</code></th>
 <td class="colLast">
-<div class="block">Selects a random location for a cell to be added or move into.</div>
+<div class="block">Selects best location for a cell to be added or move into.</div>
 </td>
 </tr>
 <tr id="i24" class="altColor">
@@ -840,6 +854,26 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <h4>energyThreshold</h4>
 <pre>private final&nbsp;double energyThreshold</pre>
 <div class="block">Maximum energy deficit before necrosis.</div>
+</li>
+</ul>
+<a id="accuracy">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>accuracy</h4>
+<pre>private final&nbsp;double accuracy</pre>
+<div class="block">Accuracy in detecting concentration when selecting best location.</div>
+</li>
+</ul>
+<a id="affinity">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>affinity</h4>
+<pre>private final&nbsp;double affinity</pre>
+<div class="block">Affinity to prefer locations towards the center of simulation.</div>
 </li>
 </ul>
 <a id="module">
@@ -1386,7 +1420,10 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <h4>selectBestLocation</h4>
 <pre class="methodSignature">public&nbsp;<a href="../../env/location/PatchLocation.html" title="class in arcade.patch.env.location">PatchLocation</a>&nbsp;selectBestLocation&#8203;(<a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim,
                                         ec.util.MersenneTwisterFast&nbsp;random)</pre>
-<div class="block">Selects a random location for a cell to be added or move into.</div>
+<div class="block">Selects best location for a cell to be added or move into.
+
+ <p>Each free location is scored based on glucose availability and distance from the center of
+ the simulation.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sim</code> - the simulation instance</dd>
@@ -1408,7 +1445,7 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sim</code> - the simulation instance</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a list of free locations</dd>
+<dd>a <code>Bag</code> of free locations</dd>
 </dl>
 </li>
 </ul>
