@@ -62,7 +62,7 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
             prodIndex += boundArray.length;
         }
         priorIL2prod = boundArray[prodIndex];
-        IL2ProdRate = IL2_PROD_RATE_IL2 * (priorIL2prod / IL2_RECEPTORS);
+        IL2ProdRate = IL2_PROD_RATE_IL2 * (priorIL2prod / iL2Receptors);
 
         // Add IL-2 production rate dependent on antigen-induced
         // cell activation if cell is activated.
@@ -96,7 +96,7 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
         this.amts[IL2_IL2RBG] = inflammation.amts[IL2_IL2RBG] * split;
         this.amts[IL2_IL2RBGa] = inflammation.amts[IL2_IL2RBGa] * split;
         this.amts[IL2RBG] =
-                IL2_RECEPTORS - this.amts[IL2RBGa] - this.amts[IL2_IL2RBG] - this.amts[IL2_IL2RBGa];
+                iL2Receptors - this.amts[IL2RBGa] - this.amts[IL2_IL2RBG] - this.amts[IL2_IL2RBGa];
         this.amts[IL2_INT_TOTAL] = this.amts[IL2_IL2RBG] + this.amts[IL2_IL2RBGa];
         this.amts[IL2R_TOTAL] = this.amts[IL2RBG] + this.amts[IL2RBGa];
         this.boundArray = (inflammation.boundArray).clone();
@@ -106,7 +106,7 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
         inflammation.amts[IL2_IL2RBG] *= (1 - split);
         inflammation.amts[IL2_IL2RBGa] *= (1 - split);
         inflammation.amts[IL2RBG] =
-                IL2_RECEPTORS
+                iL2Receptors
                         - inflammation.amts[IL2RBGa]
                         - inflammation.amts[IL2_IL2RBG]
                         - inflammation.amts[IL2_IL2RBGa];

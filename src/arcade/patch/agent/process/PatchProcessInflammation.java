@@ -112,10 +112,10 @@ public abstract class PatchProcessInflammation extends PatchProcess {
     protected double[] boundArray;
 
     /** Distance outward from surface a cell can sense. */
-    protected final double SHELL_THICKNESS;
+    protected final double shellThickness;
 
     /** Total 2-complex receptors. */
-    protected final double IL2_RECEPTORS;
+    protected final double iL2Receptors;
 
     /**
      * Creates an {@code Inflammation} module for the given {@link PatchCellCART}.
@@ -138,8 +138,8 @@ public abstract class PatchProcessInflammation extends PatchProcess {
 
         // Set parameters.
         Parameters parameters = cell.getParameters();
-        this.SHELL_THICKNESS = parameters.getDouble("inflammation/SHELL_THICKNESS");
-        this.IL2_RECEPTORS = parameters.getDouble("inflammation/IL2_RECEPTORS");
+        this.shellThickness= parameters.getDouble("inflammation/SHELL_THICKNESS");
+        this.iL2Receptors = parameters.getDouble("inflammation/IL2_RECEPTORS");
         this.iL2BindingOnRateMin = parameters.getDouble("inflammation/IL2_BINDING_ON_RATE_MIN");
         this.iL2BindingOnRateMax = parameters.getDouble("inflammation/IL2_BINDING_ON_RATE_MAX");
         this.iL2BindingOffRate = parameters.getDouble("inflammation/IL2_BINDING_OFF_RATE");
@@ -149,8 +149,8 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         // Initial amounts of each species, all in molecules/cell.
         amts = new double[NUM_COMPONENTS];
         amts[IL2_INT_TOTAL] = 0;
-        amts[IL2R_TOTAL] = IL2_RECEPTORS;
-        amts[IL2RBG] = IL2_RECEPTORS;
+        amts[IL2R_TOTAL] = iL2Receptors;
+        amts[IL2RBG] = iL2Receptors;
         amts[IL2RBGa] = 0;
         amts[IL2_IL2RBG] = 0;
         amts[IL2_IL2RBGa] = 0;
@@ -281,7 +281,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
     public void step(MersenneTwisterFast random, Simulation sim) {
         // Calculate shell volume 2 um outside of cell.
         double radCell = Math.cbrt((3.0 / 4.0) * (1.0 / Math.PI) * volume);
-        double radShell = radCell + SHELL_THICKNESS;
+        double radShell = radCell + shellThickness;
         double volShell =
                 volume * (((radShell * radShell * radShell) / (radCell * radCell * radCell)) - 1.0);
         f = volShell / loc.getVolume();
