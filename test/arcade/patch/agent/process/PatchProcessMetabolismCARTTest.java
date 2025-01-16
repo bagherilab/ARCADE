@@ -90,27 +90,27 @@ public class PatchProcessMetabolismCARTTest {
         assertEquals(1.0, glucUptakeRateField.get(metabolism));
 
         Field metabolicPreference_IL2Field =
-                PatchProcessMetabolismCART.class.getDeclaredField("metabolicPreference_IL2");
+                PatchProcessMetabolismCART.class.getDeclaredField("metabolicPreferenceIL2");
         metabolicPreference_IL2Field.setAccessible(true);
         assertEquals(1.0, metabolicPreference_IL2Field.get(metabolism));
 
         Field metabolicPreference_activeField =
-                PatchProcessMetabolismCART.class.getDeclaredField("metabolicPreference_active");
+                PatchProcessMetabolismCART.class.getDeclaredField("metabolicPreferenceActive");
         metabolicPreference_activeField.setAccessible(true);
         assertEquals(1.0, metabolicPreference_activeField.get(metabolism));
 
         Field glucoseUptakeRate_IL2Field =
-                PatchProcessMetabolismCART.class.getDeclaredField("glucoseUptakeRate_IL2");
+                PatchProcessMetabolismCART.class.getDeclaredField("glucoseUptakeRateIL2");
         glucoseUptakeRate_IL2Field.setAccessible(true);
         assertEquals(1.0, glucoseUptakeRate_IL2Field.get(metabolism));
 
         Field glucoseUptakeRate_activeField =
-                PatchProcessMetabolismCART.class.getDeclaredField("glucoseUptakeRate_active");
+                PatchProcessMetabolismCART.class.getDeclaredField("glucoseUptakeRateActive");
         glucoseUptakeRate_activeField.setAccessible(true);
         assertEquals(1.0, glucoseUptakeRate_activeField.get(metabolism));
 
         Field minimumMassFraction_activeField =
-                PatchProcessMetabolismCART.class.getDeclaredField("minimumMassFraction_active");
+                PatchProcessMetabolismCART.class.getDeclaredField("minimumMassFractionActive");
         minimumMassFraction_activeField.setAccessible(true);
         assertEquals(1.0, minimumMassFraction_activeField.get(metabolism));
 
