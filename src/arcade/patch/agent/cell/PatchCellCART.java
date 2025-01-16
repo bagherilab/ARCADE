@@ -45,55 +45,55 @@ import static arcade.patch.util.PatchEnums.State;
  * specified amount of heterogeneity ({@code HETEROGENEITY}).
  */
 public abstract class PatchCellCART extends PatchCell {
-    /** Cell binding flag */
+    /** Cell binding flag. */
     public AntigenFlag binding;
 
-    /** Cell activation flag */
+    /** Cell activation flag. */
     protected boolean activated;
 
-    /** number of current PDL-1 receptors on CART cell */
+    /** number of current PDL-1 receptors on CART cell. */
     protected int selfReceptors;
 
-    /** initial number of PDL-1 receptors on CART cell */
+    /** initial number of PDL-1 receptors on CART cell. */
     protected int selfReceptorsStart;
 
-    /** number of bound CAR antigens */
+    /** number of bound CAR antigens. */
     protected int boundAntigensCount;
 
-    /** number of bound PDL-1 antigens */
+    /** number of bound PDL-1 antigens. */
     protected int boundSelfCount;
 
-    /** number of neighbors that T cell is able to search through */
+    /** number of neighbors that T cell is able to search through. */
     protected final double searchAbility;
 
-    /** binding affinity for CAR receptor */
+    /** binding affinity for CAR receptor. */
     protected final double carAffinity;
 
-    /** tuning factor for CAR binding */
+    /** tuning factor for CAR binding. */
     protected final double carAlpha;
 
-    /** tuning factor for CAR binding */
+    /** tuning factor for CAR binding. */
     protected final double carBeta;
 
-    /** binding affinity for PDL-1 receptor */
+    /** binding affinity for PDL-1 receptor. */
     protected final double selfReceptorAffinity;
 
-    /** tuning factor for PDL-1 receptor binding */
+    /** tuning factor for PDL-1 receptor binding. */
     protected final double selfAlpha;
 
-    /** tuning factor for PDL-1 receptor binding */
+    /** tuning factor for PDL-1 receptor binding. */
     protected final double selfBeta;
 
-    /** fraction of cell surface that contacts when binding */
+    /** fraction of cell surface that contacts when binding. */
     protected final double contactFraction;
 
-    /** max antigens threshold for T cell exhaustion */
+    /** max antigens threshold for T cell exhaustion. */
     protected final int maxAntigenBinding;
 
-    /** number of CARs on T cell surface */
+    /** number of CARs on T cell surface. */
     protected final int cars;
 
-    /** simulation time since T cell was last activated */
+    /** simulation time since T cell was last activated. */
     protected int lastActiveTicker;
 
     /** Fraction of exhausted cells that become apoptotic. */
@@ -186,11 +186,13 @@ public abstract class PatchCellCART extends PatchCell {
      * @param sim the MASON simulation
      * @param loc the location of the CAR T-cell
      * @param random random seed
+     *
+     * @return the target cell if one was bound. Null if none were bound.
      */
     public PatchCellTissue bindTarget(
             Simulation sim, PatchLocation loc, MersenneTwisterFast random) {
-        double KDCAR = carAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
-        double KDSelf = selfReceptorAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
+        double kDCAR = carAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
+        double kDSelf = selfReceptorAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
         PatchGrid grid = (PatchGrid) sim.getGrid();
 
         // get all agents from this location
@@ -233,19 +235,19 @@ public abstract class PatchCellCART extends PatchCell {
                         && cell.getState() != State.APOPTOTIC
                         && cell.getState() != State.NECROTIC) {
                     PatchCellTissue tissueCell = (PatchCellTissue) cell;
-                    double CARAntigens = tissueCell.carAntigens;
+                    double cARAntigens = tissueCell.carAntigens;
                     double selfTargets = tissueCell.selfTargets;
 
                     double hillCAR =
-                            (CARAntigens
+                            (cARAntigens
                                             * contactFraction
-                                            / (KDCAR * carBeta + CARAntigens * contactFraction))
+                                            / (kDCAR * carBeta + cARAntigens * contactFraction))
                                     * (cars / 50000)
                                     * carAlpha;
                     double hillSelf =
                             (selfTargets
                                             * contactFraction
-                                            / (KDSelf * selfBeta + selfTargets * contactFraction))
+                                            / (kDSelf * selfBeta + selfTargets * contactFraction))
                                     * (selfReceptors / selfReceptorsStart)
                                     * selfAlpha;
 
@@ -309,7 +311,7 @@ public abstract class PatchCellCART extends PatchCell {
     }
 
     /**
-     * Returns the cell activation status
+     * Returns the cell activation status.
      *
      * @return the activation status
      */
