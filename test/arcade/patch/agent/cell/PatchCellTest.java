@@ -13,6 +13,7 @@ import arcade.patch.agent.module.PatchModule;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
+import arcade.patch.env.lattice.PatchLattice;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
 import arcade.patch.util.PatchEnums.Domain;
@@ -34,6 +35,8 @@ public class PatchCellTest {
     static PatchProcessSignaling signalingMock;
 
     static PatchGrid gridMock;
+
+    static MersenneTwisterFast randomMock;
 
     static int cellID = randomIntBetween(1, 10);
 
@@ -98,6 +101,7 @@ public class PatchCellTest {
         signalingMock = mock(PatchProcessSignaling.class);
         gridMock = mock(PatchGrid.class);
         doReturn(gridMock).when(simMock).getGrid();
+        randomMock = mock(MersenneTwisterFast.class);
     }
 
     @Test
@@ -505,5 +509,253 @@ public class PatchCellTest {
         assertTrue(freeLocations.contains(freeLocation));
         assertFalse(freeLocations.contains(locationMock));
         assertFalse(freeLocations.contains(notFreeLocation));
+    }
+
+    @Test
+    public void selectBestLocation_calledWithPerfectAccuracy_returnsBetterLocation() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(0.0).when(parametersMock).getDouble("AFFINITY");
+        doReturn(1.0).when(parametersMock).getDouble("ACCURACY");
+        doReturn(0.5).when(randomMock).nextDouble();
+        PatchLattice latticeMock = mock(PatchLattice.class);
+        MiniBox boxMock = mock(MiniBox.class);
+        doReturn(boxMock).when(latticeMock).getParameters();
+        doReturn(latticeMock).when(simMock).getLattice("GLUCOSE");
+        doReturn(100.).when(boxMock).getDouble("generator/CONCENTRATION");
+        PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
+        PatchLocation betterLocation = mock(PatchLocation.class);
+        PatchLocation closerLocation = mock(PatchLocation.class);
+
+        doReturn(1).when(locationMock).getPlanarIndex();
+        doReturn(1).when(betterLocation).getPlanarIndex();
+        doReturn(1).when(closerLocation).getPlanarIndex();
+        doReturn(50.).when(latticeMock).getAverageValue(locationMock);
+        doReturn(75.).when(latticeMock).getAverageValue(betterLocation);
+        doReturn(25.).when(latticeMock).getAverageValue(closerLocation);
+        doReturn(5.0).when(locationMock).getPlanarDistance();
+        doReturn(6.0).when(betterLocation).getPlanarDistance();
+        doReturn(4.0).when(closerLocation).getPlanarDistance();
+
+        Bag locations = new Bag();
+        locations.add(betterLocation);
+        locations.add(closerLocation);
+        locations.add(locationMock);
+        doReturn(locations).when(cell).findFreeLocations(simMock);
+
+        PatchLocation bestLocation = cell.selectBestLocation(simMock, randomMock);
+        assertEquals(bestLocation, betterLocation);
+    }
+
+    @Test
+    public void selectBestLocation_calledWithMaxAffinity_returnsCloserLocation() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(1.0).when(parametersMock).getDouble("AFFINITY");
+        doReturn(0.0).when(parametersMock).getDouble("ACCURACY");
+        doReturn(0.5).when(randomMock).nextDouble();
+        PatchLattice latticeMock = mock(PatchLattice.class);
+        MiniBox boxMock = mock(MiniBox.class);
+        doReturn(boxMock).when(latticeMock).getParameters();
+        doReturn(latticeMock).when(simMock).getLattice("GLUCOSE");
+        doReturn(100.).when(boxMock).getDouble("generator/CONCENTRATION");
+        PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
+        PatchLocation betterLocation = mock(PatchLocation.class);
+        PatchLocation closerLocation = mock(PatchLocation.class);
+
+        doReturn(1).when(locationMock).getPlanarIndex();
+        doReturn(1).when(betterLocation).getPlanarIndex();
+        doReturn(1).when(closerLocation).getPlanarIndex();
+        doReturn(50.).when(latticeMock).getAverageValue(locationMock);
+        doReturn(75.).when(latticeMock).getAverageValue(betterLocation);
+        doReturn(25.).when(latticeMock).getAverageValue(closerLocation);
+        doReturn(5.0).when(locationMock).getPlanarDistance();
+        doReturn(6.0).when(betterLocation).getPlanarDistance();
+        doReturn(4.0).when(closerLocation).getPlanarDistance();
+
+        Bag locations = new Bag();
+        locations.add(betterLocation);
+        locations.add(closerLocation);
+        locations.add(locationMock);
+        doReturn(locations).when(cell).findFreeLocations(simMock);
+
+        PatchLocation bestLocation = cell.selectBestLocation(simMock, randomMock);
+
+        assertEquals(bestLocation, closerLocation);
+    }
+
+    @Test
+    public void selectBestLocation_calledWithNoFreeLocations_returnsNull() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(1.0).when(parametersMock).getDouble("AFFINITY");
+        doReturn(0.0).when(parametersMock).getDouble("ACCURACY");
+        doReturn(1).when(locationMock).getPlanarIndex();
+        doReturn(0.5).when(randomMock).nextDouble();
+        PatchLattice latticeMock = mock(PatchLattice.class);
+        MiniBox boxMock = mock(MiniBox.class);
+        doReturn(boxMock).when(latticeMock).getParameters();
+        doReturn(latticeMock).when(simMock).getLattice("GLUCOSE");
+        doReturn(100.).when(boxMock).getDouble("generator/CONCENTRATION");
+        PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
+        doReturn(50.).when(latticeMock).getAverageValue(locationMock);
+        doReturn(5.0).when(locationMock).getPlanarDistance();
+
+        Bag locations = new Bag();
+        doReturn(locations).when(cell).findFreeLocations(simMock);
+
+        PatchLocation bestLocation = cell.selectBestLocation(simMock, randomMock);
+        assertNull(bestLocation);
+    }
+
+    @Test
+    public void selectBestLocation_calledWithMultipleZLocations_returnsExpectedLocation() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(1.0).when(parametersMock).getDouble("AFFINITY");
+        doReturn(0.0).when(parametersMock).getDouble("ACCURACY");
+
+        doReturn(0.5).when(randomMock).nextDouble();
+
+        PatchLattice latticeMock = mock(PatchLattice.class);
+        MiniBox boxMock = mock(MiniBox.class);
+        doReturn(boxMock).when(latticeMock).getParameters();
+        doReturn(latticeMock).when(simMock).getLattice("GLUCOSE");
+        doReturn(100.).when(boxMock).getDouble("generator/CONCENTRATION");
+
+        PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
+        PatchLocation higherLocation = mock(PatchLocation.class);
+        PatchLocation lowerLocation = mock(PatchLocation.class);
+
+        doReturn(2).when(locationMock).getPlanarIndex();
+        doReturn(3).when(higherLocation).getPlanarIndex();
+        doReturn(1).when(lowerLocation).getPlanarIndex();
+        doReturn(50.).when(latticeMock).getAverageValue(locationMock);
+        doReturn(25.).when(latticeMock).getAverageValue(higherLocation);
+        doReturn(5.0).when(locationMock).getPlanarDistance();
+        doReturn(4.0).when(higherLocation).getPlanarDistance();
+        doReturn(4.0).when(lowerLocation).getPlanarDistance();
+
+        Bag locations = new Bag();
+        locations.add(higherLocation);
+        locations.add(lowerLocation);
+        locations.add(locationMock);
+
+        doReturn(locations).when(cell).findFreeLocations(simMock);
+
+        PatchLocation bestLocation = cell.selectBestLocation(simMock, randomMock);
+
+        assertEquals(bestLocation, higherLocation);
+    }
+
+    @Test
+    public void selectBestLocation_calledWithNoHigherFreeLocations_returnsExpectedLocation() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(1.0).when(parametersMock).getDouble("AFFINITY");
+        doReturn(0.0).when(parametersMock).getDouble("ACCURACY");
+
+        doReturn(0.75).when(randomMock).nextDouble();
+
+        PatchLattice latticeMock = mock(PatchLattice.class);
+        MiniBox boxMock = mock(MiniBox.class);
+        doReturn(boxMock).when(latticeMock).getParameters();
+        doReturn(latticeMock).when(simMock).getLattice("GLUCOSE");
+        doReturn(100.).when(boxMock).getDouble("generator/CONCENTRATION");
+
+        PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
+        PatchLocation lowerLocation = mock(PatchLocation.class);
+
+        doReturn(2).when(locationMock).getPlanarIndex();
+        doReturn(1).when(lowerLocation).getPlanarIndex();
+        doReturn(50.).when(latticeMock).getAverageValue(locationMock);
+        doReturn(25.).when(latticeMock).getAverageValue(lowerLocation);
+        doReturn(5.0).when(locationMock).getPlanarDistance();
+        doReturn(4.0).when(lowerLocation).getPlanarDistance();
+
+        Bag locations = new Bag();
+        locations.add(lowerLocation);
+        locations.add(locationMock);
+
+        doReturn(locations).when(cell).findFreeLocations(simMock);
+
+        PatchLocation bestLocation = cell.selectBestLocation(simMock, randomMock);
+
+        assertEquals(bestLocation, lowerLocation);
+    }
+
+    @Test
+    public void selectBestLocation_calledWithNoLowerFreeLocations_returnsExpectedLocation() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(1.0).when(parametersMock).getDouble("AFFINITY");
+        doReturn(0.0).when(parametersMock).getDouble("ACCURACY");
+
+        doReturn(0.75).when(randomMock).nextDouble();
+
+        PatchLattice latticeMock = mock(PatchLattice.class);
+        MiniBox boxMock = mock(MiniBox.class);
+        doReturn(boxMock).when(latticeMock).getParameters();
+        doReturn(latticeMock).when(simMock).getLattice("GLUCOSE");
+        doReturn(100.).when(boxMock).getDouble("generator/CONCENTRATION");
+
+        PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
+        PatchLocation higherLocation = mock(PatchLocation.class);
+
+        doReturn(2).when(locationMock).getPlanarIndex();
+        doReturn(3).when(higherLocation).getPlanarIndex();
+        doReturn(50.).when(latticeMock).getAverageValue(locationMock);
+        doReturn(25.).when(latticeMock).getAverageValue(higherLocation);
+        doReturn(5.0).when(locationMock).getPlanarDistance();
+        doReturn(4.0).when(higherLocation).getPlanarDistance();
+
+        Bag locations = new Bag();
+        locations.add(higherLocation);
+        locations.add(locationMock);
+
+        doReturn(locations).when(cell).findFreeLocations(simMock);
+
+        PatchLocation bestLocation = cell.selectBestLocation(simMock, randomMock);
+
+        assertEquals(bestLocation, higherLocation);
+    }
+
+    @Test
+    public void selectBestLocation_calledWithNoFreeLocationsOnSamePlane_returnsExpectedLocation() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(1.0).when(parametersMock).getDouble("AFFINITY");
+        doReturn(0.0).when(parametersMock).getDouble("ACCURACY");
+
+        doReturn(0.25).when(randomMock).nextDouble();
+
+        PatchLattice latticeMock = mock(PatchLattice.class);
+        MiniBox boxMock = mock(MiniBox.class);
+        doReturn(boxMock).when(latticeMock).getParameters();
+        doReturn(latticeMock).when(simMock).getLattice("GLUCOSE");
+        doReturn(100.).when(boxMock).getDouble("generator/CONCENTRATION");
+
+        PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
+        PatchLocation higherLocation = mock(PatchLocation.class);
+        PatchLocation lowerLocation = mock(PatchLocation.class);
+
+        doReturn(2).when(locationMock).getPlanarIndex();
+        doReturn(3).when(higherLocation).getPlanarIndex();
+        doReturn(1).when(lowerLocation).getPlanarIndex();
+        doReturn(50.).when(latticeMock).getAverageValue(locationMock);
+        doReturn(25.).when(latticeMock).getAverageValue(higherLocation);
+        doReturn(5.0).when(locationMock).getPlanarDistance();
+        doReturn(4.0).when(higherLocation).getPlanarDistance();
+        doReturn(4.0).when(lowerLocation).getPlanarDistance();
+
+        Bag locations = new Bag();
+        locations.add(higherLocation);
+        locations.add(lowerLocation);
+
+        doReturn(locations).when(cell).findFreeLocations(simMock);
+
+        PatchLocation bestLocation = cell.selectBestLocation(simMock, randomMock);
+
+        assertEquals(bestLocation, higherLocation);
     }
 }
