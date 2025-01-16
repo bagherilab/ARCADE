@@ -248,6 +248,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
      * Sets the internal amounts of requested key.
      *
      * @param key the requested substance
+     * @param val the amount of the requested substance
      */
     public void setInternal(String key, double val) {
         amts[names.indexOf(key)] = val;
