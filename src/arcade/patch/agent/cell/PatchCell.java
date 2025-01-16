@@ -119,6 +119,12 @@ public abstract class PatchCell implements Cell {
     /** Maximum energy deficit before necrosis. */
     protected final double energyThreshold;
 
+    /** Accuracy in detecting concentration when selecting best location. */
+    private final double accuracy;
+
+    /** Affinity to prefer locations towards the center of simulation. */
+    private final double affinity;
+
     /** Cell state module. */
     protected Module module;
 
@@ -178,6 +184,8 @@ public abstract class PatchCell implements Cell {
         senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
         energyThreshold = -parameters.getDouble("ENERGY_THRESHOLD");
         apoptosisAge = parameters.getDouble("APOPTOSIS_AGE");
+        accuracy = parameters.getDouble("ACCURACY");
+        affinity = parameters.getDouble("AFFINITY");
 
         int densityInput = parameters.getInt("MAX_DENSITY");
         maxDensity = (densityInput >= 0 ? densityInput : Integer.MAX_VALUE);
@@ -406,7 +414,10 @@ public abstract class PatchCell implements Cell {
     }
 
     /**
-     * Selects a random location for a cell to be added or move into.
+     * Selects best location for a cell to be added or move into.
+     *
+     * <p>Each free location is scored based on glucose availability and distance from the center of
+     * the simulation.
      *
      * @param sim the simulation instance
      * @param random the random number generator
@@ -414,15 +425,56 @@ public abstract class PatchCell implements Cell {
      */
     public PatchLocation selectBestLocation(Simulation sim, MersenneTwisterFast random) {
         Bag locs = findFreeLocations(sim);
-        locs.shuffle(random);
-        return (locs.size() > 0 ? (PatchLocation) locs.get(0) : null);
+        double maxGlucose =
+                sim.getLattice("GLUCOSE").getParameters().getDouble("generator/CONCENTRATION");
+        int currZ = location.getPlanarIndex();
+        double currR = location.getPlanarDistance();
+        int[] inds = new int[3];
+        double[] scores = new double[3];
+
+        // Check each free location for glucose and track the location with the
+        // highest glucose concentration.
+        if (locs.size() > 0) {
+            for (int i = 0; i < locs.numObjs; i++) {
+                PatchLocation loc = (PatchLocation) (locs.get(i));
+                // Calculate score by introducing error to the location check
+                // and adding affinity to move toward center.
+                double normConc = sim.getLattice("GLUCOSE").getAverageValue(location) / maxGlucose;
+                double gluc = (accuracy * normConc + (1 - accuracy) * random.nextDouble());
+                double dist = ((currR - loc.getPlanarDistance()) + 1) / 2.0;
+                double score = affinity * dist + (1 - affinity) * gluc;
+
+                // Determine index for z position of location.
+                // 0: same z, 1: z + 1, 2: z - 1
+                int k =
+                        loc.getPlanarIndex() == currZ
+                                ? 0
+                                : loc.getPlanarIndex() == currZ + 1 ? 1 : 2;
+
+                // Check if location is more desirable than current best location in z plane.
+                if (score > scores[k]) {
+                    scores[k] = score;
+                    inds[k] = i;
+                }
+            }
+
+            GrabBag options = new GrabBag();
+            for (int i = 0; i < 3; i++) {
+                if (scores[i] != 0) {
+                    options.add(inds[i], 1);
+                }
+            }
+            return (PatchLocation) locs.get(options.next(random));
+        } else {
+            return null;
+        }
     }
 
     /**
      * Find free locations in the neighborhood of the cell.
      *
      * @param sim the simulation instance
-     * @return a list of free locations
+     * @return a {@code Bag} of free locations
      */
     public Bag findFreeLocations(Simulation sim) {
         Bag freeLocations = new Bag();
