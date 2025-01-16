@@ -22,7 +22,7 @@ public class PatchProcessMetabolismCARTTest {
     private PatchProcessMetabolismCART metabolism;
 
     private PatchLocation mockLocation;
-    
+
     private double cellVolume;
 
     static class inflammationMock extends PatchProcessInflammation {
@@ -93,30 +93,30 @@ public class PatchProcessMetabolismCARTTest {
         glucUptakeRateField.setAccessible(true);
         assertEquals(1.0, glucUptakeRateField.get(metabolism));
 
-        Field metabolicPreference_IL2Field =
+        Field metabolicPreferenceIL2Field =
                 PatchProcessMetabolismCART.class.getDeclaredField("metabolicPreferenceIL2");
-        metabolicPreference_IL2Field.setAccessible(true);
-        assertEquals(1.0, metabolicPreference_IL2Field.get(metabolism));
+        metabolicPreferenceIL2Field.setAccessible(true);
+        assertEquals(1.0, metabolicPreferenceIL2Field.get(metabolism));
 
-        Field metabolicPreference_activeField =
+        Field metabolicPreferenceActiveField =
                 PatchProcessMetabolismCART.class.getDeclaredField("metabolicPreferenceActive");
-        metabolicPreference_activeField.setAccessible(true);
-        assertEquals(1.0, metabolicPreference_activeField.get(metabolism));
+        metabolicPreferenceActiveField.setAccessible(true);
+        assertEquals(1.0, metabolicPreferenceActiveField.get(metabolism));
 
-        Field glucoseUptakeRate_IL2Field =
+        Field glucoseUptakeRateIL2Field =
                 PatchProcessMetabolismCART.class.getDeclaredField("glucoseUptakeRateIL2");
-        glucoseUptakeRate_IL2Field.setAccessible(true);
-        assertEquals(1.0, glucoseUptakeRate_IL2Field.get(metabolism));
+        glucoseUptakeRateIL2Field.setAccessible(true);
+        assertEquals(1.0, glucoseUptakeRateIL2Field.get(metabolism));
 
-        Field glucoseUptakeRate_activeField =
+        Field glucoseUptakeRateActiveField =
                 PatchProcessMetabolismCART.class.getDeclaredField("glucoseUptakeRateActive");
-        glucoseUptakeRate_activeField.setAccessible(true);
-        assertEquals(1.0, glucoseUptakeRate_activeField.get(metabolism));
+        glucoseUptakeRateActiveField.setAccessible(true);
+        assertEquals(1.0, glucoseUptakeRateActiveField.get(metabolism));
 
-        Field minimumMassFraction_activeField =
+        Field minimumMassFractionActiveField =
                 PatchProcessMetabolismCART.class.getDeclaredField("minimumMassFractionActive");
-        minimumMassFraction_activeField.setAccessible(true);
-        assertEquals(1.0, minimumMassFraction_activeField.get(metabolism));
+        minimumMassFractionActiveField.setAccessible(true);
+        assertEquals(1.0, minimumMassFractionActiveField.get(metabolism));
 
         Field timeDelayField = PatchProcessMetabolismCART.class.getDeclaredField("timeDelay");
         timeDelayField.setAccessible(true);
