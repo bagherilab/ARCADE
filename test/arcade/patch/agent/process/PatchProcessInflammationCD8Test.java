@@ -68,7 +68,7 @@ public class PatchProcessInflammationCD8Test {
         inflammation = new PatchProcessInflammationCD8(mockCell);
         inflammation.active = true;
         inflammation.activeTicker = 10;
-        inflammation.IL2Ticker = 10;
+        inflammation.iL2Ticker = 10;
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 10000);
 
@@ -86,7 +86,7 @@ public class PatchProcessInflammationCD8Test {
         inflammation = new PatchProcessInflammationCD8(mockCell);
         inflammation.active = false;
         inflammation.activeTicker = 10;
-        inflammation.IL2Ticker = 10;
+        inflammation.iL2Ticker = 10;
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 10000);
 
@@ -106,7 +106,7 @@ public class PatchProcessInflammationCD8Test {
         inflammation = new PatchProcessInflammationCD8(mockCell);
         inflammation.active = true;
         inflammation.activeTicker = 3;
-        inflammation.IL2Ticker = 10;
+        inflammation.iL2Ticker = 10;
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 10000);
 

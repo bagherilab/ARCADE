@@ -57,7 +57,7 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
     public void stepProcess(MersenneTwisterFast random, Simulation sim) {
 
         // Determine IL-2 production rate as a function of IL-2 bound.
-        int prodIndex = (IL2Ticker % boundArray.length) - IL2_SYNTHESIS_DELAY;
+        int prodIndex = (iL2Ticker % boundArray.length) - IL2_SYNTHESIS_DELAY;
         if (prodIndex < 0) {
             prodIndex += boundArray.length;
         }
@@ -92,27 +92,27 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
 
         // Update daughter cell inflammation as a fraction of parent.
         // this.volume = this.cell.getVolume();
-        this.amts[IL2Rbga] = inflammation.amts[IL2Rbga] * split;
-        this.amts[IL2_IL2Rbg] = inflammation.amts[IL2_IL2Rbg] * split;
-        this.amts[IL2_IL2Rbga] = inflammation.amts[IL2_IL2Rbga] * split;
-        this.amts[IL2Rbg] =
-                IL2_RECEPTORS - this.amts[IL2Rbga] - this.amts[IL2_IL2Rbg] - this.amts[IL2_IL2Rbga];
-        this.amts[IL2_INT_TOTAL] = this.amts[IL2_IL2Rbg] + this.amts[IL2_IL2Rbga];
-        this.amts[IL2R_TOTAL] = this.amts[IL2Rbg] + this.amts[IL2Rbga];
+        this.amts[IL2RBGa] = inflammation.amts[IL2RBGa] * split;
+        this.amts[IL2_IL2RBG] = inflammation.amts[IL2_IL2RBG] * split;
+        this.amts[IL2_IL2RBGa] = inflammation.amts[IL2_IL2RBGa] * split;
+        this.amts[IL2RBG] =
+                IL2_RECEPTORS - this.amts[IL2RBGa] - this.amts[IL2_IL2RBG] - this.amts[IL2_IL2RBGa];
+        this.amts[IL2_INT_TOTAL] = this.amts[IL2_IL2RBG] + this.amts[IL2_IL2RBGa];
+        this.amts[IL2R_TOTAL] = this.amts[IL2RBG] + this.amts[IL2RBGa];
         this.boundArray = (inflammation.boundArray).clone();
 
         // Update parent cell with remaining fraction.
-        inflammation.amts[IL2Rbga] *= (1 - split);
-        inflammation.amts[IL2_IL2Rbg] *= (1 - split);
-        inflammation.amts[IL2_IL2Rbga] *= (1 - split);
-        inflammation.amts[IL2Rbg] =
+        inflammation.amts[IL2RBGa] *= (1 - split);
+        inflammation.amts[IL2_IL2RBG] *= (1 - split);
+        inflammation.amts[IL2_IL2RBGa] *= (1 - split);
+        inflammation.amts[IL2RBG] =
                 IL2_RECEPTORS
-                        - inflammation.amts[IL2Rbga]
-                        - inflammation.amts[IL2_IL2Rbg]
-                        - inflammation.amts[IL2_IL2Rbga];
+                        - inflammation.amts[IL2RBGa]
+                        - inflammation.amts[IL2_IL2RBG]
+                        - inflammation.amts[IL2_IL2RBGa];
         inflammation.amts[IL2_INT_TOTAL] =
-                inflammation.amts[IL2_IL2Rbg] + inflammation.amts[IL2_IL2Rbga];
-        inflammation.amts[IL2R_TOTAL] = inflammation.amts[IL2Rbg] + inflammation.amts[IL2Rbga];
+                inflammation.amts[IL2_IL2RBG] + inflammation.amts[IL2_IL2RBGa];
+        inflammation.amts[IL2R_TOTAL] = inflammation.amts[IL2RBG] + inflammation.amts[IL2RBGa];
         inflammation.volume *= (1 - split);
     }
 

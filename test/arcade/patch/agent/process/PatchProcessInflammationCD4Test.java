@@ -78,7 +78,7 @@ public class PatchProcessInflammationCD4Test {
 
         inflammation.active = true;
         inflammation.activeTicker = 10;
-        inflammation.IL2Ticker = 10;
+        inflammation.iL2Ticker = 10;
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 10000);
 
@@ -119,7 +119,7 @@ public class PatchProcessInflammationCD4Test {
 
         inflammation.active = true;
         inflammation.activeTicker = 10;
-        inflammation.IL2Ticker = 10;
+        inflammation.iL2Ticker = 10;
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 10000);
 
@@ -154,7 +154,7 @@ public class PatchProcessInflammationCD4Test {
 
         inflammation.active = false;
         inflammation.activeTicker = 10;
-        inflammation.IL2Ticker = 10;
+        inflammation.iL2Ticker = 10;
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 10000);
 
@@ -185,7 +185,7 @@ public class PatchProcessInflammationCD4Test {
 
         inflammation.active = true;
         inflammation.activeTicker = 10;
-        inflammation.IL2Ticker = 10;
+        inflammation.iL2Ticker = 10;
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 10000);
 
@@ -222,7 +222,7 @@ public class PatchProcessInflammationCD4Test {
 
         inflammation.active = true;
         inflammation.activeTicker = 10;
-        inflammation.IL2Ticker = 10;
+        inflammation.iL2Ticker = 10;
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 10000);
 
@@ -249,28 +249,28 @@ public class PatchProcessInflammationCD4Test {
     public void testUpdate() {
         inflammation = new PatchProcessInflammationCD4(mockCell);
         PatchProcessInflammationCD4 parentProcess = new PatchProcessInflammationCD4(mockCell);
-        parentProcess.amts[PatchProcessInflammationCD4.IL2Rbga] = 100;
+        parentProcess.amts[PatchProcessInflammationCD4.IL2RBGa] = 100;
         when(mockCell.getVolume()).thenReturn(cellVolume / 2);
 
         inflammation.update(parentProcess);
 
-        assertEquals(50, inflammation.amts[PatchProcessInflammationCD4.IL2Rbga]);
-        assertEquals(50, parentProcess.amts[PatchProcessInflammationCD4.IL2Rbga]);
+        assertEquals(50, inflammation.amts[PatchProcessInflammationCD4.IL2RBGa]);
+        assertEquals(50, parentProcess.amts[PatchProcessInflammationCD4.IL2RBGa]);
     }
 
     @Test
     public void testUpdateWithZeroVolume() {
         inflammation = new PatchProcessInflammationCD4(mockCell);
         PatchProcessInflammationCD4 parentProcess = new PatchProcessInflammationCD4(mockCell);
-        parentProcess.amts[PatchProcessInflammationCD4.IL2Rbga] = 100;
+        parentProcess.amts[PatchProcessInflammationCD4.IL2RBGa] = 100;
         when(mockCell.getVolume()).thenReturn(0.0);
 
         inflammation.update(parentProcess);
 
-        assertEquals(0.0, inflammation.amts[PatchProcessInflammationCD8.IL2Rbga]);
-        assertEquals(0.0, inflammation.amts[PatchProcessInflammationCD8.IL2_IL2Rbg]);
-        assertEquals(0.0, inflammation.amts[PatchProcessInflammationCD8.IL2_IL2Rbga]);
+        assertEquals(0.0, inflammation.amts[PatchProcessInflammationCD8.IL2RBGa]);
+        assertEquals(0.0, inflammation.amts[PatchProcessInflammationCD8.IL2_IL2RBG]);
+        assertEquals(0.0, inflammation.amts[PatchProcessInflammationCD8.IL2_IL2RBGa]);
 
-        assertEquals(100, parentProcess.amts[PatchProcessInflammationCD4.IL2Rbga]);
+        assertEquals(100, parentProcess.amts[PatchProcessInflammationCD4.IL2RBGa]);
     }
 }

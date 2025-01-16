@@ -21,100 +21,100 @@ import arcade.patch.env.lattice.PatchLattice;
  */
 public abstract class PatchProcessInflammation extends PatchProcess {
 
-    /** Number of components in signaling network */
+    /** Number of components in signaling network. */
     protected static final int NUM_COMPONENTS = 8;
 
-    /** ID for IL-2, bound total */
+    /** ID for IL-2, bound total. */
     protected static final int IL2_INT_TOTAL = 0;
 
-    /** ID for IL-2, external */
+    /** ID for IL-2, external. */
     protected static final int IL2_EXT = 1;
 
-    /** ID for IL-2 receptors, total between both two and three chain complex */
+    /** ID for IL-2 receptors, total between both two and three chain complex. */
     protected static final int IL2R_TOTAL = 2;
 
-    /** ID for two-chain IL-2 receptor complex */
-    protected static final int IL2Rbg = 3;
+    /** ID for two-chain IL-2 receptor complex. */
+    protected static final int IL2RBG = 3;
 
-    /** ID for three-chain IL-2 receptor complex */
-    protected static final int IL2Rbga = 4;
+    /** ID for three-chain IL-2 receptor complex. */
+    protected static final int IL2RBGa = 4;
 
-    /** ID for IL-2-two-chain IL-2 receptor complex */
-    protected static final int IL2_IL2Rbg = 5;
+    /** ID for IL-2-two-chain IL-2 receptor complex. */
+    protected static final int IL2_IL2RBG = 5;
 
-    /** ID for IL-2-three-chain IL-2 receptor complex */
-    protected static final int IL2_IL2Rbga = 6;
+    /** ID for IL-2-three-chain IL-2 receptor complex. */
+    protected static final int IL2_IL2RBGa = 6;
 
-    /** ID for granzyme, internal */
+    /** ID for granzyme, internal. */
     protected static final int GRANZYME = 7;
 
-    /** Number of steps per second to take in ODE */
+    /** Number of steps per second to take in ODE. */
     private static final double STEP_DIVIDER = 3.0;
 
     /**
      * Rate of conversion of IL-2R two-chain complex to IL-2R three chain complex [/sec/step
-     * divider]
+     * divider].
      */
     private static final double K_CONVERT = 1e-3 / STEP_DIVIDER;
 
     /**
      * Rate of recycling of receptor complexes back to IL-2 receptor two chain complex [/sec/step
-     * divider]
+     * divider].
      */
     private static final double K_REC = 1e-5 / STEP_DIVIDER;
 
-    /** Rate of IL-2 binding to two-chain IL-2 receptor complex [um^3/molecules IL-2/min] */
-    private double IL2_BINDING_ON_RATE_MIN = 3.8193E-2;
+    /** Rate of IL-2 binding to two-chain IL-2 receptor complex [um^3/molecules IL-2/min]. */
+    private double iL2BindingOnRateMin = 3.8193E-2;
 
-    /** Rate of IL-2 binding to three-chain IL-2 receptor complex [um^3/molecules IL-2/min] */
-    private double IL2_BINDING_ON_RATE_MAX = 3.155;
+    /** Rate of IL-2 binding to three-chain IL-2 receptor complex [um^3/molecules IL-2/min]. */
+    private double iL2BindingOnRateMax = 3.155;
 
-    /** Rate of unbinding of IL-2 from two- or three- chain IL-2 receptor complex [/min] */
-    private double IL2_BINDING_OFF_RATE = 0.015;
+    /** Rate of unbinding of IL-2 from two- or three- chain IL-2 receptor complex [/min]. */
+    private double iL2BindingOffRate = 0.015;
 
-    /** Step size for module (in seconds) */
+    /** Step size for module (in seconds). */
     static final double STEP_SIZE = 1.0 / STEP_DIVIDER;
 
-    /** Location of cell */
+    /** Location of cell. */
     protected Location loc;
 
-    /** Cell the module is associated with */
+    /** Cell the module is associated with. */
     protected PatchCellCART c;
 
-    /** Cell population index */
+    /** Cell population index. */
     protected int pop;
 
-    /** List of internal names */
+    /** List of internal names. */
     protected List<String> names;
 
-    /** List of amounts of each species */
+    /** List of amounts of each species. */
     protected double[] amts;
 
-    /** External IL-2 [molecules] */
+    /** External IL-2 [molecules]. */
     protected double extIL2;
 
-    /** Shell around cell volume fraction */
+    /** Shell around cell volume fraction. */
     protected double f;
 
-    /** Volume of cell [um<sup>3</sup>] */
+    /** Volume of cell [um<sup>3</sup>]. */
     protected double volume;
 
-    /** Flag marking if cell is activated via antigen-induced activation */
+    /** Flag marking if cell is activated via antigen-induced activation. */
     protected boolean active;
 
-    /** Time since cell first bound IL-2 */
-    protected int IL2Ticker;
+    /** Time since cell first bound IL-2 .*/
+    protected int iL2Ticker;
 
-    /** Time since cell became activated via antigen-induced activation */
+    /** Time since cell became activated via antigen-induced activation. */
     protected int activeTicker;
 
-    /** List of amounts of IL-2 bound to cell at previous time points */
+    /** List of amounts of IL-2 bound to cell at previous time points. */
     protected double[] boundArray;
 
-    /** Distance outward from surface a cell can sense */
+    /** Distance outward from surface a cell can sense. */
     protected final double SHELL_THICKNESS;
 
-    /** Total 2-complex receptors */
+    /** Total 2-complex receptors. */
     protected final double IL2_RECEPTORS;
 
     /**
@@ -133,16 +133,16 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         this.c = c;
         this.pop = c.getPop();
         this.volume = c.getVolume();
-        this.IL2Ticker = 0;
+        this.iL2Ticker = 0;
         this.activeTicker = 0;
 
         // Set parameters.
         Parameters parameters = cell.getParameters();
         this.SHELL_THICKNESS = parameters.getDouble("inflammation/SHELL_THICKNESS");
         this.IL2_RECEPTORS = parameters.getDouble("inflammation/IL2_RECEPTORS");
-        this.IL2_BINDING_ON_RATE_MIN = parameters.getDouble("inflammation/IL2_BINDING_ON_RATE_MIN");
-        this.IL2_BINDING_ON_RATE_MAX = parameters.getDouble("inflammation/IL2_BINDING_ON_RATE_MAX");
-        this.IL2_BINDING_OFF_RATE = parameters.getDouble("inflammation/IL2_BINDING_OFF_RATE");
+        this.iL2BindingOnRateMin = parameters.getDouble("inflammation/IL2_BINDING_ON_RATE_MIN");
+        this.iL2BindingOnRateMax = parameters.getDouble("inflammation/IL2_BINDING_ON_RATE_MAX");
+        this.iL2BindingOffRate = parameters.getDouble("inflammation/IL2_BINDING_OFF_RATE");
 
         extIL2 = 0;
 
@@ -150,88 +150,88 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         amts = new double[NUM_COMPONENTS];
         amts[IL2_INT_TOTAL] = 0;
         amts[IL2R_TOTAL] = IL2_RECEPTORS;
-        amts[IL2Rbg] = IL2_RECEPTORS;
-        amts[IL2Rbga] = 0;
-        amts[IL2_IL2Rbg] = 0;
-        amts[IL2_IL2Rbga] = 0;
+        amts[IL2RBG] = IL2_RECEPTORS;
+        amts[IL2RBGa] = 0;
+        amts[IL2_IL2RBG] = 0;
+        amts[IL2_IL2RBGa] = 0;
 
         // Molecule names.
         names = new ArrayList<String>();
         names.add(IL2_INT_TOTAL, "IL-2");
         names.add(IL2_EXT, "external_IL-2");
         names.add(IL2R_TOTAL, "IL2R_total");
-        names.add(IL2Rbg, "IL2R_two_chain_complex");
-        names.add(IL2Rbga, "IL2R_three_chain_complex");
-        names.add(IL2_IL2Rbg, "IL-2_IL2R_two_chain_complex");
-        names.add(IL2_IL2Rbga, "IL-2_IL2R_three_chain_complex");
+        names.add(IL2RBG, "IL2R_two_chain_complex");
+        names.add(IL2RBGa, "IL2R_three_chain_complex");
+        names.add(IL2_IL2RBG, "IL-2_IL2R_two_chain_complex");
+        names.add(IL2_IL2RBGa, "IL-2_IL2R_three_chain_complex");
 
         // Initialize prior IL2 array.
         this.boundArray = new double[180];
     }
 
-    /** System of ODEs for network */
+    /** System of ODEs for network. */
     Equations dydt =
             (Equations & Serializable)
                     (t, y) -> {
                         double[] dydt = new double[NUM_COMPONENTS];
 
-                        double kon_2 =
-                                IL2_BINDING_ON_RATE_MIN / loc.getVolume() / 60 / STEP_DIVIDER;
-                        double kon_3 =
-                                IL2_BINDING_ON_RATE_MAX / loc.getVolume() / 60 / STEP_DIVIDER;
-                        double koff = IL2_BINDING_OFF_RATE / 60 / STEP_DIVIDER;
+                        double kOn2 =
+                                iL2BindingOnRateMin / loc.getVolume() / 60 / STEP_DIVIDER;
+                        double kOn3 =
+                                iL2BindingOnRateMax / loc.getVolume() / 60 / STEP_DIVIDER;
+                        double kOff = iL2BindingOffRate / 60 / STEP_DIVIDER;
 
                         dydt[IL2_EXT] =
-                                koff * y[IL2_IL2Rbg]
-                                        + koff * y[IL2_IL2Rbga]
-                                        - kon_2 * y[IL2Rbg] * y[IL2_EXT]
-                                        - kon_3 * y[IL2Rbga] * y[IL2_EXT];
-                        dydt[IL2Rbg] =
-                                koff * y[IL2_IL2Rbg]
-                                        - kon_2 * y[IL2Rbg] * y[IL2_EXT]
-                                        - K_CONVERT * (y[IL2_IL2Rbg] + y[IL2_IL2Rbga]) * y[IL2Rbg]
-                                        + K_REC * (y[IL2_IL2Rbg] + y[IL2_IL2Rbga] + y[IL2Rbga]);
-                        dydt[IL2Rbga] =
-                                koff * y[IL2_IL2Rbga]
-                                        - kon_3 * y[IL2Rbga] * y[IL2_EXT]
-                                        + K_CONVERT * (y[IL2_IL2Rbg] + y[IL2_IL2Rbga]) * y[IL2Rbg]
-                                        - K_REC * y[IL2Rbga];
-                        dydt[IL2_IL2Rbg] =
-                                kon_2 * y[IL2Rbg] * y[IL2_EXT]
-                                        - koff * y[IL2_IL2Rbg]
+                                kOff * y[IL2_IL2RBG]
+                                        + kOff * y[IL2_IL2RBGa]
+                                        - kOn2 * y[IL2RBG] * y[IL2_EXT]
+                                        - kOn3 * y[IL2RBGa] * y[IL2_EXT];
+                        dydt[IL2RBG] =
+                                kOff * y[IL2_IL2RBG]
+                                        - kOn2 * y[IL2RBG] * y[IL2_EXT]
+                                        - K_CONVERT * (y[IL2_IL2RBG] + y[IL2_IL2RBGa]) * y[IL2RBG]
+                                        + K_REC * (y[IL2_IL2RBG] + y[IL2_IL2RBGa] + y[IL2RBGa]);
+                        dydt[IL2RBGa] =
+                                kOff * y[IL2_IL2RBGa]
+                                        - kOn3 * y[IL2RBGa] * y[IL2_EXT]
+                                        + K_CONVERT * (y[IL2_IL2RBG] + y[IL2_IL2RBGa]) * y[IL2RBG]
+                                        - K_REC * y[IL2RBGa];
+                        dydt[IL2_IL2RBG] =
+                                kOn2 * y[IL2RBG] * y[IL2_EXT]
+                                        - kOff * y[IL2_IL2RBG]
                                         - K_CONVERT
-                                                * (y[IL2_IL2Rbg] + y[IL2_IL2Rbga])
-                                                * y[IL2_IL2Rbg]
-                                        - K_REC * y[IL2_IL2Rbg];
-                        dydt[IL2_IL2Rbga] =
-                                kon_3 * y[IL2Rbga] * y[IL2_EXT]
-                                        - koff * y[IL2_IL2Rbga]
+                                                * (y[IL2_IL2RBG] + y[IL2_IL2RBGa])
+                                                * y[IL2_IL2RBG]
+                                        - K_REC * y[IL2_IL2RBG];
+                        dydt[IL2_IL2RBGa] =
+                                kOn3 * y[IL2RBGa] * y[IL2_EXT]
+                                        - kOff * y[IL2_IL2RBGa]
                                         + K_CONVERT
-                                                * (y[IL2_IL2Rbg] + y[IL2_IL2Rbga])
-                                                * y[IL2_IL2Rbg]
-                                        - K_REC * y[IL2_IL2Rbga];
+                                                * (y[IL2_IL2RBG] + y[IL2_IL2RBGa])
+                                                * y[IL2_IL2RBG]
+                                        - K_REC * y[IL2_IL2RBGa];
                         dydt[IL2_INT_TOTAL] =
-                                kon_2 * y[IL2Rbg] * y[IL2_EXT]
-                                        - koff * y[IL2_IL2Rbg]
+                                kOn2 * y[IL2RBG] * y[IL2_EXT]
+                                        - kOff * y[IL2_IL2RBG]
                                         - K_CONVERT
-                                                * (y[IL2_IL2Rbg] + y[IL2_IL2Rbga])
-                                                * y[IL2_IL2Rbg]
-                                        - K_REC * y[IL2_IL2Rbg]
-                                        + kon_3 * y[IL2Rbga] * y[IL2_EXT]
-                                        - koff * y[IL2_IL2Rbga]
+                                                * (y[IL2_IL2RBG] + y[IL2_IL2RBGa])
+                                                * y[IL2_IL2RBG]
+                                        - K_REC * y[IL2_IL2RBG]
+                                        + kOn3 * y[IL2RBGa] * y[IL2_EXT]
+                                        - kOff * y[IL2_IL2RBGa]
                                         + K_CONVERT
-                                                * (y[IL2_IL2Rbg] + y[IL2_IL2Rbga])
-                                                * y[IL2_IL2Rbg]
-                                        - K_REC * y[IL2_IL2Rbga];
+                                                * (y[IL2_IL2RBG] + y[IL2_IL2RBGa])
+                                                * y[IL2_IL2RBG]
+                                        - K_REC * y[IL2_IL2RBGa];
                         dydt[IL2R_TOTAL] =
-                                koff * y[IL2_IL2Rbg]
-                                        - kon_2 * y[IL2Rbg] * y[IL2_EXT]
-                                        - K_CONVERT * (y[IL2_IL2Rbg] + y[IL2_IL2Rbga]) * y[IL2Rbg]
-                                        + K_REC * (y[IL2_IL2Rbg] + y[IL2_IL2Rbga] + y[IL2Rbga])
-                                        + koff * y[IL2_IL2Rbga]
-                                        - kon_3 * y[IL2Rbga] * y[IL2_EXT]
-                                        + K_CONVERT * (y[IL2_IL2Rbg] + y[IL2_IL2Rbga]) * y[IL2Rbg]
-                                        - K_REC * y[IL2Rbga];
+                                kOff * y[IL2_IL2RBG]
+                                        - kOn2 * y[IL2RBG] * y[IL2_EXT]
+                                        - K_CONVERT * (y[IL2_IL2RBG] + y[IL2_IL2RBGa]) * y[IL2RBG]
+                                        + K_REC * (y[IL2_IL2RBG] + y[IL2_IL2RBGa] + y[IL2RBGa])
+                                        + kOff * y[IL2_IL2RBGa]
+                                        - kOn3 * y[IL2RBGa] * y[IL2_EXT]
+                                        + K_CONVERT * (y[IL2_IL2RBG] + y[IL2_IL2RBGa]) * y[IL2RBG]
+                                        - K_REC * y[IL2RBGa];
 
                         return dydt;
                     };
@@ -240,11 +240,17 @@ public abstract class PatchProcessInflammation extends PatchProcess {
      * Gets the internal amounts of requested key.
      *
      * @param key the requested substance
+     * @return the internal cell amount of requested substance
      */
     public double getInternal(String key) {
         return amts[names.indexOf(key)];
     }
 
+    /**
+     * Sets the internal amounts of requested key.
+     *
+     * @param key the requested substance
+     */
     public void setInternal(String key, double val) {
         amts[names.indexOf(key)] = val;
     }
@@ -271,7 +277,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         extIL2 = il2.getAverageValue(loc) * loc.getVolume() / 1E12;
     }
 
-    // METHOD: stepModule.
+    @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
         // Calculate shell volume 2 um outside of cell.
         double radCell = Math.cbrt((3.0 / 4.0) * (1.0 / Math.PI) * volume);
@@ -302,8 +308,8 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         stepProcess(random, sim);
 
         // Update bound array.
-        boundArray[IL2Ticker % boundArray.length] = amts[IL2_INT_TOTAL];
-        IL2Ticker++;
+        boundArray[iL2Ticker % boundArray.length] = amts[IL2_INT_TOTAL];
+        iL2Ticker++;
     }
 
     /**

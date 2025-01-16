@@ -129,7 +129,7 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
         PatchProcessInflammation inflammation =
                 (PatchProcessInflammation) cell.getProcess(Domain.INFLAMMATION);
         double[] boundArray = inflammation.boundArray; // [molecules]
-        int IL2Ticker = inflammation.IL2Ticker;
+        int IL2Ticker = inflammation.iL2Ticker;
         double IL2ReceptorsTotal = inflammation.IL2_RECEPTORS;
 
         int metaIndex = (IL2Ticker % boundArray.length) - timeDelay;
