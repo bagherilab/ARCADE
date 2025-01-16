@@ -72,7 +72,7 @@ public class PatchProcessInflammationCD8Test {
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 10000);
 
-        Field receptors = PatchProcessInflammation.class.getDeclaredField("IL2_RECEPTORS");
+        Field receptors = PatchProcessInflammation.class.getDeclaredField("iL2Receptors");
         receptors.setAccessible(true);
         receptors.set(inflammation, 5000);
 
@@ -90,7 +90,7 @@ public class PatchProcessInflammationCD8Test {
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 10000);
 
-        Field receptors = PatchProcessInflammation.class.getDeclaredField("IL2_RECEPTORS");
+        Field receptors = PatchProcessInflammation.class.getDeclaredField("iL2Receptors");
         receptors.setAccessible(true);
         receptors.set(inflammation, 5000);
 
@@ -110,7 +110,7 @@ public class PatchProcessInflammationCD8Test {
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 10000);
 
-        Field receptors = PatchProcessInflammation.class.getDeclaredField("IL2_RECEPTORS");
+        Field receptors = PatchProcessInflammation.class.getDeclaredField("iL2Receptors");
         receptors.setAccessible(true);
         receptors.set(inflammation, 5000);
 
