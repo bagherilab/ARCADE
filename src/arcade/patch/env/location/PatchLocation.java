@@ -87,6 +87,24 @@ public abstract class PatchLocation implements Location {
     }
 
     /**
+     * Calculate the distance to center of simulation.
+     *
+     * @return the distance to center
+     */
+    public double getPlanarDistance() {
+        return coordinate.calculateDistance();
+    }
+
+    /**
+     * Gets the z coordinate.
+     *
+     * @return the z coordinate
+     */
+    public int getPlanarIndex() {
+        return coordinate.z;
+    }
+
+    /**
      * Gets the patch subcoordinate in the {@link arcade.core.env.lattice.Lattice}.
      *
      * <p>These are not necessarily the same as the {@link arcade.core.env.grid.Grid} coordinates.
