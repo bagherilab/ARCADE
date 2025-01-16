@@ -186,7 +186,6 @@ public abstract class PatchCellCART extends PatchCell {
      * @param sim the MASON simulation
      * @param loc the location of the CAR T-cell
      * @param random random seed
-     *
      * @return the target cell if one was bound. Null if none were bound.
      */
     public PatchCellTissue bindTarget(
