@@ -18,13 +18,17 @@ import static org.mockito.Mockito.*;
 public class PatchProcessInflammationTest {
 
     private PatchProcessInflammation inflammation;
+
     private PatchCellCART mockCell;
+
     private Parameters mockParameters;
+
     private Simulation mockSimulation;
+
     private MersenneTwisterFast mockRandom;
 
-    static class inflammationMock extends PatchProcessInflammation {
-        public inflammationMock(PatchCellCART c) {
+    static class InflammationMock extends PatchProcessInflammation {
+        InflammationMock(PatchCellCART c) {
             super(c);
         }
 
@@ -52,7 +56,7 @@ public class PatchProcessInflammationTest {
         Mockito.when(mockParameters.getInt(anyString())).thenReturn(1);
         Mockito.when(mockSimulation.getLattice(anyString())).thenReturn(mockLattice);
         doNothing().when(mockLattice).setValue(any(PatchLocation.class), anyDouble());
-        inflammation = new inflammationMock(mockCell);
+        inflammation = new InflammationMock(mockCell);
     }
 
     @Test
