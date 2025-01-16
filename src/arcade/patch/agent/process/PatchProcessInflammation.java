@@ -102,7 +102,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
     /** Flag marking if cell is activated via antigen-induced activation. */
     protected boolean active;
 
-    /** Time since cell first bound IL-2 .*/
+    /** Time since cell first bound IL-2 . */
     protected int iL2Ticker;
 
     /** Time since cell became activated via antigen-induced activation. */
@@ -138,7 +138,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
 
         // Set parameters.
         Parameters parameters = cell.getParameters();
-        this.shellThickness= parameters.getDouble("inflammation/SHELL_THICKNESS");
+        this.shellThickness = parameters.getDouble("inflammation/SHELL_THICKNESS");
         this.iL2Receptors = parameters.getDouble("inflammation/IL2_RECEPTORS");
         this.iL2BindingOnRateMin = parameters.getDouble("inflammation/IL2_BINDING_ON_RATE_MIN");
         this.iL2BindingOnRateMax = parameters.getDouble("inflammation/IL2_BINDING_ON_RATE_MAX");
@@ -175,10 +175,8 @@ public abstract class PatchProcessInflammation extends PatchProcess {
                     (t, y) -> {
                         double[] dydt = new double[NUM_COMPONENTS];
 
-                        double kOn2 =
-                                iL2BindingOnRateMin / loc.getVolume() / 60 / STEP_DIVIDER;
-                        double kOn3 =
-                                iL2BindingOnRateMax / loc.getVolume() / 60 / STEP_DIVIDER;
+                        double kOn2 = iL2BindingOnRateMin / loc.getVolume() / 60 / STEP_DIVIDER;
+                        double kOn3 = iL2BindingOnRateMax / loc.getVolume() / 60 / STEP_DIVIDER;
                         double kOff = iL2BindingOffRate / 60 / STEP_DIVIDER;
 
                         dydt[IL2_EXT] =
