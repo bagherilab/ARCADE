@@ -239,14 +239,14 @@ public abstract class PatchCellCART extends PatchCell {
 
                     double hillCAR =
                             (cARAntigens
-                                    * contactFraction
-                                    / (kDCAR * carBeta + cARAntigens * contactFraction))
+                                            * contactFraction
+                                            / (kDCAR * carBeta + cARAntigens * contactFraction))
                                     * (cars / 50000)
                                     * carAlpha;
                     double hillSelf =
                             (selfTargets
-                                    * contactFraction
-                                    / (kDSelf * selfBeta + selfTargets * contactFraction))
+                                            * contactFraction
+                                            / (kDSelf * selfBeta + selfTargets * contactFraction))
                                     * (selfReceptors / selfReceptorsStart)
                                     * selfAlpha;
 
