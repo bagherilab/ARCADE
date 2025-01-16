@@ -16,9 +16,13 @@ import static arcade.core.ARCADETestUtilities.randomDoubleBetween;
 public class PatchProcessMetabolismCARTTest {
 
     private PatchCellCART mockCell;
+
     private Parameters mockParameters;
+
     private PatchProcessMetabolismCART metabolism;
+
     private PatchLocation mockLocation;
+    
     private double cellVolume;
 
     static class inflammationMock extends PatchProcessInflammation {
