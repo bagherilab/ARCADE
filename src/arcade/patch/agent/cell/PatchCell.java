@@ -140,7 +140,7 @@ public abstract class PatchCell implements Cell {
     /** List of cell cycle lengths (in minutes). */
     private final Bag cycles = new Bag();
 
-    /** If cell is stopped in the simulation */
+    /** If cell is stopped in the simulation. */
     private boolean isStopped;
 
     /**
@@ -333,6 +333,11 @@ public abstract class PatchCell implements Cell {
         isStopped = true;
     }
 
+    /**
+     * Gets stopping status of the cell.
+     *
+     * @return if the cell has been stopped in the simulation
+     */
     public boolean isStopped() {
         return isStopped;
     }
