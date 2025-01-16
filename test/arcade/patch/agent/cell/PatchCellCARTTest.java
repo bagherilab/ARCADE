@@ -20,9 +20,13 @@ import static arcade.core.ARCADETestUtilities.randomDoubleBetween;
 import static arcade.core.ARCADETestUtilities.randomIntBetween;
 
 public class PatchCellCARTTest {
+
     private PatchCellCART patchCellCART;
+
     private Parameters parameters;
+
     private PatchLocation location;
+
     private PatchCellContainer container;
 
     static class PatchCellMock extends PatchCellCART {
