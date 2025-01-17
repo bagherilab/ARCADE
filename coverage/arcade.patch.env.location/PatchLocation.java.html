@@ -75,6 +75,13 @@ public abstract class PatchLocation implements Location {
     public abstract double getArea();
 
     /**
+     * Gets a shallow copy of the location.
+     *
+     * @return a new instance of location
+     */
+    public abstract PatchLocation getClone();
+
+    /**
      * Gets the patch coordinate in the {@link arcade.core.env.grid.Grid}.
      *
      * &lt;p&gt;These are not necessarily the same as the {@link arcade.core.env.lattice.Lattice}
@@ -83,7 +90,7 @@ public abstract class PatchLocation implements Location {
      * @return the coordinate
      */
     public Coordinate getCoordinate() {
-<span class="fc" id="L86">        return coordinate;</span>
+<span class="fc" id="L93">        return coordinate;</span>
     }
 
     /**
@@ -92,7 +99,7 @@ public abstract class PatchLocation implements Location {
      * @return the distance to center
      */
     public double getPlanarDistance() {
-<span class="nc" id="L95">        return coordinate.calculateDistance();</span>
+<span class="nc" id="L102">        return coordinate.calculateDistance();</span>
     }
 
     /**
@@ -101,7 +108,7 @@ public abstract class PatchLocation implements Location {
      * @return the z coordinate
      */
     public int getPlanarIndex() {
-<span class="nc" id="L104">        return coordinate.z;</span>
+<span class="nc" id="L111">        return coordinate.z;</span>
     }
 
     /**
@@ -112,7 +119,7 @@ public abstract class PatchLocation implements Location {
      * @return the subcoordinate
      */
     public Coordinate getSubcoordinate() {
-<span class="nc" id="L115">        return subcoordinates.get(0);</span>
+<span class="nc" id="L122">        return subcoordinates.get(0);</span>
     }
 
     /**
@@ -122,7 +129,7 @@ public abstract class PatchLocation implements Location {
      * @return the array of subcoordinates
      */
     public ArrayList&lt;Coordinate&gt; getSubcoordinates() {
-<span class="nc" id="L125">        return subcoordinates;</span>
+<span class="nc" id="L132">        return subcoordinates;</span>
     }
 
     /**
@@ -171,11 +178,11 @@ public abstract class PatchLocation implements Location {
      * @param location the new location
      */
     public void update(PatchLocation location) {
-<span class="nc" id="L174">        this.coordinate = location.coordinate;</span>
-<span class="nc" id="L175">        this.subcoordinates = new ArrayList&lt;&gt;(location.subcoordinates);</span>
-<span class="nc" id="L176">        this.offset = location.offset;</span>
-<span class="nc" id="L177">        this.check = location.check;</span>
-<span class="nc" id="L178">    }</span>
+<span class="fc" id="L181">        this.coordinate = location.coordinate;</span>
+<span class="fc" id="L182">        this.subcoordinates = new ArrayList&lt;&gt;(location.subcoordinates);</span>
+<span class="fc" id="L183">        this.offset = location.offset;</span>
+<span class="fc" id="L184">        this.check = location.check;</span>
+<span class="fc" id="L185">    }</span>
 
     /**
      * Get unique hash based on location coordinate.
@@ -183,7 +190,7 @@ public abstract class PatchLocation implements Location {
      * @return the hash
      */
     public int hashCode() {
-<span class="nc" id="L186">        return coordinate.hashCode();</span>
+<span class="nc" id="L193">        return coordinate.hashCode();</span>
     }
 
     /**
@@ -193,10 +200,10 @@ public abstract class PatchLocation implements Location {
      * @return {@code true} if coordinates are equal, {@code false} otherwise
      */
     public boolean equals(Object obj) {
-<span class="pc bpc" id="L196" title="1 of 2 branches missed.">        if (obj instanceof PatchLocation) {</span>
-<span class="fc" id="L197">            return coordinate.equals(((PatchLocation) obj).getCoordinate());</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">        if (obj instanceof PatchLocation) {</span>
+<span class="fc" id="L204">            return coordinate.equals(((PatchLocation) obj).getCoordinate());</span>
         }
-<span class="nc" id="L199">        return false;</span>
+<span class="nc" id="L206">        return false;</span>
     }
 
     /**
@@ -222,10 +229,10 @@ public abstract class PatchLocation implements Location {
      * @return the offset byte
      */
     byte offsetByte(byte b, int k) {
-<span class="fc" id="L225">        int left = b &gt;&gt; 2 &amp; 0x3F; // left most 6 bits</span>
-<span class="fc" id="L226">        int right = b &amp; 0x3; // right most 2 bits</span>
-<span class="fc" id="L227">        int shifted = (left &lt;&lt; k &amp; 0x3F) | (left &gt;&gt;&gt; (6 - k) &amp; 0x3F);</span>
-<span class="fc" id="L228">        return (byte) (shifted &lt;&lt; 2 | right);</span>
+<span class="fc" id="L232">        int left = b &gt;&gt; 2 &amp; 0x3F; // left most 6 bits</span>
+<span class="fc" id="L233">        int right = b &amp; 0x3; // right most 2 bits</span>
+<span class="fc" id="L234">        int shifted = (left &lt;&lt; k &amp; 0x3F) | (left &gt;&gt;&gt; (6 - k) &amp; 0x3F);</span>
+<span class="fc" id="L235">        return (byte) (shifted &lt;&lt; 2 | right);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

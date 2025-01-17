@@ -140,6 +140,11 @@ public final class PatchLocationRect extends PatchLocation {
 <span class="nc" id="L140">        return NUM_SUBCOORDINATES;</span>
     }
 
+    @Override
+    public PatchLocationRect getClone() {
+<span class="fc" id="L145">        return new PatchLocationRect((CoordinateXYZ) this.coordinate);</span>
+    }
+
     /**
      * Updates static configuration variables.
      *
@@ -150,32 +155,32 @@ public final class PatchLocationRect extends PatchLocation {
      * @param series the current simulation series
      */
     public static void updateConfigs(PatchSeries series) {
-<span class="nc" id="L153">        radius = series.radius;</span>
-<span class="nc" id="L154">        depth = series.depth;</span>
-<span class="nc" id="L155">        radiusBounds = series.radiusBounds;</span>
-<span class="nc" id="L156">        depthBounds = series.depthBounds;</span>
-<span class="nc" id="L157">        heightOffset = series.height % 2 - series.height;</span>
-<span class="nc" id="L158">    }</span>
+<span class="nc" id="L158">        radius = series.radius;</span>
+<span class="nc" id="L159">        depth = series.depth;</span>
+<span class="nc" id="L160">        radiusBounds = series.radiusBounds;</span>
+<span class="nc" id="L161">        depthBounds = series.depthBounds;</span>
+<span class="nc" id="L162">        heightOffset = series.height % 2 - series.height;</span>
+<span class="nc" id="L163">    }</span>
 
     @Override
     void calculateOffset() {
-<span class="fc" id="L162">        offset = (byte) (Math.abs(heightOffset + coordinate.z) % 2);</span>
-<span class="fc" id="L163">    }</span>
+<span class="fc" id="L167">        offset = (byte) (Math.abs(heightOffset + coordinate.z) % 2);</span>
+<span class="fc" id="L168">    }</span>
 
     @Override
     void calculateSubcoordinates() {
-<span class="fc" id="L167">        CoordinateXYZ rect = (CoordinateXYZ) coordinate;</span>
+<span class="fc" id="L172">        CoordinateXYZ rect = (CoordinateXYZ) coordinate;</span>
 
         // Calculate coordinate of top right subrectangle.
-<span class="fc" id="L170">        int x = 2 * (rect.x + radiusBounds - 1) + offset;</span>
-<span class="fc" id="L171">        int y = 2 * (rect.y + radiusBounds - 1) + offset;</span>
-<span class="fc" id="L172">        int z = depthBounds + rect.z - 1;</span>
+<span class="fc" id="L175">        int x = 2 * (rect.x + radiusBounds - 1) + offset;</span>
+<span class="fc" id="L176">        int y = 2 * (rect.y + radiusBounds - 1) + offset;</span>
+<span class="fc" id="L177">        int z = depthBounds + rect.z - 1;</span>
 
         // Set coordinates of subrectangles clockwise from top left.
-<span class="fc bfc" id="L175" title="All 2 branches covered.">        for (int i = 0; i &lt; NUM_SUBCOORDINATES; i++) {</span>
-<span class="fc" id="L176">            subcoordinates.add(i, new CoordinateXYZ(x + X_OFF[i], y + Y_OFF[i], z));</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">        for (int i = 0; i &lt; NUM_SUBCOORDINATES; i++) {</span>
+<span class="fc" id="L181">            subcoordinates.add(i, new CoordinateXYZ(x + X_OFF[i], y + Y_OFF[i], z));</span>
         }
-<span class="fc" id="L178">    }</span>
+<span class="fc" id="L183">    }</span>
 
     /**
      * {@inheritDoc}
@@ -185,18 +190,18 @@ public final class PatchLocationRect extends PatchLocation {
      */
     @Override
     void calculateChecks() {
-<span class="fc" id="L188">        CoordinateXYZ rect = (CoordinateXYZ) coordinate;</span>
-<span class="fc" id="L189">        check =</span>
-<span class="fc bfc" id="L190" title="All 4 branches covered.">                radius == 0 || depth == 0</span>
-<span class="fc" id="L191">                        ? 0</span>
+<span class="fc" id="L193">        CoordinateXYZ rect = (CoordinateXYZ) coordinate;</span>
+<span class="fc" id="L194">        check =</span>
+<span class="fc bfc" id="L195" title="All 4 branches covered.">                radius == 0 || depth == 0</span>
+<span class="fc" id="L196">                        ? 0</span>
                         : (byte)
-<span class="pc bpc" id="L193" title="1 of 2 branches missed.">                                ((rect.x == radius - 1 ? 0 : 1 &lt;&lt; 5)</span>
-<span class="pc bpc" id="L194" title="1 of 2 branches missed.">                                        + (rect.x == 1 - radius ? 0 : 1 &lt;&lt; 4)</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">                                        + (rect.y == radius - 1 ? 0 : 1 &lt;&lt; 3)</span>
-<span class="pc bpc" id="L196" title="1 of 2 branches missed.">                                        + (rect.y == 1 - radius ? 0 : 1 &lt;&lt; 2)</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">                                        + (rect.z == depth - 1 ? 0 : 1 &lt;&lt; 1)</span>
-<span class="fc bfc" id="L198" title="All 2 branches covered.">                                        + (rect.z == 1 - depth ? 0 : 1 &lt;&lt; 0));</span>
-<span class="fc" id="L199">    }</span>
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">                                ((rect.x == radius - 1 ? 0 : 1 &lt;&lt; 5)</span>
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">                                        + (rect.x == 1 - radius ? 0 : 1 &lt;&lt; 4)</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">                                        + (rect.y == radius - 1 ? 0 : 1 &lt;&lt; 3)</span>
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">                                        + (rect.y == 1 - radius ? 0 : 1 &lt;&lt; 2)</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">                                        + (rect.z == depth - 1 ? 0 : 1 &lt;&lt; 1)</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">                                        + (rect.z == 1 - depth ? 0 : 1 &lt;&lt; 0));</span>
+<span class="fc" id="L204">    }</span>
 
     /**
      * {@inheritDoc}
@@ -207,7 +212,7 @@ public final class PatchLocationRect extends PatchLocation {
      */
     @Override
     public double getPerimeter(double f) {
-<span class="nc bnc" id="L210" title="All 2 branches missed.">        return f * RECT_PERIMETER + (f == 1 ? 0 : RECT_SIZE);</span>
+<span class="nc bnc" id="L215" title="All 2 branches missed.">        return f * RECT_PERIMETER + (f == 1 ? 0 : RECT_SIZE);</span>
     }
 
     /**
@@ -218,22 +223,22 @@ public final class PatchLocationRect extends PatchLocation {
      */
     @Override
     public ArrayList&lt;Location&gt; getNeighbors() {
-<span class="fc" id="L221">        CoordinateXYZ rect = (CoordinateXYZ) coordinate;</span>
-<span class="fc" id="L222">        ArrayList&lt;Location&gt; neighbors = new ArrayList&lt;&gt;(MOVES.length + 1);</span>
+<span class="fc" id="L226">        CoordinateXYZ rect = (CoordinateXYZ) coordinate;</span>
+<span class="fc" id="L227">        ArrayList&lt;Location&gt; neighbors = new ArrayList&lt;&gt;(MOVES.length + 1);</span>
         byte b;
 
         // Add neighbor locations.
-<span class="fc bfc" id="L226" title="All 2 branches covered.">        for (int i = 0; i &lt; MOVES.length; i++) {</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">        for (int i = 0; i &lt; MOVES.length; i++) {</span>
             // Adjust byte for vertical offset.
-<span class="fc bfc" id="L228" title="All 2 branches covered.">            if (i &gt; 5) {</span>
-<span class="fc" id="L229">                b = offsetByte(MOVES[i], offset);</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">            if (i &gt; 5) {</span>
+<span class="fc" id="L234">                b = offsetByte(MOVES[i], offset);</span>
             } else {
-<span class="fc" id="L231">                b = MOVES[i];</span>
+<span class="fc" id="L236">                b = MOVES[i];</span>
             }
 
             // Add location if possible to move there.
-<span class="fc bfc" id="L235" title="All 2 branches covered.">            if ((b &amp; check ^ b) == 0) {</span>
-<span class="fc" id="L236">                neighbors.add(</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">            if ((b &amp; check ^ b) == 0) {</span>
+<span class="fc" id="L241">                neighbors.add(</span>
                         new PatchLocationRect(
                                 rect.x + (b &gt;&gt; 5 &amp; 1) - (b &gt;&gt; 4 &amp; 1),
                                 rect.y + (b &gt;&gt; 3 &amp; 1) - (b &gt;&gt; 2 &amp; 1),
@@ -241,12 +246,12 @@ public final class PatchLocationRect extends PatchLocation {
             }
         }
 
-<span class="fc" id="L244">        return neighbors;</span>
+<span class="fc" id="L249">        return neighbors;</span>
     }
 
     @Override
     public LocationContainer convert(int id) {
-<span class="nc" id="L249">        return new PatchLocationContainer(id, coordinate);</span>
+<span class="nc" id="L254">        return new PatchLocationContainer(id, coordinate);</span>
     }
 
     /**
@@ -257,20 +262,20 @@ public final class PatchLocationRect extends PatchLocation {
      * @return the corresponding rectangular coordinate
      */
     public static CoordinateXYZ translate(CoordinateXYZ coordinate) {
-<span class="nc" id="L260">        int z = coordinate.z - depthBounds + 1;</span>
-<span class="nc" id="L261">        int zo = (byte) (Math.abs(heightOffset + z) % 2);</span>
+<span class="nc" id="L265">        int z = coordinate.z - depthBounds + 1;</span>
+<span class="nc" id="L266">        int zo = (byte) (Math.abs(heightOffset + z) % 2);</span>
 
         // Calculate a and b coordinates
-<span class="nc" id="L264">        double xx = (coordinate.x - zo) / 2.0 + 1 - radiusBounds;</span>
-<span class="nc" id="L265">        int x = (int) Math.floor(xx);</span>
-<span class="nc" id="L266">        double yy = (coordinate.y - zo) / 2.0 + 1 - radiusBounds;</span>
-<span class="nc" id="L267">        int y = (int) Math.floor(yy);</span>
+<span class="nc" id="L269">        double xx = (coordinate.x - zo) / 2.0 + 1 - radiusBounds;</span>
+<span class="nc" id="L270">        int x = (int) Math.floor(xx);</span>
+<span class="nc" id="L271">        double yy = (coordinate.y - zo) / 2.0 + 1 - radiusBounds;</span>
+<span class="nc" id="L272">        int y = (int) Math.floor(yy);</span>
 
         // Check if out of bounds.
-<span class="nc bnc" id="L270" title="All 4 branches missed.">        if (Math.abs(x) &gt;= radius || Math.abs(y) &gt;= radius) {</span>
-<span class="nc" id="L271">            return null;</span>
+<span class="nc bnc" id="L275" title="All 4 branches missed.">        if (Math.abs(x) &gt;= radius || Math.abs(y) &gt;= radius) {</span>
+<span class="nc" id="L276">            return null;</span>
         }
-<span class="nc" id="L273">        return new CoordinateXYZ(x, y, z);</span>
+<span class="nc" id="L278">        return new CoordinateXYZ(x, y, z);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

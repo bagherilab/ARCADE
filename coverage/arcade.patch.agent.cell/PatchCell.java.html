@@ -523,7 +523,7 @@ public abstract class PatchCell implements Cell {
 
 <span class="fc bfc" id="L524" title="All 2 branches covered.">        if (checkLocation(</span>
                 sim, currentLocation, 0, criticalHeight, pop, maxDensity - densityAdjustment)) {
-<span class="fc" id="L526">            freeLocations.add(currentLocation);</span>
+<span class="fc" id="L526">            freeLocations.add(currentLocation.getClone());</span>
         }
 
 <span class="fc bfc" id="L529" title="All 2 branches covered.">        for (Location neighborLocation : currentLocation.getNeighbors()) {</span>
