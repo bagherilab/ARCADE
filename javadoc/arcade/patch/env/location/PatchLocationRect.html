@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":9,"i15":9};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":9,"i16":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -356,69 +356,76 @@ extends <a href="PatchLocation.html" title="class in arcade.patch.env.location">
 </td>
 </tr>
 <tr id="i5" class="rowColor">
+<td class="colFirst"><code><a href="PatchLocationRect.html" title="class in arcade.patch.env.location">PatchLocationRect</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getClone()">getClone</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Gets a shallow copy of the location.</div>
+</td>
+</tr>
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCoordinateSize()">getCoordinateSize</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the <a href="../../../core/env/grid/Grid.html" title="interface in arcade.core.env.grid"><code>Grid</code></a> coordinate size in the xy plane.</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getHeight()">getHeight</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the height of the location.</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>java.util.ArrayList&lt;<a href="../../../core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getNeighbors()">getNeighbors</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the location of the neighbors to the current location.</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getNumSubcoordinates()">getNumSubcoordinates</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the number of subcoordinates in a location.</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPerimeter(double)">getPerimeter</a></span>&#8203;(double&nbsp;f)</code></th>
 <td class="colLast">
 <div class="block">Calculates the perimeter of a cell occupying the location.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRatio()">getRatio</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the ratio of the <a href="../../../core/env/grid/Grid.html" title="interface in arcade.core.env.grid"><code>Grid</code></a> z to xy sizes.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSubcoordinateSize()">getSubcoordinateSize</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the <a href="../../../core/env/lattice/Lattice.html" title="interface in arcade.core.env.lattice"><code>Lattice</code></a> coordinate size in the xy plane.</div>
 </td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSurface()">getSurface</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the surface area of the location.</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getVolume()">getVolume</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the volume of the location.</div>
 </td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code>static <a href="CoordinateXYZ.html" title="class in arcade.patch.env.location">CoordinateXYZ</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#translate(arcade.patch.env.location.CoordinateXYZ)">translate</a></span>&#8203;(<a href="CoordinateXYZ.html" title="class in arcade.patch.env.location">CoordinateXYZ</a>&nbsp;coordinate)</code></th>
 <td class="colLast">
@@ -426,7 +433,7 @@ extends <a href="PatchLocation.html" title="class in arcade.patch.env.location">
  <a href="../../../core/env/grid/Grid.html" title="interface in arcade.core.env.grid"><code>Grid</code></a> coordinate.</div>
 </td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code>static void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateConfigs(arcade.patch.sim.PatchSeries)">updateConfigs</a></span>&#8203;(<a href="../../sim/PatchSeries.html" title="class in arcade.patch.sim">PatchSeries</a>&nbsp;series)</code></th>
 <td class="colLast">
@@ -799,6 +806,23 @@ extends <a href="PatchLocation.html" title="class in arcade.patch.env.location">
 <dd><code><a href="PatchLocation.html#getNumSubcoordinates()">getNumSubcoordinates</a></code>&nbsp;in class&nbsp;<code><a href="PatchLocation.html" title="class in arcade.patch.env.location">PatchLocation</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the number of subcoordinates</dd>
+</dl>
+</li>
+</ul>
+<a id="getClone()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getClone</h4>
+<pre class="methodSignature">public&nbsp;<a href="PatchLocationRect.html" title="class in arcade.patch.env.location">PatchLocationRect</a>&nbsp;getClone()</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="PatchLocation.html#getClone()">PatchLocation</a></code></span></div>
+<div class="block">Gets a shallow copy of the location.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="PatchLocation.html#getClone()">getClone</a></code>&nbsp;in class&nbsp;<code><a href="PatchLocation.html" title="class in arcade.patch.env.location">PatchLocation</a></code></dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a new instance of location</dd>
 </dl>
 </li>
 </ul>
