@@ -147,6 +147,11 @@ public final class PatchLocationHex extends PatchLocation {
         return NUM_SUBCOORDINATES;
     }
 
+    @Override
+    public PatchLocationHex getClone() {
+        return new PatchLocationHex((CoordinateUVWZ) this.coordinate);
+    }
+
     /**
      * Updates static configuration variables.
      *
