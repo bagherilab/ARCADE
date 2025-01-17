@@ -523,7 +523,7 @@ public abstract class PatchCell implements Cell {
 
         if (checkLocation(
                 sim, currentLocation, 0, criticalHeight, pop, maxDensity - densityAdjustment)) {
-            freeLocations.add(currentLocation);
+            freeLocations.add(currentLocation.getClone());
         }
 
         for (Location neighborLocation : currentLocation.getNeighbors()) {
