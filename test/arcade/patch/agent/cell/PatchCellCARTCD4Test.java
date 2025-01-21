@@ -1,14 +1,13 @@
 package arcade.patch.agent.cell;
 
 import java.lang.reflect.Field;
-
-import arcade.core.util.MiniBox;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sim.engine.Schedule;
 import sim.engine.Steppable;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModule;
 import arcade.patch.agent.process.PatchProcessInflammation;

@@ -1,8 +1,6 @@
 package arcade.patch.agent.cell;
 
 import java.util.ArrayList;
-
-import arcade.core.util.MiniBox;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sim.engine.SimState;
@@ -11,6 +9,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;

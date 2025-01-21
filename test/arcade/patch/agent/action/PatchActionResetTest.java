@@ -1,12 +1,12 @@
 package arcade.patch.agent.action;
 
-import arcade.core.util.MiniBox;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Series;
+import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.cell.PatchCellCARTCD4;
