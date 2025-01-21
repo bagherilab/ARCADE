@@ -9,6 +9,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
@@ -55,7 +56,7 @@ public class PatchCellCARTTest {
 
     @BeforeEach
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        parameters = mock(Parameters.class);
+        parameters = spy(new Parameters(new MiniBox(), null, null));
         location = mock(PatchLocation.class);
 
         doReturn(0.0).when(parameters).getDouble(any(String.class));
