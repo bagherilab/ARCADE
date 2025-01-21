@@ -131,7 +131,6 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
         names = Arrays.asList(intNames);
 
         // Set loaded parameters.
-        // TODO: pull metabolic preference from distribution
         Parameters parameters = cell.getParameters();
         metaPref = parameters.getDouble("metabolism/METABOLIC_PREFERENCE");
         conversionFraction = parameters.getDouble("metabolism/CONVERSION_FRACTION");
