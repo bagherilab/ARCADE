@@ -1,6 +1,8 @@
 package arcade.patch.agent.cell;
 
 import java.util.ArrayList;
+
+import arcade.core.util.MiniBox;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sim.engine.SimState;
@@ -55,7 +57,7 @@ public class PatchCellCARTTest {
 
     @BeforeEach
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        parameters = mock(Parameters.class);
+        parameters = spy(new Parameters(new MiniBox(), null, null));
         location = mock(PatchLocation.class);
 
         doReturn(0.0).when(parameters).getDouble(any(String.class));
