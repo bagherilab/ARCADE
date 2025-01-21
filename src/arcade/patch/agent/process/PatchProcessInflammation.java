@@ -170,7 +170,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
     }
 
     /** System of ODEs for network. */
-    Equations dydt =
+    Equations equations =
             (Equations & Serializable)
                     (t, y) -> {
                         double[] dydt = new double[NUM_COMPONENTS];
@@ -301,7 +301,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         amts[IL2_EXT] = extIL2 * f; // [molecules]
 
         // Solve system of equations.
-        amts = Solver.rungeKutta(dydt, 0, amts, 60, STEP_SIZE);
+        amts = Solver.rungeKutta(equations, 0, amts, 60, STEP_SIZE);
 
         // Modify internal inflammation response.
         stepProcess(random, sim);
