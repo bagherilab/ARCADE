@@ -1,6 +1,8 @@
 package arcade.patch.agent.cell;
 
 import java.lang.reflect.Field;
+
+import arcade.core.util.MiniBox;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sim.engine.Schedule;
@@ -32,7 +34,7 @@ public class PatchCellCARTCD4Test {
 
     @BeforeEach
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        parameters = mock(Parameters.class);
+        parameters = spy(new Parameters(new MiniBox(), null, null));
         location = mock(PatchLocation.class);
 
         int id = 1;
@@ -59,7 +61,8 @@ public class PatchCellCARTCD4Test {
                         height,
                         criticalVolume,
                         criticalHeight);
-
+        doReturn(0.0).when(parameters).getDouble(any(String.class));
+        doReturn(0).when(parameters).getInt(any(String.class));
         when(parameters.getDouble("HETEROGENEITY")).thenReturn(0.0);
         when(parameters.getDouble("ENERGY_THRESHOLD")).thenReturn(1.0);
 
