@@ -231,8 +231,7 @@ public abstract class PatchCellCART extends PatchCell {
             // Within maximum search vicinity, search for neighboring cells to bind to
             for (int i = 0; i < maxSearch; i++) {
                 Cell cell = (Cell) allAgents.get(i);
-                if (cell.getState() != State.APOPTOTIC
-                        && cell.getState() != State.NECROTIC) {
+                if (cell.getState() != State.APOPTOTIC && cell.getState() != State.NECROTIC) {
                     PatchCellTissue tissueCell = (PatchCellTissue) cell;
                     double cARAntigens = tissueCell.carAntigens;
                     double selfTargets = tissueCell.selfTargets;
