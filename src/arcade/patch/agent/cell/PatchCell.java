@@ -193,13 +193,12 @@ public abstract class PatchCell implements Cell {
         // Add cell processes.
         processes = new HashMap<>();
         MiniBox processBox = parameters.filter("(PROCESS)");
-        if (processBox != null) {
-            for (String processKey : processBox.getKeys()) {
-                ProcessDomain domain = Domain.valueOf(processKey);
-                String version = processBox.get(processKey);
-                Process process = makeProcess(domain, version);
-                processes.put(domain, process);
-            }
+
+        for (String processKey : processBox.getKeys()) {
+            ProcessDomain domain = Domain.valueOf(processKey);
+            String version = processBox.get(processKey);
+            Process process = makeProcess(domain, version);
+            processes.put(domain, process);
         }
     }
 
