@@ -200,9 +200,10 @@ public abstract class PatchCellCART extends PatchCell {
         // get all agents from neighboring locations
         for (Location neighborLocation : loc.getNeighbors()) {
             Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));
-            for (Object b : bag) {
-                // add all agents from neighboring locations
-                if (!allAgents.contains(b)) allAgents.add(b);
+            for (Object agent : bag) {
+                Cell cell = (Cell) agent;
+                // add all tissue agents from neighboring locations
+                if (cell instanceof PatchCellTissue) allAgents.add(cell);
             }
         }
 
@@ -230,9 +231,7 @@ public abstract class PatchCellCART extends PatchCell {
             // Within maximum search vicinity, search for neighboring cells to bind to
             for (int i = 0; i < maxSearch; i++) {
                 Cell cell = (Cell) allAgents.get(i);
-                if (!(cell instanceof PatchCellCART)
-                        && cell.getState() != State.APOPTOTIC
-                        && cell.getState() != State.NECROTIC) {
+                if (cell.getState() != State.APOPTOTIC && cell.getState() != State.NECROTIC) {
                     PatchCellTissue tissueCell = (PatchCellTissue) cell;
                     double cARAntigens = tissueCell.carAntigens;
                     double selfTargets = tissueCell.selfTargets;
