@@ -1,5 +1,6 @@
 package arcade.patch.agent.action;
 
+import arcade.core.util.MiniBox;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sim.engine.Schedule;
@@ -28,9 +29,11 @@ public class PatchActionResetTest {
     public void setUp() {
         MersenneTwisterFast mockRandom = mock(MersenneTwisterFast.class);
         Series mockSeries = mock(Series.class);
-        Parameters mockParameters = mock(Parameters.class);
+        Parameters mockParameters = spy(new Parameters(new MiniBox(), null, null));
         PatchLocation mockLocation = mock(PatchLocation.class);
 
+        doReturn(0.0).when(mockParameters).getDouble(any(String.class));
+        doReturn(0).when(mockParameters).getInt(any(String.class));
         when(mockParameters.getInt("BOUND_TIME")).thenReturn(10);
         when(mockParameters.getInt("BOUND_RANGE")).thenReturn(5);
         when(mockRandom.nextInt()).thenReturn(1);
