@@ -18,6 +18,7 @@ import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.State;
 import static arcade.potts.util.PottsEnums.State;
 
 /**
@@ -66,6 +67,24 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         return splitDirectionDistribution.nextDouble();
     }
 
+    public static Location getSmallerLocation(Location location1, Location location2) {
+        if (location1.getVolume() < location2.getVolume()) {
+            return location1;
+        } else {
+            return location2;
+        }
+    }
+
+    private PottsLocation getApicalLocation(PottsLocation location1, PottsLocation location2) {
+        double[] centroid1 = location1.getCentroid();
+        double[] centroid2 = location2.getCentroid();
+        if (centroid1[1] < centroid2[1]) {
+            return location2;
+        } else {
+            return location1;
+        }
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -85,6 +104,8 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         Location newLocation =
                 ((PottsLocation2D) cell.getLocation())
                         .split(random, divisionPlane, splitProbability);
+        Location originalLocation = cell.getLocation();
+        Location smallerLocation = getSmallerLocation(newLocation, originalLocation);
 
         // Reset current cell
         cell.reset(potts.ids, potts.regions);
