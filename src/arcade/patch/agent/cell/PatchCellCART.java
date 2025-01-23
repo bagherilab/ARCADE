@@ -194,17 +194,14 @@ public abstract class PatchCellCART extends PatchCell {
         double kDSelf = selfReceptorAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
         PatchGrid grid = (PatchGrid) sim.getGrid();
 
-        // get all agents from this location
-        Bag allAgents = new Bag(grid.getObjectsAtLocation(loc));
+        // get all tissue agents from this location
+        Bag allAgents = new Bag();
+        getTissueAgents(allAgents, grid.getObjectsAtLocation(loc));
 
         // get all agents from neighboring locations
         for (Location neighborLocation : loc.getNeighbors()) {
             Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));
-            for (Object agent : bag) {
-                Cell cell = (Cell) agent;
-                // add all tissue agents from neighboring locations
-                if (cell instanceof PatchCellTissue) allAgents.add(cell);
-            }
+            getTissueAgents(allAgents, bag);
         }
 
         // remove self
@@ -315,5 +312,20 @@ public abstract class PatchCellCART extends PatchCell {
      */
     public boolean getActivationStatus() {
         return this.activated;
+    }
+
+    /**
+     * Adds only tissue cells to the provided bag. Helper method for bindTarget.
+     *
+     * @param tissueAgents the bag to add tissue cells into
+     * @param possibleAgents the bag of possible agents to check for tissue cells
+     */
+    private void getTissueAgents(Bag tissueAgents, Bag possibleAgents) {
+        for (Object agent : possibleAgents) {
+            Cell cell = (Cell) agent;
+            if (cell instanceof PatchCellTissue) {
+                tissueAgents.add(cell);
+            }
+        }
     }
 }
