@@ -230,20 +230,18 @@ public abstract class PatchCellCART extends PatchCell {
                     double selfTargets = tissueCell.selfTargets;
 
                     double hillCAR =
-                            (cARAntigens
-                                            * contactFraction
-                                            / (kDCAR * carBeta + cARAntigens * contactFraction))
-                                    * (cars / 50000)
-                                    * carAlpha;
+                            getHillCoefficient(cARAntigens, kDCAR, cars, 5000, carAlpha, carBeta);
                     double hillSelf =
-                            (selfTargets
-                                            * contactFraction
-                                            / (kDSelf * selfBeta + selfTargets * contactFraction))
-                                    * (selfReceptors / selfReceptorsStart)
-                                    * selfAlpha;
+                            getHillCoefficient(
+                                    selfTargets,
+                                    kDSelf,
+                                    selfReceptors,
+                                    selfReceptorsStart,
+                                    selfAlpha,
+                                    selfBeta);
 
-                    double logCAR = 2 * (1 / (1 + Math.exp(-1 * hillCAR))) - 1;
-                    double logSelf = 2 * (1 / (1 + Math.exp(-1 * hillSelf))) - 1;
+                    double logCAR = getLog(hillCAR);
+                    double logSelf = getLog(hillSelf);
 
                     double randomAntigen = random.nextDouble();
                     double randomSelf = random.nextDouble();
@@ -305,5 +303,38 @@ public abstract class PatchCellCART extends PatchCell {
                 tissueAgents.add(cell);
             }
         }
+    }
+
+    /**
+     * Computes Hill Coefficient for given parameters.
+     *
+     * @param targets the number of antigens on the target cell
+     * @param affinity binding affinity of receptor
+     * @param currentReceptors number of receptors currently on the cell
+     * @param startReceptors number of starting receptors on the cell
+     * @param alpha fudge factor for receptor binding
+     * @param beta fudge factor for receptor binding
+     * @return the Hill Coefficient
+     */
+    private double getHillCoefficient(
+            double targets,
+            double affinity,
+            int currentReceptors,
+            int startReceptors,
+            double alpha,
+            double beta) {
+        return (targets * contactFraction / (affinity * beta + targets * contactFraction))
+                * (currentReceptors / startReceptors)
+                * alpha;
+    }
+
+    /**
+     * Computes log function for given hill coeffient.
+     *
+     * @param hill hill coefficient for the log function
+     * @return the log value
+     */
+    private double getLog(double hill) {
+        return 2 * (1 / (1 + Math.exp(-1 * hill))) - 1;
     }
 }
