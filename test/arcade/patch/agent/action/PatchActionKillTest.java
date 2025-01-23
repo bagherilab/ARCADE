@@ -62,7 +62,7 @@ public class PatchActionKillTest {
         when(mockTarget.isStopped()).thenReturn(true);
         action.step(sim);
         verify(mockTarget, never()).setState(any());
-        assertEquals(AntigenFlag.BOUND_CELL_RECEPTOR, mockCell.getAntigenFlag());
+        verify(mockCell).setAntigenFlag(AntigenFlag.BOUND_CELL_RECEPTOR);
     }
 
     @Test

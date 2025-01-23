@@ -118,18 +118,6 @@ public class PatchCellCARTTest {
     }
 
     @Test
-    public void testSetAntigenFlag() {
-        patchCellCART.setAntigenFlag(PatchEnums.AntigenFlag.BOUND_ANTIGEN);
-        assertEquals(PatchEnums.AntigenFlag.BOUND_ANTIGEN, patchCellCART.getAntigenFlag());
-    }
-
-    @Test
-    public void testGetAntigenFlag() {
-        patchCellCART.setAntigenFlag(PatchEnums.AntigenFlag.BOUND_ANTIGEN);
-        assertEquals(PatchEnums.AntigenFlag.BOUND_ANTIGEN, patchCellCART.getAntigenFlag());
-    }
-
-    @Test
     public void testBindTargetNoNeighbors() {
         Simulation sim = mock(Simulation.class);
         PatchLocation loc = mock(PatchLocation.class);

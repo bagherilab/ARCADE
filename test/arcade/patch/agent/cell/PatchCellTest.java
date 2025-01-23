@@ -15,6 +15,7 @@ import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.lattice.PatchLattice;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
+import arcade.patch.util.PatchEnums;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -124,6 +125,20 @@ public class PatchCellTest {
         assertEquals(3, cell.getCycles().get(1));
         assertEquals(5, cell.getCycles().get(2));
         assertEquals(3, cell.getCycles().size());
+    }
+
+    @Test
+    public void testSetAntigenFlag() {
+        PatchCell cell = new PatchCellMock(baseContainer, locationMock, parametersMock);
+        cell.setAntigenFlag(PatchEnums.AntigenFlag.BOUND_ANTIGEN);
+        assertEquals(PatchEnums.AntigenFlag.BOUND_ANTIGEN, cell.getAntigenFlag());
+    }
+
+    @Test
+    public void testGetAntigenFlag() {
+        PatchCell cell = new PatchCellMock(baseContainer, locationMock, parametersMock);
+        cell.setAntigenFlag(PatchEnums.AntigenFlag.BOUND_ANTIGEN);
+        assertEquals(PatchEnums.AntigenFlag.BOUND_ANTIGEN, cell.getAntigenFlag());
     }
 
     @Test

@@ -179,7 +179,7 @@ public abstract class PatchCell implements Cell {
         this.flag = Flag.UNDEFINED;
         this.parameters = parameters;
         this.isStopped = false;
-        bindingFlag = PatchEnums.AntigenFlag.UNDEFINED;
+        this.bindingFlag = PatchEnums.AntigenFlag.UNDEFINED;
         this.links = links;
 
         setState(container.state);
