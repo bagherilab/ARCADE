@@ -80,7 +80,7 @@ public class PatchActionResetTest {
     @Test
     public void testStep_CytotoxicState() {
         when(mockCell.isStopped()).thenReturn(false);
-        mockCell.binding = AntigenFlag.BOUND_ANTIGEN;
+        mockCell.setAntigenFlag(AntigenFlag.BOUND_ANTIGEN);
         when(mockCell.getState()).thenReturn(State.CYTOTOXIC);
 
         actionReset.step(mock(SimState.class));
@@ -92,7 +92,7 @@ public class PatchActionResetTest {
     @Test
     public void testStep_StimulatoryState() {
         when(mockCell.isStopped()).thenReturn(false);
-        mockCell.binding = AntigenFlag.BOUND_ANTIGEN;
+        mockCell.setAntigenFlag(AntigenFlag.BOUND_ANTIGEN);
         when(mockCell.getState()).thenReturn(State.STIMULATORY);
 
         actionReset.step(mock(SimState.class));
@@ -104,7 +104,7 @@ public class PatchActionResetTest {
     @Test
     public void testStep_StoppedCell() {
         when(mockCell.isStopped()).thenReturn(true);
-        mockCell.binding = AntigenFlag.BOUND_ANTIGEN;
+        mockCell.setAntigenFlag(AntigenFlag.BOUND_ANTIGEN);
         actionReset.step(mock(SimState.class));
         verify(mockCell, never()).setState(any(State.class));
         assertEquals(AntigenFlag.BOUND_ANTIGEN, mockCell.getAntigenFlag());

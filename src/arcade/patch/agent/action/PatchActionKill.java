@@ -78,10 +78,10 @@ public class PatchActionKill implements Action {
 
         // If bound target cell is stopped, stop helper.
         if (target.isStopped()) {
-            if (c.binding == AntigenFlag.BOUND_ANTIGEN) {
-                c.binding = AntigenFlag.UNBOUND;
+            if (c.getAntigenFlag() == AntigenFlag.BOUND_ANTIGEN) {
+                c.setAntigenFlag(AntigenFlag.UNBOUND);
             } else {
-                c.binding = AntigenFlag.BOUND_CELL_RECEPTOR;
+                c.setAntigenFlag(AntigenFlag.BOUND_CELL_RECEPTOR);
             }
             return;
         }

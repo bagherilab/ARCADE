@@ -117,7 +117,7 @@ public class PatchCellCARTCD8 extends PatchCellCART {
                 PatchCellTissue target = super.bindTarget(sim, location, simstate.random);
 
                 // If cell is bound to both antigen and self it will become anergic.
-                if (binding == AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR) {
+                if (super.getAntigenFlag() == AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR) {
                     if (simstate.random.nextDouble() > super.anergicFraction) {
                         super.setState(State.APOPTOTIC);
                     } else {
@@ -125,7 +125,7 @@ public class PatchCellCARTCD8 extends PatchCellCART {
                     }
                     super.setAntigenFlag(AntigenFlag.UNBOUND);
                     this.activated = false;
-                } else if (binding == AntigenFlag.BOUND_ANTIGEN) {
+                } else if (super.getAntigenFlag() == AntigenFlag.BOUND_ANTIGEN) {
                     // If cell is only bound to target antigen, the cell
                     // can potentially become properly activated.
 
@@ -163,7 +163,7 @@ public class PatchCellCARTCD8 extends PatchCellCART {
                     }
                 } else {
                     // If self binding, unbind
-                    if (binding == AntigenFlag.BOUND_CELL_RECEPTOR)
+                    if (super.getAntigenFlag() == AntigenFlag.BOUND_CELL_RECEPTOR)
                         super.setAntigenFlag(AntigenFlag.UNBOUND);
                     // Check activation status. If cell has been activated before,
                     // it will proliferate. If not, it will migrate.

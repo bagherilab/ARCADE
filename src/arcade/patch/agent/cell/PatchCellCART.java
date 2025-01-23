@@ -45,9 +45,6 @@ import static arcade.patch.util.PatchEnums.State;
  * specified amount of heterogeneity ({@code HETEROGENEITY}).
  */
 public abstract class PatchCellCART extends PatchCell {
-    /** Cell binding flag. */
-    public AntigenFlag binding;
-
     /** Cell activation flag. */
     protected boolean activated;
 
@@ -154,7 +151,6 @@ public abstract class PatchCellCART extends PatchCell {
         boundAntigensCount = 0;
         boundSelfCount = 0;
         lastActiveTicker = 0;
-        binding = AntigenFlag.UNDEFINED;
         activated = true;
 
         // Set loaded parameters.
@@ -216,7 +212,7 @@ public abstract class PatchCellCART extends PatchCell {
         // Bind target with some probability if a nearby cell has targets to bind.
         int maxSearch = 0;
         if (neighbors == 0) {
-            binding = AntigenFlag.UNBOUND;
+            super.setAntigenFlag(AntigenFlag.UNBOUND);
             return null;
         } else {
             if (neighbors < searchAbility) {
@@ -254,7 +250,7 @@ public abstract class PatchCellCART extends PatchCell {
 
                     if (logCAR >= randomAntigen && logSelf < randomSelf) {
                         // cell binds to antigen receptor
-                        binding = AntigenFlag.BOUND_ANTIGEN;
+                        super.setAntigenFlag(AntigenFlag.BOUND_ANTIGEN);
                         boundAntigensCount++;
                         selfReceptors +=
                                 (int)
@@ -263,7 +259,7 @@ public abstract class PatchCellCART extends PatchCell {
                         return tissueCell;
                     } else if (logCAR >= randomAntigen && logSelf >= randomSelf) {
                         // cell binds to antigen receptor and self
-                        binding = AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR;
+                        super.setAntigenFlag(AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR);
                         boundAntigensCount++;
                         boundSelfCount++;
                         selfReceptors +=
@@ -273,36 +269,18 @@ public abstract class PatchCellCART extends PatchCell {
                         return tissueCell;
                     } else if (logCAR < randomAntigen && logSelf >= randomSelf) {
                         // cell binds to self
-                        binding = AntigenFlag.BOUND_CELL_RECEPTOR;
+                        super.setAntigenFlag(AntigenFlag.BOUND_CELL_RECEPTOR);
                         boundSelfCount++;
                         return tissueCell;
                     } else {
                         // cell doesn't bind to anything
-                        binding = AntigenFlag.UNBOUND;
+                        super.setAntigenFlag(AntigenFlag.UNBOUND);
                     }
                 }
             }
-            binding = AntigenFlag.UNBOUND;
+            super.setAntigenFlag(AntigenFlag.UNBOUND);
         }
         return null;
-    }
-
-    /**
-     * Sets the cell binding flag.
-     *
-     * @param flag the target cell antigen binding state
-     */
-    public void setAntigenFlag(AntigenFlag flag) {
-        this.binding = flag;
-    }
-
-    /**
-     * Returns the cell binding flag.
-     *
-     * @return the cell antigen binding state
-     */
-    public AntigenFlag getAntigenFlag() {
-        return this.binding;
     }
 
     /**

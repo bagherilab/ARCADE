@@ -60,7 +60,7 @@ public class PatchActionReset implements Action {
         }
 
         if (c.getState() == State.CYTOTOXIC || c.getState() == State.STIMULATORY) {
-            c.binding = AntigenFlag.UNBOUND;
+            c.setAntigenFlag(AntigenFlag.UNBOUND);
             c.setState(State.QUIESCENT);
         }
     }

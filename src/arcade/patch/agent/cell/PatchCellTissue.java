@@ -7,7 +7,6 @@ import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
-import arcade.patch.util.PatchEnums.AntigenFlag;
 import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.Flag;
 import arcade.patch.util.PatchEnums.State;
@@ -19,9 +18,6 @@ public class PatchCellTissue extends PatchCell {
 
     /** Cell surface PDL1 count. */
     int selfTargets;
-
-    /** Cell binding flag. */
-    public AntigenFlag binding;
 
     /**
      * Creates a tissue {@code PatchCell} agent.
@@ -47,7 +43,6 @@ public class PatchCellTissue extends PatchCell {
         super(container, location, parameters, links);
         carAntigens = parameters.getInt("CAR_ANTIGENS_HEALTHY");
         selfTargets = parameters.getInt("SELF_TARGETS");
-        this.binding = AntigenFlag.UNDEFINED;
     }
 
     @Override

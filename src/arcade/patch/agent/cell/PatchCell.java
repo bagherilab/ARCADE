@@ -25,6 +25,7 @@ import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
+import arcade.patch.util.PatchEnums;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.Flag;
 import static arcade.patch.util.PatchEnums.Ordering;
@@ -143,6 +144,9 @@ public abstract class PatchCell implements Cell {
     /** If cell is stopped in the simulation. */
     private boolean isStopped;
 
+    /** Cell binding flag. */
+    protected PatchEnums.AntigenFlag bindingFlag;
+
     /**
      * Creates a {@code PatchCell} agent.
      *
@@ -175,6 +179,7 @@ public abstract class PatchCell implements Cell {
         this.flag = Flag.UNDEFINED;
         this.parameters = parameters;
         this.isStopped = false;
+        bindingFlag = PatchEnums.AntigenFlag.UNDEFINED;
         this.links = links;
 
         setState(container.state);
@@ -551,5 +556,23 @@ public abstract class PatchCell implements Cell {
             }
         }
         return true;
+    }
+
+    /**
+     * Sets the cell binding flag.
+     *
+     * @param flag the target cell antigen binding state
+     */
+    public void setAntigenFlag(PatchEnums.AntigenFlag flag) {
+        this.bindingFlag = flag;
+    }
+
+    /**
+     * Returns the cell binding flag.
+     *
+     * @return the cell antigen binding state
+     */
+    public PatchEnums.AntigenFlag getAntigenFlag() {
+        return this.bindingFlag;
     }
 }
