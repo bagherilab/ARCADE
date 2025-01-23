@@ -4,9 +4,7 @@ import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.sim.Simulation;
-import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
-import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.process.PatchProcess;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
@@ -55,13 +53,8 @@ public class PatchModuleProliferation extends PatchModule {
         targetVolume = 2 * cell.getCriticalVolume();
         maxHeight = cell.getCriticalHeight();
         duration = 0;
-        // Set loaded parameters.
-        Parameters parameters = cell.getParameters();
-        if (cell instanceof PatchCellCART) {
-            synthesisDuration = parameters.getInt("proliferation/T_CELL_SYNTHESIS_DURATION");
-        } else {
-            synthesisDuration = parameters.getInt("proliferation/SYNTHESIS_DURATION");
-        }
+        // Load parameters.
+        synthesisDuration = cell.getSynthesisDuration();
     }
 
     @Override
