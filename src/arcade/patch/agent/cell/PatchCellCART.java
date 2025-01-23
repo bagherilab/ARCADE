@@ -323,9 +323,9 @@ public abstract class PatchCellCART extends PatchCell {
             int startReceptors,
             double alpha,
             double beta) {
-        return (targets * contactFraction / (affinity * alpha + targets * contactFraction))
+        return (targets * contactFraction / (affinity * beta + targets * contactFraction))
                 * (currentReceptors / startReceptors)
-                * beta;
+                * alpha;
     }
 
     /**
