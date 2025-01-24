@@ -42,7 +42,6 @@ public class PatchCellCancer extends PatchCellTissue {
     public PatchCellCancer(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
-        super.carAntigens = parameters.getInt("CAR_ANTIGENS_CANCER");
     }
 
     /**

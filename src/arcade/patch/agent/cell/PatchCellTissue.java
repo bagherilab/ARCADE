@@ -41,7 +41,7 @@ public class PatchCellTissue extends PatchCell {
     public PatchCellTissue(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
-        carAntigens = parameters.getInt("CAR_ANTIGENS_HEALTHY");
+        carAntigens = parameters.getInt("CAR_ANTIGENS");
         selfTargets = parameters.getInt("SELF_TARGETS");
     }
 
