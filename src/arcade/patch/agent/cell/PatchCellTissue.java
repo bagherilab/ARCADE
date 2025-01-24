@@ -14,10 +14,10 @@ import arcade.patch.util.PatchEnums.State;
 /** Extension of {@link PatchCell} for healthy tissue cells. */
 public class PatchCellTissue extends PatchCell {
     /** Cell surface antigen count. */
-    private int carAntigens;
+    private final int carAntigens;
 
     /** Cell surface PDL1 count. */
-    private int selfTargets;
+    private final int selfTargets;
 
     /**
      * Creates a tissue {@code PatchCell} agent.
