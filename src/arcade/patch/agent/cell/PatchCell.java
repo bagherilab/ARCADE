@@ -102,6 +102,9 @@ public abstract class PatchCell implements Cell {
     /** Death age due to apoptosis [min]. */
     double apoptosisAge;
 
+    /** Time required for DNA synthesis [min]. */
+    final int synthesisDuration;
+
     /** Critical volume for cell [um<sup>3</sup>]. */
     final double criticalVolume;
 
@@ -191,6 +194,7 @@ public abstract class PatchCell implements Cell {
         apoptosisAge = parameters.getDouble("APOPTOSIS_AGE");
         accuracy = parameters.getDouble("ACCURACY");
         affinity = parameters.getDouble("AFFINITY");
+        synthesisDuration = parameters.getInt("SYNTHESIS_DURATION");
 
         int densityInput = parameters.getInt("MAX_DENSITY");
         maxDensity = (densityInput >= 0 ? densityInput : Integer.MAX_VALUE);
@@ -574,5 +578,14 @@ public abstract class PatchCell implements Cell {
      */
     public PatchEnums.AntigenFlag getAntigenFlag() {
         return this.bindingFlag;
+    }
+
+    /**
+     * Returns the synthesis duration period.
+     *
+     * @return the cell antigen binding state
+     */
+    public int getSynthesisDuration() {
+        return this.synthesisDuration;
     }
 }
