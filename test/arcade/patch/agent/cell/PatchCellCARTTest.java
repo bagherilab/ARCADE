@@ -148,8 +148,7 @@ public class PatchCellCARTTest {
         when(loc.getNeighbors()).thenReturn(new ArrayList<Location>());
         when(loc.getVolume()).thenReturn(6000.0);
 
-        when(parameters.getInt("CAR_ANTIGENS_HEALTHY")).thenReturn(10);
-        when(parameters.getInt("CAR_ANTIGENS_CANCER")).thenReturn(10);
+        when(parameters.getInt("CAR_ANTIGENS")).thenReturn(10);
         when(parameters.getInt("SELF_TARGETS")).thenReturn(10000000);
         PatchCellTissue tissueCell = new PatchCellTissue(container, location, parameters);
 
@@ -175,8 +174,7 @@ public class PatchCellCARTTest {
         when(loc.getNeighbors()).thenReturn(new ArrayList<Location>());
         when(loc.getVolume()).thenReturn(6000.0);
 
-        when(parameters.getInt("CAR_ANTIGENS_HEALTHY")).thenReturn(5000);
-        when(parameters.getInt("CAR_ANTIGENS_CANCER")).thenReturn(5000);
+        when(parameters.getInt("CAR_ANTIGENS")).thenReturn(5000);
         when(parameters.getInt("SELF_TARGETS")).thenReturn(50000000);
 
         PatchCellTissue tissueCell = new PatchCellTissue(container, location, parameters);
@@ -204,8 +202,7 @@ public class PatchCellCARTTest {
         when(loc.getNeighbors()).thenReturn(new ArrayList<Location>());
         when(loc.getVolume()).thenReturn(6000.0);
 
-        when(parameters.getInt("CAR_ANTIGENS_HEALTHY")).thenReturn(5000);
-        when(parameters.getInt("CAR_ANTIGENS_CANCER")).thenReturn(5000);
+        when(parameters.getInt("CAR_ANTIGENS")).thenReturn(5000);
         when(parameters.getInt("SELF_TARGETS")).thenReturn(5000);
 
         PatchCellTissue tissueCell = new PatchCellTissue(container, location, parameters);
