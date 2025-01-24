@@ -35,8 +35,7 @@
     <population id="SEARCH_ABILITY" value="1" description="max number of cells a CAR T-cell could make contact with per time step" />
     <population id="MAX_ANTIGEN_BINDING" value="10" description="number of times a CAR T-cell can interact with target without becoming exhausted" />
     <population id="CARS" value="50000" description="average number of CARs on a CAR T-cell" />
-    <population id="CAR_ANTIGENS_HEALTHY" value="0" description="average number of CAR antigens on a tissue healthy cell" />
-    <population id="CAR_ANTIGENS_CANCER" value="1000" description="average number of CAR antigens on a tissue cancer cell" />
+    <population id="CAR_ANTIGENS" value="1000" description="average number of CAR antigens on a given cell" />
     <population id="SELF_RECEPTORS" value="150" description="average number of PD1s on a CAR T-cell" />
     <population id="SELF_TARGETS" value="3600" description="average number of PDL1s on tissue cell" />
     <population id="CAR_AFFINITY" value="1E-7" unit="M" description="affinity of CAR for target antigen" />
