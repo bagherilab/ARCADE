@@ -140,10 +140,6 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         Parameters parameters = cell.getParameters();
         this.shellThickness = parameters.getDouble("inflammation/SHELL_THICKNESS");
         this.iL2Receptors = parameters.getDouble("inflammation/IL2_RECEPTORS");
-        this.iL2BindingOnRateMin = parameters.getDouble("inflammation/IL2_BINDING_ON_RATE_MIN");
-        this.iL2BindingOnRateMax = parameters.getDouble("inflammation/IL2_BINDING_ON_RATE_MAX");
-        this.iL2BindingOffRate = parameters.getDouble("inflammation/IL2_BINDING_OFF_RATE");
-
         extIL2 = 0;
 
         // Initial amounts of each species, all in molecules/cell.

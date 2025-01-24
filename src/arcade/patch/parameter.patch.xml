@@ -92,9 +92,6 @@
     <!-- inflammation process module -->
     <population.process process="inflammation" id="SHELL_THICKNESS" value="2.0" unit="um" />
     <population.process process="inflammation" id="IL2_RECEPTORS" value="2000" unit="IL-2 receptors/cell" />
-    <population.process process="inflammation" id="IL2_BINDING_ON_RATE_MIN" value="3.8193E-2" unit="um^3/molecules IL-2/min" />
-    <population.process process="inflammation" id="IL2_BINDING_ON_RATE_MAX" value="3.155" unit="um^3/molecules IL-2/min" />
-    <population.process process="inflammation" id="IL2_BINDING_OFF_RATE" value="0.015" units="1/min" />
 
     <!-- inflammation CD4 module -->
     <population.process process="inflammation" id="IL2_PROD_RATE_IL2" value="16.62" unit="molecules IL-2/cell/min" />
