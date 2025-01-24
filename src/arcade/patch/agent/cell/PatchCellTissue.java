@@ -14,10 +14,10 @@ import arcade.patch.util.PatchEnums.State;
 /** Extension of {@link PatchCell} for healthy tissue cells. */
 public class PatchCellTissue extends PatchCell {
     /** Cell surface antigen count. */
-    int carAntigens;
+    private int carAntigens;
 
     /** Cell surface PDL1 count. */
-    int selfTargets;
+    private int selfTargets;
 
     /**
      * Creates a tissue {@code PatchCell} agent.
@@ -111,5 +111,23 @@ public class PatchCellTissue extends PatchCell {
         if (module != null) {
             module.step(simstate.random, sim);
         }
+    }
+
+    /**
+     * Returns the number of CAR antigens on this cell.
+     *
+     * @return the number of CAR antigens on this cell.
+     */
+    public int getCarAntigens() {
+        return carAntigens;
+    }
+
+    /**
+     * Returns the number of self receptor antigens on this cell.
+     *
+     * @return the number of self receptor antigens on this cell.
+     */
+    public int getSelfAntigens() {
+        return selfTargets;
     }
 }
