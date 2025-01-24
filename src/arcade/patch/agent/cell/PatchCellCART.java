@@ -226,8 +226,8 @@ public abstract class PatchCellCART extends PatchCell {
                 Cell cell = (Cell) allAgents.get(i);
                 if (cell.getState() != State.APOPTOTIC && cell.getState() != State.NECROTIC) {
                     PatchCellTissue tissueCell = (PatchCellTissue) cell;
-                    double cARAntigens = tissueCell.carAntigens;
-                    double selfTargets = tissueCell.selfTargets;
+                    double cARAntigens = tissueCell.getCarAntigens();
+                    double selfTargets = tissueCell.getSelfAntigens();
 
                     double hillCAR =
                             getHillCoefficient(cARAntigens, kDCAR, cars, 5000, carAlpha, carBeta);
