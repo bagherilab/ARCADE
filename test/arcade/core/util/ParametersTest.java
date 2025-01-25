@@ -174,6 +174,28 @@ public class ParametersTest {
     }
 
     @Test
+    public void getString_keyExists_returnsValue() {
+        MiniBox box = new MiniBox();
+        String key = randomString();
+        String value = randomString();
+        box.put(key, value);
+
+        Parameters parameters = new Parameters(box, null, RANDOM);
+
+        assertEquals(value, parameters.getString(key));
+    }
+
+    @Test
+    public void getString_keyDoesNotExist_throwsException() {
+        MiniBox box = new MiniBox();
+        String key = randomString();
+
+        Parameters parameters = new Parameters(box, null, RANDOM);
+
+        assertThrows(InvalidParameterException.class, () -> parameters.getString(key));
+    }
+
+    @Test
     public void getDistribution_keyHasDistribution_returnsDistribution() {
         MiniBox box = new MiniBox();
         String key = randomString();

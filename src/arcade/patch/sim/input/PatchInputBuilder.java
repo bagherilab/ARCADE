@@ -226,8 +226,12 @@ public final class PatchInputBuilder extends InputBuilder {
 
         patch.add("GRID_VOLUME", String.valueOf(location.getVolume()));
         patch.add("GRID_AREA", String.valueOf(location.getArea()));
-        patch.add("LATTICE_VOLUME", String.valueOf(location.getVolume() / location.getMaximum()));
-        patch.add("LATTICE_AREA", String.valueOf(location.getArea() / location.getMaximum()));
+        patch.add(
+                "LATTICE_VOLUME",
+                String.valueOf(location.getVolume() / location.getNumSubcoordinates()));
+        patch.add(
+                "LATTICE_AREA",
+                String.valueOf(location.getArea() / location.getNumSubcoordinates()));
         patch.add("TOTAL_PATCHES", String.valueOf(totalPatches));
     }
 }

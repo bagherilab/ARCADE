@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Scanner;
@@ -101,6 +102,18 @@ public abstract class ARCADE {
             throw new InvalidParameterException();
         }
 
+        // Display current model version and exit.
+        if (args[0].equals("--version")) {
+            System.out.println(loadVersion());
+            System.exit(0);
+        }
+
+        // Display help message if any help flags exist and exit.
+        if (Arrays.stream(args).anyMatch(s -> s.equals("-h") || s.equals("--help"))) {
+            System.out.println(renderHelp());
+            System.exit(0);
+        }
+
         // Extract ARCADE type.
         ARCADE arcade;
 
@@ -114,7 +127,10 @@ public abstract class ARCADE {
                 arcade = new PottsARCADE();
                 break;
             default:
-                logger.warning("ARCADE [ " + args[0] + " ] does not exist");
+                logger.warning(
+                        "ARCADE implementation [ "
+                                + args[0]
+                                + " ] does not exist. Valid implementations: patch | potts");
                 throw new InvalidParameterException();
         }
 
@@ -168,6 +184,18 @@ public abstract class ARCADE {
         } catch (Exception e) {
             return "<undefined>";
         }
+    }
+
+    /**
+     * Render help message.
+     *
+     * @return the help message
+     */
+    static String renderHelp() throws IOException, SAXException {
+        InputLoader loader = new InputLoader();
+        Box commands = loader.load(ARCADE.class.getResource("command.xml").toString());
+        InputParser parser = new InputParser(commands);
+        return parser.help("java -jar arcade-X.X.X.jar");
     }
 
     /**
@@ -241,16 +269,16 @@ public abstract class ARCADE {
      */
     ArrayList<Series> buildSeries(Box parameters, MiniBox settings)
             throws IOException, SAXException {
-        String xml = settings.get("XML");
-        String path = settings.get("PATH");
+        String setupFile = settings.get("SETUP_FILE");
+        String snapshotPath = settings.get("SNAPSHOT_PATH");
         boolean isVis = settings.contains("VIS");
 
         InputBuilder builder = this.getBuilder();
-        builder.path = path.endsWith("/") ? path : (path + "/");
+        builder.path = snapshotPath.endsWith("/") ? snapshotPath : (snapshotPath + "/");
         builder.parameters = parameters;
         builder.isVis = isVis;
 
-        return builder.build(xml);
+        return builder.build(setupFile);
     }
 
     /**
@@ -264,9 +292,9 @@ public abstract class ARCADE {
      */
     void runSeries(ArrayList<Series> series, MiniBox settings) throws Exception {
         boolean isVis = settings.contains("VIS");
-        String loadPath = settings.get("LOADPATH");
-        boolean loadCells = settings.contains("LOADCELLS");
-        boolean loadLocations = settings.contains("LOADLOCATIONS");
+        String loadPath = settings.get("LOAD_PATH");
+        boolean loadCells = settings.contains("LOAD_CELLS");
+        boolean loadLocations = settings.contains("LOAD_LOCATIONS");
 
         // Iterate through each series and run.
         for (Series s : series) {

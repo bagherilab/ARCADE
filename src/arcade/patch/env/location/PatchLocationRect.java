@@ -136,8 +136,13 @@ public final class PatchLocationRect extends PatchLocation {
     }
 
     @Override
-    public int getMaximum() {
+    public int getNumSubcoordinates() {
         return NUM_SUBCOORDINATES;
+    }
+
+    @Override
+    public PatchLocationRect getClone() {
+        return new PatchLocationRect((CoordinateXYZ) this.coordinate);
     }
 
     /**
@@ -187,13 +192,15 @@ public final class PatchLocationRect extends PatchLocation {
     void calculateChecks() {
         CoordinateXYZ rect = (CoordinateXYZ) coordinate;
         check =
-                (byte)
-                        ((rect.x == radius - 1 ? 0 : 1 << 5)
-                                + (rect.x == 1 - radius ? 0 : 1 << 4)
-                                + (rect.y == radius - 1 ? 0 : 1 << 3)
-                                + (rect.y == 1 - radius ? 0 : 1 << 2)
-                                + (rect.z == depth - 1 ? 0 : 1 << 1)
-                                + (rect.z == 1 - depth ? 0 : 1 << 0));
+                radius == 0 || depth == 0
+                        ? 0
+                        : (byte)
+                                ((rect.x == radius - 1 ? 0 : 1 << 5)
+                                        + (rect.x == 1 - radius ? 0 : 1 << 4)
+                                        + (rect.y == radius - 1 ? 0 : 1 << 3)
+                                        + (rect.y == 1 - radius ? 0 : 1 << 2)
+                                        + (rect.z == depth - 1 ? 0 : 1 << 1)
+                                        + (rect.z == 1 - depth ? 0 : 1 << 0));
     }
 
     /**
@@ -212,7 +219,7 @@ public final class PatchLocationRect extends PatchLocation {
      * {@inheritDoc}
      *
      * <p>We check if a neighbor location is valid by comparing the movement checks byte with the
-     * neighbor location byte. Neighbor list includes the current location.
+     * neighbor location byte.
      */
     @Override
     public ArrayList<Location> getNeighbors() {
@@ -238,9 +245,6 @@ public final class PatchLocationRect extends PatchLocation {
                                 rect.z + (b >> 1 & 1) - (b >> 0 & 1)));
             }
         }
-
-        // Add current location.
-        neighbors.add(new PatchLocationRect(rect));
 
         return neighbors;
     }

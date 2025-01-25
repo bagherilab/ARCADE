@@ -1,9 +1,9 @@
 <commands>
-    <position id="ARCADE" help="ARCADE type" />
-    <position id="XML" help="Absolute path to setup XML" />
-    <position id="PATH" help="Absolute path for snapshot JSON" />
-    <switch id="VIS" short="v" long="vis" help="Run with visualization overhead" />
-    <option id="LOADPATH" long="loadpath" help="Path prefix for loaded files" />
-    <switch id="LOADCELLS" short="c" long="cells" help="Load the .CELLS file" />
-    <switch id="LOADLOCATIONS" short="l" long="locations" help="Load the .LOCATIONS file" />
+    <position id="IMPLEMENTATION_TYPE" help="Model implementation type (patch | potts)" />
+    <position id="SETUP_FILE" help="Absolute path to setup file" />
+    <position id="SNAPSHOT_PATH" help="Absolute path for snapshot files" />
+    <switch id="VIS" short="v" long="vis" help="Flag for running with visualization" />
+    <option id="LOAD_PATH" long="loadpath" help="Path prefix for loading snapshots" />
+    <switch id="LOAD_CELLS" short="c" long="cells" help="Load the CELLS snapshot file" />
+    <switch id="LOAD_LOCATIONS" short="l" long="locations" help="Load the LOCATIONS snapshot file" />
 </commands>

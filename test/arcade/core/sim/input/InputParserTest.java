@@ -238,10 +238,8 @@ public class InputParserTest {
                 () -> {
                     Box box = new Box();
                     box.addTag(COMMAND_ID_1, "POSITION");
-
                     InputParser parser = new InputParser(box);
-                    MiniBox parsed = parser.parse(new String[] {});
-                    assertTrue(parsed.compare(new MiniBox()));
+                    parser.parse(new String[] {});
                 });
     }
 
@@ -446,6 +444,17 @@ public class InputParserTest {
         int newIndex = parser.parsePositionArgument(arguments, index);
 
         assertEquals(index + 1, newIndex);
+    }
+
+    @Test
+    public void parseFlaggedArgument_nullCommand_throwsException() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    Box box = new Box();
+                    InputParser parser = new InputParser(box);
+                    parser.parseFlaggedArgument(new String[] {""}, 0, null);
+                });
     }
 
     @Test
