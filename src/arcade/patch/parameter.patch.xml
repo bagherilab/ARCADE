@@ -26,7 +26,7 @@
     <population id="ACCURACY" value="0.8" description="accuracy to select highest glucose concentration in future location" />
     <population id="AFFINITY" value="0.5" description="movement toward center affinity when selecting future location" />
     <population id="BOUND_TIME" value="360" description="6 hours" />
-	<population id="BOUND_RANGE" value="0" description="hours" />
+    <population id="BOUND_RANGE" value="0" description="hours" />
 
     <!-- CAR T specific parameters -->
     <population id="DIVISION_POTENTIAL_T" value="10" description="max number of divisions for a CAR T-cell" />

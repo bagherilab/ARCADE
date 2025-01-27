@@ -1,6 +1,5 @@
 package arcade.patch.agent.cell;
 
-import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;

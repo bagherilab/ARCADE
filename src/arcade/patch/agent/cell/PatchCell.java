@@ -25,12 +25,11 @@ import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
+import arcade.patch.util.PatchEnums;
 import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.Flag;
 import arcade.patch.util.PatchEnums.Ordering;
 import arcade.patch.util.PatchEnums.State;
-
-import arcade.patch.util.PatchEnums;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.Flag;
 import static arcade.patch.util.PatchEnums.Ordering;
