@@ -47,7 +47,9 @@ public class PatchModuleMigration extends PatchModule {
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
         if (ticker > movementDuration) {
-            PatchLocation newLocation = cell.selectBestLocation(sim, random);
+            PatchLocation newLocation =
+                    PatchCell.selectBestLocation(
+                            sim, location, cell.getVolume(), cell.getCriticalHeight(), random);
 
             if (newLocation == null) {
                 cell.setState(State.QUIESCENT);

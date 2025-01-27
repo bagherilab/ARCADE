@@ -143,7 +143,7 @@ public final class PatchLocationHex extends PatchLocation {
     }
 
     @Override
-    public int getNumSubcoordinates() {
+    public int getMaximum() {
         return NUM_SUBCOORDINATES;
     }
 
@@ -199,17 +199,15 @@ public final class PatchLocationHex extends PatchLocation {
     void calculateChecks() {
         CoordinateUVWZ hex = (CoordinateUVWZ) coordinate;
         check =
-                radius == 0 || depth == 0
-                        ? 0
-                        : (byte)
-                                ((hex.u == radius - 1 ? 0 : 1 << 7)
-                                        + (hex.u == 1 - radius ? 0 : 1 << 6)
-                                        + (hex.v == radius - 1 ? 0 : 1 << 5)
-                                        + (hex.v == 1 - radius ? 0 : 1 << 4)
-                                        + (hex.w == radius - 1 ? 0 : 1 << 3)
-                                        + (hex.w == 1 - radius ? 0 : 1 << 2)
-                                        + (hex.z == depth - 1 ? 0 : 1 << 1)
-                                        + (hex.z == 1 - depth ? 0 : 1 << 0));
+                (byte)
+                        ((hex.u == radius - 1 ? 0 : 1 << 7)
+                                + (hex.u == 1 - radius ? 0 : 1 << 6)
+                                + (hex.v == radius - 1 ? 0 : 1 << 5)
+                                + (hex.v == 1 - radius ? 0 : 1 << 4)
+                                + (hex.w == radius - 1 ? 0 : 1 << 3)
+                                + (hex.w == 1 - radius ? 0 : 1 << 2)
+                                + (hex.z == depth - 1 ? 0 : 1 << 1)
+                                + (hex.z == 1 - depth ? 0 : 1 << 0));
     }
 
     /**
@@ -228,7 +226,7 @@ public final class PatchLocationHex extends PatchLocation {
      * {@inheritDoc}
      *
      * <p>We check if a neighbor location is valid by comparing the movement checks byte with the
-     * neighbor location byte.
+     * neighbor location byte. Neighbor list includes the current location.
      */
     @Override
     public ArrayList<Location> getNeighbors() {
@@ -255,6 +253,9 @@ public final class PatchLocationHex extends PatchLocation {
                                 hex.z + (b >> 1 & 1) - (b >> 0 & 1)));
             }
         }
+
+        // Add current location.
+        neighbors.add(new PatchLocationHex(hex));
 
         return neighbors;
     }
