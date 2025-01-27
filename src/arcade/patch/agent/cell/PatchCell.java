@@ -30,6 +30,7 @@ import arcade.patch.util.PatchEnums.Flag;
 import arcade.patch.util.PatchEnums.Ordering;
 import arcade.patch.util.PatchEnums.State;
 
+import arcade.patch.util.PatchEnums;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.Flag;
 import static arcade.patch.util.PatchEnums.Ordering;
@@ -89,7 +90,7 @@ public abstract class PatchCell implements Cell {
     int age;
 
     /** Cell energy [fmol ATP]. */
-    double energy;
+    protected double energy;
 
     /** Number of divisions. */
     int divisions;
@@ -103,6 +104,9 @@ public abstract class PatchCell implements Cell {
     /** Death age due to apoptosis [min]. */
     double apoptosisAge;
 
+    /** Time required for DNA synthesis [min]. */
+    final int synthesisDuration;
+
     /** Critical volume for cell [um<sup>3</sup>]. */
     final double criticalVolume;
 
@@ -110,18 +114,16 @@ public abstract class PatchCell implements Cell {
     final double criticalHeight;
 
     /** Cell state change flag. */
-    private Flag flag;
+    protected Flag flag;
 
     /** Fraction of necrotic cells that become apoptotic. */
-    final double necroticFraction;
+    protected final double necroticFraction;
 
     /** Fraction of senescent cells that become apoptotic. */
-    final double senescentFraction;
+    protected final double senescentFraction;
 
     /** Maximum energy deficit before necrosis. */
-    final double energyThreshold;
-
-    private final double energyThreshold;
+    protected final double energyThreshold;
 
     /** Cell state module. */
     protected Module module;
@@ -135,11 +137,14 @@ public abstract class PatchCell implements Cell {
     /** Cell population links. */
     final GrabBag links;
 
-     /** If cell is stopped in the simulation */
-     private boolean isStopped;
-
     /** List of cell cycle lengths (in minutes). */
     private final Bag cycles = new Bag();
+
+    /** If cell is stopped in the simulation. */
+    private boolean isStopped;
+
+    /** Cell binding flag. */
+    protected PatchEnums.AntigenFlag bindingFlag;
 
     /**
      * Creates a {@code PatchCell} agent.
@@ -174,17 +179,22 @@ public abstract class PatchCell implements Cell {
         this.flag = Flag.UNDEFINED;
         this.parameters = parameters;
         this.isStopped = false;
+        this.bindingFlag = PatchEnums.AntigenFlag.UNDEFINED;
+        this.links = links;
 
         setState(container.state);
-        this.links = links;
+
+        // Set loaded parameters.
         necroticFraction = parameters.getDouble("NECROTIC_FRACTION");
         senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
         energyThreshold = -parameters.getDouble("ENERGY_THRESHOLD");
         apoptosisAge = parameters.getDouble("APOPTOSIS_AGE");
+        synthesisDuration = parameters.getInt("SYNTHESIS_DURATION");
 
         // Add cell processes.
         processes = new HashMap<>();
         MiniBox processBox = parameters.filter("(PROCESS)");
+
         for (String processKey : processBox.getKeys()) {
             ProcessDomain domain = Domain.valueOf(processKey);
             String version = processBox.get(processKey);
@@ -323,7 +333,14 @@ public abstract class PatchCell implements Cell {
         isStopped = true;
     }
 
-    public boolean isStopped(){ return isStopped;}
+    /**
+     * Gets stopping status of the cell.
+     *
+     * @return if the cell has been stopped in the simulation
+     */
+    public boolean isStopped() {
+        return isStopped;
+    }
 
     @Override
     public void setState(CellState state) {
@@ -360,7 +377,7 @@ public abstract class PatchCell implements Cell {
             case SIGNALING:
                 return PatchProcessSignaling.make(this, version);
             case INFLAMMATION:
-                return PatchProcessInflammation.make(this,version);
+                return PatchProcessInflammation.make(this, version);
             case UNDEFINED:
             default:
                 return null;
@@ -489,5 +506,32 @@ public abstract class PatchCell implements Cell {
         Bag locs = findFreeLocations(sim, location, volume, height);
         locs.shuffle(random);
         return (locs.size() > 0 ? (PatchLocation) locs.get(0) : null);
+    }
+
+    /**
+     * Sets the cell binding flag.
+     *
+     * @param flag the target cell antigen binding state
+     */
+    public void setAntigenFlag(PatchEnums.AntigenFlag flag) {
+        this.bindingFlag = flag;
+    }
+
+    /**
+     * Returns the cell binding flag.
+     *
+     * @return the cell antigen binding state
+     */
+    public PatchEnums.AntigenFlag getAntigenFlag() {
+        return this.bindingFlag;
+    }
+
+    /**
+     * Returns the synthesis duration period.
+     *
+     * @return the cell antigen binding state
+     */
+    public int getSynthesisDuration() {
+        return this.synthesisDuration;
     }
 }

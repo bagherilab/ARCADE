@@ -8,7 +8,6 @@ import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.env.grid.PatchGrid;
 import static arcade.patch.util.PatchEnums.State;
-import sim.engine.SimState;
 
 /**
  * Implementation of {@link Process} for cell metabolism.
