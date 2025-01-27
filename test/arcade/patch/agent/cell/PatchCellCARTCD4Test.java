@@ -94,9 +94,9 @@ public class PatchCellCARTCD4Test {
         apoptosisAge.setAccessible(true);
         apoptosisAge.set(cell, 120958);
 
-        Field maxDensity = PatchCell.class.getDeclaredField("maxDensity");
-        maxDensity.setAccessible(true);
-        maxDensity.set(cell, 54);
+//        Field maxDensity = PatchCell.class.getDeclaredField("maxDensity");
+//        maxDensity.setAccessible(true);
+//        maxDensity.set(cell, 54);
     }
 
     @Test
