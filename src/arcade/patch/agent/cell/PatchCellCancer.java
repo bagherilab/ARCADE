@@ -42,7 +42,6 @@ public class PatchCellCancer extends PatchCellTissue {
     public PatchCellCancer(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
-        super.carAntigens = parameters.getInt("CAR_ANTIGENS_CANCER");
     }
 
     /**
@@ -78,14 +77,14 @@ public class PatchCellCancer extends PatchCellTissue {
     /**
      * Checks neighborhood for free locations.
      *
-     * <p>If there is at least one free location, cell state becomes undefined.
+     * <p>If there is at least one free location for proliferation, cell state becomes undefined.
      *
      * @param simstate the MASON simulation state
      * @param cell the reference cell
      */
-    private static void checkNeighborhood(SimState simstate, PatchCell cell) {
+    private void checkNeighborhood(SimState simstate, PatchCell cell) {
         Simulation sim = (Simulation) simstate;
-        if (PatchCell.findFreeLocations(sim, cell.location, cell.volume, cell.height).size() > 0) {
+        if (findFreeLocations(sim).size() > 0) {
             cell.setState(State.UNDEFINED);
         }
     }

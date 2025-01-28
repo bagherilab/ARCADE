@@ -14,20 +14,16 @@ import arcade.patch.util.PatchEnums.Ordering;
 import arcade.patch.util.PatchEnums.State;
 
 /**
- * Implementation of {@link Action} for killing tissue agents.
+ * Implementation of {@link Action} for resetting T cell agents.
  *
- * <p>{@code PatchActionKill} is stepped once after a CD8 CAR T-cell binds to a target tissue cell.
- * The {@code PatchActionKill} determines if cell has enough granzyme to kill. If so, it kills cell
- * and calls the reset to neutral helper to return to neutral state. If not, it waits until it has
- * enough granzyme to kill cell.
+ * <p>{@code PatchActionReset} is stepped once after a CD8 CAR T-cell binds to a target tissue cell,
+ * or after a CD4 CAR T-cell gets stimulated. The {@code PatchReset} unbinds to any target cell that
+ * the T cell is bound to, and sets the cell state back to quiescent.
  */
 public class PatchActionReset implements Action {
 
     /** CAR T-cell inflammation module */
     PatchProcessInflammation inflammation;
-
-    /** Amount of granzyme inside CAR T-cell */
-    double granzyme;
 
     /** CAR T-cell that the module is linked to */
     PatchCellCART c;
@@ -36,11 +32,9 @@ public class PatchActionReset implements Action {
     private final int timeDelay;
 
     /**
-     * Creates a {@code PatchActionKill} for the given {@link
-     * arcade.patch.agent.cell.PatchCellCART}.
+     * Creates a {@code PatchActionReset} for the given {@link PatchCellCART}.
      *
-     * @param c the {@link arcade.patch.agent.cell.PatchCellCART} the helper is associated with
-     * @param target the {@link arcade.patch.agent.cell.PatchCellTissue} the CAR T-cell is bound to
+     * @param c the {@link PatchCellCART} the helper is associated with
      */
     public PatchActionReset(
             PatchCellCART c, MersenneTwisterFast random, Series series, Parameters parameters) {
@@ -66,7 +60,7 @@ public class PatchActionReset implements Action {
         }
 
         if (c.getState() == State.CYTOTOXIC || c.getState() == State.STIMULATORY) {
-            c.binding = AntigenFlag.UNBOUND;
+            c.setAntigenFlag(AntigenFlag.UNBOUND);
             c.setState(State.QUIESCENT);
         }
     }

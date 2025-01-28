@@ -9,52 +9,97 @@ import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.util.PatchEnums.Domain;
 
+/**
+ * Extension of {@link PatchProcessMetabolism} for CAR T-cell metabolism.
+ *
+ * <p>{@code PatchProcessMetabolismCART} is adapted from {@code PatchProcessMetabolismComplex} and
+ * thus this module explicitly includes pyruvate intermediate between glycolysis and oxidative
+ * phosphorylation and glucose uptake is based on cell surface area. Metabolic preference between
+ * glycolysis and oxidative phosphorylation is controlled by the {@code META_PREF} parameter. The
+ * glycolysis pathway will compensate if there is not enough oxygen to meet energetic requirements
+ * through the oxidative phosphorylation pathway given the specified metabolic preference. The
+ * preference for glycolysis can be further increased due to IL-2 bound to the cell surface by a
+ * maximum of {@code META_PREF_IL2} parameter and by the T-cell's antigen-induced activation state
+ * by the {@code META_PREF_ACTIVE} parameter. The antigen-induced activation state can also increase
+ * the rate of uptake of glucose by the {@code GLUC_UPTAKE_RATE_ACTIVE} parameter and the fraction
+ * of glucose being used to make cell mass by the {@code FRAC_MASS_ACTIVE} parameter. The amount of
+ * IL-2 bound to the cell surface can also incrase the uptake rate of glucose by a max of the {@code
+ * GLUC_UPTAKE_RATE_IL2} parameter.
+ *
+ * <p>{@code PatchProcessMetabolismCART} will increase cell mass (using specified fractions of
+ * internal glucose and pyruvate) if:
+ *
+ * <ul>
+ *   <li>cell is dividing and less than double in size
+ *   <li>cell is below critical mass for maintenance
+ * </ul>
+ *
+ * {@code PatchProcessMetabolismCART} will decrease cell mass if:
+ *
+ * <ul>
+ *   <li>cell has negative energy levels indicating insufficient nutrients
+ *   <li>cell is above critical mass for maintenance
+ * </ul>
+ *
+ * <p>Internal pyruvate is removed through conversion to lactate.
+ */
 public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
 
-    /** ID for pyruvate */
+    /** ID for pyruvate. */
     public static final int PYRUVATE = 1;
 
     /** Flag indicating T-cell's antigen induced activation state. */
     private boolean active;
 
-    /** Metabolic preference for glycolysis over oxidative phosphorylation */
+    /** Metabolic preference for glycolysis over oxidative phosphorylation. */
     private final double metaPref;
 
-    /** Minimal cell mass */
+    /** Minimal cell mass. */
     private final double fracMass;
 
     /** Fraction of internal glucose/pyruvate converted to mass. */
     private final double conversionFraction;
 
-    /** Preference for glucose over pyruvate for mass */
+    /** Preference for glucose over pyruvate for mass. */
     private final double ratioGlucosePyruvate;
 
-    /** Rate of lactate production */
+    /** Rate of lactate production. */
     private final double lactateRate;
 
-    /** Rate of autophagy */
+    /** Rate of autophagy. */
     private final double autophagyRate;
 
-    /** Rate of glucose uptake */
+    /** Rate of glucose uptake. */
     private final double glucUptakeRate;
 
-    /** Max incrase in metabolic preference for glycolysis over oxidative phosphorylation */
-    private final double metabolicPreference_IL2;
+    /** Max incrase in metabolic preference for glycolysis over oxidative phosphorylation. */
+    private final double metabolicPreferenceIL2;
 
-    /** Increase in rate of glucose uptake due antigen-induced activation */
-    private final double metabolicPreference_active;
+    /** Increase in rate of glucose uptake due antigen-induced activation. */
+    private final double metabolicPreferenceActive;
 
-    /** Max increase in rate of glucose uptake due to IL-2 bound to surface */
-    private final double glucoseUptakeRate_IL2;
+    /** Max increase in rate of glucose uptake due to IL-2 bound to surface. */
+    private final double glucoseUptakeRateIL2;
 
     /** Increase in rate of glucose uptake due to antigen-induced activation. */
-    private final double glucoseUptakeRate_active;
+    private final double glucoseUptakeRateActive;
 
     /** Increase in fraction of glucose used for cell mass due to antigen-induced activation. */
-    private final double minimumMassFraction_active;
+    private final double minimumMassFractionActive;
 
     /** Time delay for changes in metabolism. */
     private final int timeDelay;
+
+    /** Metabolic preference value after stepping through the process. For testing purposes only. */
+    private double finalMetabolicPreference;
+
+    /** Glucose uptake rate value after stepping through the process. For testing purposes only. */
+    private double finalGlucoseUptakeRate;
+
+    /**
+     * Minimum mass fraction value after stepping through the process. For testing purposes only.
+     */
+    private double finalMinimumMassFraction;
 
     /**
      * Creates a metabolism {@link PatchProcess} for the given cell.
@@ -86,7 +131,6 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
         names = Arrays.asList(intNames);
 
         // Set loaded parameters.
-        // TODO: pull metabolic preference from distribution
         Parameters parameters = cell.getParameters();
         metaPref = parameters.getDouble("metabolism/METABOLIC_PREFERENCE");
         conversionFraction = parameters.getDouble("metabolism/CONVERSION_FRACTION");
@@ -96,11 +140,11 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
         autophagyRate = parameters.getDouble("metabolism/AUTOPHAGY_RATE");
         glucUptakeRate = parameters.getDouble("metabolism/GLUCOSE_UPTAKE_RATE");
 
-        metabolicPreference_IL2 = parameters.getDouble("metabolism/META_PREF_IL2");
-        metabolicPreference_active = parameters.getDouble("metabolism/META_PREF_ACTIVE");
-        glucoseUptakeRate_IL2 = parameters.getDouble("metabolism/GLUC_UPTAKE_RATE_IL2");
-        glucoseUptakeRate_active = parameters.getDouble("metabolism/GLUC_UPTAKE_RATE_ACTIVE");
-        minimumMassFraction_active = parameters.getDouble("metabolism/FRAC_MASS_ACTIVE");
+        metabolicPreferenceIL2 = parameters.getDouble("metabolism/META_PREF_IL2");
+        metabolicPreferenceActive = parameters.getDouble("metabolism/META_PREF_ACTIVE");
+        glucoseUptakeRateIL2 = parameters.getDouble("metabolism/GLUC_UPTAKE_RATE_IL2");
+        glucoseUptakeRateActive = parameters.getDouble("metabolism/GLUC_UPTAKE_RATE_ACTIVE");
+        minimumMassFractionActive = parameters.getDouble("metabolism/FRAC_MASS_ACTIVE");
         timeDelay = (int) parameters.getDouble("metabolism/META_SWITCH_DELAY");
 
         // Initial internal concentrations.
@@ -120,10 +164,10 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
         PatchProcessInflammation inflammation =
                 (PatchProcessInflammation) cell.getProcess(Domain.INFLAMMATION);
         double[] boundArray = inflammation.boundArray; // [molecules]
-        int IL2Ticker = inflammation.IL2Ticker;
-        double IL2ReceptorsTotal = inflammation.IL2_RECEPTORS;
+        int iL2Ticker = inflammation.iL2Ticker;
+        double iL2ReceptorsTotal = inflammation.iL2Receptors;
 
-        int metaIndex = (IL2Ticker % boundArray.length) - timeDelay;
+        int metaIndex = (iL2Ticker % boundArray.length) - timeDelay;
         if (metaIndex < 0) {
             metaIndex += boundArray.length;
         }
@@ -132,9 +176,9 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
         // Calculate metabolic preference and glucose uptake rate
         // as a function of base values plus impact of IL-2 bound to surface.
         double metabolicPreference =
-                metaPref + (metabolicPreference_IL2 * (priorIL2meta / IL2ReceptorsTotal));
+                metaPref + (metabolicPreferenceIL2 * (priorIL2meta / iL2ReceptorsTotal));
         double glucoseUptakeRate =
-                glucUptakeRate + (glucoseUptakeRate_IL2 * (priorIL2meta / IL2ReceptorsTotal));
+                glucUptakeRate + (glucoseUptakeRateIL2 * (priorIL2meta / iL2ReceptorsTotal));
         double minimumMassFraction = fracMass;
 
         // Check active status
@@ -144,9 +188,9 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
         // Add metabolic preference and glucose uptake rate depdendent on
         // antigen-induced cell activation if cell is activated.
         if (active && activeTicker >= timeDelay) {
-            metabolicPreference += metabolicPreference_active;
-            glucoseUptakeRate += glucoseUptakeRate_active;
-            minimumMassFraction += minimumMassFraction_active;
+            metabolicPreference += metabolicPreferenceActive;
+            glucoseUptakeRate += glucoseUptakeRateActive;
+            minimumMassFraction += minimumMassFractionActive;
         }
 
         // Take up glucose from environment, relative to glucose gradient.
@@ -239,6 +283,13 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
         upAmts[GLUCOSE] = glucUptake;
         upAmts[OXYGEN] = oxyUptake;
         intAmts[PYRUVATE] = pyruInt;
+
+        // Set final metabolic preference for testing
+        finalMetabolicPreference = metabolicPreference;
+        // Set final glucose uptake rate for testing
+        finalGlucoseUptakeRate = glucoseUptakeRate;
+        // Set final min mass fraction for testing
+        finalMinimumMassFraction = minimumMassFraction;
     }
 
     @Override
@@ -257,22 +308,35 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
         metabolism.intAmts[PYRUVATE] *= (1 - split);
         metabolism.volume *= (1 - split);
         metabolism.mass *= (1 - split);
+    }
 
-        // PatchProcessMetabolismCART metabolism = (PatchProcessMetabolismCART) process;
-        // double split = this.cell.getVolume() / this.volume;
+    /**
+     * Returns final value of metabolic preference after stepping process Exists for testing
+     * purposes only.
+     *
+     * @return final value of the metabolic preference
+     */
+    public double getFinalMetabolicPreference() {
+        return finalMetabolicPreference;
+    }
 
-        // // Update this process as split of given process.
-        // this.volume = this.cell.getVolume();
-        // this.energy = this.cell.getEnergy();
-        // this.mass = this.volume * cellDensity;
-        // this.intAmts[GLUCOSE] = metabolism.intAmts[GLUCOSE] * split;
-        // this.intAmts[PYRUVATE] = metabolism.intAmts[PYRUVATE] * split;
+    /**
+     * Returns final value of glucose uptake rate after stepping process Exists for testing purposes
+     * only.
+     *
+     * @return final value of glucose uptake rate
+     */
+    public double getFinalGlucoseUptakeRate() {
+        return finalGlucoseUptakeRate;
+    }
 
-        // // Update given process with remaining split.
-        // metabolism.volume = metabolism.cell.getVolume();
-        // metabolism.energy = metabolism.cell.getEnergy();
-        // metabolism.mass = metabolism.volume * cellDensity;
-        // metabolism.intAmts[GLUCOSE] *= (1 - split);
-        // metabolism.intAmts[PYRUVATE] *= (1 - split);
+    /**
+     * Returns final value of minimum mass fraction after stepping process Exists for testing
+     * purposes only.
+     *
+     * @return final value of min mass fraction
+     */
+    public double getFinalMinimumMassFraction() {
+        return finalMinimumMassFraction;
     }
 }

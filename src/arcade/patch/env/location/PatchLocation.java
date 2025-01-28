@@ -75,6 +75,13 @@ public abstract class PatchLocation implements Location {
     public abstract double getArea();
 
     /**
+     * Gets a shallow copy of the location.
+     *
+     * @return a new instance of location
+     */
+    public abstract PatchLocation getClone();
+
+    /**
      * Gets the patch coordinate in the {@link arcade.core.env.grid.Grid}.
      *
      * <p>These are not necessarily the same as the {@link arcade.core.env.lattice.Lattice}
@@ -84,6 +91,24 @@ public abstract class PatchLocation implements Location {
      */
     public Coordinate getCoordinate() {
         return coordinate;
+    }
+
+    /**
+     * Calculate the distance to center of simulation.
+     *
+     * @return the distance to center
+     */
+    public double getPlanarDistance() {
+        return coordinate.calculateDistance();
+    }
+
+    /**
+     * Gets the z coordinate.
+     *
+     * @return the z coordinate
+     */
+    public int getPlanarIndex() {
+        return coordinate.z;
     }
 
     /**
@@ -129,11 +154,11 @@ public abstract class PatchLocation implements Location {
     public abstract double getRatio();
 
     /**
-     * Gets the maximum occupancy of a location.
+     * Gets the number of subcoordinates in a location.
      *
-     * @return the maximum occupancy
+     * @return the number of subcoordinates
      */
-    public abstract int getMaximum();
+    public abstract int getNumSubcoordinates();
 
     /**
      * Gets the {@link arcade.core.env.grid.Grid} offset relative to the {@link
@@ -175,7 +200,10 @@ public abstract class PatchLocation implements Location {
      * @return {@code true} if coordinates are equal, {@code false} otherwise
      */
     public boolean equals(Object obj) {
-        return coordinate.equals(obj);
+        if (obj instanceof PatchLocation) {
+            return coordinate.equals(((PatchLocation) obj).getCoordinate());
+        }
+        return false;
     }
 
     /**

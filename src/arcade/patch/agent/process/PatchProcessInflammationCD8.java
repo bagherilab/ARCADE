@@ -17,12 +17,11 @@ public class PatchProcessInflammationCD8 extends PatchProcessInflammation {
     private double priorIL2granz;
 
     /**
-     * Creates a CD8 {@link arcade.agent.module.Inflammation} module.
+     * Creates a CD8 {@link PatchProcessInflammation} module.
      *
      * <p>Initial amount of internal granzyme is set. Granzyme production parameters set.
      *
-     * @param c the {@link arcade.agent.cell.CARTCell} the module is associated with
-     * @param sim the simulation instance
+     * @param c the {@link PatchCellCART} the module is associated with
      */
     public PatchProcessInflammationCD8(PatchCellCART c) {
         super(c);
@@ -43,14 +42,14 @@ public class PatchProcessInflammationCD8 extends PatchProcessInflammation {
 
         // Determine amount of granzyme production based on if cell is activated
         // as a function of IL-2 production.
-        int granzIndex = (IL2Ticker % boundArray.length) - GRANZ_SYNTHESIS_DELAY;
+        int granzIndex = (iL2Ticker % boundArray.length) - GRANZ_SYNTHESIS_DELAY;
         if (granzIndex < 0) {
             granzIndex += boundArray.length;
         }
         priorIL2granz = boundArray[granzIndex];
 
         if (active && activeTicker > GRANZ_SYNTHESIS_DELAY) {
-            amts[GRANZYME] += GRANZ_PER_IL2 * (priorIL2granz / IL2_RECEPTORS);
+            amts[GRANZYME] += GRANZ_PER_IL2 * (priorIL2granz / iL2Receptors);
         }
 
         // Update environment.
@@ -65,29 +64,28 @@ public class PatchProcessInflammationCD8 extends PatchProcessInflammation {
         double split = (this.cell.getVolume() / this.volume);
 
         // Update daughter cell inflammation as a fraction of parent.
-        // this.volume = this.cell.getVolume();
-        this.amts[IL2Rbga] = inflammation.amts[IL2Rbga] * split;
-        this.amts[IL2_IL2Rbg] = inflammation.amts[IL2_IL2Rbg] * split;
-        this.amts[IL2_IL2Rbga] = inflammation.amts[IL2_IL2Rbga] * split;
-        this.amts[IL2Rbg] =
-                IL2_RECEPTORS - this.amts[IL2Rbga] - this.amts[IL2_IL2Rbg] - this.amts[IL2_IL2Rbga];
-        this.amts[IL2_INT_TOTAL] = this.amts[IL2_IL2Rbg] + this.amts[IL2_IL2Rbga];
-        this.amts[IL2R_TOTAL] = this.amts[IL2Rbg] + this.amts[IL2Rbga];
+        this.amts[IL2RBGa] = inflammation.amts[IL2RBGa] * split;
+        this.amts[IL2_IL2RBG] = inflammation.amts[IL2_IL2RBG] * split;
+        this.amts[IL2_IL2RBGa] = inflammation.amts[IL2_IL2RBGa] * split;
+        this.amts[IL2RBG] =
+                iL2Receptors - this.amts[IL2RBGa] - this.amts[IL2_IL2RBG] - this.amts[IL2_IL2RBGa];
+        this.amts[IL2_INT_TOTAL] = this.amts[IL2_IL2RBG] + this.amts[IL2_IL2RBGa];
+        this.amts[IL2R_TOTAL] = this.amts[IL2RBG] + this.amts[IL2RBGa];
         this.amts[GRANZYME] = inflammation.amts[GRANZYME] * split;
         this.boundArray = (inflammation.boundArray).clone();
 
         // Update parent cell with remaining fraction.
-        inflammation.amts[IL2Rbga] *= (1 - split);
-        inflammation.amts[IL2_IL2Rbg] *= (1 - split);
-        inflammation.amts[IL2_IL2Rbga] *= (1 - split);
-        inflammation.amts[IL2Rbg] =
-                IL2_RECEPTORS
-                        - inflammation.amts[IL2Rbga]
-                        - inflammation.amts[IL2_IL2Rbg]
-                        - inflammation.amts[IL2_IL2Rbga];
+        inflammation.amts[IL2RBGa] *= (1 - split);
+        inflammation.amts[IL2_IL2RBG] *= (1 - split);
+        inflammation.amts[IL2_IL2RBGa] *= (1 - split);
+        inflammation.amts[IL2RBG] =
+                iL2Receptors
+                        - inflammation.amts[IL2RBGa]
+                        - inflammation.amts[IL2_IL2RBG]
+                        - inflammation.amts[IL2_IL2RBGa];
         inflammation.amts[IL2_INT_TOTAL] =
-                inflammation.amts[IL2_IL2Rbg] + inflammation.amts[IL2_IL2Rbga];
-        inflammation.amts[IL2R_TOTAL] = inflammation.amts[IL2Rbg] + inflammation.amts[IL2Rbga];
+                inflammation.amts[IL2_IL2RBG] + inflammation.amts[IL2_IL2RBGa];
+        inflammation.amts[IL2R_TOTAL] = inflammation.amts[IL2RBG] + inflammation.amts[IL2RBGa];
         inflammation.amts[GRANZYME] *= (1 - split);
         inflammation.volume *= (1 - split);
     }

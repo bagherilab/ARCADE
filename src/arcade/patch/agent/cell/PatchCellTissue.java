@@ -7,33 +7,22 @@ import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
-import arcade.patch.util.PatchEnums.AntigenFlag;
 import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.Flag;
 import arcade.patch.util.PatchEnums.State;
 
 /** Extension of {@link PatchCell} for healthy tissue cells. */
 public class PatchCellTissue extends PatchCell {
-    // /** Fraction of necrotic cells that become apoptotic. */
-    // private final double necroticFraction;
+    /** Cell surface antigen count. */
+    private final int carAntigens;
 
-    // /** Fraction of senescent cells that become apoptotic. */
-    // private final double senescentFraction;
-
-    // these two variables are public bc I don't want to implement setter/getter methods for sims
-    // that do not use CART cells.
-
-    /** Cell surface CAR antigen count */
-    int carAntigens;
-
-    /** Cell surface PDL1 count */
-    int selfTargets;
+    /** Cell surface PDL1 count. */
+    private final int selfTargets;
 
     /** Cell surface SynNotch antigen count */
-    int synNotchAntigens;
+    private int synNotchAntigens;
 
-    /** Cell binding flag */
-    public AntigenFlag binding;
+
 
     /**
      * Creates a tissue {@code PatchCell} agent.
@@ -57,7 +46,7 @@ public class PatchCellTissue extends PatchCell {
     public PatchCellTissue(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
-        carAntigens = parameters.getInt("CAR_ANTIGENS_HEALTHY");
+        carAntigens = parameters.getInt("CAR_ANTIGENS");
         selfTargets = parameters.getInt("SELF_TARGETS");
         synNotchAntigens = parameters.getInt("SYNNOTCH_ANTIGENS");
         this.binding = AntigenFlag.UNDEFINED;
@@ -80,55 +69,72 @@ public class PatchCellTissue extends PatchCell {
                 criticalHeight);
     }
 
-    /* consider making PatchCell parameters protected instead of private */
-
     @Override
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
-
         // Increase age of cell.
-        super.age++;
+        age++;
 
-        // TODO: check for death due to age
+        if (state != State.APOPTOTIC && age > apoptosisAge) {
+            setState(State.APOPTOTIC);
+        }
 
         // Step metabolism process.
-        super.processes.get(Domain.METABOLISM).step(simstate.random, sim);
+        processes.get(Domain.METABOLISM).step(simstate.random, sim);
 
         // Check energy status. If cell has less energy than threshold, it will
         // necrose. If overall energy is negative, then cell enters quiescence.
         if (state != State.APOPTOTIC && energy < 0) {
-            if (super.energy < super.energyThreshold) {
+            if (energy < energyThreshold) {
                 if (simstate.random.nextDouble() > necroticFraction) {
-                    super.setState(State.APOPTOTIC);
+                    setState(State.APOPTOTIC);
                 } else {
-                    super.setState(State.NECROTIC);
+                    setState(State.NECROTIC);
                 }
             } else if (state != State.QUIESCENT && state != State.SENESCENT) {
-                super.setState(State.QUIESCENT);
+                setState(State.QUIESCENT);
             }
         }
 
         // Step signaling network process.
-        super.processes.get(Domain.SIGNALING).step(simstate.random, sim);
+        processes.get(Domain.SIGNALING).step(simstate.random, sim);
 
         // Change state from undefined.
-        if (super.state == State.UNDEFINED) {
-            if (super.flag == Flag.MIGRATORY) {
-                super.setState(State.MIGRATORY);
-            } else if (super.divisions == 0) {
+        if (state == State.UNDEFINED) {
+            if (flag == Flag.MIGRATORY) {
+                setState(State.MIGRATORY);
+            } else if (divisions == 0) {
                 if (simstate.random.nextDouble() > senescentFraction) {
-                    super.setState(State.APOPTOTIC);
+                    setState(State.APOPTOTIC);
                 } else {
-                    super.setState(State.SENESCENT);
+                    setState(State.SENESCENT);
                 }
             } else {
-                super.setState(State.PROLIFERATIVE);
+                setState(State.PROLIFERATIVE);
             }
         }
 
         // Step the module for the cell state.
-        if (super.module != null) {
-            super.module.step(simstate.random, sim);
+        if (module != null) {
+            module.step(simstate.random, sim);
         }
+    }
+
+    /**
+     * Returns the number of CAR antigens on this cell.
+     *
+     * @return the number of CAR antigens on this cell.
+     */
+    public int getCarAntigens() {
+        return carAntigens;
+    }
+
+    /**
+     * Returns the number of self receptor antigens on this cell.
+     *
+     * @return the number of self receptor antigens on this cell.
+     */
+    public int getSelfAntigens() {
+        return selfTargets;
     }
 }

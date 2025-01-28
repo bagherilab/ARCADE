@@ -11,6 +11,7 @@ import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.cell.PatchCellTissue;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.util.PatchEnums.AntigenFlag;
+import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.Ordering;
 import arcade.patch.util.PatchEnums.State;
 
@@ -40,11 +41,10 @@ public class PatchActionKill implements Action {
     private final int timeDelay;
 
     /**
-     * Creates a {@code PatchActionKill} for the given {@link
-     * arcade.patch.agent.cell.PatchCellCART}.
+     * Creates a {@code PatchActionKill} for the given {@link PatchCellCART}.
      *
-     * @param c the {@link arcade.patch.agent.cell.PatchCellCART} the helper is associated with
-     * @param target the {@link arcade.patch.agent.cell.PatchCellTissue} the CAR T-cell is bound to
+     * @param c the {@link PatchCellCART} the helper is associated with
+     * @param target the {@link PatchCellTissue} the CAR T-cell is bound to
      */
     public PatchActionKill(
             PatchCellCART c,
@@ -54,8 +54,8 @@ public class PatchActionKill implements Action {
             Parameters parameters) {
         this.c = c;
         this.target = target;
-        // this.inflammation = (PatchProcessInflammation) c.getProcess(Domain.INFLAMMATION);
-        // this.granzyme = inflammation.getInternal("granzyme");
+        this.inflammation = (PatchProcessInflammation) c.getProcess(Domain.INFLAMMATION);
+        this.granzyme = inflammation.getInternal("granzyme");
         timeDelay = 0;
     }
 
@@ -78,24 +78,23 @@ public class PatchActionKill implements Action {
 
         // If bound target cell is stopped, stop helper.
         if (target.isStopped()) {
-            if (c.binding == AntigenFlag.BOUND_ANTIGEN) {
-                c.binding = AntigenFlag.UNBOUND;
+            if (c.getAntigenFlag() == AntigenFlag.BOUND_ANTIGEN) {
+                c.setAntigenFlag(AntigenFlag.UNBOUND);
             } else {
-                c.binding = AntigenFlag.BOUND_CELL_RECEPTOR;
+                c.setAntigenFlag(AntigenFlag.BOUND_CELL_RECEPTOR);
             }
             return;
         }
 
-        // if (granzyme >= 1) {
+        if (granzyme >= 1) {
 
-        // Kill bound target cell.
-        PatchCellTissue tissueCell = (PatchCellTissue) target;
-        tissueCell.setState(State.APOPTOTIC);
-        tissueCell.getModule().step(state.random, sim);
+            // Kill bound target cell.
+            PatchCellTissue tissueCell = (PatchCellTissue) target;
+            tissueCell.setState(State.APOPTOTIC);
 
-        // Use up some granzyme in the process.
-        // granzyme--;
-        // inflammation.setInternal("granzyme", granzyme);
-        // }
+            // Use up some granzyme in the process.
+            granzyme--;
+            inflammation.setInternal("granzyme", granzyme);
+        }
     }
 }

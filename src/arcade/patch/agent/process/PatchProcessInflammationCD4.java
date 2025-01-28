@@ -32,13 +32,15 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
     /** Amount of IL-2 bound in past being used for current IL-2 production calculation */
     private double priorIL2prod;
 
+    /** External IL-2 sent into environment after each step. Used for testing only */
+    private double IL2EnvTesting;
+
     /**
-     * Creates a CD4 {@link arcade.agent.module.Inflammation} module.
+     * Creates a CD4 {@link PatchProcessInflammation} module.
      *
      * <p>IL-2 production rate parameters set.
      *
-     * @param c the {@link arcade.agent.cell.CARTCell} the module is associated with
-     * @param sim the simulation instance
+     * @param c the {@link PatchCellCART} the module is associated with
      */
     public PatchProcessInflammationCD4(PatchCellCART c) {
         super(c);
@@ -55,12 +57,12 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
     public void stepProcess(MersenneTwisterFast random, Simulation sim) {
 
         // Determine IL-2 production rate as a function of IL-2 bound.
-        int prodIndex = (IL2Ticker % boundArray.length) - IL2_SYNTHESIS_DELAY;
+        int prodIndex = (iL2Ticker % boundArray.length) - IL2_SYNTHESIS_DELAY;
         if (prodIndex < 0) {
             prodIndex += boundArray.length;
         }
         priorIL2prod = boundArray[prodIndex];
-        IL2ProdRate = IL2_PROD_RATE_IL2 * (priorIL2prod / IL2_RECEPTORS);
+        IL2ProdRate = IL2_PROD_RATE_IL2 * (priorIL2prod / iL2Receptors);
 
         // Add IL-2 production rate dependent on antigen-induced
         // cell activation if cell is activated.
@@ -76,6 +78,10 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
         // then convert units back to molecules/cm^3.
         double IL2Env =
                 (((extIL2 - (extIL2 * f - amts[IL2_EXT])) + IL2Produced) * 1E12 / loc.getVolume());
+
+        // update IL2 env variable for testing
+        IL2EnvTesting = IL2Env;
+
         sim.getLattice("IL-2").setValue(loc, IL2Env);
     }
 
@@ -86,27 +92,36 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
 
         // Update daughter cell inflammation as a fraction of parent.
         // this.volume = this.cell.getVolume();
-        this.amts[IL2Rbga] = inflammation.amts[IL2Rbga] * split;
-        this.amts[IL2_IL2Rbg] = inflammation.amts[IL2_IL2Rbg] * split;
-        this.amts[IL2_IL2Rbga] = inflammation.amts[IL2_IL2Rbga] * split;
-        this.amts[IL2Rbg] =
-                IL2_RECEPTORS - this.amts[IL2Rbga] - this.amts[IL2_IL2Rbg] - this.amts[IL2_IL2Rbga];
-        this.amts[IL2_INT_TOTAL] = this.amts[IL2_IL2Rbg] + this.amts[IL2_IL2Rbga];
-        this.amts[IL2R_TOTAL] = this.amts[IL2Rbg] + this.amts[IL2Rbga];
+        this.amts[IL2RBGa] = inflammation.amts[IL2RBGa] * split;
+        this.amts[IL2_IL2RBG] = inflammation.amts[IL2_IL2RBG] * split;
+        this.amts[IL2_IL2RBGa] = inflammation.amts[IL2_IL2RBGa] * split;
+        this.amts[IL2RBG] =
+                iL2Receptors - this.amts[IL2RBGa] - this.amts[IL2_IL2RBG] - this.amts[IL2_IL2RBGa];
+        this.amts[IL2_INT_TOTAL] = this.amts[IL2_IL2RBG] + this.amts[IL2_IL2RBGa];
+        this.amts[IL2R_TOTAL] = this.amts[IL2RBG] + this.amts[IL2RBGa];
         this.boundArray = (inflammation.boundArray).clone();
 
         // Update parent cell with remaining fraction.
-        inflammation.amts[IL2Rbga] *= (1 - split);
-        inflammation.amts[IL2_IL2Rbg] *= (1 - split);
-        inflammation.amts[IL2_IL2Rbga] *= (1 - split);
-        inflammation.amts[IL2Rbg] =
-                IL2_RECEPTORS
-                        - inflammation.amts[IL2Rbga]
-                        - inflammation.amts[IL2_IL2Rbg]
-                        - inflammation.amts[IL2_IL2Rbga];
+        inflammation.amts[IL2RBGa] *= (1 - split);
+        inflammation.amts[IL2_IL2RBG] *= (1 - split);
+        inflammation.amts[IL2_IL2RBGa] *= (1 - split);
+        inflammation.amts[IL2RBG] =
+                iL2Receptors
+                        - inflammation.amts[IL2RBGa]
+                        - inflammation.amts[IL2_IL2RBG]
+                        - inflammation.amts[IL2_IL2RBGa];
         inflammation.amts[IL2_INT_TOTAL] =
-                inflammation.amts[IL2_IL2Rbg] + inflammation.amts[IL2_IL2Rbga];
-        inflammation.amts[IL2R_TOTAL] = inflammation.amts[IL2Rbg] + inflammation.amts[IL2Rbga];
+                inflammation.amts[IL2_IL2RBG] + inflammation.amts[IL2_IL2RBGa];
+        inflammation.amts[IL2R_TOTAL] = inflammation.amts[IL2RBG] + inflammation.amts[IL2RBGa];
         inflammation.volume *= (1 - split);
+    }
+
+    /**
+     * Returns final value of external IL2 after stepping process. Exists for testing purposes only
+     *
+     * @return final value of external IL2
+     */
+    public double getIL2EnvTesting() {
+        return IL2EnvTesting;
     }
 }

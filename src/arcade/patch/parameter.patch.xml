@@ -13,6 +13,7 @@
     <population id="CELL_VOLUME" value="NORMAL(MU=2250,SIGMA=200)" unit="um^3" description="cell volume distribution" />
     <population id="CELL_HEIGHT" value="NORMAL(MU=8.7,SIGMA=0)" unit="um" description="cell height distribution" />
     <population id="CELL_AGE" value="UNIFORM(MIN=0,MAX=120960)" unit="min" description="cell age distribution" />
+    <population id="APOPTOSIS_AGE" value="NORMAL(MU=120960,SIGMA=10080)" unit="min" description="cell apoptosis age distribution" />
     <population id="DIVISION_POTENTIAL" value="50" description="maximum number of divisions" />
     <population id="COMPRESSION_TOLERANCE" value="0" units="um" description="maximum compression tolerance" />
     <population id="HETEROGENEITY" value="0.0" description="variation in cell agent parameters" />
@@ -21,8 +22,11 @@
     <population id="PROLIFERATIVE_FRACTION" value="0.5" description="fraction of proliferative cells that become apoptotic" />
     <population id="ENERGY_THRESHOLD" value="1000.0" description="maximum energy deficit before necrosis" />
     <population id="SYMMETRIC_FRACTION" value="0.05" description="fraction of divisions that are symmetric" />
-    <population id="BOUND_TIME" value="360" description="6 hours" />
-    <population id="BOUND_RANGE" value="0" description="hours" />
+    <population id="MAX_DENSITY" value="-1" description="maximum amount of cells in location, -1 means no limit" />
+    <population id="ACCURACY" value="0.8" description="accuracy to select highest glucose concentration in future location" />
+    <population id="AFFINITY" value="0.5" description="movement toward center affinity when selecting future location" />
+    <population id="MAX_DENSITY" value="54" description="maximum amount of cells in location, -1 means no limit" />
+    <population id="SYNTHESIS_DURATION" value="637" units="min" description="time required for DNA synthesis" />
 
     <!-- CAR T specific parameters -->
     <population id="DIVISION_POTENTIAL_T" value="10" description="max number of divisions for a CAR T-cell" />
@@ -31,8 +35,7 @@
     <population id="SEARCH_ABILITY" value="1" description="max number of cells a CAR T-cell could make contact with per time step" />
     <population id="MAX_ANTIGEN_BINDING" value="10" description="number of times a CAR T-cell can interact with target without becoming exhausted" />
     <population id="CARS" value="50000" description="average number of CARs on a CAR T-cell" />
-    <population id="CAR_ANTIGENS_HEALTHY" value="0" description="average number of CAR antigens on a tissue healthy cell" />
-    <population id="CAR_ANTIGENS_CANCER" value="1000" description="average number of CAR antigens on a tissue cancer cell" />
+    <population id="CAR_ANTIGENS" value="1000" description="average number of CAR antigens on a given cell" />
     <population id="SELF_RECEPTORS" value="150" description="average number of PD1s on a CAR T-cell" />
     <population id="SELF_TARGETS" value="3600" description="average number of PDL1s on tissue cell" />
     <population id="CAR_AFFINITY" value="1E-7" unit="M" description="affinity of CAR for target antigen" />
@@ -44,6 +47,8 @@
     <population id="CONTACT_FRAC" value="0.2" description="fraction of cell surface contacting a bound cell during a binding event" />
     <population id="T_CELL_VOL_MEAN" value="175.0" unit="um^3" />
     <population id="T_CELL_VOLUME_STDEV" value="10.0" unit="um^3" description="cell volume distribution standard deviation" />
+    <population id="BOUND_TIME" value="360" description="6 hours" />
+    <population id="BOUND_RANGE" value="0" description="hours" />
 
      <!-- SynNotch specific parameters -->
     <population id="SYNNOTCH_ALPHA" value="3" description="fitting factor in CAR binding function" />
@@ -53,8 +58,6 @@
     <population id="SYNNOTCH_ANTIGENS" value="1000" description="average number of SynNotch antigens on a tissue cancer cell" />
 
     <!-- proliferation module parameters -->
-    <population.module module="proliferation" id="SYNTHESIS_DURATION" value="637" units="min" description="time required for DNA synthesis" />
-    <population.module module="proliferation" id="T_CELL_SYNTHESIS_DURATION" value="360" units="min" description="time required for DNA synthesis" />
 
     <!-- migration module parameters -->
     <population.module module="migration" id="MIGRATION_RATE" value="0.24" unit="um/min" description="cell migration rate" />
@@ -80,14 +83,13 @@
     <population.process process="metabolism" id="CONSTANT_GLUCOSE_UPTAKE_RATE" value="929.88" unit="fmol glucose/min/M glucose" description="constant glucose uptake rate" />
     <population.process process="metabolism" id="CONSTANT_ATP_PRODUCTION_RATE" value="4.9817" unit="fmol ATP/cell/min" description="constant ATP production rate" />
     <population.process process="metabolism" id="CONSTANT_VOLUME_GROWTH_RATE" value="2.819" unit="um^3/min" description="constant volume growth rate"/>
-
+    <population.process process="metabolism" id="INITIAL_GLUCOSE_CONCENTRATION" value="0.005" unit="fmol/um^3" description="initial cell internal glucose concentration"/>
     <population.process process="metabolism" id="FRAC_MASS_ACTIVE" value="0.25" description="increase in percent of internal nutrients converted to mass due to antigen activation" />
     <population.process process="metabolism" id="META_PREF_IL2" value="0.1" description="maximum increase in preference for glycolysis due to IL-2" />
     <population.process process="metabolism" id ="META_PREF_ACTIVE" value="0.3" description="increase in preference for glycolysis due to antigen activation" />
     <population.process process="metabolism" id ="GLUC_UPTAKE_RATE_IL2" value="0.56" unit="fmol glucose/um^2 cell/min/M glucose" description="increase in glucose uptake rate due to IL-2" />
     <population.process process="metabolism" id ="GLUC_UPTAKE_RATE_ACTIVE" value="3.78" unit="fmol glucose/um^2 cell/min/M glucose" description="increase in glucose uptake rate due to antigen activation" />
     <population.process process="metabolism" id ="META_SWITCH_DELAY" value="60" unit="min" />
-    <population.process process="metabolism" id="INITIAL_GLUCOSE_CONCENTRATION" value="0.005" unit="fmol/um^3" description="initial cell internal glucose concentration"/>
 
     <!-- signaling process parameters -->
     <population.process process="signaling" id="MIGRATORY_THRESHOLD" value="10" description="threshold fold change in PLCg for migration" />
@@ -96,9 +98,6 @@
     <!-- inflammation process module -->
     <population.process process="inflammation" id="SHELL_THICKNESS" value="2.0" unit="um" />
     <population.process process="inflammation" id="IL2_RECEPTORS" value="2000" unit="IL-2 receptors/cell" />
-    <population.process process="inflammation" id="IL2_BINDING_ON_RATE_MIN" value="3.8193E-2" unit="um^3/molecules IL-2/min" />
-    <population.process process="inflammation" id="IL2_BINDING_ON_RATE_MAX" value="3.155" unit="um^3/molecules IL-2/min" />
-    <population.process process="inflammation" id="IL2_BINDING_OFF_RATE" value="0.015" units="1/min" />
 
     <!-- inflammation CD4 module -->
     <population.process process="inflammation" id="IL2_PROD_RATE_IL2" value="16.62" unit="molecules IL-2/cell/min" />

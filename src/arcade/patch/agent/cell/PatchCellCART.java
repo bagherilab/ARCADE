@@ -13,11 +13,11 @@ import static arcade.patch.util.PatchEnums.AntigenFlag;
 import static arcade.patch.util.PatchEnums.State;
 
 /**
- * Implementation of {@link Cell} for generic CART cell.
+ * Implementation of {@link PatchCell} for generic CART cell.
  *
  * <p>{@code PatchCellCART} agents exist in one of thirteen states: neutral, apoptotic, migratory,
  * proliferative, senescent, cytotoxic (CD8), stimulatory (CD4), exhausted, anergic, starved, or
- * paused. The neutral state is an transition state for "undecided" cells, and does not have any
+ * paused. The neutral state is a transition state for "undecided" cells, and does not have any
  * biological analog.
  *
  * <p>{@code PatchCellCART} agents have two required {@link Process} domains: metabolism and
@@ -45,44 +45,52 @@ import static arcade.patch.util.PatchEnums.State;
  * specified amount of heterogeneity ({@code HETEROGENEITY}).
  */
 public abstract class PatchCellCART extends PatchCell {
-
-    //  /** Fraction of exhausted cells that become apoptotic. */
-    //  protected final double exhaustedFraction;
-
-    //  /** Fraction of senescent cells that become apoptotic. */
-    //  protected final double senescentFraction;
-
-    //  /** Fraction of anergic cells that become apoptotic. */
-    //  protected final double anergicFraction;
-
-    //   /** Fraction of proliferative cells that become apoptotic. */
-    //  protected final double proliferativeFraction;
-
-    /** Cell binding flag */
-    public AntigenFlag binding;
-
-    /** Cell activation flag */
+    /** Cell activation flag. */
     protected boolean activated;
 
-    /** lack of documentation so these parameters are TBD */
+    /** number of current PDL-1 receptors on CART cell. */
     protected int selfReceptors;
 
+    /** initial number of PDL-1 receptors on CART cell. */
     protected int selfReceptorsStart;
+
+    /** number of bound CAR antigens. */
     protected int boundAntigensCount;
+
+    /** number of bound PDL-1 antigens. */
     protected int boundSelfCount;
 
-    /** lack of documentation so these loaded parameters are TBD */
+    /** number of neighbors that T cell is able to search through. */
     protected final double searchAbility;
 
+    /** binding affinity for CAR receptor. */
     protected final double carAffinity;
+
+    /** tuning factor for CAR binding. */
     protected final double carAlpha;
+
+    /** tuning factor for CAR binding. */
     protected final double carBeta;
+
+    /** binding affinity for PDL-1 receptor. */
     protected final double selfReceptorAffinity;
+
+    /** tuning factor for PDL-1 receptor binding. */
     protected final double selfAlpha;
+
+    /** tuning factor for PDL-1 receptor binding. */
     protected final double selfBeta;
+
+    /** fraction of cell surface that contacts when binding. */
     protected final double contactFraction;
+
+    /** max antigens threshold for T cell exhaustion. */
     protected final int maxAntigenBinding;
-    public final int cars;
+
+    /** number of CARs on T cell surface. */
+    protected final int cars;
+
+    /** simulation time since T cell was last activated. */
     protected int lastActiveTicker;
 
     /** Fraction of exhausted cells that become apoptotic. */
@@ -98,52 +106,38 @@ public abstract class PatchCellCART extends PatchCell {
     protected final double proliferativeFraction;
 
     /**
-     * Creates a tissue {@code PatchCellCART} agent. *
+     * Creates a {@code PatchCellCART} agent. *
      *
-     * <p>Loaded parameters include:
-     *
-     * <ul>
-     *   <li>{@code EXHAUSTED_FRACTION} = fraction of exhausted cells that become apoptotic
-     *   <li>{@code SENESCENT_FRACTION} = fraction of senescent cells that become apoptotic
-     *   <li>{@code ANERGIC_FRACTION} = fraction of anergic cells that become apoptotic
-     *   <li>{@code PROLIFERATIVE_FRACTION} = fraction of proliferative cells that become apoptotic
-     *   <li>{@code CAR_ANTIGENS} = Cell surface antigen count
-     *   <li>{@code SELF_TARGETS} = Cell surface PDL1 count
-     *   <li>{@code SEARCH_ABILITY} = TBD
-     *   <li>{@code CAR_AFFINITY} = TBD
-     *   <li>{@code CAR_ALPHA} = TBD
-     *   <li>{@code CAR_BETA} = TBD
-     *   <li>{@code SELF_RECEPTOR_AFFINITY} = TBD
-     *   <li>{@code SELF_ALPHA} = TBD
-     *   <li>{@code SELF_BETA} = TBD
-     *   <li>{@code CONTACT_FRACTION} = TBD
-     *   <li>{@code MAX_ANTIGEN_BINDING} = TBD
-     *   <li>{@code CARS} = TBD
-     *   <li>{@code SELF_RECEPTORS} = TBD
-     *   <li>{@code SELF_RECEPTORS_START} = TBD
-     * </ul>
-     *
-     * < THERE IS A LACK OF DOCUMENTATION FOR THE REST OF THE LOADED PARAMS SO THEY ARE TBD>
-     *
-     * @param id the cell ID
-     * @param parent the parent ID
-     * @param pop the cell population index
-     * @param state the cell state
-     * @param age the cell age
-     * @param divisions the number of cell divisions
+     * @param container the cell container
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
-     * @param volume the cell volume
-     * @param height the cell height
-     * @param criticalVolume the critical cell volume
-     * @param criticalHeight the critical cell height
      */
     public PatchCellCART(PatchCellContainer container, Location location, Parameters parameters) {
         this(container, location, parameters, null);
     }
 
     /**
-     * Creates a tissue {@code PatchCell} agent with population links.
+     * Creates a {@code PatchCellCART} agent. *
+     *
+     * <p>Loaded parameters include:
+     *
+     * <ul>
+     *   <li>{@code EXHAU_FRACTION} = fraction of exhausted cells that become apoptotic
+     *   <li>{@code SENESCENT_FRACTION} = fraction of senescent cells that become apoptotic
+     *   <li>{@code ANERGIC_FRACTION} = fraction of anergic cells that become apoptotic
+     *   <li>{@code PROLIFERATIVE_FRACTION} = fraction of proliferative cells that become apoptotic
+     *   <li>{@code SELF_RECEPTORS} = current number of PDL-1 receptors on cell surface
+     *   <li>{@code SEARCH_ABILITY} = number of neighbors that T cell can search through
+     *   <li>{@code CAR_AFFINITY} = CAR receptor binding affinity
+     *   <li>{@code CAR_ALPHA} = tuning factor for CAR binding
+     *   <li>{@code CAR_BETA} = tuning factor for CAR binding
+     *   <li>{@code SELF_RECEPTOR_AFFINITY} = PDL-1 receptor binding affinity
+     *   <li>{@code SELF_ALPHA} = tuning factor for PDL-1 receptor binding
+     *   <li>{@code SELF_BETA} = tuning factor for PDL-1 receptor binding
+     *   <li>{@code CONTACT_FRAC} = fraction of surface area that contacts target cell when binding
+     *   <li>{@code MAX_ANTIGEN_BINDING} = maximum bound antigen count for T cell exhaustion
+     *   <li>{@code CARS} = number of CAR receptors on the cell
+     * </ul>
      *
      * @param container the cell container
      * @param location the {@link Location} of the cell
@@ -157,7 +151,6 @@ public abstract class PatchCellCART extends PatchCell {
         boundAntigensCount = 0;
         boundSelfCount = 0;
         lastActiveTicker = 0;
-        binding = AntigenFlag.UNDEFINED;
         activated = true;
 
         // Set loaded parameters.
@@ -179,7 +172,6 @@ public abstract class PatchCellCART extends PatchCell {
         cars = parameters.getInt("CARS");
     }
 
-    /* need to implement bindTarget equivalent here*/
     /**
      * Determines if CAR T cell agent is bound to neighbor through receptor-target binding.
      *
@@ -187,26 +179,25 @@ public abstract class PatchCellCART extends PatchCell {
      * antigen and self receptors, compares values to random variable. Sets flags accordingly and
      * returns a target cell if one was bound by antigen or self receptor.
      *
-     * @param state the MASON simulation state
+     * @param sim the MASON simulation
      * @param loc the location of the CAR T-cell
      * @param random random seed
+     * @return the target cell if one was bound. Null if none were bound.
      */
     public PatchCellTissue bindTarget(
             Simulation sim, PatchLocation loc, MersenneTwisterFast random) {
-        double KDCAR = carAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
-        double KDSelf = selfReceptorAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
+        double kDCAR = carAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
+        double kDSelf = selfReceptorAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
         PatchGrid grid = (PatchGrid) sim.getGrid();
 
-        // get all agents from this location
-        Bag allAgents = new Bag(grid.getObjectsAtLocation(loc));
+        // get all tissue agents from this location
+        Bag allAgents = new Bag();
+        getTissueAgents(allAgents, grid.getObjectsAtLocation(loc));
 
         // get all agents from neighboring locations
         for (Location neighborLocation : loc.getNeighbors()) {
             Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));
-            for (Object b : bag) {
-                // add all agents from neighboring locations
-                if (!allAgents.contains(b)) allAgents.add(b);
-            }
+            getTissueAgents(allAgents, bag);
         }
 
         // remove self
@@ -221,7 +212,7 @@ public abstract class PatchCellCART extends PatchCell {
         // Bind target with some probability if a nearby cell has targets to bind.
         int maxSearch = 0;
         if (neighbors == 0) {
-            binding = AntigenFlag.UNBOUND;
+            super.setAntigenFlag(AntigenFlag.UNBOUND);
             return null;
         } else {
             if (neighbors < searchAbility) {
@@ -233,35 +224,31 @@ public abstract class PatchCellCART extends PatchCell {
             // Within maximum search vicinity, search for neighboring cells to bind to
             for (int i = 0; i < maxSearch; i++) {
                 Cell cell = (Cell) allAgents.get(i);
-                if (!(cell instanceof PatchCellCART)
-                        && cell.getState() != State.APOPTOTIC
-                        && cell.getState() != State.NECROTIC) {
+                if (cell.getState() != State.APOPTOTIC && cell.getState() != State.NECROTIC) {
                     PatchCellTissue tissueCell = (PatchCellTissue) cell;
-                    double CARAntigens = tissueCell.carAntigens;
-                    double selfTargets = tissueCell.selfTargets;
+                    double cARAntigens = tissueCell.getCarAntigens();
+                    double selfTargets = tissueCell.getSelfAntigens();
 
                     double hillCAR =
-                            (CARAntigens
-                                            * contactFraction
-                                            / (KDCAR * carBeta + CARAntigens * contactFraction))
-                                    * (cars / 50000)
-                                    * carAlpha;
+                            getHillCoefficient(cARAntigens, kDCAR, cars, 5000, carAlpha, carBeta);
                     double hillSelf =
-                            (selfTargets
-                                            * contactFraction
-                                            / (KDSelf * selfBeta + selfTargets * contactFraction))
-                                    * (selfReceptors / selfReceptorsStart)
-                                    * selfAlpha;
+                            getHillCoefficient(
+                                    selfTargets,
+                                    kDSelf,
+                                    selfReceptors,
+                                    selfReceptorsStart,
+                                    selfAlpha,
+                                    selfBeta);
 
-                    double logCAR = 2 * (1 / (1 + Math.exp(-1 * hillCAR))) - 1;
-                    double logSelf = 2 * (1 / (1 + Math.exp(-1 * hillSelf))) - 1;
+                    double logCAR = getLog(hillCAR);
+                    double logSelf = getLog(hillSelf);
 
                     double randomAntigen = random.nextDouble();
                     double randomSelf = random.nextDouble();
 
                     if (logCAR >= randomAntigen && logSelf < randomSelf) {
                         // cell binds to antigen receptor
-                        binding = AntigenFlag.BOUND_ANTIGEN;
+                        super.setAntigenFlag(AntigenFlag.BOUND_ANTIGEN);
                         boundAntigensCount++;
                         selfReceptors +=
                                 (int)
@@ -270,7 +257,7 @@ public abstract class PatchCellCART extends PatchCell {
                         return tissueCell;
                     } else if (logCAR >= randomAntigen && logSelf >= randomSelf) {
                         // cell binds to antigen receptor and self
-                        binding = AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR;
+                        super.setAntigenFlag(AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR);
                         boundAntigensCount++;
                         boundSelfCount++;
                         selfReceptors +=
@@ -280,40 +267,74 @@ public abstract class PatchCellCART extends PatchCell {
                         return tissueCell;
                     } else if (logCAR < randomAntigen && logSelf >= randomSelf) {
                         // cell binds to self
-                        binding = AntigenFlag.BOUND_CELL_RECEPTOR;
+                        super.setAntigenFlag(AntigenFlag.BOUND_CELL_RECEPTOR);
                         boundSelfCount++;
                         return tissueCell;
                     } else {
                         // cell doesn't bind to anything
-                        binding = AntigenFlag.UNBOUND;
+                        super.setAntigenFlag(AntigenFlag.UNBOUND);
                     }
                 }
             }
-            binding = AntigenFlag.UNBOUND;
+            super.setAntigenFlag(AntigenFlag.UNBOUND);
         }
         return null;
     }
 
     /**
-     * Sets the cell binding flag.
+     * Returns the cell activation status.
      *
-     * @param antigenFlag the target cell antigen binding state
+     * @return the activation status
      */
-    public void setAntigenFlag(AntigenFlag flag) {
-        this.binding = flag;
+    public boolean getActivationStatus() {
+        return this.activated;
     }
 
     /**
-     * Returns the cell binding flag.
+     * Adds only tissue cells to the provided bag. Helper method for bindTarget.
      *
-     * @return the cell antigen binding state
+     * @param tissueAgents the bag to add tissue cells into
+     * @param possibleAgents the bag of possible agents to check for tissue cells
      */
-    public AntigenFlag getAntigenFlag() {
-        return this.binding;
+    private void getTissueAgents(Bag tissueAgents, Bag possibleAgents) {
+        for (Object agent : possibleAgents) {
+            Cell cell = (Cell) agent;
+            if (cell instanceof PatchCellTissue) {
+                tissueAgents.add(cell);
+            }
+        }
     }
 
-    /** Returns activation status */
-    public boolean getActivationStatus() {
-        return this.activated;
+    /**
+     * Computes Hill Coefficient for given parameters.
+     *
+     * @param targets the number of antigens on the target cell
+     * @param affinity binding affinity of receptor
+     * @param currentReceptors number of receptors currently on the cell
+     * @param startReceptors number of starting receptors on the cell
+     * @param alpha fudge factor for receptor binding
+     * @param beta fudge factor for receptor binding
+     * @return the Hill Coefficient
+     */
+    private double getHillCoefficient(
+            double targets,
+            double affinity,
+            int currentReceptors,
+            int startReceptors,
+            double alpha,
+            double beta) {
+        return (targets * contactFraction / (affinity * beta + targets * contactFraction))
+                * (currentReceptors / startReceptors)
+                * alpha;
+    }
+
+    /**
+     * Computes log function for given hill coeffient.
+     *
+     * @param hill hill coefficient for the log function
+     * @return the log value
+     */
+    private double getLog(double hill) {
+        return 2 * (1 / (1 + Math.exp(-1 * hill))) - 1;
     }
 }

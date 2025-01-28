@@ -1,6 +1,7 @@
 package arcade.patch.agent.action;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.util.Bag;
@@ -48,29 +49,32 @@ public class PatchActionTreat implements Action {
     /** Total number of CAR T-cells to treat with */
     private final int dose;
 
-    /** List of populations being treated with */
-    // private final ArrayList<MiniBox> treatPops;
-
-    /** List of freaction of each population to treat with. CD4 to CD8 ratio */
+    /** List of fraction of each population to treat with. CD4 to CD8 ratio */
     private final double treatFrac;
 
     /** Maximum damage value at which T-cells can spawn next to in source or pattern source */
     private double max_damage;
 
     /** Minimum radius value at which T- cells can spawn next to in graph source */
-    private double min_damage_radius;
+    private final double min_damage_radius;
 
     /** Number of agent positions per lattice site */
     private int latPositions;
 
     /** Coordinate system used for simulation */
-    private String coord;
+    private final String coord;
 
     /** List of populations. */
     private final ArrayList<MiniBox> populations;
 
     /** parameters */
     MiniBox parameters;
+
+    /** Maximum confluency of cells in any location */
+    final int maxConfluency;
+
+    /** location of available places to insert T cells. For testing purposes only */
+    private ArrayList<Location> siteLocations;
 
     /**
      * Creates an {@code Action} to add agents after a delay.
@@ -85,16 +89,17 @@ public class PatchActionTreat implements Action {
         this.treatFrac = parameters.getDouble("RATIO");
         this.max_damage = parameters.getDouble("MAX_DAMAGE_SEED");
         this.min_damage_radius = parameters.getDouble("MIN_RADIUS_SEED");
+        this.maxConfluency = 54;
         this.parameters = parameters;
 
         this.coord =
                 ((PatchSeries) series).patch.get("GEOMETRY").equalsIgnoreCase("HEX")
                         ? "Hex"
                         : "Rect";
-        if (coord == "Hex") {
+        if (coord.equals("Hex")) {
             latPositions = 9;
         }
-        if (coord == "Rect") {
+        if (coord.equals("Rect")) {
             latPositions = 16;
         }
 
@@ -115,7 +120,7 @@ public class PatchActionTreat implements Action {
     /**
      * Steps the helper to insert cells of the treatment population(s).
      *
-     * @param state the MASON simulation state
+     * @param simstate the MASON simulation state
      */
     public void step(SimState simstate) {
 
@@ -148,7 +153,7 @@ public class PatchActionTreat implements Action {
                 double[][][] damage;
                 boolean[][][] sitesLat;
 
-                if (type == "source") {
+                if (type.equals("source")) {
                     damage = ((PatchComponentSitesSource) comp).getDamage();
                     sitesLat = ((PatchComponentSitesSource) comp).getSources();
                 } else {
@@ -182,7 +187,7 @@ public class PatchActionTreat implements Action {
                 for (Object edgeObj : allEdges) {
                     SiteEdge edge = (SiteEdge) edgeObj;
                     Bag allEdgeLocs = new Bag();
-                    if (coord == "Hex") {
+                    if (Objects.equals(coord, "Hex")) {
                         allEdgeLocs.add(
                                 ((PatchComponentSitesGraphTri) graphSites)
                                         .getSpan(edge.getFrom(), edge.getTo()));
@@ -213,7 +218,7 @@ public class PatchActionTreat implements Action {
         siteLocs.addAll(siteLocs2);
         siteLocs.addAll(siteLocs1);
         siteLocs.addAll(siteLocs0);
-        // insert(siteLocs, sim, grid);
+        siteLocations = (ArrayList<Location>) siteLocs.clone();
         insert(siteLocs, simstate);
     }
 
@@ -281,8 +286,8 @@ public class PatchActionTreat implements Action {
             PatchLocation loc = ((PatchLocation) coordinates.remove(0));
             Coordinate coord = loc.getCoordinate();
 
-            // find available locaiton space
-            while (!coordinates.isEmpty() && !checkLocationSpace(sim, loc, grid)) {
+            // find available location space
+            while (!coordinates.isEmpty() && !checkLocationSpace(loc, grid)) {
                 loc = (PatchLocation) coordinates.remove(0);
             }
 
@@ -300,9 +305,9 @@ public class PatchActionTreat implements Action {
         }
     }
 
-    protected boolean checkLocationSpace(Simulation sim, Location loc, PatchGrid grid) {
+    protected boolean checkLocationSpace(Location loc, PatchGrid grid) {
         boolean available;
-        int locMax = ((PatchLocation) loc).getMaximum();
+        int locMax = this.maxConfluency;
         double locVolume = ((PatchLocation) loc).getVolume();
         double locArea = ((PatchLocation) loc).getArea();
 
@@ -326,19 +331,12 @@ public class PatchActionTreat implements Action {
 
             for (Object cellObj : bag) {
                 PatchCell cell = (PatchCell) cellObj;
-                // MiniBox cellParams = cell.getParameters();
-                // String className = cellParams.get("CLASS");
-                // if(className.equals("cart_cd4") || className.equals("cart_cd8")){
                 if (cell instanceof PatchCellCART) {
-                    // totalVol = PatchCell.calculateTotalVolume(bag) +
-                    // cell.getParameters().getDouble("T_CELL_VOL_AVG");
                     totalVol =
                             PatchCell.calculateTotalVolume(bag)
                                     + parameters.getDouble("T_CELL_VOL_AVG");
                     currentHeight = totalVol / locArea;
                 }
-                // if (className.equals("tissue") || className.equals("cancer") ||
-                // className.equals("cancer_stem")) {
                 if (cell instanceof PatchCellTissue) {
                     if (currentHeight > cell.getCriticalHeight()) {
                         available = false;
@@ -348,5 +346,23 @@ public class PatchActionTreat implements Action {
         }
 
         return available;
+    }
+
+    /**
+     * Returns registered populations for the action. Exists for testing purposes only
+     *
+     * @return registered populations for the action
+     */
+    public ArrayList<MiniBox> getPopulations() {
+        return populations;
+    }
+
+    /**
+     * Returns locations of sites available for insertion. Exists for testing purposes only
+     *
+     * @return Returns locations of sites available for insertion
+     */
+    public ArrayList<Location> getSiteLocs() {
+        return siteLocations;
     }
 }

@@ -4,7 +4,6 @@ import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.sim.Simulation;
-import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.cell.PatchCellSynNotch;
@@ -35,6 +34,9 @@ public class PatchModuleProliferation extends PatchModule {
     /** Time required for DNA synthesis [min]. */
     private final double synthesisDuration;
 
+    /** Tick the {@code Module} was started. */
+    int duration;
+
     /**
      * Creates a proliferation {@link PatchModule} for the given cell.
      *
@@ -52,14 +54,9 @@ public class PatchModuleProliferation extends PatchModule {
         // Calculate thresholds.
         targetVolume = 2 * cell.getCriticalVolume();
         maxHeight = cell.getCriticalHeight();
-
-        // Set loaded parameters.
-        Parameters parameters = cell.getParameters();
-        if (cell instanceof PatchCellCART) {
-            synthesisDuration = parameters.getInt("proliferation/T_CELL_SYNTHESIS_DURATION");
-        } else {
-            synthesisDuration = parameters.getInt("proliferation/SYNTHESIS_DURATION");
-        }
+        duration = 0;
+        // Load parameters.
+        synthesisDuration = cell.getSynthesisDuration();
     }
 
     @Override
@@ -67,7 +64,7 @@ public class PatchModuleProliferation extends PatchModule {
         Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocation(location);
         double totalVolume = PatchCell.calculateTotalVolume(bag);
         double currentHeight = totalVolume / location.getArea();
-
+        duration++;
         // Check if cell is no longer able to proliferate due to (i) other
         // condition that has caused its type to no longer be proliferative,
         // (ii) cell no longer exists at a tolerable height, or (iii) no
@@ -76,16 +73,14 @@ public class PatchModuleProliferation extends PatchModule {
         if (currentHeight > maxHeight) {
             cell.setState(State.QUIESCENT);
         } else {
-            PatchLocation newLocation =
-                    PatchCell.selectBestLocation(
-                            sim, location, cell.getVolume() * 0.5, maxHeight, random);
+            PatchLocation newLocation = cell.selectBestLocation(sim, random);
 
             if (newLocation == null) {
                 cell.setState(State.QUIESCENT);
             } else if (cell.getVolume() >= targetVolume) {
                 if (ticker > synthesisDuration) {
-                    // TODO: ADD CYCLE TIME TO TRACKER.
 
+                    cell.addCycle(duration);
                     // Reset current cell.
                     cell.setState(State.UNDEFINED);
 
@@ -112,19 +107,12 @@ public class PatchModuleProliferation extends PatchModule {
                     newCell.setEnergy(energy * (1 - split));
 
                     // Update processes.
-                    PatchProcess metabolism = (PatchProcess) newCell.getProcess(Domain.METABOLISM);
-                    metabolism.update(cell.getProcess(Domain.METABOLISM));
-                    if (cell instanceof PatchCellSynNotch) {
-                        PatchProcess quorum = (PatchProcess) newCell.getProcess(Domain.QUORUM);
-                        quorum.update(cell.getProcess(Domain.QUORUM));
-                    } else if (cell instanceof PatchCellCART) {
-                        PatchProcess inflammation =
-                                (PatchProcess) newCell.getProcess(Domain.INFLAMMATION);
-                        inflammation.update(cell.getProcess(Domain.INFLAMMATION));
-                    } else {
-                        PatchProcess signaling =
-                                (PatchProcess) newCell.getProcess(Domain.SIGNALING);
-                        signaling.update(cell.getProcess(Domain.SIGNALING));
+                    Domain[] processes = Domain.values();
+                    for (Domain processName : processes) {
+                        PatchProcess process = (PatchProcess) newCell.getProcess(processName);
+                        if (process != null) {
+                            process.update(cell.getProcess(processName));
+                        }
                     }
                     // TODO: Update environment generator sites.
                 } else {

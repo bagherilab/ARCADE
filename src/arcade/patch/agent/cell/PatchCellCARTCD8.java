@@ -16,32 +16,25 @@ import arcade.patch.util.PatchEnums.State;
 
 public class PatchCellCARTCD8 extends PatchCellCART {
     /**
-     * Creates a tissue {@code PatchCellCARTCD8} agent. *
+     * Creates a T cell {@code PatchCellCARTCD8} agent. *
      *
-     * <p>Loaded parameters include:
-     *
-     * <ul>
-     *   <li>{@code CYTOTOXIC_FRACTION} = fraction of cytotoxic cells that become apoptotic
-     * </ul>
-     *
-     * @param id the cell ID
-     * @param parent the parent ID
-     * @param pop the cell population index
-     * @param state the cell state
-     * @param age the cell age
-     * @param divisions the number of cell divisions
+     * @param container the cell container
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
-     * @param volume the cell volume
-     * @param height the cell height
-     * @param criticalVolume the critical cell volume
-     * @param criticalHeight the critical cell height
      */
     public PatchCellCARTCD8(
             PatchCellContainer container, Location location, Parameters parameters) {
         this(container, location, parameters, null);
     }
 
+    /**
+     * Creates a T cell {@code PatchCellCARTCD8} agent. *
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
     public PatchCellCARTCD8(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
@@ -49,10 +42,7 @@ public class PatchCellCARTCD8 extends PatchCellCART {
 
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-
         divisions--;
-        // return new PatchCellCARTCD8(newID, id, pop, newState, age, divisions, newLocation,
-        //     parameters, volume, height, criticalVolume, criticalHeight);
         return new PatchCellContainer(
                 newID,
                 id,
@@ -73,7 +63,11 @@ public class PatchCellCARTCD8 extends PatchCellCART {
         // Increase age of cell.
         super.age++;
 
-        // TODO: check for death due to age
+        if (state != State.APOPTOTIC && age > apoptosisAge) {
+            setState(State.APOPTOTIC);
+            super.setAntigenFlag(AntigenFlag.UNBOUND);
+            this.activated = false;
+        }
 
         // Increase time since last active ticker
         super.lastActiveTicker++;
@@ -123,7 +117,7 @@ public class PatchCellCARTCD8 extends PatchCellCART {
                 PatchCellTissue target = super.bindTarget(sim, location, simstate.random);
 
                 // If cell is bound to both antigen and self it will become anergic.
-                if (binding == AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR) {
+                if (super.getAntigenFlag() == AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR) {
                     if (simstate.random.nextDouble() > super.anergicFraction) {
                         super.setState(State.APOPTOTIC);
                     } else {
@@ -131,7 +125,7 @@ public class PatchCellCARTCD8 extends PatchCellCART {
                     }
                     super.setAntigenFlag(AntigenFlag.UNBOUND);
                     this.activated = false;
-                } else if (binding == AntigenFlag.BOUND_ANTIGEN) {
+                } else if (super.getAntigenFlag() == AntigenFlag.BOUND_ANTIGEN) {
                     // If cell is only bound to target antigen, the cell
                     // can potentially become properly activated.
 
@@ -146,11 +140,10 @@ public class PatchCellCARTCD8 extends PatchCellCART {
                         super.setAntigenFlag(AntigenFlag.UNBOUND);
                         this.activated = false;
                     } else {
-                        // if CD4 cell is properly activated, it can stimulate
+                        // if CD8 cell is properly activated, it can be cytotoxic
                         this.lastActiveTicker = 0;
                         this.activated = true;
                         super.setState(State.CYTOTOXIC);
-                        // need to call kill
                         PatchActionKill kill =
                                 new PatchActionKill(
                                         this,
@@ -159,7 +152,7 @@ public class PatchCellCARTCD8 extends PatchCellCART {
                                         ((PatchSimulation) simstate).getSeries(),
                                         parameters);
                         kill.schedule(sim.getSchedule());
-                        // need to reset
+                        // cell resets after binding
                         PatchActionReset reset =
                                 new PatchActionReset(
                                         this,
@@ -170,7 +163,7 @@ public class PatchCellCARTCD8 extends PatchCellCART {
                     }
                 } else {
                     // If self binding, unbind
-                    if (binding == AntigenFlag.BOUND_CELL_RECEPTOR)
+                    if (super.getAntigenFlag() == AntigenFlag.BOUND_CELL_RECEPTOR)
                         super.setAntigenFlag(AntigenFlag.UNBOUND);
                     // Check activation status. If cell has been activated before,
                     // it will proliferate. If not, it will migrate.
