@@ -47,7 +47,6 @@ public class PatchCellTissue extends PatchCell {
         carAntigens = parameters.getInt("CAR_ANTIGENS");
         selfTargets = parameters.getInt("SELF_TARGETS");
         synNotchAntigens = parameters.getInt("SYNNOTCH_ANTIGENS");
-        this.binding = AntigenFlag.UNDEFINED;
     }
 
     @Override
