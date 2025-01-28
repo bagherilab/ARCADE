@@ -88,7 +88,7 @@ public abstract class PatchCellCART extends PatchCell {
     protected final int maxAntigenBinding;
 
     /** number of CARs on T cell surface. */
-    protected final int cars;
+    protected int cars;
 
     /** simulation time since T cell was last activated. */
     protected int lastActiveTicker;
@@ -296,7 +296,7 @@ public abstract class PatchCellCART extends PatchCell {
      * @param tissueAgents the bag to add tissue cells into
      * @param possibleAgents the bag of possible agents to check for tissue cells
      */
-    private void getTissueAgents(Bag tissueAgents, Bag possibleAgents) {
+    public void getTissueAgents(Bag tissueAgents, Bag possibleAgents) {
         for (Object agent : possibleAgents) {
             Cell cell = (Cell) agent;
             if (cell instanceof PatchCellTissue) {
@@ -316,7 +316,7 @@ public abstract class PatchCellCART extends PatchCell {
      * @param beta fudge factor for receptor binding
      * @return the Hill Coefficient
      */
-    private double getHillCoefficient(
+    public double getHillCoefficient(
             double targets,
             double affinity,
             int currentReceptors,
@@ -334,7 +334,16 @@ public abstract class PatchCellCART extends PatchCell {
      * @param hill hill coefficient for the log function
      * @return the log value
      */
-    private double getLog(double hill) {
+    public double getLog(double hill) {
         return 2 * (1 / (1 + Math.exp(-1 * hill))) - 1;
+    }
+
+    /**
+     * Setter for car receptors.
+     *
+     * @param receptors the new number of car receptors on the cell
+     */
+    public void setCARS(int receptors) {
+        this.cars = receptors;
     }
 }

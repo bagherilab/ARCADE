@@ -5,8 +5,6 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.sim.Simulation;
 import arcade.patch.agent.cell.PatchCell;
-import arcade.patch.agent.cell.PatchCellCART;
-import arcade.patch.agent.cell.PatchCellSynNotch;
 import arcade.patch.agent.process.PatchProcess;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;

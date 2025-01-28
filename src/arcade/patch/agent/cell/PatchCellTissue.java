@@ -22,8 +22,6 @@ public class PatchCellTissue extends PatchCell {
     /** Cell surface SynNotch antigen count */
     private int synNotchAntigens;
 
-
-
     /**
      * Creates a tissue {@code PatchCell} agent.
      *
@@ -136,5 +134,14 @@ public class PatchCellTissue extends PatchCell {
      */
     public int getSelfAntigens() {
         return selfTargets;
+    }
+
+    /**
+     * Returns the number of synnotch antigens on this cell.
+     *
+     * @return the number of self receptor antigens on this cell.
+     */
+    public int getSynNotchAntigens() {
+        return synNotchAntigens;
     }
 }

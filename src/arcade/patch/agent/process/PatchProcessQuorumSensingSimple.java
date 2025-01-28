@@ -121,13 +121,13 @@ public class PatchProcessQuorumSensingSimple extends PatchProcessQuorumSensing {
     }
 
     /** System of ODEs for network */
-    Equations dydt =
+    Equations equations =
             (Equations & Serializable)
                     (t, y) -> {
                         double[] dydt = new double[NUM_COMPONENTS];
 
                         dydt[ACTIVATION] =
-                        isBound * K_ACTIVE_EXPRESS * (boundCarConcentration)
+                                isBound * K_ACTIVE_EXPRESS * (boundCarConcentration)
                                         - K_ACTIVE_DEGRADE * y[ACTIVATION];
 
                         dydt[CAR] = K_CAR_EXPRESS * (y[AUXIN]) - K_CAR_DEGRADE * (y[CAR]);
@@ -157,16 +157,16 @@ public class PatchProcessQuorumSensingSimple extends PatchProcessQuorumSensing {
                                 || boundStatus == AntigenFlag.BOUND_ANTIGEN_CELL_SYNNOTCH_RECEPTOR)
                         ? 1
                         : 0;
-        
+
         preventOverflow();
         double scale = rescaleConcentrations();
 
-        this.boundSynNotchConcentration = this.cell.synNotchAntigensBound/scale;
-        this.boundCarConcentration = this.cell.returnBoundCars()/scale;
+        this.boundSynNotchConcentration = this.cell.synNotchAntigensBound / scale;
+        this.boundCarConcentration = this.cell.returnBoundCars() / scale;
 
         // Solve system of equations.
-        concs = Solver.rungeKutta(dydt, 0, concs, 60, STEP_SIZE);
-        
+        concs = Solver.rungeKutta(equations, 0, concs, 60, STEP_SIZE);
+
         // update cell state
         if (concs[ACTIVATION] < activation_scaled) {
             cell.setActivationStatus(false);
@@ -175,16 +175,7 @@ public class PatchProcessQuorumSensingSimple extends PatchProcessQuorumSensing {
             cell.resetLastActiveTicker();
         }
 
-        // if (random.nextDouble() < 0.5) {
-        //     cell.setActivationStatus(false);
-        // } else {
-        //     cell.setActivationStatus(true);
-        //     cell.resetLastActiveTicker();
-        // }
-
-        // cell.setActivationStatus(true);
-        // concs[ACTIVATION] = 6000;
-        cell.cars = (int) Math.round(concs[CAR] * scale);
+        cell.setCARS((int) Math.round(concs[CAR] * scale));
     }
 
     @Override
@@ -203,37 +194,36 @@ public class PatchProcessQuorumSensingSimple extends PatchProcessQuorumSensing {
         quorum.concs[ACTIVATION] *= quorum.concs[ACTIVATION] * (1 - split);
     }
 
-
     /**
-     * Rescales the concentrations array if any two values are more than 1e4 times apart.
-     * The rescaling ensures that all values are in a comparable range.
+     * Rescales the concentrations array if any two values are more than 1e4 times apart. The
+     * rescaling ensures that all values are in a comparable range.
      */
     private double rescaleConcentrations() {
         // Find the maximum and minimum non-zero values
         double maxConcentration = Double.NEGATIVE_INFINITY;
         double minConcentration = Double.POSITIVE_INFINITY;
-    
+
         for (double conc : concs) {
             if (conc > 0) { // Ignore zero or negative concentrations
                 maxConcentration = Math.max(maxConcentration, conc);
                 minConcentration = Math.min(minConcentration, conc);
             }
         }
-    
+
         // Check if the range exceeds 1e4
         if (maxConcentration / minConcentration > 1e4) {
             // Calculate a scaling factor to keep values in a manageable range
             double scalingFactor = Math.sqrt(maxConcentration * minConcentration);
-    
+
             // Avoid zeroing out small values; use a minimum scaling threshold
             double minimumThreshold = 1e-6;
             scalingFactor = Math.max(scalingFactor, minimumThreshold);
-    
+
             // Scale concentrations
             for (int i = 0; i < concs.length; i++) {
                 concs[i] /= scalingFactor;
             }
-    
+
             // Adjust activation_scaled proportionally
             activation_scaled /= scalingFactor;
             return scalingFactor;
@@ -241,7 +231,7 @@ public class PatchProcessQuorumSensingSimple extends PatchProcessQuorumSensing {
         return 1;
     }
 
-    //rescale if numbers are too small
+    // rescale if numbers are too small
     public void preventOverflow() {
         for (int i = 0; i < concs.length; i++) {
             if (Math.abs(concs[i]) < 1e-12) {

@@ -26,26 +26,10 @@ public class PatchCellSynNotch extends PatchCellCART {
     public int synNotchAntigensBound;
 
     /**
-     * Creates a tissue {@code PatchCellCARTCD8} agent. *
+     * Creates a tissue {@code PatchCellSynNotch} agent. *
      *
-     * <p>Loaded parameters include:
-     *
-     * <ul>
-     *   <li>{@code CYTOTOXIC_FRACTION} = fraction of cytotoxic cells that become apoptotic
-     * </ul>
-     *
-     * @param id the cell ID
-     * @param parent the parent ID
-     * @param pop the cell population index
-     * @param state the cell state
-     * @param age the cell age
-     * @param divisions the number of cell divisions
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
-     * @param volume the cell volume
-     * @param height the cell height
-     * @param criticalVolume the critical cell volume
-     * @param criticalHeight the critical cell height
      */
     public PatchCellSynNotch(
             PatchCellContainer container, Location location, Parameters parameters) {
@@ -86,30 +70,24 @@ public class PatchCellSynNotch extends PatchCellCART {
      * <p>Searches the number of allowed neighbors in series, calculates bound probability to
      * antigen and self receptors, compares values to random variable. Sets flags accordingly and
      * returns a target cell if one was bound by antigen or self receptor.
-     *
-     * @param state the MASON simulation state
-     * @param loc the location of the SynNotch T-cell
-     * @param random random seed
      */
     @Override
     public PatchCellTissue bindTarget(
             Simulation sim, PatchLocation loc, MersenneTwisterFast random) {
-        double KDCAR = carAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
-        double KDSelf = selfReceptorAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
-        double KDSynNotch = synNotchReceptorAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
+        double kDCAR = carAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
+        double kDSelf = selfReceptorAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
+        double kDSynNotch = synNotchReceptorAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
 
         PatchGrid grid = (PatchGrid) sim.getGrid();
 
-        // get all agents from this location
-        Bag allAgents = new Bag(grid.getObjectsAtLocation(loc));
+        // get all tissue agents from this location
+        Bag allAgents = new Bag();
+        getTissueAgents(allAgents, grid.getObjectsAtLocation(loc));
 
         // get all agents from neighboring locations
         for (Location neighborLocation : loc.getNeighbors()) {
             Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));
-            for (Object b : bag) {
-                // add all agents from neighboring locations
-                if (!allAgents.contains(b)) allAgents.add(b);
-            }
+            getTissueAgents(allAgents, bag);
         }
 
         // remove self
@@ -124,7 +102,7 @@ public class PatchCellSynNotch extends PatchCellCART {
         // Bind target with some probability if a nearby cell has targets to bind.
         int maxSearch = 0;
         if (neighbors == 0) {
-            binding = AntigenFlag.UNBOUND;
+            this.setAntigenFlag(AntigenFlag.UNBOUND);
             return null;
         } else {
             if (neighbors < searchAbility) {
@@ -136,39 +114,36 @@ public class PatchCellSynNotch extends PatchCellCART {
             // Within maximum search vicinity, search for neighboring cells to bind to
             for (int i = 0; i < maxSearch; i++) {
                 Cell cell = (Cell) allAgents.get(i);
-                if (!(cell instanceof PatchCellCART)
-                        && cell.getState() != State.APOPTOTIC
-                        && cell.getState() != State.NECROTIC) {
+                if (cell.getState() != State.APOPTOTIC && cell.getState() != State.NECROTIC) {
                     PatchCellTissue tissueCell = (PatchCellTissue) cell;
-                    double CARAntigens = tissueCell.carAntigens;
-                    double selfTargets = tissueCell.selfTargets;
-                    double synNotchAntigens = tissueCell.synNotchAntigens;
+                    double cARAntigens = tissueCell.getCarAntigens();
+                    double selfTargets = tissueCell.getSelfAntigens();
+                    double synNotchAntigens = tissueCell.getSynNotchAntigens();
 
                     double hillCAR =
-                            (CARAntigens
-                                            * contactFraction
-                                            / (KDCAR * carBeta + CARAntigens * contactFraction))
-                                    * (cars / 50000)
-                                    * carAlpha;
-                    double hillSelf =
-                            (selfTargets
-                                            * contactFraction
-                                            / (KDSelf * selfBeta + selfTargets * contactFraction))
-                                    * (selfReceptors / selfReceptorsStart)
-                                    * selfAlpha;
-                    double hillSynNotch =
-                            (synNotchAntigens
-                                            * contactFraction
-                                            / (KDSynNotch * synNotchBeta
-                                                    + synNotchAntigens * contactFraction))
-                                    // TODO: find literature value for avg synnotch receptors and
-                                    // replace 50000
-                                    * (synnotchs / 50000)
-                                    * synNotchAlpha;
+                            getHillCoefficient(cARAntigens, kDCAR, cars, 5000, carAlpha, carBeta);
 
-                    double logCAR = 2 * (1 / (1 + Math.exp(-1 * hillCAR))) - 1;
-                    double logSelf = 2 * (1 / (1 + Math.exp(-1 * hillSelf))) - 1;
-                    double logSynNotch = 2 * (1 / (1 + Math.exp(-1 * hillSynNotch))) - 1;
+                    double hillSelf =
+                            getHillCoefficient(
+                                    selfTargets,
+                                    kDSelf,
+                                    selfReceptors,
+                                    selfReceptorsStart,
+                                    selfAlpha,
+                                    selfBeta);
+
+                    double hillSynNotch =
+                            getHillCoefficient(
+                                    synNotchAntigens,
+                                    kDSynNotch,
+                                    synnotchs,
+                                    5000,
+                                    synNotchAlpha,
+                                    synNotchBeta);
+
+                    double logCAR = getLog(hillCAR);
+                    double logSelf = getLog(hillSelf);
+                    double logSynNotch = getLog(hillSynNotch);
 
                     double randomAntigen = random.nextDouble();
                     double randomSelf = random.nextDouble();
@@ -299,8 +274,8 @@ public class PatchCellSynNotch extends PatchCellCART {
 
             // If cell is bound to target antigen and/or SynNotch, the cell
             // can potentially become properly activated.
-            if (binding == AntigenFlag.BOUND_ANTIGEN
-                    || binding == AntigenFlag.BOUND_ANTIGEN_CELL_SYNNOTCH_RECEPTOR) {
+            if (this.getAntigenFlag() == AntigenFlag.BOUND_ANTIGEN
+                    || this.getAntigenFlag() == AntigenFlag.BOUND_ANTIGEN_CELL_SYNNOTCH_RECEPTOR) {
                 // Check overstimulation. If cell has bound to
                 // target antigens too many times, becomes exhausted.
                 if (boundAntigensCount > maxAntigenBinding) {
@@ -336,7 +311,7 @@ public class PatchCellSynNotch extends PatchCellCART {
                 // Check activation status. If cell has been activated before,
                 // it will proliferate. If not, it will migrate.
                 if (activated) {
-                    super.setState(State.PROLIFERATIVE_ACTIVE);
+                    super.setState(State.PROLIFERATIVE);
                 } else {
                     if (simstate.random.nextDouble() > super.proliferativeFraction) {
                         super.setState(State.MIGRATORY);
