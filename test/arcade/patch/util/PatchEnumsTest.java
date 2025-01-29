@@ -130,14 +130,14 @@ public class PatchEnumsTest {
         // Create list of all values.
         ArrayList<Ordering> enumList = new ArrayList<Ordering>(Arrays.asList(Ordering.values()));
 
-        int n = -1;
-        int verify = -2;
+        int n = 0;
+        int verify;
         // Grabbing order of items in enum
         for (Ordering x : enumList) {
             verify = x.ordinal();
-            n++;
             // Verify order of enum
             assertEquals(n, verify);
+            n++;
         }
     }
 }
