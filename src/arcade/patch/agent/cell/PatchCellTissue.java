@@ -3,6 +3,7 @@ package arcade.patch.agent.cell;
 import sim.engine.SimState;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
+import arcade.core.agent.process.Process;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
@@ -11,7 +12,30 @@ import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.Flag;
 import arcade.patch.util.PatchEnums.State;
 
-/** Extension of {@link PatchCell} for healthy tissue cells. */
+/**
+ * Extension of {@link PatchCell} for healthy tissue cells. *
+ *
+ * <p>{@code PatchCellTissue} agents exist in one of seven states: undefined, apoptotic, quiescent,
+ * migratory, proliferative, senescent, and necrotic. The undefined state is a transition state for
+ * "undecided" cells, and does not have any biological analog.
+ *
+ * <p>{@code PatchCellTissue} agents have two required {@link Process} domains: metabolism and
+ * signaling. Metabolism controls changes in cell energy and volume. Signaling controls the
+ * proliferative vs. migratory decision.
+ *
+ * <p>General order of rules for the {@code PatchCellTissue} step:
+ *
+ * <ul>
+ *   <li>update age
+ *   <li>check lifespan (possible change to apoptotic)
+ *   <li>step metabolism process
+ *   <li>check energy status (possible change to quiescent or necrotic depending on {@code
+ *       ENERGY_THRESHOLD})
+ *   <li>step signaling process
+ *   <li>check if neutral (change to proliferative, migratory, senescent)
+ *   <li>step state-specific module
+ * </ul>
+ */
 public class PatchCellTissue extends PatchCell {
     /** Cell surface antigen count. */
     private final int carAntigens;
