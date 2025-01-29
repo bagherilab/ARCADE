@@ -3,7 +3,6 @@ package arcade.patch.agent.cell;
 import sim.engine.SimState;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
-import arcade.core.agent.process.Process;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;

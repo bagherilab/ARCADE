@@ -85,7 +85,6 @@ public class PatchCellCARTTest {
         double criticalVolume = randomDoubleBetween(100, 200);
         double criticalHeight = randomDoubleBetween(4, 10);
         PatchEnums.State state = PatchEnums.State.UNDEFINED;
-        ;
 
         container =
                 new PatchCellContainer(
