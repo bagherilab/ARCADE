@@ -60,25 +60,26 @@ public class PatchProcessInflammationTest {
     }
 
     @Test
-    public void testConstructor() {
+    public void constructorInitiatesValues() {
         assertNotNull(inflammation);
         assertEquals(0, inflammation.getInternal("IL-2"));
         assertEquals(1.0, inflammation.getInternal("IL2R_total"));
     }
 
     @Test
-    public void testStep() {
+    public void stepCalculatesIL2() {
         inflammation.step(mockRandom, mockSimulation);
         assertTrue(inflammation.getInternal("IL-2") >= 0);
     }
 
     @Test
-    public void testGetInternal() {
-        assertEquals(0, inflammation.getInternal("IL-2"));
+    public void getInternalReturnsInternalValue() {
+        inflammation.amts[PatchProcessInflammation.IL2_INT_TOTAL] = 10.0;
+        assertEquals(10.0, inflammation.getInternal("IL-2"));
     }
 
     @Test
-    public void testSetInternal() {
+    public void setInternalSetsLayer() {
         inflammation.setInternal("IL-2", 10.0);
         assertEquals(10.0, inflammation.getInternal("IL-2"));
     }
