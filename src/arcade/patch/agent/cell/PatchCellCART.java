@@ -32,8 +32,11 @@ import static arcade.patch.util.PatchEnums.State;
  *   <li>step metabolism module
  *   <li>check energy status (possible change to starved, apoptotic)
  *   <li>step inflammation module
+ *   <li>check for bound targets (possible state change to cytotoxic, stimulatory, exhausted,
+ *       anergic)
  *   <li>check if neutral or paused (change to proliferative, migratory, senescent, cytotoxic,
  *       stimulatory, exhausted, anergic)
+ *   <li>step state-specific module
  * </ul>
  *
  * <p>Cells that become senescent, exhausted, anergic, or proliferative have a change to become
@@ -41,8 +44,9 @@ import static arcade.patch.util.PatchEnums.State;
  * ANERGIC_FRACTION}, and ({@code PROLIFERATIVE_FRACTION}, respectively).
  *
  * <p>Cell parameters are tracked using a map between the parameter name and value. Daughter cell
- * parameter values are drawn from a distribution centered on the parent cell parameter with the
- * specified amount of heterogeneity ({@code HETEROGENEITY}).
+ * parameter values are drawn from a distribution centered on the parent cell parameter. The
+ * parameter classes have support for loading in distributions to reflect heterogeneity. ({@code
+ * HETEROGENEITY}).
  */
 public abstract class PatchCellCART extends PatchCell {
     /** Cell activation flag. */
@@ -122,7 +126,7 @@ public abstract class PatchCellCART extends PatchCell {
      * <p>Loaded parameters include:
      *
      * <ul>
-     *   <li>{@code EXHAU_FRACTION} = fraction of exhausted cells that become apoptotic
+     *   <li>{@code EXHAUSTED_FRACTION} = fraction of exhausted cells that become apoptotic
      *   <li>{@code SENESCENT_FRACTION} = fraction of senescent cells that become apoptotic
      *   <li>{@code ANERGIC_FRACTION} = fraction of anergic cells that become apoptotic
      *   <li>{@code PROLIFERATIVE_FRACTION} = fraction of proliferative cells that become apoptotic
@@ -154,7 +158,7 @@ public abstract class PatchCellCART extends PatchCell {
         activated = true;
 
         // Set loaded parameters.
-        exhaustedFraction = parameters.getDouble("EXHAU_FRAC");
+        exhaustedFraction = parameters.getDouble("EXHAUSTED_FRAC");
         senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
         anergicFraction = parameters.getDouble("ANERGIC_FRACTION");
         proliferativeFraction = parameters.getDouble("PROLIFERATIVE_FRACTION");
