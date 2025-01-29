@@ -64,10 +64,10 @@ public abstract class PatchProcessInflammation extends PatchProcess {
     private static final double K_REC = 1e-5 / STEP_DIVIDER;
 
     /** Rate of IL-2 binding to two-chain IL-2 receptor complex [um^3/molecules IL-2/min]. */
-    private double iL2BindingOnRateMin = 3.8193E-2;
+    private double iL2BindingMin = 3.8193E-2;
 
     /** Rate of IL-2 binding to three-chain IL-2 receptor complex [um^3/molecules IL-2/min]. */
-    private double iL2BindingOnRateMax = 3.155;
+    private double iL2BindingMax = 3.155;
 
     /** Rate of unbinding of IL-2 from two- or three- chain IL-2 receptor complex [/min]. */
     private double iL2BindingOffRate = 0.015;
@@ -171,8 +171,8 @@ public abstract class PatchProcessInflammation extends PatchProcess {
                     (t, y) -> {
                         double[] dydt = new double[NUM_COMPONENTS];
 
-                        double kOn2 = iL2BindingOnRateMin / loc.getVolume() / 60 / STEP_DIVIDER;
-                        double kOn3 = iL2BindingOnRateMax / loc.getVolume() / 60 / STEP_DIVIDER;
+                        double kOn2 = iL2BindingMin / loc.getVolume() / 60 / STEP_DIVIDER;
+                        double kOn3 = iL2BindingMax / loc.getVolume() / 60 / STEP_DIVIDER;
                         double kOff = iL2BindingOffRate / 60 / STEP_DIVIDER;
 
                         dydt[IL2_EXT] =
