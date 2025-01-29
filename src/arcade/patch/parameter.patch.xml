@@ -29,7 +29,6 @@
     <population id="SYNTHESIS_DURATION" value="637" units="min" description="time required for DNA synthesis" />
 
     <!-- CAR T specific parameters -->
-    <population id="DIVISION_POTENTIAL_T" value="10" description="max number of divisions for a CAR T-cell" />
     <population id="ANERGIC_FRACTION" value="0.5" description="fraction of anergic cells that become apoptotic" />
     <population id="EXHAU_FRAC" value="0.5" description="fraction exhausted vs. apoptotic" />
     <population id="SEARCH_ABILITY" value="1" description="max number of cells a CAR T-cell could make contact with per time step" />
@@ -45,10 +44,6 @@
     <population id="SELF_ALPHA" value="3" description="fitting factor in PD1 binding function" />
     <population id="SELF_BETA" value="0.02" description="fitting factor in PD1 binding function" />
     <population id="CONTACT_FRAC" value="0.2" description="fraction of cell surface contacting a bound cell during a binding event" />
-    <population id="T_CELL_VOL_MEAN" value="175.0" unit="um^3" />
-    <population id="T_CELL_VOLUME_STDEV" value="10.0" unit="um^3" description="cell volume distribution standard deviation" />
-    <population id="BOUND_TIME" value="360" description="6 hours" />
-    <population id="BOUND_RANGE" value="0" description="hours" />
 
     <!-- proliferation module parameters -->
 
@@ -92,14 +87,6 @@
     <population.process process="inflammation" id="SHELL_THICKNESS" value="2.0" unit="um" />
     <population.process process="inflammation" id="IL2_RECEPTORS" value="2000" unit="IL-2 receptors/cell" />
 
-    <!-- inflammation CD4 module -->
-    <population.process process="inflammation" id="IL2_PROD_RATE_IL2" value="16.62" unit="molecules IL-2/cell/min" />
-    <population.process process="inflammation" id="IL2_PROD_RATE_ACTIVE" value="293.27" unit="molecules IL-2/cell/min" />
-    <population.process process="inflammation" id="IL2_SYNTHESIS_DELAY" value="180" unit="min" />
-
-    <!-- inflammation CD8 module -->
-    <population.process process="inflammation" id="GRANZ_SYNTHESIS_DELAY" value="15" unit="min" />
-
     <!-- LAYERS ============================================================ -->
 
     <!-- default parameters for layers -->
@@ -125,16 +112,6 @@
 
     <!-- convert action parameters -->
     <action class="convert" id="TIME_DELAY" value="0" units="min" description="time delay before calling the action" />
-
-    <!-- kill action parameters -->
-    <action class="kill" id="TIME_DELAY" value="0" units="min" description="time delay before calling the action" />
-
-    <!-- treat action parameters -->
-    <action class="treat" id="TIME_DELAY" value="0" units="hour" description="time delay before calling the action" />
-    <action class="treat" id="DOSE" value="0" description="number of CAR-T cells to add into the treatment" />
-    <action class="treat" id="RATIO" value="1" description="ratio of cd4 to cd8 cells in the dose" />
-    <action class="treat" id="MAX_DAMAGE_SEED" value="1E7" description="maximum damage value at which T-cells can seed next to in source or pattern source" />
-    <action class="treat" id="MIN_RADIUS_SEED" value="2.0" description="minimum radius value at which T-cells can seed next to in graph source" />
 
     <!-- COMPONENTS ======================================================== -->
 
