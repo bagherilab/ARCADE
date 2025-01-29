@@ -317,11 +317,9 @@ public abstract class PatchProcessInflammation extends PatchProcess {
     public static PatchProcess make(PatchCell cell, String version) {
         switch (version.toUpperCase()) {
             case "CD4":
-                // TODO: upload class specific inflammation modules
-                //                return new PatchProcessInflammationCD4((PatchCellCART) cell);
+                throw new UnsupportedOperationException();
             case "CD8":
-                // TODO: upload class specific inflammation modules
-                //                return new PatchProcessInflammationCD8((PatchCellCART) cell);
+                throw new UnsupportedOperationException();
             default:
                 return null;
         }
