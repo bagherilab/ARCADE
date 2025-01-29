@@ -1,6 +1,7 @@
 package arcade.patch.agent.cell;
 
 import java.util.ArrayList;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sim.engine.SimState;
@@ -29,6 +30,18 @@ public class PatchCellCARTTest {
     private PatchLocation location;
 
     private PatchCellContainer container;
+
+    private static Simulation sim;
+
+    private static PatchLocation loc;
+
+    private static MersenneTwisterFast random;
+
+    private static PatchGrid grid;
+
+    private static PatchCellTissue tissueCell;
+
+    private static Bag bag;
 
     static class PatchCellMock extends PatchCellCART {
         PatchCellMock(PatchCellContainer container, Location location, Parameters parameters) {
@@ -87,9 +100,7 @@ public class PatchCellCARTTest {
                         criticalVolume,
                         criticalHeight);
 
-        when(parameters.getDouble("HETEROGENEITY")).thenReturn(0.0);
         when(parameters.getDouble("ENERGY_THRESHOLD")).thenReturn(1.0);
-
         when(parameters.getDouble("NECROTIC_FRACTION"))
                 .thenReturn(randomIntBetween(40, 100) / 100.0);
         when(parameters.getDouble("EXHAU_FRAC")).thenReturn(randomIntBetween(40, 100) / 100.0);
@@ -110,110 +121,72 @@ public class PatchCellCARTTest {
         when(parameters.getDouble("CONTACT_FRAC")).thenReturn(7.8E-6);
         when(parameters.getInt("MAX_ANTIGEN_BINDING")).thenReturn(10);
         when(parameters.getInt("CARS")).thenReturn(50000);
-
         when(parameters.getInt("APOPTOSIS_AGE")).thenReturn(120960);
         when(parameters.getInt("MAX_DENSITY")).thenReturn(54);
 
         patchCellCART = new PatchCellMock(container, location, parameters);
     }
 
-    @Test
-    public void testBindTargetNoNeighbors() {
-        Simulation sim = mock(Simulation.class);
-        PatchLocation loc = mock(PatchLocation.class);
-        MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-        PatchGrid grid = mock(PatchGrid.class);
-        Bag bag = new Bag();
-
+    @BeforeAll
+    public static void setupMocks() {
+        sim = mock(Simulation.class);
+        loc = mock(PatchLocation.class);
+        random = mock(MersenneTwisterFast.class);
+        grid = mock(PatchGrid.class);
+        bag = new Bag();
         when(sim.getGrid()).thenReturn(grid);
         when(grid.getObjectsAtLocation(loc)).thenReturn(bag);
         when(loc.getNeighbors()).thenReturn(new ArrayList<Location>());
+        when(loc.getVolume()).thenReturn(6000.0);
+        tissueCell = mock(PatchCellTissue.class);
+    }
 
+    @Test
+    public void bindTargetNoNeighborsDoesNotBind() {
         PatchCellTissue result = patchCellCART.bindTarget(sim, loc, random);
         assertNull(result);
         assertEquals(PatchEnums.AntigenFlag.UNBOUND, patchCellCART.getAntigenFlag());
     }
 
     @Test
-    public void testBindTargetWithSelfBinding() {
-        // lots of self antigens, not a lot of car antigens
-        Simulation sim = mock(Simulation.class);
-        PatchLocation loc = mock(PatchLocation.class);
-        MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-        PatchGrid grid = mock(PatchGrid.class);
-        Bag bag = new Bag();
-
-        when(sim.getGrid()).thenReturn(grid);
-        when(grid.getObjectsAtLocation(loc)).thenReturn(bag);
-        when(loc.getNeighbors()).thenReturn(new ArrayList<Location>());
-        when(loc.getVolume()).thenReturn(6000.0);
-
-        when(parameters.getInt("CAR_ANTIGENS")).thenReturn(10);
-        when(parameters.getInt("SELF_TARGETS")).thenReturn(10000000);
-        PatchCellTissue tissueCell = new PatchCellTissue(container, location, parameters);
+    public void bindTargetWithSelfBindingBindsToCell() {
+        when(tissueCell.getCarAntigens()).thenReturn(10);
+        when(tissueCell.getSelfAntigens()).thenReturn(10000000);
+        when(random.nextDouble()).thenReturn(0.0000005);
 
         bag.add(tissueCell);
 
-        when(random.nextDouble()).thenReturn(0.0000005);
-
         PatchCellTissue result = patchCellCART.bindTarget(sim, loc, random);
+        bag.clear();
         assertNotNull(result);
         assertEquals(PatchEnums.AntigenFlag.BOUND_CELL_RECEPTOR, patchCellCART.getAntigenFlag());
     }
 
     @Test
-    public void testBindTargetWithSelfAndAntigenBinding() {
-        Simulation sim = mock(Simulation.class);
-        PatchLocation loc = mock(PatchLocation.class);
-        MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-        PatchGrid grid = mock(PatchGrid.class);
-        Bag bag = new Bag();
-
-        when(sim.getGrid()).thenReturn(grid);
-        when(grid.getObjectsAtLocation(loc)).thenReturn(bag);
-        when(loc.getNeighbors()).thenReturn(new ArrayList<Location>());
-        when(loc.getVolume()).thenReturn(6000.0);
-
-        when(parameters.getInt("CAR_ANTIGENS")).thenReturn(5000);
-        when(parameters.getInt("SELF_TARGETS")).thenReturn(50000000);
-
-        PatchCellTissue tissueCell = new PatchCellTissue(container, location, parameters);
+    public void bindTargetWithSelfAndAntigenBindingBindsToCell() {
+        when(tissueCell.getCarAntigens()).thenReturn(5000);
+        when(tissueCell.getSelfAntigens()).thenReturn(50000000);
+        when(random.nextDouble()).thenReturn(0.0000005);
 
         bag.add(tissueCell);
 
-        when(random.nextDouble()).thenReturn(0.0000005);
-
         PatchCellTissue result = patchCellCART.bindTarget(sim, loc, random);
+        bag.clear();
         assertNotNull(result);
         assertEquals(
                 PatchEnums.AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR, patchCellCART.getAntigenFlag());
     }
 
     @Test
-    public void testBindTarget() {
-        Simulation sim = mock(Simulation.class);
-        PatchLocation loc = mock(PatchLocation.class);
-        MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-        PatchGrid grid = mock(PatchGrid.class);
-        Bag bag = new Bag();
-
-        when(sim.getGrid()).thenReturn(grid);
-        when(grid.getObjectsAtLocation(loc)).thenReturn(bag);
-        when(loc.getNeighbors()).thenReturn(new ArrayList<Location>());
-        when(loc.getVolume()).thenReturn(6000.0);
-
-        when(parameters.getInt("CAR_ANTIGENS")).thenReturn(5000);
-        when(parameters.getInt("SELF_TARGETS")).thenReturn(5000);
-
-        PatchCellTissue tissueCell = new PatchCellTissue(container, location, parameters);
-
-        bag.add(tissueCell);
-
+    public void bindTargetBindsToCell() {
+        when(tissueCell.getCarAntigens()).thenReturn(5000);
+        when(tissueCell.getSelfAntigens()).thenReturn(5000);
         when(random.nextDouble()).thenReturn(0.0000005);
 
         bag.add(tissueCell);
 
         PatchCellTissue result = patchCellCART.bindTarget(sim, loc, random);
+        bag.clear();
         assertNotNull(result);
         assertEquals(PatchEnums.AntigenFlag.BOUND_ANTIGEN, patchCellCART.getAntigenFlag());
     }
