@@ -38,8 +38,8 @@ import static arcade.patch.util.PatchEnums.State;
  * NECROTIC_FRACTION} and {@code SENESCENT_FRACTION}, respectively).
  *
  * <p>Cell parameters are tracked using a map between the parameter name and value. Daughter cell
- * parameter values are drawn from a distribution centered on the parent cell parameter with the
- * specified amount of heterogeneity ({@code HETEROGENEITY}).
+ * parameter values are drawn from a distribution centered on the parent cell. The parameter classes
+ * have support for loading in distributions to reflect heterogeneity. ({@code HETEROGENEITY}).
  */
 public abstract class PatchCell implements Cell {
     /** Stopper used to stop this agent from being stepped in the schedule. */

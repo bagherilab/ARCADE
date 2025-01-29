@@ -31,7 +31,7 @@
     <!-- CAR T specific parameters -->
     <population id="DIVISION_POTENTIAL_T" value="10" description="max number of divisions for a CAR T-cell" />
     <population id="ANERGIC_FRACTION" value="0.5" description="fraction of anergic cells that become apoptotic" />
-    <population id="EXHAU_FRAC" value="0.5" description="fraction exhausted vs. apoptotic" />
+    <population id="EXHAUSTED_FRAC" value="0.5" description="fraction exhausted vs. apoptotic" />
     <population id="SEARCH_ABILITY" value="1" description="max number of cells a CAR T-cell could make contact with per time step" />
     <population id="MAX_ANTIGEN_BINDING" value="10" description="number of times a CAR T-cell can interact with target without becoming exhausted" />
     <population id="CARS" value="50000" description="average number of CARs on a CAR T-cell" />
