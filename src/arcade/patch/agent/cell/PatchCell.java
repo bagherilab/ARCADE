@@ -32,28 +32,7 @@ import static arcade.patch.util.PatchEnums.Ordering;
 import static arcade.patch.util.PatchEnums.State;
 
 /**
- * Implementation of {@link Cell} for generic tissue cell.
- *
- * <p>{@code PatchCell} agents exist in one of seven states: undefined, apoptotic, quiescent,
- * migratory, proliferative, senescent, and necrotic. The undefined state is a transition state for
- * "undecided" cells, and does not have any biological analog.
- *
- * <p>{@code PatchCell} agents have two required {@link Process} domains: metabolism and signaling.
- * Metabolism controls changes in cell energy and volume. Signaling controls the proliferative vs.
- * migratory decision.
- *
- * <p>General order of rules for the {@code PatchCell} step:
- *
- * <ul>
- *   <li>update age
- *   <li>check lifespan (possible change to apoptotic)
- *   <li>step metabolism process
- *   <li>check energy status (possible change to quiescent or necrotic depending on {@code
- *       ENERGY_THRESHOLD})
- *   <li>step signaling process
- *   <li>check if neutral (change to proliferative, migratory, senescent)
- *   <li>step state-specific module
- * </ul>
+ * Implementation of {@link Cell} for generic cell agent.
  *
  * <p>Cells that become necrotic or senescent have a change to become apoptotic instead ({@code
  * NECROTIC_FRACTION} and {@code SENESCENT_FRACTION}, respectively).
@@ -522,7 +501,7 @@ public abstract class PatchCell implements Cell {
      * @param maxHeight the maximum height tolerance
      * @param population the population index
      * @param maxDensity the maximum density of population in the location
-     * @return a list of free locations
+     * @return if the location is available for the cell
      */
     static boolean checkLocation(
             Simulation sim,
