@@ -4,7 +4,6 @@ import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.sim.Simulation;
-import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.process.PatchProcess;
 import arcade.patch.env.grid.PatchGrid;
@@ -54,9 +53,8 @@ public class PatchModuleProliferation extends PatchModule {
         targetVolume = 2 * cell.getCriticalVolume();
         maxHeight = cell.getCriticalHeight();
         duration = 0;
-        // Set loaded parameters.
-        Parameters parameters = cell.getParameters();
-        synthesisDuration = parameters.getInt("proliferation/SYNTHESIS_DURATION");
+        // Load parameters.
+        synthesisDuration = cell.getSynthesisDuration();
     }
 
     @Override
@@ -107,11 +105,13 @@ public class PatchModuleProliferation extends PatchModule {
                     newCell.setEnergy(energy * (1 - split));
 
                     // Update processes.
-                    PatchProcess metabolism = (PatchProcess) newCell.getProcess(Domain.METABOLISM);
-                    metabolism.update(cell.getProcess(Domain.METABOLISM));
-                    PatchProcess signaling = (PatchProcess) newCell.getProcess(Domain.SIGNALING);
-                    signaling.update(cell.getProcess(Domain.SIGNALING));
-
+                    Domain[] processes = Domain.values();
+                    for (Domain processName : processes) {
+                        PatchProcess process = (PatchProcess) newCell.getProcess(processName);
+                        if (process != null) {
+                            process.update(cell.getProcess(processName));
+                        }
+                    }
                     // TODO: Update environment generator sites.
                 } else {
                     ticker++;
