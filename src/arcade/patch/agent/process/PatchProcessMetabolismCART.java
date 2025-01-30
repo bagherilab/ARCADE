@@ -90,17 +90,6 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
     /** Time delay for changes in metabolism. */
     private final int timeDelay;
 
-    /** Metabolic preference value after stepping through the process. For testing purposes only. */
-    private double finalMetabolicPreference;
-
-    /** Glucose uptake rate value after stepping through the process. For testing purposes only. */
-    private double finalGlucoseUptakeRate;
-
-    /**
-     * Minimum mass fraction value after stepping through the process. For testing purposes only.
-     */
-    private double finalMinimumMassFraction;
-
     /**
      * Creates a metabolism {@link PatchProcess} for the given cell.
      *
@@ -283,13 +272,6 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
         upAmts[GLUCOSE] = glucUptake;
         upAmts[OXYGEN] = oxyUptake;
         intAmts[PYRUVATE] = pyruInt;
-
-        // Set final metabolic preference for testing
-        finalMetabolicPreference = metabolicPreference;
-        // Set final glucose uptake rate for testing
-        finalGlucoseUptakeRate = glucoseUptakeRate;
-        // Set final min mass fraction for testing
-        finalMinimumMassFraction = minimumMassFraction;
     }
 
     @Override
@@ -308,35 +290,5 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
         metabolism.intAmts[PYRUVATE] *= (1 - split);
         metabolism.volume *= (1 - split);
         metabolism.mass *= (1 - split);
-    }
-
-    /**
-     * Returns final value of metabolic preference after stepping process Exists for testing
-     * purposes only.
-     *
-     * @return final value of the metabolic preference
-     */
-    public double getFinalMetabolicPreference() {
-        return finalMetabolicPreference;
-    }
-
-    /**
-     * Returns final value of glucose uptake rate after stepping process Exists for testing purposes
-     * only.
-     *
-     * @return final value of glucose uptake rate
-     */
-    public double getFinalGlucoseUptakeRate() {
-        return finalGlucoseUptakeRate;
-    }
-
-    /**
-     * Returns final value of minimum mass fraction after stepping process Exists for testing
-     * purposes only.
-     *
-     * @return final value of min mass fraction
-     */
-    public double getFinalMinimumMassFraction() {
-        return finalMinimumMassFraction;
     }
 }
