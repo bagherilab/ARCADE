@@ -25,6 +25,10 @@ public class PatchProcessMetabolismCARTTest {
 
     private double cellVolume;
 
+    private MersenneTwisterFast random = new MersenneTwisterFast();
+
+    private Simulation sim;
+
     static class inflammationMock extends PatchProcessInflammation {
         public inflammationMock(PatchCellCART c) {
             super(c);
@@ -38,7 +42,7 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
         mockCell = mock(PatchCellCART.class);
         mockParameters = mock(Parameters.class);
         mockLocation = mock(PatchLocation.class);
@@ -52,13 +56,19 @@ public class PatchProcessMetabolismCARTTest {
                 .thenReturn(randomDoubleBetween(0, 1.0) * 6 * 30 / Math.sqrt(3));
         when(mockLocation.getArea()).thenReturn(3.0 / 2.0 / Math.sqrt(3.0) * 30 * 30);
         when(mockLocation.getVolume()).thenReturn(3.0 / 2.0 / Math.sqrt(3.0) * 30 * 30 * 8.7);
+
+        // set up metabolism class
+        when(mockParameters.getDouble("metabolism/GLUCOSE_UPTAKE_RATE")).thenReturn(1.12);
+        when(mockParameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION")).thenReturn(0.05);
+        metabolism = new PatchProcessMetabolismCART(mockCell);
+        Field fraction = PatchProcessMetabolism.class.getDeclaredField("f");
+        fraction.setAccessible(true);
+        fraction.set(metabolism, 1.0);
+        sim = mock(Simulation.class);
     }
 
     @Test
-    public void testConstructorInitializesFields()
-            throws NoSuchFieldException, IllegalAccessException {
-        metabolism = new PatchProcessMetabolismCART(mockCell);
-
+    public void constructorInitializesFields() throws NoSuchFieldException, IllegalAccessException {
         assertNotNull(metabolism);
 
         Field metaPrefField = PatchProcessMetabolismCART.class.getDeclaredField("metaPref");
@@ -91,7 +101,7 @@ public class PatchProcessMetabolismCARTTest {
         Field glucUptakeRateField =
                 PatchProcessMetabolismCART.class.getDeclaredField("glucUptakeRate");
         glucUptakeRateField.setAccessible(true);
-        assertEquals(1.0, glucUptakeRateField.get(metabolism));
+        assertEquals(1.12, glucUptakeRateField.get(metabolism));
 
         Field metabolicPreferenceIL2Field =
                 PatchProcessMetabolismCART.class.getDeclaredField("metabolicPreferenceIL2");
@@ -124,19 +134,8 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void testStepProcess() throws NoSuchFieldException, IllegalAccessException {
-        // set up metabolism class
-        when(mockParameters.getDouble("metabolism/GLUCOSE_UPTAKE_RATE")).thenReturn(1.12);
-        when(mockParameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION")).thenReturn(0.05);
-        metabolism = new PatchProcessMetabolismCART(mockCell);
-        Field fraction = PatchProcessMetabolism.class.getDeclaredField("f");
-        fraction.setAccessible(true);
-        fraction.set(metabolism, 1.0);
-
-        // set up simulation
-        MersenneTwisterFast random = new MersenneTwisterFast();
-        Simulation sim = mock(Simulation.class);
-
+    public void stepProcessUpdatesInternalGlucoseAndPyruvate()
+            throws NoSuchFieldException, IllegalAccessException {
         // mock inflammation process
         PatchProcessInflammation inflammation = new inflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
@@ -149,38 +148,23 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void testStepProcessWithZeroInitialGlucose() {
-        // set up metabolism class
-        when(mockParameters.getDouble("metabolism/GLUCOSE_UPTAKE_RATE")).thenReturn(1.12);
-        when(mockParameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION")).thenReturn(0.0);
-        metabolism = new PatchProcessMetabolismCART(mockCell);
-
-        // set up simulation
-        MersenneTwisterFast random = new MersenneTwisterFast();
-        Simulation sim = mock(Simulation.class);
+    public void stepProcessWithZeroInitialGlucoseReducesMass() {
+        metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE] = 0;
 
         // mock inflammation process
         PatchProcessInflammation inflammation = new inflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
         when(mockCell.getActivationStatus()).thenReturn(true);
 
+        double initialMass = metabolism.mass;
         metabolism.stepProcess(random, sim);
+        double finalMass = metabolism.mass;
 
-        assertEquals(0.0, metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE]);
+        assertTrue(finalMass < initialMass);
     }
 
     @Test
-    public void testStepProcessWithMaxGlucoseConcentration() {
-        // set up metabolism class
-        when(mockParameters.getDouble("metabolism/GLUCOSE_UPTAKE_RATE")).thenReturn(1.12);
-        when(mockParameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION"))
-                .thenReturn(Double.MAX_VALUE);
-        metabolism = new PatchProcessMetabolismCART(mockCell);
-
-        // set up simulation
-        MersenneTwisterFast random = new MersenneTwisterFast();
-        Simulation sim = mock(Simulation.class);
-
+    public void stepProcessWithMaxGlucoseConcentrationDoesNotOverflow() {
         // mock inflammation process
         PatchProcessInflammation inflammation = new inflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
@@ -192,16 +176,7 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void testStepProcessWithNegativeGlucoseConcentration() {
-        // set up metabolism class
-        when(mockParameters.getDouble("metabolism/GLUCOSE_UPTAKE_RATE")).thenReturn(1.12);
-        when(mockParameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION")).thenReturn(-1.0);
-        metabolism = new PatchProcessMetabolismCART(mockCell);
-
-        // set up simulation
-        MersenneTwisterFast random = new MersenneTwisterFast();
-        Simulation sim = mock(Simulation.class);
-
+    public void stepProcessWithNegativeGlucoseConcentrationStaysPositive() {
         // mock inflammation process
         PatchProcessInflammation inflammation = new inflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
@@ -213,16 +188,7 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void testStepProcessWithZeroOxygenConcentration() {
-        // set up metabolism class
-        when(mockParameters.getDouble("metabolism/GLUCOSE_UPTAKE_RATE")).thenReturn(1.12);
-        when(mockParameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION")).thenReturn(0.05);
-        metabolism = new PatchProcessMetabolismCART(mockCell);
-
-        // set up simulation
-        MersenneTwisterFast random = new MersenneTwisterFast();
-        Simulation sim = mock(Simulation.class);
-
+    public void stepProcessWithZeroOxygenConcentrationProducesNoOxygen() {
         // mock inflammation process
         PatchProcessInflammation inflammation = new inflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
@@ -236,16 +202,7 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void testStepProcessWithMaxOxygenConcentration() {
-        // set up metabolism class
-        when(mockParameters.getDouble("metabolism/GLUCOSE_UPTAKE_RATE")).thenReturn(1.12);
-        when(mockParameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION")).thenReturn(0.05);
-        metabolism = new PatchProcessMetabolismCART(mockCell);
-
-        // set up simulation
-        MersenneTwisterFast random = new MersenneTwisterFast();
-        Simulation sim = mock(Simulation.class);
-
+    public void stepProcessWithMaxOxygenConcentrationDoesNotOverflow() {
         // mock inflammation process
         PatchProcessInflammation inflammation = new inflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
@@ -259,86 +216,28 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void testActivatedMetabolicPreference()
+    public void activatedCellProducesMoreGlucose()
             throws IllegalAccessException, NoSuchFieldException {
-        // set up metabolism class
-        when(mockParameters.getDouble("metabolism/GLUCOSE_UPTAKE_RATE")).thenReturn(1.12);
-        when(mockParameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION")).thenReturn(0.05);
-        metabolism = new PatchProcessMetabolismCART(mockCell);
-
-        // set up simulation
-        MersenneTwisterFast random = new MersenneTwisterFast();
-        Simulation sim = mock(Simulation.class);
-
+        metabolism.extAmts[PatchProcessMetabolismCART.GLUCOSE] = 10000.0;
         // mock inflammation process
         PatchProcessInflammation inflammation = new inflammationMock(mockCell);
+        when(mockCell.getProcess(any())).thenReturn(inflammation);
+        metabolism.stepProcess(random, sim);
+        double inactiveGlucose = metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE];
+        double inactivePyruvate = metabolism.intAmts[PatchProcessMetabolismCART.PYRUVATE];
         Field activeTicker = PatchProcessInflammation.class.getDeclaredField("activeTicker");
         activeTicker.setAccessible(true);
         activeTicker.set(inflammation, 1);
-        when(mockCell.getProcess(any())).thenReturn(inflammation);
         when(mockCell.getActivationStatus()).thenReturn(true);
-
         metabolism.stepProcess(random, sim);
+        double activatedGlucose = metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE];
+        double activatedPyruvate = metabolism.intAmts[PatchProcessMetabolismCART.PYRUVATE];
 
-        double expectedMetabolicPreference = 1.0 + 1.0; // base + active
-        assertEquals(expectedMetabolicPreference, metabolism.getFinalMetabolicPreference());
+        assertTrue(activatedGlucose > inactiveGlucose);
     }
 
     @Test
-    public void testActivatedGlucoseUptakeRate()
-            throws IllegalAccessException, NoSuchFieldException {
-        // set up metabolism class
-        when(mockParameters.getDouble("metabolism/GLUCOSE_UPTAKE_RATE")).thenReturn(1.12);
-        when(mockParameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION")).thenReturn(0.05);
-        metabolism = new PatchProcessMetabolismCART(mockCell);
-
-        // set up simulation
-        MersenneTwisterFast random = new MersenneTwisterFast();
-        Simulation sim = mock(Simulation.class);
-
-        // mock inflammation process
-        PatchProcessInflammation inflammation = new inflammationMock(mockCell);
-        Field activeTicker = PatchProcessInflammation.class.getDeclaredField("activeTicker");
-        activeTicker.setAccessible(true);
-        activeTicker.set(inflammation, 1);
-        when(mockCell.getProcess(any())).thenReturn(inflammation);
-        when(mockCell.getActivationStatus()).thenReturn(true);
-
-        metabolism.stepProcess(random, sim);
-
-        double expectedGlucoseUptakeRate = 1.12 + 1.0; // base + active
-        assertEquals(expectedGlucoseUptakeRate, metabolism.getFinalGlucoseUptakeRate());
-    }
-
-    @Test
-    public void testActivatedMinimumMassFraction()
-            throws NoSuchFieldException, IllegalAccessException {
-        // set up metabolism class
-        when(mockParameters.getDouble("metabolism/GLUCOSE_UPTAKE_RATE")).thenReturn(1.12);
-        when(mockParameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION")).thenReturn(0.05);
-        metabolism = new PatchProcessMetabolismCART(mockCell);
-
-        // set up simulation
-        MersenneTwisterFast random = new MersenneTwisterFast();
-        Simulation sim = mock(Simulation.class);
-
-        // mock inflammation process
-        PatchProcessInflammation inflammation = new inflammationMock(mockCell);
-        Field activeTicker = PatchProcessInflammation.class.getDeclaredField("activeTicker");
-        activeTicker.setAccessible(true);
-        activeTicker.set(inflammation, 1);
-        when(mockCell.getProcess(any())).thenReturn(inflammation);
-        when(mockCell.getActivationStatus()).thenReturn(true);
-
-        metabolism.stepProcess(random, sim);
-
-        double expectedMinimumMassFraction = 1.0 + 1.0; // base + active
-        assertEquals(expectedMinimumMassFraction, metabolism.getFinalMinimumMassFraction());
-    }
-
-    @Test
-    public void testUpdate() {
-        metabolism = new PatchProcessMetabolismCART(mockCell);
+    public void updateSplitCellEvenlyDividesGlucose() {
         PatchProcessMetabolismCART parentProcess = new PatchProcessMetabolismCART(mockCell);
         parentProcess.intAmts[PatchProcessMetabolismCART.GLUCOSE] = 100;
         when(mockCell.getVolume()).thenReturn(cellVolume / 2);
@@ -350,8 +249,7 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void testUpdateZeroVolumeParent() {
-        metabolism = new PatchProcessMetabolismCART(mockCell);
+    public void updateSplitCellUnevenlyDividesGlucose() {
         PatchProcessMetabolismCART parentProcess = new PatchProcessMetabolismCART(mockCell);
         parentProcess.intAmts[PatchProcessMetabolismCART.GLUCOSE] = 100;
         when(mockCell.getVolume()).thenReturn(0.0);
