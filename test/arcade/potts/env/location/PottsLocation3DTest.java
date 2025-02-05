@@ -283,8 +283,12 @@ public class PottsLocation3DTest {
         PottsLocation3D loc = new PottsLocation3D(voxelListAB);
         PottsLocation3D split = (PottsLocation3D) loc.split(randomDoubleOne);
 
+        // Voxel (2,0,1) is on the plane of division. Because random.nextDouble() will return 1, in
+        // this test it will be sorted into split instead of loc.
         ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListB);
+        locVoxels.remove(new Voxel(2, 0, 1));
         ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListA);
+        splitVoxels.add(new Voxel(2, 0, 1));
 
         locVoxels.sort(VOXEL_COMPARATOR);
         loc.voxels.sort(VOXEL_COMPARATOR);
