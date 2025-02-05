@@ -4,7 +4,7 @@ import sim.util.Double3D;
 
 /** A 3D vector. */
 public class Vector {
-    /** The (x,y,z) values of the vector*/
+    /** The (x,y,z) values of the vector */
     public final Double3D vector;
 
     /**
@@ -126,18 +126,24 @@ public class Vector {
         double cosTheta = Math.cos(thetaRadians);
         double sinTheta = Math.sin(thetaRadians);
 
-         // Compute the dot product (k • v)
-         double dotProduct = dotProduct(unitAxisVector, vector);
-         // Compute the cross product (k × v)
-         Vector crossProduct = crossProduct(unitAxisVector, vector);
+        // Compute the dot product (k • v)
+        double dotProduct = dotProduct(unitAxisVector, vector);
+        // Compute the cross product (k × v)
+        Vector crossProduct = crossProduct(unitAxisVector, vector);
 
-         // Compute the rotated Normal vector components
+        // Compute the rotated Normal vector components
         double rotatedX =
-        vector.getX() * cosTheta + crossProduct.getX() * sinTheta + unitAxisVector.getX() * dotProduct * (1 - cosTheta);
+                vector.getX() * cosTheta
+                        + crossProduct.getX() * sinTheta
+                        + unitAxisVector.getX() * dotProduct * (1 - cosTheta);
         double rotatedY =
-        vector.getY() * cosTheta + crossProduct.getY() * sinTheta + unitAxisVector.getY() * dotProduct * (1 - cosTheta);
+                vector.getY() * cosTheta
+                        + crossProduct.getY() * sinTheta
+                        + unitAxisVector.getY() * dotProduct * (1 - cosTheta);
         double rotatedZ =
-        vector.getZ() * cosTheta + crossProduct.getZ() * sinTheta + unitAxisVector.getZ() * dotProduct * (1 - cosTheta);
+                vector.getZ() * cosTheta
+                        + crossProduct.getZ() * sinTheta
+                        + unitAxisVector.getZ() * dotProduct * (1 - cosTheta);
         return new Vector(rotatedX, rotatedY, rotatedZ);
     }
 

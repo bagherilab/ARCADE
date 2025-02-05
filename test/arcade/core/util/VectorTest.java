@@ -1,8 +1,8 @@
 package arcade.core.util;
+
 import org.junit.jupiter.api.Test;
 import sim.util.Double3D;
 import static org.junit.jupiter.api.Assertions.*;
-
 
 public class VectorTest {
     static final double EPSILON = 0.0001;
@@ -50,7 +50,7 @@ public class VectorTest {
 
     @Test
     public void getVectorMagnitude_givenVector_returnsCorrectMagnitude() {
-        double magnitude = Vector.getVectorMagnitude(new Vector(1,2,2));
+        double magnitude = Vector.getVectorMagnitude(new Vector(1, 2, 2));
         assertEquals(3, magnitude, EPSILON);
     }
 
@@ -138,7 +138,8 @@ public class VectorTest {
     @Test
     public void rotateVectorAroundAxis_zeroDegreeRotation_returnsSameVector() {
         Vector normalVector = new Vector(1, 0, 0);
-        Vector zAxis = new Vector(0, 0, 1);;
+        Vector zAxis = new Vector(0, 0, 1);
+        ;
         double thetaDegrees = 0.0;
         Vector rotatedVector = Vector.rotateVectorAroundAxis(normalVector, zAxis, thetaDegrees);
         assertEquals(normalVector, rotatedVector);
@@ -147,7 +148,7 @@ public class VectorTest {
     @Test
     public void rotateVectorAroundAxis_xAxis_returnsCorrectRotation() {
         Vector normalVector = new Vector(0.0, 1.0, 0.0);
-        Vector xAxis = new Vector (1, 0, 0);
+        Vector xAxis = new Vector(1, 0, 0);
         double thetaDegrees = 90.0;
         Vector rotatedVector = Vector.rotateVectorAroundAxis(normalVector, xAxis, thetaDegrees);
         assertEquals(0.0, rotatedVector.getX(), EPSILON);
@@ -158,7 +159,7 @@ public class VectorTest {
     @Test
     public void rotateVectorAroundAxis_yAxis_returnsCorrectRotation() {
         Vector normalVector = new Vector(1.0, 0.0, 0.0);
-        Vector yAxis = new Vector (0, 1, 0);
+        Vector yAxis = new Vector(0, 1, 0);
         double thetaDegrees = 90.0;
         Vector rotatedVector = Vector.rotateVectorAroundAxis(normalVector, yAxis, thetaDegrees);
         assertEquals(0.0, rotatedVector.getX(), EPSILON);
@@ -169,7 +170,7 @@ public class VectorTest {
     @Test
     public void rotateVectorAroundAxis_zAxis_returnsCorrectRotation() {
         Vector normalVector = new Vector(1.0, 0.0, 0.0);
-        Vector zAxis =new Vector (0, 0, 1);
+        Vector zAxis = new Vector(0, 0, 1);
         double thetaDegrees = 90.0;
         Vector rotatedVector = Vector.rotateVectorAroundAxis(normalVector, zAxis, thetaDegrees);
         assertEquals(0.0, rotatedVector.getX(), EPSILON);
@@ -180,7 +181,7 @@ public class VectorTest {
     @Test
     public void rotateVectorAroundAxis_positiveXY_returnsCorrectRotation() {
         Vector normalVector = new Vector(1.0, 0.0, 0.0);
-        Vector posXYAxis =new Vector(-1, 1, 0);
+        Vector posXYAxis = new Vector(-1, 1, 0);
         double thetaDegrees = 90.0;
         Vector rotatedVector = Vector.rotateVectorAroundAxis(normalVector, posXYAxis, thetaDegrees);
         assertEquals(0.5, rotatedVector.getX(), EPSILON);
@@ -191,7 +192,7 @@ public class VectorTest {
     @Test
     public void rotateVectorAroundAxis_negativeXY_returnsCorrectRotation() {
         Vector normalVector = new Vector(1.0, 0.0, 0.0);
-        Vector negXYAxis = new Vector (-1, -1, 0);
+        Vector negXYAxis = new Vector(-1, -1, 0);
         double thetaDegrees = 90.0;
         Vector rotatedVector = Vector.rotateVectorAroundAxis(normalVector, negXYAxis, thetaDegrees);
         assertEquals(0.5, rotatedVector.getX(), EPSILON);
