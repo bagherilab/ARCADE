@@ -1,11 +1,11 @@
-package arcade.potts.env.location;
+package arcade.core.util;
 
-import arcade.core.util.Vector;
+import sim.util.Double3D;
 
 /** A plane in 3D space. */
 public final class Plane {
     /** A point on the plane. */
-    public final Voxel referencePoint;
+    public final Double3D referencePoint;
 
     /** The unit normal vector to the plane. */
     public final Vector unitNormalVector;
@@ -16,7 +16,7 @@ public final class Plane {
      * @param voxel a point on the plane
      * @param normalVector the normal vector to the plane
      */
-    public Plane(Voxel voxel, Vector normalVector) {
+    public Plane(Double3D voxel, Vector normalVector) {
         this.referencePoint = voxel;
         this.unitNormalVector = Vector.scaleVector(normalVector);
     }
@@ -30,7 +30,7 @@ public final class Plane {
      * @param point the point
      * @return the distance from the point to the plane.
      */
-    public double signedDistanceToPlane(Voxel point) {
+    public double signedDistanceToPlane(Double3D point) {
         return (point.x - referencePoint.x) * unitNormalVector.getX()
                 + (point.y - referencePoint.y) * unitNormalVector.getY()
                 + (point.z - referencePoint.z) * unitNormalVector.getZ();
