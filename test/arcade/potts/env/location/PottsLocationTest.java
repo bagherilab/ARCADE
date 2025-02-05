@@ -5,10 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
-import arcade.potts.util.PottsEnums.Direction;
-import arcade.potts.util.PottsEnums.Region;
+import arcade.core.util.Vector;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
@@ -860,7 +858,7 @@ public class PottsLocationTest {
         voxelsBSplit.add(new Voxel(2, 2, 0));
 
         Voxel center = loc.getCenter();
-        Plane yzPlane = new Plane(center, Direction.YZ_PLANE);
+        Plane yzPlane = new Plane(center, Direction.YZ_PLANE.vector);
 
         PottsLocation.splitVoxels(yzPlane, voxels, voxelsA, voxelsB, randomDoubleZero);
         assertEquals(voxelsASplit, voxelsA);
@@ -891,7 +889,7 @@ public class PottsLocationTest {
         voxelsBSplit.add(new Voxel(2, 2, 0));
 
         Voxel center = loc.getCenter();
-        Plane zxPlane = new Plane(center, Direction.ZX_PLANE);
+        Plane zxPlane = new Plane(center, Direction.ZX_PLANE.vector);
 
         PottsLocation.splitVoxels(zxPlane, voxels, voxelsA, voxelsB, randomDoubleZero);
         assertEquals(voxelsASplit, voxelsA);
@@ -917,7 +915,7 @@ public class PottsLocationTest {
         voxelsASplit.add(new Voxel(2, 2, 0));
 
         Voxel center = loc.getCenter();
-        Plane xyPlane = new Plane(center, Direction.XY_PLANE);
+        Plane xyPlane = new Plane(center, Direction.XY_PLANE.vector);
 
         PottsLocation.splitVoxels(xyPlane, voxels, voxelsA, voxelsB, randomDoubleZero);
         assertEquals(voxelsASplit, voxelsA);
@@ -943,7 +941,7 @@ public class PottsLocationTest {
         voxelsASplit.add(new Voxel(2, 2, 0));
 
         Voxel center = loc.getCenter();
-        Plane negativeXYPlane = new Plane(center, Direction.NEGATIVE_XY);
+        Plane negativeXYPlane = new Plane(center, Direction.NEGATIVE_XY.vector);
 
         PottsLocation.splitVoxels(negativeXYPlane, voxels, voxelsA, voxelsB, randomDoubleZero);
         assertEquals(voxelsASplit, voxelsA);
@@ -969,7 +967,7 @@ public class PottsLocationTest {
         voxelsBSplit.add(new Voxel(2, 2, 0));
 
         Voxel center = loc.getCenter();
-        Plane positiveXYPlane = new Plane(center, Direction.POSITIVE_XY);
+        Plane positiveXYPlane = new Plane(center, Direction.POSITIVE_XY.vector);
 
         PottsLocation.splitVoxels(positiveXYPlane, voxels, voxelsA, voxelsB, randomDoubleZero);
         assertEquals(voxelsASplit, voxelsA);
@@ -995,7 +993,7 @@ public class PottsLocationTest {
         voxelsBSplit.add(new Voxel(2, 2, 0));
 
         Voxel center = loc.getCenter();
-        Plane negativeYZPlane = new Plane(center, Direction.NEGATIVE_YZ);
+        Plane negativeYZPlane = new Plane(center, Direction.NEGATIVE_YZ.vector);
 
         PottsLocation.splitVoxels(negativeYZPlane, voxels, voxelsA, voxelsB, randomDoubleZero);
         assertEquals(voxelsASplit, voxelsA);
@@ -1021,7 +1019,7 @@ public class PottsLocationTest {
         voxelsASplit.add(new Voxel(2, 2, 0));
 
         Voxel center = loc.getCenter();
-        Plane positiveYZPlane = new Plane(center, Direction.POSITIVE_YZ);
+        Plane positiveYZPlane = new Plane(center, Direction.POSITIVE_YZ.vector);
 
         PottsLocation.splitVoxels(positiveYZPlane, voxels, voxelsA, voxelsB, randomDoubleZero);
         assertEquals(voxelsASplit, voxelsA);
@@ -1047,7 +1045,7 @@ public class PottsLocationTest {
         voxelsBSplit.add(new Voxel(2, 2, 0));
 
         Voxel center = loc.getCenter();
-        Plane negativeZXPlane = new Plane(center, Direction.NEGATIVE_ZX);
+        Plane negativeZXPlane = new Plane(center, Direction.NEGATIVE_ZX.vector);
 
         PottsLocation.splitVoxels(negativeZXPlane, voxels, voxelsA, voxelsB, randomDoubleZero);
         assertEquals(voxelsASplit, voxelsA);
@@ -1073,7 +1071,7 @@ public class PottsLocationTest {
         voxelsBSplit.add(new Voxel(2, 2, 0));
 
         Voxel center = loc.getCenter();
-        Plane positiveZXPlane = new Plane(center, Direction.POSITIVE_ZX);
+        Plane positiveZXPlane = new Plane(center, Direction.POSITIVE_ZX.vector);
 
         PottsLocation.splitVoxels(positiveZXPlane, voxels, voxelsA, voxelsB, randomDoubleZero);
         assertEquals(voxelsASplit, voxelsA);
@@ -1099,7 +1097,7 @@ public class PottsLocationTest {
         voxelsBSplit.add(new Voxel(2, 2, 0));
 
         Voxel center = loc.getCenter();
-        Plane yzPlane = new Plane(center, Direction.YZ_PLANE);
+        Plane yzPlane = new Plane(center, Direction.YZ_PLANE.vector);
 
         PottsLocation.splitVoxels(yzPlane, voxels, voxelsA, voxelsB, randomDoubleOne);
         assertEquals(voxelsASplit, voxelsA);
@@ -1125,7 +1123,7 @@ public class PottsLocationTest {
         voxelsBSplit.add(new Voxel(2, 2, 0));
 
         Voxel center = loc.getCenter();
-        Plane zxPlane = new Plane(center, Direction.ZX_PLANE);
+        Plane zxPlane = new Plane(center, Direction.ZX_PLANE.vector);
 
         PottsLocation.splitVoxels(zxPlane, voxels, voxelsA, voxelsB, randomDoubleOne);
         assertEquals(voxelsASplit, voxelsA);
@@ -1151,7 +1149,7 @@ public class PottsLocationTest {
         voxelsASplit.add(new Voxel(2, 2, 0));
 
         Voxel center = loc.getCenter();
-        Plane xyPlane = new Plane(center, Direction.XY_PLANE);
+        Plane xyPlane = new Plane(center, Direction.XY_PLANE.vector);
 
         PottsLocation.splitVoxels(xyPlane, voxels, voxelsA, voxelsB, randomDoubleOne);
         assertEquals(voxelsASplit, voxelsA);
@@ -1177,7 +1175,7 @@ public class PottsLocationTest {
         voxelsASplit.add(new Voxel(2, 2, 0));
 
         Voxel center = loc.getCenter();
-        Plane negativeXYPlane = new Plane(center, Direction.NEGATIVE_XY);
+        Plane negativeXYPlane = new Plane(center, Direction.NEGATIVE_XY.vector);
 
         PottsLocation.splitVoxels(negativeXYPlane, voxels, voxelsA, voxelsB, randomDoubleOne);
         assertEquals(voxelsASplit, voxelsA);
@@ -1203,7 +1201,7 @@ public class PottsLocationTest {
         voxelsASplit.add(new Voxel(2, 2, 0));
 
         Voxel center = loc.getCenter();
-        Plane positiveXYPlane = new Plane(center, Direction.POSITIVE_XY);
+        Plane positiveXYPlane = new Plane(center, Direction.POSITIVE_XY.vector);
 
         PottsLocation.splitVoxels(positiveXYPlane, voxels, voxelsA, voxelsB, randomDoubleOne);
         assertEquals(voxelsASplit, voxelsA);
@@ -1229,7 +1227,7 @@ public class PottsLocationTest {
         voxelsASplit.add(new Voxel(2, 2, 0));
 
         Voxel center = loc.getCenter();
-        Plane negativeYZPlane = new Plane(center, Direction.NEGATIVE_YZ);
+        Plane negativeYZPlane = new Plane(center, Direction.NEGATIVE_YZ.vector);
 
         PottsLocation.splitVoxels(negativeYZPlane, voxels, voxelsA, voxelsB, randomDoubleOne);
         assertEquals(voxelsASplit, voxelsA);
@@ -1255,7 +1253,7 @@ public class PottsLocationTest {
         voxelsASplit.add(new Voxel(2, 2, 0));
 
         Voxel center = loc.getCenter();
-        Plane positiveYZPlane = new Plane(center, Direction.POSITIVE_YZ);
+        Plane positiveYZPlane = new Plane(center, Direction.POSITIVE_YZ.vector);
 
         PottsLocation.splitVoxels(positiveYZPlane, voxels, voxelsA, voxelsB, randomDoubleOne);
         assertEquals(voxelsASplit, voxelsA);
@@ -1281,7 +1279,7 @@ public class PottsLocationTest {
         voxelsASplit.add(new Voxel(2, 2, 0));
 
         Voxel center = loc.getCenter();
-        Plane negativeZXPlane = new Plane(center, Direction.NEGATIVE_ZX);
+        Plane negativeZXPlane = new Plane(center, Direction.NEGATIVE_ZX.vector);
 
         PottsLocation.splitVoxels(negativeZXPlane, voxels, voxelsA, voxelsB, randomDoubleOne);
         assertEquals(voxelsASplit, voxelsA);
@@ -1307,7 +1305,7 @@ public class PottsLocationTest {
         voxelsBSplit.add(new Voxel(2, 2, 0));
 
         Voxel center = loc.getCenter();
-        Plane positiveZXPlane = new Plane(center, Direction.POSITIVE_ZX);
+        Plane positiveZXPlane = new Plane(center, Direction.POSITIVE_ZX.vector);
 
         PottsLocation.splitVoxels(positiveZXPlane, voxels, voxelsA, voxelsB, randomDoubleOne);
         assertEquals(voxelsASplit, voxelsA);
@@ -1585,7 +1583,7 @@ public class PottsLocationTest {
         // Plane with normal vector (1, 2, 3) passing through point (1, 2, 1)
         // Plane equation: x + 2y + 3z = 8
         Voxel planePoint = new Voxel(1, 2, 1);
-        Double3D normalVector = new Double3D(1, 2, 3);
+        Vector normalVector = new Vector(1, 2, 3);
         Plane plane = new Plane(planePoint, normalVector);
 
         for (Voxel voxel : voxels) {
