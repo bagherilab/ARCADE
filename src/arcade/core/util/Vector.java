@@ -4,7 +4,7 @@ import sim.util.Double3D;
 
 /** A 3D vector. */
 public class Vector {
-    /** The (x,y,z) values of the vector */
+    /** The (x,y,z) values of the vector. */
     public final Double3D vector;
 
     /**
@@ -48,7 +48,6 @@ public class Vector {
     /**
      * Gets the z component of the vector.
      *
-     * @param vector the vector
      * @return the z component
      */
     public double getZ() {
@@ -58,6 +57,7 @@ public class Vector {
     /**
      * Determines the magnitude of the provided vector.
      *
+     * @param vector the vector
      * @return the magnitude of the vector
      */
     public static double getVectorMagnitude(Vector vector) {
@@ -148,7 +148,7 @@ public class Vector {
     }
 
     /**
-     * Determines if two vectors are equal
+     * Determines if two vectors are equal.
      *
      * @param obj the object to compare
      * @return true if the vectors are equal, false otherwise

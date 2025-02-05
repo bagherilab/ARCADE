@@ -139,7 +139,6 @@ public class VectorTest {
     public void rotateVectorAroundAxis_zeroDegreeRotation_returnsSameVector() {
         Vector normalVector = new Vector(1, 0, 0);
         Vector zAxis = new Vector(0, 0, 1);
-        ;
         double thetaDegrees = 0.0;
         Vector rotatedVector = Vector.rotateVectorAroundAxis(normalVector, zAxis, thetaDegrees);
         assertEquals(normalVector, rotatedVector);
