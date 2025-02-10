@@ -189,42 +189,21 @@ public abstract class PatchCellCART extends PatchCell {
      */
     public PatchCellTissue bindTarget(
             Simulation sim, PatchLocation loc, MersenneTwisterFast random) {
-        double kDCAR = carAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
-        double kDSelf = selfReceptorAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
+
+        double kDCAR = computeAffinity(carAffinity, loc);
+        double kDSelf = computeAffinity(selfReceptorAffinity, loc);
         PatchGrid grid = (PatchGrid) sim.getGrid();
 
-        // get all tissue agents from this location
-        Bag allAgents = new Bag();
-        getTissueAgents(allAgents, grid.getObjectsAtLocation(loc));
-
-        // get all agents from neighboring locations
-        for (Location neighborLocation : loc.getNeighbors()) {
-            Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));
-            getTissueAgents(allAgents, bag);
-        }
-
-        // remove self
+        Bag allAgents = getAllTissueNeighbors(grid, loc);
         allAgents.remove(this);
-
-        // shuffle bag
         allAgents.shuffle(random);
-
-        // get number of neighbors
         int neighbors = allAgents.size();
 
-        // Bind target with some probability if a nearby cell has targets to bind.
-        int maxSearch = 0;
         if (neighbors == 0) {
             super.setBindingFlag(AntigenFlag.UNBOUND);
             return null;
         } else {
-            if (neighbors < searchAbility) {
-                maxSearch = neighbors;
-            } else {
-                maxSearch = (int) searchAbility;
-            }
-
-            // Within maximum search vicinity, search for neighboring cells to bind to
+            int maxSearch = (int) Math.min(neighbors, searchAbility);
             for (int i = 0; i < maxSearch; i++) {
                 Cell cell = (Cell) allAgents.get(i);
                 if (cell.getState() != State.APOPTOTIC && cell.getState() != State.NECROTIC) {
@@ -232,10 +211,10 @@ public abstract class PatchCellCART extends PatchCell {
                     double cARAntigens = tissueCell.getCarAntigens();
                     double selfTargets = tissueCell.getSelfAntigens();
 
-                    double hillCAR =
-                            getHillCoefficient(cARAntigens, kDCAR, cars, 5000, carAlpha, carBeta);
-                    double hillSelf =
-                            getHillCoefficient(
+                    double probabilityCAR =
+                            computeProbability(cARAntigens, kDCAR, cars, 5000, carAlpha, carBeta);
+                    double probabilitySelf =
+                            computeProbability(
                                     selfTargets,
                                     kDSelf,
                                     selfReceptors,
@@ -243,36 +222,15 @@ public abstract class PatchCellCART extends PatchCell {
                                     selfAlpha,
                                     selfBeta);
 
-                    double logCAR = getLog(hillCAR);
-                    double logSelf = getLog(hillSelf);
-
-                    double randomAntigen = random.nextDouble();
+                    double randomCAR = random.nextDouble();
                     double randomSelf = random.nextDouble();
 
-                    if (logCAR >= randomAntigen && logSelf < randomSelf) {
-                        // cell binds to antigen receptor
-                        super.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);
-                        boundCARAntigensCount++;
-                        selfReceptors +=
-                                (int)
-                                        ((double) selfReceptorsStart
-                                                * (0.95 + random.nextDouble() / 10));
-                        return tissueCell;
-                    } else if (logCAR >= randomAntigen && logSelf >= randomSelf) {
-                        // cell binds to antigen receptor and self
-                        super.setBindingFlag(AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR);
-                        boundCARAntigensCount++;
-                        boundSelfAntigensCount++;
-                        selfReceptors +=
-                                (int)
-                                        ((double) selfReceptorsStart
-                                                * (0.95 + random.nextDouble() / 10));
-                        return tissueCell;
-                    } else if (logCAR < randomAntigen && logSelf >= randomSelf) {
-                        // cell binds to self
-                        super.setBindingFlag(AntigenFlag.BOUND_CELL_RECEPTOR);
-                        boundSelfAntigensCount++;
-                        return tissueCell;
+                    if (probabilityCAR >= randomCAR && probabilitySelf < randomSelf) {
+                        return bindToCARAntigen(tissueCell);
+                    } else if (probabilityCAR >= randomCAR && probabilitySelf >= randomSelf) {
+                        return bindToCARAndSelfAntigen(tissueCell);
+                    } else if (probabilityCAR < randomCAR && probabilitySelf >= randomSelf) {
+                        return bindToSelfAntigen(tissueCell);
                     } else {
                         // cell doesn't bind to anything
                         super.setBindingFlag(AntigenFlag.UNBOUND);
@@ -309,7 +267,88 @@ public abstract class PatchCellCART extends PatchCell {
     }
 
     /**
-     * Computes Hill Coefficient for given parameters.
+     * Computes the binding probability for the receptor with the given parameters.
+     *
+     * @param antigens the number of antigens on the target cell
+     * @param kD binding affinity of receptor
+     * @param currentReceptors number of receptors currently on the cell
+     * @param startingReceptors number of starting receptors on the cell
+     * @param alpha fudge factor for receptor binding
+     * @param beta fudge factor for receptor binding
+     * @return the binding probability for the receptor
+     */
+    private double computeProbability(
+            double antigens,
+            double kD,
+            int currentReceptors,
+            int startingReceptors,
+            double alpha,
+            double beta) {
+        double bind =
+                getBindingCoefficient(
+                        antigens, kD, currentReceptors, startingReceptors, alpha, beta);
+        return getSig(bind);
+    }
+
+    /**
+     * Updates T cell as response to CAR antigen binding.
+     *
+     * @param tissueCell the target cell to bind to
+     * @return the target tissue cell to bind to
+     */
+    private PatchCellTissue bindToCARAntigen(PatchCellTissue tissueCell) {
+        super.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);
+        boundCARAntigensCount++;
+        updateSelfReceptors();
+        return tissueCell;
+    }
+
+    /**
+     * Updates T cell as response to CAR and PLD1 antigen binding.
+     *
+     * @param tissueCell the target cell to bind to
+     * @return the target tissue cell to bind to
+     */
+    private PatchCellTissue bindToCARAndSelfAntigen(PatchCellTissue tissueCell) {
+        super.setBindingFlag(AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR);
+        boundCARAntigensCount++;
+        boundSelfAntigensCount++;
+        updateSelfReceptors();
+        return tissueCell;
+    }
+
+    /**
+     * Updates T cell as response to PLD1 antigen binding.
+     *
+     * @param tissueCell the target cell to bind to
+     * @return the target tissue cell to bind to
+     */
+    private PatchCellTissue bindToSelfAntigen(PatchCellTissue tissueCell) {
+        super.setBindingFlag(AntigenFlag.BOUND_CELL_RECEPTOR);
+        boundSelfAntigensCount++;
+        return tissueCell;
+    }
+
+    /**
+     * Returns all tissue cells in neighborhood and current location.
+     *
+     * @param grid the grid used in the simulation
+     * @param loc current location of the cell
+     * @return bag of all tissue cells in neighborhood and current location
+     */
+    private Bag getAllTissueNeighbors(PatchGrid grid, PatchLocation loc) {
+        Bag neighbors = new Bag();
+        getTissueAgents(neighbors, grid.getObjectsAtLocation(loc));
+        for (Location neighborLocation : loc.getNeighbors()) {
+            Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));
+            getTissueAgents(neighbors, bag);
+        }
+
+        return neighbors;
+    }
+
+    /**
+     * Computes binding coefficient for given parameters.
      *
      * @param targets the number of antigens on the target cell
      * @param affinity binding affinity of receptor
@@ -317,9 +356,9 @@ public abstract class PatchCellCART extends PatchCell {
      * @param startReceptors number of starting receptors on the cell
      * @param alpha fudge factor for receptor binding
      * @param beta fudge factor for receptor binding
-     * @return the Hill Coefficient
+     * @return the binding Coefficient
      */
-    private double getHillCoefficient(
+    private double getBindingCoefficient(
             double targets,
             double affinity,
             int currentReceptors,
@@ -332,12 +371,28 @@ public abstract class PatchCellCART extends PatchCell {
     }
 
     /**
-     * Computes log function for given hill coeffient.
+     * Applies sigmoidal function onto given binding coeffient.
      *
-     * @param hill hill coefficient for the log function
-     * @return the log value
+     * @param bindingCoefficient the binding coefficient for the log function
+     * @return the sigmoidal value
      */
-    private double getLog(double hill) {
-        return 2 * (1 / (1 + Math.exp(-1 * hill))) - 1;
+    private double getSig(double bindingCoefficient) {
+        return 2 * (1 / (1 + Math.exp(-1 * bindingCoefficient))) - 1;
+    }
+
+    /**
+     * Converts the affinity units to molecules.
+     *
+     * @param affinity the molar affinity of the receptor
+     * @param loc the current location of the cell
+     * @return the affinity per receptor molecule
+     */
+    private double computeAffinity(double affinity, PatchLocation loc) {
+        return affinity * (loc.getVolume() * 1e-15 * 6.022E23);
+    }
+
+    /** Randomly increases number of self receptors after CAR binding. */
+    private void updateSelfReceptors() {
+        selfReceptors += (int) ((double) selfReceptorsStart * (0.95 + Math.random() / 10));
     }
 }
