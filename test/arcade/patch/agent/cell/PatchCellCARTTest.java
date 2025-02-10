@@ -1,5 +1,6 @@
 package arcade.patch.agent.cell;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -188,5 +189,14 @@ public class PatchCellCARTTest {
         bag.clear();
         assertNotNull(result);
         assertEquals(PatchEnums.AntigenFlag.BOUND_ANTIGEN, patchCellCART.getBindingFlag());
+    }
+
+    @Test
+    public void getActivationStatusReturnsStatus()
+            throws NoSuchFieldException, IllegalAccessException {
+        Field activation = PatchCellCART.class.getDeclaredField("activated");
+        activation.setAccessible(true);
+        activation.set(patchCellCART, true);
+        assertTrue(patchCellCART.getActivationStatus());
     }
 }
