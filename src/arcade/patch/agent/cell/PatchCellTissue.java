@@ -7,9 +7,6 @@ import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
-import arcade.patch.agent.module.PatchModuleApoptosis;
-import arcade.patch.agent.module.PatchModuleMigration;
-import arcade.patch.agent.module.PatchModuleProliferation;
 import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.Flag;
 import arcade.patch.util.PatchEnums.State;
@@ -136,27 +133,6 @@ public class PatchCellTissue extends PatchCell {
         // Step the module for the cell state.
         if (module != null) {
             module.step(simstate.random, sim);
-        }
-    }
-
-    @Override
-    public void setState(CellState state) {
-        this.state = state;
-        this.flag = Flag.UNDEFINED;
-
-        switch ((State) state) {
-            case PROLIFERATIVE:
-                module = new PatchModuleProliferation(this);
-                break;
-            case MIGRATORY:
-                module = new PatchModuleMigration(this);
-                break;
-            case APOPTOTIC:
-                module = new PatchModuleApoptosis(this);
-                break;
-            default:
-                module = null;
-                break;
         }
     }
 
