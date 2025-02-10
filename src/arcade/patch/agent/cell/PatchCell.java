@@ -17,9 +17,6 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
-import arcade.patch.agent.module.PatchModuleApoptosis;
-import arcade.patch.agent.module.PatchModuleMigration;
-import arcade.patch.agent.module.PatchModuleProliferation;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
@@ -327,27 +324,6 @@ public abstract class PatchCell implements Cell {
      */
     public boolean isStopped() {
         return isStopped;
-    }
-
-    @Override
-    public void setState(CellState state) {
-        this.state = state;
-        this.flag = Flag.UNDEFINED;
-
-        switch ((State) state) {
-            case PROLIFERATIVE:
-                module = new PatchModuleProliferation(this);
-                break;
-            case MIGRATORY:
-                module = new PatchModuleMigration(this);
-                break;
-            case APOPTOTIC:
-                module = new PatchModuleApoptosis(this);
-                break;
-            default:
-                module = null;
-                break;
-        }
     }
 
     /**
