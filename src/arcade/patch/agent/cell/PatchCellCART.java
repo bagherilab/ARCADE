@@ -45,8 +45,7 @@ import static arcade.patch.util.PatchEnums.State;
  *
  * <p>Cell parameters are tracked using a map between the parameter name and value. Daughter cell
  * parameter values are drawn from a distribution centered on the parent cell parameter. The
- * parameter classes have support for loading in distributions to reflect heterogeneity. ({@code
- * HETEROGENEITY}).
+ * parameter classes have support for loading in distributions to reflect heterogeneity.
  */
 public abstract class PatchCellCART extends PatchCell {
     /** Cell activation flag. */
