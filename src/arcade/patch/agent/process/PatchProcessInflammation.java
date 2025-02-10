@@ -37,13 +37,13 @@ public abstract class PatchProcessInflammation extends PatchProcess {
     protected static final int IL2RBG = 3;
 
     /** ID for three-chain IL-2 receptor complex. */
-    protected static final int IL2RBGa = 4;
+    protected static final int IL2RBGA = 4;
 
     /** ID for IL-2-two-chain IL-2 receptor complex. */
     protected static final int IL2_IL2RBG = 5;
 
     /** ID for IL-2-three-chain IL-2 receptor complex. */
-    protected static final int IL2_IL2RBGa = 6;
+    protected static final int IL2_IL2RBGA = 6;
 
     /** ID for granzyme, internal. */
     protected static final int GRANZYME = 7;
@@ -147,9 +147,9 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         amts[IL2_INT_TOTAL] = 0;
         amts[IL2R_TOTAL] = iL2Receptors;
         amts[IL2RBG] = iL2Receptors;
-        amts[IL2RBGa] = 0;
+        amts[IL2RBGA] = 0;
         amts[IL2_IL2RBG] = 0;
-        amts[IL2_IL2RBGa] = 0;
+        amts[IL2_IL2RBGA] = 0;
 
         // Molecule names.
         names = new ArrayList<String>();
@@ -157,9 +157,9 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         names.add(IL2_EXT, "external_IL-2");
         names.add(IL2R_TOTAL, "IL2R_total");
         names.add(IL2RBG, "IL2R_two_chain_complex");
-        names.add(IL2RBGa, "IL2R_three_chain_complex");
+        names.add(IL2RBGA, "IL2R_three_chain_complex");
         names.add(IL2_IL2RBG, "IL-2_IL2R_two_chain_complex");
-        names.add(IL2_IL2RBGa, "IL-2_IL2R_three_chain_complex");
+        names.add(IL2_IL2RBGA, "IL-2_IL2R_three_chain_complex");
 
         // Initialize prior IL2 array.
         this.boundArray = new double[180];
@@ -177,55 +177,55 @@ public abstract class PatchProcessInflammation extends PatchProcess {
 
                         dydt[IL2_EXT] =
                                 kOff * y[IL2_IL2RBG]
-                                        + kOff * y[IL2_IL2RBGa]
+                                        + kOff * y[IL2_IL2RBGA]
                                         - kOn2 * y[IL2RBG] * y[IL2_EXT]
-                                        - kOn3 * y[IL2RBGa] * y[IL2_EXT];
+                                        - kOn3 * y[IL2RBGA] * y[IL2_EXT];
                         dydt[IL2RBG] =
                                 kOff * y[IL2_IL2RBG]
                                         - kOn2 * y[IL2RBG] * y[IL2_EXT]
-                                        - K_CONVERT * (y[IL2_IL2RBG] + y[IL2_IL2RBGa]) * y[IL2RBG]
-                                        + K_REC * (y[IL2_IL2RBG] + y[IL2_IL2RBGa] + y[IL2RBGa]);
-                        dydt[IL2RBGa] =
-                                kOff * y[IL2_IL2RBGa]
-                                        - kOn3 * y[IL2RBGa] * y[IL2_EXT]
-                                        + K_CONVERT * (y[IL2_IL2RBG] + y[IL2_IL2RBGa]) * y[IL2RBG]
-                                        - K_REC * y[IL2RBGa];
+                                        - K_CONVERT * (y[IL2_IL2RBG] + y[IL2_IL2RBGA]) * y[IL2RBG]
+                                        + K_REC * (y[IL2_IL2RBG] + y[IL2_IL2RBGA] + y[IL2RBGA]);
+                        dydt[IL2RBGA] =
+                                kOff * y[IL2_IL2RBGA]
+                                        - kOn3 * y[IL2RBGA] * y[IL2_EXT]
+                                        + K_CONVERT * (y[IL2_IL2RBG] + y[IL2_IL2RBGA]) * y[IL2RBG]
+                                        - K_REC * y[IL2RBGA];
                         dydt[IL2_IL2RBG] =
                                 kOn2 * y[IL2RBG] * y[IL2_EXT]
                                         - kOff * y[IL2_IL2RBG]
                                         - K_CONVERT
-                                                * (y[IL2_IL2RBG] + y[IL2_IL2RBGa])
+                                                * (y[IL2_IL2RBG] + y[IL2_IL2RBGA])
                                                 * y[IL2_IL2RBG]
                                         - K_REC * y[IL2_IL2RBG];
-                        dydt[IL2_IL2RBGa] =
-                                kOn3 * y[IL2RBGa] * y[IL2_EXT]
-                                        - kOff * y[IL2_IL2RBGa]
+                        dydt[IL2_IL2RBGA] =
+                                kOn3 * y[IL2RBGA] * y[IL2_EXT]
+                                        - kOff * y[IL2_IL2RBGA]
                                         + K_CONVERT
-                                                * (y[IL2_IL2RBG] + y[IL2_IL2RBGa])
+                                                * (y[IL2_IL2RBG] + y[IL2_IL2RBGA])
                                                 * y[IL2_IL2RBG]
-                                        - K_REC * y[IL2_IL2RBGa];
+                                        - K_REC * y[IL2_IL2RBGA];
                         dydt[IL2_INT_TOTAL] =
                                 kOn2 * y[IL2RBG] * y[IL2_EXT]
                                         - kOff * y[IL2_IL2RBG]
                                         - K_CONVERT
-                                                * (y[IL2_IL2RBG] + y[IL2_IL2RBGa])
+                                                * (y[IL2_IL2RBG] + y[IL2_IL2RBGA])
                                                 * y[IL2_IL2RBG]
                                         - K_REC * y[IL2_IL2RBG]
-                                        + kOn3 * y[IL2RBGa] * y[IL2_EXT]
-                                        - kOff * y[IL2_IL2RBGa]
+                                        + kOn3 * y[IL2RBGA] * y[IL2_EXT]
+                                        - kOff * y[IL2_IL2RBGA]
                                         + K_CONVERT
-                                                * (y[IL2_IL2RBG] + y[IL2_IL2RBGa])
+                                                * (y[IL2_IL2RBG] + y[IL2_IL2RBGA])
                                                 * y[IL2_IL2RBG]
-                                        - K_REC * y[IL2_IL2RBGa];
+                                        - K_REC * y[IL2_IL2RBGA];
                         dydt[IL2R_TOTAL] =
                                 kOff * y[IL2_IL2RBG]
                                         - kOn2 * y[IL2RBG] * y[IL2_EXT]
-                                        - K_CONVERT * (y[IL2_IL2RBG] + y[IL2_IL2RBGa]) * y[IL2RBG]
-                                        + K_REC * (y[IL2_IL2RBG] + y[IL2_IL2RBGa] + y[IL2RBGa])
-                                        + kOff * y[IL2_IL2RBGa]
-                                        - kOn3 * y[IL2RBGa] * y[IL2_EXT]
-                                        + K_CONVERT * (y[IL2_IL2RBG] + y[IL2_IL2RBGa]) * y[IL2RBG]
-                                        - K_REC * y[IL2RBGa];
+                                        - K_CONVERT * (y[IL2_IL2RBG] + y[IL2_IL2RBGA]) * y[IL2RBG]
+                                        + K_REC * (y[IL2_IL2RBG] + y[IL2_IL2RBGA] + y[IL2RBGA])
+                                        + kOff * y[IL2_IL2RBGA]
+                                        - kOn3 * y[IL2RBGA] * y[IL2_EXT]
+                                        + K_CONVERT * (y[IL2_IL2RBG] + y[IL2_IL2RBGA]) * y[IL2RBG]
+                                        - K_REC * y[IL2RBGA];
 
                         return dydt;
                     };
