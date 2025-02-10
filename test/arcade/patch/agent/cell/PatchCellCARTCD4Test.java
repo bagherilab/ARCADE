@@ -157,7 +157,7 @@ public class PatchCellCARTCD4Test {
         cell.step(sim);
 
         assertEquals(State.APOPTOTIC, cell.getState());
-        assertEquals(AntigenFlag.UNBOUND, cell.getAntigenFlag());
+        assertEquals(AntigenFlag.UNBOUND, cell.getBindingFlag());
         assertFalse(cell.getActivationStatus());
     }
 
@@ -190,7 +190,7 @@ public class PatchCellCARTCD4Test {
         cell.step(sim);
 
         assertEquals(State.STARVED, cell.getState());
-        assertEquals(AntigenFlag.UNBOUND, cell.getAntigenFlag());
+        assertEquals(AntigenFlag.UNBOUND, cell.getBindingFlag());
     }
 
     @Test
@@ -253,7 +253,7 @@ public class PatchCellCARTCD4Test {
         cell.step(sim);
 
         assertTrue(cell.getState() == State.APOPTOTIC || cell.getState() == State.SENESCENT);
-        assertEquals(AntigenFlag.UNBOUND, cell.getAntigenFlag());
+        assertEquals(AntigenFlag.UNBOUND, cell.getBindingFlag());
         assertFalse(cell.getActivationStatus());
     }
 
@@ -282,11 +282,11 @@ public class PatchCellCARTCD4Test {
         sim.random = random;
         cell.setState(State.UNDEFINED);
 
-        cell.setAntigenFlag(AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR);
+        cell.setBindingFlag(AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR);
         cell.step(sim);
 
         assertTrue(cell.getState() == State.APOPTOTIC || cell.getState() == State.ANERGIC);
-        assertEquals(AntigenFlag.UNBOUND, cell.getAntigenFlag());
+        assertEquals(AntigenFlag.UNBOUND, cell.getBindingFlag());
         assertFalse(cell.getActivationStatus());
     }
 
@@ -315,7 +315,7 @@ public class PatchCellCARTCD4Test {
                         any(MersenneTwisterFast.class));
         sim.random = random;
         cell.setState(State.UNDEFINED);
-        cell.setAntigenFlag(AntigenFlag.BOUND_ANTIGEN);
+        cell.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);
 
         Schedule schedule = mock(Schedule.class);
         doReturn(true).when(schedule).scheduleOnce(any(Steppable.class));
@@ -324,7 +324,7 @@ public class PatchCellCARTCD4Test {
         cell.step(sim);
 
         assertEquals(State.STIMULATORY, cell.getState());
-        assertEquals(AntigenFlag.UNBOUND, cell.getAntigenFlag());
+        assertEquals(AntigenFlag.UNBOUND, cell.getBindingFlag());
         assertTrue(cell.getActivationStatus());
     }
 
@@ -415,12 +415,12 @@ public class PatchCellCARTCD4Test {
                         any(MersenneTwisterFast.class));
         sim.random = random;
         cell.setState(State.UNDEFINED);
-        cell.setAntigenFlag(AntigenFlag.BOUND_ANTIGEN);
+        cell.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);
 
         cell.step(sim);
 
         assertTrue(cell.getState() == State.APOPTOTIC || cell.getState() == State.EXHAUSTED);
-        assertEquals(AntigenFlag.UNBOUND, cell.getAntigenFlag());
+        assertEquals(AntigenFlag.UNBOUND, cell.getBindingFlag());
         assertFalse(cell.getActivationStatus());
     }
 }

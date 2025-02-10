@@ -216,7 +216,7 @@ public abstract class PatchCellCART extends PatchCell {
         // Bind target with some probability if a nearby cell has targets to bind.
         int maxSearch = 0;
         if (neighbors == 0) {
-            super.setAntigenFlag(AntigenFlag.UNBOUND);
+            super.setBindingFlag(AntigenFlag.UNBOUND);
             return null;
         } else {
             if (neighbors < searchAbility) {
@@ -252,7 +252,7 @@ public abstract class PatchCellCART extends PatchCell {
 
                     if (logCAR >= randomAntigen && logSelf < randomSelf) {
                         // cell binds to antigen receptor
-                        super.setAntigenFlag(AntigenFlag.BOUND_ANTIGEN);
+                        super.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);
                         boundAntigensCount++;
                         selfReceptors +=
                                 (int)
@@ -261,7 +261,7 @@ public abstract class PatchCellCART extends PatchCell {
                         return tissueCell;
                     } else if (logCAR >= randomAntigen && logSelf >= randomSelf) {
                         // cell binds to antigen receptor and self
-                        super.setAntigenFlag(AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR);
+                        super.setBindingFlag(AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR);
                         boundAntigensCount++;
                         boundSelfCount++;
                         selfReceptors +=
@@ -271,16 +271,16 @@ public abstract class PatchCellCART extends PatchCell {
                         return tissueCell;
                     } else if (logCAR < randomAntigen && logSelf >= randomSelf) {
                         // cell binds to self
-                        super.setAntigenFlag(AntigenFlag.BOUND_CELL_RECEPTOR);
+                        super.setBindingFlag(AntigenFlag.BOUND_CELL_RECEPTOR);
                         boundSelfCount++;
                         return tissueCell;
                     } else {
                         // cell doesn't bind to anything
-                        super.setAntigenFlag(AntigenFlag.UNBOUND);
+                        super.setBindingFlag(AntigenFlag.UNBOUND);
                     }
                 }
             }
-            super.setAntigenFlag(AntigenFlag.UNBOUND);
+            super.setBindingFlag(AntigenFlag.UNBOUND);
         }
         return null;
     }

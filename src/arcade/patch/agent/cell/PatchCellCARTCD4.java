@@ -65,7 +65,7 @@ public class PatchCellCARTCD4 extends PatchCellCART {
 
         if (state != State.APOPTOTIC && age > apoptosisAge) {
             setState(State.APOPTOTIC);
-            super.setAntigenFlag(AntigenFlag.UNBOUND);
+            super.setBindingFlag(AntigenFlag.UNBOUND);
             this.activated = false;
         }
 
@@ -84,14 +84,14 @@ public class PatchCellCARTCD4 extends PatchCellCART {
         if (state != State.APOPTOTIC && energy < 0) {
             if (super.energy < super.energyThreshold) {
                 super.setState(State.APOPTOTIC);
-                super.setAntigenFlag(AntigenFlag.UNBOUND);
+                super.setBindingFlag(AntigenFlag.UNBOUND);
                 this.activated = false;
             } else if (state != State.ANERGIC
                     && state != State.SENESCENT
                     && state != State.EXHAUSTED
                     && state != State.STARVED) {
                 super.setState(State.STARVED);
-                super.setAntigenFlag(AntigenFlag.UNBOUND);
+                super.setBindingFlag(AntigenFlag.UNBOUND);
             }
         } else if (state == State.STARVED && energy >= 0) {
             super.setState(State.UNDEFINED);
@@ -110,7 +110,7 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                 } else {
                     super.setState(State.SENESCENT);
                 }
-                super.setAntigenFlag(AntigenFlag.UNBOUND);
+                super.setBindingFlag(AntigenFlag.UNBOUND);
                 this.activated = false;
             } else {
                 // Cell attempts to bind to a target
@@ -118,15 +118,15 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                         super.bindTarget(sim, location, new MersenneTwisterFast(simstate.seed()));
 
                 // If cell is bound to both antigen and self it will become anergic.
-                if (super.getAntigenFlag() == AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR) {
+                if (super.getBindingFlag() == AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR) {
                     if (simstate.random.nextDouble() > super.anergicFraction) {
                         super.setState(State.APOPTOTIC);
                     } else {
                         super.setState(State.ANERGIC);
                     }
-                    super.setAntigenFlag(AntigenFlag.UNBOUND);
+                    super.setBindingFlag(AntigenFlag.UNBOUND);
                     this.activated = false;
-                } else if (super.getAntigenFlag() == AntigenFlag.BOUND_ANTIGEN) {
+                } else if (super.getBindingFlag() == AntigenFlag.BOUND_ANTIGEN) {
                     // If cell is only bound to target antigen, the cell
                     // can potentially become properly activated.
 
@@ -138,7 +138,7 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                         } else {
                             super.setState(State.EXHAUSTED);
                         }
-                        super.setAntigenFlag(AntigenFlag.UNBOUND);
+                        super.setBindingFlag(AntigenFlag.UNBOUND);
                         this.activated = false;
                     } else {
                         // if CD4 cell is properly activated, it can stimulate
@@ -146,10 +146,10 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                         this.lastActiveTicker = 0;
                         this.activated = true;
                         if (target.isStopped()) {
-                            target.setAntigenFlag(AntigenFlag.UNBOUND);
+                            target.setBindingFlag(AntigenFlag.UNBOUND);
                         }
                         target.setState(State.QUIESCENT);
-                        super.setAntigenFlag(AntigenFlag.UNBOUND);
+                        super.setBindingFlag(AntigenFlag.UNBOUND);
                         // reset the cell
                         PatchActionReset reset =
                                 new PatchActionReset(
@@ -161,8 +161,8 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                     }
                 } else {
                     // If self binding, unbind
-                    if (super.getAntigenFlag() == AntigenFlag.BOUND_CELL_RECEPTOR)
-                        super.setAntigenFlag(AntigenFlag.UNBOUND);
+                    if (super.getBindingFlag() == AntigenFlag.BOUND_CELL_RECEPTOR)
+                        super.setBindingFlag(AntigenFlag.UNBOUND);
                     // Check activation status. If cell has been activated before,
                     // it will proliferate. If not, it will migrate.
                     if (activated) {

@@ -80,33 +80,33 @@ public class PatchActionResetTest {
     @Test
     public void testStep_CytotoxicState() {
         when(mockCell.isStopped()).thenReturn(false);
-        mockCell.setAntigenFlag(AntigenFlag.BOUND_ANTIGEN);
+        mockCell.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);
         when(mockCell.getState()).thenReturn(State.CYTOTOXIC);
 
         actionReset.step(mock(SimState.class));
 
         verify(mockCell).setState(State.QUIESCENT);
-        assertEquals(AntigenFlag.UNBOUND, mockCell.getAntigenFlag());
+        assertEquals(AntigenFlag.UNBOUND, mockCell.getBindingFlag());
     }
 
     @Test
     public void testStep_StimulatoryState() {
         when(mockCell.isStopped()).thenReturn(false);
-        mockCell.setAntigenFlag(AntigenFlag.BOUND_ANTIGEN);
+        mockCell.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);
         when(mockCell.getState()).thenReturn(State.STIMULATORY);
 
         actionReset.step(mock(SimState.class));
 
         verify(mockCell).setState(State.QUIESCENT);
-        assertEquals(AntigenFlag.UNBOUND, mockCell.getAntigenFlag());
+        assertEquals(AntigenFlag.UNBOUND, mockCell.getBindingFlag());
     }
 
     @Test
     public void testStep_StoppedCell() {
         when(mockCell.isStopped()).thenReturn(true);
-        mockCell.setAntigenFlag(AntigenFlag.BOUND_ANTIGEN);
+        mockCell.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);
         actionReset.step(mock(SimState.class));
         verify(mockCell, never()).setState(any(State.class));
-        assertEquals(AntigenFlag.BOUND_ANTIGEN, mockCell.getAntigenFlag());
+        assertEquals(AntigenFlag.BOUND_ANTIGEN, mockCell.getBindingFlag());
     }
 }

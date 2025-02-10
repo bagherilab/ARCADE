@@ -14,7 +14,6 @@ import arcade.patch.sim.PatchSimulation;
 import arcade.patch.util.PatchEnums;
 import arcade.patch.util.PatchEnums.AntigenFlag;
 import arcade.patch.util.PatchEnums.State;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class PatchActionKillTest {
@@ -62,7 +61,7 @@ public class PatchActionKillTest {
         when(mockTarget.isStopped()).thenReturn(true);
         action.step(sim);
         verify(mockTarget, never()).setState(any());
-        verify(mockCell).setAntigenFlag(AntigenFlag.BOUND_CELL_RECEPTOR);
+        verify(mockCell).setBindingFlag(AntigenFlag.BOUND_CELL_RECEPTOR);
     }
 
     @Test

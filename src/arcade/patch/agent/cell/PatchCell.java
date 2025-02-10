@@ -544,10 +544,10 @@ public abstract class PatchCell implements Cell {
     /**
      * Sets the cell binding flag.
      *
-     * @param flag the target cell antigen binding state
+     * @param newBindingFlag the target cell antigen binding state
      */
-    public void setAntigenFlag(PatchEnums.AntigenFlag flag) {
-        this.bindingFlag = flag;
+    public void setBindingFlag(PatchEnums.AntigenFlag newBindingFlag) {
+        this.bindingFlag = newBindingFlag;
     }
 
     /**
@@ -555,7 +555,7 @@ public abstract class PatchCell implements Cell {
      *
      * @return the cell antigen binding state
      */
-    public PatchEnums.AntigenFlag getAntigenFlag() {
+    public PatchEnums.AntigenFlag getBindingFlag() {
         return this.bindingFlag;
     }
 
