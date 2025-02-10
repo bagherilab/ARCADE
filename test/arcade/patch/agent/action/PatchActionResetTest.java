@@ -69,7 +69,7 @@ public class PatchActionResetTest {
     }
 
     @Test
-    public void testSchedule() {
+    public void schedule_updatesSimSchedule() {
         Schedule mockSchedule = mock(Schedule.class);
         actionReset.schedule(mockSchedule);
         verify(mockSchedule)
@@ -78,7 +78,7 @@ public class PatchActionResetTest {
     }
 
     @Test
-    public void testStep_CytotoxicState() {
+    public void step_cytotoxicState_unbindsAndUncommitsCell() {
         when(mockCell.isStopped()).thenReturn(false);
         mockCell.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);
         when(mockCell.getState()).thenReturn(State.CYTOTOXIC);
@@ -90,7 +90,7 @@ public class PatchActionResetTest {
     }
 
     @Test
-    public void testStep_StimulatoryState() {
+    public void step_stimulatoryState_unbindsAndUncommitsCell() {
         when(mockCell.isStopped()).thenReturn(false);
         mockCell.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);
         when(mockCell.getState()).thenReturn(State.STIMULATORY);
@@ -102,7 +102,7 @@ public class PatchActionResetTest {
     }
 
     @Test
-    public void testStep_StoppedCell() {
+    public void step_stoppedCell_doesNotChangeCell() {
         when(mockCell.isStopped()).thenReturn(true);
         mockCell.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);
         actionReset.step(mock(SimState.class));

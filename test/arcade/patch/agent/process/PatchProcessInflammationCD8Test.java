@@ -48,7 +48,7 @@ public class PatchProcessInflammationCD8Test {
     }
 
     @Test
-    public void testConstructor() throws NoSuchFieldException, IllegalAccessException {
+    public void constructor_setsParameters() throws NoSuchFieldException, IllegalAccessException {
         inflammation = new PatchProcessInflammationCD8(mockCell);
         assertNotNull(inflammation);
 
@@ -64,7 +64,8 @@ public class PatchProcessInflammationCD8Test {
     }
 
     @Test
-    public void testStepProcess() throws NoSuchFieldException, IllegalAccessException {
+    public void stepProcess_updatesEnvironment()
+            throws NoSuchFieldException, IllegalAccessException {
         inflammation = new PatchProcessInflammationCD8(mockCell);
         inflammation.active = true;
         inflammation.activeTicker = 10;
@@ -82,7 +83,8 @@ public class PatchProcessInflammationCD8Test {
     }
 
     @Test
-    public void testStepProcessInactive() throws NoSuchFieldException, IllegalAccessException {
+    public void stepProcess_whenInactive_returnsDefaultRate()
+            throws NoSuchFieldException, IllegalAccessException {
         inflammation = new PatchProcessInflammationCD8(mockCell);
         inflammation.active = false;
         inflammation.activeTicker = 10;
@@ -100,7 +102,7 @@ public class PatchProcessInflammationCD8Test {
     }
 
     @Test
-    public void testStepProcessActiveTickerLessThanDelay()
+    public void stepProcess_activeTickerLessThanDelay_usesDefaultRate()
             throws NoSuchFieldException, IllegalAccessException {
         Mockito.when(mockParameters.getInt("inflammation/GRANZ_SYNTHESIS_DELAY")).thenReturn(5);
         inflammation = new PatchProcessInflammationCD8(mockCell);
@@ -120,7 +122,7 @@ public class PatchProcessInflammationCD8Test {
     }
 
     @Test
-    public void testUpdate() {
+    public void update_evenSplit_splitsEvenly() {
         inflammation = new PatchProcessInflammationCD8(mockCell);
         PatchProcessInflammationCD8 parentProcess = new PatchProcessInflammationCD8(mockCell);
         parentProcess.amts[PatchProcessInflammationCD8.GRANZYME] = 100;
@@ -133,7 +135,7 @@ public class PatchProcessInflammationCD8Test {
     }
 
     @Test
-    public void testUpdateZeroVolumeParent() {
+    public void update_withZeroVolume_splitsUnevenly() {
         inflammation = new PatchProcessInflammationCD8(mockCell);
         PatchProcessInflammationCD8 parentProcess = new PatchProcessInflammationCD8(mockCell);
         parentProcess.amts[PatchProcessInflammationCD8.GRANZYME] = 100;

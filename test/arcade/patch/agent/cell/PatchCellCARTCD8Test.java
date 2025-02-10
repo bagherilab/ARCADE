@@ -99,7 +99,7 @@ public class PatchCellCARTCD8Test {
     }
 
     @Test
-    public void testStepIncreasesAge() {
+    public void step_increasesAge() {
         PatchSimulation sim = mock(PatchSimulation.class);
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
@@ -128,7 +128,7 @@ public class PatchCellCARTCD8Test {
     }
 
     @Test
-    public void testStepSetsStateToApoptoticWhenEnergyIsLow() {
+    public void step_whenEnergyIsLow_setsStateToApoptotic() {
         PatchSimulation sim = mock(PatchSimulation.class);
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
@@ -161,7 +161,7 @@ public class PatchCellCARTCD8Test {
     }
 
     @Test
-    public void testStepSetsStateToStarvedWhenEnergyIsNegativeAndMoreThanThreshold() {
+    public void step_whenEnergyIsNegativeAndMoreThanThreshold_setsStateToStarved() {
         PatchSimulation sim = mock(PatchSimulation.class);
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
@@ -193,7 +193,7 @@ public class PatchCellCARTCD8Test {
     }
 
     @Test
-    public void testStepSetsStateToApoptoticWhenEnergyIsNegativeAndLessThanThreshold() {
+    public void step_whenEnergyIsNegativeAndMoreThanThreshold_setsStateToApoptotic() {
         PatchSimulation sim = mock(PatchSimulation.class);
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
@@ -224,7 +224,7 @@ public class PatchCellCARTCD8Test {
     }
 
     @Test
-    public void testStepSetsStateToSenescentWhenDivisionsAreZero() {
+    public void step_whenDivisionsAreZero_setsStateToSenescent() {
         PatchSimulation sim = mock(PatchSimulation.class);
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
@@ -257,7 +257,7 @@ public class PatchCellCARTCD8Test {
     }
 
     @Test
-    public void testStepSetsStateToAnergicWhenBoundToBothAntigenAndSelf() {
+    public void step_whenBoundToBothAntigenAndSelf_setsStateToAnergic() {
         PatchSimulation sim = mock(PatchSimulation.class);
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
@@ -290,7 +290,7 @@ public class PatchCellCARTCD8Test {
     }
 
     @Test
-    public void testStepSetsStateToCytotoxicWhenBoundToAntigen() {
+    public void step_whenBoundToAntigen_setsStateToCytotoxic() {
         PatchSimulation sim = mock(PatchSimulation.class);
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
@@ -326,7 +326,7 @@ public class PatchCellCARTCD8Test {
     }
 
     @Test
-    public void testStepSetsStateToProliferativeWhenActivated() {
+    public void step_whenActivated_setsStateToProliferative() {
         PatchSimulation sim = mock(PatchSimulation.class);
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
@@ -357,7 +357,7 @@ public class PatchCellCARTCD8Test {
     }
 
     @Test
-    public void testStepSetsStateToMigratoryWhenNotActivated() {
+    public void step_whenNotActivated_setsStateToMigratory() {
         PatchSimulation sim = mock(PatchSimulation.class);
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
@@ -388,7 +388,7 @@ public class PatchCellCARTCD8Test {
     }
 
     @Test
-    public void testStepSetsStatetoExhaustedWhenOverstimulated() {
+    public void step_whenOverstimulated_setsStateToExhausted() {
         PatchSimulation sim = mock(PatchSimulation.class);
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));

@@ -43,21 +43,21 @@ public class PatchActionKillTest {
     }
 
     @Test
-    public void testSchedule() {
+    public void schedule_updatesSchedule() {
         action.schedule(schedule);
         verify(schedule)
                 .scheduleOnce(anyDouble(), eq(PatchEnums.Ordering.ACTIONS.ordinal()), eq(action));
     }
 
     @Test
-    public void testStep_CARCellStopped() {
+    public void step_CARCellStopped_doesNotChangeCell() {
         when(mockCell.isStopped()).thenReturn(true);
         action.step(sim);
         verify(mockTarget, never()).setState(any());
     }
 
     @Test
-    public void testStep_TargetCellStopped() {
+    public void step_targetCellStopped_doesNotChangeCell() {
         when(mockTarget.isStopped()).thenReturn(true);
         action.step(sim);
         verify(mockTarget, never()).setState(any());
@@ -65,7 +65,7 @@ public class PatchActionKillTest {
     }
 
     @Test
-    public void testStep_KillTargetCell() {
+    public void step_killTargetCell_killsCellAndUsesGranzyme() {
         when(mockCell.isStopped()).thenReturn(false);
         when(mockTarget.isStopped()).thenReturn(false);
         PatchModuleApoptosis mockProcess = mock(PatchModuleApoptosis.class);

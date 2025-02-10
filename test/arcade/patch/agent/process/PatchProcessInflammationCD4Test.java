@@ -48,7 +48,7 @@ public class PatchProcessInflammationCD4Test {
     }
 
     @Test
-    public void testConstructor() throws NoSuchFieldException, IllegalAccessException {
+    public void constructor_setsParameters() throws NoSuchFieldException, IllegalAccessException {
         inflammation = new PatchProcessInflammationCD4(mockCell);
         assertNotNull(inflammation);
 
@@ -73,7 +73,8 @@ public class PatchProcessInflammationCD4Test {
     }
 
     @Test
-    public void testStepProcess() throws NoSuchFieldException, IllegalAccessException {
+    public void stepProcess_updatesEnvironment()
+            throws NoSuchFieldException, IllegalAccessException {
         inflammation = new PatchProcessInflammationCD4(mockCell);
 
         inflammation.active = true;
@@ -114,7 +115,8 @@ public class PatchProcessInflammationCD4Test {
     }
 
     @Test
-    public void testStepProcessActive() throws NoSuchFieldException, IllegalAccessException {
+    public void stepProcess_whenActive_returnsHigherRate()
+            throws NoSuchFieldException, IllegalAccessException {
         inflammation = new PatchProcessInflammationCD4(mockCell);
 
         inflammation.active = true;
@@ -149,7 +151,8 @@ public class PatchProcessInflammationCD4Test {
     }
 
     @Test
-    public void testStepProcessInactive() throws NoSuchFieldException, IllegalAccessException {
+    public void stepProcess_whenInactive_returnsDefaultRate()
+            throws NoSuchFieldException, IllegalAccessException {
         inflammation = new PatchProcessInflammationCD4(mockCell);
 
         inflammation.active = false;
@@ -179,7 +182,7 @@ public class PatchProcessInflammationCD4Test {
     }
 
     @Test
-    public void testStepProcessActiveTickerLessThanDelay()
+    public void stepProcess_activeTickerLessThanDelay_usesDefaultRate()
             throws NoSuchFieldException, IllegalAccessException {
         inflammation = new PatchProcessInflammationCD4(mockCell);
 
@@ -214,7 +217,7 @@ public class PatchProcessInflammationCD4Test {
     }
 
     @Test
-    public void testStepProcessWithZeroIL2ProdRate()
+    public void stepProcess_withZeroIL2ProdRate_returnsZero()
             throws NoSuchFieldException, IllegalAccessException {
         when(mockParameters.getDouble("inflammation/IL2_PROD_RATE_IL2")).thenReturn(0.0);
         when(mockParameters.getDouble("inflammation/IL2_PROD_RATE_ACTIVE")).thenReturn(0.0);
@@ -246,7 +249,7 @@ public class PatchProcessInflammationCD4Test {
     }
 
     @Test
-    public void testUpdate() {
+    public void update_evenSplit_splitsEvenly() {
         inflammation = new PatchProcessInflammationCD4(mockCell);
         PatchProcessInflammationCD4 parentProcess = new PatchProcessInflammationCD4(mockCell);
         parentProcess.amts[PatchProcessInflammationCD4.IL2RBGA] = 100;
@@ -259,7 +262,7 @@ public class PatchProcessInflammationCD4Test {
     }
 
     @Test
-    public void testUpdateWithZeroVolume() {
+    public void update_withZeroVolume_splitsUnevenly() {
         inflammation = new PatchProcessInflammationCD4(mockCell);
         PatchProcessInflammationCD4 parentProcess = new PatchProcessInflammationCD4(mockCell);
         parentProcess.amts[PatchProcessInflammationCD4.IL2RBGA] = 100;

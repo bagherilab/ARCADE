@@ -103,7 +103,8 @@ public class PatchActionTreatTest {
     }
 
     @Test
-    public void testSchedule() throws NoSuchFieldException, IllegalAccessException {
+    public void schedule_callsScheduleOnAction()
+            throws NoSuchFieldException, IllegalAccessException {
         action = new PatchActionTreat(series, parameters);
 
         ArrayList<MiniBox> populations = new ArrayList<>();
@@ -122,7 +123,7 @@ public class PatchActionTreatTest {
     }
 
     @Test
-    public void testStep() throws NoSuchFieldException, IllegalAccessException {
+    public void step_addsObjectsToSim() throws NoSuchFieldException, IllegalAccessException {
         action = new PatchActionTreat(series, parameters);
 
         ArrayList<MiniBox> populations = new ArrayList<>();
@@ -141,7 +142,8 @@ public class PatchActionTreatTest {
     }
 
     @Test
-    public void testZeroDose() throws NoSuchFieldException, IllegalAccessException {
+    public void step_zeroDose_doesNotAddObjects()
+            throws NoSuchFieldException, IllegalAccessException {
         when(parameters.getInt("DOSE")).thenReturn(0);
         action = new PatchActionTreat(series, parameters);
 
@@ -160,7 +162,8 @@ public class PatchActionTreatTest {
     }
 
     @Test
-    public void testCheckLocationSpace() throws NoSuchFieldException, IllegalAccessException {
+    public void checkLocationSpace_withEmptySpaces_returnsAvailable()
+            throws NoSuchFieldException, IllegalAccessException {
         action = new PatchActionTreat(series, parameters);
         ArrayList<MiniBox> populations = new ArrayList<>();
         MiniBox populationMock = mock(MiniBox.class);
@@ -181,7 +184,8 @@ public class PatchActionTreatTest {
     }
 
     @Test
-    public void testMaxConfluency() throws NoSuchFieldException, IllegalAccessException {
+    public void checkLocation_maxConfluency_returnsUnavailable()
+            throws NoSuchFieldException, IllegalAccessException {
         action = new PatchActionTreat(series, parameters);
         Field density = PatchActionTreat.class.getDeclaredField("maxConfluency");
         density.setAccessible(true);
