@@ -72,7 +72,7 @@ public class PatchCellCARTCD4 extends PatchCellCART {
         // Increase time since last active ticker
         super.lastActiveTicker++;
         if (super.lastActiveTicker != 0 && super.lastActiveTicker % 1440 == 0) {
-            if (super.boundAntigensCount != 0) super.boundAntigensCount--;
+            if (super.boundCARAntigensCount != 0) super.boundCARAntigensCount--;
         }
         if (super.lastActiveTicker / 1440 >= 7) super.activated = false;
 
@@ -132,7 +132,7 @@ public class PatchCellCARTCD4 extends PatchCellCART {
 
                     // Check overstimulation. If cell has bound to
                     // target antigens too many times, becomes exhausted.
-                    if (boundAntigensCount > maxAntigenBinding) {
+                    if (boundCARAntigensCount > maxAntigenBinding) {
                         if (simstate.random.nextDouble() > super.exhaustedFraction) {
                             super.setState(State.APOPTOTIC);
                         } else {

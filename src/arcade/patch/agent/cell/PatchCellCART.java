@@ -58,10 +58,10 @@ public abstract class PatchCellCART extends PatchCell {
     protected int selfReceptorsStart;
 
     /** number of bound CAR antigens. */
-    protected int boundAntigensCount;
+    protected int boundCARAntigensCount;
 
     /** number of bound PDL-1 antigens. */
-    protected int boundSelfCount;
+    protected int boundSelfAntigensCount;
 
     /** number of neighbors that T cell is able to search through. */
     protected final double searchAbility;
@@ -151,8 +151,8 @@ public abstract class PatchCellCART extends PatchCell {
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
         // initialized non-loaded parameters
-        boundAntigensCount = 0;
-        boundSelfCount = 0;
+        boundCARAntigensCount = 0;
+        boundSelfAntigensCount = 0;
         lastActiveTicker = 0;
         activated = true;
 
@@ -252,7 +252,7 @@ public abstract class PatchCellCART extends PatchCell {
                     if (logCAR >= randomAntigen && logSelf < randomSelf) {
                         // cell binds to antigen receptor
                         super.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);
-                        boundAntigensCount++;
+                        boundCARAntigensCount++;
                         selfReceptors +=
                                 (int)
                                         ((double) selfReceptorsStart
@@ -261,8 +261,8 @@ public abstract class PatchCellCART extends PatchCell {
                     } else if (logCAR >= randomAntigen && logSelf >= randomSelf) {
                         // cell binds to antigen receptor and self
                         super.setBindingFlag(AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR);
-                        boundAntigensCount++;
-                        boundSelfCount++;
+                        boundCARAntigensCount++;
+                        boundSelfAntigensCount++;
                         selfReceptors +=
                                 (int)
                                         ((double) selfReceptorsStart
@@ -271,7 +271,7 @@ public abstract class PatchCellCART extends PatchCell {
                     } else if (logCAR < randomAntigen && logSelf >= randomSelf) {
                         // cell binds to self
                         super.setBindingFlag(AntigenFlag.BOUND_CELL_RECEPTOR);
-                        boundSelfCount++;
+                        boundSelfAntigensCount++;
                         return tissueCell;
                     } else {
                         // cell doesn't bind to anything

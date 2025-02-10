@@ -301,7 +301,7 @@ public class PatchCellCARTCD4Test {
         doAnswer(
                         invocationOnMock -> {
                             cell.state = invocationOnMock.getArgument(0);
-                            cell.boundAntigensCount = 0;
+                            cell.boundCARAntigensCount = 0;
                             cell.module = module;
                             return null;
                         })
@@ -401,7 +401,7 @@ public class PatchCellCARTCD4Test {
         doAnswer(
                         invocationOnMock -> {
                             cell.state = invocationOnMock.getArgument(0);
-                            cell.boundAntigensCount = cell.maxAntigenBinding + 1;
+                            cell.boundCARAntigensCount = cell.maxAntigenBinding + 1;
                             cell.module = module;
                             return null;
                         })
