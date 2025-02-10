@@ -85,7 +85,7 @@ public class PatchActionResetTest {
 
         actionReset.step(mock(SimState.class));
 
-        verify(mockCell).setState(State.QUIESCENT);
+        verify(mockCell).setState(State.UNDEFINED);
         assertEquals(AntigenFlag.UNBOUND, mockCell.getBindingFlag());
     }
 
@@ -97,7 +97,7 @@ public class PatchActionResetTest {
 
         actionReset.step(mock(SimState.class));
 
-        verify(mockCell).setState(State.QUIESCENT);
+        verify(mockCell).setState(State.UNDEFINED);
         assertEquals(AntigenFlag.UNBOUND, mockCell.getBindingFlag());
     }
 

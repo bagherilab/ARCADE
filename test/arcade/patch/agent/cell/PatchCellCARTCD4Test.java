@@ -291,7 +291,7 @@ public class PatchCellCARTCD4Test {
     }
 
     @Test
-    public void testStepSetsStateToCytotoxicWhenBoundToAntigen() {
+    public void testStepSetsStateToStimulatoryWhenBoundToAntigen() {
         PatchSimulation sim = mock(PatchSimulation.class);
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
