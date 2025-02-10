@@ -144,7 +144,7 @@ public class PatchCellCARTTest {
     public void bindTargetNoNeighborsDoesNotBind() {
         PatchCellTissue result = patchCellCART.bindTarget(sim, loc, random);
         assertNull(result);
-        assertEquals(PatchEnums.AntigenFlag.UNBOUND, patchCellCART.getAntigenFlag());
+        assertEquals(PatchEnums.AntigenFlag.UNBOUND, patchCellCART.getBindingFlag());
     }
 
     @Test
@@ -158,7 +158,7 @@ public class PatchCellCARTTest {
         PatchCellTissue result = patchCellCART.bindTarget(sim, loc, random);
         bag.clear();
         assertNotNull(result);
-        assertEquals(PatchEnums.AntigenFlag.BOUND_CELL_RECEPTOR, patchCellCART.getAntigenFlag());
+        assertEquals(PatchEnums.AntigenFlag.BOUND_CELL_RECEPTOR, patchCellCART.getBindingFlag());
     }
 
     @Test
@@ -173,7 +173,7 @@ public class PatchCellCARTTest {
         bag.clear();
         assertNotNull(result);
         assertEquals(
-                PatchEnums.AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR, patchCellCART.getAntigenFlag());
+                PatchEnums.AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR, patchCellCART.getBindingFlag());
     }
 
     @Test
@@ -187,6 +187,6 @@ public class PatchCellCARTTest {
         PatchCellTissue result = patchCellCART.bindTarget(sim, loc, random);
         bag.clear();
         assertNotNull(result);
-        assertEquals(PatchEnums.AntigenFlag.BOUND_ANTIGEN, patchCellCART.getAntigenFlag());
+        assertEquals(PatchEnums.AntigenFlag.BOUND_ANTIGEN, patchCellCART.getBindingFlag());
     }
 }

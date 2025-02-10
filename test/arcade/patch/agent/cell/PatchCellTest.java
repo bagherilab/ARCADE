@@ -128,17 +128,17 @@ public class PatchCellTest {
     }
 
     @Test
-    public void testSetAntigenFlag() {
+    public void testBindingFlag() {
         PatchCell cell = new PatchCellMock(baseContainer, locationMock, parametersMock);
-        cell.setAntigenFlag(PatchEnums.AntigenFlag.BOUND_ANTIGEN);
-        assertEquals(PatchEnums.AntigenFlag.BOUND_ANTIGEN, cell.getAntigenFlag());
+        cell.setBindingFlag(PatchEnums.AntigenFlag.BOUND_ANTIGEN);
+        assertEquals(PatchEnums.AntigenFlag.BOUND_ANTIGEN, cell.getBindingFlag());
     }
 
     @Test
-    public void testGetAntigenFlag() {
+    public void testGetBindingFlag() {
         PatchCell cell = new PatchCellMock(baseContainer, locationMock, parametersMock);
-        cell.setAntigenFlag(PatchEnums.AntigenFlag.BOUND_ANTIGEN);
-        assertEquals(PatchEnums.AntigenFlag.BOUND_ANTIGEN, cell.getAntigenFlag());
+        cell.setBindingFlag(PatchEnums.AntigenFlag.BOUND_ANTIGEN);
+        assertEquals(PatchEnums.AntigenFlag.BOUND_ANTIGEN, cell.getBindingFlag());
     }
 
     @Test
