@@ -195,12 +195,12 @@ public abstract class PatchCellCART extends PatchCell {
             case APOPTOTIC:
                 module = new PatchModuleApoptosis(this);
                 break;
-            case CYTOTOXIC:
-                throw new UnsupportedOperationException();
+                //            case CYTOTOXIC:
+                //                throw new UnsupportedOperationException();
             case QUIESCENT:
                 this.setState(State.PAUSED);
-            case STIMULATORY:
-                throw new UnsupportedOperationException();
+                //            case STIMULATORY:
+                //                throw new UnsupportedOperationException();
             default:
                 module = null;
                 break;
@@ -226,7 +226,7 @@ public abstract class PatchCellCART extends PatchCell {
         double kDSelf = computeAffinity(selfReceptorAffinity, loc);
         PatchGrid grid = (PatchGrid) sim.getGrid();
 
-        Bag allAgents = getAllTissueNeighbors(grid, loc);
+        Bag allAgents = grabAllTissueNeighbors(grid, loc);
         allAgents.remove(this);
         allAgents.shuffle(random);
         int neighbors = allAgents.size();
@@ -289,7 +289,7 @@ public abstract class PatchCellCART extends PatchCell {
      * @param tissueAgents the bag to add tissue cells into
      * @param possibleAgents the bag of possible agents to check for tissue cells
      */
-    private void getTissueAgents(Bag tissueAgents, Bag possibleAgents) {
+    private void grabTissueAgents(Bag tissueAgents, Bag possibleAgents) {
         for (Object agent : possibleAgents) {
             Cell cell = (Cell) agent;
             if (cell instanceof PatchCellTissue) {
@@ -317,9 +317,9 @@ public abstract class PatchCellCART extends PatchCell {
             double alpha,
             double beta) {
         double bind =
-                getBindingCoefficient(
+                calculateBindingCoefficient(
                         antigens, kD, currentReceptors, startingReceptors, alpha, beta);
-        return getSig(bind);
+        return applySig(bind);
     }
 
     /**
@@ -368,12 +368,12 @@ public abstract class PatchCellCART extends PatchCell {
      * @param loc current location of the cell
      * @return bag of all tissue cells in neighborhood and current location
      */
-    private Bag getAllTissueNeighbors(PatchGrid grid, PatchLocation loc) {
+    private Bag grabAllTissueNeighbors(PatchGrid grid, PatchLocation loc) {
         Bag neighbors = new Bag();
-        getTissueAgents(neighbors, grid.getObjectsAtLocation(loc));
+        grabTissueAgents(neighbors, grid.getObjectsAtLocation(loc));
         for (Location neighborLocation : loc.getNeighbors()) {
             Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));
-            getTissueAgents(neighbors, bag);
+            grabTissueAgents(neighbors, bag);
         }
 
         return neighbors;
@@ -390,7 +390,7 @@ public abstract class PatchCellCART extends PatchCell {
      * @param beta fudge factor for receptor binding
      * @return the binding Coefficient
      */
-    private double getBindingCoefficient(
+    private double calculateBindingCoefficient(
             double targets,
             double affinity,
             int currentReceptors,
@@ -408,7 +408,7 @@ public abstract class PatchCellCART extends PatchCell {
      * @param bindingCoefficient the binding coefficient for the log function
      * @return the sigmoidal value
      */
-    private double getSig(double bindingCoefficient) {
+    private double applySig(double bindingCoefficient) {
         return 2 * (1 / (1 + Math.exp(-1 * bindingCoefficient))) - 1;
     }
 
