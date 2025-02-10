@@ -3,7 +3,10 @@ package arcade.patch.agent.module;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.process.ProcessDomain;
 import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.process.PatchProcess;
 import arcade.patch.env.grid.PatchGrid;
@@ -85,13 +88,14 @@ public class PatchModuleProliferation extends PatchModule {
                     // Create and schedule new cell.
                     int newID = sim.getID();
                     CellContainer newContainer = cell.make(newID, State.UNDEFINED, random);
+                    Parameters newParameters = cell.getParameters();
                     PatchCell newCell =
                             (PatchCell)
                                     newContainer.convert(
                                             sim.getCellFactory(),
                                             newLocation,
                                             random,
-                                            cell.getParameters());
+                                            newParameters);
                     sim.getGrid().addObject(newCell, newLocation);
                     newCell.schedule(sim.getSchedule());
 
@@ -105,12 +109,11 @@ public class PatchModuleProliferation extends PatchModule {
                     newCell.setEnergy(energy * (1 - split));
 
                     // Update processes.
-                    Domain[] processes = Domain.values();
-                    for (Domain processName : processes) {
-                        PatchProcess process = (PatchProcess) newCell.getProcess(processName);
-                        if (process != null) {
-                            process.update(cell.getProcess(processName));
-                        }
+                    MiniBox processBox = newParameters.filter("(PROCESS)");
+                    for (String processKey : processBox.getKeys()) {
+                        ProcessDomain domain = Domain.valueOf(processKey);
+                        PatchProcess process = (PatchProcess) newCell.getProcess(domain);
+                        process.update(cell.getProcess(domain));
                     }
                     // TODO: Update environment generator sites.
                 } else {
