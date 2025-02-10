@@ -68,7 +68,8 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void constructorInitializesFields() throws NoSuchFieldException, IllegalAccessException {
+    public void constructor_initializesFields()
+            throws NoSuchFieldException, IllegalAccessException {
         assertNotNull(metabolism);
 
         Field metaPrefField = PatchProcessMetabolismCART.class.getDeclaredField("metaPref");
@@ -134,7 +135,7 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void stepProcessUpdatesInternalGlucoseAndPyruvate()
+    public void stepProcess_updatesInternalGlucoseAndPyruvate()
             throws NoSuchFieldException, IllegalAccessException {
         // mock inflammation process
         PatchProcessInflammation inflammation = new inflammationMock(mockCell);
@@ -148,7 +149,7 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void stepProcessWithZeroInitialGlucoseReducesMass() {
+    public void stepProcess_reducesMass_withZeroInitialGlucose() {
         metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE] = 0;
 
         // mock inflammation process
@@ -164,7 +165,7 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void stepProcessWithMaxGlucoseConcentrationDoesNotOverflow() {
+    public void stepProcess_withMaxGlucoseConcentration_doesNotOverflow() {
         // mock inflammation process
         PatchProcessInflammation inflammation = new inflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
@@ -176,7 +177,7 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void stepProcessWithNegativeGlucoseConcentrationStaysPositive() {
+    public void stepProcess_withNegativeGlucoseConcentration_staysPositive() {
         // mock inflammation process
         PatchProcessInflammation inflammation = new inflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
@@ -188,7 +189,7 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void stepProcessWithZeroOxygenConcentrationProducesNoOxygen() {
+    public void stepProcess_withZeroOxygenConcentration_producesNoOxygen() {
         // mock inflammation process
         PatchProcessInflammation inflammation = new inflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
@@ -202,7 +203,7 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void stepProcessWithMaxOxygenConcentrationDoesNotOverflow() {
+    public void stepProcess_withMaxOxygenConcentration_doesNotOverflow() {
         // mock inflammation process
         PatchProcessInflammation inflammation = new inflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
@@ -216,7 +217,7 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void activatedCellProducesMoreGlucose()
+    public void step_whenActivated_producesMoreGlucose()
             throws IllegalAccessException, NoSuchFieldException {
         metabolism.extAmts[PatchProcessMetabolismCART.GLUCOSE] = 10000.0;
         // mock inflammation process
@@ -237,7 +238,7 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void updateSplitCellEvenlyDividesGlucose() {
+    public void update_evenSplit_splitCellEvenly() {
         PatchProcessMetabolismCART parentProcess = new PatchProcessMetabolismCART(mockCell);
         parentProcess.intAmts[PatchProcessMetabolismCART.GLUCOSE] = 100;
         when(mockCell.getVolume()).thenReturn(cellVolume / 2);
@@ -249,7 +250,7 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void updateSplitCellUnevenlyDividesGlucose() {
+    public void update_unevenSplit_splitCellUnevenly() {
         PatchProcessMetabolismCART parentProcess = new PatchProcessMetabolismCART(mockCell);
         parentProcess.intAmts[PatchProcessMetabolismCART.GLUCOSE] = 100;
         when(mockCell.getVolume()).thenReturn(0.0);

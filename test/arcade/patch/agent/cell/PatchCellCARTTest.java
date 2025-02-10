@@ -142,14 +142,14 @@ public class PatchCellCARTTest {
     }
 
     @Test
-    public void bindTargetNoNeighborsDoesNotBind() {
+    public void bindTarget_noNeighbors_doesNotBind() {
         PatchCellTissue result = patchCellCART.bindTarget(sim, loc, random);
         assertNull(result);
         assertEquals(PatchEnums.AntigenFlag.UNBOUND, patchCellCART.getBindingFlag());
     }
 
     @Test
-    public void bindTargetWithSelfBindingBindsToCell() {
+    public void bindTarget_withSelfBinding_bindsToCell() {
         when(tissueCell.getCarAntigens()).thenReturn(10);
         when(tissueCell.getSelfAntigens()).thenReturn(10000000);
         when(random.nextDouble()).thenReturn(0.0000005);
@@ -163,7 +163,7 @@ public class PatchCellCARTTest {
     }
 
     @Test
-    public void bindTargetWithSelfAndAntigenBindingBindsToCell() {
+    public void bindTarget_withSelfAndAntigenBinding_bindsToCell() {
         when(tissueCell.getCarAntigens()).thenReturn(5000);
         when(tissueCell.getSelfAntigens()).thenReturn(50000000);
         when(random.nextDouble()).thenReturn(0.0000005);
@@ -178,7 +178,7 @@ public class PatchCellCARTTest {
     }
 
     @Test
-    public void bindTargetBindsToCell() {
+    public void bindTarget_bindsToCell() {
         when(tissueCell.getCarAntigens()).thenReturn(5000);
         when(tissueCell.getSelfAntigens()).thenReturn(5000);
         when(random.nextDouble()).thenReturn(0.0000005);
@@ -192,7 +192,7 @@ public class PatchCellCARTTest {
     }
 
     @Test
-    public void getActivationStatusReturnsStatus()
+    public void getActivationStatus_returnsStatus()
             throws NoSuchFieldException, IllegalAccessException {
         Field activation = PatchCellCART.class.getDeclaredField("activated");
         activation.setAccessible(true);
