@@ -317,7 +317,7 @@ public abstract class PatchCellCART extends PatchCell {
             double alpha,
             double beta) {
         double bind =
-                calculateBindingCoefficient(
+                calculateMichaelisMenten(
                         antigens, kD, currentReceptors, startingReceptors, alpha, beta);
         return applySig(bind);
     }
@@ -390,7 +390,7 @@ public abstract class PatchCellCART extends PatchCell {
      * @param beta fudge factor for receptor binding
      * @return the binding Coefficient
      */
-    private double calculateBindingCoefficient(
+    private double calculateMichaelisMenten(
             double targets,
             double affinity,
             int currentReceptors,
