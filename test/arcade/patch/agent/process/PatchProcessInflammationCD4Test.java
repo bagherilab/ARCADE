@@ -92,7 +92,7 @@ public class PatchProcessInflammationCD4Test {
         receptors.setAccessible(true);
         receptors.set(inflammation, 5000);
 
-        Field fraction = PatchProcessInflammation.class.getDeclaredField("f");
+        Field fraction = PatchProcessInflammation.class.getDeclaredField("fraction");
         fraction.setAccessible(true);
         fraction.set(inflammation, 1.0);
 
@@ -134,7 +134,7 @@ public class PatchProcessInflammationCD4Test {
         receptors.setAccessible(true);
         receptors.set(inflammation, 5000);
 
-        Field fraction = PatchProcessInflammation.class.getDeclaredField("f");
+        Field fraction = PatchProcessInflammation.class.getDeclaredField("fraction");
         fraction.setAccessible(true);
         fraction.set(inflammation, 1.0);
 
@@ -170,7 +170,7 @@ public class PatchProcessInflammationCD4Test {
         receptors.setAccessible(true);
         receptors.set(inflammation, 5000);
 
-        Field fraction = PatchProcessInflammation.class.getDeclaredField("f");
+        Field fraction = PatchProcessInflammation.class.getDeclaredField("fraction");
         fraction.setAccessible(true);
         fraction.set(inflammation, 1.0);
 
@@ -201,7 +201,7 @@ public class PatchProcessInflammationCD4Test {
         receptors.setAccessible(true);
         receptors.set(inflammation, 5000);
 
-        Field fraction = PatchProcessInflammation.class.getDeclaredField("f");
+        Field fraction = PatchProcessInflammation.class.getDeclaredField("fraction");
         fraction.setAccessible(true);
         fraction.set(inflammation, 1.0);
 
@@ -233,7 +233,7 @@ public class PatchProcessInflammationCD4Test {
         receptors.setAccessible(true);
         receptors.set(inflammation, 5000);
 
-        Field fraction = PatchProcessInflammation.class.getDeclaredField("f");
+        Field fraction = PatchProcessInflammation.class.getDeclaredField("fraction");
         fraction.setAccessible(true);
         fraction.set(inflammation, 1.0);
 

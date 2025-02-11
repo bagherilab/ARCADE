@@ -77,7 +77,9 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
         // Take current IL2 external concentration and add the amount produced,
         // then convert units back to molecules/cm^3.
         double IL2Env =
-                (((extIL2 - (extIL2 * f - amts[IL2_EXT])) + IL2Produced) * 1E12 / loc.getVolume());
+                (((extIL2 - (extIL2 * fraction - amts[IL2_EXT])) + IL2Produced)
+                        * 1E12
+                        / loc.getVolume());
 
         // update IL2 env variable for testing
         IL2EnvTesting = IL2Env;

@@ -54,7 +54,7 @@ public class PatchProcessInflammationCD8 extends PatchProcessInflammation {
 
         // Update environment.
         // Convert units back from molecules to molecules/cm^3.
-        double IL2Env = ((extIL2 - (extIL2 * f - amts[IL2_EXT])) * 1E12 / loc.getVolume());
+        double IL2Env = ((extIL2 - (extIL2 * fraction - amts[IL2_EXT])) * 1E12 / loc.getVolume());
         sim.getLattice("IL-2").setValue(loc, IL2Env);
     }
 

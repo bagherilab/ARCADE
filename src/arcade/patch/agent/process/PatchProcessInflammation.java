@@ -79,7 +79,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
     protected Location loc;
 
     /** Cell the module is associated with. */
-    protected PatchCellCART c;
+    protected PatchCellCART cell;
 
     /** Cell population index. */
     protected int pop;
@@ -94,7 +94,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
     protected double extIL2;
 
     /** Shell around cell volume fraction. */
-    protected double f;
+    protected double fraction;
 
     /** Volume of cell [um<sup>3</sup>]. */
     protected double volume;
@@ -130,7 +130,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         super(c);
         // Initialize module.
         this.loc = c.getLocation();
-        this.c = c;
+        this.cell = c;
         this.pop = c.getPop();
         this.volume = c.getVolume();
         this.iL2Ticker = 0;
@@ -279,11 +279,11 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         double radShell = radCell + shellThickness;
         double volShell =
                 volume * (((radShell * radShell * radShell) / (radCell * radCell * radCell)) - 1.0);
-        f = volShell / loc.getVolume();
+        fraction = volShell / loc.getVolume();
         updateExternal(sim);
 
         // Check active status.
-        active = c.getActivationStatus();
+        active = cell.getActivationStatus();
         if (active) {
             activeTicker++;
         } else {
@@ -294,7 +294,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         // Local IL-2 total available to cell is fraction of total available
         // where that fraction is the relative volume fraction the cell occupies
         // in the location.
-        amts[IL2_EXT] = extIL2 * f; // [molecules]
+        amts[IL2_EXT] = extIL2 * fraction; // [molecules]
 
         // Solve system of equations.
         amts = Solver.rungeKutta(equations, 0, amts, 60, STEP_SIZE);
