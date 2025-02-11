@@ -199,6 +199,7 @@ public abstract class PatchCellCART extends PatchCell {
                 //                throw new UnsupportedOperationException();
             case QUIESCENT:
                 this.setState(State.PAUSED);
+                break;
                 //            case STIMULATORY:
                 //                throw new UnsupportedOperationException();
             default:
