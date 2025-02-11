@@ -195,12 +195,13 @@ public abstract class PatchCellCART extends PatchCell {
             case APOPTOTIC:
                 module = new PatchModuleApoptosis(this);
                 break;
-                //            case CYTOTOXIC:
-                //                throw new UnsupportedOperationException();
             case QUIESCENT:
                 this.setState(State.PAUSED);
-                //            case STIMULATORY:
-                //                throw new UnsupportedOperationException();
+                break;
+            case CYTOTOXIC:
+                throw new UnsupportedOperationException();
+            case STIMULATORY:
+                throw new UnsupportedOperationException();
             default:
                 module = null;
                 break;
