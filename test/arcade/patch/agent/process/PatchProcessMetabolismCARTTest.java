@@ -29,8 +29,8 @@ public class PatchProcessMetabolismCARTTest {
 
     private Simulation sim;
 
-    static class inflammationMock extends PatchProcessInflammation {
-        public inflammationMock(PatchCellCART c) {
+    static class InflammationMock extends PatchProcessInflammation {
+        InflammationMock(PatchCellCART c) {
             super(c);
         }
 
@@ -138,7 +138,7 @@ public class PatchProcessMetabolismCARTTest {
     public void stepProcess_updatesInternalGlucoseAndPyruvate()
             throws NoSuchFieldException, IllegalAccessException {
         // mock inflammation process
-        PatchProcessInflammation inflammation = new inflammationMock(mockCell);
+        PatchProcessInflammation inflammation = new InflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
         when(mockCell.getActivationStatus()).thenReturn(true);
 
@@ -153,7 +153,7 @@ public class PatchProcessMetabolismCARTTest {
         metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE] = 0;
 
         // mock inflammation process
-        PatchProcessInflammation inflammation = new inflammationMock(mockCell);
+        PatchProcessInflammation inflammation = new InflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
         when(mockCell.getActivationStatus()).thenReturn(true);
 
@@ -167,7 +167,7 @@ public class PatchProcessMetabolismCARTTest {
     @Test
     public void stepProcess_withMaxGlucoseConcentration_doesNotOverflow() {
         // mock inflammation process
-        PatchProcessInflammation inflammation = new inflammationMock(mockCell);
+        PatchProcessInflammation inflammation = new InflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
         when(mockCell.getActivationStatus()).thenReturn(true);
 
@@ -179,7 +179,7 @@ public class PatchProcessMetabolismCARTTest {
     @Test
     public void stepProcess_withNegativeGlucoseConcentration_staysPositive() {
         // mock inflammation process
-        PatchProcessInflammation inflammation = new inflammationMock(mockCell);
+        PatchProcessInflammation inflammation = new InflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
         when(mockCell.getActivationStatus()).thenReturn(true);
 
@@ -191,7 +191,7 @@ public class PatchProcessMetabolismCARTTest {
     @Test
     public void stepProcess_withZeroOxygenConcentration_producesNoOxygen() {
         // mock inflammation process
-        PatchProcessInflammation inflammation = new inflammationMock(mockCell);
+        PatchProcessInflammation inflammation = new InflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
         when(mockCell.getActivationStatus()).thenReturn(true);
 
@@ -205,7 +205,7 @@ public class PatchProcessMetabolismCARTTest {
     @Test
     public void stepProcess_withMaxOxygenConcentration_doesNotOverflow() {
         // mock inflammation process
-        PatchProcessInflammation inflammation = new inflammationMock(mockCell);
+        PatchProcessInflammation inflammation = new InflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
         when(mockCell.getActivationStatus()).thenReturn(true);
 
@@ -221,7 +221,7 @@ public class PatchProcessMetabolismCARTTest {
             throws IllegalAccessException, NoSuchFieldException {
         metabolism.extAmts[PatchProcessMetabolismCART.GLUCOSE] = 10000.0;
         // mock inflammation process
-        PatchProcessInflammation inflammation = new inflammationMock(mockCell);
+        PatchProcessInflammation inflammation = new InflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
         metabolism.stepProcess(random, sim);
         double inactiveGlucose = metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE];
