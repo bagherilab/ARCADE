@@ -3,17 +3,12 @@ package arcade.patch.agent.cell;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.Cell;
-import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
-import arcade.patch.agent.module.PatchModuleApoptosis;
-import arcade.patch.agent.module.PatchModuleMigration;
-import arcade.patch.agent.module.PatchModuleProliferation;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
-import arcade.patch.util.PatchEnums;
 import static arcade.patch.util.PatchEnums.AntigenFlag;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -178,34 +173,6 @@ public abstract class PatchCellCART extends PatchCell {
         contactFraction = parameters.getDouble("CONTACT_FRAC");
         maxAntigenBinding = parameters.getInt("MAX_ANTIGEN_BINDING");
         cars = parameters.getInt("CARS");
-    }
-
-    @Override
-    public void setState(CellState state) {
-        this.state = state;
-        this.flag = PatchEnums.Flag.UNDEFINED;
-
-        switch ((State) state) {
-            case PROLIFERATIVE:
-                module = new PatchModuleProliferation(this);
-                break;
-            case MIGRATORY:
-                module = new PatchModuleMigration(this);
-                break;
-            case APOPTOTIC:
-                module = new PatchModuleApoptosis(this);
-                break;
-            case QUIESCENT:
-                this.setState(State.PAUSED);
-                break;
-            case CYTOTOXIC:
-                throw new UnsupportedOperationException();
-            case STIMULATORY:
-                throw new UnsupportedOperationException();
-            default:
-                module = null;
-                break;
-        }
     }
 
     /**

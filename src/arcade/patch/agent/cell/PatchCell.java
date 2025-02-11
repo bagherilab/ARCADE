@@ -344,6 +344,10 @@ public abstract class PatchCell implements Cell {
             case APOPTOTIC:
                 module = new PatchModuleApoptosis(this);
                 break;
+            case CYTOTOXIC:
+                throw new UnsupportedOperationException();
+            case STIMULATORY:
+                throw new UnsupportedOperationException();
             default:
                 module = null;
                 break;
