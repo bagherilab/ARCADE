@@ -4,6 +4,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.env.location.PatchLocation;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -50,7 +51,11 @@ public class PatchModuleMigration extends PatchModule {
             PatchLocation newLocation = cell.selectBestLocation(sim, random);
 
             if (newLocation == null) {
-                cell.setState(State.QUIESCENT);
+                if (cell instanceof PatchCellCART) {
+                    cell.setState(State.PAUSED);
+                } else {
+                    cell.setState(State.QUIESCENT);
+                }
             } else {
                 if (!location.equals(newLocation)) {
                     sim.getGrid().moveObject(cell, location, newLocation);
