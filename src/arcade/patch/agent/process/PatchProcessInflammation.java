@@ -128,7 +128,6 @@ public abstract class PatchProcessInflammation extends PatchProcess {
      */
     public PatchProcessInflammation(PatchCellCART c) {
         super(c);
-        // Initialize module.
         this.loc = c.getLocation();
         this.cell = c;
         this.pop = c.getPop();
@@ -136,7 +135,6 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         this.iL2Ticker = 0;
         this.activeTicker = 0;
 
-        // Set parameters.
         Parameters parameters = cell.getParameters();
         this.shellThickness = parameters.getDouble("inflammation/SHELL_THICKNESS");
         this.iL2Receptors = parameters.getDouble("inflammation/IL2_RECEPTORS");
@@ -151,7 +149,6 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         amts[IL2_IL2RBG] = 0;
         amts[IL2_IL2RBGA] = 0;
 
-        // Molecule names.
         names = new ArrayList<String>();
         names.add(IL2_INT_TOTAL, "IL-2");
         names.add(IL2_EXT, "external_IL-2");
@@ -282,7 +279,6 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         fraction = volShell / loc.getVolume();
         updateExternal(sim);
 
-        // Check active status.
         active = cell.getActivationStatus();
         if (active) {
             activeTicker++;
@@ -296,13 +292,10 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         // in the location.
         amts[IL2_EXT] = extIL2 * fraction; // [molecules]
 
-        // Solve system of equations.
         amts = Solver.rungeKutta(equations, 0, amts, 60, STEP_SIZE);
 
-        // Modify internal inflammation response.
         stepProcess(random, sim);
 
-        // Update bound array.
         boundArray[iL2Ticker % boundArray.length] = amts[IL2_INT_TOTAL];
         iL2Ticker++;
     }
