@@ -59,7 +59,6 @@ public class PatchProcessMetabolismCARTTest {
         when(mockLocation.getArea()).thenReturn(3.0 / 2.0 / Math.sqrt(3.0) * 30 * 30);
         when(mockLocation.getVolume()).thenReturn(3.0 / 2.0 / Math.sqrt(3.0) * 30 * 30 * 8.7);
 
-        // set up metabolism class
         when(mockParameters.getDouble("metabolism/GLUCOSE_UPTAKE_RATE")).thenReturn(1.12);
         when(mockParameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION")).thenReturn(0.05);
         when(mockParameters.getDouble("metabolism/LACTATE_RATE")).thenReturn(0.05);
