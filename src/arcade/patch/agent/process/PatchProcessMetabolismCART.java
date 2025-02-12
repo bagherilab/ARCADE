@@ -113,13 +113,11 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
      */
     public PatchProcessMetabolismCART(PatchCell cell) {
         super(cell);
-        // Mapping for internal concentration access.
         String[] intNames = new String[2];
         intNames[GLUCOSE] = "glucose";
         intNames[PYRUVATE] = "pyruvate";
         names = Arrays.asList(intNames);
 
-        // Set loaded parameters.
         Parameters parameters = cell.getParameters();
         metaPref = parameters.getDouble("metabolism/METABOLIC_PREFERENCE");
         conversionFraction = parameters.getDouble("metabolism/CONVERSION_FRACTION");
@@ -136,7 +134,6 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
         minimumMassFractionActive = parameters.getDouble("metabolism/FRAC_MASS_ACTIVE");
         timeDelay = (int) parameters.getDouble("metabolism/META_SWITCH_DELAY");
 
-        // Initial internal concentrations.
         intAmts = new double[2];
         intAmts[GLUCOSE] =
                 parameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION") * volume;
@@ -170,11 +167,10 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
                 glucUptakeRate + (glucoseUptakeRateIL2 * (priorIL2meta / iL2ReceptorsTotal));
         double minimumMassFraction = fracMass;
 
-        // Check active status
         active = ((PatchCellCART) cell).getActivationStatus();
         double activeTicker = inflammation.activeTicker;
 
-        // Add metabolic preference and glucose uptake rate depdendent on
+        // Add metabolic preference and glucose uptake rate dependent on
         // antigen-induced cell activation if cell is activated.
         if (active && activeTicker >= timeDelay) {
             metabolicPreference += metabolicPreferenceActive;
@@ -234,7 +230,6 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
             glucInt = 0.0; // use up all internal glucose
         }
 
-        // Update energy.
         energy += energyGen[0];
         energy += energyGen[1];
         energy -= energyCons;
@@ -261,7 +256,6 @@ public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
             glucInt += autophagyRate * ratioGlucoseBiomass;
         }
 
-        // Update volume based on changes in mass.
         volume = mass / cellDensity;
 
         // Convert internal pyruvate to lactate (i.e. remove pyruvate).
