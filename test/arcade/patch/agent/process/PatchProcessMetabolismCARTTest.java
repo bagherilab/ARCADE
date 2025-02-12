@@ -25,9 +25,11 @@ public class PatchProcessMetabolismCARTTest {
 
     private double cellVolume;
 
-    private MersenneTwisterFast random = new MersenneTwisterFast();
+    private MersenneTwisterFast random = new MersenneTwisterFast(0);
 
     private Simulation sim;
+
+    private double delta = 0.001;
 
     static class InflammationMock extends PatchProcessInflammation {
         InflammationMock(PatchCellCART c) {
@@ -60,6 +62,7 @@ public class PatchProcessMetabolismCARTTest {
         // set up metabolism class
         when(mockParameters.getDouble("metabolism/GLUCOSE_UPTAKE_RATE")).thenReturn(1.12);
         when(mockParameters.getDouble("metabolism/INITIAL_GLUCOSE_CONCENTRATION")).thenReturn(0.05);
+        when(mockParameters.getDouble("metabolism/LACTATE_RATE")).thenReturn(0.05);
         metabolism = new PatchProcessMetabolismCART(mockCell);
         Field fraction = PatchProcessMetabolism.class.getDeclaredField("f");
         fraction.setAccessible(true);
@@ -92,7 +95,7 @@ public class PatchProcessMetabolismCARTTest {
 
         Field lactateRateField = PatchProcessMetabolismCART.class.getDeclaredField("lactateRate");
         lactateRateField.setAccessible(true);
-        assertEquals(1.0, lactateRateField.get(metabolism));
+        assertEquals(0.05, lactateRateField.get(metabolism));
 
         Field autophagyRateField =
                 PatchProcessMetabolismCART.class.getDeclaredField("autophagyRate");
@@ -135,24 +138,30 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void stepProcess_updatesInternalGlucoseAndPyruvate()
-            throws NoSuchFieldException, IllegalAccessException {
-        // mock inflammation process
+    public void stepProcess_updatesInternalGlucoseAndPyruvate() {
         PatchProcessInflammation inflammation = new InflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
         when(mockCell.getActivationStatus()).thenReturn(true);
+        double initialGlucose = metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE];
 
         metabolism.stepProcess(random, sim);
 
-        assertTrue(metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE] >= 0);
-        assertTrue(metabolism.intAmts[PatchProcessMetabolismCART.PYRUVATE] >= 0);
+        double producedGlucose = metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE];
+        double producedPyruvate = metabolism.intAmts[PatchProcessMetabolismCART.PYRUVATE];
+        double gradient = 0;
+        double surfaceArea =
+                mockLocation.getArea() * 2
+                        + (cellVolume / mockLocation.getArea()) * mockLocation.getPerimeter(1.0);
+        double expectedGlucose = initialGlucose + 1.12 * surfaceArea * gradient + 1;
+        double expectedPyruvate = (initialGlucose * 2) * (1 - 0.05);
+
+        assertEquals(producedGlucose, expectedGlucose, delta);
+        assertEquals(producedPyruvate, expectedPyruvate, delta);
     }
 
     @Test
     public void stepProcess_reducesMass_withZeroInitialGlucose() {
         metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE] = 0;
-
-        // mock inflammation process
         PatchProcessInflammation inflammation = new InflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
         when(mockCell.getActivationStatus()).thenReturn(true);
@@ -165,76 +174,78 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void stepProcess_withMaxGlucoseConcentration_doesNotOverflow() {
-        // mock inflammation process
-        PatchProcessInflammation inflammation = new InflammationMock(mockCell);
-        when(mockCell.getProcess(any())).thenReturn(inflammation);
-        when(mockCell.getActivationStatus()).thenReturn(true);
-
-        metabolism.stepProcess(random, sim);
-
-        assertTrue(metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE] <= Double.MAX_VALUE);
-    }
-
-    @Test
     public void stepProcess_withNegativeGlucoseConcentration_staysPositive() {
-        // mock inflammation process
         PatchProcessInflammation inflammation = new InflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
         when(mockCell.getActivationStatus()).thenReturn(true);
+        double initialGlucose = metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE];
 
         metabolism.stepProcess(random, sim);
+
+        double producedGlucose = metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE];
+        double gradient = 0;
+        double surfaceArea =
+                mockLocation.getArea() * 2
+                        + (cellVolume / mockLocation.getArea()) * mockLocation.getPerimeter(1.0);
+        double expectedGlucose = initialGlucose + 1.12 * surfaceArea * gradient + 1;
 
         assertTrue(metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE] >= 0);
+        assertEquals(producedGlucose, expectedGlucose, delta);
     }
 
     @Test
     public void stepProcess_withZeroOxygenConcentration_producesNoOxygen() {
-        // mock inflammation process
         PatchProcessInflammation inflammation = new InflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
         when(mockCell.getActivationStatus()).thenReturn(true);
 
         metabolism.extAmts[PatchProcessMetabolismCART.OXYGEN] = 0.0;
-
         metabolism.stepProcess(random, sim);
 
         assertEquals(0.0, metabolism.extAmts[PatchProcessMetabolismCART.OXYGEN]);
     }
 
     @Test
-    public void stepProcess_withMaxOxygenConcentration_doesNotOverflow() {
-        // mock inflammation process
-        PatchProcessInflammation inflammation = new InflammationMock(mockCell);
-        when(mockCell.getProcess(any())).thenReturn(inflammation);
-        when(mockCell.getActivationStatus()).thenReturn(true);
-
-        metabolism.extAmts[PatchProcessMetabolismCART.OXYGEN] = Double.MAX_VALUE;
-
-        metabolism.stepProcess(random, sim);
-
-        assertTrue(metabolism.extAmts[PatchProcessMetabolismCART.OXYGEN] <= Double.MAX_VALUE);
-    }
-
-    @Test
-    public void step_whenActivated_producesMoreGlucose()
+    public void stepProcess_whenActivated_producesMoreGlucose()
             throws IllegalAccessException, NoSuchFieldException {
         metabolism.extAmts[PatchProcessMetabolismCART.GLUCOSE] = 10000.0;
-        // mock inflammation process
+        double initialGlucose = metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE];
         PatchProcessInflammation inflammation = new InflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
-        metabolism.stepProcess(random, sim);
-        double inactiveGlucose = metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE];
-        double inactivePyruvate = metabolism.intAmts[PatchProcessMetabolismCART.PYRUVATE];
         Field activeTicker = PatchProcessInflammation.class.getDeclaredField("activeTicker");
         activeTicker.setAccessible(true);
+
         activeTicker.set(inflammation, 1);
         when(mockCell.getActivationStatus()).thenReturn(true);
         metabolism.stepProcess(random, sim);
-        double activatedGlucose = metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE];
-        double activatedPyruvate = metabolism.intAmts[PatchProcessMetabolismCART.PYRUVATE];
 
-        assertTrue(activatedGlucose > inactiveGlucose);
+        double activatedGlucose = metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE];
+        double gradient = (10000.0 / mockLocation.getVolume()) - (initialGlucose / cellVolume);
+        double surfaceArea =
+                mockLocation.getArea() * 2
+                        + (cellVolume / mockLocation.getArea()) * mockLocation.getPerimeter(1.0);
+        double expectedGlucose = initialGlucose + 2.12 * surfaceArea * gradient + 1;
+
+        assertEquals(activatedGlucose, expectedGlucose, delta);
+    }
+
+    @Test
+    public void stepProcess_whenInactive_updatesGlucose() {
+        metabolism.extAmts[PatchProcessMetabolismCART.GLUCOSE] = 10000.0;
+        PatchProcessInflammation inflammation = new InflammationMock(mockCell);
+        when(mockCell.getProcess(any())).thenReturn(inflammation);
+        double initialGlucose = metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE];
+
+        metabolism.stepProcess(random, sim);
+
+        double inactiveGlucose = metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE];
+        double gradient = (10000.0 / mockLocation.getVolume()) - (initialGlucose / cellVolume);
+        double surfaceArea =
+                mockLocation.getArea() * 2
+                        + (cellVolume / mockLocation.getArea()) * mockLocation.getPerimeter(1.0);
+        double expectedGlucose = initialGlucose + 1.12 * surfaceArea * gradient + 1;
+
+        assertEquals(inactiveGlucose, expectedGlucose, delta);
     }
 
     @Test
