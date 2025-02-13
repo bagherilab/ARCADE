@@ -3,6 +3,7 @@ package arcade.patch.agent.cell;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import sim.util.Bag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModule;
@@ -54,6 +55,8 @@ public class PatchCellCancerStemTest {
 
     static State cellState = State.QUIESCENT;
 
+    static Bag cycles = new Bag();
+
     @BeforeAll
     public static void setupMocks() {
         simMock = mock(PatchSimulation.class);
@@ -91,7 +94,8 @@ public class PatchCellCancerStemTest {
                             cellVolume,
                             cellHeight,
                             cellCriticalVolume,
-                            cellCriticalHeight);
+                            cellCriticalHeight,
+                            cycles);
             PatchCell cell = spy(new PatchCellCancerStem(container, locationMock, parametersMock));
             cell.module = module;
             cell.processes.put(Domain.METABOLISM, metabolismMock);

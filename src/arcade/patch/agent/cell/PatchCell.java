@@ -138,7 +138,7 @@ public abstract class PatchCell implements Cell {
     final GrabBag links;
 
     /** List of cell cycle lengths (in minutes). */
-    private final Bag cycles = new Bag();
+    public final Bag cycles = new Bag();
 
     /**
      * Creates a {@code PatchCell} agent.
@@ -435,7 +435,8 @@ public abstract class PatchCell implements Cell {
                 volume,
                 height,
                 criticalVolume,
-                criticalHeight);
+                criticalHeight,
+                cycles);
     }
 
     /**

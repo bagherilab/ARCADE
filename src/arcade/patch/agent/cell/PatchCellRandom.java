@@ -56,7 +56,8 @@ public class PatchCellRandom extends PatchCell {
                 volume,
                 height,
                 criticalVolume,
-                criticalHeight);
+                criticalHeight,
+                cycles);
     }
 
     @Override

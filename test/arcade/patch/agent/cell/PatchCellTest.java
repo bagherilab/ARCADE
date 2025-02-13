@@ -58,6 +58,8 @@ public class PatchCellTest {
 
     static State cellState = State.QUIESCENT;
 
+    static Bag cellCycles = new Bag();
+
     static PatchCellContainer baseContainer =
             new PatchCellContainer(
                     cellID,
@@ -69,7 +71,8 @@ public class PatchCellTest {
                     cellVolume,
                     cellHeight,
                     cellCriticalVolume,
-                    cellCriticalHeight);
+                    cellCriticalHeight,
+                    cellCycles);
 
     static class PatchCellMock extends PatchCell {
         PatchCellMock(PatchCellContainer container, Location location, Parameters parameters) {
@@ -88,7 +91,8 @@ public class PatchCellTest {
                     volume,
                     height,
                     criticalVolume,
-                    criticalHeight);
+                    criticalHeight,
+                    cycles);
         }
     }
 
@@ -152,7 +156,8 @@ public class PatchCellTest {
                             cellVolume,
                             cellHeight,
                             cellCriticalVolume,
-                            cellCriticalHeight);
+                            cellCriticalHeight,
+                            cellCycles);
             PatchCell cell = spy(new PatchCellMock(container, locationMock, parametersMock));
             cell.processes.put(Domain.METABOLISM, metabolismMock);
             cell.processes.put(Domain.SIGNALING, signalingMock);
@@ -195,7 +200,8 @@ public class PatchCellTest {
                             cellVolume,
                             cellHeight,
                             cellCriticalVolume,
-                            cellCriticalHeight);
+                            cellCriticalHeight,
+                            cellCycles);
             PatchCell cell = spy(new PatchCellMock(container, locationMock, parametersMock));
             cell.processes.put(Domain.METABOLISM, metabolismMock);
             cell.processes.put(Domain.SIGNALING, signalingMock);
@@ -234,7 +240,8 @@ public class PatchCellTest {
                         cellVolume,
                         cellHeight,
                         cellCriticalVolume,
-                        cellCriticalHeight);
+                        cellCriticalHeight,
+                        cellCycles);
         PatchCell cell = spy(new PatchCellMock(container, locationMock, parametersMock));
         cell.processes.put(Domain.METABOLISM, metabolismMock);
         cell.processes.put(Domain.SIGNALING, signalingMock);
@@ -281,7 +288,8 @@ public class PatchCellTest {
                             volume,
                             cellHeight,
                             cellCriticalVolume,
-                            critHeight);
+                            critHeight,
+                            cellCycles);
             PatchCell cell = new PatchCellMock(container, locationMock, parametersMock);
             bag.add(cell);
         }
@@ -444,7 +452,8 @@ public class PatchCellTest {
                         cellVolume,
                         cellHeight,
                         cellCriticalVolume,
-                        cellCriticalHeight);
+                        cellCriticalHeight,
+                        cellCycles);
         PatchCell cell = new PatchCellMock(container, locationMock, parametersMock);
 
         Bag currentBag = new Bag();
@@ -496,7 +505,8 @@ public class PatchCellTest {
                         cellVolume,
                         cellHeight,
                         cellCriticalVolume,
-                        cellCriticalHeight);
+                        cellCriticalHeight,
+                        cellCycles);
         PatchCell cell = new PatchCellMock(container, locationMock, parametersMock);
 
         Bag currentBag = new Bag();

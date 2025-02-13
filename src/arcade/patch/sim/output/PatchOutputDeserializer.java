@@ -10,6 +10,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import sim.util.Bag;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.output.OutputDeserializer;
@@ -68,6 +69,11 @@ public final class PatchOutputDeserializer {
             double volume = jsonObject.get("volume").getAsDouble();
             double height = jsonObject.get("height").getAsDouble();
 
+            Bag cycles = new Bag();
+            for (JsonElement cycle : jsonObject.get("cycles").getAsJsonArray()) {
+                cycles.add(cycle.getAsDouble());
+            }
+
             State state = State.valueOf(jsonObject.get("state").getAsString());
 
             JsonArray criticals = jsonObject.get("criticals").getAsJsonArray();
@@ -84,7 +90,8 @@ public final class PatchOutputDeserializer {
                     volume,
                     height,
                     criticalVolume,
-                    criticalHeight);
+                    criticalHeight,
+                    cycles);
         }
     }
 
