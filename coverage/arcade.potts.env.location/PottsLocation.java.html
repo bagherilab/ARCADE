@@ -288,7 +288,7 @@ public abstract class PottsLocation implements Location {
      * @return a location with the split voxels
      */
     public Location split(MersenneTwisterFast random) {
-<span class="fc" id="L291">        Plane divisionPlane = new Plane(getCenter(), getDirection(random));</span>
+<span class="fc" id="L291">        Plane divisionPlane = new Plane(getCenter(), getDirection(random).vector);</span>
 <span class="fc" id="L292">        return split(random, divisionPlane, DEFAULT_SPLIT_SELECTION_PROBABILITY);</span>
     }
 
@@ -304,7 +304,7 @@ public abstract class PottsLocation implements Location {
      * @return a location with the split voxels
      */
     public Location split(MersenneTwisterFast random, ArrayList&lt;Integer&gt; offsets) {
-<span class="fc" id="L307">        Plane divisionPlane = new Plane(getOffset(offsets), getDirection(random));</span>
+<span class="fc" id="L307">        Plane divisionPlane = new Plane(getOffset(offsets), getDirection(random).vector);</span>
 <span class="fc" id="L308">        return split(random, divisionPlane, DEFAULT_SPLIT_SELECTION_PROBABILITY);</span>
     }
 
@@ -326,7 +326,7 @@ public abstract class PottsLocation implements Location {
             ArrayList&lt;Integer&gt; offsets,
             Direction direction,
             Double probability) {
-<span class="fc" id="L329">        Plane divisionPlane = new Plane(getOffset(offsets), direction);</span>
+<span class="fc" id="L329">        Plane divisionPlane = new Plane(getOffset(offsets), direction.vector);</span>
 <span class="fc" id="L330">        return split(random, divisionPlane, probability);</span>
     }
 
