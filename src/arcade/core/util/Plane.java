@@ -11,13 +11,13 @@ public final class Plane {
     public final Vector unitNormalVector;
 
     /**
-     * Creates a plane from a point and a vector.
+     * Creates a plane from a Double3D point on plane and a vector.
      *
-     * @param voxel a point on the plane
+     * @param point a point on the plane
      * @param normalVector the normal vector to the plane
      */
-    public Plane(Double3D voxel, Vector normalVector) {
-        this.referencePoint = voxel;
+    public Plane(Double3D point, Vector normalVector) {
+        this.referencePoint = point;
         this.unitNormalVector = Vector.normalizeVector(normalVector);
     }
 
