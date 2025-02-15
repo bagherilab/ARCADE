@@ -4,7 +4,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.Parameters;
-import arcade.potts.agent.module.*;
+import arcade.potts.agent.module.PottsModuleProliferationSimple;
 import arcade.potts.util.PottsEnums.State;
 
 /**
