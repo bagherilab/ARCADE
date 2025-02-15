@@ -27,8 +27,8 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":9,"i2":10,"i3":9,"i4":9,"i5":10};
-var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var data = {"i0":10,"i1":10,"i2":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -161,7 +161,7 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>sim.util.Double3D</code></td>
+<td class="colFirst"><code><a href="../../../core/util/Vector.html" title="class in arcade.core.util">Vector</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#unitNormalVector">unitNormalVector</a></span></code></th>
 <td class="colLast">
 <div class="block">The unit normal vector to the plane.</div>
@@ -185,15 +185,8 @@ extends java.lang.Object</pre>
 <th class="colLast" scope="col">Description</th>
 </tr>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(arcade.potts.env.location.Voxel,arcade.potts.util.PottsEnums.Direction)">Plane</a></span>&#8203;(<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&nbsp;voxel,
-     <a href="../../util/PottsEnums.Direction.html" title="enum in arcade.potts.util">PottsEnums.Direction</a>&nbsp;direction)</code></th>
-<td class="colLast">
-<div class="block">Creates a plane from a point and a direction.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(arcade.potts.env.location.Voxel,sim.util.Double3D)">Plane</a></span>&#8203;(<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&nbsp;voxel,
-     sim.util.Double3D&nbsp;normalVector)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(arcade.potts.env.location.Voxel,arcade.core.util.Vector)">Plane</a></span>&#8203;(<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&nbsp;voxel,
+     <a href="../../../core/util/Vector.html" title="class in arcade.core.util">Vector</a>&nbsp;normalVector)</code></th>
 <td class="colLast">
 <div class="block">Creates a plane from a point and a vector.</div>
 </td>
@@ -210,7 +203,7 @@ extends java.lang.Object</pre>
 </a>
 <h3>Method Summary</h3>
 <table class="memberSummary">
-<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t1" class="tableTab"><span><a href="javascript:show(1);">Static Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
 <th class="colSecond" scope="col">Method</th>
@@ -224,36 +217,13 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
-<td class="colFirst"><code>(package private) static double</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getVectorMagnitude(sim.util.Double3D)">getVectorMagnitude</a></span>&#8203;(sim.util.Double3D&nbsp;vector)</code></th>
-<td class="colLast">
-<div class="block">Determines the magnitude of the provided vector.</div>
-</td>
-</tr>
-<tr id="i2" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#hashCode()">hashCode</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Returns a hash code for the plane.</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
-<td class="colFirst"><code>static sim.util.Double3D</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#rotateVectorAroundAxis(sim.util.Double3D,arcade.potts.util.PottsEnums.Direction,double)">rotateVectorAroundAxis</a></span>&#8203;(sim.util.Double3D&nbsp;vector,
-                      <a href="../../util/PottsEnums.Direction.html" title="enum in arcade.potts.util">PottsEnums.Direction</a>&nbsp;axis,
-                      double&nbsp;thetaDegrees)</code></th>
-<td class="colLast">
-<div class="block">Rotates a given vector around a given axis by a given angle.</div>
-</td>
-</tr>
-<tr id="i4" class="altColor">
-<td class="colFirst"><code>(package private) static sim.util.Double3D</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#scaleVector(sim.util.Double3D)">scaleVector</a></span>&#8203;(sim.util.Double3D&nbsp;vector)</code></th>
-<td class="colLast">
-<div class="block">Scales the provided vector to a unit vector.</div>
-</td>
-</tr>
-<tr id="i5" class="rowColor">
+<tr id="i2" class="altColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#signedDistanceToPlane(arcade.potts.env.location.Voxel)">signedDistanceToPlane</a></span>&#8203;(<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&nbsp;point)</code></th>
 <td class="colLast">
@@ -300,7 +270,7 @@ extends java.lang.Object</pre>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>unitNormalVector</h4>
-<pre>public final&nbsp;sim.util.Double3D unitNormalVector</pre>
+<pre>public final&nbsp;<a href="../../../core/util/Vector.html" title="class in arcade.core.util">Vector</a> unitNormalVector</pre>
 <div class="block">The unit normal vector to the plane.</div>
 </li>
 </ul>
@@ -314,35 +284,19 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a id="&lt;init&gt;(arcade.potts.env.location.Voxel,sim.util.Double3D)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>Plane</h4>
-<pre>public&nbsp;Plane&#8203;(<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&nbsp;voxel,
-             sim.util.Double3D&nbsp;normalVector)</pre>
-<div class="block">Creates a plane from a point and a vector.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>voxel</code> - a point on the plane</dd>
-<dd><code>normalVector</code> - the normal vector to the plane</dd>
-</dl>
-</li>
-</ul>
-<a id="&lt;init&gt;(arcade.potts.env.location.Voxel,arcade.potts.util.PottsEnums.Direction)">
+<a id="&lt;init&gt;(arcade.potts.env.location.Voxel,arcade.core.util.Vector)">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>Plane</h4>
 <pre>public&nbsp;Plane&#8203;(<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&nbsp;voxel,
-             <a href="../../util/PottsEnums.Direction.html" title="enum in arcade.potts.util">PottsEnums.Direction</a>&nbsp;direction)</pre>
-<div class="block">Creates a plane from a point and a direction.</div>
+             <a href="../../../core/util/Vector.html" title="class in arcade.core.util">Vector</a>&nbsp;normalVector)</pre>
+<div class="block">Creates a plane from a point and a vector.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>voxel</code> - a point on the plane</dd>
-<dd><code>direction</code> - the direction of the plane</dd>
+<dd><code>normalVector</code> - the normal vector to the plane</dd>
 </dl>
 </li>
 </ul>
@@ -356,38 +310,6 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a id="getVectorMagnitude(sim.util.Double3D)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getVectorMagnitude</h4>
-<pre class="methodSignature">static&nbsp;double&nbsp;getVectorMagnitude&#8203;(sim.util.Double3D&nbsp;vector)</pre>
-<div class="block">Determines the magnitude of the provided vector.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>vector</code> - the vector</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>the magnitude of the normal vector</dd>
-</dl>
-</li>
-</ul>
-<a id="scaleVector(sim.util.Double3D)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>scaleVector</h4>
-<pre class="methodSignature">static&nbsp;sim.util.Double3D&nbsp;scaleVector&#8203;(sim.util.Double3D&nbsp;vector)</pre>
-<div class="block">Scales the provided vector to a unit vector.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>vector</code> - the normal vector</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>the unit normal vector</dd>
-</dl>
-</li>
-</ul>
 <a id="signedDistanceToPlane(arcade.potts.env.location.Voxel)">
 <!--   -->
 </a>
@@ -428,7 +350,7 @@ extends java.lang.Object</pre>
 <a id="hashCode()">
 <!--   -->
 </a>
-<ul class="blockList">
+<ul class="blockListLast">
 <li class="blockList">
 <h4>hashCode</h4>
 <pre class="methodSignature">public&nbsp;int&nbsp;hashCode()</pre>
@@ -438,28 +360,6 @@ extends java.lang.Object</pre>
 <dd><code>hashCode</code>&nbsp;in class&nbsp;<code>java.lang.Object</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>a hash code for the plane</dd>
-</dl>
-</li>
-</ul>
-<a id="rotateVectorAroundAxis(sim.util.Double3D,arcade.potts.util.PottsEnums.Direction,double)">
-<!--   -->
-</a>
-<ul class="blockListLast">
-<li class="blockList">
-<h4>rotateVectorAroundAxis</h4>
-<pre class="methodSignature">public static&nbsp;sim.util.Double3D&nbsp;rotateVectorAroundAxis&#8203;(sim.util.Double3D&nbsp;vector,
-                                                       <a href="../../util/PottsEnums.Direction.html" title="enum in arcade.potts.util">PottsEnums.Direction</a>&nbsp;axis,
-                                                       double&nbsp;thetaDegrees)</pre>
-<div class="block">Rotates a given vector around a given axis by a given angle.
-
- <p>Rotation is performed using Rodrigues' rotation formula.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>vector</code> - the vector</dd>
-<dd><code>axis</code> - the axis of rotation</dd>
-<dd><code>thetaDegrees</code> - the angle of rotation in degrees</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>the rotated vector scaled to unit length</dd>
 </dl>
 </li>
 </ul>
