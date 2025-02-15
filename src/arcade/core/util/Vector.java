@@ -117,7 +117,7 @@ public class Vector {
      * <p>Rotation is performed using Rodrigues' rotation formula.
      *
      * @param vector the vector
-     * @param axis the axis of rotation
+     * @param rotationAxis the axis of rotation
      * @param thetaDegrees the angle of rotation in degrees
      * @return the rotated vector scaled to unit length
      */
