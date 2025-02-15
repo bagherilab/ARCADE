@@ -73,8 +73,11 @@ public class Vector {
      * @param vector the vector
      * @return the unit vector
      */
-    public static Vector scaleVector(Vector vector) {
+    public static Vector normalizeVector(Vector vector) {
         double magnitude = getVectorMagnitude(vector);
+        if (magnitude == 0) {
+            return new Vector(0, 0, 0);
+        }
         double scaledX = vector.getX() / magnitude;
         double scaledY = vector.getY() / magnitude;
         double scaledZ = vector.getZ() / magnitude;
@@ -118,32 +121,33 @@ public class Vector {
      * @param thetaDegrees the angle of rotation in degrees
      * @return the rotated vector scaled to unit length
      */
-    public static Vector rotateVectorAroundAxis(Vector vector, Vector axis, double thetaDegrees) {
+    public static Vector rotateVectorAroundAxis(
+            Vector vector, Vector rotationAxis, double thetaDegrees) {
         double thetaRadians = Math.toRadians(thetaDegrees);
         // Normalize the axis vector
-        Vector unitAxisVector = scaleVector(axis);
+        Vector unitRotationAxis = normalizeVector(rotationAxis);
 
         double cosTheta = Math.cos(thetaRadians);
         double sinTheta = Math.sin(thetaRadians);
 
         // Compute the dot product (k • v)
-        double dotProduct = dotProduct(unitAxisVector, vector);
+        double dotProduct = dotProduct(unitRotationAxis, vector);
         // Compute the cross product (k × v)
-        Vector crossProduct = crossProduct(unitAxisVector, vector);
+        Vector crossProduct = crossProduct(unitRotationAxis, vector);
 
         // Compute the rotated Normal vector components
         double rotatedX =
                 vector.getX() * cosTheta
                         + crossProduct.getX() * sinTheta
-                        + unitAxisVector.getX() * dotProduct * (1 - cosTheta);
+                        + unitRotationAxis.getX() * dotProduct * (1 - cosTheta);
         double rotatedY =
                 vector.getY() * cosTheta
                         + crossProduct.getY() * sinTheta
-                        + unitAxisVector.getY() * dotProduct * (1 - cosTheta);
+                        + unitRotationAxis.getY() * dotProduct * (1 - cosTheta);
         double rotatedZ =
                 vector.getZ() * cosTheta
                         + crossProduct.getZ() * sinTheta
-                        + unitAxisVector.getZ() * dotProduct * (1 - cosTheta);
+                        + unitRotationAxis.getZ() * dotProduct * (1 - cosTheta);
         return new Vector(rotatedX, rotatedY, rotatedZ);
     }
 

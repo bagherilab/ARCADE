@@ -18,7 +18,7 @@ public final class Plane {
      */
     public Plane(Voxel voxel, Vector normalVector) {
         this.referencePoint = voxel;
-        this.unitNormalVector = Vector.scaleVector(normalVector);
+        this.unitNormalVector = Vector.normalizeVector(normalVector);
     }
 
     /**

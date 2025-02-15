@@ -61,13 +61,13 @@ public class PlaneTest {
     @Test
     public void scaleVector_givenUnitVector_returnsSameVector() {
         Vector normalVector = new Vector(1, 0, 0);
-        Vector unitNormalVector = Vector.scaleVector(normalVector);
+        Vector unitNormalVector = Vector.normalizeVector(normalVector);
         assertEquals(normalVector, unitNormalVector);
     }
 
     @Test
     public void scaleVector_givenNonUnitVector_returnsUnitVector() {
-        Vector unitNormalVector = Vector.scaleVector(new Vector(1, 2, 2));
+        Vector unitNormalVector = Vector.normalizeVector(new Vector(1, 2, 2));
         Double x = 1.0 / 3.0;
         Double y = 2.0 / 3.0;
         Double z = 2.0 / 3.0;
