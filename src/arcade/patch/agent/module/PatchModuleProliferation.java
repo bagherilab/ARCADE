@@ -3,7 +3,9 @@ package arcade.patch.agent.module;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.process.ProcessDomain;
 import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.process.PatchProcess;
@@ -54,9 +56,8 @@ public class PatchModuleProliferation extends PatchModule {
         targetVolume = 2 * cell.getCriticalVolume();
         maxHeight = cell.getCriticalHeight();
         duration = 0;
-        // Set loaded parameters.
-        Parameters parameters = cell.getParameters();
-        synthesisDuration = parameters.getInt("proliferation/SYNTHESIS_DURATION");
+        // Load parameters.
+        synthesisDuration = cell.getSynthesisDuration();
     }
 
     @Override
@@ -87,13 +88,14 @@ public class PatchModuleProliferation extends PatchModule {
                     // Create and schedule new cell.
                     int newID = sim.getID();
                     CellContainer newContainer = cell.make(newID, State.UNDEFINED, random);
+                    Parameters newParameters = cell.getParameters();
                     PatchCell newCell =
                             (PatchCell)
                                     newContainer.convert(
                                             sim.getCellFactory(),
                                             newLocation,
                                             random,
-                                            cell.getParameters());
+                                            newParameters);
                     sim.getGrid().addObject(newCell, newLocation);
                     newCell.schedule(sim.getSchedule());
 
@@ -107,11 +109,12 @@ public class PatchModuleProliferation extends PatchModule {
                     newCell.setEnergy(energy * (1 - split));
 
                     // Update processes.
-                    PatchProcess metabolism = (PatchProcess) newCell.getProcess(Domain.METABOLISM);
-                    metabolism.update(cell.getProcess(Domain.METABOLISM));
-                    PatchProcess signaling = (PatchProcess) newCell.getProcess(Domain.SIGNALING);
-                    signaling.update(cell.getProcess(Domain.SIGNALING));
-
+                    MiniBox processBox = newParameters.filter("(PROCESS)");
+                    for (String processKey : processBox.getKeys()) {
+                        ProcessDomain domain = Domain.valueOf(processKey);
+                        PatchProcess process = (PatchProcess) newCell.getProcess(domain);
+                        process.update(cell.getProcess(domain));
+                    }
                     // TODO: Update environment generator sites.
                 } else {
                     ticker++;

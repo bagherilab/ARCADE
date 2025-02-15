@@ -3,7 +3,6 @@ package arcade.patch.agent.cell;
 import java.util.HashMap;
 import java.util.Map;
 import sim.engine.Schedule;
-import sim.engine.SimState;
 import sim.engine.Stoppable;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
@@ -21,38 +20,19 @@ import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModuleApoptosis;
 import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleProliferation;
+import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
+import arcade.patch.util.PatchEnums;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.Flag;
 import static arcade.patch.util.PatchEnums.Ordering;
 import static arcade.patch.util.PatchEnums.State;
 
 /**
- * Implementation of {@link Cell} for generic tissue cell.
- *
- * <p>{@code PatchCell} agents exist in one of seven states: undefined, apoptotic, quiescent,
- * migratory, proliferative, senescent, and necrotic. The undefined state is a transition state for
- * "undecided" cells, and does not have any biological analog.
- *
- * <p>{@code PatchCell} agents have two required {@link Process} domains: metabolism and signaling.
- * Metabolism controls changes in cell energy and volume. Signaling controls the proliferative vs.
- * migratory decision.
- *
- * <p>General order of rules for the {@code PatchCell} step:
- *
- * <ul>
- *   <li>update age
- *   <li>check lifespan (possible change to apoptotic)
- *   <li>step metabolism process
- *   <li>check energy status (possible change to quiescent or necrotic depending on {@code
- *       ENERGY_THRESHOLD})
- *   <li>step signaling process
- *   <li>check if neutral (change to proliferative, migratory, senescent)
- *   <li>step state-specific module
- * </ul>
+ * Implementation of {@link Cell} for generic cell agent.
  *
  * <p>Cells that become necrotic or senescent have a change to become apoptotic instead ({@code
  * NECROTIC_FRACTION} and {@code SENESCENT_FRACTION}, respectively).
@@ -87,7 +67,7 @@ public abstract class PatchCell implements Cell {
     int age;
 
     /** Cell energy [fmol ATP]. */
-    private double energy;
+    protected double energy;
 
     /** Number of divisions. */
     int divisions;
@@ -101,6 +81,9 @@ public abstract class PatchCell implements Cell {
     /** Death age due to apoptosis [min]. */
     double apoptosisAge;
 
+    /** Time required for DNA synthesis [min]. */
+    final int synthesisDuration;
+
     /** Critical volume for cell [um<sup>3</sup>]. */
     final double criticalVolume;
 
@@ -108,16 +91,16 @@ public abstract class PatchCell implements Cell {
     final double criticalHeight;
 
     /** Cell state change flag. */
-    private Flag flag;
+    protected Flag flag;
 
     /** Fraction of necrotic cells that become apoptotic. */
-    private final double necroticFraction;
+    protected final double necroticFraction;
 
     /** Fraction of senescent cells that become apoptotic. */
-    private final double senescentFraction;
+    protected final double senescentFraction;
 
     /** Maximum energy deficit before necrosis. */
-    private final double energyThreshold;
+    protected final double energyThreshold;
 
     /** Accuracy in detecting concentration when selecting best location. */
     private final double accuracy;
@@ -140,6 +123,12 @@ public abstract class PatchCell implements Cell {
     /** List of cell cycle lengths (in minutes). */
     private final Bag cycles = new Bag();
 
+    /** If cell is stopped in the simulation. */
+    private boolean isStopped;
+
+    /** Cell binding flag. */
+    protected PatchEnums.AntigenFlag bindingFlag;
+
     /**
      * Creates a {@code PatchCell} agent.
      *
@@ -149,7 +138,6 @@ public abstract class PatchCell implements Cell {
      *   <li>{@code NECROTIC_FRACTION} = fraction of necrotic cells that become apoptotic
      *   <li>{@code SENESCENT_FRACTION} = fraction of senescent cells that become apoptotic
      *   <li>{@code ENERGY_THRESHOLD} = maximum energy deficit before necrosis
-     *   <li>{@code HETEROGENEITY} = variation in cell agent parameters
      * </ul>
      *
      * @param container the cell container
@@ -172,6 +160,8 @@ public abstract class PatchCell implements Cell {
         this.criticalHeight = container.criticalHeight;
         this.flag = Flag.UNDEFINED;
         this.parameters = parameters;
+        this.isStopped = false;
+        this.bindingFlag = PatchEnums.AntigenFlag.UNDEFINED;
         this.links = links;
 
         setState(container.state);
@@ -183,6 +173,7 @@ public abstract class PatchCell implements Cell {
         apoptosisAge = parameters.getDouble("APOPTOSIS_AGE");
         accuracy = parameters.getDouble("ACCURACY");
         affinity = parameters.getDouble("AFFINITY");
+        synthesisDuration = parameters.getInt("SYNTHESIS_DURATION");
 
         int densityInput = parameters.getInt("MAX_DENSITY");
         maxDensity = (densityInput >= 0 ? densityInput : Integer.MAX_VALUE);
@@ -190,6 +181,7 @@ public abstract class PatchCell implements Cell {
         // Add cell processes.
         processes = new HashMap<>();
         MiniBox processBox = parameters.filter("(PROCESS)");
+
         for (String processKey : processBox.getKeys()) {
             ProcessDomain domain = Domain.valueOf(processKey);
             String version = processBox.get(processKey);
@@ -325,6 +317,16 @@ public abstract class PatchCell implements Cell {
     @Override
     public void stop() {
         stopper.stop();
+        isStopped = true;
+    }
+
+    /**
+     * Gets stopping status of the cell.
+     *
+     * @return if the cell has been stopped in the simulation
+     */
+    public boolean isStopped() {
+        return isStopped;
     }
 
     @Override
@@ -342,6 +344,10 @@ public abstract class PatchCell implements Cell {
             case APOPTOTIC:
                 module = new PatchModuleApoptosis(this);
                 break;
+            case CYTOTOXIC:
+                throw new UnsupportedOperationException();
+            case STIMULATORY:
+                throw new UnsupportedOperationException();
             default:
                 module = null;
                 break;
@@ -361,6 +367,8 @@ public abstract class PatchCell implements Cell {
                 return PatchProcessMetabolism.make(this, version);
             case SIGNALING:
                 return PatchProcessSignaling.make(this, version);
+            case INFLAMMATION:
+                return PatchProcessInflammation.make(this, version);
             case UNDEFINED:
             default:
                 return null;
@@ -370,57 +378,6 @@ public abstract class PatchCell implements Cell {
     @Override
     public void schedule(Schedule schedule) {
         stopper = schedule.scheduleRepeating(this, Ordering.CELLS.ordinal(), 1);
-    }
-
-    @Override
-    public void step(SimState simstate) {
-        Simulation sim = (Simulation) simstate;
-        // Increase age of cell.
-        age++;
-
-        if (state != State.APOPTOTIC && age > apoptosisAge) {
-            setState(State.APOPTOTIC);
-        }
-
-        // Step metabolism process.
-        processes.get(Domain.METABOLISM).step(simstate.random, sim);
-
-        // Check energy status. If cell has less energy than threshold, it will
-        // necrose. If overall energy is negative, then cell enters quiescence.
-        if (state != State.APOPTOTIC && energy < 0) {
-            if (energy < energyThreshold) {
-                if (simstate.random.nextDouble() > necroticFraction) {
-                    setState(State.APOPTOTIC);
-                } else {
-                    setState(State.NECROTIC);
-                }
-            } else if (state != State.QUIESCENT && state != State.SENESCENT) {
-                setState(State.QUIESCENT);
-            }
-        }
-
-        // Step signaling network process.
-        processes.get(Domain.SIGNALING).step(simstate.random, sim);
-
-        // Change state from undefined.
-        if (state == State.UNDEFINED) {
-            if (flag == Flag.MIGRATORY) {
-                setState(State.MIGRATORY);
-            } else if (divisions == 0) {
-                if (simstate.random.nextDouble() > senescentFraction) {
-                    setState(State.APOPTOTIC);
-                } else {
-                    setState(State.SENESCENT);
-                }
-            } else {
-                setState(State.PROLIFERATIVE);
-            }
-        }
-
-        // Step the module for the cell state.
-        if (module != null) {
-            module.step(simstate.random, sim);
-        }
     }
 
     @Override
@@ -548,7 +505,7 @@ public abstract class PatchCell implements Cell {
      * @param maxHeight the maximum height tolerance
      * @param population the population index
      * @param maxDensity the maximum density of population in the location
-     * @return a list of free locations
+     * @return if the location is available for the cell
      */
     static boolean checkLocation(
             Simulation sim,
@@ -586,5 +543,32 @@ public abstract class PatchCell implements Cell {
             }
         }
         return true;
+    }
+
+    /**
+     * Sets the cell binding flag.
+     *
+     * @param newBindingFlag the target cell antigen binding state
+     */
+    public void setBindingFlag(PatchEnums.AntigenFlag newBindingFlag) {
+        this.bindingFlag = newBindingFlag;
+    }
+
+    /**
+     * Returns the cell binding flag.
+     *
+     * @return the cell antigen binding state
+     */
+    public PatchEnums.AntigenFlag getBindingFlag() {
+        return this.bindingFlag;
+    }
+
+    /**
+     * Returns the synthesis duration period.
+     *
+     * @return the cell antigen binding state
+     */
+    public int getSynthesisDuration() {
+        return this.synthesisDuration;
     }
 }
