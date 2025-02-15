@@ -22,12 +22,14 @@ public final class PottsCellFlyNeuron extends PottsCell {
      */
     public PottsCellFlyNeuron(
             PottsCellContainer container, Location location, Parameters parameters) {
+
         super(container, location, parameters, null);
     }
 
     @Override
     public PottsCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-        throw new UnsupportedOperationException("Neurons should not divide");
+        throw new UnsupportedOperationException(
+                "Neurons should not grow or divide. Set proliferation/CELL_GROWTH_RATE to 0 in setup file.");
     }
 
     @Override
@@ -41,7 +43,7 @@ public final class PottsCellFlyNeuron extends PottsCell {
                 break;
             case APOPTOTIC:
                 throw new UnsupportedOperationException(
-                        "Neurons should not apoptose. Set apoptosis rate to 0 in setup file.");
+                        "Neurons should not apoptose. Set proliferation/BASAL_APOPTOSIS_RATE to 0 in setup file.");
             default:
                 module = null;
                 break;
