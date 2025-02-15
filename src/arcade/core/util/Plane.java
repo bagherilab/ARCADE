@@ -1,23 +1,23 @@
-package arcade.potts.env.location;
+package arcade.core.util;
 
-import arcade.core.util.Vector;
+import sim.util.Double3D;
 
 /** A plane in 3D space. */
 public final class Plane {
     /** A point on the plane. */
-    public final Voxel referencePoint;
+    public final Double3D referencePoint;
 
     /** The unit normal vector to the plane. */
     public final Vector unitNormalVector;
 
     /**
-     * Creates a plane from a point and a vector.
+     * Creates a plane from a Double3D point on plane and a vector.
      *
-     * @param voxel a point on the plane
+     * @param point a point on the plane
      * @param normalVector the normal vector to the plane
      */
-    public Plane(Voxel voxel, Vector normalVector) {
-        this.referencePoint = voxel;
+    public Plane(Double3D point, Vector normalVector) {
+        this.referencePoint = point;
         this.unitNormalVector = Vector.normalizeVector(normalVector);
     }
 
@@ -30,7 +30,7 @@ public final class Plane {
      * @param point the point
      * @return the distance from the point to the plane.
      */
-    public double signedDistanceToPlane(Voxel point) {
+    public double signedDistanceToPlane(Double3D point) {
         return (point.x - referencePoint.x) * unitNormalVector.getX()
                 + (point.y - referencePoint.y) * unitNormalVector.getY()
                 + (point.z - referencePoint.z) * unitNormalVector.getZ();
