@@ -178,7 +178,7 @@ public class PatchCellCARTTest {
     }
 
     @Test
-    public void bindTarget_bindsToCell() {
+    public void bindTarget_called_bindsToCell() {
         when(tissueCell.getCarAntigens()).thenReturn(5000);
         when(tissueCell.getSelfAntigens()).thenReturn(5000);
         when(random.nextDouble()).thenReturn(0.0000005);
@@ -192,7 +192,7 @@ public class PatchCellCARTTest {
     }
 
     @Test
-    public void getActivationStatus_returnsStatus()
+    public void getActivationStatus_called_returnsStatus()
             throws NoSuchFieldException, IllegalAccessException {
         Field activation = PatchCellCART.class.getDeclaredField("activated");
         activation.setAccessible(true);
