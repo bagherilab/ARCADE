@@ -108,6 +108,9 @@ public abstract class PatchCellCART extends PatchCell {
     /** Fraction of proliferative cells that become apoptotic. */
     protected final double proliferativeFraction;
 
+    /** Target cell that current T cell is bound to. */
+    protected PatchCell boundTarget;
+
     /**
      * Creates a {@code PatchCellCART} agent. *
      *
@@ -155,6 +158,7 @@ public abstract class PatchCellCART extends PatchCell {
         boundSelfAntigensCount = 0;
         lastActiveTicker = 0;
         activated = true;
+        boundTarget = null;
 
         // Set loaded parameters.
         exhaustedFraction = parameters.getDouble("EXHAUSTED_FRAC");
@@ -252,7 +256,7 @@ public abstract class PatchCellCART extends PatchCell {
     }
 
     /**
-     * Adds only tissue cells to the provided bag. Helper method for bindTarget.
+     * Adds only tissue cells to the provided bag.
      *
      * @param tissueAgents the bag to add tissue cells into
      * @param possibleAgents the bag of possible agents to check for tissue cells
@@ -287,7 +291,7 @@ public abstract class PatchCellCART extends PatchCell {
         double bind =
                 calculateMichaelisMenten(
                         antigens, kD, currentReceptors, startingReceptors, alpha, beta);
-        return applySig(bind);
+        return applySigmoid(bind);
     }
 
     /**
@@ -376,7 +380,7 @@ public abstract class PatchCellCART extends PatchCell {
      * @param bindingCoefficient the binding coefficient for the log function
      * @return the sigmoidal value
      */
-    private double applySig(double bindingCoefficient) {
+    private double applySigmoid(double bindingCoefficient) {
         return 2 * (1 / (1 + Math.exp(-1 * bindingCoefficient))) - 1;
     }
 

@@ -18,7 +18,7 @@ import arcade.patch.util.PatchEnums.State;
  *
  * <p>{@code PatchActionReset} is stepped once after a CD8 CAR T-cell binds to a target tissue cell,
  * or after a CD4 CAR T-cell gets stimulated. The {@code PatchReset} unbinds to any target cell that
- * the T cell is bound to, and sets the cell state back to quiescent.
+ * the T cell is bound to, and sets the cell state back to undefined.
  */
 public class PatchActionReset implements Action {
 
