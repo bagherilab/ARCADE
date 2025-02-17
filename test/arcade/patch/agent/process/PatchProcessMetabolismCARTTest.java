@@ -159,7 +159,7 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @Test
-    public void stepProcess_reducesMass_withZeroInitialGlucose() {
+    public void stepProcess_withZeroInitialGlucose_reducesMass() {
         metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE] = 0;
         PatchProcessInflammation inflammation = new InflammationMock(mockCell);
         when(mockCell.getProcess(any())).thenReturn(inflammation);
@@ -263,11 +263,11 @@ public class PatchProcessMetabolismCARTTest {
     public void update_unevenSplit_splitCellUnevenly() {
         PatchProcessMetabolismCART parentProcess = new PatchProcessMetabolismCART(mockCell);
         parentProcess.intAmts[PatchProcessMetabolismCART.GLUCOSE] = 100;
-        when(mockCell.getVolume()).thenReturn(0.0);
+        when(mockCell.getVolume()).thenReturn(cellVolume / 4);
 
         metabolism.update(parentProcess);
 
-        assertEquals(0, metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE]);
-        assertEquals(100, parentProcess.intAmts[PatchProcessMetabolismCART.GLUCOSE]);
+        assertEquals(25, metabolism.intAmts[PatchProcessMetabolismCART.GLUCOSE]);
+        assertEquals(75, parentProcess.intAmts[PatchProcessMetabolismCART.GLUCOSE]);
     }
 }

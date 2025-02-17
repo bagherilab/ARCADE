@@ -128,16 +128,24 @@ public class PatchCellTest {
     }
 
     @Test
-    public void setBindingFlag_setsFlag() {
+    public void setBindingFlag_called_setsFlag() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
         PatchCell cell = new PatchCellMock(baseContainer, locationMock, parametersMock);
+
         cell.setBindingFlag(PatchEnums.AntigenFlag.BOUND_ANTIGEN);
+
         assertEquals(PatchEnums.AntigenFlag.BOUND_ANTIGEN, cell.getBindingFlag());
     }
 
     @Test
-    public void getBindingFlag_returnsFlag() {
+    public void getBindingFlag_called_returnsFlag() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
         PatchCell cell = new PatchCellMock(baseContainer, locationMock, parametersMock);
+
         cell.setBindingFlag(PatchEnums.AntigenFlag.BOUND_ANTIGEN);
+
         assertEquals(PatchEnums.AntigenFlag.BOUND_ANTIGEN, cell.getBindingFlag());
     }
 
