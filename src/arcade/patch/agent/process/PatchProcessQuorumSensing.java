@@ -8,12 +8,6 @@ import arcade.core.sim.Simulation;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.env.grid.PatchGrid;
 
-/**
- * Implementation of {@link Process} for quorum sensing type modules in which auxin is taken up and
- * cytotoxic/stimulatory functions are modified.
- *
- * <p>The {@code PatchProcessQuorumSensing} module represents an auxin signaling network.
- */
 public abstract class PatchProcessQuorumSensing extends PatchProcess {
 
     /** List of internal amounts of each species. */
@@ -25,32 +19,12 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
     /** List of internal names. */
     protected List<String> names;
 
-    /** Volume fraction. */
-    protected double f;
-
-    /** Cell the module is associated with */
-    protected PatchCell cell;
-
-    /** Volume of cell [um<sup>3</sup>]. */
-    double volume;
-
-    /** Location of cell */
-    protected Location loc;
-
-    /** Number of steps per second to take in ODE. */
+    /** Number of steps per second to take in ODE */
     private static final double STEP_DIVIDER = 3.0;
 
-    /** Step size for module (in seconds). */
+    /** Step size for module (in seconds) */
     static final double STEP_SIZE = 1.0 / STEP_DIVIDER;
 
-    /**
-     * Creates an {@code PatchCellQuorumSensing} module for the given {@link PatchCell}.
-     *
-     * <p>Module parameters are specific for the cell population. The module starts with no internal
-     * auxin. Daughter cells split amounts of bound auxin and receptors upon dividing.
-     *
-     * @param cell the {@link PatchCell} the module is associated with
-     */
     PatchProcessQuorumSensing(PatchCell cell) {
         super(cell);
         this.cell = cell;
