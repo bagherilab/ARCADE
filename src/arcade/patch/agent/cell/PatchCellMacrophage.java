@@ -171,17 +171,38 @@ public abstract class PatchCellMacrophage extends PatchCell {
         Poisson createPoisson(double lambda, MersenneTwisterFast random);
     }
 
+    /** Implementation of the PoissonFactory interface. */
     public class PoissonFactoryImpl implements PoissonFactory {
+
+        /**
+         * Creates an instance of Poisson distribution.
+         *
+         * @param lambda the Poisson distribution lambda
+         * @param random the random number generator
+         * @return a Poisson distribution instance
+         */
         @Override
         public Poisson createPoisson(double lambda, MersenneTwisterFast random) {
             return new Poisson(lambda, random);
         }
     }
 
+    /** Class representing a Poisson distribution. */
     public class Poisson {
+
+        /** Lambda parameter for the distribution. */
         private final double lambda;
+
+        /** Random number generator. */
         private final MersenneTwisterFast random;
 
+        /**
+         * Constructs a Poisson distribution with the specified lambda and random number generator.
+         *
+         * @param lambda the Poisson distribution lambda
+         * @param random the random number generator
+         * @throws IllegalArgumentException if lambda is not positive
+         */
         public Poisson(double lambda, MersenneTwisterFast random) {
             if (lambda <= 0) {
                 throw new IllegalArgumentException("Lambda must be positive.");
@@ -196,14 +217,14 @@ public abstract class PatchCellMacrophage extends PatchCell {
          * @return a Poisson-distributed random integer
          */
         public int nextSample() {
-            double L = Math.exp(-lambda);
+            double l = Math.exp(-lambda);
             int k = 0;
             double p = 1.0;
 
             do {
                 k++;
                 p *= random.nextDouble();
-            } while (p > L);
+            } while (p > l);
 
             return k - 1;
         }
