@@ -123,7 +123,7 @@ public abstract class PatchCellMacrophage extends PatchCell {
      */
     private double computeTimeInterval(double rate, MersenneTwisterFast random) {
         double randomSample = 1 / random.nextDouble();
-        return Math.log(randomSample / rate);
+        return Math.log(randomSample) / rate;
     }
 
     /**
