@@ -1,7 +1,12 @@
 package arcade.patch.agent.process;
 
 import java.util.List;
+import sim.util.Bag;
+import ec.util.MersenneTwisterFast;
+import arcade.core.env.location.Location;
+import arcade.core.sim.Simulation;
 import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.env.grid.PatchGrid;
 
 /**
  * Implementation of {@link Process} for quorum sensing type modules in which auxin is taken up and
@@ -11,11 +16,26 @@ import arcade.patch.agent.cell.PatchCell;
  */
 public abstract class PatchProcessQuorumSensing extends PatchProcess {
 
-    /** List of amounts of each species. */
+    /** List of internal amounts of each species. */
     protected double[] concs;
+
+    /** Environmental auxin at current location. */
+    protected double extAuxin;
 
     /** List of internal names. */
     protected List<String> names;
+
+    /** Volume fraction. */
+    protected double f;
+
+    /** Cell the module is associated with */
+    protected PatchCell cell;
+
+    /** Volume of cell [um<sup>3</sup>]. */
+    double volume;
+
+    /** Location of cell */
+    protected Location loc;
 
     /** Number of steps per second to take in ODE. */
     private static final double STEP_DIVIDER = 3.0;
@@ -33,6 +53,38 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
      */
     PatchProcessQuorumSensing(PatchCell cell) {
         super(cell);
+        this.cell = cell;
+        this.volume = cell.getVolume();
+        this.loc = cell.getLocation();
+    }
+
+    /**
+     * Gets the external amounts of auxin in fmol.
+     *
+     * @param sim the simulation instance
+     */
+    private void updateExternal(Simulation sim) {
+        extAuxin = sim.getLattice("AUXIN").getAverageValue(location) * location.getVolume();
+    }
+
+    /**
+     * Steps the quorum sensing process.
+     *
+     * @param random the random number generator
+     * @param sim the simulation instance
+     */
+    abstract void stepProcess(MersenneTwisterFast random, Simulation sim);
+
+    @Override
+    public void step(MersenneTwisterFast random, Simulation sim) {
+        // Calculate fraction of volume occupied by cell.
+        Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocation(location);
+        double totalVolume = PatchCell.calculateTotalVolume(bag);
+        f = volume / totalVolume;
+
+        updateExternal(sim);
+
+        stepProcess(random, sim);
     }
 
     /**
