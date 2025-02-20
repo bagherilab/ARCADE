@@ -399,4 +399,19 @@ public abstract class PatchCellCART extends PatchCell {
     private void updateSelfReceptors() {
         selfReceptors += (int) ((double) selfReceptorsStart * (0.95 + Math.random() / 10));
     }
+
+    /**
+     * Returns bound cell.
+     *
+     * @return the bound cell
+     */
+    public PatchCell getBoundTarget() {
+        return this.boundTarget;
+    }
+
+    /** Sets binding flag to unbound and binding target to null. */
+    public void unbind() {
+        super.setBindingFlag(AntigenFlag.UNBOUND);
+        this.boundTarget = null;
+    }
 }
