@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchProcessMetabolismCART.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.agent.process</a> &gt; <span class="el_source">PatchProcessMetabolismCART.java</span></div><h1>PatchProcessMetabolismCART.java</h1><pre class="source lang-java linenums">package arcade.patch.agent.process;
+
+import java.util.Arrays;
+import ec.util.MersenneTwisterFast;
+import arcade.core.agent.process.Process;
+import arcade.core.sim.Simulation;
+import arcade.core.util.Parameters;
+import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.agent.cell.PatchCellCART;
+import arcade.patch.util.PatchEnums.Domain;
+
+/**
+ * Extension of {@link PatchProcessMetabolism} for CAR T-cell metabolism.
+ *
+ * &lt;p&gt;{@code PatchProcessMetabolismCART} is adapted from {@code PatchProcessMetabolismComplex} and
+ * thus this module explicitly includes pyruvate intermediate between glycolysis and oxidative
+ * phosphorylation and glucose uptake is based on cell surface area. Metabolic preference between
+ * glycolysis and oxidative phosphorylation is controlled by the {@code META_PREF} parameter. The
+ * glycolysis pathway will compensate if there is not enough oxygen to meet energetic requirements
+ * through the oxidative phosphorylation pathway given the specified metabolic preference. The
+ * preference for glycolysis can be further increased due to IL-2 bound to the cell surface by a
+ * maximum of {@code META_PREF_IL2} parameter and by the T-cell's antigen-induced activation state
+ * by the {@code META_PREF_ACTIVE} parameter. The antigen-induced activation state can also increase
+ * the rate of uptake of glucose by the {@code GLUC_UPTAKE_RATE_ACTIVE} parameter and the fraction
+ * of glucose being used to make cell mass by the {@code FRAC_MASS_ACTIVE} parameter. The amount of
+ * IL-2 bound to the cell surface can also incrase the uptake rate of glucose by a max of the {@code
+ * GLUC_UPTAKE_RATE_IL2} parameter.
+ *
+ * &lt;p&gt;{@code PatchProcessMetabolismCART} will increase cell mass (using specified fractions of
+ * internal glucose and pyruvate) if:
+ *
+ * &lt;ul&gt;
+ *   &lt;li&gt;cell is dividing and less than double in size
+ *   &lt;li&gt;cell is below critical mass for maintenance
+ * &lt;/ul&gt;
+ *
+ * {@code PatchProcessMetabolismCART} will decrease cell mass if:
+ *
+ * &lt;ul&gt;
+ *   &lt;li&gt;cell has negative energy levels indicating insufficient nutrients
+ *   &lt;li&gt;cell is above critical mass for maintenance
+ * &lt;/ul&gt;
+ *
+ * &lt;p&gt;Internal pyruvate is removed through conversion to lactate.
+ */
+public class PatchProcessMetabolismCART extends PatchProcessMetabolism {
+
+    /** ID for pyruvate. */
+    public static final int PYRUVATE = 1;
+
+    /** Flag indicating T-cell's antigen induced activation state. */
+    private boolean active;
+
+    /** Metabolic preference for glycolysis over oxidative phosphorylation. */
+    private final double metaPref;
+
+    /** Minimal cell mass. */
+    private final double fracMass;
+
+    /** Fraction of internal glucose/pyruvate converted to mass. */
+    private final double conversionFraction;
+
+    /** Preference for glucose over pyruvate for mass. */
+    private final double ratioGlucosePyruvate;
+
+    /** Rate of lactate production. */
+    private final double lactateRate;
+
+    /** Rate of autophagy. */
+    private final double autophagyRate;
+
+    /** Rate of glucose uptake. */
+    private final double glucUptakeRate;
+
+    /** Max incrase in metabolic preference for glycolysis over oxidative phosphorylation. */
+    private final double metabolicPreferenceIL2;
+
+    /** Increase in rate of glucose uptake due antigen-induced activation. */
+    private final double metabolicPreferenceActive;
+
+    /** Max increase in rate of glucose uptake due to IL-2 bound to surface. */
+    private final double glucoseUptakeRateIL2;
+
+    /** Increase in rate of glucose uptake due to antigen-induced activation. */
+    private final double glucoseUptakeRateActive;
+
+    /** Increase in fraction of glucose used for cell mass due to antigen-induced activation. */
+    private final double minimumMassFractionActive;
+
+    /** Time delay for changes in metabolism. */
+    private final int timeDelay;
+
+    /**
+     * Creates a metabolism {@link PatchProcess} for the given cell.
+     *
+     * &lt;p&gt;Process parameters are specific for the cell population. Loaded parameters include:
+     *
+     * &lt;ul&gt;
+     *   &lt;li&gt;{@code METABOLIC_PREFERENCE} = preference for glycolysis over oxidative phosphorylation
+     *   &lt;li&gt;{@code CONVERSION_FRACTION} = fraction of internal glucose / pyruvate converted to mass
+     *   &lt;li&gt;{@code MINIMUM_MASS_FRACTION} = minimum viable cell mass fraction
+     *   &lt;li&gt;{@code RATIO_GLUCOSE_PYRUVATE} = preference for glucose over pyruvate for mass
+     *   &lt;li&gt;{@code LACTATE_RATE} = rate of lactate production
+     *   &lt;li&gt;{@code AUTOPHAGY_RATE} = rate of autophagy
+     *   &lt;li&gt;{@code GLUCOSE_UPTAKE_RATE} = rate of glucose uptake
+     *   &lt;li&gt;{@code INITIAL_GLUCOSE_CONCENTRATION} = initial cell internal glucose concentration
+     * &lt;/ul&gt;
+     *
+     * The process starts with energy at zero and assumes a constant ratio between mass and volume
+     * (through density).
+     *
+     * @param cell the {@link PatchCell} the process is associated with
+     */
+    public PatchProcessMetabolismCART(PatchCell cell) {
+<span class="fc" id="L115">        super(cell);</span>
+<span class="fc" id="L116">        String[] intNames = new String[2];</span>
+<span class="fc" id="L117">        intNames[GLUCOSE] = &quot;glucose&quot;;</span>
+<span class="fc" id="L118">        intNames[PYRUVATE] = &quot;pyruvate&quot;;</span>
+<span class="fc" id="L119">        names = Arrays.asList(intNames);</span>
+
+<span class="fc" id="L121">        Parameters parameters = cell.getParameters();</span>
+<span class="fc" id="L122">        metaPref = parameters.getDouble(&quot;metabolism/METABOLIC_PREFERENCE&quot;);</span>
+<span class="fc" id="L123">        conversionFraction = parameters.getDouble(&quot;metabolism/CONVERSION_FRACTION&quot;);</span>
+<span class="fc" id="L124">        fracMass = parameters.getDouble(&quot;metabolism/MINIMUM_MASS_FRACTION&quot;);</span>
+<span class="fc" id="L125">        ratioGlucosePyruvate = parameters.getDouble(&quot;metabolism/RATIO_GLUCOSE_PYRUVATE&quot;);</span>
+<span class="fc" id="L126">        lactateRate = parameters.getDouble(&quot;metabolism/LACTATE_RATE&quot;);</span>
+<span class="fc" id="L127">        autophagyRate = parameters.getDouble(&quot;metabolism/AUTOPHAGY_RATE&quot;);</span>
+<span class="fc" id="L128">        glucUptakeRate = parameters.getDouble(&quot;metabolism/GLUCOSE_UPTAKE_RATE&quot;);</span>
+
+<span class="fc" id="L130">        metabolicPreferenceIL2 = parameters.getDouble(&quot;metabolism/META_PREF_IL2&quot;);</span>
+<span class="fc" id="L131">        metabolicPreferenceActive = parameters.getDouble(&quot;metabolism/META_PREF_ACTIVE&quot;);</span>
+<span class="fc" id="L132">        glucoseUptakeRateIL2 = parameters.getDouble(&quot;metabolism/GLUC_UPTAKE_RATE_IL2&quot;);</span>
+<span class="fc" id="L133">        glucoseUptakeRateActive = parameters.getDouble(&quot;metabolism/GLUC_UPTAKE_RATE_ACTIVE&quot;);</span>
+<span class="fc" id="L134">        minimumMassFractionActive = parameters.getDouble(&quot;metabolism/FRAC_MASS_ACTIVE&quot;);</span>
+<span class="fc" id="L135">        timeDelay = (int) parameters.getDouble(&quot;metabolism/META_SWITCH_DELAY&quot;);</span>
+
+<span class="fc" id="L137">        intAmts = new double[2];</span>
+<span class="fc" id="L138">        intAmts[GLUCOSE] =</span>
+<span class="fc" id="L139">                parameters.getDouble(&quot;metabolism/INITIAL_GLUCOSE_CONCENTRATION&quot;) * volume;</span>
+<span class="fc" id="L140">        intAmts[PYRUVATE] = intAmts[GLUCOSE] * PYRU_PER_GLUC;</span>
+<span class="fc" id="L141">    }</span>
+
+    @Override
+    void stepProcess(MersenneTwisterFast random, Simulation sim) {
+<span class="fc" id="L145">        double glucInt = intAmts[GLUCOSE]; // [fmol]</span>
+<span class="fc" id="L146">        double pyruInt = intAmts[PYRUVATE]; // [fmol]</span>
+<span class="fc" id="L147">        double glucExt = extAmts[GLUCOSE]; // [fmol]</span>
+<span class="fc" id="L148">        double oxyExt = extAmts[OXYGEN]; // [fmol]</span>
+
+<span class="fc" id="L150">        PatchProcessInflammation inflammation =</span>
+<span class="fc" id="L151">                (PatchProcessInflammation) cell.getProcess(Domain.INFLAMMATION);</span>
+<span class="fc" id="L152">        double[] boundArray = inflammation.boundArray; // [molecules]</span>
+<span class="fc" id="L153">        int iL2Ticker = inflammation.iL2Ticker;</span>
+<span class="fc" id="L154">        double iL2ReceptorsTotal = inflammation.iL2Receptors;</span>
+
+<span class="fc" id="L156">        int metaIndex = (iL2Ticker % boundArray.length) - timeDelay;</span>
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">        if (metaIndex &lt; 0) {</span>
+<span class="fc" id="L158">            metaIndex += boundArray.length;</span>
+        }
+<span class="fc" id="L160">        double priorIL2meta = boundArray[metaIndex];</span>
+
+        // Calculate metabolic preference and glucose uptake rate
+        // as a function of base values plus impact of IL-2 bound to surface.
+<span class="fc" id="L164">        double metabolicPreference =</span>
+                metaPref + (metabolicPreferenceIL2 * (priorIL2meta / iL2ReceptorsTotal));
+<span class="fc" id="L166">        double glucoseUptakeRate =</span>
+                glucUptakeRate + (glucoseUptakeRateIL2 * (priorIL2meta / iL2ReceptorsTotal));
+<span class="fc" id="L168">        double minimumMassFraction = fracMass;</span>
+
+<span class="fc" id="L170">        active = ((PatchCellCART) cell).getActivationStatus();</span>
+<span class="fc" id="L171">        double activeTicker = inflammation.activeTicker;</span>
+
+        // Add metabolic preference and glucose uptake rate dependent on
+        // antigen-induced cell activation if cell is activated.
+<span class="fc bfc" id="L175" title="All 4 branches covered.">        if (active &amp;&amp; activeTicker &gt;= timeDelay) {</span>
+<span class="fc" id="L176">            metabolicPreference += metabolicPreferenceActive;</span>
+<span class="fc" id="L177">            glucoseUptakeRate += glucoseUptakeRateActive;</span>
+<span class="fc" id="L178">            minimumMassFraction += minimumMassFractionActive;</span>
+        }
+
+        // Take up glucose from environment, relative to glucose gradient.
+        // If agent shares location with other agents, occupied area for
+        // calculating surface area is limited by the number of neighbors.
+<span class="fc" id="L184">        double area = location.getArea() * f;</span>
+<span class="fc" id="L185">        double surfaceArea = area * 2 + (volume / area) * location.getPerimeter(f);</span>
+<span class="fc" id="L186">        double glucGrad = (glucExt / location.getVolume()) - (glucInt / volume);</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">        glucGrad *= glucGrad &lt; 1E-10 ? 0 : 1;</span>
+<span class="fc" id="L188">        double glucUptake = glucoseUptakeRate * surfaceArea * glucGrad;</span>
+<span class="fc" id="L189">        glucInt += glucUptake;</span>
+
+        // Determine energy requirement given current type in terms of glucose.
+        // Additional energy needed for cell that is migrating or proliferating.
+        // Arrays indicate oxidative phosphorylation (0) and glycolysis (1).
+<span class="fc" id="L194">        double[] energyGen = {0, 0};</span>
+<span class="fc" id="L195">        double glucReq = metabolicPreference * energyReq / ENERGY_FROM_GLYC;</span>
+<span class="fc" id="L196">        double pyruReq = (1 - metabolicPreference) * energyReq / ENERGY_FROM_OXPHOS;</span>
+
+        // Calculate oxygen required and take up from environment.
+<span class="fc" id="L199">        double oxyReq = pyruReq * OXY_PER_PYRU;</span>
+<span class="fc" id="L200">        double oxyUptake = Math.min(oxyExt, oxyReq);</span>
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">        oxyUptake *= oxyUptake &lt; 1E-10 ? 0 : 1;</span>
+
+        // Perform oxidative phosphorylation using internal pyruvate.
+<span class="fc" id="L204">        double oxyUptakeInPyru = oxyUptake / OXY_PER_PYRU;</span>
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">        if (pyruInt &gt; oxyUptakeInPyru) {</span>
+<span class="fc" id="L206">            energyGen[0] += oxyUptakeInPyru * ENERGY_FROM_OXPHOS; // add energy</span>
+<span class="fc" id="L207">            pyruInt -= oxyUptakeInPyru; // use up internal pyruvate</span>
+        } else {
+<span class="nc" id="L209">            energyGen[0] += pyruInt * ENERGY_FROM_OXPHOS; // add energy</span>
+<span class="nc" id="L210">            oxyUptake = pyruInt * OXY_PER_PYRU; // return unused oxygen</span>
+<span class="nc" id="L211">            pyruInt = 0.0; // use up internal pyruvate</span>
+        }
+
+        // Check if more glucose needs to be diverted to compensate for energy
+        // deficit (from not enough oxygen) and is available.
+<span class="pc bpc" id="L216" title="1 of 4 branches missed.">        if (energy &lt;= 0 &amp;&amp; glucInt &gt; 0) {</span>
+<span class="fc" id="L217">            double glucNeeded = -(energy - energyCons + energyGen[0]) / ENERGY_FROM_GLYC;</span>
+<span class="fc" id="L218">            glucReq = Math.max(glucReq, glucNeeded);</span>
+        }
+
+        // Perform glycolysis. Internal glucose is converted to internal pyruvate
+        // which is used in oxidative phosphorylation or to increase mass.
+<span class="fc bfc" id="L223" title="All 2 branches covered.">        if (glucInt &gt; glucReq) {</span>
+<span class="fc" id="L224">            energyGen[1] += glucReq * ENERGY_FROM_GLYC;</span>
+<span class="fc" id="L225">            pyruInt += glucReq * PYRU_PER_GLUC; // increase internal pyruvate</span>
+<span class="fc" id="L226">            glucInt -= glucReq; // use up internal glucose</span>
+        } else {
+<span class="fc" id="L228">            energyGen[1] += glucInt * ENERGY_FROM_GLYC;</span>
+<span class="fc" id="L229">            pyruInt += glucInt * PYRU_PER_GLUC; // increase internal pyruvate</span>
+<span class="fc" id="L230">            glucInt = 0.0; // use up all internal glucose</span>
+        }
+
+<span class="fc" id="L233">        energy += energyGen[0];</span>
+<span class="fc" id="L234">        energy += energyGen[1];</span>
+<span class="fc" id="L235">        energy -= energyCons;</span>
+<span class="pc bpc" id="L236" title="1 of 2 branches missed.">        energy *= Math.abs(energy) &lt; 1E-10 ? 0 : 1;</span>
+
+        // Increase mass if (i) dividing and less than double mass or (ii)
+        // below critical mass for maintenance.
+<span class="pc bpc" id="L240" title="6 of 10 branches missed.">        if ((energy &gt;= 0 &amp;&amp; isProliferative &amp;&amp; mass &lt; 2 * critMass)</span>
+                || (energy &gt;= 0 &amp;&amp; mass &lt; 0.99 * critMass)) {
+<span class="nc" id="L242">            mass +=</span>
+                    conversionFraction
+                            * (ratioGlucosePyruvate * glucInt
+                                    + (1 - ratioGlucosePyruvate) * pyruInt / PYRU_PER_GLUC)
+                            / ratioGlucoseBiomass;
+<span class="nc" id="L247">            glucInt *= (1 - conversionFraction * ratioGlucosePyruvate);</span>
+<span class="nc" id="L248">            pyruInt *= (1 - conversionFraction * (1 - ratioGlucosePyruvate));</span>
+        }
+
+        // Decrease mass through autophagy if (i) negative energy indicating
+        // not enough nutrients or (ii) above critical mass for maintenance
+<span class="pc bpc" id="L253" title="6 of 10 branches missed.">        if ((energy &lt; 0 &amp;&amp; mass &gt; minimumMassFraction * critMass)</span>
+                || (energy &gt;= 0 &amp;&amp; mass &gt; 1.01 * critMass &amp;&amp; !isProliferative)) {
+<span class="fc" id="L255">            mass -= autophagyRate;</span>
+<span class="fc" id="L256">            glucInt += autophagyRate * ratioGlucoseBiomass;</span>
+        }
+
+<span class="fc" id="L259">        volume = mass / cellDensity;</span>
+
+        // Convert internal pyruvate to lactate (i.e. remove pyruvate).
+<span class="fc" id="L262">        pyruInt -= lactateRate * pyruInt;</span>
+
+        // Reset values.
+<span class="fc" id="L265">        intAmts[GLUCOSE] = glucInt;</span>
+<span class="fc" id="L266">        upAmts[GLUCOSE] = glucUptake;</span>
+<span class="fc" id="L267">        upAmts[OXYGEN] = oxyUptake;</span>
+<span class="fc" id="L268">        intAmts[PYRUVATE] = pyruInt;</span>
+<span class="fc" id="L269">    }</span>
+
+    @Override
+    public void update(Process process) {
+<span class="fc" id="L273">        PatchProcessMetabolismCART metabolism = (PatchProcessMetabolismCART) process;</span>
+<span class="fc" id="L274">        double split = this.cell.getVolume() / this.volume;</span>
+
+        // Update daughter cell metabolism as fraction of parent.
+<span class="fc" id="L277">        this.energy = metabolism.energy * f;</span>
+<span class="fc" id="L278">        this.intAmts[GLUCOSE] = metabolism.intAmts[GLUCOSE] * split;</span>
+<span class="fc" id="L279">        this.intAmts[PYRUVATE] = metabolism.intAmts[PYRUVATE] * split;</span>
+
+        // Update parent cell with remaining fraction.
+<span class="fc" id="L282">        metabolism.energy *= (1 - split);</span>
+<span class="fc" id="L283">        metabolism.intAmts[GLUCOSE] *= (1 - split);</span>
+<span class="fc" id="L284">        metabolism.intAmts[PYRUVATE] *= (1 - split);</span>
+<span class="fc" id="L285">        metabolism.volume *= (1 - split);</span>
+<span class="fc" id="L286">        metabolism.mass *= (1 - split);</span>
+<span class="fc" id="L287">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

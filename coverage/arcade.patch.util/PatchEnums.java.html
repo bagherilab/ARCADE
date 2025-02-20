@@ -16,81 +16,100 @@ import arcade.core.env.operation.OperationCategory;
  *   &lt;li&gt;{@code Domain} defining domain for a given process
  *   &lt;li&gt;{@code Flag} defining state change flags
  *   &lt;li&gt;{@code Category} defining operation categories
+ *   &lt;li&gt;{@code AntigenFlag} defining cell antigen binding status
  * &lt;/ul&gt;
  */
 public final class PatchEnums {
     /** Hidden utility class constructor. */
-<span class="fc" id="L23">    protected PatchEnums() {</span>
-<span class="fc" id="L24">        throw new UnsupportedOperationException();</span>
+<span class="fc" id="L24">    protected PatchEnums() {</span>
+<span class="fc" id="L25">        throw new UnsupportedOperationException();</span>
     }
 
     /** Stepping order for patch simulations. */
-<span class="nc" id="L28">    public enum Ordering {</span>
+<span class="fc" id="L29">    public enum Ordering {</span>
         /** First stepping order (nothing stepped before). */
-<span class="nc" id="L30">        FIRST,</span>
+<span class="fc" id="L31">        FIRST,</span>
 
         /** Stepping order for first action. */
-<span class="nc" id="L33">        FIRST_ACTION,</span>
+<span class="fc" id="L34">        FIRST_ACTION,</span>
 
         /** Stepping order for actions. */
-<span class="nc" id="L36">        ACTIONS,</span>
+<span class="fc" id="L37">        ACTIONS,</span>
 
         /** Stepping order for last action. */
-<span class="nc" id="L39">        LAST_ACTION,</span>
+<span class="fc" id="L40">        LAST_ACTION,</span>
 
         /** Stepping order for first cell. */
-<span class="nc" id="L42">        FIRST_CELL,</span>
+<span class="fc" id="L43">        FIRST_CELL,</span>
 
         /** Stepping order for cells. */
-<span class="nc" id="L45">        CELLS,</span>
+<span class="fc" id="L46">        CELLS,</span>
 
         /** Stepping order for last cell. */
-<span class="nc" id="L48">        LAST_CELL,</span>
+<span class="fc" id="L49">        LAST_CELL,</span>
 
         /** Stepping order for first component. */
-<span class="nc" id="L51">        FIRST_COMPONENT,</span>
+<span class="fc" id="L52">        FIRST_COMPONENT,</span>
 
         /** Stepping order for components. */
-<span class="nc" id="L54">        COMPONENTS,</span>
+<span class="fc" id="L55">        COMPONENTS,</span>
 
         /** Stepping order for last component. */
-<span class="nc" id="L57">        LAST_COMPONENT,</span>
+<span class="fc" id="L58">        LAST_COMPONENT,</span>
 
         /** Stepping order for first lattice. */
-<span class="nc" id="L60">        FIRST_LATTICE,</span>
+<span class="fc" id="L61">        FIRST_LATTICE,</span>
 
         /** Stepping order for lattices. */
-<span class="nc" id="L63">        LATTICES,</span>
+<span class="fc" id="L64">        LATTICES,</span>
 
         /** Stepping order for last lattice. */
-<span class="nc" id="L66">        LAST_LATTICE,</span>
+<span class="fc" id="L67">        LAST_LATTICE,</span>
 
         /** Last stepping order (nothing stepped after). */
-<span class="nc" id="L69">        LAST,</span>
+<span class="fc" id="L70">        LAST,</span>
     }
 
     /** Cell state codes for patch simulations. */
-<span class="fc" id="L73">    public enum State implements CellState {</span>
+<span class="fc" id="L74">    public enum State implements CellState {</span>
         /** Code for undefined state. */
-<span class="fc" id="L75">        UNDEFINED,</span>
+<span class="fc" id="L76">        UNDEFINED,</span>
 
         /** Code for quiescent cells. */
-<span class="fc" id="L78">        QUIESCENT,</span>
+<span class="fc" id="L79">        QUIESCENT,</span>
 
         /** Code for proliferative cells. */
-<span class="fc" id="L81">        PROLIFERATIVE,</span>
+<span class="fc" id="L82">        PROLIFERATIVE,</span>
 
         /** Code for migratory cells. */
-<span class="fc" id="L84">        MIGRATORY,</span>
+<span class="fc" id="L85">        MIGRATORY,</span>
 
         /** Code for apoptotic cells. */
-<span class="fc" id="L87">        APOPTOTIC,</span>
+<span class="fc" id="L88">        APOPTOTIC,</span>
 
         /** Code for necrotic cells. */
-<span class="fc" id="L90">        NECROTIC,</span>
+<span class="fc" id="L91">        NECROTIC,</span>
+
+        /** Code for stimulatory cells. */
+<span class="fc" id="L94">        STIMULATORY,</span>
+
+        /** Code for cytotoxic cells. */
+<span class="fc" id="L97">        CYTOTOXIC,</span>
+
+        /** Code for paused cells. */
+<span class="fc" id="L100">        PAUSED,</span>
+
+        /** Code for exhausted cells. */
+<span class="fc" id="L103">        EXHAUSTED,</span>
+
+        /** Code for anergic cells. */
+<span class="fc" id="L106">        ANERGIC,</span>
+
+        /** Code for starved cells. */
+<span class="fc" id="L109">        STARVED,</span>
 
         /** Code for senescent cells. */
-<span class="fc" id="L93">        SENESCENT;</span>
+<span class="fc" id="L112">        SENESCENT;</span>
 
         /**
          * Randomly selects a {@code State}.
@@ -99,20 +118,23 @@ public final class PatchEnums {
          * @return a random {@code State}
          */
         public static State random(MersenneTwisterFast rng) {
-<span class="fc" id="L102">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+<span class="fc" id="L121">            return values()[rng.nextInt(values().length - 1) + 1];</span>
         }
     }
 
     /** Process domain codes for patch simulations. */
-<span class="fc" id="L107">    public enum Domain implements ProcessDomain {</span>
+<span class="fc" id="L126">    public enum Domain implements ProcessDomain {</span>
         /** Code for undefined domain. */
-<span class="fc" id="L109">        UNDEFINED,</span>
+<span class="fc" id="L128">        UNDEFINED,</span>
 
         /** Code for metabolism domain. */
-<span class="fc" id="L112">        METABOLISM,</span>
+<span class="fc" id="L131">        METABOLISM,</span>
+
+        /** Code for inflammation domain. */
+<span class="fc" id="L134">        INFLAMMATION,</span>
 
         /** Code for signaling domain. */
-<span class="fc" id="L115">        SIGNALING;</span>
+<span class="fc" id="L137">        SIGNALING;</span>
 
         /**
          * Randomly selects a {@code Domain}.
@@ -121,20 +143,20 @@ public final class PatchEnums {
          * @return a random {@code Domain}
          */
         public static Domain random(MersenneTwisterFast rng) {
-<span class="nc" id="L124">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+<span class="fc" id="L146">            return values()[rng.nextInt(values().length - 1) + 1];</span>
         }
     }
 
     /** State change flags for patch simulations. */
-<span class="fc" id="L129">    public enum Flag {</span>
+<span class="fc" id="L151">    public enum Flag {</span>
         /** Code for undefined flag. */
-<span class="fc" id="L131">        UNDEFINED,</span>
+<span class="fc" id="L153">        UNDEFINED,</span>
 
         /** Code for proliferative flag. */
-<span class="fc" id="L134">        PROLIFERATIVE,</span>
+<span class="fc" id="L156">        PROLIFERATIVE,</span>
 
         /** Code for migratory flag. */
-<span class="fc" id="L137">        MIGRATORY;</span>
+<span class="fc" id="L159">        MIGRATORY;</span>
 
         /**
          * Randomly selects a {@code Flag}.
@@ -143,20 +165,48 @@ public final class PatchEnums {
          * @return a random {@code Flag}
          */
         public static Flag random(MersenneTwisterFast rng) {
-<span class="fc" id="L146">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+<span class="fc" id="L168">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+        }
+    }
+
+    /** Antigen binding for CART simulations. */
+<span class="fc" id="L173">    public enum AntigenFlag {</span>
+        /** Code for undefined flag. */
+<span class="fc" id="L175">        UNDEFINED,</span>
+
+        /** Code for cell bound to antigen. */
+<span class="fc" id="L178">        BOUND_ANTIGEN,</span>
+
+        /** Code for cell bound to self. */
+<span class="fc" id="L181">        BOUND_CELL_RECEPTOR,</span>
+
+        /** Code for cell bound to self and antigen. */
+<span class="fc" id="L184">        BOUND_ANTIGEN_CELL_RECEPTOR,</span>
+
+        /** Code for cell bound to nothing. */
+<span class="fc" id="L187">        UNBOUND;</span>
+
+        /**
+         * Randomly selects a {@code AntigenFlag}.
+         *
+         * @param rng the random number generator
+         * @return a random {@code AntigenFlag}
+         */
+        public static AntigenFlag random(MersenneTwisterFast rng) {
+<span class="fc" id="L196">            return values()[rng.nextInt(values().length - 1) + 1];</span>
         }
     }
 
     /** Operation category codes for patch simulations. */
-<span class="nc" id="L151">    public enum Category implements OperationCategory {</span>
+<span class="fc" id="L201">    public enum Category implements OperationCategory {</span>
         /** Code for undefined category. */
-<span class="nc" id="L153">        UNDEFINED,</span>
+<span class="fc" id="L203">        UNDEFINED,</span>
 
         /** Code for metabolism category. */
-<span class="nc" id="L156">        DIFFUSER,</span>
+<span class="fc" id="L206">        DIFFUSER,</span>
 
         /** Code for signaling category. */
-<span class="nc" id="L159">        GENERATOR;</span>
+<span class="fc" id="L209">        GENERATOR;</span>
 
         /**
          * Randomly selects a {@code Category}.
@@ -165,7 +215,7 @@ public final class PatchEnums {
          * @return a random {@code Operation}
          */
         public static Category random(MersenneTwisterFast rng) {
-<span class="nc" id="L168">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+<span class="fc" id="L218">            return values()[rng.nextInt(values().length - 1) + 1];</span>
         }
     }
 }

@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchProcessInflammation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.agent.process</a> &gt; <span class="el_source">PatchProcessInflammation.java</span></div><h1>PatchProcessInflammation.java</h1><pre class="source lang-java linenums">package arcade.patch.agent.process;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import ec.util.MersenneTwisterFast;
+import arcade.core.env.location.Location;
+import arcade.core.sim.Simulation;
+import arcade.core.util.Parameters;
+import arcade.core.util.Solver;
+import arcade.core.util.Solver.Equations;
+import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.agent.cell.PatchCellCART;
+import arcade.patch.env.lattice.PatchLattice;
+
+/**
+ * Implementation of {@link Process} for inflammation type modules in which IL-2 is taken up and
+ * cytotoxic/stimulatory functions are modified.
+ *
+ * &lt;p&gt;The {@code Inflammation} module represents an 8-component signaling network.
+ */
+public abstract class PatchProcessInflammation extends PatchProcess {
+
+    /** Number of components in signaling network. */
+    protected static final int NUM_COMPONENTS = 8;
+
+    /** ID for IL-2, bound total. */
+    protected static final int IL2_INT_TOTAL = 0;
+
+    /** ID for IL-2, external. */
+    protected static final int IL2_EXT = 1;
+
+    /** ID for IL-2 receptors, total between both two and three chain complex. */
+    protected static final int IL2R_TOTAL = 2;
+
+    /** ID for two-chain IL-2 receptor complex. */
+    protected static final int IL2RBG = 3;
+
+    /** ID for three-chain IL-2 receptor complex. */
+    protected static final int IL2RBGA = 4;
+
+    /** ID for IL-2-two-chain IL-2 receptor complex. */
+    protected static final int IL2_IL2RBG = 5;
+
+    /** ID for IL-2-three-chain IL-2 receptor complex. */
+    protected static final int IL2_IL2RBGA = 6;
+
+    /** ID for granzyme, internal. */
+    protected static final int GRANZYME = 7;
+
+    /** Number of steps per second to take in ODE. */
+    private static final double STEP_DIVIDER = 3.0;
+
+    /**
+     * Rate of conversion of IL-2R two-chain complex to IL-2R three chain complex [/sec/step
+     * divider].
+     */
+    private static final double K_CONVERT = 1e-3 / STEP_DIVIDER;
+
+    /**
+     * Rate of recycling of receptor complexes back to IL-2 receptor two chain complex [/sec/step
+     * divider].
+     */
+    private static final double K_REC = 1e-5 / STEP_DIVIDER;
+
+    /** Rate of IL-2 binding to two-chain IL-2 receptor complex [um^3/molecules IL-2/min]. */
+<span class="fc" id="L67">    private double iL2BindingMin = 3.8193E-2;</span>
+
+    /** Rate of IL-2 binding to three-chain IL-2 receptor complex [um^3/molecules IL-2/min]. */
+<span class="fc" id="L70">    private double iL2BindingMax = 3.155;</span>
+
+    /** Rate of unbinding of IL-2 from two- or three- chain IL-2 receptor complex [/min]. */
+<span class="fc" id="L73">    private double iL2BindingOffRate = 0.015;</span>
+
+    /** Step size for module (in seconds). */
+    static final double STEP_SIZE = 1.0 / STEP_DIVIDER;
+
+    /** Location of cell. */
+    protected Location loc;
+
+    /** Cell the module is associated with. */
+    protected PatchCellCART cell;
+
+    /** Cell population index. */
+    protected int pop;
+
+    /** List of internal names. */
+    protected List&lt;String&gt; names;
+
+    /** List of amounts of each species. */
+    protected double[] amts;
+
+    /** External IL-2 [molecules]. */
+    protected double extIL2;
+
+    /** Shell around cell volume fraction. */
+    protected double fraction;
+
+    /** Volume of cell [um&lt;sup&gt;3&lt;/sup&gt;]. */
+    protected double volume;
+
+    /** Flag marking if cell is activated via antigen-induced activation. */
+    protected boolean active;
+
+    /** Time since cell first bound IL-2 . */
+    protected int iL2Ticker;
+
+    /** Time since cell became activated via antigen-induced activation. */
+    protected int activeTicker;
+
+    /** List of amounts of IL-2 bound to cell at previous time points. */
+    protected double[] boundArray;
+
+    /** Distance outward from surface a cell can sense. */
+    protected final double shellThickness;
+
+    /** Total 2-complex receptors. */
+    protected final double iL2Receptors;
+
+    /**
+     * Creates an {@code Inflammation} module for the given {@link PatchCellCART}.
+     *
+     * &lt;p&gt;Module parameters are specific for the cell population. The module starts with no IL-2
+     * bound and no three-chain receptors. Daughter cells split amounts of bound IL-2 and
+     * three-chain receptors upon dividing.
+     *
+     * @param c the {@link PatchCellCART} the module is associated with
+     */
+    public PatchProcessInflammation(PatchCellCART c) {
+<span class="fc" id="L130">        super(c);</span>
+<span class="fc" id="L131">        this.loc = c.getLocation();</span>
+<span class="fc" id="L132">        this.cell = c;</span>
+<span class="fc" id="L133">        this.pop = c.getPop();</span>
+<span class="fc" id="L134">        this.volume = c.getVolume();</span>
+<span class="fc" id="L135">        this.iL2Ticker = 0;</span>
+<span class="fc" id="L136">        this.activeTicker = 0;</span>
+
+<span class="fc" id="L138">        Parameters parameters = cell.getParameters();</span>
+<span class="fc" id="L139">        this.shellThickness = parameters.getDouble(&quot;inflammation/SHELL_THICKNESS&quot;);</span>
+<span class="fc" id="L140">        this.iL2Receptors = parameters.getDouble(&quot;inflammation/IL2_RECEPTORS&quot;);</span>
+<span class="fc" id="L141">        extIL2 = 0;</span>
+
+<span class="fc" id="L143">        amts = new double[NUM_COMPONENTS];</span>
+<span class="fc" id="L144">        amts[IL2_INT_TOTAL] = 0;</span>
+<span class="fc" id="L145">        amts[IL2R_TOTAL] = iL2Receptors;</span>
+<span class="fc" id="L146">        amts[IL2RBG] = iL2Receptors;</span>
+<span class="fc" id="L147">        amts[IL2RBGA] = 0;</span>
+<span class="fc" id="L148">        amts[IL2_IL2RBG] = 0;</span>
+<span class="fc" id="L149">        amts[IL2_IL2RBGA] = 0;</span>
+
+<span class="fc" id="L151">        names = new ArrayList&lt;String&gt;();</span>
+<span class="fc" id="L152">        names.add(IL2_INT_TOTAL, &quot;IL-2&quot;);</span>
+<span class="fc" id="L153">        names.add(IL2_EXT, &quot;external_IL-2&quot;);</span>
+<span class="fc" id="L154">        names.add(IL2R_TOTAL, &quot;IL2R_total&quot;);</span>
+<span class="fc" id="L155">        names.add(IL2RBG, &quot;IL2R_two_chain_complex&quot;);</span>
+<span class="fc" id="L156">        names.add(IL2RBGA, &quot;IL2R_three_chain_complex&quot;);</span>
+<span class="fc" id="L157">        names.add(IL2_IL2RBG, &quot;IL-2_IL2R_two_chain_complex&quot;);</span>
+<span class="fc" id="L158">        names.add(IL2_IL2RBGA, &quot;IL-2_IL2R_three_chain_complex&quot;);</span>
+
+        // Initialize prior IL2 array.
+<span class="fc" id="L161">        this.boundArray = new double[180];</span>
+<span class="fc" id="L162">    }</span>
+
+    /** System of ODEs for network. */
+<span class="fc" id="L165">    Equations equations =</span>
+            (Equations &amp; Serializable)
+                    (t, y) -&gt; {
+<span class="nc" id="L168">                        double[] dydt = new double[NUM_COMPONENTS];</span>
+
+<span class="nc" id="L170">                        double kOn2 = iL2BindingMin / loc.getVolume() / 60 / STEP_DIVIDER;</span>
+<span class="nc" id="L171">                        double kOn3 = iL2BindingMax / loc.getVolume() / 60 / STEP_DIVIDER;</span>
+<span class="nc" id="L172">                        double kOff = iL2BindingOffRate / 60 / STEP_DIVIDER;</span>
+
+<span class="nc" id="L174">                        dydt[IL2_EXT] =</span>
+                                kOff * y[IL2_IL2RBG]
+                                        + kOff * y[IL2_IL2RBGA]
+                                        - kOn2 * y[IL2RBG] * y[IL2_EXT]
+                                        - kOn3 * y[IL2RBGA] * y[IL2_EXT];
+<span class="nc" id="L179">                        dydt[IL2RBG] =</span>
+                                kOff * y[IL2_IL2RBG]
+                                        - kOn2 * y[IL2RBG] * y[IL2_EXT]
+                                        - K_CONVERT * (y[IL2_IL2RBG] + y[IL2_IL2RBGA]) * y[IL2RBG]
+                                        + K_REC * (y[IL2_IL2RBG] + y[IL2_IL2RBGA] + y[IL2RBGA]);
+<span class="nc" id="L184">                        dydt[IL2RBGA] =</span>
+                                kOff * y[IL2_IL2RBGA]
+                                        - kOn3 * y[IL2RBGA] * y[IL2_EXT]
+                                        + K_CONVERT * (y[IL2_IL2RBG] + y[IL2_IL2RBGA]) * y[IL2RBG]
+                                        - K_REC * y[IL2RBGA];
+<span class="nc" id="L189">                        dydt[IL2_IL2RBG] =</span>
+                                kOn2 * y[IL2RBG] * y[IL2_EXT]
+                                        - kOff * y[IL2_IL2RBG]
+                                        - K_CONVERT
+                                                * (y[IL2_IL2RBG] + y[IL2_IL2RBGA])
+                                                * y[IL2_IL2RBG]
+                                        - K_REC * y[IL2_IL2RBG];
+<span class="nc" id="L196">                        dydt[IL2_IL2RBGA] =</span>
+                                kOn3 * y[IL2RBGA] * y[IL2_EXT]
+                                        - kOff * y[IL2_IL2RBGA]
+                                        + K_CONVERT
+                                                * (y[IL2_IL2RBG] + y[IL2_IL2RBGA])
+                                                * y[IL2_IL2RBG]
+                                        - K_REC * y[IL2_IL2RBGA];
+<span class="nc" id="L203">                        dydt[IL2_INT_TOTAL] =</span>
+                                kOn2 * y[IL2RBG] * y[IL2_EXT]
+                                        - kOff * y[IL2_IL2RBG]
+                                        - K_CONVERT
+                                                * (y[IL2_IL2RBG] + y[IL2_IL2RBGA])
+                                                * y[IL2_IL2RBG]
+                                        - K_REC * y[IL2_IL2RBG]
+                                        + kOn3 * y[IL2RBGA] * y[IL2_EXT]
+                                        - kOff * y[IL2_IL2RBGA]
+                                        + K_CONVERT
+                                                * (y[IL2_IL2RBG] + y[IL2_IL2RBGA])
+                                                * y[IL2_IL2RBG]
+                                        - K_REC * y[IL2_IL2RBGA];
+<span class="nc" id="L216">                        dydt[IL2R_TOTAL] =</span>
+                                kOff * y[IL2_IL2RBG]
+                                        - kOn2 * y[IL2RBG] * y[IL2_EXT]
+                                        - K_CONVERT * (y[IL2_IL2RBG] + y[IL2_IL2RBGA]) * y[IL2RBG]
+                                        + K_REC * (y[IL2_IL2RBG] + y[IL2_IL2RBGA] + y[IL2RBGA])
+                                        + kOff * y[IL2_IL2RBGA]
+                                        - kOn3 * y[IL2RBGA] * y[IL2_EXT]
+                                        + K_CONVERT * (y[IL2_IL2RBG] + y[IL2_IL2RBGA]) * y[IL2RBG]
+                                        - K_REC * y[IL2RBGA];
+
+<span class="nc" id="L226">                        return dydt;</span>
+                    };
+
+    /**
+     * Gets the internal amounts of requested key.
+     *
+     * @param key the requested substance
+     * @return the internal cell amount of requested substance
+     */
+    public double getInternal(String key) {
+<span class="fc" id="L236">        return amts[names.indexOf(key)];</span>
+    }
+
+    /**
+     * Sets the internal amounts of requested key.
+     *
+     * @param key the requested substance
+     * @param val the amount of the requested substance
+     */
+    public void setInternal(String key, double val) {
+<span class="fc" id="L246">        amts[names.indexOf(key)] = val;</span>
+<span class="fc" id="L247">    }</span>
+
+    /**
+     * Steps the metabolism process.
+     *
+     * @param random the random number generator
+     * @param sim the simulation instance
+     */
+    abstract void stepProcess(MersenneTwisterFast random, Simulation sim);
+
+    /**
+     * Gets the external amounts of IL-2.
+     *
+     * &lt;p&gt;Multiply by location volume and divide by 1E12 to convert from cm&lt;sup&gt;3&lt;/sup&gt; to
+     * um&lt;sup&gt;3&lt;/sup&gt; to get in molecules.
+     *
+     * @param sim the simulation instance
+     */
+    private void updateExternal(Simulation sim) {
+        // Convert to molecules.
+<span class="nc" id="L267">        PatchLattice il2 = (PatchLattice) sim.getLattice(&quot;IL-2&quot;);</span>
+<span class="nc" id="L268">        extIL2 = il2.getAverageValue(loc) * loc.getVolume() / 1E12;</span>
+<span class="nc" id="L269">    }</span>
+
+    @Override
+    public void step(MersenneTwisterFast random, Simulation sim) {
+        // Calculate shell volume 2 um outside of cell.
+<span class="nc" id="L274">        double radCell = Math.cbrt((3.0 / 4.0) * (1.0 / Math.PI) * volume);</span>
+<span class="nc" id="L275">        double radShell = radCell + shellThickness;</span>
+<span class="nc" id="L276">        double volShell =</span>
+                volume * (((radShell * radShell * radShell) / (radCell * radCell * radCell)) - 1.0);
+<span class="nc" id="L278">        fraction = volShell / loc.getVolume();</span>
+<span class="nc" id="L279">        updateExternal(sim);</span>
+
+<span class="nc" id="L281">        active = cell.getActivationStatus();</span>
+<span class="nc bnc" id="L282" title="All 2 branches missed.">        if (active) {</span>
+<span class="nc" id="L283">            activeTicker++;</span>
+        } else {
+<span class="nc" id="L285">            activeTicker = 0;</span>
+        }
+
+        // Calculate external IL-2 used in inflammation module.
+        // Local IL-2 total available to cell is fraction of total available
+        // where that fraction is the relative volume fraction the cell occupies
+        // in the location.
+<span class="nc" id="L292">        amts[IL2_EXT] = extIL2 * fraction; // [molecules]</span>
+
+<span class="nc" id="L294">        amts = Solver.rungeKutta(equations, 0, amts, 60, STEP_SIZE);</span>
+
+<span class="nc" id="L296">        stepProcess(random, sim);</span>
+
+<span class="nc" id="L298">        boundArray[iL2Ticker % boundArray.length] = amts[IL2_INT_TOTAL];</span>
+<span class="nc" id="L299">        iL2Ticker++;</span>
+<span class="nc" id="L300">    }</span>
+
+    /**
+     * Creates a {@code PatchProcessInflammation} for given version.
+     *
+     * @param cell the {@link PatchCellCART} the process is associated with
+     * @param version the process version
+     * @return the process instance
+     */
+    public static PatchProcess make(PatchCell cell, String version) {
+<span class="nc bnc" id="L310" title="All 3 branches missed.">        switch (version.toUpperCase()) {</span>
+            case &quot;CD4&quot;:
+<span class="nc" id="L312">                throw new UnsupportedOperationException();</span>
+            case &quot;CD8&quot;:
+<span class="nc" id="L314">                throw new UnsupportedOperationException();</span>
+            default:
+<span class="nc" id="L316">                return null;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -4,6 +4,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.env.location.PatchLocation;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -36,32 +37,35 @@ public class PatchModuleMigration extends PatchModule {
      * @param cell the {@link PatchCell} the module is associated with
      */
     public PatchModuleMigration(PatchCell cell) {
-<span class="fc" id="L39">        super(cell);</span>
+<span class="fc" id="L40">        super(cell);</span>
 
         // Set loaded parameters.
-<span class="fc" id="L42">        Parameters parameters = cell.getParameters();</span>
-<span class="fc" id="L43">        migrationRate = parameters.getDouble(&quot;migration/MIGRATION_RATE&quot;);</span>
-<span class="fc" id="L44">        movementDuration = Math.round(location.getCoordinateSize() / migrationRate);</span>
-<span class="fc" id="L45">    }</span>
+<span class="fc" id="L43">        Parameters parameters = cell.getParameters();</span>
+<span class="fc" id="L44">        migrationRate = parameters.getDouble(&quot;migration/MIGRATION_RATE&quot;);</span>
+<span class="fc" id="L45">        movementDuration = Math.round(location.getCoordinateSize() / migrationRate);</span>
+<span class="fc" id="L46">    }</span>
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-<span class="nc bnc" id="L49" title="All 2 branches missed.">        if (ticker &gt; movementDuration) {</span>
-<span class="nc" id="L50">            PatchLocation newLocation = cell.selectBestLocation(sim, random);</span>
-
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        if (ticker &gt; movementDuration) {</span>
+<span class="nc" id="L51">            PatchLocation newLocation = cell.selectBestLocation(sim, random);</span>
 <span class="nc bnc" id="L52" title="All 2 branches missed.">            if (newLocation == null) {</span>
-<span class="nc" id="L53">                cell.setState(State.QUIESCENT);</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">                if (cell instanceof PatchCellCART) {</span>
+<span class="nc" id="L54">                    cell.setState(State.PAUSED);</span>
+                } else {
+<span class="nc" id="L56">                    cell.setState(State.QUIESCENT);</span>
+                }
             } else {
-<span class="nc bnc" id="L55" title="All 2 branches missed.">                if (!location.equals(newLocation)) {</span>
-<span class="nc" id="L56">                    sim.getGrid().moveObject(cell, location, newLocation);</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">                if (!location.equals(newLocation)) {</span>
+<span class="nc" id="L60">                    sim.getGrid().moveObject(cell, location, newLocation);</span>
 
                     // TODO: Update environment generator sites.
                 }
-<span class="nc" id="L60">                cell.setState(State.UNDEFINED);</span>
+<span class="nc" id="L64">                cell.setState(State.UNDEFINED);</span>
             }
-<span class="nc" id="L62">        } else {</span>
-<span class="nc" id="L63">            ticker++;</span>
+<span class="nc" id="L66">        } else {</span>
+<span class="nc" id="L67">            ticker++;</span>
         }
-<span class="nc" id="L65">    }</span>
+<span class="nc" id="L69">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
