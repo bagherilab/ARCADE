@@ -47,7 +47,7 @@ public abstract class PatchCellMacrophage extends PatchCell {
     /** Target cell that current macrophage cell is bound to. */
     protected PatchCell boundCell;
 
-    /** Association rate constant for receptor/antigen binding [molecules per second]. */
+    /** Association rate constant for receptor/antigen binding [molecules per minute]. */
     protected double bindingRate;
 
     /** number of synnotch receptors on the macrophage cell surface. */
@@ -85,7 +85,7 @@ public abstract class PatchCellMacrophage extends PatchCell {
         super(container, location, parameters, links);
         this.boundCell = null;
         this.bindingRate =
-                parameters.getDouble("ANTIGEN_BINDING_RATE") * location.getVolume() * 6.022E23;
+                parameters.getDouble("ANTIGEN_BINDING_RATE") * 60 * location.getVolume() * 6.022E23;
         this.synnotchs = parameters.getInt("SYNNOTCH_RECEPTORS");
     }
 
