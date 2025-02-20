@@ -2,6 +2,8 @@ package arcade.patch.agent.cell;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import arcade.patch.agent.process.PatchProcessQuorumSensing;
 import sim.engine.Schedule;
 import sim.engine.Stoppable;
 import sim.util.Bag;
@@ -344,6 +346,8 @@ public abstract class PatchCell implements Cell {
                 return PatchProcessSignaling.make(this, version);
             case INFLAMMATION:
                 return PatchProcessInflammation.make(this, version);
+            case QUORUM:
+                return PatchProcessQuorumSensing.make(this, version);
             case UNDEFINED:
             default:
                 return null;
