@@ -1,12 +1,7 @@
 package arcade.patch.agent.process;
 
 import java.util.List;
-import sim.util.Bag;
-import ec.util.MersenneTwisterFast;
-import arcade.core.env.location.Location;
-import arcade.core.sim.Simulation;
 import arcade.patch.agent.cell.PatchCell;
-import arcade.patch.env.grid.PatchGrid;
 
 public abstract class PatchProcessQuorumSensing extends PatchProcess {
 
