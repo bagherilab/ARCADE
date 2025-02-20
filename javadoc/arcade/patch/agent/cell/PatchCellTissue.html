@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -94,7 +94,7 @@ loadScripts(document, 'script');</script>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>
@@ -145,7 +145,28 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <hr>
 <pre>public class <span class="typeNameLabel">PatchCellTissue</span>
 extends <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a></pre>
-<div class="block">Extension of <a href="PatchCell.html" title="class in arcade.patch.agent.cell"><code>PatchCell</code></a> for healthy tissue cells.</div>
+<div class="block">Extension of <a href="PatchCell.html" title="class in arcade.patch.agent.cell"><code>PatchCell</code></a> for healthy tissue cells. *
+
+ <p><code>PatchCellTissue</code> agents exist in one of seven states: undefined, apoptotic, quiescent,
+ migratory, proliferative, senescent, and necrotic. The undefined state is a transition state for
+ "undecided" cells, and does not have any biological analog.
+
+ <p><code>PatchCellTissue</code> agents have two required <code>Process</code> domains: metabolism and
+ signaling. Metabolism controls changes in cell energy and volume. Signaling controls the
+ proliferative vs. migratory decision.
+
+ <p>General order of rules for the <code>PatchCellTissue</code> step:
+
+ <ul>
+   <li>update age
+   <li>check lifespan (possible change to apoptotic)
+   <li>step metabolism process
+   <li>check energy status (possible change to quiescent or necrotic depending on <code>
+       ENERGY_THRESHOLD</code>)
+   <li>step signaling process
+   <li>check if neutral (change to proliferative, migratory, senescent)
+   <li>step state-specific module
+ </ul></div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../serialized-form.html#arcade.patch.agent.cell.PatchCellTissue">Serialized Form</a></dd>
@@ -163,12 +184,34 @@ extends <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchC
 <!--   -->
 </a>
 <h3>Field Summary</h3>
+<table class="memberSummary">
+<caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Field</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#carAntigens">carAntigens</a></span></code></th>
+<td class="colLast">
+<div class="block">Cell surface antigen count.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#selfTargets">selfTargets</a></span></code></th>
+<td class="colLast">
+<div class="block">Cell surface PDL1 count.</div>
+</td>
+</tr>
+</table>
 <ul class="blockList">
 <li class="blockList"><a id="fields.inherited.from.class.arcade.patch.agent.cell.PatchCell">
 <!--   -->
 </a>
 <h3>Fields inherited from class&nbsp;arcade.patch.agent.cell.<a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a></h3>
-<code><a href="PatchCell.html#age">age</a>, <a href="PatchCell.html#apoptosisAge">apoptosisAge</a>, <a href="PatchCell.html#criticalHeight">criticalHeight</a>, <a href="PatchCell.html#criticalVolume">criticalVolume</a>, <a href="PatchCell.html#divisions">divisions</a>, <a href="PatchCell.html#height">height</a>, <a href="PatchCell.html#id">id</a>, <a href="PatchCell.html#links">links</a>, <a href="PatchCell.html#location">location</a>, <a href="PatchCell.html#maxDensity">maxDensity</a>, <a href="PatchCell.html#module">module</a>, <a href="PatchCell.html#parameters">parameters</a>, <a href="PatchCell.html#parent">parent</a>, <a href="PatchCell.html#pop">pop</a>, <a href="PatchCell.html#processes">processes</a>, <a href="PatchCell.html#state">state</a>, <a href="PatchCell.html#stopper">stopper</a>, <a href="PatchCell.html#volume">volume</a></code></li>
+<code><a href="PatchCell.html#age">age</a>, <a href="PatchCell.html#apoptosisAge">apoptosisAge</a>, <a href="PatchCell.html#bindingFlag">bindingFlag</a>, <a href="PatchCell.html#criticalHeight">criticalHeight</a>, <a href="PatchCell.html#criticalVolume">criticalVolume</a>, <a href="PatchCell.html#divisions">divisions</a>, <a href="PatchCell.html#energy">energy</a>, <a href="PatchCell.html#energyThreshold">energyThreshold</a>, <a href="PatchCell.html#flag">flag</a>, <a href="PatchCell.html#height">height</a>, <a href="PatchCell.html#id">id</a>, <a href="PatchCell.html#links">links</a>, <a href="PatchCell.html#location">location</a>, <a href="PatchCell.html#maxDensity">maxDensity</a>, <a href="PatchCell.html#module">module</a>, <a href="PatchCell.html#necroticFraction">necroticFraction</a>, <a href="PatchCell.html#parameters">parameters</a>, <a href="PatchCell.html#parent">parent</a>, <a href="PatchCell.html#pop">pop</a>, <a href="PatchCell.html#processes">processes</a>, <a href="PatchCell.html#senescentFraction">senescentFraction</a>, <a href="PatchCell.html#state">state</a>, <a href="PatchCell.html#stopper">stopper</a>, <a href="PatchCell.html#synthesisDuration">synthesisDuration</a>, <a href="PatchCell.html#volume">volume</a></code></li>
 </ul>
 </li>
 </ul>
@@ -222,6 +265,20 @@ extends <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchC
 <th class="colLast" scope="col">Description</th>
 </tr>
 <tr id="i0" class="altColor">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCarAntigens()">getCarAntigens</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Returns the number of CAR antigens on this cell.</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSelfAntigens()">getSelfAntigens</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Returns the number of self receptor antigens on this cell.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
 <td class="colFirst"><code><a href="PatchCellContainer.html" title="class in arcade.patch.agent.cell">PatchCellContainer</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#make(int,arcade.core.agent.cell.CellState,ec.util.MersenneTwisterFast)">make</a></span>&#8203;(int&nbsp;newID,
     <a href="../../../core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;newState,
@@ -230,13 +287,18 @@ extends <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchC
 <div class="block">Creates a new cell container.</div>
 </td>
 </tr>
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#step(sim.engine.SimState)">step</a></span>&#8203;(sim.engine.SimState&nbsp;simstate)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
 </table>
 <ul class="blockList">
 <li class="blockList"><a id="methods.inherited.from.class.arcade.patch.agent.cell.PatchCell">
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;arcade.patch.agent.cell.<a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a></h3>
-<code><a href="PatchCell.html#addCycle(int)">addCycle</a>, <a href="PatchCell.html#calculateTotalVolume(sim.util.Bag)">calculateTotalVolume</a>, <a href="PatchCell.html#checkLocation(arcade.core.sim.Simulation,arcade.patch.env.location.PatchLocation,double,double,int,int)">checkLocation</a>, <a href="PatchCell.html#convert()">convert</a>, <a href="PatchCell.html#findFreeLocations(arcade.core.sim.Simulation)">findFreeLocations</a>, <a href="PatchCell.html#getAge()">getAge</a>, <a href="PatchCell.html#getCriticalHeight()">getCriticalHeight</a>, <a href="PatchCell.html#getCriticalVolume()">getCriticalVolume</a>, <a href="PatchCell.html#getCycles()">getCycles</a>, <a href="PatchCell.html#getDivisions()">getDivisions</a>, <a href="PatchCell.html#getEnergy()">getEnergy</a>, <a href="PatchCell.html#getHeight()">getHeight</a>, <a href="PatchCell.html#getID()">getID</a>, <a href="PatchCell.html#getLocation()">getLocation</a>, <a href="PatchCell.html#getModule()">getModule</a>, <a href="PatchCell.html#getParameters()">getParameters</a>, <a href="PatchCell.html#getParent()">getParent</a>, <a href="PatchCell.html#getPop()">getPop</a>, <a href="PatchCell.html#getProcess(arcade.core.agent.process.ProcessDomain)">getProcess</a>, <a href="PatchCell.html#getState()">getState</a>, <a href="PatchCell.html#getVolume()">getVolume</a>, <a href="PatchCell.html#makeProcess(arcade.core.agent.process.ProcessDomain,java.lang.String)">makeProcess</a>, <a href="PatchCell.html#schedule(sim.engine.Schedule)">schedule</a>, <a href="PatchCell.html#selectBestLocation(arcade.core.sim.Simulation,ec.util.MersenneTwisterFast)">selectBestLocation</a>, <a href="PatchCell.html#setEnergy(double)">setEnergy</a>, <a href="PatchCell.html#setFlag(arcade.patch.util.PatchEnums.Flag)">setFlag</a>, <a href="PatchCell.html#setState(arcade.core.agent.cell.CellState)">setState</a>, <a href="PatchCell.html#setVolume(double)">setVolume</a>, <a href="PatchCell.html#step(sim.engine.SimState)">step</a>, <a href="PatchCell.html#stop()">stop</a></code></li>
+<code><a href="PatchCell.html#addCycle(int)">addCycle</a>, <a href="PatchCell.html#calculateTotalVolume(sim.util.Bag)">calculateTotalVolume</a>, <a href="PatchCell.html#checkLocation(arcade.core.sim.Simulation,arcade.patch.env.location.PatchLocation,double,double,int,int)">checkLocation</a>, <a href="PatchCell.html#convert()">convert</a>, <a href="PatchCell.html#findFreeLocations(arcade.core.sim.Simulation)">findFreeLocations</a>, <a href="PatchCell.html#getAge()">getAge</a>, <a href="PatchCell.html#getBindingFlag()">getBindingFlag</a>, <a href="PatchCell.html#getCriticalHeight()">getCriticalHeight</a>, <a href="PatchCell.html#getCriticalVolume()">getCriticalVolume</a>, <a href="PatchCell.html#getCycles()">getCycles</a>, <a href="PatchCell.html#getDivisions()">getDivisions</a>, <a href="PatchCell.html#getEnergy()">getEnergy</a>, <a href="PatchCell.html#getHeight()">getHeight</a>, <a href="PatchCell.html#getID()">getID</a>, <a href="PatchCell.html#getLocation()">getLocation</a>, <a href="PatchCell.html#getModule()">getModule</a>, <a href="PatchCell.html#getParameters()">getParameters</a>, <a href="PatchCell.html#getParent()">getParent</a>, <a href="PatchCell.html#getPop()">getPop</a>, <a href="PatchCell.html#getProcess(arcade.core.agent.process.ProcessDomain)">getProcess</a>, <a href="PatchCell.html#getState()">getState</a>, <a href="PatchCell.html#getSynthesisDuration()">getSynthesisDuration</a>, <a href="PatchCell.html#getVolume()">getVolume</a>, <a href="PatchCell.html#isStopped()">isStopped</a>, <a href="PatchCell.html#makeProcess(arcade.core.agent.process.ProcessDomain,java.lang.String)">makeProcess</a>, <a href="PatchCell.html#schedule(sim.engine.Schedule)">schedule</a>, <a href="PatchCell.html#selectBestLocation(arcade.core.sim.Simulation,ec.util.MersenneTwisterFast)">selectBestLocation</a>, <a href="PatchCell.html#setBindingFlag(arcade.patch.util.PatchEnums.AntigenFlag)">setBindingFlag</a>, <a href="PatchCell.html#setEnergy(double)">setEnergy</a>, <a href="PatchCell.html#setFlag(arcade.patch.util.PatchEnums.Flag)">setFlag</a>, <a href="PatchCell.html#setState(arcade.core.agent.cell.CellState)">setState</a>, <a href="PatchCell.html#setVolume(double)">setVolume</a>, <a href="PatchCell.html#stop()">stop</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a id="methods.inherited.from.class.java.lang.Object">
@@ -254,6 +316,36 @@ extends <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchC
 <div class="details">
 <ul class="blockList">
 <li class="blockList">
+<!-- ============ FIELD DETAIL =========== -->
+<section>
+<ul class="blockList">
+<li class="blockList"><a id="field.detail">
+<!--   -->
+</a>
+<h3>Field Detail</h3>
+<a id="carAntigens">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>carAntigens</h4>
+<pre>private final&nbsp;int carAntigens</pre>
+<div class="block">Cell surface antigen count.</div>
+</li>
+</ul>
+<a id="selfTargets">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>selfTargets</h4>
+<pre>private final&nbsp;int selfTargets</pre>
+<div class="block">Cell surface PDL1 count.</div>
+</li>
+</ul>
+</li>
+</ul>
+</section>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <section>
 <ul class="blockList">
@@ -312,7 +404,7 @@ extends <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchC
 <a id="make(int,arcade.core.agent.cell.CellState,ec.util.MersenneTwisterFast)">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>make</h4>
 <pre class="methodSignature">public&nbsp;<a href="PatchCellContainer.html" title="class in arcade.patch.agent.cell">PatchCellContainer</a>&nbsp;make&#8203;(int&nbsp;newID,
@@ -327,6 +419,43 @@ extends <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchC
 <dd><code>random</code> - the random number generator</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the new <code>Cell</code> object</dd>
+</dl>
+</li>
+</ul>
+<a id="step(sim.engine.SimState)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>step</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;step&#8203;(sim.engine.SimState&nbsp;simstate)</pre>
+</li>
+</ul>
+<a id="getCarAntigens()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getCarAntigens</h4>
+<pre class="methodSignature">public&nbsp;int&nbsp;getCarAntigens()</pre>
+<div class="block">Returns the number of CAR antigens on this cell.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the number of CAR antigens on this cell.</dd>
+</dl>
+</li>
+</ul>
+<a id="getSelfAntigens()">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>getSelfAntigens</h4>
+<pre class="methodSignature">public&nbsp;int&nbsp;getSelfAntigens()</pre>
+<div class="block">Returns the number of self receptor antigens on this cell.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the number of self receptor antigens on this cell.</dd>
 </dl>
 </li>
 </ul>
@@ -387,7 +516,7 @@ extends <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchC
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>

@@ -262,7 +262,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </dd>
 <dt><a href="../arcade/patch/agent/cell/PatchCell.html" title="class in arcade.patch.agent.cell"><span class="typeNameLink">PatchCell</span></a> - Class in <a href="../arcade/patch/agent/cell/package-summary.html">arcade.patch.agent.cell</a></dt>
 <dd>
-<div class="block">Implementation of <a href="../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell"><code>Cell</code></a> for generic tissue cell.</div>
+<div class="block">Implementation of <a href="../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell"><code>Cell</code></a> for generic cell agent.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCell.html#%3Cinit%3E(arcade.patch.agent.cell.PatchCellContainer,arcade.core.env.location.Location,arcade.core.util.Parameters,arcade.core.util.GrabBag)">PatchCell(PatchCellContainer, Location, Parameters, GrabBag)</a></span> - Constructor for class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a></dt>
 <dd>
@@ -291,6 +291,18 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellCancerStem.html#%3Cinit%3E(arcade.patch.agent.cell.PatchCellContainer,arcade.core.env.location.Location,arcade.core.util.Parameters,arcade.core.util.GrabBag)">PatchCellCancerStem(PatchCellContainer, Location, Parameters, GrabBag)</a></span> - Constructor for class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCancerStem.html" title="class in arcade.patch.agent.cell">PatchCellCancerStem</a></dt>
 <dd>
 <div class="block">Creates a cancer stem <code>PatchCell</code> agent with population links.</div>
+</dd>
+<dt><a href="../arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell"><span class="typeNameLink">PatchCellCART</span></a> - Class in <a href="../arcade/patch/agent/cell/package-summary.html">arcade.patch.agent.cell</a></dt>
+<dd>
+<div class="block">Implementation of <a href="../arcade/patch/agent/cell/PatchCell.html" title="class in arcade.patch.agent.cell"><code>PatchCell</code></a> for generic CART cell.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellCART.html#%3Cinit%3E(arcade.patch.agent.cell.PatchCellContainer,arcade.core.env.location.Location,arcade.core.util.Parameters)">PatchCellCART(PatchCellContainer, Location, Parameters)</a></span> - Constructor for class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell">PatchCellCART</a></dt>
+<dd>
+<div class="block">Creates a <code>PatchCellCART</code> agent.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellCART.html#%3Cinit%3E(arcade.patch.agent.cell.PatchCellContainer,arcade.core.env.location.Location,arcade.core.util.Parameters,arcade.core.util.GrabBag)">PatchCellCART(PatchCellContainer, Location, Parameters, GrabBag)</a></span> - Constructor for class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell">PatchCellCART</a></dt>
+<dd>
+<div class="block">Creates a <code>PatchCellCART</code> agent.</div>
 </dd>
 <dt><a href="../arcade/patch/agent/cell/PatchCellContainer.html" title="class in arcade.patch.agent.cell"><span class="typeNameLink">PatchCellContainer</span></a> - Class in <a href="../arcade/patch/agent/cell/package-summary.html">arcade.patch.agent.cell</a></dt>
 <dd>
@@ -650,6 +662,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Hidden utility class constructor.</div>
 </dd>
+<dt><a href="../arcade/patch/util/PatchEnums.AntigenFlag.html" title="enum in arcade.patch.util"><span class="typeNameLink">PatchEnums.AntigenFlag</span></a> - Enum in <a href="../arcade/patch/util/package-summary.html">arcade.patch.util</a></dt>
+<dd>
+<div class="block">Antigen binding for CART simulations.</div>
+</dd>
 <dt><a href="../arcade/patch/util/PatchEnums.Category.html" title="enum in arcade.patch.util"><span class="typeNameLink">PatchEnums.Category</span></a> - Enum in <a href="../arcade/patch/util/package-summary.html">arcade.patch.util</a></dt>
 <dd>
 <div class="block">Operation category codes for patch simulations.</div>
@@ -963,11 +979,28 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Creates a module for a <a href="../arcade/patch/agent/cell/PatchCell.html" title="class in arcade.patch.agent.cell"><code>PatchCell</code></a> state.</div>
 </dd>
+<dt><a href="../arcade/patch/agent/process/PatchProcessInflammation.html" title="class in arcade.patch.agent.process"><span class="typeNameLink">PatchProcessInflammation</span></a> - Class in <a href="../arcade/patch/agent/process/package-summary.html">arcade.patch.agent.process</a></dt>
+<dd>
+<div class="block">Implementation of <code>Process</code> for inflammation type modules in which IL-2 is taken up and
+ cytotoxic/stimulatory functions are modified.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessInflammation.html#%3Cinit%3E(arcade.patch.agent.cell.PatchCellCART)">PatchProcessInflammation(PatchCellCART)</a></span> - Constructor for class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessInflammation.html" title="class in arcade.patch.agent.process">PatchProcessInflammation</a></dt>
+<dd>
+<div class="block">Creates an <code>Inflammation</code> module for the given <a href="../arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell"><code>PatchCellCART</code></a>.</div>
+</dd>
 <dt><a href="../arcade/patch/agent/process/PatchProcessMetabolism.html" title="class in arcade.patch.agent.process"><span class="typeNameLink">PatchProcessMetabolism</span></a> - Class in <a href="../arcade/patch/agent/process/package-summary.html">arcade.patch.agent.process</a></dt>
 <dd>
 <div class="block">Implementation of <code>Process</code> for cell metabolism.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessMetabolism.html#%3Cinit%3E(arcade.patch.agent.cell.PatchCell)">PatchProcessMetabolism(PatchCell)</a></span> - Constructor for class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessMetabolism.html" title="class in arcade.patch.agent.process">PatchProcessMetabolism</a></dt>
+<dd>
+<div class="block">Creates a metabolism <a href="../arcade/patch/agent/process/PatchProcess.html" title="class in arcade.patch.agent.process"><code>PatchProcess</code></a> for the given cell.</div>
+</dd>
+<dt><a href="../arcade/patch/agent/process/PatchProcessMetabolismCART.html" title="class in arcade.patch.agent.process"><span class="typeNameLink">PatchProcessMetabolismCART</span></a> - Class in <a href="../arcade/patch/agent/process/package-summary.html">arcade.patch.agent.process</a></dt>
+<dd>
+<div class="block">Extension of <a href="../arcade/patch/agent/process/PatchProcessMetabolism.html" title="class in arcade.patch.agent.process"><code>PatchProcessMetabolism</code></a> for CAR T-cell metabolism.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessMetabolismCART.html#%3Cinit%3E(arcade.patch.agent.cell.PatchCell)">PatchProcessMetabolismCART(PatchCell)</a></span> - Constructor for class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessMetabolismCART.html" title="class in arcade.patch.agent.process">PatchProcessMetabolismCART</a></dt>
 <dd>
 <div class="block">Creates a metabolism <a href="../arcade/patch/agent/process/PatchProcess.html" title="class in arcade.patch.agent.process"><code>PatchProcess</code></a> for the given cell.</div>
 </dd>
@@ -1097,6 +1130,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Array holding locations of patterns.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/util/PatchEnums.State.html#PAUSED">PAUSED</a></span> - arcade.patch.util.<a href="../arcade/patch/util/PatchEnums.State.html" title="enum in arcade.patch.util">PatchEnums.State</a></dt>
+<dd>
+<div class="block">Code for paused cells.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="../arcade/patch/env/component/PatchComponentSites.SiteLayer.html#permeability">permeability</a></span> - Variable in class arcade.patch.env.component.<a href="../arcade/patch/env/component/PatchComponentSites.SiteLayer.html" title="class in arcade.patch.env.component">PatchComponentSites.SiteLayer</a></dt>
 <dd>
 <div class="block">Molecule permeability.</div>
@@ -1194,6 +1231,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <div class="block">Cell population index.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellContainer.html#pop">pop</a></span> - Variable in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellContainer.html" title="class in arcade.patch.agent.cell">PatchCellContainer</a></dt>
+<dd>
+<div class="block">Cell population index.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessInflammation.html#pop">pop</a></span> - Variable in class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessInflammation.html" title="class in arcade.patch.agent.process">PatchProcessInflammation</a></dt>
 <dd>
 <div class="block">Cell population index.</div>
 </dd>
@@ -1897,6 +1938,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Code for proliferative S phase.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellCART.html#proliferativeFraction">proliferativeFraction</a></span> - Variable in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell">PatchCellCART</a></dt>
+<dd>
+<div class="block">Fraction of proliferative cells that become apoptotic.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="../arcade/patch/env/component/PatchComponentPulse.html#pulseInterval">pulseInterval</a></span> - Variable in class arcade.patch.env.component.<a href="../arcade/patch/env/component/PatchComponentPulse.html" title="class in arcade.patch.env.component">PatchComponentPulse</a></dt>
 <dd>
 <div class="block">Interval between pulses [min].</div>
@@ -1920,6 +1965,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessMetabolism.html#PYRU_PER_GLUC">PYRU_PER_GLUC</a></span> - Static variable in class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessMetabolism.html" title="class in arcade.patch.agent.process">PatchProcessMetabolism</a></dt>
 <dd>
 <div class="block">Stoichiometric ratio for pyruvate:glucose [mol pyruvate/mol glucose].</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessMetabolismCART.html#PYRUVATE">PYRUVATE</a></span> - Static variable in class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessMetabolismCART.html" title="class in arcade.patch.agent.process">PatchProcessMetabolismCART</a></dt>
+<dd>
+<div class="block">ID for pyruvate.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessMetabolismComplex.html#PYRUVATE">PYRUVATE</a></span> - Static variable in class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessMetabolismComplex.html" title="class in arcade.patch.agent.process">PatchProcessMetabolismComplex</a></dt>
 <dd>

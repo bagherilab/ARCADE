@@ -257,6 +257,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block"><code>true</code> if local factor is calculated, <code>false</code> otherwise.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellCART.html#calculateMichaelisMenten(double,double,int,int,double,double)">calculateMichaelisMenten(double, double, int, int, double, double)</a></span> - Method in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell">PatchCellCART</a></dt>
+<dd>
+<div class="block">Computes binding coefficient for given parameters.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="../arcade/patch/env/location/PatchLocation.html#calculateOffset()">calculateOffset()</a></span> - Method in class arcade.patch.env.location.<a href="../arcade/patch/env/location/PatchLocation.html" title="class in arcade.patch.env.location">PatchLocation</a></dt>
 <dd>
 <div class="block">Gets the <a href="../arcade/core/env/grid/Grid.html" title="interface in arcade.core.env.grid"><code>Grid</code></a> offset relative to the <a href="../arcade/core/env/lattice/Lattice.html" title="interface in arcade.core.env.lattice"><code>Lattice</code></a>.</div>
@@ -341,6 +345,26 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Initial capillary radius [um].</div>
 </dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellCART.html#carAffinity">carAffinity</a></span> - Variable in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell">PatchCellCART</a></dt>
+<dd>
+<div class="block">binding affinity for CAR receptor.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellCART.html#carAlpha">carAlpha</a></span> - Variable in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell">PatchCellCART</a></dt>
+<dd>
+<div class="block">tuning factor for CAR binding.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellTissue.html#carAntigens">carAntigens</a></span> - Variable in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellTissue.html" title="class in arcade.patch.agent.cell">PatchCellTissue</a></dt>
+<dd>
+<div class="block">Cell surface antigen count.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellCART.html#carBeta">carBeta</a></span> - Variable in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell">PatchCellCART</a></dt>
+<dd>
+<div class="block">tuning factor for CAR binding.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellCART.html#cars">cars</a></span> - Variable in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell">PatchCellCART</a></dt>
+<dd>
+<div class="block">number of CARs on T cell surface.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="../arcade/core/util/Solver.html#cashKarp(arcade.core.util.Solver.Equations,double,double%5B%5D,double,double)">cashKarp(Solver.Equations, double, double[], double, double)</a></span> - Static method in class arcade.core.util.<a href="../arcade/core/util/Solver.html" title="class in arcade.core.util">Solver</a></dt>
 <dd>
 <div class="block">Solves a system of ODEs using adaptive timestep Cash-Karp with default maximum steps.</div>
@@ -366,6 +390,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcess.html#cell">cell</a></span> - Variable in class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcess.html" title="class in arcade.patch.agent.process">PatchProcess</a></dt>
 <dd>
 <div class="block">The <a href="../arcade/patch/agent/cell/PatchCell.html" title="class in arcade.patch.agent.cell"><code>PatchCell</code></a> the process is associated with.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessInflammation.html#cell">cell</a></span> - Variable in class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessInflammation.html" title="class in arcade.patch.agent.process">PatchProcessInflammation</a></dt>
+<dd>
+<div class="block">Cell the module is associated with.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModule.html#cell">cell</a></span> - Variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModule.html" title="class in arcade.potts.agent.module">PottsModule</a></dt>
 <dd>
@@ -621,6 +649,14 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Stepping order for components.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellCART.html#computeAffinity(double,arcade.patch.env.location.PatchLocation)">computeAffinity(double, PatchLocation)</a></span> - Method in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell">PatchCellCART</a></dt>
+<dd>
+<div class="block">Converts the affinity units to molecules.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellCART.html#computeProbability(double,double,int,int,double,double)">computeProbability(double, double, int, int, double, double)</a></span> - Method in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell">PatchCellCART</a></dt>
+<dd>
+<div class="block">Computes the binding probability for the receptor with the given parameters.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="../arcade/patch/env/component/PatchComponentSites.SiteLayer.html#concentration">concentration</a></span> - Variable in class arcade.patch.env.component.<a href="../arcade/patch/env/component/PatchComponentSites.SiteLayer.html" title="class in arcade.patch.env.component">PatchComponentSites.SiteLayer</a></dt>
 <dd>
 <div class="block">Maximum concentration.</div>
@@ -675,6 +711,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Connects voxels in the splits.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellCART.html#contactFraction">contactFraction</a></span> - Variable in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell">PatchCellCART</a></dt>
+<dd>
+<div class="block">fraction of cell surface that contacts when binding.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="../arcade/core/util/Graph.html#contains(arcade.core.util.Graph.Edge)">contains(Graph.Edge)</a></span> - Method in class arcade.core.util.<a href="../arcade/core/util/Graph.html" title="class in arcade.core.util">Graph</a></dt>
 <dd>
 <div class="block">Check to see if a graph contains an edge.</div>
@@ -694,6 +734,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt><span class="memberNameLink"><a href="../arcade/core/util/MiniBox.html#contents">contents</a></span> - Variable in class arcade.core.util.<a href="../arcade/core/util/MiniBox.html" title="class in arcade.core.util">MiniBox</a></dt>
 <dd>
 <div class="block">Map of keys to values.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessMetabolismCART.html#conversionFraction">conversionFraction</a></span> - Variable in class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessMetabolismCART.html" title="class in arcade.patch.agent.process">PatchProcessMetabolismCART</a></dt>
+<dd>
+<div class="block">Fraction of internal glucose/pyruvate converted to mass.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessMetabolismComplex.html#conversionFraction">conversionFraction</a></span> - Variable in class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessMetabolismComplex.html" title="class in arcade.patch.agent.process">PatchProcessMetabolismComplex</a></dt>
 <dd>
@@ -1066,6 +1110,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessSignalingComplex.html#CYTOPLASM">CYTOPLASM</a></span> - Static variable in class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessSignalingComplex.html" title="class in arcade.patch.agent.process">PatchProcessSignalingComplex</a></dt>
 <dd>
 <div class="block">Initial cytoplasm concentration [nM].</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/util/PatchEnums.State.html#CYTOTOXIC">CYTOTOXIC</a></span> - arcade.patch.util.<a href="../arcade/patch/util/PatchEnums.State.html" title="enum in arcade.patch.util">PatchEnums.State</a></dt>
+<dd>
+<div class="block">Code for cytotoxic cells.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../arcade/potts/env/location/PottsLocation.html#cz">cz</a></span> - Variable in class arcade.potts.env.location.<a href="../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></dt>
 <dd>

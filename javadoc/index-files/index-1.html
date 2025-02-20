@@ -124,6 +124,22 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Stepping order for actions.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellCART.html#activated">activated</a></span> - Variable in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell">PatchCellCART</a></dt>
+<dd>
+<div class="block">Cell activation flag.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessInflammation.html#active">active</a></span> - Variable in class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessInflammation.html" title="class in arcade.patch.agent.process">PatchProcessInflammation</a></dt>
+<dd>
+<div class="block">Flag marking if cell is activated via antigen-induced activation.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessMetabolismCART.html#active">active</a></span> - Variable in class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessMetabolismCART.html" title="class in arcade.patch.agent.process">PatchProcessMetabolismCART</a></dt>
+<dd>
+<div class="block">Flag indicating T-cell's antigen induced activation state.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessInflammation.html#activeTicker">activeTicker</a></span> - Variable in class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessInflammation.html" title="class in arcade.patch.agent.process">PatchProcessInflammation</a></dt>
+<dd>
+<div class="block">Time since cell became activated via antigen-induced activation.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="../arcade/core/util/Matrix.html#add(double%5B%5D,double%5B%5D)">add(double[], double[])</a></span> - Static method in class arcade.core.util.<a href="../arcade/core/util/Matrix.html" title="class in arcade.core.util">Matrix</a></dt>
 <dd>
 <div class="block">Adds two vectors.</div>
@@ -358,10 +374,24 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Multiplier on axial concentrations.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessInflammation.html#amts">amts</a></span> - Variable in class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessInflammation.html" title="class in arcade.patch.agent.process">PatchProcessInflammation</a></dt>
+<dd>
+<div class="block">List of amounts of each species.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="../arcade/patch/env/component/PatchComponentSitesPattern.html#anchors">anchors</a></span> - Variable in class arcade.patch.env.component.<a href="../arcade/patch/env/component/PatchComponentSitesPattern.html" title="class in arcade.patch.env.component">PatchComponentSitesPattern</a></dt>
 <dd>
 <div class="block">Array holding locations of pattern pair anchors.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/util/PatchEnums.State.html#ANERGIC">ANERGIC</a></span> - arcade.patch.util.<a href="../arcade/patch/util/PatchEnums.State.html" title="enum in arcade.patch.util">PatchEnums.State</a></dt>
+<dd>
+<div class="block">Code for anergic cells.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellCART.html#anergicFraction">anergicFraction</a></span> - Variable in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell">PatchCellCART</a></dt>
+<dd>
+<div class="block">Fraction of anergic cells that become apoptotic.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/util/PatchEnums.AntigenFlag.html#%3Cinit%3E()">AntigenFlag()</a></span> - Constructor for enum arcade.patch.util.<a href="../arcade/patch/util/PatchEnums.AntigenFlag.html" title="enum in arcade.patch.util">PatchEnums.AntigenFlag</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../arcade/potts/util/PottsEnums.Phase.html#APOPTOSED">APOPTOSED</a></span> - arcade.potts.util.<a href="../arcade/potts/util/PottsEnums.Phase.html" title="enum in arcade.potts.util">PottsEnums.Phase</a></dt>
 <dd>
 <div class="block">Code for apoptosed cell.</div>
@@ -385,6 +415,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt><span class="memberNameLink"><a href="../arcade/potts/util/PottsEnums.Phase.html#APOPTOTIC_LATE">APOPTOTIC_LATE</a></span> - arcade.potts.util.<a href="../arcade/potts/util/PottsEnums.Phase.html" title="enum in arcade.potts.util">PottsEnums.Phase</a></dt>
 <dd>
 <div class="block">Code for late apoptosis phase.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellCART.html#applySigmoid(double)">applySigmoid(double)</a></span> - Method in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell">PatchCellCART</a></dt>
+<dd>
+<div class="block">Applies sigmoidal function onto given binding coeffient.</div>
 </dd>
 <dt><a href="../arcade/core/ARCADE.html" title="class in arcade.core"><span class="typeNameLink">ARCADE</span></a> - Class in <a href="../arcade/core/package-summary.html">arcade.core</a></dt>
 <dd>
@@ -525,6 +559,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt><span class="memberNameLink"><a href="../arcade/core/vis/Panel.html#attach(arcade.core.vis.Drawer,java.lang.String,java.awt.geom.Rectangle2D.Double)">attach(Drawer, String, Rectangle2D.Double)</a></span> - Method in class arcade.core.vis.<a href="../arcade/core/vis/Panel.html" title="class in arcade.core.vis">Panel</a></dt>
 <dd>
 <div class="block">Attaches a <a href="../arcade/core/vis/Panel.html" title="class in arcade.core.vis"><code>Panel</code></a> to the panel.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessMetabolismCART.html#autophagyRate">autophagyRate</a></span> - Variable in class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessMetabolismCART.html" title="class in arcade.patch.agent.process">PatchProcessMetabolismCART</a></dt>
+<dd>
+<div class="block">Rate of autophagy.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessMetabolismComplex.html#autophagyRate">autophagyRate</a></span> - Variable in class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessMetabolismComplex.html" title="class in arcade.patch.agent.process">PatchProcessMetabolismComplex</a></dt>
 <dd>

@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":9,"i2":9,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10,"i28":10,"i29":10};
+var data = {"i0":10,"i1":9,"i2":9,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10,"i28":10,"i29":10,"i30":10,"i31":10,"i32":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -135,34 +135,13 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </dl>
 <dl>
 <dt>Direct Known Subclasses:</dt>
-<dd><code><a href="PatchCellRandom.html" title="class in arcade.patch.agent.cell">PatchCellRandom</a></code>, <code><a href="PatchCellTissue.html" title="class in arcade.patch.agent.cell">PatchCellTissue</a></code></dd>
+<dd><code><a href="PatchCellCART.html" title="class in arcade.patch.agent.cell">PatchCellCART</a></code>, <code><a href="PatchCellRandom.html" title="class in arcade.patch.agent.cell">PatchCellRandom</a></code>, <code><a href="PatchCellTissue.html" title="class in arcade.patch.agent.cell">PatchCellTissue</a></code></dd>
 </dl>
 <hr>
 <pre>public abstract class <span class="typeNameLabel">PatchCell</span>
 extends java.lang.Object
 implements <a href="../../../core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></pre>
-<div class="block">Implementation of <a href="../../../core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell"><code>Cell</code></a> for generic tissue cell.
-
- <p><code>PatchCell</code> agents exist in one of seven states: undefined, apoptotic, quiescent,
- migratory, proliferative, senescent, and necrotic. The undefined state is a transition state for
- "undecided" cells, and does not have any biological analog.
-
- <p><code>PatchCell</code> agents have two required <a href="../../../core/agent/process/Process.html" title="interface in arcade.core.agent.process"><code>Process</code></a> domains: metabolism and signaling.
- Metabolism controls changes in cell energy and volume. Signaling controls the proliferative vs.
- migratory decision.
-
- <p>General order of rules for the <code>PatchCell</code> step:
-
- <ul>
-   <li>update age
-   <li>check lifespan (possible change to apoptotic)
-   <li>step metabolism process
-   <li>check energy status (possible change to quiescent or necrotic depending on <code>
-       ENERGY_THRESHOLD</code>)
-   <li>step signaling process
-   <li>check if neutral (change to proliferative, migratory, senescent)
-   <li>step state-specific module
- </ul>
+<div class="block">Implementation of <a href="../../../core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell"><code>Cell</code></a> for generic cell agent.
 
  <p>Cells that become necrotic or senescent have a change to become apoptotic instead (<code>
  NECROTIC_FRACTION</code> and <code>SENESCENT_FRACTION</code>, respectively).
@@ -223,66 +202,80 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>protected <a href="../../util/PatchEnums.AntigenFlag.html" title="enum in arcade.patch.util">PatchEnums.AntigenFlag</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#bindingFlag">bindingFlag</a></span></code></th>
+<td class="colLast">
+<div class="block">Cell binding flag.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>(package private) double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#criticalHeight">criticalHeight</a></span></code></th>
 <td class="colLast">
 <div class="block">Critical height for cell [um].</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>(package private) double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#criticalVolume">criticalVolume</a></span></code></th>
 <td class="colLast">
 <div class="block">Critical volume for cell [um<sup>3</sup>].</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>private sim.util.Bag</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#cycles">cycles</a></span></code></th>
 <td class="colLast">
 <div class="block">List of cell cycle lengths (in minutes).</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>(package private) int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#divisions">divisions</a></span></code></th>
 <td class="colLast">
 <div class="block">Number of divisions.</div>
 </td>
 </tr>
-<tr class="altColor">
-<td class="colFirst"><code>private double</code></td>
+<tr class="rowColor">
+<td class="colFirst"><code>protected double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#energy">energy</a></span></code></th>
 <td class="colLast">
 <div class="block">Cell energy [fmol ATP].</div>
 </td>
 </tr>
-<tr class="rowColor">
-<td class="colFirst"><code>private double</code></td>
+<tr class="altColor">
+<td class="colFirst"><code>protected double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#energyThreshold">energyThreshold</a></span></code></th>
 <td class="colLast">
 <div class="block">Maximum energy deficit before necrosis.</div>
 </td>
 </tr>
-<tr class="altColor">
-<td class="colFirst"><code>private <a href="../../util/PatchEnums.Flag.html" title="enum in arcade.patch.util">PatchEnums.Flag</a></code></td>
+<tr class="rowColor">
+<td class="colFirst"><code>protected <a href="../../util/PatchEnums.Flag.html" title="enum in arcade.patch.util">PatchEnums.Flag</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#flag">flag</a></span></code></th>
 <td class="colLast">
 <div class="block">Cell state change flag.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>(package private) double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#height">height</a></span></code></th>
 <td class="colLast">
 <div class="block">Cell height [um].</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>(package private) int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#id">id</a></span></code></th>
 <td class="colLast">
 <div class="block">Unique cell ID.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isStopped">isStopped</a></span></code></th>
+<td class="colLast">
+<div class="block">If cell is stopped in the simulation.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -314,7 +307,7 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>private double</code></td>
+<td class="colFirst"><code>protected double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#necroticFraction">necroticFraction</a></span></code></th>
 <td class="colLast">
 <div class="block">Fraction of necrotic cells that become apoptotic.</div>
@@ -349,7 +342,7 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>private double</code></td>
+<td class="colFirst"><code>protected double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#senescentFraction">senescentFraction</a></span></code></th>
 <td class="colLast">
 <div class="block">Fraction of senescent cells that become apoptotic.</div>
@@ -370,6 +363,13 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>(package private) int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#synthesisDuration">synthesisDuration</a></span></code></th>
+<td class="colLast">
+<div class="block">Time required for DNA synthesis [min].</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>(package private) double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#volume">volume</a></span></code></th>
 <td class="colLast">
@@ -468,111 +468,132 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 </td>
 </tr>
 <tr id="i6" class="altColor">
+<td class="colFirst"><code><a href="../../util/PatchEnums.AntigenFlag.html" title="enum in arcade.patch.util">PatchEnums.AntigenFlag</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBindingFlag()">getBindingFlag</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Returns the cell binding flag.</div>
+</td>
+</tr>
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCriticalHeight()">getCriticalHeight</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the critical height.</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCriticalVolume()">getCriticalVolume</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the critical volume.</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>sim.util.Bag</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCycles()">getCycles</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the list of cell cycle lengths.</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getDivisions()">getDivisions</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell divisions.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getEnergy()">getEnergy</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell energy level.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getHeight()">getHeight</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell height.</div>
 </td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getID()">getID</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the unique cell ID.</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code><a href="../../../core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLocation()">getLocation</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell location object.</div>
 </td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code><a href="../../../core/agent/module/Module.html" title="interface in arcade.core.agent.module">Module</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getModule()">getModule</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell module object.</div>
 </td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code><a href="../../../core/util/Parameters.html" title="class in arcade.core.util">Parameters</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getParameters()">getParameters</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell parameters.</div>
 </td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i17" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getParent()">getParent</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell parent ID.</div>
 </td>
 </tr>
-<tr id="i17" class="rowColor">
+<tr id="i18" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPop()">getPop</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell population index.</div>
 </td>
 </tr>
-<tr id="i18" class="altColor">
+<tr id="i19" class="rowColor">
 <td class="colFirst"><code><a href="../../../core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getProcess(arcade.core.agent.process.ProcessDomain)">getProcess</a></span>&#8203;(<a href="../../../core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process">ProcessDomain</a>&nbsp;domain)</code></th>
 <td class="colLast">
 <div class="block">Gets the cell process object.</div>
 </td>
 </tr>
-<tr id="i19" class="rowColor">
+<tr id="i20" class="altColor">
 <td class="colFirst"><code><a href="../../../core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getState()">getState</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell state.</div>
 </td>
 </tr>
-<tr id="i20" class="altColor">
+<tr id="i21" class="rowColor">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSynthesisDuration()">getSynthesisDuration</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Returns the synthesis duration period.</div>
+</td>
+</tr>
+<tr id="i22" class="altColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getVolume()">getVolume</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell volume.</div>
 </td>
 </tr>
-<tr id="i21" class="rowColor">
+<tr id="i23" class="rowColor">
+<td class="colFirst"><code>boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isStopped()">isStopped</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Gets stopping status of the cell.</div>
+</td>
+</tr>
+<tr id="i24" class="altColor">
 <td class="colFirst"><code><a href="../../../core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#makeProcess(arcade.core.agent.process.ProcessDomain,java.lang.String)">makeProcess</a></span>&#8203;(<a href="../../../core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process">ProcessDomain</a>&nbsp;domain,
            java.lang.String&nbsp;version)</code></th>
@@ -580,14 +601,14 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <div class="block">Makes the specified <a href="../../../core/agent/process/Process.html" title="interface in arcade.core.agent.process"><code>Process</code></a> object.</div>
 </td>
 </tr>
-<tr id="i22" class="altColor">
+<tr id="i25" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#schedule(sim.engine.Schedule)">schedule</a></span>&#8203;(sim.engine.Schedule&nbsp;schedule)</code></th>
 <td class="colLast">
 <div class="block">Schedules the cell in the simulation.</div>
 </td>
 </tr>
-<tr id="i23" class="rowColor">
+<tr id="i26" class="altColor">
 <td class="colFirst"><code><a href="../../env/location/PatchLocation.html" title="class in arcade.patch.env.location">PatchLocation</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#selectBestLocation(arcade.core.sim.Simulation,ec.util.MersenneTwisterFast)">selectBestLocation</a></span>&#8203;(<a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim,
                   ec.util.MersenneTwisterFast&nbsp;random)</code></th>
@@ -595,40 +616,42 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <div class="block">Selects best location for a cell to be added or move into.</div>
 </td>
 </tr>
-<tr id="i24" class="altColor">
+<tr id="i27" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setBindingFlag(arcade.patch.util.PatchEnums.AntigenFlag)">setBindingFlag</a></span>&#8203;(<a href="../../util/PatchEnums.AntigenFlag.html" title="enum in arcade.patch.util">PatchEnums.AntigenFlag</a>&nbsp;newBindingFlag)</code></th>
+<td class="colLast">
+<div class="block">Sets the cell binding flag.</div>
+</td>
+</tr>
+<tr id="i28" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setEnergy(double)">setEnergy</a></span>&#8203;(double&nbsp;energy)</code></th>
 <td class="colLast">
 <div class="block">Sets the cell energy level.</div>
 </td>
 </tr>
-<tr id="i25" class="rowColor">
+<tr id="i29" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setFlag(arcade.patch.util.PatchEnums.Flag)">setFlag</a></span>&#8203;(<a href="../../util/PatchEnums.Flag.html" title="enum in arcade.patch.util">PatchEnums.Flag</a>&nbsp;flag)</code></th>
 <td class="colLast">
 <div class="block">Sets the cell flag.</div>
 </td>
 </tr>
-<tr id="i26" class="altColor">
+<tr id="i30" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setState(arcade.core.agent.cell.CellState)">setState</a></span>&#8203;(<a href="../../../core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;state)</code></th>
 <td class="colLast">
 <div class="block">Sets the cell state.</div>
 </td>
 </tr>
-<tr id="i27" class="rowColor">
+<tr id="i31" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setVolume(double)">setVolume</a></span>&#8203;(double&nbsp;volume)</code></th>
 <td class="colLast">
 <div class="block">Sets the cell volume.</div>
 </td>
 </tr>
-<tr id="i28" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#step(sim.engine.SimState)">step</a></span>&#8203;(sim.engine.SimState&nbsp;simstate)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i29" class="rowColor">
+<tr id="i32" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#stop()">stop</a></span>()</code></th>
 <td class="colLast">
@@ -649,6 +672,13 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 </a>
 <h3>Methods inherited from interface&nbsp;arcade.core.agent.cell.<a href="../../../core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></h3>
 <code><a href="../../../core/agent/cell/Cell.html#make(int,arcade.core.agent.cell.CellState,ec.util.MersenneTwisterFast)">make</a></code></li>
+</ul>
+<ul class="blockList">
+<li class="blockList"><a id="methods.inherited.from.class.sim.engine.Steppable">
+<!--   -->
+</a>
+<h3>Methods inherited from interface&nbsp;sim.engine.Steppable</h3>
+<code>step</code></li>
 </ul>
 </li>
 </ul>
@@ -752,7 +782,7 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <ul class="blockList">
 <li class="blockList">
 <h4>energy</h4>
-<pre>private&nbsp;double energy</pre>
+<pre>protected&nbsp;double energy</pre>
 <div class="block">Cell energy [fmol ATP].</div>
 </li>
 </ul>
@@ -796,6 +826,16 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <div class="block">Death age due to apoptosis [min].</div>
 </li>
 </ul>
+<a id="synthesisDuration">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>synthesisDuration</h4>
+<pre>final&nbsp;int synthesisDuration</pre>
+<div class="block">Time required for DNA synthesis [min].</div>
+</li>
+</ul>
 <a id="criticalVolume">
 <!--   -->
 </a>
@@ -822,7 +862,7 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <ul class="blockList">
 <li class="blockList">
 <h4>flag</h4>
-<pre>private&nbsp;<a href="../../util/PatchEnums.Flag.html" title="enum in arcade.patch.util">PatchEnums.Flag</a> flag</pre>
+<pre>protected&nbsp;<a href="../../util/PatchEnums.Flag.html" title="enum in arcade.patch.util">PatchEnums.Flag</a> flag</pre>
 <div class="block">Cell state change flag.</div>
 </li>
 </ul>
@@ -832,7 +872,7 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <ul class="blockList">
 <li class="blockList">
 <h4>necroticFraction</h4>
-<pre>private final&nbsp;double necroticFraction</pre>
+<pre>protected final&nbsp;double necroticFraction</pre>
 <div class="block">Fraction of necrotic cells that become apoptotic.</div>
 </li>
 </ul>
@@ -842,7 +882,7 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <ul class="blockList">
 <li class="blockList">
 <h4>senescentFraction</h4>
-<pre>private final&nbsp;double senescentFraction</pre>
+<pre>protected final&nbsp;double senescentFraction</pre>
 <div class="block">Fraction of senescent cells that become apoptotic.</div>
 </li>
 </ul>
@@ -852,7 +892,7 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <ul class="blockList">
 <li class="blockList">
 <h4>energyThreshold</h4>
-<pre>private final&nbsp;double energyThreshold</pre>
+<pre>protected final&nbsp;double energyThreshold</pre>
 <div class="block">Maximum energy deficit before necrosis.</div>
 </li>
 </ul>
@@ -919,11 +959,31 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <a id="cycles">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>cycles</h4>
 <pre>private final&nbsp;sim.util.Bag cycles</pre>
 <div class="block">List of cell cycle lengths (in minutes).</div>
+</li>
+</ul>
+<a id="isStopped">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>isStopped</h4>
+<pre>private&nbsp;boolean isStopped</pre>
+<div class="block">If cell is stopped in the simulation.</div>
+</li>
+</ul>
+<a id="bindingFlag">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>bindingFlag</h4>
+<pre>protected&nbsp;<a href="../../util/PatchEnums.AntigenFlag.html" title="enum in arcade.patch.util">PatchEnums.AntigenFlag</a> bindingFlag</pre>
+<div class="block">Cell binding flag.</div>
 </li>
 </ul>
 </li>
@@ -954,7 +1014,6 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
    <li><code>NECROTIC_FRACTION</code> = fraction of necrotic cells that become apoptotic
    <li><code>SENESCENT_FRACTION</code> = fraction of senescent cells that become apoptotic
    <li><code>ENERGY_THRESHOLD</code> = maximum energy deficit before necrosis
-   <li><code>HETEROGENEITY</code> = variation in cell agent parameters
  </ul></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -1314,6 +1373,20 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 </dl>
 </li>
 </ul>
+<a id="isStopped()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>isStopped</h4>
+<pre class="methodSignature">public&nbsp;boolean&nbsp;isStopped()</pre>
+<div class="block">Gets stopping status of the cell.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>if the cell has been stopped in the simulation</dd>
+</dl>
+</li>
+</ul>
 <a id="setState(arcade.core.agent.cell.CellState)">
 <!--   -->
 </a>
@@ -1363,19 +1436,6 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <dd><code><a href="../../../core/agent/cell/Cell.html#schedule(sim.engine.Schedule)">schedule</a></code>&nbsp;in interface&nbsp;<code><a href="../../../core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>schedule</code> - the simulation schedule</dd>
-</dl>
-</li>
-</ul>
-<a id="step(sim.engine.SimState)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>step</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;step&#8203;(sim.engine.SimState&nbsp;simstate)</pre>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code>step</code>&nbsp;in interface&nbsp;<code>sim.engine.Steppable</code></dd>
 </dl>
 </li>
 </ul>
@@ -1452,7 +1512,7 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <a id="checkLocation(arcade.core.sim.Simulation,arcade.patch.env.location.PatchLocation,double,double,int,int)">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>checkLocation</h4>
 <pre class="methodSignature">static&nbsp;boolean&nbsp;checkLocation&#8203;(<a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim,
@@ -1475,7 +1535,49 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <dd><code>population</code> - the population index</dd>
 <dd><code>maxDensity</code> - the maximum density of population in the location</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>a list of free locations</dd>
+<dd>if the location is available for the cell</dd>
+</dl>
+</li>
+</ul>
+<a id="setBindingFlag(arcade.patch.util.PatchEnums.AntigenFlag)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setBindingFlag</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;setBindingFlag&#8203;(<a href="../../util/PatchEnums.AntigenFlag.html" title="enum in arcade.patch.util">PatchEnums.AntigenFlag</a>&nbsp;newBindingFlag)</pre>
+<div class="block">Sets the cell binding flag.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>newBindingFlag</code> - the target cell antigen binding state</dd>
+</dl>
+</li>
+</ul>
+<a id="getBindingFlag()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getBindingFlag</h4>
+<pre class="methodSignature">public&nbsp;<a href="../../util/PatchEnums.AntigenFlag.html" title="enum in arcade.patch.util">PatchEnums.AntigenFlag</a>&nbsp;getBindingFlag()</pre>
+<div class="block">Returns the cell binding flag.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the cell antigen binding state</dd>
+</dl>
+</li>
+</ul>
+<a id="getSynthesisDuration()">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>getSynthesisDuration</h4>
+<pre class="methodSignature">public&nbsp;int&nbsp;getSynthesisDuration()</pre>
+<div class="block">Returns the synthesis duration period.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the cell antigen binding state</dd>
 </dl>
 </li>
 </ul>

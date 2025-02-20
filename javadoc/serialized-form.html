@@ -342,6 +342,11 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <div class="block">Death age due to apoptosis [min].</div>
 </li>
 <li class="blockList">
+<h4>bindingFlag</h4>
+<pre><a href="arcade/patch/util/PatchEnums.AntigenFlag.html" title="enum in arcade.patch.util">PatchEnums.AntigenFlag</a> bindingFlag</pre>
+<div class="block">Cell binding flag.</div>
+</li>
+<li class="blockList">
 <h4>criticalHeight</h4>
 <pre>double criticalHeight</pre>
 <div class="block">Critical height for cell [um].</div>
@@ -385,6 +390,11 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <h4>id</h4>
 <pre>int id</pre>
 <div class="block">Unique cell ID.</div>
+</li>
+<li class="blockList">
+<h4>isStopped</h4>
+<pre>boolean isStopped</pre>
+<div class="block">If cell is stopped in the simulation.</div>
 </li>
 <li class="blockList">
 <h4>links</h4>
@@ -446,6 +456,11 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <pre>sim.engine.Stoppable stopper</pre>
 <div class="block">Stopper used to stop this agent from being stepped in the schedule.</div>
 </li>
+<li class="blockList">
+<h4>synthesisDuration</h4>
+<pre>int synthesisDuration</pre>
+<div class="block">Time required for DNA synthesis [min].</div>
+</li>
 <li class="blockListLast">
 <h4>volume</h4>
 <pre>double volume</pre>
@@ -465,6 +480,118 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </a>
 <h3>Class <a href="arcade/patch/agent/cell/PatchCellCancerStem.html" title="class in arcade.patch.agent.cell">arcade.patch.agent.cell.PatchCellCancerStem</a> extends <a href="arcade/patch/agent/cell/PatchCellCancer.html" title="class in arcade.patch.agent.cell">PatchCellCancer</a> implements Serializable</h3>
 </li>
+<li class="blockList"><a id="arcade.patch.agent.cell.PatchCellCART">
+<!--   -->
+</a>
+<h3>Class <a href="arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell">arcade.patch.agent.cell.PatchCellCART</a> extends <a href="arcade/patch/agent/cell/PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a> implements Serializable</h3>
+<ul class="blockList">
+<li class="blockList">
+<h3>Serialized Fields</h3>
+<ul class="blockList">
+<li class="blockList">
+<h4>activated</h4>
+<pre>boolean activated</pre>
+<div class="block">Cell activation flag.</div>
+</li>
+<li class="blockList">
+<h4>anergicFraction</h4>
+<pre>double anergicFraction</pre>
+<div class="block">Fraction of anergic cells that become apoptotic.</div>
+</li>
+<li class="blockList">
+<h4>boundCARAntigensCount</h4>
+<pre>int boundCARAntigensCount</pre>
+<div class="block">number of bound CAR antigens.</div>
+</li>
+<li class="blockList">
+<h4>boundSelfAntigensCount</h4>
+<pre>int boundSelfAntigensCount</pre>
+<div class="block">number of bound PDL-1 antigens.</div>
+</li>
+<li class="blockList">
+<h4>carAffinity</h4>
+<pre>double carAffinity</pre>
+<div class="block">binding affinity for CAR receptor.</div>
+</li>
+<li class="blockList">
+<h4>carAlpha</h4>
+<pre>double carAlpha</pre>
+<div class="block">tuning factor for CAR binding.</div>
+</li>
+<li class="blockList">
+<h4>carBeta</h4>
+<pre>double carBeta</pre>
+<div class="block">tuning factor for CAR binding.</div>
+</li>
+<li class="blockList">
+<h4>cars</h4>
+<pre>int cars</pre>
+<div class="block">number of CARs on T cell surface.</div>
+</li>
+<li class="blockList">
+<h4>contactFraction</h4>
+<pre>double contactFraction</pre>
+<div class="block">fraction of cell surface that contacts when binding.</div>
+</li>
+<li class="blockList">
+<h4>exhaustedFraction</h4>
+<pre>double exhaustedFraction</pre>
+<div class="block">Fraction of exhausted cells that become apoptotic.</div>
+</li>
+<li class="blockList">
+<h4>lastActiveTicker</h4>
+<pre>int lastActiveTicker</pre>
+<div class="block">simulation time since T cell was last activated.</div>
+</li>
+<li class="blockList">
+<h4>maxAntigenBinding</h4>
+<pre>int maxAntigenBinding</pre>
+<div class="block">max antigens threshold for T cell exhaustion.</div>
+</li>
+<li class="blockList">
+<h4>proliferativeFraction</h4>
+<pre>double proliferativeFraction</pre>
+<div class="block">Fraction of proliferative cells that become apoptotic.</div>
+</li>
+<li class="blockList">
+<h4>searchAbility</h4>
+<pre>double searchAbility</pre>
+<div class="block">number of neighbors that T cell is able to search through.</div>
+</li>
+<li class="blockList">
+<h4>selfAlpha</h4>
+<pre>double selfAlpha</pre>
+<div class="block">tuning factor for PDL-1 receptor binding.</div>
+</li>
+<li class="blockList">
+<h4>selfBeta</h4>
+<pre>double selfBeta</pre>
+<div class="block">tuning factor for PDL-1 receptor binding.</div>
+</li>
+<li class="blockList">
+<h4>selfReceptorAffinity</h4>
+<pre>double selfReceptorAffinity</pre>
+<div class="block">binding affinity for PDL-1 receptor.</div>
+</li>
+<li class="blockList">
+<h4>selfReceptors</h4>
+<pre>int selfReceptors</pre>
+<div class="block">number of current PDL-1 receptors on CART cell.</div>
+</li>
+<li class="blockList">
+<h4>selfReceptorsStart</h4>
+<pre>int selfReceptorsStart</pre>
+<div class="block">initial number of PDL-1 receptors on CART cell.</div>
+</li>
+<li class="blockListLast">
+<h4>senescentFraction</h4>
+<pre>double senescentFraction</pre>
+<div class="block">Fraction of senescent cells that become apoptotic.</div>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="blockList"><a id="arcade.patch.agent.cell.PatchCellRandom">
 <!--   -->
 </a>
@@ -474,6 +601,23 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <!--   -->
 </a>
 <h3>Class <a href="arcade/patch/agent/cell/PatchCellTissue.html" title="class in arcade.patch.agent.cell">arcade.patch.agent.cell.PatchCellTissue</a> extends <a href="arcade/patch/agent/cell/PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a> implements Serializable</h3>
+<ul class="blockList">
+<li class="blockList">
+<h3>Serialized Fields</h3>
+<ul class="blockList">
+<li class="blockList">
+<h4>carAntigens</h4>
+<pre>int carAntigens</pre>
+<div class="block">Cell surface antigen count.</div>
+</li>
+<li class="blockListLast">
+<h4>selfTargets</h4>
+<pre>int selfTargets</pre>
+<div class="block">Cell surface PDL1 count.</div>
+</li>
+</ul>
+</li>
+</ul>
 </li>
 </ul>
 </section>
