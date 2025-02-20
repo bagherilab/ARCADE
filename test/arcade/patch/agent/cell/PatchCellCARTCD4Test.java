@@ -324,6 +324,7 @@ public class PatchCellCARTCD4Test {
         cell.step(sim);
 
         assertEquals(State.STIMULATORY, cell.getState());
+        assertEquals(AntigenFlag.UNBOUND, cell.getBindingFlag());
         assertTrue(cell.getActivationStatus());
     }
 

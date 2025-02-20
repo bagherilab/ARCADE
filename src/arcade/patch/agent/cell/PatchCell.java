@@ -17,7 +17,9 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
-import arcade.patch.agent.module.*;
+import arcade.patch.agent.module.PatchModuleApoptosis;
+import arcade.patch.agent.module.PatchModuleMigration;
+import arcade.patch.agent.module.PatchModuleProliferation;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
@@ -362,17 +364,6 @@ public abstract class PatchCell implements Cell {
                 break;
             case APOPTOTIC:
                 module = new PatchModuleApoptosis(this);
-                break;
-            case STIMULATORY:
-                module = new PatchModuleStimulation(this);
-                break;
-            case CYTOTOXIC:
-                module = new PatchModuleCytotoxicity(this);
-                break;
-            case QUIESCENT:
-                if (this instanceof PatchCellCART) {
-                    this.setState(State.UNDEFINED);
-                }
                 break;
             default:
                 module = null;

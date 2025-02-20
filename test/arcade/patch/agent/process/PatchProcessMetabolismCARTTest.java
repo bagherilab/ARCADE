@@ -44,7 +44,7 @@ public class PatchProcessMetabolismCARTTest {
     }
 
     @BeforeEach
-    public final void setUp() throws NoSuchFieldException, IllegalAccessException {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
         mockCell = mock(PatchCellCART.class);
         mockParameters = mock(Parameters.class);
         mockLocation = mock(PatchLocation.class);

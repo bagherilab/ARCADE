@@ -69,7 +69,7 @@ public class PatchCellCARTTest {
     }
 
     @BeforeEach
-    public final void setUp() throws NoSuchFieldException, IllegalAccessException {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
         parameters = spy(new Parameters(new MiniBox(), null, null));
         location = mock(PatchLocation.class);
 

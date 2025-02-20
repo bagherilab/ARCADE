@@ -7,6 +7,8 @@ import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
+import arcade.patch.agent.action.PatchActionReset;
+import arcade.patch.sim.PatchSimulation;
 import arcade.patch.util.PatchEnums.AntigenFlag;
 import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.State;
@@ -79,43 +81,42 @@ public class PatchCellCARTCD4 extends PatchCellCART {
 
         // Check energy status. If cell has less energy than threshold, it will
         // apoptose. If overall energy is negative, then cell enters quiescence.
-        if (state != State.APOPTOTIC) {
+        if (state != State.APOPTOTIC && energy < 0) {
             if (super.energy < super.energyThreshold) {
-
                 super.setState(State.APOPTOTIC);
-                super.unbind();
+                super.setBindingFlag(AntigenFlag.UNBOUND);
                 this.activated = false;
             } else if (state != State.ANERGIC
                     && state != State.SENESCENT
                     && state != State.EXHAUSTED
-                    && state != State.STARVED
-                    && energy < 0) {
-
+                    && state != State.STARVED) {
                 super.setState(State.STARVED);
-                super.unbind();
-            } else if (state == State.STARVED && energy >= 0) {
-                super.setState(State.UNDEFINED);
+                super.setBindingFlag(AntigenFlag.UNBOUND);
             }
+        } else if (state == State.STARVED && energy >= 0) {
+            super.setState(State.UNDEFINED);
         }
 
         // Step inflammation process.
         super.processes.get(Domain.INFLAMMATION).step(simstate.random, sim);
 
         // Change state from undefined.
-        if (super.state == State.UNDEFINED || super.state == State.PAUSED) {
+        if (super.state == State.UNDEFINED
+                || super.state == State.PAUSED
+                || super.state == State.QUIESCENT) {
             if (divisions == 0) {
                 if (simstate.random.nextDouble() > super.senescentFraction) {
                     super.setState(State.APOPTOTIC);
                 } else {
                     super.setState(State.SENESCENT);
                 }
-                super.unbind();
+                super.setBindingFlag(AntigenFlag.UNBOUND);
                 this.activated = false;
             } else {
                 // Cell attempts to bind to a target
                 PatchCellTissue target =
                         super.bindTarget(sim, location, new MersenneTwisterFast(simstate.seed()));
-                super.boundTarget = target;
+
                 // If cell is bound to both antigen and self it will become anergic.
                 if (super.getBindingFlag() == AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR) {
                     if (simstate.random.nextDouble() > super.anergicFraction) {
@@ -123,7 +124,7 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                     } else {
                         super.setState(State.ANERGIC);
                     }
-                    super.unbind();
+                    super.setBindingFlag(AntigenFlag.UNBOUND);
                     this.activated = false;
                 } else if (super.getBindingFlag() == AntigenFlag.BOUND_ANTIGEN) {
                     // If cell is only bound to target antigen, the cell
@@ -137,19 +138,31 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                         } else {
                             super.setState(State.EXHAUSTED);
                         }
-                        super.unbind();
+                        super.setBindingFlag(AntigenFlag.UNBOUND);
                         this.activated = false;
                     } else {
                         // if CD4 cell is properly activated, it can stimulate
                         super.setState(State.STIMULATORY);
                         this.lastActiveTicker = 0;
                         this.activated = true;
+                        if (target.isStopped()) {
+                            target.setBindingFlag(AntigenFlag.UNBOUND);
+                        }
+                        target.setState(State.QUIESCENT);
+                        super.setBindingFlag(AntigenFlag.UNBOUND);
+                        // reset the cell
+                        PatchActionReset reset =
+                                new PatchActionReset(
+                                        this,
+                                        simstate.random,
+                                        ((PatchSimulation) simstate).getSeries(),
+                                        parameters);
+                        reset.schedule(sim.getSchedule());
                     }
                 } else {
                     // If self binding, unbind
-                    if (super.getBindingFlag() == AntigenFlag.BOUND_CELL_RECEPTOR) {
-                        super.unbind();
-                    }
+                    if (super.getBindingFlag() == AntigenFlag.BOUND_CELL_RECEPTOR)
+                        super.setBindingFlag(AntigenFlag.UNBOUND);
                     // Check activation status. If cell has been activated before,
                     // it will proliferate. If not, it will migrate.
                     if (activated) {
