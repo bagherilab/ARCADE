@@ -49,7 +49,6 @@
     <population id="BOUND_TIME" value="360" description="6 hours" />
     <population id="BOUND_RANGE" value="0" description="hours" />
     <!-- SynNotch Circuit specific parameters -->
-    <population id="SYNNOTCH_RECEPTORS" value="50000" description="average number of synnotch receptors on a given cell" />
     <population id="ANTIGEN_BINDING_RATE" value="5.1E3" unit="M^-1 s^-1" description="association rate constant for receptor/antigen binding" />
 
     <!-- proliferation module parameters -->
