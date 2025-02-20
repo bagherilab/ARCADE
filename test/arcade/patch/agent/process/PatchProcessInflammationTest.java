@@ -40,7 +40,7 @@ public class PatchProcessInflammationTest {
     }
 
     @BeforeEach
-    public void setUp() {
+    public final void setUp() {
         mockCell = Mockito.mock(PatchCellCART.class);
         mockParameters = Mockito.mock(Parameters.class);
         mockSimulation = Mockito.mock(Simulation.class);
