@@ -50,8 +50,8 @@ public abstract class PatchCellMacrophage extends PatchCell {
     /** Association rate constant for receptor/antigen binding [molecules per minute]. */
     protected double bindingRate;
 
-    /** number of bound synnotch receptors on the macrophage cell surface. */
-    protected int synnotchs;
+    /** number of synnotch receptors on the macrophage cell surface. */
+    protected final int synnotchs;
 
     /**
      * Creates a {@code PatchCellCART} agent. *
@@ -86,7 +86,7 @@ public abstract class PatchCellMacrophage extends PatchCell {
         this.boundCell = null;
         this.bindingRate =
                 parameters.getDouble("ANTIGEN_BINDING_RATE") * 60 * location.getVolume() * 6.022E23;
-        this.synnotchs = 0;
+        this.synnotchs = parameters.getInt("SYNNOTCH_RECEPTORS");
     }
 
     /**
@@ -94,7 +94,7 @@ public abstract class PatchCellMacrophage extends PatchCell {
      *
      * @param simstate the current state of the simulation
      */
-    protected void checkForBinding(SimState simstate) {
+    private void checkForBinding(SimState simstate) {
         Simulation sim = (Simulation) simstate;
         PatchGrid grid = (PatchGrid) sim.getGrid();
 
@@ -110,7 +110,6 @@ public abstract class PatchCellMacrophage extends PatchCell {
                 boundCell =
                         (PatchCellTissue) allAgents.get(simstate.random.nextInt(allAgents.size()));
                 this.bindingFlag = PatchEnums.AntigenFlag.BOUND_ANTIGEN;
-                this.synnotchs++;
             }
         }
     }
