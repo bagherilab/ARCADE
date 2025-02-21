@@ -58,7 +58,7 @@ public class PatchProcessQuorumSensingSource extends PatchProcessQuorumSensing {
 
         // Initial amounts of each species, all in fmol/cell.
         this.concs = new double[NUM_COMPONENTS];
-        concs[SYNNOTCH] = boundSynnotch / 6.022E-23 * 1E15; // convert from molecules to fmol
+        concs[SYNNOTCH] = boundSynnotch / 6.022E23 * 1E15; // convert from molecules to fmol
         concs[AUXIN] = 0;
 
         // Molecule names.
