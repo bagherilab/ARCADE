@@ -94,7 +94,7 @@ public abstract class PatchCellMacrophage extends PatchCell {
      *
      * @param simstate the current state of the simulation
      */
-    private void checkForBinding(SimState simstate) {
+    protected void checkForBinding(SimState simstate) {
         Simulation sim = (Simulation) simstate;
         PatchGrid grid = (PatchGrid) sim.getGrid();
 
