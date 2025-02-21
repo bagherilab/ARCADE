@@ -7,7 +7,7 @@ import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModuleFlyNeuronQuiescence;
 import static arcade.potts.util.PottsEnums.State;
 
-/** Represents a fly neuron cell in the Potts model. This cell is quiescent. file. */
+/** Represents a fly neuron cell in the Potts model. This cell is quiescent. */
 public final class PottsCellFlyNeuron extends PottsCell {
 
     /**
