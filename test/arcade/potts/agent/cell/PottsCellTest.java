@@ -112,7 +112,11 @@ public class PottsCellTest {
     }
 
     static class PottsCellMockWithLinks extends PottsCell {
-        PottsCellMockWithLinks(PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
+        PottsCellMockWithLinks(
+                PottsCellContainer container,
+                Location location,
+                Parameters parameters,
+                GrabBag links) {
             super(container, location, parameters, links);
         }
 
@@ -765,9 +769,13 @@ public class PottsCellTest {
     @Test
     public void getLinks_valueAssigned_returnsValue() {
         GrabBag links = mock(GrabBag.class);
-        PottsCell cellWithRegions = new PottsCellMockWithLinks(containerWithRegions, locationMock, parametersMock, links);
+        PottsCell cellWithRegions =
+                new PottsCellMockWithLinks(
+                        containerWithRegions, locationMock, parametersMock, links);
         assertSame(links, cellWithRegions.getLinks());
-        PottsCell cellWithoutRegions = new PottsCellMockWithLinks(containerWithoutRegions, locationMock, parametersMock, links);
+        PottsCell cellWithoutRegions =
+                new PottsCellMockWithLinks(
+                        containerWithoutRegions, locationMock, parametersMock, links);
         assertSame(links, cellWithoutRegions.getLinks());
     }
 
