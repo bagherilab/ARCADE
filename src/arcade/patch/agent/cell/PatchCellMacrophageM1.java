@@ -75,7 +75,7 @@ public class PatchCellMacrophageM1 extends PatchCellMacrophage {
             setState(PatchEnums.State.APOPTOTIC);
             this.unbind();
         }
-        
+
         processes.get(PatchEnums.Domain.METABOLISM).step(simstate.random, sim);
 
         // Check energy status. If cell has less energy than threshold, it will
