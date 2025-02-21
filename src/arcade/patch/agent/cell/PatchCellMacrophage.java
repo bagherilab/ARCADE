@@ -182,10 +182,12 @@ public abstract class PatchCellMacrophage extends PatchCell {
 
     /** Sets binding flag to unbound and binding target to null. */
     public void unbind() {
-        super.setBindingFlag(PatchEnums.AntigenFlag.UNBOUND);
-        this.boundCell = null;
-        this.ticker = 0;
-        this.synnotchs--;
+        if (this.bindingFlag == PatchEnums.AntigenFlag.BOUND_ANTIGEN) {
+            super.setBindingFlag(PatchEnums.AntigenFlag.UNBOUND);
+            this.boundCell = null;
+            this.ticker = 0;
+            this.synnotchs--;
+        }
     }
 
     /**
