@@ -185,6 +185,7 @@ public abstract class PatchCellMacrophage extends PatchCell {
         super.setBindingFlag(PatchEnums.AntigenFlag.UNBOUND);
         this.boundCell = null;
         this.ticker = 0;
+        this.synnotchs--;
     }
 
     /**
