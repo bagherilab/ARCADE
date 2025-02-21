@@ -24,13 +24,23 @@ public final class PottsCellFlyNeuron extends PottsCell {
             PottsCellContainer container, Location location, Parameters parameters) {
 
         super(container, location, parameters, null);
+        double basal_apoptosis_rate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
+        if (basal_apoptosis_rate != 0) {
+            throw new UnsupportedOperationException(
+                    "Neurons should not apoptose."
+                            + "Set proliferation/BASAL_APOPTOSIS_RATE to 0 in setup file.");
+        }
+        int cell_growth_rate = parameters.getInt("proliferation/CELL_GROWTH_RATE");
+        if (cell_growth_rate != 0) {
+            throw new UnsupportedOperationException(
+                    "Neurons should not grow or divide."
+                            + " Set proliferation/CELL_GROWTH_RATE to 0 in setup file.");
+        }
     }
 
     @Override
     public PottsCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-        throw new UnsupportedOperationException(
-                "Neurons should not grow or divide."
-                        + " Set proliferation/CELL_GROWTH_RATE to 0 in setup file.");
+        throw new UnsupportedOperationException("Neurons can not grow or divide.");
     }
 
     @Override
@@ -42,10 +52,6 @@ public final class PottsCellFlyNeuron extends PottsCell {
             case PROLIFERATIVE:
                 module = new PottsModuleProliferationSimple(this);
                 break;
-            case APOPTOTIC:
-                throw new UnsupportedOperationException(
-                        "Neurons should not apoptose."
-                                + "Set proliferation/BASAL_APOPTOSIS_RATE to 0 in setup file.");
             default:
                 module = null;
                 break;

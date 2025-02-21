@@ -1,6 +1,6 @@
 package arcade.potts.agent.cell;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
@@ -51,12 +51,39 @@ public class PottsCellFlyNeuronTest {
                     cellCriticalVolume,
                     cellCriticalHeight);
 
-    @BeforeAll
-    public static void setupMocks() {
+    @BeforeEach
+    public void setupMocks() {
         locationMock = mock(PottsLocation.class);
         parametersMock = spy(new Parameters(new MiniBox(), null, null));
         doReturn(0.0).when(parametersMock).getDouble(any(String.class));
         doReturn(0).when(parametersMock).getInt(any(String.class));
+    }
+
+    @Test
+    public void constructor_validParameters_createsInstance() {
+        PottsCellFlyNeuron neuron =
+                new PottsCellFlyNeuron(baseContainer, locationMock, parametersMock);
+        assertNotNull(neuron);
+    }
+
+    @Test
+    public void constructor_invalidApoptosisRate_throwsUnsupportedOperationException() {
+        doReturn(1.0).when(parametersMock).getDouble("proliferation/BASAL_APOPTOSIS_RATE");
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> {
+                    new PottsCellFlyNeuron(baseContainer, locationMock, parametersMock);
+                });
+    }
+
+    @Test
+    public void constructor_invalidGrowthRate_throwsUnsupportedOperationException() {
+        doReturn(1).when(parametersMock).getInt("proliferation/CELL_GROWTH_RATE");
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> {
+                    new PottsCellFlyNeuron(baseContainer, locationMock, parametersMock);
+                });
     }
 
     @Test
@@ -76,17 +103,6 @@ public class PottsCellFlyNeuronTest {
                 new PottsCellFlyNeuron(baseContainer, locationMock, parametersMock);
         neuron.setState(State.PROLIFERATIVE);
         assertTrue(neuron.module instanceof PottsModuleProliferationSimple);
-    }
-
-    @Test
-    public void setState_apoptotic_throwsUnsupportedOperationException() {
-        PottsCellFlyNeuron neuron =
-                new PottsCellFlyNeuron(baseContainer, locationMock, parametersMock);
-        assertThrows(
-                UnsupportedOperationException.class,
-                () -> {
-                    neuron.setState(State.APOPTOTIC);
-                });
     }
 
     @Test
