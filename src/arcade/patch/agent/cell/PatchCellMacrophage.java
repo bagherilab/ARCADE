@@ -268,12 +268,12 @@ public abstract class PatchCellMacrophage extends PatchCell {
         }
 
         /**
-         * Calculates the probability of a single event following the Poisson distribution.
+         * Calculates the probability that at least one event occurs.
          *
-         * @return the probability that one event will occur in this current time step.
+         * @return the probability that one or more events occurs within this time step.
          */
         public double nextEvent() {
-            return lambda * Math.exp(-lambda);
+            return 1 - Math.exp(-lambda);
         }
 
         /**
