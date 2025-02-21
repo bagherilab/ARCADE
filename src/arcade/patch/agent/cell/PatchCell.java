@@ -2,8 +2,6 @@ package arcade.patch.agent.cell;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import arcade.patch.agent.process.PatchProcessQuorumSensing;
 import sim.engine.Schedule;
 import sim.engine.Stoppable;
 import sim.util.Bag;
@@ -24,6 +22,7 @@ import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleProliferation;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
+import arcade.patch.agent.process.PatchProcessQuorumSensing;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;

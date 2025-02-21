@@ -1,12 +1,19 @@
 package arcade.patch.agent.process;
 
 import java.util.List;
+import sim.util.Bag;
+import ec.util.MersenneTwisterFast;
+import arcade.core.sim.Simulation;
 import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.env.grid.PatchGrid;
 
 public abstract class PatchProcessQuorumSensing extends PatchProcess {
 
     /** List of internal amounts of each species. */
     protected double[] concs;
+
+    /** Volume of cell [um<sup>3</sup>]. */
+    double volume;
 
     /** Environmental auxin at current location. */
     protected double extAuxin;
@@ -20,11 +27,12 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
     /** Step size for module (in seconds) */
     static final double STEP_SIZE = 1.0 / STEP_DIVIDER;
 
+    /** Volume fraction. */
+    protected double f;
+
     PatchProcessQuorumSensing(PatchCell cell) {
         super(cell);
-        this.cell = cell;
         this.volume = cell.getVolume();
-        this.loc = cell.getLocation();
     }
 
     /**
