@@ -150,6 +150,12 @@ public abstract class PatchCellMacrophage extends PatchCell {
         return this.boundCell;
     }
 
+    /** Sets binding flag to unbound and binding target to null. */
+    public void unbind() {
+        super.setBindingFlag(PatchEnums.AntigenFlag.UNBOUND);
+        this.boundCell = null;
+    }
+
     /**
      * Returns number of synnotch receptors.
      *
