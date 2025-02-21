@@ -8,6 +8,7 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 import arcade.patch.env.grid.PatchGrid;
+import arcade.patch.env.location.PatchLocation;
 import arcade.patch.util.PatchEnums;
 
 /**
@@ -102,8 +103,7 @@ public abstract class PatchCellMacrophage extends PatchCell {
         Simulation sim = (Simulation) simstate;
         PatchGrid grid = (PatchGrid) sim.getGrid();
 
-        Bag allAgents = new Bag();
-        getTissueAgents(allAgents, grid.getObjectsAtLocation(location));
+        Bag allAgents = grabAllTissueNeighbors(grid, location);
 
         if (!allAgents.isEmpty()) {
             PatchCellTissue target =
@@ -148,6 +148,24 @@ public abstract class PatchCellMacrophage extends PatchCell {
                 tissueAgents.add((PatchCellTissue) cell);
             }
         }
+    }
+
+    /**
+     * Adds all tissue agents at a given location in the input bag.
+     *
+     * @param grid the simulation grid
+     * @param loc the location
+     * @return bag of all tissue neighbor agents
+     */
+    private Bag grabAllTissueNeighbors(PatchGrid grid, PatchLocation loc) {
+        Bag neighbors = new Bag();
+        getTissueAgents(neighbors, grid.getObjectsAtLocation(loc));
+        for (Location neighborLocation : loc.getNeighbors()) {
+            Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));
+            getTissueAgents(neighbors, bag);
+        }
+
+        return neighbors;
     }
 
     /**
