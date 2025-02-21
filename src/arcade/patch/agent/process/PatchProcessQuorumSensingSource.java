@@ -102,6 +102,9 @@ public class PatchProcessQuorumSensingSource extends PatchProcessQuorumSensing {
                                 == PatchEnums.AntigenFlag.BOUND_ANTIGEN
                         ? 1
                         : 0;
+        // update bound synnotch receptors
+        this.boundSynnotch = ((PatchCellMacrophage) cell).getSynNotchs();
+        concs[SYNNOTCH] = boundSynnotch / 6.022E-23 * 1E15;
     }
 
     @Override
