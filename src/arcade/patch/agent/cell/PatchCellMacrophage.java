@@ -89,7 +89,10 @@ public abstract class PatchCellMacrophage extends PatchCell {
         super(container, location, parameters, links);
         this.boundCell = null;
         this.bindingRate =
-                parameters.getDouble("ANTIGEN_BINDING_RATE") * 60 * location.getVolume() * 6.022E23;
+                parameters.getDouble("ANTIGEN_BINDING_RATE")
+                        * 60
+                        * (1 / location.getVolume())
+                        * (1 / 6.022E23);
         this.synnotchs = 0;
         this.ticker = 0;
     }
