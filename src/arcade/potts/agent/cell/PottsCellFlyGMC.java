@@ -16,6 +16,15 @@ import arcade.potts.util.PottsEnums.State;
  * in the setup file.
  */
 public class PottsCellFlyGMC extends PottsCell {
+
+    /**
+     * Creates a fly GMC {@code PottsCell} agent.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
     public PottsCellFlyGMC(
             PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);

@@ -13,7 +13,18 @@ import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.State;
 
+/**
+ * Implementation of {@link PottsModuleProliferationSimple} for fly GMC agents. These cells divide
+ * into two {@link PottsCellFlyNeuron} cells. The links must be set in the setup file so that 100%
+ * of the daughter cells are Neurons.
+ */
 public class PottsModuleFlyGMCProliferation extends PottsModuleProliferationSimple {
+
+    /**
+     * Creates a fly GMC proliferation module
+     *
+     * @param cell the cell to which this module is attached
+     */
     public PottsModuleFlyGMCProliferation(PottsCellFlyGMC cell) {
         super(cell);
     }
