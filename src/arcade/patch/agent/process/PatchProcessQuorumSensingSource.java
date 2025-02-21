@@ -52,7 +52,7 @@ public class PatchProcessQuorumSensingSource extends PatchProcessQuorumSensing {
         this.boundSynnotch = ((PatchCellMacrophage) cell).getSynNotchs();
         this.isBound =
                 ((PatchCellMacrophage) cell).getBindingFlag()
-                        == PatchEnums.AntigenFlag.BOUND_ANTIGEN
+                                == PatchEnums.AntigenFlag.BOUND_ANTIGEN
                         ? 1
                         : 0;
 
@@ -99,7 +99,7 @@ public class PatchProcessQuorumSensingSource extends PatchProcessQuorumSensing {
         // update binding status per current tick
         this.isBound =
                 ((PatchCellMacrophage) cell).getBindingFlag()
-                        == PatchEnums.AntigenFlag.BOUND_ANTIGEN
+                                == PatchEnums.AntigenFlag.BOUND_ANTIGEN
                         ? 1
                         : 0;
     }
