@@ -6,7 +6,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
-import arcade.potts.agent.module.PottsModuleProliferationSimple;
+import arcade.potts.agent.module.PottsModuleFlyNeuronQuiescence;
 import arcade.potts.env.location.PottsLocation;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -67,49 +67,29 @@ public class PottsCellFlyNeuronTest {
     }
 
     @Test
-    public void constructor_invalidApoptosisRate_throwsUnsupportedOperationException() {
-        doReturn(1.0).when(parametersMock).getDouble("proliferation/BASAL_APOPTOSIS_RATE");
-        assertThrows(
-                UnsupportedOperationException.class,
-                () -> {
-                    new PottsCellFlyNeuron(baseContainer, locationMock, parametersMock);
-                });
-    }
-
-    @Test
-    public void constructor_invalidGrowthRate_throwsUnsupportedOperationException() {
-        doReturn(1).when(parametersMock).getInt("proliferation/CELL_GROWTH_RATE");
-        assertThrows(
-                UnsupportedOperationException.class,
-                () -> {
-                    new PottsCellFlyNeuron(baseContainer, locationMock, parametersMock);
-                });
-    }
-
-    @Test
     public void make_called_throwUnsupportedOperationException() {
         PottsCellFlyNeuron neuron =
                 new PottsCellFlyNeuron(baseContainer, locationMock, parametersMock);
         assertThrows(
                 UnsupportedOperationException.class,
                 () -> {
-                    neuron.make(cellID + 1, State.PROLIFERATIVE, mock(MersenneTwisterFast.class));
+                    neuron.make(cellID + 1, State.QUIESCENT, mock(MersenneTwisterFast.class));
                 });
     }
 
     @Test
-    public void setState_proliferative_setsProliferationModule() {
+    public void setState_quiescent_setsQuiescenceModule() {
         PottsCellFlyNeuron neuron =
                 new PottsCellFlyNeuron(baseContainer, locationMock, parametersMock);
-        neuron.setState(State.PROLIFERATIVE);
-        assertTrue(neuron.module instanceof PottsModuleProliferationSimple);
+        neuron.setState(State.QUIESCENT);
+        assertTrue(neuron.module instanceof PottsModuleFlyNeuronQuiescence);
     }
 
     @Test
     public void setState_otherStates_setsNullModule() {
         PottsCellFlyNeuron neuron =
                 new PottsCellFlyNeuron(baseContainer, locationMock, parametersMock);
-        neuron.setState(State.QUIESCENT);
+        neuron.setState(State.PROLIFERATIVE);
         assertNull(neuron.getModule());
         neuron.setState(State.NECROTIC);
         assertNull(neuron.getModule());
