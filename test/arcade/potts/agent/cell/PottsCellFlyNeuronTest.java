@@ -52,7 +52,7 @@ public class PottsCellFlyNeuronTest {
                     cellCriticalHeight);
 
     @BeforeEach
-    public void setupMocks() {
+    public final void setupMocks() {
         locationMock = mock(PottsLocation.class);
         parametersMock = spy(new Parameters(new MiniBox(), null, null));
         doReturn(0.0).when(parametersMock).getDouble(any(String.class));

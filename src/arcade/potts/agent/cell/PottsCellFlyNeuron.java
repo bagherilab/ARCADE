@@ -25,14 +25,14 @@ public final class PottsCellFlyNeuron extends PottsCell {
             PottsCellContainer container, Location location, Parameters parameters) {
 
         super(container, location, parameters, null);
-        double basal_apoptosis_rate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
-        if (basal_apoptosis_rate != 0) {
+        double basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
+        if (basalApoptosisRate != 0) {
             throw new UnsupportedOperationException(
                     "Neurons should not apoptose."
                             + "Set proliferation/BASAL_APOPTOSIS_RATE to 0 in setup file.");
         }
-        int cell_growth_rate = parameters.getInt("proliferation/CELL_GROWTH_RATE");
-        if (cell_growth_rate != 0) {
+        int cellGrowthRate = parameters.getInt("proliferation/CELL_GROWTH_RATE");
+        if (cellGrowthRate != 0) {
             throw new UnsupportedOperationException(
                     "Neurons should not grow or divide."
                             + " Set proliferation/CELL_GROWTH_RATE to 0 in setup file.");
