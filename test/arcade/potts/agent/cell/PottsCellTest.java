@@ -12,6 +12,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.agent.module.Module;
 import arcade.core.env.location.*;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModule;
@@ -84,6 +85,35 @@ public class PottsCellTest {
     static class PottsCellMock extends PottsCell {
         PottsCellMock(PottsCellContainer container, Location location, Parameters parameters) {
             super(container, location, parameters, null);
+        }
+
+        @Override
+        public PottsCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
+            return new PottsCellContainer(
+                    newID,
+                    id,
+                    pop,
+                    age,
+                    divisions,
+                    newState,
+                    null,
+                    0,
+                    (hasRegions ? new EnumMap<>(Region.class) : null),
+                    criticalVolume,
+                    criticalHeight,
+                    criticalRegionVolumes,
+                    criticalRegionHeights);
+        }
+
+        @Override
+        void setStateModule(CellState newState) {
+            module = mock(PottsModule.class);
+        }
+    }
+
+    static class PottsCellMockWithLinks extends PottsCell {
+        PottsCellMockWithLinks(PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
+            super(container, location, parameters, links);
         }
 
         @Override
@@ -677,6 +707,68 @@ public class PottsCellTest {
         for (Region region : regionList) {
             assertEquals(0, cell.getCriticalHeight(region), EPSILON);
         }
+    }
+
+    @Test
+    public void getCriticalRegionVolumes_beforeInitializeNoRegions_returnsNull() {
+        assertNull(cellWithoutRegions.getCriticalRegionVolumes());
+    }
+
+    @Test
+    public void getCriticalRegionVolumes_beforeInitializeWithRegions_returnsValue() {
+        assertEquals(criticalVolumesRegionMock, cellWithRegions.getCriticalRegionVolumes());
+    }
+
+    @Test
+    public void getCriticalRegionVolumes_afterInitializeNoRegions_returnsNull() {
+        PottsCell cell = new PottsCellMock(containerWithoutRegions, locationMock, parametersMock);
+        cell.initialize(null, null);
+        assertNull(cellWithoutRegions.getCriticalRegionVolumes());
+    }
+
+    @Test
+    public void getCriticalRegionVolumes_afterInitializeWithRegions_returnsValue() {
+        PottsCell cell = new PottsCellMock(containerWithRegions, locationMock, parametersMock);
+        cell.initialize(null, null);
+        assertEquals(criticalVolumesRegionMock, cell.getCriticalRegionVolumes());
+    }
+
+    @Test
+    public void getCriticalRegionHeights_beforeInitializeNoRegions_returnsNull() {
+        assertNull(cellWithoutRegions.getCriticalRegionHeights());
+    }
+
+    @Test
+    public void getCriticalRegionHeights_beforeInitializeWithRegions_returnsValue() {
+        assertEquals(criticalHeightsRegionMock, cellWithRegions.getCriticalRegionHeights());
+    }
+
+    @Test
+    public void getCriticalRegionHeights_afterInitializeNoRegions_returnsNull() {
+        PottsCell cell = new PottsCellMock(containerWithoutRegions, locationMock, parametersMock);
+        cell.initialize(null, null);
+        assertNull(cellWithoutRegions.getCriticalRegionHeights());
+    }
+
+    @Test
+    public void getCriticalRegionHeights_afterInitializeWithRegions_returnsValue() {
+        PottsCell cell = new PottsCellMock(containerWithRegions, locationMock, parametersMock);
+        cell.initialize(null, null);
+        assertEquals(criticalHeightsRegionMock, cell.getCriticalRegionHeights());
+    }
+
+    @Test
+    public void getLinks_defaultConstructor_returnsNull() {
+        assertNull(cellWithoutRegions.getLinks());
+    }
+
+    @Test
+    public void getLinks_valueAssigned_returnsValue() {
+        GrabBag links = mock(GrabBag.class);
+        PottsCell cellWithRegions = new PottsCellMockWithLinks(containerWithRegions, locationMock, parametersMock, links);
+        assertSame(links, cellWithRegions.getLinks());
+        PottsCell cellWithoutRegions = new PottsCellMockWithLinks(containerWithoutRegions, locationMock, parametersMock, links);
+        assertSame(links, cellWithoutRegions.getLinks());
     }
 
     @Test
