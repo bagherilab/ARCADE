@@ -91,9 +91,9 @@ public class PatchProcessQuorumSensingSource extends PatchProcessQuorumSensing {
         if (gradient >= 0) {
             auxinOutput = gradient * AUX_FLOW_RATE;
         }
-
+        extAuxin += auxinOutput;
         // Update internal and external auxin based off of output
-        sim.getLattice("AUXIN").setValue(location, auxinOutput);
+        sim.getLattice("AUXIN").setValue(location, extAuxin);
         concs[AUXIN] -= auxinOutput;
 
         // update binding status per current tick
