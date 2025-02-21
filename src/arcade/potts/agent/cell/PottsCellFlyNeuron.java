@@ -9,7 +9,8 @@ import arcade.potts.util.PottsEnums.State;
 
 /**
  * Represents a fly neuron cell in the Potts model. This cell does not grow nor divide. It also does
- * not undergo apoptosis. Basal apoptosis rate and growth rate should both be set to 0 in setup file.
+ * not undergo apoptosis. Basal apoptosis rate and growth rate should both be set to 0 in setup
+ * file.
  */
 public final class PottsCellFlyNeuron extends PottsCell {
 
