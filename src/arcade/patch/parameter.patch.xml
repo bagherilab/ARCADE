@@ -48,6 +48,8 @@
     <population id="T_CELL_VOLUME_STDEV" value="10.0" unit="um^3" description="cell volume distribution standard deviation" />
     <population id="BOUND_TIME" value="360" description="6 hours" />
     <population id="BOUND_RANGE" value="0" description="hours" />
+    <!-- SynNotch Circuit specific parameters -->
+    <population id="ANTIGEN_BINDING_RATE" value="5.1E3" unit="M^-1 s^-1" description="association rate constant for receptor/antigen binding" />
 
     <!-- proliferation module parameters -->
 
