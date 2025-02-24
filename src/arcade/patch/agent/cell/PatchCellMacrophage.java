@@ -112,8 +112,7 @@ public abstract class PatchCellMacrophage extends PatchCell {
         if (!allAgents.isEmpty()) {
             PatchCellTissue target =
                     (PatchCellTissue) allAgents.get(simstate.random.nextInt(allAgents.size()));
-            // TODO: change this to getSynNotch antigens once SynNotch is implemented
-            double antigenMolecules = ((PatchCellTissue) target).getCarAntigens();
+            double antigenMolecules = ((PatchCellTissue) target).getSynNotchAntigens();
             double bindingEvent = antigenMolecules * bindingRate;
             double timeInterval = computeTimeInterval(bindingEvent, simstate.random);
             Poisson distribution = new Poisson(timeInterval, simstate.random);
