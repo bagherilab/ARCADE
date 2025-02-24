@@ -128,6 +128,9 @@ public abstract class PatchCell implements Cell {
     /** Cell binding flag. */
     protected PatchEnums.AntigenFlag bindingFlag;
 
+    /** Cell surface SynNotch antigen count */
+    private int synNotchAntigens;
+
     /**
      * Creates a {@code PatchCell} agent.
      *
@@ -173,7 +176,7 @@ public abstract class PatchCell implements Cell {
         accuracy = parameters.getDouble("ACCURACY");
         affinity = parameters.getDouble("AFFINITY");
         synthesisDuration = parameters.getInt("SYNTHESIS_DURATION");
-
+        synNotchAntigens = parameters.getInt("SYNNOTCH_ANTIGENS");
         int densityInput = parameters.getInt("MAX_DENSITY");
         maxDensity = (densityInput >= 0 ? densityInput : Integer.MAX_VALUE);
 
@@ -578,5 +581,14 @@ public abstract class PatchCell implements Cell {
      */
     public int getSynthesisDuration() {
         return this.synthesisDuration;
+    }
+
+    /**
+     * Returns the number of synnotch antigens on this cell.
+     *
+     * @return the number of self receptor antigens on this cell.
+     */
+    public int getSynNotchAntigens() {
+        return synNotchAntigens;
     }
 }
