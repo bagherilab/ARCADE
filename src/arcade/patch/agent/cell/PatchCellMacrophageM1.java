@@ -100,8 +100,6 @@ public class PatchCellMacrophageM1 extends PatchCellMacrophage {
 
         processes.get(PatchEnums.Domain.QUORUM).step(simstate.random, sim);
 
-        processes.get(PatchEnums.Domain.SIGNALING).step(simstate.random, sim);
-
         if (state == PatchEnums.State.UNDEFINED) {
             if (flag == PatchEnums.Flag.MIGRATORY) {
                 setState(PatchEnums.State.MIGRATORY);
