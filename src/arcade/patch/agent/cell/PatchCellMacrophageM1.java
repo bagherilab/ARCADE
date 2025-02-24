@@ -94,14 +94,13 @@ public class PatchCellMacrophageM1 extends PatchCellMacrophage {
             }
         }
 
-        processes.get(PatchEnums.Domain.QUORUM).step(simstate.random, sim);
-
         if (state == PatchEnums.State.QUIESCENT) {
             checkForBinding(simstate);
         }
 
+        processes.get(PatchEnums.Domain.QUORUM).step(simstate.random, sim);
+
         if (state == PatchEnums.State.UNDEFINED) {
-            this.unbind();
             if (flag == PatchEnums.Flag.MIGRATORY) {
                 setState(PatchEnums.State.MIGRATORY);
             } else if (divisions == 0) {
