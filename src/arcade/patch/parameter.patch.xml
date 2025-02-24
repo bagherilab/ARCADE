@@ -102,6 +102,9 @@
     <!-- inflammation CD8 module -->
     <population.process process="inflammation" id="GRANZ_SYNTHESIS_DELAY" value="15" unit="min" />
 
+    <!-- quorum process parameters -->
+    <population.process process="quorum" id="ACTIVATION_THRESHOLD" value="1500" unit="molecules/cell" />
+
     <!-- LAYERS ============================================================ -->
 
     <!-- default parameters for layers -->
