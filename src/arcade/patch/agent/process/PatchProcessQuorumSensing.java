@@ -92,7 +92,7 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
             case "SOURCE":
                 return new PatchProcessQuorumSensingSource(cell);
             case "SINK":
-                throw new UnsupportedOperationException();
+                return new PatchProcessQuorumSensingSink(cell);
             default:
                 return null;
         }
