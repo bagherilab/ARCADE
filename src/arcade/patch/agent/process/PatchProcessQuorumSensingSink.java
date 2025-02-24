@@ -67,9 +67,7 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
         super(cell);
 
         // initialize module
-        // TODO: add getBoundAntigens to PatchCellCART
-        this.boundCAR = 0;
-        // this.boundCAR = ((PatchCellCART) cell).getBoundAntigens();
+        this.boundCAR = ((PatchCellCART) cell).getBoundCARAntigensCount();
         this.isBound =
                 ((PatchCellCART) cell).getBindingFlag() == PatchEnums.AntigenFlag.BOUND_ANTIGEN
                         ? 1
@@ -129,9 +127,8 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
 
         // update activation of cell according to activation status
         if (concs[ACTIVATION] > ACTIVATION_THRESHOLD) {
-            // TODO: add setActivation and reset active ticker to PatchCellCART
-            // ((PatchCellCART) cell).setActivationStatus(true);
-            // ((PatchCellCART) cell).resetLastActiveTicker();
+            ((PatchCellCART) cell).setActivationStatus(true);
+            ((PatchCellCART) cell).resetLastActiveTicker();
         }
 
         // update binding status per current tick
@@ -140,8 +137,7 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
                         ? 1
                         : 0;
         // update bound CAR receptors
-        // TODO: add getBoundAntigens to PatchCellCART
-        // this.boundCAR = ((PatchCellCART) cell).getBoundAntigens();
+        this.boundCAR = ((PatchCellCART) cell).getBoundCARAntigensCount();
         concs[CAR] = boundCAR / 6.022E-23 * 1E15;
     }
 

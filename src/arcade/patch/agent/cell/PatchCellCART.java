@@ -414,4 +414,23 @@ public abstract class PatchCellCART extends PatchCell {
         super.setBindingFlag(AntigenFlag.UNBOUND);
         this.boundTarget = null;
     }
+
+    /**
+     * Getter for number of bound CARS.
+     *
+     * @return number of bound CARs
+     */
+    public int getBoundCARAntigensCount() {
+        return this.boundCARAntigensCount;
+    }
+
+    /** Sets last active ticker to 0. */
+    public void resetLastActiveTicker() {
+        this.lastActiveTicker = 0;
+    }
+
+    /** Sets the activation status of the cell. */
+    public void setActivationStatus(boolean status) {
+        this.activated = status;
+    }
 }
