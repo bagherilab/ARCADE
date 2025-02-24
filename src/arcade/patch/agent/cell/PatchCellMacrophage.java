@@ -2,6 +2,7 @@ package arcade.patch.agent.cell;
 
 import sim.engine.SimState;
 import sim.util.Bag;
+import sim.util.distribution.*;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
@@ -115,9 +116,9 @@ public abstract class PatchCellMacrophage extends PatchCell {
             double antigenMolecules = ((PatchCellTissue) target).getCarAntigens();
             double bindingEvent = antigenMolecules * bindingRate;
             double timeInterval = computeTimeInterval(bindingEvent, simstate.random);
-            Poisson distribution =
-                    new PoissonFactoryImpl().createPoisson(timeInterval, simstate.random);
-            double bindingProbability = distribution.nextEvent();
+            Poisson distribution = new Poisson(timeInterval, simstate.random);
+            // calculate probability of 1 or more events occurring in this time step
+            double bindingProbability = 1 - distribution.pdf(0);
             if (bindingProbability > simstate.random.nextDouble()) {
                 this.boundCell = target;
                 this.bindingFlag = PatchEnums.AntigenFlag.BOUND_ANTIGEN;
@@ -197,95 +198,5 @@ public abstract class PatchCellMacrophage extends PatchCell {
      */
     public int getSynNotchs() {
         return this.synnotchs;
-    }
-
-    /** A {@code PoissonFactory} object instantiates Poisson distributions. */
-    interface PoissonFactory {
-
-        /**
-         * Creates instance of Poisson.
-         *
-         * @param lambda the Poisson distribution lambda
-         * @param random the random number generator
-         * @return a Poisson distribution instance
-         */
-        Poisson createPoisson(double lambda, MersenneTwisterFast random);
-    }
-
-    /** Implementation of the PoissonFactory interface. */
-    public class PoissonFactoryImpl implements PoissonFactory {
-
-        /**
-         * Creates an instance of Poisson distribution.
-         *
-         * @param lambda the Poisson distribution lambda
-         * @param random the random number generator
-         * @return a Poisson distribution instance
-         */
-        @Override
-        public Poisson createPoisson(double lambda, MersenneTwisterFast random) {
-            return new Poisson(lambda, random);
-        }
-    }
-
-    /** Class representing a Poisson distribution. */
-    public class Poisson {
-
-        /** Lambda parameter for the distribution. */
-        private final double lambda;
-
-        /** Random number generator. */
-        private final MersenneTwisterFast random;
-
-        /**
-         * Constructs a Poisson distribution with the specified lambda and random number generator.
-         *
-         * @param lambda the Poisson distribution lambda
-         * @param random the random number generator
-         * @throws IllegalArgumentException if lambda is not positive
-         */
-        public Poisson(double lambda, MersenneTwisterFast random) {
-            if (lambda <= 0) {
-                throw new IllegalArgumentException("Lambda must be positive.");
-            }
-            this.lambda = lambda;
-            this.random = random;
-        }
-
-        /**
-         * Generates a random number following the Poisson distribution.
-         *
-         * @return a Poisson-distributed random integer
-         */
-        public int nextSample() {
-            double l = Math.exp(-lambda);
-            int k = 0;
-            double p = 1.0;
-
-            do {
-                k++;
-                p *= random.nextDouble();
-            } while (p > l);
-
-            return k - 1;
-        }
-
-        /**
-         * Calculates the probability that at least one event occurs.
-         *
-         * @return the probability that one or more events occurs within this time step.
-         */
-        public double nextEvent() {
-            return 1 - Math.exp(-lambda);
-        }
-
-        /**
-         * Returns lambda value of the distribution.
-         *
-         * @return the lambda
-         */
-        public double getLambda() {
-            return lambda;
-        }
     }
 }
