@@ -88,6 +88,7 @@ public class PatchProcessQuorumSensingSource extends PatchProcessQuorumSensing {
         // Calculate auxin output based on gradient
         double gradient = concs[AUXIN] - extAuxin;
         double auxinOutput = 0;
+        gradient *= gradient < 1E-10 ? 0 : 1;
         if (gradient > 0) {
             auxinOutput = gradient * AUX_FLOW_RATE;
         }
