@@ -132,9 +132,9 @@ public class PatchCellKiller extends PatchCellCARTCD8 {
                         this.activated = false;
                     } else {
                         // if CD8 cell is properly activated, it can be cytotoxic
-                        this.lastActiveTicker = 0;
-                        this.activated = true;
-                        super.setState(PatchEnums.State.CYTOTOXIC);
+                        if (this.activated) {
+                            super.setState(PatchEnums.State.CYTOTOXIC);
+                        }
                     }
                 } else {
                     // If self binding, unbind
