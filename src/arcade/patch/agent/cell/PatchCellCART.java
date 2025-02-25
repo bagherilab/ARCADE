@@ -108,6 +108,9 @@ public abstract class PatchCellCART extends PatchCell {
     /** Fraction of proliferative cells that become apoptotic. */
     protected final double proliferativeFraction;
 
+    /** Target cell that current T cell is bound to. */
+    protected PatchCell boundTarget;
+
     /**
      * Creates a {@code PatchCellCART} agent. *
      *
@@ -155,6 +158,7 @@ public abstract class PatchCellCART extends PatchCell {
         boundSelfAntigensCount = 0;
         lastActiveTicker = 0;
         activated = true;
+        boundTarget = null;
 
         // Set loaded parameters.
         exhaustedFraction = parameters.getDouble("EXHAUSTED_FRAC");
@@ -394,5 +398,20 @@ public abstract class PatchCellCART extends PatchCell {
     /** Randomly increases number of self receptors after CAR binding. */
     private void updateSelfReceptors() {
         selfReceptors += (int) ((double) selfReceptorsStart * (0.95 + Math.random() / 10));
+    }
+
+    /**
+     * Returns bound cell.
+     *
+     * @return the bound cell
+     */
+    public PatchCell getBoundTarget() {
+        return this.boundTarget;
+    }
+
+    /** Sets binding flag to unbound and binding target to null. */
+    public void unbind() {
+        super.setBindingFlag(AntigenFlag.UNBOUND);
+        this.boundTarget = null;
     }
 }

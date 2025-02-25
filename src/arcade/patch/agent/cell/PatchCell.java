@@ -18,6 +18,7 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModuleApoptosis;
+import arcade.patch.agent.module.PatchModuleCytotoxicity;
 import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleProliferation;
 import arcade.patch.agent.process.PatchProcessInflammation;
@@ -345,9 +346,15 @@ public abstract class PatchCell implements Cell {
                 module = new PatchModuleApoptosis(this);
                 break;
             case CYTOTOXIC:
-                throw new UnsupportedOperationException();
+                module = new PatchModuleCytotoxicity(this);
+                break;
             case STIMULATORY:
                 throw new UnsupportedOperationException();
+            case QUIESCENT:
+                if (this instanceof PatchCellCART) {
+                    this.setState(State.UNDEFINED);
+                }
+                break;
             default:
                 module = null;
                 break;

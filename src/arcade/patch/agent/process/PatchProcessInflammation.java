@@ -311,7 +311,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
             case "CD4":
                 throw new UnsupportedOperationException();
             case "CD8":
-                throw new UnsupportedOperationException();
+                return new PatchProcessInflammationCD8((PatchCellCART) cell);
             default:
                 return null;
         }
