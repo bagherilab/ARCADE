@@ -14,14 +14,11 @@ import arcade.patch.util.PatchEnums;
 
 public class PatchCellKiller extends PatchCellCARTCD8 {
 
-    /** Association rate constant for receptor/antigen binding [molecules per minute]. */
-    protected double bindingRate;
+    /** CAR Association rate constant for receptor/antigen binding [molecules per minute]. */
+    protected double CARBindingRate;
 
-    /** Ticker to keep track of how long the cell has been bound [min]. */
-    protected double ticker;
-
-    /** Average time that macrophage is bound to target [min]. */
-    private double boundTime;
+    /** PLD1 association rate constant for receptor/antigen binding [molecules per minute]. */
+    protected double selfBindingRate;
 
     public PatchCellKiller(PatchCellContainer container, Location location, Parameters parameters) {
         super(container, location, parameters);
@@ -30,9 +27,8 @@ public class PatchCellKiller extends PatchCellCARTCD8 {
     public PatchCellKiller(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
-        this.ticker = 0;
-        this.bindingRate = parameters.getDouble("ANTIGEN_BINDING_RATE");
-        this.boundTime = 360;
+        this.CARBindingRate = parameters.getDouble("CAR_ANTIGEN_BINDING_RATE");
+        this.selfBindingRate = parameters.getDouble("SELF_ANTIGEN_BINDING_RATE");
     }
 
     @Override
@@ -42,18 +38,9 @@ public class PatchCellKiller extends PatchCellCARTCD8 {
         // Increase age of cell.
         super.age++;
 
-        // unbind from target if delay is reached
-        // otherwise increment if still bound
-        if (ticker > boundTime) {
-            this.unbind();
-        } else if (this.bindingFlag == PatchEnums.AntigenFlag.BOUND_ANTIGEN) {
-            ticker++;
-        }
-
         if (state != PatchEnums.State.APOPTOTIC && age > apoptosisAge) {
             setState(PatchEnums.State.APOPTOTIC);
             this.unbind();
-            this.activated = false;
         }
 
         // Increase time since last active ticker
@@ -102,7 +89,6 @@ public class PatchCellKiller extends PatchCellCARTCD8 {
                     super.setState(PatchEnums.State.SENESCENT);
                 }
                 this.unbind();
-                this.activated = false;
             } else {
                 // Cell attempts to bind to a target
                 this.checkForBinding(simstate);
@@ -115,7 +101,6 @@ public class PatchCellKiller extends PatchCellCARTCD8 {
                         super.setState(PatchEnums.State.ANERGIC);
                     }
                     this.unbind();
-                    this.activated = false;
                 } else if (super.getBindingFlag() == PatchEnums.AntigenFlag.BOUND_ANTIGEN) {
                     // If cell is only bound to target antigen, the cell
                     // can potentially become properly activated.
@@ -129,10 +114,9 @@ public class PatchCellKiller extends PatchCellCARTCD8 {
                             super.setState(PatchEnums.State.EXHAUSTED);
                         }
                         this.unbind();
-                        this.activated = false;
                     } else {
                         // if CD8 cell is properly activated, it can be cytotoxic
-                        if (this.activated) {
+                        if (activated) {
                             super.setState(PatchEnums.State.CYTOTOXIC);
                         }
                     }
@@ -176,19 +160,55 @@ public class PatchCellKiller extends PatchCellCARTCD8 {
         if (!allAgents.isEmpty()) {
             PatchCellTissue target =
                     (PatchCellTissue) allAgents.get(simstate.random.nextInt(allAgents.size()));
-            double antigenMolecules = ((PatchCellTissue) target).getCarAntigens();
-            double bindingEvent = antigenMolecules * bindingRate;
-            double timeInterval = computeTimeInterval(bindingEvent, simstate.random);
-            Poisson distribution = new Poisson(timeInterval, simstate.random);
-            // calculate probability of 1 or more events occurring in this time step
-            double bindingProbability = 1 - distribution.pdf(0);
-            if (bindingProbability > simstate.random.nextDouble()) {
+            double carProbability =
+                    calculateProbability(
+                            ((PatchCellTissue) target).getCarAntigens(),
+                            CARBindingRate,
+                            simstate.random);
+            double selfProbability =
+                    calculateProbability(
+                            ((PatchCellTissue) target).getSelfAntigens(),
+                            selfBindingRate,
+                            simstate.random);
+            double randomCar = simstate.random.nextDouble();
+            double randomSelf = simstate.random.nextDouble();
+            if (carProbability > randomCar && selfProbability < randomSelf) {
                 this.boundTarget = target;
                 this.bindingFlag = PatchEnums.AntigenFlag.BOUND_ANTIGEN;
                 this.boundCARAntigensCount++;
-                this.ticker = 0;
+                updateSelfReceptors();
+            } else if (carProbability > randomCar && selfProbability > randomSelf) {
+                this.boundTarget = target;
+                this.bindingFlag = PatchEnums.AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR;
+                this.boundCARAntigensCount++;
+                boundSelfAntigensCount++;
+                updateSelfReceptors();
+            } else if (carProbability < randomCar && selfProbability > randomSelf) {
+                this.boundTarget = target;
+                super.setBindingFlag(PatchEnums.AntigenFlag.BOUND_CELL_RECEPTOR);
+                boundSelfAntigensCount++;
+            } else {
+                this.boundTarget = null;
+                super.setBindingFlag(PatchEnums.AntigenFlag.UNBOUND);
             }
         }
+    }
+
+    /**
+     * Calculates probability of binding using a poisson distribution.
+     *
+     * @param antigens the number of antigens on target cell surface
+     * @param bindingRate the affinity of the antigen to the receptor
+     * @param random the random number generator
+     * @return probability that at least one binding event occurs
+     */
+    private double calculateProbability(
+            double antigens, double bindingRate, MersenneTwisterFast random) {
+        double bindingEvent = antigens * bindingRate;
+        double timeInterval = computeTimeInterval(bindingEvent, random);
+        Poisson distribution = new Poisson(timeInterval, random);
+        // calculate probability of 1 or more events occurring in this time step
+        return 1 - distribution.pdf(0);
     }
 
     /**
@@ -240,8 +260,12 @@ public class PatchCellKiller extends PatchCellCARTCD8 {
         if (this.bindingFlag == PatchEnums.AntigenFlag.BOUND_ANTIGEN) {
             super.setBindingFlag(PatchEnums.AntigenFlag.UNBOUND);
             this.boundTarget = null;
-            this.ticker = 0;
             this.boundCARAntigensCount--;
         }
+    }
+
+    /** Randomly increases number of self receptors after CAR binding. */
+    private void updateSelfReceptors() {
+        selfReceptors += (int) ((double) selfReceptorsStart * (0.95 + Math.random() / 10));
     }
 }
