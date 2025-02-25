@@ -50,7 +50,9 @@
     <population id="BOUND_RANGE" value="0" description="hours" />
     <!-- SynNotch Circuit specific parameters -->
     <population id="SYNNOTCH_ANTIGENS" value="0" description="number of synnotch antigens on cell surface" />
-    <population id="ANTIGEN_BINDING_RATE" value="5.1E3" unit="M^-1 s^-1" description="association rate constant for receptor/antigen binding" />
+    <population id="ANTIGEN_BINDING_RATE" value="5.1E3" unit="M^-1 s^-1" description="association rate constant for synnotch receptor/antigen binding" />
+    <population id="CAR_ANTIGEN_BINDING_RATE" value="5.1E3" unit="M^-1 s^-1" description="association rate constant for CAR receptor/antigen binding" />
+    <population id="SELF_ANTIGEN_BINDING_RATE" value="5.1E3" unit="M^-1 s^-1" description="association rate constant for PDL1 receptor/antigen binding" />
 
     <!-- proliferation module parameters -->
 
