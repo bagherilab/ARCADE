@@ -129,11 +129,10 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
         if (concs[ACTIVATION] > ACTIVATION_THRESHOLD) {
             ((PatchCellCART) cell).setActivationStatus(true);
             ((PatchCellCART) cell).resetLastActiveTicker();
-            // TODO: add setActivation and reset active ticker to PatchCellCART
-            // ((PatchCellCART) cell).setActivationStatus(true);
-            // ((PatchCellCART) cell).resetLastActiveTicker();
+             ((PatchCellCART) cell).setActivationStatus(true);
+             ((PatchCellCART) cell).resetLastActiveTicker();
         } else {
-            // ((PatchCellCART) cell).setActivationStatus(false);
+             ((PatchCellCART) cell).setActivationStatus(false);
         }
 
         // update binding status per current tick
