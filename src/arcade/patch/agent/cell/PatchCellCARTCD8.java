@@ -11,6 +11,7 @@ import arcade.patch.util.PatchEnums.AntigenFlag;
 import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.State;
 
+/** Extension of {@link PatchCellCART} for CD8 CART-cells with selected module versions. */
 public class PatchCellCARTCD8 extends PatchCellCART {
     /**
      * Creates a T cell {@code PatchCellCARTCD8} agent. *
@@ -69,9 +70,13 @@ public class PatchCellCARTCD8 extends PatchCellCART {
         // Increase time since last active ticker
         super.lastActiveTicker++;
         if (super.lastActiveTicker != 0 && super.lastActiveTicker % 1440 == 0) {
-            if (super.boundCARAntigensCount != 0) super.boundCARAntigensCount--;
+            if (super.boundCARAntigensCount != 0) {
+                super.boundCARAntigensCount--;
+            }
         }
-        if (super.lastActiveTicker / 1440 > 7) super.activated = false;
+        if (super.lastActiveTicker / 1440 > 7) {
+            super.activated = false;
+        }
 
         // Step metabolism process.
         super.processes.get(Domain.METABOLISM).step(simstate.random, sim);
