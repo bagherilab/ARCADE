@@ -18,13 +18,13 @@ import arcade.patch.util.PatchEnums;
  * waits until it has enough granzyme to kill cell.
  */
 public class PatchModuleCytotoxicity extends PatchModule {
-    /** Target cell cytotoxic CAR T-cell is bound to */
+    /** Target cell cytotoxic CAR T-cell is bound to. */
     PatchCellTissue target;
 
-    /** CAR T-cell inflammation module */
+    /** CAR T-cell inflammation module. */
     PatchProcessInflammation inflammation;
 
-    /** Amount of granzyme inside CAR T-cell */
+    /** Amount of granzyme inside CAR T-cell. */
     double granzyme;
 
     /** Time delay before calling the action [min]. */
