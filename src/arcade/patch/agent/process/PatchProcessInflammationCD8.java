@@ -6,12 +6,18 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCellCART;
 
+/**
+ * Extension of {@link PatchProcessInflammation} for CD8 CAR T-cells
+ *
+ * <p>{@code InflammationCD8} determines granzyme amounts produced for cytotoxic effector functions
+ * as a function of IL-2 bound and antigen-induced activation state.
+ */
 public class PatchProcessInflammationCD8 extends PatchProcessInflammation {
     /** Moles of granzyme produced per moles IL-2 [mol granzyme/mol IL-2]. */
     private static final double GRANZ_PER_IL2 = 0.005;
 
     /** Delay in IL-2 synthesis after antigen-induced activation. */
-    private final int granz_synthesis_delay;
+    private final int granzSynthesisDelay;
 
     /** Amount of IL-2 bound in past being used for current granzyme production calculation. */
     private double priorIL2granz;
@@ -27,7 +33,7 @@ public class PatchProcessInflammationCD8 extends PatchProcessInflammation {
         super(c);
 
         Parameters parameters = cell.getParameters();
-        this.granz_synthesis_delay = parameters.getInt("inflammation/GRANZ_SYNTHESIS_DELAY");
+        this.granzSynthesisDelay = parameters.getInt("inflammation/GRANZ_SYNTHESIS_DELAY");
         this.priorIL2granz = 0;
 
         amts[GRANZYME] = 1; // [molecules]
@@ -39,13 +45,13 @@ public class PatchProcessInflammationCD8 extends PatchProcessInflammation {
 
         // Determine amount of granzyme production based on if cell is activated
         // as a function of IL-2 production.
-        int granzIndex = (iL2Ticker % boundArray.length) - granz_synthesis_delay;
+        int granzIndex = (iL2Ticker % boundArray.length) - granzSynthesisDelay;
         if (granzIndex < 0) {
             granzIndex += boundArray.length;
         }
         priorIL2granz = boundArray[granzIndex];
 
-        if (active && activeTicker > granz_synthesis_delay) {
+        if (active && activeTicker > granzSynthesisDelay) {
             amts[GRANZYME] += GRANZ_PER_IL2 * (priorIL2granz / iL2Receptors);
         }
 
