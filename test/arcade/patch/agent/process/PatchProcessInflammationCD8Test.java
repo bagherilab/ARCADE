@@ -58,7 +58,7 @@ public class PatchProcessInflammationCD8Test {
         prior.setAccessible(true);
         assertEquals(0.0, prior.get(inflammation));
 
-        Field delay = PatchProcessInflammationCD8.class.getDeclaredField("granz_synthesis_delay");
+        Field delay = PatchProcessInflammationCD8.class.getDeclaredField("granzSynthesisDelay");
         delay.setAccessible(true);
         assertEquals(1, delay.get(inflammation));
     }
