@@ -7,13 +7,13 @@ import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCellCART;
 
 public class PatchProcessInflammationCD8 extends PatchProcessInflammation {
-    /** Moles of granzyme produced per moles IL-2 [mol granzyme/mol IL-2] */
+    /** Moles of granzyme produced per moles IL-2 [mol granzyme/mol IL-2]. */
     private static final double GRANZ_PER_IL2 = 0.005;
 
-    /** Delay in IL-2 synthesis after antigen-induced activation */
-    private final int GRANZ_SYNTHESIS_DELAY;
+    /** Delay in IL-2 synthesis after antigen-induced activation. */
+    private final int granz_synthesis_delay;
 
-    /** Amount of IL-2 bound in past being used for current granzyme production calculation */
+    /** Amount of IL-2 bound in past being used for current granzyme production calculation. */
     private double priorIL2granz;
 
     /**
@@ -28,7 +28,7 @@ public class PatchProcessInflammationCD8 extends PatchProcessInflammation {
 
         // Set parameters.
         Parameters parameters = cell.getParameters();
-        this.GRANZ_SYNTHESIS_DELAY = parameters.getInt("inflammation/GRANZ_SYNTHESIS_DELAY");
+        this.granz_synthesis_delay = parameters.getInt("inflammation/granz_synthesis_delay");
         this.priorIL2granz = 0;
 
         // Initialize internal, external, and uptake concentration arrays.
@@ -38,24 +38,25 @@ public class PatchProcessInflammationCD8 extends PatchProcessInflammation {
         names.add(GRANZYME, "granzyme");
     }
 
+    @Override
     public void stepProcess(MersenneTwisterFast random, Simulation sim) {
 
         // Determine amount of granzyme production based on if cell is activated
         // as a function of IL-2 production.
-        int granzIndex = (iL2Ticker % boundArray.length) - GRANZ_SYNTHESIS_DELAY;
+        int granzIndex = (iL2Ticker % boundArray.length) - granz_synthesis_delay;
         if (granzIndex < 0) {
             granzIndex += boundArray.length;
         }
         priorIL2granz = boundArray[granzIndex];
 
-        if (active && activeTicker > GRANZ_SYNTHESIS_DELAY) {
+        if (active && activeTicker > granz_synthesis_delay) {
             amts[GRANZYME] += GRANZ_PER_IL2 * (priorIL2granz / iL2Receptors);
         }
 
         // Update environment.
         // Convert units back from molecules to molecules/cm^3.
-        double IL2Env = ((extIL2 - (extIL2 * fraction - amts[IL2_EXT])) * 1E12 / loc.getVolume());
-        sim.getLattice("IL-2").setValue(loc, IL2Env);
+        double iL2Env = ((extIL2 - (extIL2 * fraction - amts[IL2_EXT])) * 1E12 / loc.getVolume());
+        sim.getLattice("IL-2").setValue(loc, iL2Env);
     }
 
     @Override
