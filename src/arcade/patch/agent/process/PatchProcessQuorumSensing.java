@@ -3,6 +3,7 @@ package arcade.patch.agent.process;
 import java.util.List;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
+import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.env.grid.PatchGrid;
@@ -36,6 +37,9 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
     /** Step size for module (in seconds). */
     static final double STEP_SIZE = 1.0 / STEP_DIVIDER;
 
+    /** Location of cell. */
+    protected Location loc;
+
     /**
      * Creates an {@code PatchCellQuorumSensing} module for the given {@link PatchCell}.
      *
@@ -47,6 +51,7 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
     PatchProcessQuorumSensing(PatchCell cell) {
         super(cell);
         this.volume = cell.getVolume();
+        this.loc = cell.getLocation();
     }
 
     /**
@@ -55,7 +60,7 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
      * @param sim the simulation instance
      */
     private void updateExternal(Simulation sim) {
-        extAuxin = sim.getLattice("AUXIN").getAverageValue(location) * location.getVolume();
+        extAuxin = sim.getLattice("AUXIN").getAverageValue(loc) * loc.getVolume();
     }
 
     /**
