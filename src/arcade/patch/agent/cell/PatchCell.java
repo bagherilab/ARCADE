@@ -20,6 +20,7 @@ import arcade.core.util.Parameters;
 import arcade.patch.agent.module.*;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
+import arcade.patch.agent.process.PatchProcessQuorumSensing;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
@@ -127,6 +128,9 @@ public abstract class PatchCell implements Cell {
     /** Cell binding flag. */
     protected PatchEnums.AntigenFlag bindingFlag;
 
+    /** Cell surface SynNotch antigen count */
+    private int synNotchAntigens;
+
     /**
      * Creates a {@code PatchCell} agent.
      *
@@ -172,7 +176,7 @@ public abstract class PatchCell implements Cell {
         accuracy = parameters.getDouble("ACCURACY");
         affinity = parameters.getDouble("AFFINITY");
         synthesisDuration = parameters.getInt("SYNTHESIS_DURATION");
-
+        synNotchAntigens = parameters.getInt("SYNNOTCH_ANTIGENS");
         int densityInput = parameters.getInt("MAX_DENSITY");
         maxDensity = (densityInput >= 0 ? densityInput : Integer.MAX_VALUE);
 
@@ -342,6 +346,8 @@ public abstract class PatchCell implements Cell {
                 return PatchProcessSignaling.make(this, version);
             case INFLAMMATION:
                 return PatchProcessInflammation.make(this, version);
+            case QUORUM:
+                return PatchProcessQuorumSensing.make(this, version);
             case UNDEFINED:
             default:
                 return null;
@@ -575,5 +581,14 @@ public abstract class PatchCell implements Cell {
      */
     public int getSynthesisDuration() {
         return this.synthesisDuration;
+    }
+
+    /**
+     * Returns the number of synnotch antigens on this cell.
+     *
+     * @return the number of self receptor antigens on this cell.
+     */
+    public int getSynNotchAntigens() {
+        return synNotchAntigens;
     }
 }
