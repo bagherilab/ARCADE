@@ -20,14 +20,19 @@ import static arcade.core.ARCADETestUtilities.randomDoubleBetween;
 public class PatchProcessInflammationCD8Test {
 
     private PatchProcessInflammationCD8 inflammation;
+
     private PatchCellCART mockCell;
+
     private Parameters mockParameters;
+
     private Simulation mockSimulation;
+
     private MersenneTwisterFast mockRandom;
+
     private double cellVolume;
 
     @BeforeEach
-    public void setUp() {
+    public final void setUp() {
         mockCell = Mockito.mock(PatchCellCART.class);
         mockParameters = Mockito.mock(Parameters.class);
         mockSimulation = Mockito.mock(Simulation.class);
