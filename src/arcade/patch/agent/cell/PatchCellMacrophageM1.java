@@ -96,8 +96,8 @@ public class PatchCellMacrophageM1 extends PatchCellMacrophage {
 
         processes.get(PatchEnums.Domain.QUORUM).step(simstate.random, sim);
 
-        if (state == PatchEnums.State.QUIESCENT) {
-            if (flag == PatchEnums.Flag.MIGRATORY) {
+        if (state == PatchEnums.State.QUIESCENT || state == PatchEnums.State.UNDEFINED) {
+            if (simstate.random.nextDouble() > 0.5) {
                 setState(PatchEnums.State.MIGRATORY);
             } else if (divisions == 0) {
                 if (simstate.random.nextDouble() > senescentFraction) {
