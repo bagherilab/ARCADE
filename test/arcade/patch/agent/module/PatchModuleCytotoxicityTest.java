@@ -26,7 +26,7 @@ public class PatchModuleCytotoxicityTest {
     private MersenneTwisterFast randomMock;
 
     @BeforeEach
-    public void setUp() {
+    public final void setUp() {
         mockCell = mock(PatchCellCART.class);
         mockTarget = mock(PatchCellTissue.class);
         mockInflammation = mock(PatchProcessInflammation.class);
