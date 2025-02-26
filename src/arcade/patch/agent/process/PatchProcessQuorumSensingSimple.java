@@ -161,19 +161,19 @@ public class PatchProcessQuorumSensingSimple extends PatchProcessQuorumSensing {
         preventOverflow();
         double scale = rescaleConcentrations();
 
-        this.boundSynNotchConcentration = this.cell.synNotchAntigensBound / scale;
-        this.boundCarConcentration = this.cell.returnBoundCars() / scale;
+        this.boundSynNotchConcentration = this.cell.boundSynNotch / scale;
+        // this.boundCarConcentration = this.cell.returnBoundCars() / scale;
 
         // Solve system of equations.
         concs = Solver.rungeKutta(equations, 0, concs, 60, STEP_SIZE);
 
-        // update cell state
-        if (concs[ACTIVATION] < activation_scaled) {
-            cell.setActivationStatus(false);
-        } else {
-            cell.setActivationStatus(true);
-            cell.resetLastActiveTicker();
-        }
+        // // update cell state
+        // if (concs[ACTIVATION] < activation_scaled) {
+        //     cell.setActivationStatus(false);
+        // } else {
+        //     cell.setActivationStatus(true);
+        //     cell.resetLastActiveTicker();
+        // }
 
         cell.setCARS((int) Math.round(concs[CAR] * scale));
     }

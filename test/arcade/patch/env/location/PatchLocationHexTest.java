@@ -7,6 +7,18 @@ import static org.junit.jupiter.api.Assertions.*;
 import static arcade.core.ARCADETestUtilities.*;
 
 public class PatchLocationHexTest {
+
+    @Test
+    public void getVolume_returnsVolume() {
+        CoordinateUVWZ coord = new CoordinateUVWZ(2, 4, 6, 8);
+        PatchLocationHex location = new PatchLocationHex(coord);
+        double actual = location.getVolume();
+
+        double expected = 6780.97;
+
+        assertEquals(expected, actual, 0.01);
+    }
+
     @Test
     public void getNeighbors_calledWithZeroRadius_returnsNoNeighbors() {
         PatchLocation.radius = 0;

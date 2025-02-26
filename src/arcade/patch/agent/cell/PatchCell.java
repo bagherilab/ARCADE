@@ -19,6 +19,7 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModuleApoptosis;
 import arcade.patch.agent.module.PatchModuleMigration;
+import arcade.patch.agent.module.PatchModuleNecrosis;
 import arcade.patch.agent.module.PatchModuleProliferation;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
@@ -366,6 +367,9 @@ public abstract class PatchCell implements Cell {
             case APOPTOTIC:
                 module = new PatchModuleApoptosis(this);
                 break;
+            case NECROTIC:
+                module = new PatchModuleNecrosis(this);
+                break;
             default:
                 module = null;
                 break;
@@ -474,11 +478,16 @@ public abstract class PatchCell implements Cell {
                 }
             }
 
+            boolean allZero = true;
             GrabBag options = new GrabBag();
             for (int i = 0; i < 3; i++) {
                 if (scores[i] != 0) {
+                    allZero = false;
                     options.add(inds[i], 1);
                 }
+            }
+            if (allZero) {
+                return null;
             }
             return (PatchLocation) locs.get(options.next(random));
         } else {

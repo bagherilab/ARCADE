@@ -93,13 +93,13 @@ public class PatchActionTreat implements Action {
         this.parameters = parameters;
 
         this.coord =
-                ((PatchSeries) series).patch.get("GEOMETRY").equalsIgnoreCase("HEX")
+                "HEX".equalsIgnoreCase(((PatchSeries) series).patch.get("GEOMETRY"))
                         ? "Hex"
                         : "Rect";
-        if (coord.equals("Hex")) {
+        if ("Hex".equals(coord)) {
             latPositions = 9;
         }
-        if (coord.equals("Rect")) {
+        if ("Rect".equals(coord)) {
             latPositions = 16;
         }
 
@@ -153,7 +153,7 @@ public class PatchActionTreat implements Action {
                 double[][][] damage;
                 boolean[][][] sitesLat;
 
-                if (type.equals("source")) {
+                if ("source".equals(type)) {
                     damage = ((PatchComponentSitesSource) comp).getDamage();
                     sitesLat = ((PatchComponentSitesSource) comp).getSources();
                 } else {
@@ -265,10 +265,10 @@ public class PatchActionTreat implements Action {
 
         for (MiniBox population : populations) {
             String className = population.get("CLASS");
-            if (className.equals("cart_cd4")) {
+            if ("cart_cd4".equals(className)) {
                 cd4Code = population.getInt("CODE");
             }
-            if (className.equals("cart_cd8")) {
+            if ("cart_cd8".equals(className) || "synnotch".equals(className)) {
                 cd8Code = population.getInt("CODE");
             }
         }
