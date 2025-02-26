@@ -30,6 +30,7 @@ public class PatchCellCARTCD8Test {
     private Parameters parameters;
     private PatchLocation location;
     private PatchCellContainer container;
+    PatchSimulation sim;
 
     @BeforeEach
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
@@ -46,7 +47,6 @@ public class PatchCellCARTCD8Test {
         double criticalVolume = randomDoubleBetween(100, 200);
         double criticalHeight = randomDoubleBetween(4, 10);
         State state = State.UNDEFINED;
-        ;
 
         container =
                 new PatchCellContainer(
@@ -60,11 +60,11 @@ public class PatchCellCARTCD8Test {
                         height,
                         criticalVolume,
                         criticalHeight);
+
         doReturn(0.0).when(parameters).getDouble(any(String.class));
         doReturn(0).when(parameters).getInt(any(String.class));
         when(parameters.getDouble("HETEROGENEITY")).thenReturn(0.0);
         when(parameters.getDouble("ENERGY_THRESHOLD")).thenReturn(1.0);
-
         when(parameters.getDouble("NECROTIC_FRACTION"))
                 .thenReturn(randomIntBetween(40, 100) / 100.0);
         when(parameters.getDouble("EXHAU_FRAC")).thenReturn(randomIntBetween(40, 100) / 100.0);
@@ -85,22 +85,12 @@ public class PatchCellCARTCD8Test {
         when(parameters.getDouble("CONTACT_FRAC")).thenReturn(7.8E-6);
         when(parameters.getInt("MAX_ANTIGEN_BINDING")).thenReturn(10);
         when(parameters.getInt("CARS")).thenReturn(50000);
-        when(parameters.getInt("APOPTOSIS_AGE")).thenReturn(120960);
+        when(parameters.getDouble("APOPTOSIS_AGE")).thenReturn(120960.0);
         when(parameters.getInt("MAX_DENSITY")).thenReturn(54);
 
         cell = spy(new PatchCellCARTCD8(container, location, parameters));
-        Field apoptosisAge = PatchCell.class.getDeclaredField("apoptosisAge");
-        apoptosisAge.setAccessible(true);
-        apoptosisAge.set(cell, 120958);
 
-        Field maxDensity = PatchCell.class.getDeclaredField("maxDensity");
-        maxDensity.setAccessible(true);
-        maxDensity.set(cell, 54);
-    }
-
-    @Test
-    public void step_increasesAge() {
-        PatchSimulation sim = mock(PatchSimulation.class);
+        sim = mock(PatchSimulation.class);
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
         cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
@@ -122,37 +112,21 @@ public class PatchCellCARTCD8Test {
                         any(MersenneTwisterFast.class));
         sim.random = random;
         cell.setState(State.UNDEFINED);
+    }
+
+    @Test
+    public void step_called_increasesAge() {
         int initialAge = cell.getAge();
+
         cell.step(sim);
+
         assertEquals(initialAge + 1, cell.getAge());
     }
 
     @Test
     public void step_whenEnergyIsLow_setsStateToApoptotic() {
-        PatchSimulation sim = mock(PatchSimulation.class);
-        cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
-        cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
-        cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
-        PatchModule module = mock(PatchModule.class);
-        MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-        doAnswer(
-                        invocationOnMock -> {
-                            cell.state = invocationOnMock.getArgument(0);
-                            cell.module = module;
-                            return null;
-                        })
-                .when(cell)
-                .setState(any(State.class));
-        doReturn(new PatchCellTissue(container, location, parameters))
-                .when(cell)
-                .bindTarget(
-                        any(Simulation.class),
-                        any(PatchLocation.class),
-                        any(MersenneTwisterFast.class));
-        sim.random = random;
-        cell.setState(State.UNDEFINED);
-
         cell.setEnergy(-1 * randomIntBetween(2, 5));
+
         cell.step(sim);
 
         assertEquals(State.APOPTOTIC, cell.getState());
@@ -162,30 +136,8 @@ public class PatchCellCARTCD8Test {
 
     @Test
     public void step_whenEnergyIsNegativeAndMoreThanThreshold_setsStateToStarved() {
-        PatchSimulation sim = mock(PatchSimulation.class);
-        cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
-        cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
-        cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
-        PatchModule module = mock(PatchModule.class);
-        MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-        doAnswer(
-                        invocationOnMock -> {
-                            cell.state = invocationOnMock.getArgument(0);
-                            cell.module = module;
-                            return null;
-                        })
-                .when(cell)
-                .setState(any(State.class));
-        doReturn(new PatchCellTissue(container, location, parameters))
-                .when(cell)
-                .bindTarget(
-                        any(Simulation.class),
-                        any(PatchLocation.class),
-                        any(MersenneTwisterFast.class));
-        sim.random = random;
-        cell.setState(State.UNDEFINED);
-
         cell.setEnergy(-0.5);
+
         cell.step(sim);
 
         assertEquals(State.STARVED, cell.getState());
@@ -194,60 +146,19 @@ public class PatchCellCARTCD8Test {
 
     @Test
     public void step_whenEnergyIsNegativeAndMoreThanThreshold_setsStateToApoptotic() {
-        PatchSimulation sim = mock(PatchSimulation.class);
-        cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
-        cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
-        cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
-        PatchModule module = mock(PatchModule.class);
-        MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-        doAnswer(
-                        invocationOnMock -> {
-                            cell.state = invocationOnMock.getArgument(0);
-                            cell.module = module;
-                            return null;
-                        })
-                .when(cell)
-                .setState(any(State.class));
-        doReturn(new PatchCellTissue(container, location, parameters))
-                .when(cell)
-                .bindTarget(
-                        any(Simulation.class),
-                        any(PatchLocation.class),
-                        any(MersenneTwisterFast.class));
-        sim.random = random;
-        cell.setState(State.UNDEFINED);
-
         cell.setEnergy(-1.5);
+
         cell.step(sim);
 
         assertEquals(State.APOPTOTIC, cell.getState());
     }
 
     @Test
-    public void step_whenDivisionsAreZero_setsStateToSenescent() {
-        PatchSimulation sim = mock(PatchSimulation.class);
-        cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
-        cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
-        cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
-        PatchModule module = mock(PatchModule.class);
-        MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-        doAnswer(
-                        invocationOnMock -> {
-                            cell.state = invocationOnMock.getArgument(0);
-                            cell.divisions = 0;
-                            cell.module = module;
-                            return null;
-                        })
-                .when(cell)
-                .setState(any(State.class));
-        doReturn(new PatchCellTissue(container, location, parameters))
-                .when(cell)
-                .bindTarget(
-                        any(Simulation.class),
-                        any(PatchLocation.class),
-                        any(MersenneTwisterFast.class));
-        sim.random = random;
-        cell.setState(State.UNDEFINED);
+    public void step_whenDivisionsAreZero_setsStateToSenescent()
+            throws NoSuchFieldException, IllegalAccessException {
+        Field div = PatchCell.class.getDeclaredField("divisions");
+        div.setAccessible(true);
+        div.set(cell, 0);
 
         cell.step(sim);
 
@@ -258,30 +169,8 @@ public class PatchCellCARTCD8Test {
 
     @Test
     public void step_whenBoundToBothAntigenAndSelf_setsStateToAnergic() {
-        PatchSimulation sim = mock(PatchSimulation.class);
-        cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
-        cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
-        cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
-        PatchModule module = mock(PatchModule.class);
-        MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-        doAnswer(
-                        invocationOnMock -> {
-                            cell.state = invocationOnMock.getArgument(0);
-                            cell.module = module;
-                            return null;
-                        })
-                .when(cell)
-                .setState(any(State.class));
-        doReturn(new PatchCellTissue(container, location, parameters))
-                .when(cell)
-                .bindTarget(
-                        any(Simulation.class),
-                        any(PatchLocation.class),
-                        any(MersenneTwisterFast.class));
-        sim.random = random;
-        cell.setState(State.UNDEFINED);
-
         cell.setBindingFlag(AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR);
+
         cell.step(sim);
 
         assertTrue(cell.getState() == State.APOPTOTIC || cell.getState() == State.ANERGIC);
@@ -290,32 +179,12 @@ public class PatchCellCARTCD8Test {
     }
 
     @Test
-    public void step_whenBoundToAntigen_setsStateToCytotoxic() {
-        PatchSimulation sim = mock(PatchSimulation.class);
-        cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
-        cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
-        cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
-        PatchModule module = mock(PatchModule.class);
-        MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-        doAnswer(
-                        invocationOnMock -> {
-                            cell.state = invocationOnMock.getArgument(0);
-                            cell.boundCARAntigensCount = 0;
-                            cell.module = module;
-                            return null;
-                        })
-                .when(cell)
-                .setState(any(State.class));
-        doReturn(new PatchCellTissue(container, location, parameters))
-                .when(cell)
-                .bindTarget(
-                        any(Simulation.class),
-                        any(PatchLocation.class),
-                        any(MersenneTwisterFast.class));
-        sim.random = random;
-        cell.setState(State.UNDEFINED);
+    public void step_whenBoundToAntigen_setsStateToCytotoxic()
+            throws NoSuchFieldException, IllegalAccessException {
+        Field boundAntigens = PatchCellCART.class.getDeclaredField("boundCARAntigensCount");
+        boundAntigens.setAccessible(true);
+        boundAntigens.set(cell, 0);
         cell.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);
-
         Schedule schedule = mock(Schedule.class);
         doReturn(true).when(schedule).scheduleOnce(any(Steppable.class));
         doReturn(schedule).when(sim).getSchedule();
@@ -326,30 +195,11 @@ public class PatchCellCARTCD8Test {
     }
 
     @Test
-    public void step_whenActivated_setsStateToProliferative() {
-        PatchSimulation sim = mock(PatchSimulation.class);
-        cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
-        cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
-        cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
-        PatchModule module = mock(PatchModule.class);
-        MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-        doAnswer(
-                        invocationOnMock -> {
-                            cell.state = invocationOnMock.getArgument(0);
-                            cell.activated = true;
-                            cell.module = module;
-                            return null;
-                        })
-                .when(cell)
-                .setState(any(State.class));
-        doReturn(new PatchCellTissue(container, location, parameters))
-                .when(cell)
-                .bindTarget(
-                        any(Simulation.class),
-                        any(PatchLocation.class),
-                        any(MersenneTwisterFast.class));
-        sim.random = random;
-        cell.setState(State.UNDEFINED);
+    public void step_whenActivated_setsStateToProliferative()
+            throws NoSuchFieldException, IllegalAccessException {
+        Field active = PatchCellCART.class.getDeclaredField("activated");
+        active.setAccessible(true);
+        active.set(cell, true);
 
         cell.step(sim);
 
@@ -358,60 +208,17 @@ public class PatchCellCARTCD8Test {
 
     @Test
     public void step_whenNotActivated_setsStateToMigratory() {
-        PatchSimulation sim = mock(PatchSimulation.class);
-        cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
-        cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
-        cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
-        PatchModule module = mock(PatchModule.class);
-        MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-        doAnswer(
-                        invocationOnMock -> {
-                            cell.state = invocationOnMock.getArgument(0);
-                            cell.activated = false;
-                            cell.module = module;
-                            return null;
-                        })
-                .when(cell)
-                .setState(any(State.class));
-        doReturn(new PatchCellTissue(container, location, parameters))
-                .when(cell)
-                .bindTarget(
-                        any(Simulation.class),
-                        any(PatchLocation.class),
-                        any(MersenneTwisterFast.class));
-        sim.random = random;
-        cell.setState(State.UNDEFINED);
-
         cell.step(sim);
 
         assertTrue(cell.getState() == State.MIGRATORY || cell.getState() == State.PROLIFERATIVE);
     }
 
     @Test
-    public void step_whenOverstimulated_setsStateToExhausted() {
-        PatchSimulation sim = mock(PatchSimulation.class);
-        cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
-        cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
-        cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
-        PatchModule module = mock(PatchModule.class);
-        MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-        doAnswer(
-                        invocationOnMock -> {
-                            cell.state = invocationOnMock.getArgument(0);
-                            cell.boundCARAntigensCount = cell.maxAntigenBinding + 1;
-                            cell.module = module;
-                            return null;
-                        })
-                .when(cell)
-                .setState(any(State.class));
-        doReturn(new PatchCellTissue(container, location, parameters))
-                .when(cell)
-                .bindTarget(
-                        any(Simulation.class),
-                        any(PatchLocation.class),
-                        any(MersenneTwisterFast.class));
-        sim.random = random;
-        cell.setState(State.UNDEFINED);
+    public void step_whenOverstimulated_setsStateToExhausted()
+            throws NoSuchFieldException, IllegalAccessException {
+        Field boundAntigens = PatchCellCART.class.getDeclaredField("boundCARAntigensCount");
+        boundAntigens.setAccessible(true);
+        boundAntigens.set(cell, cell.maxAntigenBinding + 1);
         cell.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);
 
         cell.step(sim);
