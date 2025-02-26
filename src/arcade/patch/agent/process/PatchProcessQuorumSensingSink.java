@@ -142,7 +142,7 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
                         : 0;
         // update bound CAR receptors
         this.boundCAR = ((PatchCellCART) cell).getBoundCARAntigensCount();
-        concs[CAR] = boundCAR / 6.022E-23 * 1E15;
+        concs[CAR] = boundCAR / 6.022E23 * 1E15;
     }
 
     @Override
