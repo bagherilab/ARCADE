@@ -94,13 +94,9 @@ public class PatchCellMacrophageM1 extends PatchCellMacrophage {
             }
         }
 
-        if (state == PatchEnums.State.QUIESCENT) {
-            checkForBinding(simstate);
-        }
-
         processes.get(PatchEnums.Domain.QUORUM).step(simstate.random, sim);
 
-        if (state == PatchEnums.State.UNDEFINED) {
+        if (state == PatchEnums.State.QUIESCENT) {
             if (flag == PatchEnums.Flag.MIGRATORY) {
                 setState(PatchEnums.State.MIGRATORY);
             } else if (divisions == 0) {
@@ -110,7 +106,7 @@ public class PatchCellMacrophageM1 extends PatchCellMacrophage {
                     setState(PatchEnums.State.SENESCENT);
                 }
             } else {
-                setState(PatchEnums.State.PROLIFERATIVE);
+                checkForBinding(simstate);
             }
         }
 
