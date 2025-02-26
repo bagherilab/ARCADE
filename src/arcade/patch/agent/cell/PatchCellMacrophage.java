@@ -121,7 +121,7 @@ public abstract class PatchCellMacrophage extends PatchCell {
             if (bindingProbability > simstate.random.nextDouble()) {
                 this.boundCell = target;
                 this.bindingFlag = PatchEnums.AntigenFlag.BOUND_ANTIGEN;
-                this.synnotchs++;
+                this.synnotchs+=1000;
                 this.ticker = 0;
             }
         }
@@ -186,7 +186,7 @@ public abstract class PatchCellMacrophage extends PatchCell {
             super.setBindingFlag(PatchEnums.AntigenFlag.UNBOUND);
             this.boundCell = null;
             this.ticker = 0;
-            this.synnotchs--;
+            this.synnotchs-=1000;
         }
     }
 
