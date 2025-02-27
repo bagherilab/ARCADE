@@ -190,7 +190,7 @@ public class PatchCellTest {
     }
 
     @Test
-    public void setState_migrationIfCurrentLocationIsBestLocation_movesCell() {
+    public void setState_migrationIfCurrentLocationIsBestLocation_setsUndefinedCellState() {
         doReturn(0.0).when(parametersMock).getDouble(any(String.class));
         doReturn(0).when(parametersMock).getInt(any(String.class));
         doReturn(2.0).when(parametersMock).getDouble("migration/MIGRATION_RATE");
