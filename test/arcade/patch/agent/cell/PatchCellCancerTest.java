@@ -2,6 +2,7 @@ package arcade.patch.agent.cell;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import ec.util.MersenneTwisterFast;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
@@ -10,7 +11,6 @@ import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
-import ec.util.MersenneTwisterFast;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -68,7 +68,7 @@ public class PatchCellCancerTest {
         randomMock = mock(MersenneTwisterFast.class);
         simMock.random = randomMock;
     }
-    
+
     @Test
     public void make_called_createsContainer() {
         doReturn(0.0).when(parametersMock).getDouble(any(String.class));

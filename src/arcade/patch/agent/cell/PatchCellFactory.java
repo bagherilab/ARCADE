@@ -160,16 +160,7 @@ public final class PatchCellFactory implements CellFactory {
         int age = parameters.getInt("CELL_AGE");
 
         return new PatchCellContainer(
-                id,
-                0,
-                pop,
-                age,
-                0,
-                State.UNDEFINED,
-                volume,
-                height,
-                volume,
-                height + compression);
+                id, 0, pop, age, 0, State.UNDEFINED, volume, height, volume, height + compression);
     }
 
     /**

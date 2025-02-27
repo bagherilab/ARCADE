@@ -13,15 +13,15 @@ import arcade.patch.agent.module.PatchModule;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
-import arcade.patch.env.location.PatchLocation; 
+import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
 import arcade.patch.util.PatchEnums.Domain;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
-import static arcade.patch.util.PatchEnums.State;
 import static arcade.patch.util.PatchEnums.Flag;
+import static arcade.patch.util.PatchEnums.State;
 
 public class PatchCellTissueTest {
     static final double EPSILON = 1E-8;
@@ -226,7 +226,7 @@ public class PatchCellTissueTest {
         doReturn(50.0).when(parametersMock).getDouble("ENERGY_THRESHOLD");
         doReturn(0.5).when(parametersMock).getDouble("NECROTIC_FRACTION");
         doReturn(0.2).when(randomMock).nextDouble();
-        int age = 0; 
+        int age = 0;
         ArrayList<State> relevantStates = new ArrayList<>();
         relevantStates.add(State.QUIESCENT);
         relevantStates.add(State.MIGRATORY);
@@ -273,7 +273,7 @@ public class PatchCellTissueTest {
         doReturn(50.0).when(parametersMock).getDouble("ENERGY_THRESHOLD");
         doReturn(0.5).when(parametersMock).getDouble("NECROTIC_FRACTION");
         doReturn(0.7).when(randomMock).nextDouble();
-        int age = 0; 
+        int age = 0;
         ArrayList<State> relevantStates = new ArrayList<>();
         relevantStates.add(State.QUIESCENT);
         relevantStates.add(State.MIGRATORY);
@@ -318,7 +318,7 @@ public class PatchCellTissueTest {
         doReturn(0).when(parametersMock).getInt(any(String.class));
         doReturn(10.0).when(parametersMock).getDouble("APOPTOSIS_AGE");
         doReturn(100.0).when(parametersMock).getDouble("ENERGY_THRESHOLD");
-        int age = 0; 
+        int age = 0;
         ArrayList<State> relevantStates = new ArrayList<>();
         relevantStates.add(State.QUIESCENT);
         relevantStates.add(State.MIGRATORY);
@@ -363,7 +363,7 @@ public class PatchCellTissueTest {
         doReturn(0).when(parametersMock).getInt(any(String.class));
         doReturn(10.0).when(parametersMock).getDouble("APOPTOSIS_AGE");
         doReturn(100.0).when(parametersMock).getDouble("ENERGY_THRESHOLD");
-        int age = 0; 
+        int age = 0;
 
         State state = State.UNDEFINED;
         PatchCellContainer container =
@@ -403,7 +403,7 @@ public class PatchCellTissueTest {
         doReturn(0).when(parametersMock).getInt(any(String.class));
         doReturn(10.0).when(parametersMock).getDouble("APOPTOSIS_AGE");
         doReturn(100.0).when(parametersMock).getDouble("ENERGY_THRESHOLD");
-        int age = 0; 
+        int age = 0;
 
         State state = State.UNDEFINED;
         PatchCellContainer container =
@@ -437,7 +437,8 @@ public class PatchCellTissueTest {
     }
 
     @Test
-    public void step_undefinedCellWithProliferativeFlagWithMaxDivisions_setsSenescentStateWithProbability() {
+    public void
+            step_undefinedCellWithProliferativeFlagWithMaxDivisions_setsSenescentStateWithProbability() {
         PatchModule module = mock(PatchModule.class);
         doReturn(0.0).when(parametersMock).getDouble(any(String.class));
         doReturn(0).when(parametersMock).getInt(any(String.class));
@@ -446,7 +447,7 @@ public class PatchCellTissueTest {
         doReturn(100.0).when(parametersMock).getDouble("ENERGY_THRESHOLD");
         doReturn(0.5).when(parametersMock).getDouble("SENESCENT_FRACTION");
         doReturn(0.2).when(randomMock).nextDouble();
-        int age = 0; 
+        int age = 0;
         int divisions = 10;
         State state = State.UNDEFINED;
 
@@ -481,7 +482,8 @@ public class PatchCellTissueTest {
     }
 
     @Test
-    public void step_undefinedCellWithProliferativeFlagWithMaxDivisions_setsApoptoticStateWithProbability() {
+    public void
+            step_undefinedCellWithProliferativeFlagWithMaxDivisions_setsApoptoticStateWithProbability() {
         PatchModule module = mock(PatchModule.class);
         doReturn(0.0).when(parametersMock).getDouble(any(String.class));
         doReturn(0).when(parametersMock).getInt(any(String.class));
@@ -490,7 +492,7 @@ public class PatchCellTissueTest {
         doReturn(100.0).when(parametersMock).getDouble("ENERGY_THRESHOLD");
         doReturn(0.5).when(parametersMock).getDouble("SENESCENT_FRACTION");
         doReturn(0.7).when(randomMock).nextDouble();
-        int age = 0; 
+        int age = 0;
         int divisions = 10;
         State state = State.UNDEFINED;
 
