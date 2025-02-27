@@ -6,12 +6,12 @@ import arcade.potts.util.PottsEnums.Phase;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
-public class PottsModuleFlyNeuronQuiescenceTest {
+public class PottsModuleQuiescenceTest {
 
     @Test
     public void constructor_called_createsInstance() {
         PottsCellFlyNeuron cell = mock(PottsCellFlyNeuron.class);
-        PottsModuleFlyNeuronQuiescence module = new PottsModuleFlyNeuronQuiescence(cell);
+        PottsModuleQuiescence module = new PottsModuleQuiescence(cell);
         assertNotNull(module);
         assert (module.getPhase() == Phase.UNDEFINED);
     }

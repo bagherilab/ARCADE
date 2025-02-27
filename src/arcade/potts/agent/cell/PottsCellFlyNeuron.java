@@ -4,7 +4,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.Parameters;
-import arcade.potts.agent.module.PottsModuleFlyNeuronQuiescence;
+import arcade.potts.agent.module.PottsModuleQuiescence;
 import static arcade.potts.util.PottsEnums.State;
 
 /** Represents a fly neuron cell in the Potts model. This cell is quiescent. */
@@ -36,7 +36,7 @@ public final class PottsCellFlyNeuron extends PottsCell {
         }
         switch ((State) newState) {
             case QUIESCENT:
-                module = new PottsModuleFlyNeuronQuiescence(this);
+                module = new PottsModuleQuiescence(this);
                 break;
             default:
                 module = null;

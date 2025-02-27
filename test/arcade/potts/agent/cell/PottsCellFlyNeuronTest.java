@@ -6,7 +6,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
-import arcade.potts.agent.module.PottsModuleFlyNeuronQuiescence;
+import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.env.location.PottsLocation;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -82,7 +82,7 @@ public class PottsCellFlyNeuronTest {
         PottsCellFlyNeuron neuron =
                 new PottsCellFlyNeuron(baseContainer, locationMock, parametersMock);
         neuron.setState(State.QUIESCENT);
-        assertTrue(neuron.module instanceof PottsModuleFlyNeuronQuiescence);
+        assertTrue(neuron.module instanceof PottsModuleQuiescence);
     }
 
     @Test
