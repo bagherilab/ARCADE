@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PottsCellFlyNeuron.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.agent.cell</a> &gt; <span class="el_source">PottsCellFlyNeuron.java</span></div><h1>PottsCellFlyNeuron.java</h1><pre class="source lang-java linenums">package arcade.potts.agent.cell;
+
+import ec.util.MersenneTwisterFast;
+import arcade.core.agent.cell.CellState;
+import arcade.core.env.location.Location;
+import arcade.core.util.GrabBag;
+import arcade.core.util.Parameters;
+import arcade.potts.agent.module.PottsModuleQuiescence;
+import static arcade.potts.util.PottsEnums.State;
+
+/** Represents a fly neuron cell in the Potts model. This cell is quiescent. */
+public final class PottsCellFlyNeuron extends PottsCell {
+
+    /**
+     * Creates a {@code PottsCellFlyNeuron} {@code PottsCell} agent.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     */
+    public PottsCellFlyNeuron(
+            PottsCellContainer container, Location location, Parameters parameters) {
+
+<span class="fc" id="L24">        super(container, location, parameters, null);</span>
+<span class="fc" id="L25">        setStateModule(State.QUIESCENT);</span>
+<span class="fc" id="L26">    }</span>
+
+    /**
+     * Creates a {@code PottsCellFlyNeuron} {@code PottsCell} agent. Population links provided in
+     * constructor are not used because this cell type does not divide. This constructor allows for
+     * all constructor calls in PottsCellContainer to have the same format.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
+    public PottsCellFlyNeuron(
+            PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
+
+<span class="nc" id="L41">        super(container, location, parameters, null);</span>
+<span class="nc" id="L42">        setStateModule(State.QUIESCENT);</span>
+<span class="nc" id="L43">    }</span>
+
+    @Override
+    public PottsCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
+<span class="fc" id="L47">        throw new UnsupportedOperationException(&quot;Neurons can not grow or divide.&quot;);</span>
+    }
+
+    @Override
+    void setStateModule(CellState newState) {
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (newState == null) {</span>
+<span class="fc" id="L53">            throw new IllegalArgumentException(&quot;Invalid state type&quot;);</span>
+        }
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        switch ((State) newState) {</span>
+            case QUIESCENT:
+<span class="fc" id="L57">                module = new PottsModuleQuiescence(this);</span>
+<span class="fc" id="L58">                break;</span>
+            default:
+<span class="fc" id="L60">                module = null;</span>
+                break;
+        }
+<span class="fc" id="L63">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

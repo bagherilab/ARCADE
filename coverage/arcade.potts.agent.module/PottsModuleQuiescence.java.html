@@ -3,6 +3,7 @@
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.util.PottsEnums.Phase;
 
 /** Extension of {@link PottsModule} for quiescence. */
 public class PottsModuleQuiescence extends PottsModule {
@@ -12,10 +13,11 @@ public class PottsModuleQuiescence extends PottsModule {
      * @param cell the {@link PottsCell} the module is associated with
      */
     public PottsModuleQuiescence(PottsCell cell) {
-<span class="fc" id="L15">        super(cell);</span>
-<span class="fc" id="L16">    }</span>
+<span class="fc" id="L16">        super(cell);</span>
+<span class="fc" id="L17">        setPhase(Phase.UNDEFINED);</span>
+<span class="fc" id="L18">    }</span>
 
     @Override
-<span class="nc" id="L19">    public void step(MersenneTwisterFast random, Simulation sim) {}</span>
+<span class="nc" id="L21">    public void step(MersenneTwisterFast random, Simulation sim) {}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
