@@ -153,7 +153,6 @@ public final class PatchCellFactory implements CellFactory {
         MiniBox population = popToParameters.get(pop);
         Parameters parameters = new Parameters(population, null, random);
 
-        int divisions = parameters.getInt("DIVISION_POTENTIAL");
         double compression = parameters.getDouble("COMPRESSION_TOLERANCE");
 
         double volume = parameters.getDouble("CELL_VOLUME");
@@ -165,7 +164,7 @@ public final class PatchCellFactory implements CellFactory {
                 0,
                 pop,
                 age,
-                divisions,
+                0,
                 State.UNDEFINED,
                 volume,
                 height,

@@ -94,8 +94,8 @@ public class PatchCellRandomTest {
         assertEquals(cellID, container.parent);
         assertEquals(cellPop, container.pop);
         assertEquals(cellAge, container.age);
-        assertEquals(cellDivisions - 1, container.divisions);
-        assertEquals(cellDivisions - 1, container.divisions);
+        assertEquals(cellDivisions + 1, container.divisions);
+        assertEquals(cellDivisions + 1, container.divisions);
         assertEquals(state2, container.state);
         assertEquals(volume, container.volume, EPSILON);
         assertEquals(height, container.height, EPSILON);
@@ -141,8 +141,8 @@ public class PatchCellRandomTest {
         assertEquals(cellID, container.parent);
         assertEquals(newPop, container.pop);
         assertEquals(cellAge, container.age);
-        assertEquals(cellDivisions - 1, container.divisions);
-        assertEquals(cellDivisions - 1, container.divisions);
+        assertEquals(cellDivisions + 1, container.divisions);
+        assertEquals(cellDivisions + 1, container.divisions);
         assertEquals(state2, container.state);
         assertEquals(volume, container.volume, EPSILON);
         assertEquals(height, container.height, EPSILON);
