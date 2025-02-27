@@ -3,7 +3,6 @@ package arcade.potts.agent.cell;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
-import arcade.core.agent.cell.CellState;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModuleQuiescence;
@@ -99,7 +98,6 @@ public class PottsCellFlyNeuronTest {
     public void setState_invalidType_throwsIllegalArgumentException() {
         PottsCellFlyNeuron neuron =
                 new PottsCellFlyNeuron(baseContainer, locationMock, parametersMock);
-        CellState invalidState = new CellState() {};
-        assertThrows(IllegalArgumentException.class, () -> neuron.setState(invalidState));
+        assertThrows(IllegalArgumentException.class, () -> neuron.setState(null));
     }
 }
