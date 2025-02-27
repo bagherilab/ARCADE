@@ -3,7 +3,6 @@ package arcade.patch.agent.module;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.patch.agent.cell.PatchCell;
-import arcade.patch.agent.cell.PatchCellCancer;
 
 /**
  * Extension of {@link PatchModule} for quiescence.
