@@ -5,14 +5,14 @@ import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
-import arcade.potts.agent.module.PottsModuleFlyGMCProliferation;
+import arcade.potts.agent.module.PottsModuleFlyGMCDifferentiation;
 import arcade.potts.util.PottsEnums.State;
 
 /**
  * Implementation of {@link PottsCell} for fly GMC agents. These cells divide into two {@link
  * PottsCellFlyNeuron} cells. The links must be set in the setup file so that 100% of the daughter
  * cells are Neurons. The differentiation of the parent cell is handled by the {@link
- * PottsModuleFlyGMCProliferation} module. The basal apoptosis rate of this cell should be set to 0
+ * PottsModuleFlyGMCDifferentiation} module. The basal apoptosis rate of this cell should be set to 0
  * in the setup file.
  */
 public class PottsCellFlyGMC extends PottsCell {
@@ -62,7 +62,7 @@ public class PottsCellFlyGMC extends PottsCell {
     void setStateModule(CellState newState) {
         switch ((State) newState) {
             case PROLIFERATIVE:
-                module = new PottsModuleFlyGMCProliferation(this);
+                module = new PottsModuleFlyGMCDifferentiation(this);
                 break;
             default:
                 module = null;

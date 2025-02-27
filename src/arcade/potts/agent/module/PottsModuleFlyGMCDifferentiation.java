@@ -18,14 +18,14 @@ import arcade.potts.util.PottsEnums.State;
  * into two {@link PottsCellFlyNeuron} cells. The links must be set in the setup file so that 100%
  * of the daughter cells are Neurons.
  */
-public class PottsModuleFlyGMCProliferation extends PottsModuleProliferationSimple {
+public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationSimple {
 
     /**
      * Creates a fly GMC proliferation module
      *
      * @param cell the cell to which this module is attached
      */
-    public PottsModuleFlyGMCProliferation(PottsCellFlyGMC cell) {
+    public PottsModuleFlyGMCDifferentiation(PottsCellFlyGMC cell) {
         super(cell);
     }
 
