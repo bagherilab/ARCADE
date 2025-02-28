@@ -44,6 +44,8 @@
     <population id="SELF_ALPHA" value="3" description="fitting factor in PD1 binding function" />
     <population id="SELF_BETA" value="0.02" description="fitting factor in PD1 binding function" />
     <population id="CONTACT_FRAC" value="0.2" description="fraction of cell surface contacting a bound cell during a binding event" />
+    <population id="BOUND_TIME" value="360" description="6 hours" />
+    <population id="BOUND_RANGE" value="0" description="hours" />
 
     <!-- proliferation module parameters -->
 
@@ -86,6 +88,9 @@
     <!-- inflammation process module -->
     <population.process process="inflammation" id="SHELL_THICKNESS" value="2.0" unit="um" />
     <population.process process="inflammation" id="IL2_RECEPTORS" value="2000" unit="IL-2 receptors/cell" />
+
+    <!-- inflammation CD8 module -->
+    <population.process process="inflammation" id="GRANZ_SYNTHESIS_DELAY" value="15" unit="min" />
 
     <!-- LAYERS ============================================================ -->
 
