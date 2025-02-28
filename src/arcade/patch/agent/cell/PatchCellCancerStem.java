@@ -54,7 +54,7 @@ public class PatchCellCancerStem extends PatchCellCancer {
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
         int newPop = links == null ? pop : links.next(random);
-        int newDivisions = newPop == pop ? divisions : divisions - 1;
+        int newDivisions = newPop == pop ? divisions : divisions + 1;
         return new PatchCellContainer(
                 newID,
                 id,
