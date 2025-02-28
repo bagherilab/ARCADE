@@ -57,7 +57,7 @@ public class PottsModuleFlyGMCDifferentiationTest {
     private MersenneTwisterFast random;
 
     @BeforeEach
-    final public void setupMocks() {
+    public final void setupMocks() {
         // Create dummy arrays of the correct types.
         dummyIDs = new int[1][1][1];
         dummyRegions = new int[0][0][0];
