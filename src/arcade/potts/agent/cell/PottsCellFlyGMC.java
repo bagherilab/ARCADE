@@ -40,7 +40,7 @@ public class PottsCellFlyGMC extends PottsCell {
     public PottsCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
         divisions++;
 
-        int newPop = links == null ? pop : links.next(random);
+        int newPop = links.next(random);
 
         return new PottsCellContainer(
                 newID,
