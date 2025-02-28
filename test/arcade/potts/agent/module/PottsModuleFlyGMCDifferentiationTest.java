@@ -26,26 +26,38 @@ import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
 
 public class PottsModuleFlyGMCDifferentiationTest {
-
-    // Instance variables for mocks used by multiple tests
     private int[][][] dummyIDs;
+
     private int[][][] dummyRegions;
+
     private Simulation sim;
+
     private Potts potts;
+
     private Grid grid;
+
     private PottsCellFactory cellFactory;
+
     private Schedule schedule;
+
     private PottsCellFlyGMC gmcCell;
+
     private PottsLocation2D location;
+
     private PottsLocation newLocation;
+
     private PottsCellContainer container;
+
     private PottsCell newCell;
+
     private GrabBag links;
+
     private Parameters parameters;
+
     private MersenneTwisterFast random;
 
     @BeforeEach
-    public void setupMocks() {
+    final public void setupMocks() {
         // Create dummy arrays of the correct types.
         dummyIDs = new int[1][1][1];
         dummyRegions = new int[0][0][0];
