@@ -25,7 +25,6 @@ public final class PottsCellFlyNeuron extends PottsCell {
         setStateModule(State.QUIESCENT);
     }
 
-
     /**
      * Creates a {@code PottsCellFlyNeuron} {@code PottsCell} agent. Population links provided in
      * constructor are not used because this cell type does not divide. This constructor allows for

@@ -173,7 +173,7 @@ public final class PottsCellContainer implements CellContainer {
         // Make cell.
         switch (popParameters.get("CLASS")) {
             case "fly-neuron":
-                return new PottsCellFlyNeuron(this, location, parameters);
+                return new PottsCellFlyNeuron(this, location, parameters, links);
             case "fly-gmc":
                 return new PottsCellFlyGMC(this, location, parameters, links);
             default:
