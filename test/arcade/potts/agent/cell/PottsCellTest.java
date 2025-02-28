@@ -769,14 +769,14 @@ public class PottsCellTest {
     @Test
     public void getLinks_valueAssigned_returnsValue() {
         GrabBag links = mock(GrabBag.class);
-        PottsCell cellWithRegions =
+        PottsCell regionsCell =
                 new PottsCellMockWithLinks(
                         containerWithRegions, locationMock, parametersMock, links);
-        assertSame(links, cellWithRegions.getLinks());
-        PottsCell cellWithoutRegions =
+        assertSame(links, regionsCell.getLinks());
+        PottsCell noRegionsCell =
                 new PottsCellMockWithLinks(
                         containerWithoutRegions, locationMock, parametersMock, links);
-        assertSame(links, cellWithoutRegions.getLinks());
+        assertSame(links, noRegionsCell.getLinks());
     }
 
     @Test

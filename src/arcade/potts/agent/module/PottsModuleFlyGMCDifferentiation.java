@@ -21,7 +21,7 @@ import arcade.potts.util.PottsEnums.State;
 public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationSimple {
 
     /**
-     * Creates a fly GMC proliferation module
+     * Creates a fly GMC proliferation module.
      *
      * @param cell the cell to which this module is attached
      */
