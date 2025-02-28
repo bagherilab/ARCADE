@@ -133,7 +133,7 @@ public class PottsModuleFlyGMCDifferentiationTest {
     }
 
     @Test
-    public void testAddCell_callsExpectedMethods() {
+    public void addCell_called_callsExpectedMethods() {
         // Intercept construction of the differentiated cell container
         try (MockedConstruction<PottsCellContainer> mockedConstruction =
                 mockConstruction(
