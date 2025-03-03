@@ -460,10 +460,10 @@ public abstract class PatchCell implements Cell {
                     options.add(inds[i], 1);
                 }
             }
-            if (!options.isEmpty()) { 
+            if (!options.isEmpty()) {
                 return (PatchLocation) locs.get(options.next(random));
             }
-        } 
+        }
 
         return null;
     }
