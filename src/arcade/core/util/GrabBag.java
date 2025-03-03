@@ -56,6 +56,10 @@ public class GrabBag {
         return map.higherEntry(value).getValue();
     }
 
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
+
     /**
      * Gets hash based on total weight and mapping.
      *
