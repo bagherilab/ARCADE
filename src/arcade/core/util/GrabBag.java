@@ -56,6 +56,12 @@ public class GrabBag {
         return map.higherEntry(value).getValue();
     }
 
+
+    /**
+     * Checks if the bag is empty.
+     *
+     * @return {@code true} if bag is empty, {@code false} otherwise
+     */
     public boolean isEmpty() {
         return map.isEmpty();
     }
