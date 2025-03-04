@@ -56,7 +56,6 @@ public class GrabBag {
         return map.higherEntry(value).getValue();
     }
 
-
     /**
      * Checks if the bag is empty.
      *
