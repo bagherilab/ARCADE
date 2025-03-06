@@ -1,54 +1,57 @@
-<set prefix="2024-10-25-04">
-    <series name="dd" start="0" end="0"
-            ds="1" margin="0" height="1" length="702" width="702"
-            dt="1" ticks="500" interval="5">
+<set prefix="2025-03-05-01">
+    <series name="test" start="0" end="0"
+            ds=".16" margin="0" height="1" length="502" width="502"
+            dt=".083" ticks="576" interval="4">
         <potts>
-            <potts.term id="volume" />
             <potts.term id="adhesion" />
+            <potts.term id="volume" />
             <potts.term id="surface" />
-            <potts.term id="persistence" />
             <potts.parameter term="adhesion" id="ADHESION" value="40" target="neuron:*"/>
             <potts.parameter term="adhesion" id="ADHESION" value="40" target="flystem-wt:*"/>
             <potts.parameter term="adhesion" id="ADHESION" value="40" target="flygmc:*"/>
-            <potts.parameter term="adhesion" id="ADHESION" value="10" target="flystem-wt:neuron"/>
-            <potts.parameter term="adhesion" id="ADHESION" value="20" target="flystem-wt:flygmc"/>
-            <potts.parameter term="adhesion" id="ADHESION" value="20" target="flystem-wt:flystem-wt"/>
-            <potts.parameter term="adhesion" id="ADHESION" value="20" target="flygmc:flystem-wt"/>
+            <potts.parameter term="adhesion" id="ADHESION" value="15" target="flystem-wt:neuron"/>
+            <potts.parameter term="adhesion" id="ADHESION" value="15" target="flystem-wt:flygmc"/>
+            <potts.parameter term="adhesion" id="ADHESION" value="15" target="flystem-wt:flystem-wt"/>
+            <potts.parameter term="adhesion" id="ADHESION" value="15" target="flygmc:flystem-wt"/>
             <potts.parameter term="adhesion" id="ADHESION" value="20" target="flygmc:neuron"/>
             <potts.parameter term="adhesion" id="ADHESION" value="20" target="flygmc:flygmc"/>
-            <potts.parameter term="adhesion" id="ADHESION" value="10" target="neuron:flystem-wt"/>
+            <potts.parameter term="adhesion" id="ADHESION" value="15" target="neuron:flystem-wt"/>
             <potts.parameter term="adhesion" id="ADHESION" value="20" target="neuron:flygmc"/>
             <potts.parameter term="adhesion" id="ADHESION" value="20" target="neuron:neuron"/>
-            <!-- <potts.parameter term="volume" id="LAMBDA" value="12" target="flystem-wt" />
-            <potts.parameter term="volume" id="LAMBDA" value="5" target="flygmc" />
-            <potts.parameter term="volume" id="LAMBDA" value="5" target="neuron" /> -->
             <potts.parameter term="surface" id="LAMBDA" value="1" target='flystem-wt'/>
-            <potts.parameter term="surface" id="LAMBDA" value="1" target='flygmc'/>
+            <potts.parameter term="surface" id="LAMBDA" value=".5" target='flygmc'/>
         </potts>
         <agents>
             <populations>
                 <population id="flystem-wt" class="flystem-wt" init="1" >
                     <population.link id="flygmc" weight="1"/>
-                    <population.parameter id="CRITICAL_VOLUME_MEAN" value="5000" units="um^3" conversion="DS^-3" />
+                    <population.parameter id="CRITICAL_VOLUME_MEAN" value="52" units="um^3" conversion="DS^-3" />
                     <population.parameter id="CRITICAL_VOLUME_STDEV" value="0" units="um^3" conversion="DS^-3" />
                     <population.parameter id="proliferation/BASAL_APOPTOSIS_RATE" value="0"/>
                     <population.parameter id="proliferation/DIV_ROTATION_DISTRIBUTION" value="NORMAL(MU=0,SIGMA=30)" />
-                    <population.parameter id="proliferation/BASAL_APOPTOSIS_RATE" value="0"/>
-                    <population.parameter id="proliferation/STEPS_G1" value="20"/>
-                    <population.parameter id="proliferation/STEPS_S" value="14"/>
-                    <population.parameter id="proliferation/STEPS_G2" value="1"/>
-                    <population.parameter id="proliferation/STEPS_M" value="19"/>
+                    <population.parameter id="proliferation/CELL_GROWTH_RATE" value="35"/>
+                    <population.parameter id="proliferation/STEPS_G1" value="9"/>
+                    <population.parameter id="proliferation/STEPS_S" value="9"/>
+                    <population.parameter id="proliferation/STEPS_G2" value="9"/>
+                    <population.parameter id="proliferation/STEPS_M" value="9"/>
+                    <population.parameter id="proliferation/RATE_G1" value="12"/>
+                    <population.parameter id="proliferation/RATE_S" value="20"/>
+                    <population.parameter id="proliferation/RATE_G2" value="40"/>
+                    <population.parameter id="proliferation/RATE_M" value="120"/>
                 </population>
                 <population id="flygmc" class="flygmc" init="0">
                     <population.link id="flyneuron" weight="1"/>
-                    <population.parameter id="CRITICAL_VOLUME_MEAN" value="1500" units="um^3" conversion="DS^-3" />
                     <population.parameter id="CRITICAL_VOLUME_STDEV" value="0" units="um^3" conversion="DS^-3" />
                     <population.parameter id="proliferation/BASAL_APOPTOSIS_RATE" value="0"/>
-                    <population.parameter id="proliferation/RATE_G1" value="60"/>
-                    <population.parameter id="proliferation/RATE_S" value="42"/>
-                    <population.parameter id="proliferation/RATE_G2" value="3"/>
-                    <population.parameter id="proliferation/RATE_M" value="38"/>
-                    <population.parameter id="proliferation/CELL_GROWTH_RATE" value="5"/>
+                    <population.parameter id="proliferation/CELL_GROWTH_RATE" value="1.22"/>
+                    <population.parameter id="proliferation/STEPS_G1" value="9"/>
+                    <population.parameter id="proliferation/STEPS_S" value="9"/>
+                    <population.parameter id="proliferation/STEPS_G2" value="9"/>
+                    <population.parameter id="proliferation/STEPS_M" value="9"/>
+                    <population.parameter id="proliferation/RATE_G1" value="2"/>
+                    <population.parameter id="proliferation/RATE_S" value=".33"/>
+                    <population.parameter id="proliferation/RATE_G2" value="6.67"/>
+                    <population.parameter id="proliferation/RATE_M" value="20"/>
 
                 </population>
                 <population id="flyneuron" class= "flyneuron" init="0">

@@ -399,6 +399,7 @@ public abstract class PottsCell implements Cell {
 
     @Override
     public void step(SimState simstate) {
+        System.out.println("PottsCell volume: " + getVolume());
         Simulation sim = (Simulation) simstate;
 
         // Increase age of cell.

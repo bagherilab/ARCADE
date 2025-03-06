@@ -63,7 +63,6 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
      */
     public PottsModuleProliferationSimple(PottsCell cell) {
         super(cell);
-
         Parameters parameters = cell.getParameters();
         rateG1 = parameters.getDouble("proliferation/RATE_G1");
         rateS = parameters.getDouble("proliferation/RATE_S");
