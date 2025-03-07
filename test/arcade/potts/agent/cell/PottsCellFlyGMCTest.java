@@ -6,6 +6,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
+import arcade.core.util.exceptions.InvalidParameterException;
 import arcade.potts.env.location.PottsLocation;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -78,7 +79,7 @@ public class PottsCellFlyGMCTest {
     public void constructor_invalidBasalApoptosisRate_throwsUnsupportedOperationException() {
         doReturn(1.0).when(parametersMock).getDouble(any(String.class));
         assertThrows(
-                UnsupportedOperationException.class,
+                InvalidParameterException.class,
                 () -> {
                     new PottsCellFlyGMC(baseContainer, locationMock, parametersMock, links);
                 });
