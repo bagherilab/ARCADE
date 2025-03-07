@@ -7,7 +7,7 @@
             <potts.term id="volume" />
             <potts.term id="surface" />
             <potts.parameter term="adhesion" id="ADHESION" value="40" target="neuron:*"/>
-            <potts.parameter term="adhesion" id="ADHESION" value="40" target="flystem-wt:*"/>
+            <potts.parameter term="adhesion" id="ADHESION" value="10" target="flystem-wt:*"/>
             <potts.parameter term="adhesion" id="ADHESION" value="40" target="flygmc:*"/>
             <potts.parameter term="adhesion" id="ADHESION" value="15" target="flystem-wt:neuron"/>
             <potts.parameter term="adhesion" id="ADHESION" value="15" target="flystem-wt:flygmc"/>
@@ -18,8 +18,9 @@
             <potts.parameter term="adhesion" id="ADHESION" value="15" target="neuron:flystem-wt"/>
             <potts.parameter term="adhesion" id="ADHESION" value="20" target="neuron:flygmc"/>
             <potts.parameter term="adhesion" id="ADHESION" value="20" target="neuron:neuron"/>
-            <potts.parameter term="surface" id="LAMBDA" value="1" target='flystem-wt'/>
+            <potts.parameter term="surface" id="LAMBDA" value="2" target='flystem-wt'/>
             <potts.parameter term="surface" id="LAMBDA" value=".5" target='flygmc'/>
+            <potts.parameter term="surface" id="LAMBDA" value=".5" target='flyneuron'/>
         </potts>
         <agents>
             <populations>
