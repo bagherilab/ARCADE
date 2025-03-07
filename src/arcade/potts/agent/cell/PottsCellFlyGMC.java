@@ -5,7 +5,7 @@ import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
-import arcade.core.util.exceptions.InvalidParameterException;
+import arcade.core.util.exceptions.IncorrectlySetParameterException;
 import arcade.potts.agent.module.PottsModuleFlyGMCDifferentiation;
 import arcade.potts.util.PottsEnums.State;
 
@@ -31,7 +31,7 @@ public class PottsCellFlyGMC extends PottsCell {
         super(container, location, parameters, links);
         double basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
         if (basalApoptosisRate != 0) {
-            throw new InvalidParameterException(basalApoptosisRate, 0);
+            throw new IncorrectlySetParameterException(basalApoptosisRate, 0);
         }
     }
 
