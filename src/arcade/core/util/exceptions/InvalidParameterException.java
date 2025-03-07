@@ -1,6 +1,6 @@
 package arcade.core.util.exceptions;
 
-/** Exception thrown when parameter value is not equal to single expected value */
+/** Exception thrown when parameter value is not equal to single expected value. */
 public class InvalidParameterException extends RuntimeException {
     /**
      * Constructs an {@code InvalidParameterException} with the specified detail message.
