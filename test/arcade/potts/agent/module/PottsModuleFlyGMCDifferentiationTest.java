@@ -58,18 +58,15 @@ public class PottsModuleFlyGMCDifferentiationTest {
 
     @BeforeEach
     public final void setupMocks() {
-        // Create dummy arrays of the correct types.
         dummyIDs = new int[1][1][1];
         dummyRegions = new int[0][0][0];
 
-        // Simulation and Potts
         sim = mock(PottsSimulation.class);
         potts = mock(Potts.class);
         when(((PottsSimulation) sim).getPotts()).thenReturn(potts);
         potts.ids = dummyIDs;
         potts.regions = dummyRegions;
 
-        // Grid, cell factory, and schedule
         grid = mock(Grid.class);
         when(sim.getGrid()).thenReturn(grid);
         cellFactory = mock(PottsCellFactory.class);
@@ -78,14 +75,12 @@ public class PottsModuleFlyGMCDifferentiationTest {
         when(sim.getSchedule()).thenReturn(schedule);
         when(sim.getID()).thenReturn(123);
 
-        // GMC cell and its location
         gmcCell = mock(PottsCellFlyGMC.class);
         location = mock(PottsLocation2D.class);
         when(gmcCell.getLocation()).thenReturn(location);
         newLocation = mock(PottsLocation.class);
         when(location.split(any(MersenneTwisterFast.class))).thenReturn(newLocation);
 
-        // Stub the links
         links = mock(GrabBag.class);
         when(gmcCell.getLinks()).thenReturn(links);
         int newPop = 2;
@@ -99,7 +94,6 @@ public class PottsModuleFlyGMCDifferentiationTest {
         when(gmcCell.getDivisions()).thenReturn(2);
         when(gmcCell.getCriticalVolume()).thenReturn(1.0);
         when(gmcCell.getCriticalHeight()).thenReturn(2.0);
-        // For critical region volumes/heights, create dummy EnumMaps if non-null values are needed
         EnumMap<Region, Double> critRegionVolumes = new EnumMap<>(Region.class);
         EnumMap<Region, Double> critRegionHeights = new EnumMap<>(Region.class);
         when(gmcCell.getCriticalRegionVolumes()).thenReturn(critRegionVolumes);

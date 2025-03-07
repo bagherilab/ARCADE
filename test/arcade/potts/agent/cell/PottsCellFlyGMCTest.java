@@ -8,8 +8,6 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.core.util.exceptions.InvalidParameterException;
 import arcade.potts.env.location.PottsLocation;
-import arcade.potts.util.PottsEnums.Phase;
-import arcade.potts.util.PottsEnums.State;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
