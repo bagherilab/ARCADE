@@ -8,6 +8,8 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.core.util.exceptions.InvalidParameterException;
 import arcade.potts.env.location.PottsLocation;
+import arcade.potts.util.PottsEnums.Phase;
+import arcade.potts.util.PottsEnums.State;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -97,35 +99,32 @@ public class PottsCellFlyGMCTest {
     public void setStateModule_notProliferative_moduleNull() {
         PottsCellFlyGMC gmc =
                 new PottsCellFlyGMC(baseContainer, locationMock, parametersMock, links);
-        gmc.setStateModule(State.QUIESCENT);
-        assertNull(gmc.getModule());
-        gmc.setStateModule(State.APOPTOTIC);
-        assertNull(gmc.getModule());
-        gmc.setStateModule(State.NECROTIC);
-        assertNull(gmc.getModule());
-        gmc.setStateModule(State.AUTOTIC);
-        assertNull(gmc.getModule());
+        for (State state : State.values()) {
+            if (state != State.PROLIFERATIVE) {
+                gmc.setStateModule(state);
+                assertNull(gmc.getModule());
+            }
+        }
     }
 
-    @Test
-    public void make_called_returnsCorrectNewContainer() {
-        PottsCellFlyGMC gmc =
-                new PottsCellFlyGMC(baseContainer, locationMock, parametersMock, links);
-        PottsCellContainer container = gmc.make(cellID, State.QUIESCENT, random);
-        assertNotNull(container);
-
-        assertEquals(cellID, container.parent);
-        assertEquals(1, container.pop);
-        assertEquals(cellAge, container.age);
-        assertEquals(cellDivisions + 1, container.divisions);
-        assertEquals(cellDivisions + 1, container.divisions);
-        assertEquals(State.QUIESCENT, container.state);
-        assertNull(container.phase);
-        assertEquals(0, container.voxels);
-        assertNull(container.regionVoxels);
-        assertEquals(cellCriticalVolume, container.criticalVolume, EPSILON);
-        assertEquals(cellCriticalHeight, container.criticalHeight, EPSILON);
-        assertNull(container.criticalRegionVolumes);
-        assertNull(container.criticalRegionHeights);
-    }
+@Test
+public void make_called_returnsCorrectNewContainer() {
+    PottsCellFlyGMC gmc = new PottsCellFlyGMC(baseContainer, locationMock, parametersMock, links);
+    PottsCellContainer container = gmc.make(cellID, State.QUIESCENT, random);
+    assertAll(
+        () -> assertNotNull(container),
+        () -> assertEquals(cellID, container.parent),
+        () -> assertEquals(1, container.pop),
+        () -> assertEquals(cellAge, container.age),
+        () -> assertEquals(cellDivisions + 1, container.divisions),
+        () -> assertEquals(State.QUIESCENT, container.state),
+        () -> assertNull(container.phase),
+        () -> assertEquals(0, container.voxels),
+        () -> assertNull(container.regionVoxels),
+        () -> assertEquals(cellCriticalVolume, container.criticalVolume, EPSILON),
+        () -> assertEquals(cellCriticalHeight, container.criticalHeight, EPSILON),
+        () -> assertNull(container.criticalRegionVolumes),
+        () -> assertNull(container.criticalRegionHeights)
+    );
+}
 }
