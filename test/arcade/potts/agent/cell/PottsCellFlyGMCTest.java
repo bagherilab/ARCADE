@@ -107,24 +107,24 @@ public class PottsCellFlyGMCTest {
         }
     }
 
-@Test
-public void make_called_returnsCorrectNewContainer() {
-    PottsCellFlyGMC gmc = new PottsCellFlyGMC(baseContainer, locationMock, parametersMock, links);
-    PottsCellContainer container = gmc.make(cellID, State.QUIESCENT, random);
-    assertAll(
-        () -> assertNotNull(container),
-        () -> assertEquals(cellID, container.parent),
-        () -> assertEquals(1, container.pop),
-        () -> assertEquals(cellAge, container.age),
-        () -> assertEquals(cellDivisions + 1, container.divisions),
-        () -> assertEquals(State.QUIESCENT, container.state),
-        () -> assertNull(container.phase),
-        () -> assertEquals(0, container.voxels),
-        () -> assertNull(container.regionVoxels),
-        () -> assertEquals(cellCriticalVolume, container.criticalVolume, EPSILON),
-        () -> assertEquals(cellCriticalHeight, container.criticalHeight, EPSILON),
-        () -> assertNull(container.criticalRegionVolumes),
-        () -> assertNull(container.criticalRegionHeights)
-    );
-}
+    @Test
+    public void make_called_returnsCorrectNewContainer() {
+        PottsCellFlyGMC gmc =
+                new PottsCellFlyGMC(baseContainer, locationMock, parametersMock, links);
+        PottsCellContainer container = gmc.make(cellID, State.QUIESCENT, random);
+        assertAll(
+                () -> assertNotNull(container),
+                () -> assertEquals(cellID, container.parent),
+                () -> assertEquals(1, container.pop),
+                () -> assertEquals(cellAge, container.age),
+                () -> assertEquals(cellDivisions + 1, container.divisions),
+                () -> assertEquals(State.QUIESCENT, container.state),
+                () -> assertNull(container.phase),
+                () -> assertEquals(0, container.voxels),
+                () -> assertNull(container.regionVoxels),
+                () -> assertEquals(cellCriticalVolume, container.criticalVolume, EPSILON),
+                () -> assertEquals(cellCriticalHeight, container.criticalHeight, EPSILON),
+                () -> assertNull(container.criticalRegionVolumes),
+                () -> assertNull(container.criticalRegionHeights));
+    }
 }

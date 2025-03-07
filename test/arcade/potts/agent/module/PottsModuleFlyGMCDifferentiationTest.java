@@ -85,14 +85,6 @@ public class PottsModuleFlyGMCDifferentiationTest {
         newLocation = mock(PottsLocation.class);
         when(location.split(any(MersenneTwisterFast.class))).thenReturn(newLocation);
 
-        // When the module calls make() on the cell
-        container = mock(PottsCellContainer.class);
-        when(gmcCell.make(eq(123), eq(State.QUIESCENT), any(MersenneTwisterFast.class)))
-                .thenReturn(container);
-        newCell = mock(PottsCell.class);
-        when(container.convert(eq(cellFactory), eq(newLocation), any(MersenneTwisterFast.class)))
-                .thenReturn(newCell);
-
         // Stub the links
         links = mock(GrabBag.class);
         when(gmcCell.getLinks()).thenReturn(links);
@@ -148,24 +140,30 @@ public class PottsModuleFlyGMCDifferentiationTest {
                                             any(MersenneTwisterFast.class)))
                                     .thenReturn(diffCell);
                         })) {
-            // Create the module under test and call addCell.
+
+            // When the module calls make() on the cell, return Quiescent PottsCellContainer mock
+            container = mock(PottsCellContainer.class);
+            when(gmcCell.make(eq(123), eq(State.QUIESCENT), any(MersenneTwisterFast.class)))
+                    .thenReturn(container);
+            newCell = mock(PottsCell.class);
+            when(container.convert(
+                            eq(cellFactory), eq(newLocation), any(MersenneTwisterFast.class)))
+                    .thenReturn(newCell);
+
             PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
             module.addCell(random, sim);
-            // Verify that the location was split.
             verify(location).split(random);
-            // Verify that the old cell was reset.
             verify(gmcCell).reset(dummyIDs, dummyRegions);
-            // Verify that make() was called to create a container.
             verify(gmcCell).make(123, State.QUIESCENT, random);
-            // Verify that the new cell was added to the grid and registered.
+
             verify(grid).addObject(newCell, null);
             verify(potts).register(newCell);
             verify(newCell).reset(dummyIDs, dummyRegions);
             verify(newCell).schedule(schedule);
-            // Verify that the old cell was removed and stopped.
+
             verify(grid).removeObject(gmcCell, location);
             verify(gmcCell).stop();
-            // Verify that a differentiated cell was constructed and handled.
+
             PottsCellContainer constructed = mockedConstruction.constructed().get(0);
             PottsCellFlyNeuron diffCell =
                     (PottsCellFlyNeuron) constructed.convert(cellFactory, location, random);
