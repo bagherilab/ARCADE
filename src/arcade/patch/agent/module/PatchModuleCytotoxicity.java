@@ -42,15 +42,16 @@ public class PatchModuleCytotoxicity extends PatchModule {
     /**
      * Creates a {@code PatchActionKill} for the given {@link PatchCellCART}.
      *
-     * @param c the {@link PatchCell} the helper is associated with
+     * @param cell the {@link PatchCell} the helper is associated with
      */
-    public PatchModuleCytotoxicity(PatchCell c) {
-        super(c);
-        this.target = (PatchCellTissue) ((PatchCellCART) c).getBoundTarget();
-        this.inflammation = (PatchProcessInflammation) c.getProcess(PatchEnums.Domain.INFLAMMATION);
+    public PatchModuleCytotoxicity(PatchCell cell) {
+        super(cell);
+        this.target = (PatchCellTissue) ((PatchCellCART) cell).getBoundTarget();
+        this.inflammation =
+                (PatchProcessInflammation) cell.getProcess(PatchEnums.Domain.INFLAMMATION);
         this.granzyme = inflammation.getInternal("granzyme");
 
-        Parameters parameters = c.getParameters();
+        Parameters parameters = cell.getParameters();
         this.boundTime = parameters.getInt("BOUND_TIME");
         this.boundRange = parameters.getInt("BOUND_RANGE");
         this.timeDelay = 0;
