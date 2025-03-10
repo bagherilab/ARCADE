@@ -40,10 +40,10 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
      *
      * <p>IL-2 production rate parameters set.
      *
-     * @param c the {@link PatchCellCART} the module is associated with
+     * @param cell the {@link PatchCellCART} the module is associated with
      */
-    public PatchProcessInflammationCD4(PatchCellCART c) {
-        super(c);
+    public PatchProcessInflammationCD4(PatchCellCART cell) {
+        super(cell);
 
         // Set parameters.
         Parameters parameters = cell.getParameters();

@@ -27,10 +27,10 @@ public class PatchProcessInflammationCD8 extends PatchProcessInflammation {
      *
      * <p>Initial amount of internal granzyme is set. Granzyme production parameters set.
      *
-     * @param c the {@link PatchCellCART} the module is associated with
+     * @param cell the {@link PatchCellCART} the module is associated with
      */
-    public PatchProcessInflammationCD8(PatchCellCART c) {
-        super(c);
+    public PatchProcessInflammationCD8(PatchCellCART cell) {
+        super(cell);
 
         Parameters parameters = cell.getParameters();
         this.granzSynthesisDelay = parameters.getInt("inflammation/GRANZ_SYNTHESIS_DELAY");

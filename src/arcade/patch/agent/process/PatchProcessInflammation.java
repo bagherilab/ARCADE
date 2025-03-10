@@ -124,14 +124,14 @@ public abstract class PatchProcessInflammation extends PatchProcess {
      * bound and no three-chain receptors. Daughter cells split amounts of bound IL-2 and
      * three-chain receptors upon dividing.
      *
-     * @param c the {@link PatchCellCART} the module is associated with
+     * @param cell the {@link PatchCellCART} the module is associated with
      */
-    public PatchProcessInflammation(PatchCellCART c) {
-        super(c);
-        this.loc = c.getLocation();
-        this.cell = c;
-        this.pop = c.getPop();
-        this.volume = c.getVolume();
+    public PatchProcessInflammation(PatchCellCART cell) {
+        super(cell);
+        this.loc = cell.getLocation();
+        this.cell = cell;
+        this.pop = cell.getPop();
+        this.volume = cell.getVolume();
         this.iL2Ticker = 0;
         this.activeTicker = 0;
 
