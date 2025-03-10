@@ -7,7 +7,8 @@ import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.cell.PatchCellTissue;
 import arcade.patch.agent.process.PatchProcessInflammation;
-import arcade.patch.util.PatchEnums;
+import static arcade.patch.util.PatchEnums.Domain;
+import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Implementation of {@link Module} for killing tissue agents.
@@ -47,8 +48,7 @@ public class PatchModuleCytotoxicity extends PatchModule {
     public PatchModuleCytotoxicity(PatchCell cell) {
         super(cell);
         this.target = (PatchCellTissue) ((PatchCellCART) cell).getBoundTarget();
-        this.inflammation =
-                (PatchProcessInflammation) cell.getProcess(PatchEnums.Domain.INFLAMMATION);
+        this.inflammation = (PatchProcessInflammation) cell.getProcess(Domain.INFLAMMATION);
         this.granzyme = inflammation.getInternal("granzyme");
 
         Parameters parameters = cell.getParameters();
@@ -66,7 +66,7 @@ public class PatchModuleCytotoxicity extends PatchModule {
 
         if (target.isStopped()) {
             ((PatchCellCART) cell).unbind();
-            cell.setState(PatchEnums.State.UNDEFINED);
+            cell.setState(State.UNDEFINED);
             return;
         }
 
@@ -75,13 +75,13 @@ public class PatchModuleCytotoxicity extends PatchModule {
                     (int) (boundTime + Math.round((boundRange * (2 * random.nextInt() - 1))));
             if (granzyme >= 1) {
                 PatchCellTissue tissueCell = (PatchCellTissue) target;
-                tissueCell.setState(PatchEnums.State.APOPTOTIC);
+                tissueCell.setState(State.APOPTOTIC);
                 granzyme--;
                 inflammation.setInternal("granzyme", granzyme);
             }
         } else if (ticker >= timeDelay) {
             ((PatchCellCART) cell).unbind();
-            cell.setState(PatchEnums.State.UNDEFINED);
+            cell.setState(State.UNDEFINED);
         }
 
         ticker++;
