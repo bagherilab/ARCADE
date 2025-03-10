@@ -31,6 +31,9 @@ public class PatchOperationGenerator extends PatchOperation {
     /** Molecule permeability. */
     public final double permeability;
 
+    /** Molecule decay rate. */
+    public final double decayRate;
+
     /**
      * Creates a generator {@link PatchOperation} for the given lattice.
      *
@@ -50,6 +53,7 @@ public class PatchOperationGenerator extends PatchOperation {
         MiniBox parameters = lattice.getParameters();
         concentration = parameters.getDouble("generator/CONCENTRATION");
         permeability = parameters.getDouble("generator/PERMEABILITY");
+        decayRate = parameters.getDouble("generator/DECAY_RATE");
 
         // Set lattice field.
         this.latticeCurrent = lattice.getField();
@@ -68,7 +72,11 @@ public class PatchOperationGenerator extends PatchOperation {
         for (int k = 0; k < latticeHeight; k++) {
             for (int i = 0; i < latticeLength; i++) {
                 for (int j = 0; j < latticeWidth; j++) {
-                    latticeCurrent[k][i][j] += latticeDelta[k][i][j];
+                    if (decayRate > 0) {
+                        latticeCurrent[k][i][j] -= decayRate * latticeDelta[k][i][j];
+                    } else {
+                        latticeCurrent[k][i][j] += latticeDelta[k][i][j];
+                    }
                 }
             }
         }

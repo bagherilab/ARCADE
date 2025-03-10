@@ -91,7 +91,7 @@ public abstract class PatchCellCART extends PatchCell {
     protected final int maxAntigenBinding;
 
     /** number of CARs on T cell surface. */
-    protected final int cars;
+    protected int cars;
 
     /** simulation time since T cell was last activated. */
     protected int lastActiveTicker;
@@ -432,5 +432,15 @@ public abstract class PatchCellCART extends PatchCell {
     /** Sets the activation status of the cell. */
     public void setActivationStatus(boolean status) {
         this.activated = status;
+    }
+
+    /** Sets the number of cars on cell. */
+    public void setCars(int newCars) {
+        this.cars = newCars;
+    }
+
+    /** Returns the number of cars on cell. */
+    public int getCars() {
+        return this.cars;
     }
 }

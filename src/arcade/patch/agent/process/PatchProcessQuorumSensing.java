@@ -1,5 +1,6 @@
 package arcade.patch.agent.process;
 
+import java.util.ArrayList;
 import java.util.List;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
@@ -15,9 +16,26 @@ import arcade.patch.env.grid.PatchGrid;
  * <p>The {@code PatchProcessQuorumSensing} module represents an auxin signaling network.
  */
 public abstract class PatchProcessQuorumSensing extends PatchProcess {
-
     /** List of internal amounts of each species. */
     protected double[] concs;
+
+    /** Number of components in signaling network */
+    protected static final int NUM_COMPONENTS = 5;
+
+    /** ID for auxin. */
+    static final int AUXIN_SOURCE = 0;
+
+    /** ID for auxin. */
+    static final int AUXIN_SINK = 1;
+
+    /** ID for CAR receptors. */
+    static final int CAR = 2;
+
+    /** ID for activation biomarker. */
+    static final int ACTIVATION = 3;
+
+    /** ID for synnotch receptors. */
+    static final int SYNNOTCH = 4;
 
     /** Environmental auxin at current location. */
     protected double extAuxin;
@@ -32,10 +50,19 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
     double volume;
 
     /** Number of steps per second to take in ODE. */
-    private static final double STEP_DIVIDER = 3.0;
+    protected static final double STEP_DIVIDER = 3.0;
 
     /** Step size for module (in seconds). */
     static final double STEP_SIZE = 1.0 / STEP_DIVIDER;
+
+    /** Rate of auxin flow [microMolar/min] */
+    protected static final double AUX_FLOW_RATE_SEEKER = 2.09 / (1E6 * 3600);
+
+    /** Rate of auxin flow [molecule/min] */
+    protected final double AUX_FLOW_RATE_KILLER = 2.09 / (1E6 * 3600);
+
+    /** Rate of environmental auxin removal [molecule/min] */
+    //    protected final double AUX_REMOVAL_RATE = 0.0165 * 60;
 
     /** Location of cell. */
     protected Location loc;
@@ -52,6 +79,16 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
         super(cell);
         this.volume = cell.getVolume();
         this.loc = cell.getLocation();
+        this.extAuxin = 0;
+        this.concs = new double[NUM_COMPONENTS];
+        this.names = new ArrayList<String>();
+
+        // Molecule names.
+        names.add(AUXIN_SOURCE, "internal_auxin_source");
+        names.add(AUXIN_SINK, "internal_auxin_sink");
+        names.add(CAR, "bound_car_receptors");
+        names.add(ACTIVATION, "activation_biomarker");
+        names.add(SYNNOTCH, "bound_synnotch_receptors");
     }
 
     /**
@@ -61,6 +98,7 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
      */
     private void updateExternal(Simulation sim) {
         extAuxin = sim.getLattice("AUXIN").getAverageValue(loc) * loc.getVolume();
+        extAuxin = extAuxin/1E23;
     }
 
     /**
@@ -81,6 +119,23 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
         updateExternal(sim);
 
         stepProcess(random, sim);
+
+        if (this instanceof PatchProcessQuorumSensingSource) {
+            double flow_in = concs[AUXIN_SOURCE] - extAuxin > 0 ? concs[AUXIN_SOURCE] - extAuxin : 0;
+            extAuxin += flow_in * AUX_FLOW_RATE_SEEKER;
+        } else {
+            double flow_out = extAuxin - concs[AUXIN_SINK] > 0 ? extAuxin - concs[AUXIN_SINK]: 0;
+            extAuxin -= flow_out * AUX_FLOW_RATE_KILLER;
+        }
+
+        // floor small values to 0 to prevent underflow
+        extAuxin = extAuxin > 1E-10 ? extAuxin : 0;
+        if (extAuxin > 0){
+            int a = 0;
+        }
+        //rescale extAuxin such that it is not a tiny amount
+        extAuxin *= 1E23;
+        sim.getLattice("AUXIN").setValue(loc, extAuxin);
     }
 
     /**
@@ -100,6 +155,21 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
                 return new PatchProcessQuorumSensingSink(cell);
             default:
                 return null;
+        }
+    }
+
+    // this is here for me to debug
+    private void safeValue() {
+        for (int i = 0; i < concs.length; i++) {
+            double val = concs[i];
+            if (Double.isNaN(val)) {
+                // TODO: something is wrong
+                concs[i] = 0;
+            }
+            if (val < 0) {
+                // TODO: something is wrong
+                concs[i] = 0;
+            }
         }
     }
 }

@@ -62,6 +62,7 @@ public class PatchOperationDiffuserTri extends PatchOperationDiffuser {
         // Calculate sum of concentrations of three neighbors. First add left
         // and right neighbor. Check if located at left hand side (for left) or
         // right hand side (for right).
+
         double sumConc = 0;
         sumConc += field[i - leftBorder[i]][j];
         sumConc += field[i + rightBorder[i]][j];

@@ -35,6 +35,10 @@ public class PatchCellKiller extends PatchCellCARTCD8 {
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
 
+        if (sim.getSchedule().getTime() == 4320) {
+            int a = 0;
+        }
+
         // Increase age of cell.
         super.age++;
 
@@ -77,6 +81,9 @@ public class PatchCellKiller extends PatchCellCARTCD8 {
         // Step quorum sensing process.
         super.processes.get(PatchEnums.Domain.QUORUM).step(simstate.random, sim);
 
+//        // Cell attempts to bind to a target
+//        this.boundTarget = super.bindTarget(sim, location, simstate.random);
+
         // Step inflammation process.
         super.processes.get(PatchEnums.Domain.INFLAMMATION).step(simstate.random, sim);
 
@@ -91,8 +98,7 @@ public class PatchCellKiller extends PatchCellCARTCD8 {
                 this.unbind();
             } else {
                 // Cell attempts to bind to a target
-                this.checkForBinding(simstate);
-
+                this.boundTarget = super.bindTarget(sim, location, simstate.random);
                 // If cell is bound to both antigen and self it will become anergic.
                 if (super.getBindingFlag() == PatchEnums.AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR) {
                     if (simstate.random.nextDouble() > super.anergicFraction) {

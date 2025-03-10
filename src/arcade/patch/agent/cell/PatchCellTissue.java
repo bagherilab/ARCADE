@@ -166,4 +166,9 @@ public class PatchCellTissue extends PatchCell {
     public int getSynNotchAntigens() {
         return synNotchAntigens;
     }
+
+    public void updateSynNotchAntigens(int add_value, int sub_value) {
+        synNotchAntigens += add_value;
+        synNotchAntigens -= sub_value;
+    }
 }

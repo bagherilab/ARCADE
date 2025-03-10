@@ -58,6 +58,15 @@ public abstract class PatchCellMacrophage extends PatchCell {
     /** Ticker to keep track of how long the cell has been bound [min]. */
     protected double ticker;
 
+    protected int boundSynNotch;
+
+    PoissonFactory poissonFactory;
+
+    public final double synNotchThreshold;
+    protected final double bindingConstant;
+    protected final double unbindingConstant;
+    protected final double contactFraction;
+
     /**
      * Creates a {@code PatchCellCART} agent. *
      *
@@ -94,8 +103,19 @@ public abstract class PatchCellMacrophage extends PatchCell {
                         * 60
                         * (1 / location.getVolume())
                         * (1 / 6.022E23);
-        this.synnotchs = 0;
+        bindingConstant = parameters.getDouble("K_SYNNOTCH_ON");
+        unbindingConstant = parameters.getDouble("K_SYNNOTCH_OFF");
+        synnotchs = parameters.getInt("SYNNOTCHS");
+        synNotchThreshold = parameters.getDouble("SYNNOTCH_TRESHOLD") * synnotchs;
+        this.contactFraction = parameters.getDouble("CONTACT_FRAC");
         this.ticker = 0;
+        boundCell = null;
+        boundSynNotch = 0;
+        poissonFactory = Poisson::new;
+    }
+
+    public double callPoisson(double lambda, MersenneTwisterFast random) {
+        return poissonFactory.createPoisson(lambda, random).nextInt();
     }
 
     /**
@@ -112,19 +132,44 @@ public abstract class PatchCellMacrophage extends PatchCell {
         if (!allAgents.isEmpty()) {
             PatchCellTissue target =
                     (PatchCellTissue) allAgents.get(simstate.random.nextInt(allAgents.size()));
-            double antigenMolecules = ((PatchCellTissue) target).getSynNotchAntigens();
-            double bindingEvent = antigenMolecules * bindingRate;
-            double timeInterval = computeTimeInterval(bindingEvent, simstate.random);
-            Poisson distribution = new Poisson(timeInterval, simstate.random);
-            // calculate probability of 1 or more events occurring in this time step
-            double bindingProbability = 1 - distribution.pdf(0);
-            if (bindingProbability > simstate.random.nextDouble()) {
+            if (target.getSynNotchAntigens() > 0) {
                 this.boundCell = target;
                 this.bindingFlag = PatchEnums.AntigenFlag.BOUND_ANTIGEN;
-                this.synnotchs+=1000;
                 this.ticker = 0;
             }
         }
+    }
+
+    protected void calculateBindingProb(MersenneTwisterFast random) {
+        int TAU = 60;
+        int unboundSynNotch = synnotchs - boundSynNotch;
+        double expectedBindingEvents =
+                bindingConstant
+                        / (volume * 6.0221415e23 * 1e-15)
+                        * unboundSynNotch
+                        * ((PatchCellTissue) boundCell).getSynNotchAntigens()
+                        * contactFraction
+                        * TAU;
+        int bindingEvents = poissonFactory.createPoisson(expectedBindingEvents, random).nextInt();
+        double expectedUnbindingEvents = unbindingConstant * boundSynNotch * TAU;
+        int unbindingEvents =
+                poissonFactory.createPoisson(expectedUnbindingEvents, random).nextInt();
+
+        boundSynNotch += bindingEvents;
+        boundSynNotch -= unbindingEvents;
+        ((PatchCellTissue) boundCell).updateSynNotchAntigens(unbindingEvents, bindingEvents);
+    }
+
+    /** A {@code PoissonFactory} object instantiates Poisson distributions. */
+    interface PoissonFactory {
+        /**
+         * Creates instance of Poisson.
+         *
+         * @param lambda the Poisson distribution lambda
+         * @param random the random number generator
+         * @return a Poisson distribution instance
+         */
+        Poisson createPoisson(double lambda, MersenneTwisterFast random);
     }
 
     /**
@@ -186,8 +231,16 @@ public abstract class PatchCellMacrophage extends PatchCell {
             super.setBindingFlag(PatchEnums.AntigenFlag.UNBOUND);
             this.boundCell = null;
             this.ticker = 0;
-            this.synnotchs-=1000;
         }
+    }
+
+    /**
+     * Returns number of bound synnotch receptors.
+     *
+     * @return number of bound synnotch receptors
+     */
+    public int getBoundSynNotchs() {
+        return this.boundSynNotch;
     }
 
     /**
@@ -195,7 +248,16 @@ public abstract class PatchCellMacrophage extends PatchCell {
      *
      * @return number of synnotch receptors
      */
-    public int getSynNotchs() {
+    public int getSynnotchs() {
         return this.synnotchs;
+    }
+
+    public void resetBoundCell() {
+        if (boundCell != null) {
+            return;
+        }
+        ((PatchCellTissue) boundCell).updateSynNotchAntigens(boundSynNotch, 0);
+        boundSynNotch = 0;
+        boundCell = null;
     }
 }

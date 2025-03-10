@@ -5,6 +5,7 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellCART;
+import arcade.patch.agent.cell.PatchCellMacrophage;
 import arcade.patch.env.location.PatchLocation;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -53,6 +54,9 @@ public class PatchModuleMigration extends PatchModule {
             if (newLocation == null) {
                 if (cell instanceof PatchCellCART) {
                     cell.setState(State.PAUSED);
+                    if (cell instanceof PatchCellMacrophage) {
+                        ((PatchCellMacrophage) cell).resetBoundCell();
+                    }
                 } else {
                     cell.setState(State.QUIESCENT);
                 }

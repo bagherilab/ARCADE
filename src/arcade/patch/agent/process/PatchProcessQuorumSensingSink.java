@@ -1,7 +1,6 @@
 package arcade.patch.agent.process;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
@@ -12,46 +11,29 @@ import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.util.PatchEnums;
 
 public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
-    /** Number of components in signaling network */
-    protected static final int NUM_COMPONENTS = 4;
-
-    /** ID for auxin. */
-    static final int AUXIN = 0;
-
-    /** ID for CAR receptors. */
-    static final int CAR = 1;
-
-    /** ID for activation biomarker. */
-    static final int ACTIVATION = 2;
-
-    /** Number of steps per second to take in ODE */
-    private static final double STEP_DIVIDER = 10.0;
-
-    /** Rate of auxin flow [molecule/min] */
-    private static final double AUX_FLOW_RATE = 1e-4;
 
     /** Rate of degradation of auxin [/sec/step/divider] */
-    private static final double K_AUX_DEGRADE = 1e-5 / STEP_DIVIDER;
+    private static final double K_AUX_DEGRADE = 20.0 / (1E3 * 3600);
 
     /** Rate of CAR expression[/sec/step/divider] */
-    private static final double K_CAR_EXPRESS = 1e-3 / STEP_DIVIDER;
+    private static final double K_CAR_EXPRESS = 0.8 / (1E3 * 3600);
 
     /** Rate of degradation of CAR [/sec/step/divider] */
-    private static final double K_CAR_DEGRADE = 1e-5 / STEP_DIVIDER;
+    private static final double K_CAR_DEGRADE = 0.2 / (1E3 * 3600);
 
     /** Rate of active biomarker expression[/sec/step/divider] */
-    private static final double K_ACTIVE_EXPRESS = 1e-3 / STEP_DIVIDER;
+    private static final double K_ACTIVE_EXPRESS = 0.8 / (1E3 * 3600);
+
+    /** Rate of active biomarker expression[/sec/step/divider] */
+    private static final double K_ACTIVE_EXPRESS_ACCELERATED = 1.0 / (1E3 * 3600);
 
     /** Rate of degradation of active biomarker [/sec/step/divider] */
-    private static final double K_ACTIVE_DEGRADE = 1e-5 / STEP_DIVIDER;
-
-    /** Step size for module (in seconds) */
-    static final double STEP_SIZE = 1.0 / STEP_DIVIDER;
+    private static final double K_ACTIVE_DEGRADE = 0.2 / (1E3 * 3600);
 
     /** Threshold of activation biomarker for cell activation */
     protected final double ACTIVATION_THRESHOLD;
 
-    protected int boundCAR;
+    protected double boundCAR;
 
     protected int isBound;
 
@@ -67,9 +49,15 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
         super(cell);
 
         // initialize module
-        this.boundCAR = ((PatchCellCART) cell).getBoundCARAntigensCount();
+        this.boundCAR =
+                ((PatchCellCART) cell).getBoundCARAntigensCount()
+                        * 1E15
+                        * 1E6
+                        / (cell.getVolume() * 6.022E23);
         this.isBound =
-                ((PatchCellCART) cell).getBindingFlag() == PatchEnums.AntigenFlag.BOUND_ANTIGEN
+                (((PatchCellCART) cell).getBindingFlag() == PatchEnums.AntigenFlag.BOUND_ANTIGEN
+                                || ((PatchCellCART) cell).getBindingFlag()
+                                        == PatchEnums.AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR)
                         ? 1
                         : 0;
         // set parameters
@@ -77,16 +65,13 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
         this.ACTIVATION_THRESHOLD = parameters.getDouble("quorum/ACTIVATION_THRESHOLD");
 
         // Initial amounts of each species, all in fmol/cell.
-        this.concs = new double[NUM_COMPONENTS];
-        concs[CAR] = boundCAR / 6.022E23 * 1E15; // convert from molecules to fmol
-        concs[AUXIN] = 0;
+        concs[CAR] =
+                parameters.getInt("CARS")
+                        * 1E15
+                        * 1E6
+                        / (cell.getVolume() * 6.022E23); // convert from molecules to microM
+        concs[AUXIN_SINK] = 0;
         concs[ACTIVATION] = 0;
-
-        // Molecule names.
-        names = new ArrayList<String>();
-        names.add(AUXIN, "internal_auxin");
-        names.add(CAR, "bound_car_receptors");
-        names.add(ACTIVATION, "activation_biomarker");
     }
 
     /** System of ODEs for network */
@@ -96,10 +81,20 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
                         double[] dydt = new double[NUM_COMPONENTS];
 
                         dydt[ACTIVATION] =
-                                isBound * K_ACTIVE_EXPRESS * (this.boundCAR)
+                                isBound * K_ACTIVE_EXPRESS_ACCELERATED * boundCAR
+                                        + K_ACTIVE_EXPRESS * boundCAR
                                         - K_ACTIVE_DEGRADE * y[ACTIVATION];
 
-                        dydt[CAR] = K_CAR_EXPRESS * (y[AUXIN]) - K_CAR_DEGRADE * (y[CAR]);
+                        dydt[CAR] = K_CAR_EXPRESS * (y[AUXIN_SINK]) - K_CAR_DEGRADE * (y[CAR]);
+
+//                        dydt[CAR] = (5.1893059E-12 - 5.1893059E-13)/(1 + Math.exp(-0.005*(y[AUXIN_SINK] - 500))) +5.1893059E-13;
+
+                        dydt[AUXIN_SINK] =
+                                AUX_FLOW_RATE_KILLER * Math.max(extAuxin - y[AUXIN_SINK], 0)
+                                        - K_AUX_DEGRADE * y[AUXIN_SINK];
+                        //                        dydt[AUX_EXT] =
+                        //                                -AUX_FLOW_RATE_KILLER *
+                        // Math.max(y[AUX_EXT] - y[AUXIN_SINK], 0);
 
                         return dydt;
                     };
@@ -109,26 +104,11 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
         // Solve system of equations.
         concs = Solver.rungeKutta(equations, 0, concs, 60, STEP_SIZE);
 
-        // Calculate auxin degradation
-        double auxinDegrade = concs[AUXIN] * K_AUX_DEGRADE;
-        // Calculate auxin uptake based on gradient
-        double area = location.getArea() * f;
-        double surfaceArea = area * 2 + (volume / area) * location.getPerimeter(f);
-        double gradient = (extAuxin / location.getVolume()) - (concs[AUXIN] / volume);
-        gradient *= gradient < 1E-10 ? 0 : 1;
-        double auxinUptake = AUX_FLOW_RATE * surfaceArea * gradient;
-        extAuxin -= auxinUptake;
-        extAuxin = extAuxin < 0 ? 0 : extAuxin;
-
-        // Update internal and external auxin based off of uptake and degradation
-        sim.getLattice("AUXIN").setValue(location, extAuxin);
-        concs[AUXIN] += auxinUptake;
-        concs[AUXIN] -= auxinDegrade;
-
+        if (concs[AUXIN_SINK] > 0){
+            int a = 0;
+        }
         // update activation of cell according to activation status
         if (concs[ACTIVATION] > ACTIVATION_THRESHOLD) {
-            ((PatchCellCART) cell).setActivationStatus(true);
-            ((PatchCellCART) cell).resetLastActiveTicker();
             ((PatchCellCART) cell).setActivationStatus(true);
             ((PatchCellCART) cell).resetLastActiveTicker();
         } else {
@@ -141,8 +121,18 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
                         ? 1
                         : 0;
         // update bound CAR receptors
-        this.boundCAR = ((PatchCellCART) cell).getBoundCARAntigensCount();
-        concs[CAR] = boundCAR / 6.022E23 * 1E15;
+        this.boundCAR =
+                ((PatchCellCART) cell).getBoundCARAntigensCount()
+                        * 1E15
+                        * 1E6
+                        / (cell.getVolume() * 6.022E23);
+        int numCars = 0;
+        if (Double.isNaN(concs[CAR])) {
+            numCars = 5000;
+        } else {
+            numCars = (int) (concs[CAR] * cell.getVolume() * 6.022E23 / (1E6 * 1E15));
+        }
+        ((PatchCellCART) cell).setCars(numCars);
     }
 
     @Override
@@ -152,13 +142,13 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
 
         // Update daughter cell auxin as a fraction of parent.
         this.concs[ACTIVATION] = quorum.concs[ACTIVATION] * split;
-        this.concs[AUXIN] = quorum.concs[AUXIN] * split;
-        int cCAR = quorum.boundCAR - (int) (quorum.boundCAR * split);
-        this.boundCAR = (int) (quorum.boundCAR * split);
+        this.concs[AUXIN_SINK] = quorum.concs[AUXIN_SINK] * split;
+        double cCAR = quorum.boundCAR - (quorum.boundCAR * split);
+        this.boundCAR = (quorum.boundCAR * split);
 
         // Update parent cell with remaining fraction.
-        quorum.concs[AUXIN] *= quorum.concs[AUXIN] * (1 - split);
-        quorum.concs[ACTIVATION] *= quorum.concs[ACTIVATION] * (1 - split);
+        quorum.concs[AUXIN_SINK] = quorum.concs[AUXIN_SINK] * (1 - split);
+        quorum.concs[ACTIVATION] = quorum.concs[ACTIVATION] * (1 - split);
         quorum.boundCAR = cCAR;
     }
 }

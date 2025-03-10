@@ -1,7 +1,8 @@
 package arcade.patch.agent.process;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+
+import arcade.core.env.location.Location;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
@@ -12,30 +13,17 @@ import arcade.patch.util.PatchEnums;
 
 public class PatchProcessQuorumSensingSource extends PatchProcessQuorumSensing {
 
-    /** Number of components in signaling network */
-    protected static final int NUM_COMPONENTS = 2;
-
-    /** ID for auxin. */
-    static final int AUXIN = 0;
-
-    /** ID for synnotch receptors. */
-    static final int SYNNOTCH = 1;
-
-    /** Number of steps per second to take in ODE */
-    private static final double STEP_DIVIDER = 10.0;
-
-    /** Rate of auxin expression[/sec/step/divider] */
-    private static final double K_AUX_EXPRESS = 1e-3 / STEP_DIVIDER;
+    /** Rate of auxin expression[/min/step/divider] */
+    private static final double K_AUX_EXPRESS =  4.18 / (3600);
 
     /** Rate of degradation of auxin [/sec/step/divider] */
-    private static final double K_AUX_DEGRADE = 1e-5 / STEP_DIVIDER;
+    private static final double K_AUX_DEGRADE = 20.0 / (1E3 * 3600);
 
-    /** Rate of auxin flow [molecule/min] */
-    private static final double AUX_FLOW_RATE = 1e-4;
-
-    protected int boundSynnotch;
+    protected double boundSynnotch;
 
     protected int isBound;
+
+//    protected int feedback;
 
     /**
      * Creates an {@code PatchCellQuorumSensing} module for the given {@link PatchCell}.
@@ -49,22 +37,22 @@ public class PatchProcessQuorumSensingSource extends PatchProcessQuorumSensing {
         super(cell);
 
         // initialize module
-        this.boundSynnotch = ((PatchCellMacrophage) cell).getSynNotchs();
+        this.boundSynnotch = (((PatchCellMacrophage) cell).getBoundSynNotchs());
         this.isBound =
                 ((PatchCellMacrophage) cell).getBindingFlag()
                                 == PatchEnums.AntigenFlag.BOUND_ANTIGEN
                         ? 1
                         : 0;
 
-        // Initial amounts of each species, all in fmol/cell.
-        this.concs = new double[NUM_COMPONENTS];
-        concs[SYNNOTCH] = boundSynnotch / 6.022E23 * 1E15; // convert from molecules to fmol
-        concs[AUXIN] = 0;
-
-        // Molecule names.
-        names = new ArrayList<String>();
-        names.add(AUXIN, "internal_auxin");
-        names.add(SYNNOTCH, "bound_synnotch_receptors");
+        // Initial amounts of each species, all in microMolar/cell.
+        concs[SYNNOTCH] =
+                boundSynnotch
+                        * 1E6
+                        * 1E4
+                        * 1E15
+                        / (cell.getVolume() * 6.022E23); // convert from molecules to microM
+        concs[AUXIN_SOURCE] = 0;
+//        this.feedback = 1;
     }
 
     /** System of ODEs for network */
@@ -73,39 +61,42 @@ public class PatchProcessQuorumSensingSource extends PatchProcessQuorumSensing {
                     (t, y) -> {
                         double[] dydt = new double[NUM_COMPONENTS];
 
-                        dydt[AUXIN] =
+                        dydt[AUXIN_SOURCE] =
                                 isBound * K_AUX_EXPRESS * (y[SYNNOTCH])
-                                        - K_AUX_DEGRADE * (y[AUXIN]);
+                                        - K_AUX_DEGRADE * (y[AUXIN_SOURCE])
+                                        - AUX_FLOW_RATE_SEEKER
+                                                * Math.max(y[AUXIN_SOURCE] - extAuxin, 0);
 
                         return dydt;
                     };
 
     @Override
     void stepProcess(MersenneTwisterFast random, Simulation sim) {
+
+        if (concs[AUXIN_SOURCE] > 0) {
+            int a = 0;
+        }
+
         // Solve system of equations.
         concs = Solver.rungeKutta(equations, 0, concs, 60, STEP_SIZE);
 
-        // Calculate auxin output based on gradient
-        double gradient = concs[AUXIN] - extAuxin;
-        double auxinOutput = 0;
-        gradient *= gradient < 1E-10 ? 0 : 1;
-        if (gradient > 0) {
-            auxinOutput = gradient * AUX_FLOW_RATE;
-        }
-        extAuxin += auxinOutput;
-        // Update internal and external auxin based off of output
-        sim.getLattice("AUXIN").setValue(location, extAuxin);
-        concs[AUXIN] -= auxinOutput;
-
         // update binding status per current tick
         this.isBound =
-                ((PatchCellMacrophage) cell).getBindingFlag()
-                                == PatchEnums.AntigenFlag.BOUND_ANTIGEN
+                ((PatchCellMacrophage) cell).getBoundSynNotchs()
+                                >= ((PatchCellMacrophage) cell).synNotchThreshold
                         ? 1
                         : 0;
+        // update feedback based on external conditions
+//        this.feedback = 1;
+//        for (Location l : location.getNeighbors()) {
+//            if (sim.getLattice("AUXIN").getAverageValue(l) > 0.1) {
+//                this.feedback = 0;
+//            }
+//        }
+
         // update bound synnotch receptors
-        this.boundSynnotch = ((PatchCellMacrophage) cell).getSynNotchs();
-        concs[SYNNOTCH] = boundSynnotch / 6.022E23 * 1E15;
+        this.boundSynnotch = (((PatchCellMacrophage) cell).getBoundSynNotchs());
+        concs[SYNNOTCH] = boundSynnotch * 1E6 * 1E4 * 1E15 / (cell.getVolume() * 6.022E23);
     }
 
     @Override
@@ -114,12 +105,12 @@ public class PatchProcessQuorumSensingSource extends PatchProcessQuorumSensing {
         double split = (this.cell.getVolume() / this.volume);
 
         // Update daughter cell auxin as a fraction of parent.
-        this.concs[AUXIN] = quorum.concs[AUXIN] * split;
-        int cSynnotch = quorum.boundSynnotch - (int) (quorum.boundSynnotch * split);
+        this.concs[AUXIN_SOURCE] = quorum.concs[AUXIN_SOURCE] * split;
+        double cSynnotch = quorum.boundSynnotch - (int) (quorum.boundSynnotch * split);
         this.boundSynnotch = (int) (quorum.boundSynnotch * split);
 
         // Update parent cell with remaining fraction.
-        quorum.concs[AUXIN] *= quorum.concs[AUXIN] * (1 - split);
+        quorum.concs[AUXIN_SOURCE] = quorum.concs[AUXIN_SOURCE] * (1 - split);
         quorum.boundSynnotch = cSynnotch;
     }
 }

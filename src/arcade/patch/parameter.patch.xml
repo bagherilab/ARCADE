@@ -53,6 +53,13 @@
     <population id="ANTIGEN_BINDING_RATE" value="5.1E3" unit="M^-1 s^-1" description="association rate constant for synnotch receptor/antigen binding" />
     <population id="CAR_ANTIGEN_BINDING_RATE" value="5.1E3" unit="M^-1 s^-1" description="association rate constant for CAR receptor/antigen binding" />
     <population id="SELF_ANTIGEN_BINDING_RATE" value="5.1E3" unit="M^-1 s^-1" description="association rate constant for PDL1 receptor/antigen binding" />
+    <!-- SynNotch specific parameters -->
+    <population id="SYNNOTCH_TRESHOLD" value="0.005" description="percentage threshold of total synnotch" />
+    <population id="K_SYNNOTCH_ON" value="5.1E3" unit="Ms^-1" description="binding kinetic constant" />
+    <population id="K_SYNNOTCH_OFF" value="9E-5" unit="s^-1" description="unbinding kinetic constant" />
+    <population id="K_CAR_DEGRADE" value="3E-4" unit="s^-1" description="degradation of CAR kinetic constant" />
+    <population id="SYNNOTCHS" value="1000" description="average number of SynNotch receptors on a SynNotch T-cell" />
+    <population id="SYNNOTCH_ANTIGENS" value="1000" description="average number of synNotch antigens on a tissue cancer cell" />
 
     <!-- proliferation module parameters -->
 
@@ -105,7 +112,7 @@
     <population.process process="inflammation" id="GRANZ_SYNTHESIS_DELAY" value="15" unit="min" />
 
     <!-- quorum process parameters -->
-    <population.process process="quorum" id="ACTIVATION_THRESHOLD" value="1E-12" unit="fmol/cell" />
+    <population.process process="quorum" id="ACTIVATION_THRESHOLD" value="1E-20" unit="units/cell" />
 
     <!-- LAYERS ============================================================ -->
 
@@ -118,6 +125,7 @@
     <!-- generator operation parameters -->
     <layer.operation operation="generator" id="CONCENTRATION" value="1.0" units="(variable)" description="maximum concentration" />
     <layer.operation operation="generator" id="PERMEABILITY" value="100.0" units="(variable)" description="molecule permeability" />
+    <layer.operation operation="generator" id="DECAY_RATE" value="0" units="(variable)" description="molecule permeability" />
 
     <!-- ACTIONS =========================================================== -->
 

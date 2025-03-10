@@ -96,6 +96,12 @@ public class PatchCellMacrophageM1 extends PatchCellMacrophage {
 
         processes.get(PatchEnums.Domain.QUORUM).step(simstate.random, sim);
 
+        if (boundCell == null) {
+            checkForBinding(simstate);
+        } else {
+            calculateBindingProb(simstate.random);
+        }
+
         if (state == PatchEnums.State.QUIESCENT || state == PatchEnums.State.UNDEFINED) {
             if (simstate.random.nextDouble() > 0.5) {
                 setState(PatchEnums.State.MIGRATORY);
@@ -105,8 +111,6 @@ public class PatchCellMacrophageM1 extends PatchCellMacrophage {
                 } else {
                     setState(PatchEnums.State.SENESCENT);
                 }
-            } else {
-                checkForBinding(simstate);
             }
         }
 
