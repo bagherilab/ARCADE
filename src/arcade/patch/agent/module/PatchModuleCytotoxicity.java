@@ -72,7 +72,7 @@ public class PatchModuleCytotoxicity extends PatchModule {
 
         if (ticker == 0) {
             this.timeDelay =
-                    (int) (boundTime + Math.round((boundRange * (2 * random.nextInt() - 1))));
+                    (int) (boundTime + Math.round((boundRange * (2 * random.nextDouble() - 1))));
             if (granzyme >= 1) {
                 PatchCellTissue tissueCell = (PatchCellTissue) target;
                 tissueCell.setState(State.APOPTOTIC);
