@@ -98,7 +98,6 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
      */
     private void updateExternal(Simulation sim) {
         extAuxin = sim.getLattice("AUXIN").getAverageValue(loc) * loc.getVolume();
-        extAuxin = extAuxin/1E23;
     }
 
     /**
@@ -121,20 +120,18 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
         stepProcess(random, sim);
 
         if (this instanceof PatchProcessQuorumSensingSource) {
-            double flow_in = concs[AUXIN_SOURCE] - extAuxin > 0 ? concs[AUXIN_SOURCE] - extAuxin : 0;
+            double flow_in =
+                    concs[AUXIN_SOURCE] - extAuxin > 0 ? concs[AUXIN_SOURCE] - extAuxin : 0;
             extAuxin += flow_in * AUX_FLOW_RATE_SEEKER;
         } else {
-            double flow_out = extAuxin - concs[AUXIN_SINK] > 0 ? extAuxin - concs[AUXIN_SINK]: 0;
+            double flow_out = extAuxin - concs[AUXIN_SINK] > 0 ? extAuxin - concs[AUXIN_SINK] : 0;
             extAuxin -= flow_out * AUX_FLOW_RATE_KILLER;
         }
 
         // floor small values to 0 to prevent underflow
         extAuxin = extAuxin > 1E-10 ? extAuxin : 0;
-        if (extAuxin > 0){
-            int a = 0;
-        }
-        //rescale extAuxin such that it is not a tiny amount
-        extAuxin *= 1E23;
+
+        // rescale extAuxin such that it is not a tiny amount
         sim.getLattice("AUXIN").setValue(loc, extAuxin);
     }
 

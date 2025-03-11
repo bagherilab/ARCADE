@@ -87,7 +87,8 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
 
                         dydt[CAR] = K_CAR_EXPRESS * (y[AUXIN_SINK]) - K_CAR_DEGRADE * (y[CAR]);
 
-//                        dydt[CAR] = (5.1893059E-12 - 5.1893059E-13)/(1 + Math.exp(-0.005*(y[AUXIN_SINK] - 500))) +5.1893059E-13;
+                        //                        dydt[CAR] = (5.1893059E-12 - 5.1893059E-13)/(1 +
+                        // Math.exp(-0.005*(y[AUXIN_SINK] - 500))) +5.1893059E-13;
 
                         dydt[AUXIN_SINK] =
                                 AUX_FLOW_RATE_KILLER * Math.max(extAuxin - y[AUXIN_SINK], 0)
@@ -104,7 +105,7 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
         // Solve system of equations.
         concs = Solver.rungeKutta(equations, 0, concs, 60, STEP_SIZE);
 
-        if (concs[AUXIN_SINK] > 0){
+        if (concs[AUXIN_SINK] > 0) {
             int a = 0;
         }
         // update activation of cell according to activation status
@@ -127,8 +128,10 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
                         * 1E6
                         / (cell.getVolume() * 6.022E23);
         int numCars = 0;
+        // band-aid to stop propagating NaNs
+        // assumption that if inf is reached, max CAR is produced
         if (Double.isNaN(concs[CAR])) {
-            numCars = 5000;
+            numCars = 50000;
         } else {
             numCars = (int) (concs[CAR] * cell.getVolume() * 6.022E23 / (1E6 * 1E15));
         }

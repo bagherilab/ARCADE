@@ -81,8 +81,8 @@ public class PatchCellKiller extends PatchCellCARTCD8 {
         // Step quorum sensing process.
         super.processes.get(PatchEnums.Domain.QUORUM).step(simstate.random, sim);
 
-//        // Cell attempts to bind to a target
-//        this.boundTarget = super.bindTarget(sim, location, simstate.random);
+        //        // Cell attempts to bind to a target
+        //        this.boundTarget = super.bindTarget(sim, location, simstate.random);
 
         // Step inflammation process.
         super.processes.get(PatchEnums.Domain.INFLAMMATION).step(simstate.random, sim);
