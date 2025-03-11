@@ -61,6 +61,8 @@ public final class PatchSimulationRect extends PatchSimulation {
                 return new PatchActionConvert(series, parameters);
             case "treat":
                 return new PatchActionTreat(series, parameters);
+            case "replace":
+                return new PatchActionTreat(series, parameters);
             default:
                 return null;
         }

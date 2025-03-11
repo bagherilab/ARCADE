@@ -1,5 +1,6 @@
 package arcade.patch.agent.cell;
 
+import java.util.logging.Logger;
 import sim.engine.SimState;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
@@ -13,6 +14,8 @@ import arcade.patch.util.PatchEnums.State;
 
 /** Extension of {@link PatchCell} for healthy tissue cells. */
 public class PatchCellTissue extends PatchCell {
+    private static final Logger LOGGER = Logger.getLogger(PatchCellSynNotch.class.getName());
+
     /** Cell surface antigen count. */
     private final int carAntigens;
 

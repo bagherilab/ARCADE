@@ -50,7 +50,7 @@
     <population id="BOUND_RANGE" value="0" description="hours" />
 
      <!-- SynNotch specific parameters -->
-    <population id="SYNNOTCH_TRESHOLD" value="0.1" description="percentage threshold of total synnotch" />
+    <population id="SYNNOTCH_THRESHOLD" value="0.01" description="percentage threshold of total synnotch" />
     <population id="K_SYNNOTCH_ON" value="5.1E3" unit="Ms^-1" description="binding kinetic constant" />
     <population id="K_SYNNOTCH_OFF" value="9E-5" unit="s^-1" description="unbinding kinetic constant" />
     <population id="K_CAR_DEGRADE" value="3E-4" unit="s^-1" description="degradation of CAR kinetic constant" />
@@ -145,6 +145,12 @@
     <action class="treat" id="RATIO" value="1" description="ratio of cd4 to cd8 cells in the dose" />
     <action class="treat" id="MAX_DAMAGE_SEED" value="1E7" description="maximum damage value at which T-cells can seed next to in source or pattern source" />
     <action class="treat" id="MIN_RADIUS_SEED" value="2.0" description="minimum radius value at which T-cells can seed next to in graph source" />
+
+   <!-- replace action parameters -->
+    <action class="replace" id="TIME_DELAY" value="0" units="min" description="time delay before calling the action" />
+    <action class="replace" id="INSERT_RADIUS" value="1" description="grid radius that cells are inserted into" />
+    <action class="replace" id="INSERT_NUMBER" value="1" description="number of cells to insert from each population" />
+
 
     <!-- COMPONENTS ======================================================== -->
 

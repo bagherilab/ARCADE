@@ -169,13 +169,13 @@ public class PatchProcessQuorumSensingSimple extends PatchProcessQuorumSensing {
 
         // // update cell state
         // if (concs[ACTIVATION] < activation_scaled) {
-        //     cell.setActivationStatus(false);
+        // cell.setActivationStatus(false);
         // } else {
-        //     cell.setActivationStatus(true);
-        //     cell.resetLastActiveTicker();
+        // cell.setActivationStatus(true);
+        // cell.resetLastActiveTicker();
         // }
 
-        cell.setCARS((int) Math.round(concs[CAR] * scale));
+        cell.setCARs((int) Math.round(concs[CAR] * scale));
     }
 
     @Override

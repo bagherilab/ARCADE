@@ -1,5 +1,6 @@
 package arcade.patch.agent.cell;
 
+import java.util.logging.Logger;
 import sim.engine.SimState;
 import sim.util.Bag;
 import sim.util.distribution.Poisson;
@@ -11,6 +12,7 @@ import arcade.core.util.Parameters;
 import arcade.patch.env.grid.PatchGrid;
 
 public class PatchCellSynNotch extends PatchCellCARTCD8 {
+    private static final Logger LOGGER = Logger.getLogger(PatchCellSynNotch.class.getName());
     protected final double synNotchThreshold;
     protected final double bindingConstant;
     protected final double unbindingConstant;
@@ -39,8 +41,7 @@ public class PatchCellSynNotch extends PatchCellCARTCD8 {
         unbindingConstant = parameters.getDouble("K_SYNNOTCH_OFF");
         carDegradationConstant = parameters.getDouble("K_CAR_DEGRADE");
         synnotchs = parameters.getInt("SYNNOTCHS");
-        synNotchThreshold = parameters.getDouble("SYNNOTCH_TRESHOLD") * synnotchs;
-
+        synNotchThreshold = parameters.getDouble("SYNNOTCH_THRESHOLD") * synnotchs;
         boundCell = null;
         boundSynNotch = 0;
         maxCars = cars;
@@ -80,7 +81,6 @@ public class PatchCellSynNotch extends PatchCellCARTCD8 {
         boundSynNotch += bindingEvents;
         boundSynNotch -= unbindingEvents;
         boundCell.updateSynNotchAntigens(unbindingEvents, bindingEvents);
-
         double n = 4.4;
         int new_cars =
                 (int) (maxCars / (1 + Math.pow(synNotchThreshold, n) / Math.pow(boundSynNotch, n)));
@@ -106,6 +106,11 @@ public class PatchCellSynNotch extends PatchCellCARTCD8 {
 
         Bag allAgents = new Bag();
         getTissueAgents(allAgents, grid.getObjectsAtLocation(location));
+        // get all agents from neighboring locations
+        for (Location neighborLocation : location.getNeighbors()) {
+            Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));
+            getTissueAgents(allAgents, bag);
+        }
 
         if (allAgents.size() > 0) {
             PatchCellTissue randomCell =
@@ -118,10 +123,9 @@ public class PatchCellSynNotch extends PatchCellCARTCD8 {
 
     public void resetBoundCell() {
         if (boundCell != null) {
-            return;
+            boundCell.updateSynNotchAntigens(boundSynNotch, 0);
+            boundCell = null;
         }
-        boundCell.updateSynNotchAntigens(boundSynNotch, 0);
         boundSynNotch = 0;
-        boundCell = null;
     }
 }

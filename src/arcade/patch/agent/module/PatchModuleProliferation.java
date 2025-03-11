@@ -6,6 +6,7 @@ import arcade.core.agent.cell.CellContainer;
 import arcade.core.sim.Simulation;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellCART;
+import arcade.patch.agent.cell.PatchCellSynNotch;
 import arcade.patch.agent.process.PatchProcess;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
@@ -109,6 +110,11 @@ public class PatchModuleProliferation extends PatchModule {
                     newCell.setVolume(volume * (1 - split));
                     newCell.setEnergy(energy * (1 - split));
 
+                    if (newCell instanceof PatchCellSynNotch) {
+                        PatchCellSynNotch newSynNotchCell = (PatchCellSynNotch) newCell;
+                        PatchCellSynNotch synNotchCell = (PatchCellSynNotch) this.cell;
+                        newSynNotchCell.setCARs(synNotchCell.getCARs());
+                    }
                     // Update processes.
                     Domain[] processes = Domain.values();
                     for (Domain processName : processes) {

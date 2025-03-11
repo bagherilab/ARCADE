@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import sim.engine.Schedule;
 import sim.engine.SimState;
+import sim.util.Bag;
 import arcade.core.agent.action.Action;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Series;
@@ -26,7 +27,7 @@ import static arcade.patch.util.PatchEnums.Ordering;
  * {@code INSERT_NUMBER} cells from each of the registered populations into locations within the
  * specified radius {@code INSERT_RADIUS} from the center of the simulation.
  */
-public class PatchActionInsert implements Action {
+public class PatchActionReplace implements Action {
     private static final Logger LOGGER = Logger.getLogger(PatchActionReplace.class.getName());
 
     /** Time delay before calling the action [min]. */
@@ -58,7 +59,7 @@ public class PatchActionInsert implements Action {
      * @param series the simulation series
      * @param parameters the component parameters dictionary
      */
-    public PatchActionInsert(Series series, MiniBox parameters) {
+    public PatchActionReplace(Series series, MiniBox parameters) {
         int maxRadius = ((PatchSeries) series).radius;
 
         // Set loaded parameters.
@@ -69,7 +70,13 @@ public class PatchActionInsert implements Action {
 
         // Initialize population register.
         populations = new ArrayList<>();
-        LOGGER.info("Action: Insert" + insertNumber + " cells from each population");
+        LOGGER.info(
+                "Action Replace: "
+                        + parameters.getInt("TIME_DELAY")
+                        + " "
+                        + insertRadius
+                        + " "
+                        + insertNumber);
     }
 
     @Override
@@ -94,25 +101,48 @@ public class PatchActionInsert implements Action {
 
         // Add cells from each population into insertion area.
         for (MiniBox population : populations) {
+            int id = sim.getID();
             int pop = population.getInt("CODE");
 
             for (int i = 0; i < insertNumber; i++) {
-                int id = sim.getID();
-
                 if (coordinates.isEmpty()) {
                     break;
                 }
 
                 Coordinate coord = coordinates.remove(0);
                 PatchLocationContainer locationContainer = new PatchLocationContainer(id, coord);
-                PatchCellContainer cellContainer = sim.cellFactory.createCellForPopulation(id, pop);
+                PatchCellContainer tempContainer = sim.cellFactory.createCellForPopulation(id, pop);
+                Location tempLocation =
+                        locationContainer.convert(sim.locationFactory, tempContainer);
 
-                Location location = locationContainer.convert(sim.locationFactory, cellContainer);
-                PatchCell cell =
+                Bag bag = (Bag) grid.getObjectAt(tempLocation.hashCode());
+
+                if (bag == null) {
+                    continue;
+                }
+
+                // Select old cell and remove from simulation.
+                PatchCell oldCell = (PatchCell) bag.get(0);
+                Location location = oldCell.getLocation();
+                grid.removeObject(oldCell, oldCell.getLocation());
+                oldCell.stop();
+                // Create new cell and add to simulation.
+                PatchCellContainer cellContainer =
+                        new PatchCellContainer(
+                                oldCell.getID(),
+                                oldCell.getParent(),
+                                pop,
+                                oldCell.getAge(),
+                                oldCell.getDivisions(),
+                                oldCell.getState(),
+                                oldCell.getVolume(),
+                                oldCell.getHeight(),
+                                oldCell.getCriticalVolume(),
+                                oldCell.getCriticalHeight());
+                PatchCell newCell =
                         (PatchCell) cellContainer.convert(sim.cellFactory, location, sim.random);
-
-                grid.addObject(cell, location);
-                cell.schedule(sim.getSchedule());
+                grid.addObject(newCell, location);
+                newCell.schedule(sim.getSchedule());
             }
         }
     }

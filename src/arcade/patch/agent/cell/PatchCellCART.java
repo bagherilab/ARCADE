@@ -343,7 +343,16 @@ public abstract class PatchCellCART extends PatchCell {
      *
      * @param receptors the new number of car receptors on the cell
      */
-    public void setCARS(int receptors) {
+    public void setCARs(int receptors) {
         this.cars = receptors;
+    }
+
+    /**
+     * Getter for car receptors.
+     *
+     * @return the number of car receptors on the cell
+     */
+    public int getCARs() {
+        return this.cars;
     }
 }
