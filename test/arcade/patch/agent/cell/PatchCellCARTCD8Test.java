@@ -69,15 +69,11 @@ public class PatchCellCARTCD8Test {
         doReturn(0).when(parameters).getInt(any(String.class));
         when(parameters.getDouble("HETEROGENEITY")).thenReturn(0.0);
         when(parameters.getDouble("ENERGY_THRESHOLD")).thenReturn(1.0);
-        when(parameters.getDouble("NECROTIC_FRACTION"))
-                .thenReturn(randomIntBetween(40, 100) / 100.0);
-        when(parameters.getDouble("EXHAU_FRAC")).thenReturn(randomIntBetween(40, 100) / 100.0);
-        when(parameters.getDouble("SENESCENT_FRACTION"))
-                .thenReturn(randomIntBetween(40, 100) / 100.0);
-        when(parameters.getDouble("ANERGIC_FRACTION"))
-                .thenReturn(randomIntBetween(40, 100) / 100.0);
-        when(parameters.getDouble("PROLIFERATIVE_FRACTION"))
-                .thenReturn(randomIntBetween(40, 100) / 100.0);
+        when(parameters.getDouble("NECROTIC_FRACTION")).thenReturn(0.5);
+        when(parameters.getDouble("EXHAUSTED_FRAC")).thenReturn(0.5);
+        when(parameters.getDouble("SENESCENT_FRACTION")).thenReturn(0.5);
+        when(parameters.getDouble("ANERGIC_FRACTION")).thenReturn(0.5);
+        when(parameters.getDouble("PROLIFERATIVE_FRACTION")).thenReturn(0.5);
         when(parameters.getInt("SELF_RECEPTORS")).thenReturn(randomIntBetween(100, 200));
         when(parameters.getDouble("SEARCH_ABILITY")).thenReturn(1.0);
         when(parameters.getDouble("CAR_AFFINITY")).thenReturn(10 * Math.pow(10, -7));
@@ -114,6 +110,7 @@ public class PatchCellCARTCD8Test {
                         any(Simulation.class),
                         any(PatchLocation.class),
                         any(MersenneTwisterFast.class));
+        when(random.nextDouble()).thenReturn(0.49);
         sim.random = random;
         cell.setState(State.UNDEFINED);
     }
@@ -163,10 +160,11 @@ public class PatchCellCARTCD8Test {
         Field div = PatchCell.class.getDeclaredField("divisions");
         div.setAccessible(true);
         div.set(cell, 0);
+        when(sim.random.nextDouble()).thenReturn(0.51);
 
         cell.step(sim);
 
-        assertTrue(cell.getState() == State.APOPTOTIC || cell.getState() == State.SENESCENT);
+        assertTrue(cell.getState() == State.APOPTOTIC);
         assertEquals(AntigenFlag.UNBOUND, cell.getBindingFlag());
         assertFalse(cell.getActivationStatus());
     }
@@ -177,7 +175,7 @@ public class PatchCellCARTCD8Test {
 
         cell.step(sim);
 
-        assertTrue(cell.getState() == State.APOPTOTIC || cell.getState() == State.ANERGIC);
+        assertTrue(cell.getState() == State.ANERGIC);
         assertEquals(AntigenFlag.UNBOUND, cell.getBindingFlag());
         assertFalse(cell.getActivationStatus());
     }
@@ -211,15 +209,22 @@ public class PatchCellCARTCD8Test {
     }
 
     @Test
-    public void step_whenNotActivated_setsStateToMigratory() {
+    public void step_whenNotActivated_setsStateToMigratory()
+            throws NoSuchFieldException, IllegalAccessException {
+        when(sim.random.nextDouble()).thenReturn(0.51);
+        Field active = PatchCellCART.class.getDeclaredField("activated");
+        active.setAccessible(true);
+        active.set(cell, false);
+
         cell.step(sim);
 
-        assertTrue(cell.getState() == State.MIGRATORY || cell.getState() == State.PROLIFERATIVE);
+        assertTrue(cell.getState() == State.MIGRATORY);
     }
 
     @Test
     public void step_whenOverstimulated_setsStateToExhausted()
             throws NoSuchFieldException, IllegalAccessException {
+        when(sim.random.nextDouble()).thenReturn(0.49);
         Field boundAntigens = PatchCellCART.class.getDeclaredField("boundCARAntigensCount");
         boundAntigens.setAccessible(true);
         boundAntigens.set(cell, cell.maxAntigenBinding + 1);
@@ -227,7 +232,7 @@ public class PatchCellCARTCD8Test {
 
         cell.step(sim);
 
-        assertTrue(cell.getState() == State.APOPTOTIC || cell.getState() == State.EXHAUSTED);
+        assertTrue(cell.getState() == State.EXHAUSTED);
         assertEquals(AntigenFlag.UNBOUND, cell.getBindingFlag());
         assertFalse(cell.getActivationStatus());
     }
