@@ -3,6 +3,7 @@ package arcade.potts.agent.module;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.util.PottsEnums.Phase;
 
 /** Extension of {@link PottsModule} for quiescence. */
 public class PottsModuleQuiescence extends PottsModule {
@@ -13,6 +14,7 @@ public class PottsModuleQuiescence extends PottsModule {
      */
     public PottsModuleQuiescence(PottsCell cell) {
         super(cell);
+        setPhase(Phase.UNDEFINED);
     }
 
     @Override

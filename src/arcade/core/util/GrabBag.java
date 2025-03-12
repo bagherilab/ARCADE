@@ -57,6 +57,15 @@ public class GrabBag {
     }
 
     /**
+     * Checks if the bag is empty.
+     *
+     * @return {@code true} if bag is empty, {@code false} otherwise
+     */
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
+
+    /**
      * Gets hash based on total weight and mapping.
      *
      * @return the hash
