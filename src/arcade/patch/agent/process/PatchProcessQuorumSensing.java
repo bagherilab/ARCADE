@@ -59,9 +59,6 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
     /** Rate of auxin flow [molecule/min] */
     protected final double AUX_FLOW_RATE_KILLER = 2.09 / (1E6 * 3600);
 
-    /** Rate of environmental auxin removal [molecule/min] */
-    //    protected final double AUX_REMOVAL_RATE = 0.0165 * 60;
-
     /** Location of cell. */
     protected Location loc;
 
@@ -152,21 +149,6 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
                 return new PatchProcessQuorumSensingSink(cell);
             default:
                 return null;
-        }
-    }
-
-    // this is here for me to debug
-    private void safeValue() {
-        for (int i = 0; i < concs.length; i++) {
-            double val = concs[i];
-            if (Double.isNaN(val)) {
-                // TODO: something is wrong
-                concs[i] = 0;
-            }
-            if (val < 0) {
-                // TODO: something is wrong
-                concs[i] = 0;
-            }
         }
     }
 }

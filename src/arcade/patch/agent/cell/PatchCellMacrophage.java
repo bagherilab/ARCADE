@@ -114,10 +114,6 @@ public abstract class PatchCellMacrophage extends PatchCell {
         poissonFactory = Poisson::new;
     }
 
-    public double callPoisson(double lambda, MersenneTwisterFast random) {
-        return poissonFactory.createPoisson(lambda, random).nextInt();
-    }
-
     /**
      * Determines if a binding event occurs at the current time step.
      *
@@ -170,18 +166,6 @@ public abstract class PatchCellMacrophage extends PatchCell {
          * @return a Poisson distribution instance
          */
         Poisson createPoisson(double lambda, MersenneTwisterFast random);
-    }
-
-    /**
-     * Calculates time interval for an event to occur according to kinetic monte carlo algorithm.
-     *
-     * @param rate the rate of the event
-     * @param random the random number generator
-     * @return the time interval for the event and given rate
-     */
-    private double computeTimeInterval(double rate, MersenneTwisterFast random) {
-        double randomSample = 1 / random.nextDouble();
-        return Math.log(randomSample) / rate;
     }
 
     /**

@@ -1,15 +1,10 @@
 package arcade.patch.agent.cell;
 
 import sim.engine.SimState;
-import sim.util.Bag;
-import sim.util.distribution.Poisson;
-import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
-import arcade.patch.env.grid.PatchGrid;
-import arcade.patch.env.location.PatchLocation;
 import arcade.patch.util.PatchEnums;
 
 public class PatchCellKiller extends PatchCellCARTCD8 {
@@ -76,9 +71,6 @@ public class PatchCellKiller extends PatchCellCARTCD8 {
 
         // Step quorum sensing process.
         super.processes.get(PatchEnums.Domain.QUORUM).step(simstate.random, sim);
-
-        //        // Cell attempts to bind to a target
-        //        this.boundTarget = super.bindTarget(sim, location, simstate.random);
 
         // Step inflammation process.
         super.processes.get(PatchEnums.Domain.INFLAMMATION).step(simstate.random, sim);
@@ -148,115 +140,6 @@ public class PatchCellKiller extends PatchCellCARTCD8 {
         }
     }
 
-    /**
-     * Determines if a binding event occurs at the current time step.
-     *
-     * @param simstate the current state of the simulation
-     */
-    protected void checkForBinding(SimState simstate) {
-        Simulation sim = (Simulation) simstate;
-        PatchGrid grid = (PatchGrid) sim.getGrid();
-
-        Bag allAgents = grabAllTissueNeighbors(grid, location);
-
-        if (!allAgents.isEmpty()) {
-            PatchCellTissue target =
-                    (PatchCellTissue) allAgents.get(simstate.random.nextInt(allAgents.size()));
-            double carProbability =
-                    calculateProbability(
-                            ((PatchCellTissue) target).getCarAntigens(),
-                            CARBindingRate,
-                            simstate.random);
-            double selfProbability =
-                    calculateProbability(
-                            ((PatchCellTissue) target).getSelfAntigens(),
-                            selfBindingRate,
-                            simstate.random);
-            double randomCar = simstate.random.nextDouble();
-            double randomSelf = simstate.random.nextDouble();
-            if (carProbability > randomCar && selfProbability < randomSelf) {
-                this.boundTarget = target;
-                this.bindingFlag = PatchEnums.AntigenFlag.BOUND_ANTIGEN;
-                this.boundCARAntigensCount++;
-                updateSelfReceptors();
-            } else if (carProbability > randomCar && selfProbability > randomSelf) {
-                this.boundTarget = target;
-                this.bindingFlag = PatchEnums.AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR;
-                this.boundCARAntigensCount++;
-                boundSelfAntigensCount++;
-                updateSelfReceptors();
-            } else if (carProbability < randomCar && selfProbability > randomSelf) {
-                this.boundTarget = target;
-                super.setBindingFlag(PatchEnums.AntigenFlag.BOUND_CELL_RECEPTOR);
-                boundSelfAntigensCount++;
-            } else {
-                this.boundTarget = null;
-                super.setBindingFlag(PatchEnums.AntigenFlag.UNBOUND);
-            }
-        }
-    }
-
-    /**
-     * Calculates probability of binding using a poisson distribution.
-     *
-     * @param antigens the number of antigens on target cell surface
-     * @param bindingRate the affinity of the antigen to the receptor
-     * @param random the random number generator
-     * @return probability that at least one binding event occurs
-     */
-    private double calculateProbability(
-            double antigens, double bindingRate, MersenneTwisterFast random) {
-        double bindingEvent = antigens * bindingRate;
-        double timeInterval = computeTimeInterval(bindingEvent, random);
-        Poisson distribution = new Poisson(timeInterval, random);
-        // calculate probability of 1 or more events occurring in this time step
-        return 1 - distribution.pdf(0);
-    }
-
-    /**
-     * Calculates time interval for an event to occur according to kinetic monte carlo algorithm.
-     *
-     * @param rate the rate of the event
-     * @param random the random number generator
-     * @return the time interval for the event and given rate
-     */
-    private double computeTimeInterval(double rate, MersenneTwisterFast random) {
-        double randomSample = 1 / random.nextDouble();
-        return Math.log(randomSample) / rate;
-    }
-
-    /**
-     * Adds all tissue agents at a given location in the input bag.
-     *
-     * @param tissueAgents the bag to add the tissue agents to
-     * @param potentialTargets all agents at the location
-     */
-    private void getTissueAgents(Bag tissueAgents, Bag potentialTargets) {
-        for (Object cell : potentialTargets) {
-            if (cell instanceof PatchCellTissue) {
-                tissueAgents.add((PatchCellTissue) cell);
-            }
-        }
-    }
-
-    /**
-     * Adds all tissue agents at a given location in the input bag.
-     *
-     * @param grid the simulation grid
-     * @param loc the location
-     * @return bag of all tissue neighbor agents
-     */
-    private Bag grabAllTissueNeighbors(PatchGrid grid, PatchLocation loc) {
-        Bag neighbors = new Bag();
-        getTissueAgents(neighbors, grid.getObjectsAtLocation(loc));
-        for (Location neighborLocation : loc.getNeighbors()) {
-            Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));
-            getTissueAgents(neighbors, bag);
-        }
-
-        return neighbors;
-    }
-
     /** Sets binding flag to unbound and binding target to null. */
     public void unbind() {
         if (this.bindingFlag == PatchEnums.AntigenFlag.BOUND_ANTIGEN) {
@@ -264,10 +147,5 @@ public class PatchCellKiller extends PatchCellCARTCD8 {
             this.boundTarget = null;
             this.boundCARAntigensCount--;
         }
-    }
-
-    /** Randomly increases number of self receptors after CAR binding. */
-    private void updateSelfReceptors() {
-        selfReceptors += (int) ((double) selfReceptorsStart * (0.95 + Math.random() / 10));
     }
 }

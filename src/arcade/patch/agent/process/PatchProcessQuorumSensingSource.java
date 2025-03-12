@@ -59,11 +59,6 @@ public class PatchProcessQuorumSensingSource extends PatchProcessQuorumSensing {
 
     @Override
     void stepProcess(MersenneTwisterFast random, Simulation sim) {
-
-        if (concs[AUXIN_SOURCE] > 0) {
-            int a = 0;
-        }
-
         // Solve system of equations.
         concs = Solver.rungeKutta(equations, 0, concs, 60, STEP_SIZE);
 
