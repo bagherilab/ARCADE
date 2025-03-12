@@ -17,9 +17,7 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
-import arcade.patch.agent.module.PatchModuleApoptosis;
-import arcade.patch.agent.module.PatchModuleMigration;
-import arcade.patch.agent.module.PatchModuleProliferation;
+import arcade.patch.agent.module.*;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
@@ -38,8 +36,8 @@ import static arcade.patch.util.PatchEnums.State;
  * NECROTIC_FRACTION} and {@code SENESCENT_FRACTION}, respectively).
  *
  * <p>Cell parameters are tracked using a map between the parameter name and value. Daughter cell
- * parameter values are drawn from a distribution centered on the parent cell parameter with the
- * specified amount of heterogeneity ({@code HETEROGENEITY}).
+ * parameter values are drawn from a distribution centered on the parent cell. The parameter classes
+ * have support for loading in distributions to reflect heterogeneity. ({@code HETEROGENEITY}).
  */
 public abstract class PatchCell implements Cell {
     /** Stopper used to stop this agent from being stepped in the schedule. */
@@ -329,31 +327,6 @@ public abstract class PatchCell implements Cell {
         return isStopped;
     }
 
-    @Override
-    public void setState(CellState state) {
-        this.state = state;
-        this.flag = Flag.UNDEFINED;
-
-        switch ((State) state) {
-            case PROLIFERATIVE:
-                module = new PatchModuleProliferation(this);
-                break;
-            case MIGRATORY:
-                module = new PatchModuleMigration(this);
-                break;
-            case APOPTOTIC:
-                module = new PatchModuleApoptosis(this);
-                break;
-            case CYTOTOXIC:
-                throw new UnsupportedOperationException();
-            case STIMULATORY:
-                throw new UnsupportedOperationException();
-            default:
-                module = null;
-                break;
-        }
-    }
-
     /**
      * Makes the specified {@link Process} object.
      *
@@ -372,6 +345,38 @@ public abstract class PatchCell implements Cell {
             case UNDEFINED:
             default:
                 return null;
+        }
+    }
+
+    @Override
+    public void setState(CellState state) {
+        this.state = state;
+        this.flag = Flag.UNDEFINED;
+
+        switch ((State) state) {
+            case PROLIFERATIVE:
+                module = new PatchModuleProliferation(this);
+                break;
+            case MIGRATORY:
+                module = new PatchModuleMigration(this);
+                break;
+            case APOPTOTIC:
+                module = new PatchModuleApoptosis(this);
+                break;
+            case STIMULATORY:
+                module = new PatchModuleStimulation(this);
+                break;
+            case CYTOTOXIC:
+                module = new PatchModuleCytotoxicity(this);
+                break;
+            case QUIESCENT:
+                if (this instanceof PatchCellCART) {
+                    this.setState(State.UNDEFINED);
+                }
+                break;
+            default:
+                module = null;
+                break;
         }
     }
 
