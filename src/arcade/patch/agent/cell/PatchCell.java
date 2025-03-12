@@ -17,7 +17,9 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
-import arcade.patch.agent.module.*;
+import arcade.patch.agent.module.PatchModuleApoptosis;
+import arcade.patch.agent.module.PatchModuleMigration;
+import arcade.patch.agent.module.PatchModuleProliferation;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
@@ -465,10 +467,12 @@ public abstract class PatchCell implements Cell {
                     options.add(inds[i], 1);
                 }
             }
-            return (PatchLocation) locs.get(options.next(random));
-        } else {
-            return null;
+            if (!options.isEmpty()) {
+                return (PatchLocation) locs.get(options.next(random));
+            }
         }
+
+        return null;
     }
 
     /**
