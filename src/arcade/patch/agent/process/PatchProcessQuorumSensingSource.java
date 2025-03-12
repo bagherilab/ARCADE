@@ -7,7 +7,6 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.Solver;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellMacrophage;
-import arcade.patch.util.PatchEnums;
 
 public class PatchProcessQuorumSensingSource extends PatchProcessQuorumSensing {
 
@@ -18,10 +17,6 @@ public class PatchProcessQuorumSensingSource extends PatchProcessQuorumSensing {
     private static final double K_AUX_DEGRADE = 20.0 / (1E3 * 3600);
 
     protected double boundSynnotch;
-
-    protected int isBound;
-
-    //    protected int feedback;
 
     /**
      * Creates an {@code PatchCellQuorumSensing} module for the given {@link PatchCell}.
@@ -36,11 +31,6 @@ public class PatchProcessQuorumSensingSource extends PatchProcessQuorumSensing {
 
         // initialize module
         this.boundSynnotch = (((PatchCellMacrophage) cell).getBoundSynNotchs());
-        this.isBound =
-                ((PatchCellMacrophage) cell).getBindingFlag()
-                                == PatchEnums.AntigenFlag.BOUND_ANTIGEN
-                        ? 1
-                        : 0;
 
         // Initial amounts of each species, all in microMolar/cell.
         concs[SYNNOTCH] =
@@ -59,7 +49,7 @@ public class PatchProcessQuorumSensingSource extends PatchProcessQuorumSensing {
                         double[] dydt = new double[NUM_COMPONENTS];
 
                         dydt[AUXIN_SOURCE] =
-                                isBound * K_AUX_EXPRESS * (y[SYNNOTCH])
+                                K_AUX_EXPRESS * (y[SYNNOTCH])
                                         - K_AUX_DEGRADE * (y[AUXIN_SOURCE])
                                         - AUX_FLOW_RATE_SEEKER
                                                 * Math.max(y[AUXIN_SOURCE] - extAuxin, 0);
@@ -76,13 +66,6 @@ public class PatchProcessQuorumSensingSource extends PatchProcessQuorumSensing {
 
         // Solve system of equations.
         concs = Solver.rungeKutta(equations, 0, concs, 60, STEP_SIZE);
-
-        // update binding status per current tick
-        this.isBound =
-                ((PatchCellMacrophage) cell).getBoundSynNotchs()
-                                >= ((PatchCellMacrophage) cell).synNotchThreshold
-                        ? 1
-                        : 0;
 
         // update bound synnotch receptors
         this.boundSynnotch = (((PatchCellMacrophage) cell).getBoundSynNotchs());

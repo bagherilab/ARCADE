@@ -35,10 +35,6 @@ public class PatchCellKiller extends PatchCellCARTCD8 {
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
 
-        if (sim.getSchedule().getTime() == 4320) {
-            int a = 0;
-        }
-
         // Increase age of cell.
         super.age++;
 

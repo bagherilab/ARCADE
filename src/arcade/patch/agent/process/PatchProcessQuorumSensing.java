@@ -2,12 +2,10 @@ package arcade.patch.agent.process;
 
 import java.util.ArrayList;
 import java.util.List;
-import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.patch.agent.cell.PatchCell;
-import arcade.patch.env.grid.PatchGrid;
 
 /**
  * Implementation of {@link Process} for quorum sensing type modules in which auxin is taken up and
@@ -97,7 +95,10 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
      * @param sim the simulation instance
      */
     private void updateExternal(Simulation sim) {
-        extAuxin = sim.getLattice("AUXIN").getAverageValue(loc) * loc.getVolume();
+        double auxLocConc = sim.getLattice("AUXIN").getAverageValue(loc);
+        // convert concentration from location volume to cell volume
+        double locationMolecules = auxLocConc / (1E6 * 1E15) * loc.getVolume() * 6.022E23;
+        extAuxin = locationMolecules / (cell.getVolume() * 6.022E23) * 1E15 * 1E6;
     }
 
     /**
@@ -110,11 +111,6 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-        // Calculate fraction of volume occupied by cell.
-        Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocation(location);
-        double totalVolume = PatchCell.calculateTotalVolume(bag);
-        f = volume / totalVolume;
-
         updateExternal(sim);
 
         stepProcess(random, sim);
@@ -128,11 +124,15 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
             extAuxin -= flow_out * AUX_FLOW_RATE_KILLER;
         }
 
-        // floor small values to 0 to prevent underflow
-        extAuxin = extAuxin > 1E-10 ? extAuxin : 0;
+        // convert extAuxin concentration to match location volume
+        // convert extAux to molecules
+        double auxMolecules = extAuxin / (1E6 * 1E15) * cell.getVolume() * 6.022E23;
+        double auxinConcLocation = auxMolecules / (loc.getVolume() * 6.022E23) * 1E15 * 1E6;
 
-        // rescale extAuxin such that it is not a tiny amount
-        sim.getLattice("AUXIN").setValue(loc, extAuxin);
+        // floor small values to 0 to prevent underflow
+        auxinConcLocation = auxinConcLocation > 1E-10 ? auxinConcLocation : 0;
+
+        sim.getLattice("AUXIN").setValue(loc, auxinConcLocation);
     }
 
     /**

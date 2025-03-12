@@ -8,7 +8,6 @@ import arcade.core.util.Parameters;
 import arcade.core.util.Solver;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellCART;
-import arcade.patch.util.PatchEnums;
 
 public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
 
@@ -35,8 +34,6 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
 
     protected double boundCAR;
 
-    protected int isBound;
-
     /**
      * Creates an {@code PatchCellQuorumSensing} module for the given {@link PatchCell}.
      *
@@ -54,12 +51,6 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
                         * 1E15
                         * 1E6
                         / (cell.getVolume() * 6.022E23);
-        this.isBound =
-                (((PatchCellCART) cell).getBindingFlag() == PatchEnums.AntigenFlag.BOUND_ANTIGEN
-                                || ((PatchCellCART) cell).getBindingFlag()
-                                        == PatchEnums.AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR)
-                        ? 1
-                        : 0;
         // set parameters
         Parameters parameters = cell.getParameters();
         this.ACTIVATION_THRESHOLD = parameters.getDouble("quorum/ACTIVATION_THRESHOLD");
@@ -81,7 +72,7 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
                         double[] dydt = new double[NUM_COMPONENTS];
 
                         dydt[ACTIVATION] =
-                                isBound * K_ACTIVE_EXPRESS_ACCELERATED * boundCAR
+                                K_ACTIVE_EXPRESS_ACCELERATED * boundCAR
                                         + K_ACTIVE_EXPRESS * boundCAR
                                         - K_ACTIVE_DEGRADE * y[ACTIVATION];
 
@@ -116,11 +107,6 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
             ((PatchCellCART) cell).setActivationStatus(false);
         }
 
-        // update binding status per current tick
-        this.isBound =
-                ((PatchCellCART) cell).getBindingFlag() == PatchEnums.AntigenFlag.BOUND_ANTIGEN
-                        ? 1
-                        : 0;
         // update bound CAR receptors
         this.boundCAR =
                 ((PatchCellCART) cell).getBoundCARAntigensCount()
