@@ -28,17 +28,11 @@ public class PatchModuleCytotoxicity extends PatchModule {
     /** Amount of granzyme inside CAR T-cell. */
     double granzyme;
 
-    /** Time delay before calling the action [min]. */
-    private int timeDelay;
+    /** Average time that T cell is bound to target [min]. */
+    private final int timeDelay;
 
     /** Ticker to keep track of the time delay [min]. */
     private int ticker;
-
-    /** Average time that T cell is bound to target [min]. */
-    private double boundTime;
-
-    /** Range in bound time [min]. */
-    private double boundRange;
 
     /**
      * Creates a {@code PatchActionKill} for the given {@link PatchCellCART}.
@@ -52,9 +46,7 @@ public class PatchModuleCytotoxicity extends PatchModule {
         this.granzyme = inflammation.getInternal("granzyme");
 
         Parameters parameters = cell.getParameters();
-        this.boundTime = parameters.getInt("BOUND_TIME");
-        this.boundRange = parameters.getInt("BOUND_RANGE");
-        this.timeDelay = 0;
+        this.timeDelay = parameters.getInt("BOUND_TIME");
         this.ticker = 0;
     }
 
@@ -71,8 +63,6 @@ public class PatchModuleCytotoxicity extends PatchModule {
         }
 
         if (ticker == 0) {
-            this.timeDelay =
-                    (int) (boundTime + Math.round((boundRange * (2 * random.nextDouble() - 1))));
             if (granzyme >= 1) {
                 PatchCellTissue tissueCell = (PatchCellTissue) target;
                 tissueCell.setState(State.APOPTOTIC);
