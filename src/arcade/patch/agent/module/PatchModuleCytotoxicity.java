@@ -29,7 +29,7 @@ public class PatchModuleCytotoxicity extends PatchModule {
     double granzyme;
 
     /** Average time that T cell is bound to target [min]. */
-    final private int timeDelay;
+    private final int timeDelay;
 
     /** Ticker to keep track of the time delay [min]. */
     private int ticker;
