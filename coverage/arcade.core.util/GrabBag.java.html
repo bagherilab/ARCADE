@@ -57,12 +57,21 @@ public class GrabBag {
     }
 
     /**
+     * Checks if the bag is empty.
+     *
+     * @return {@code true} if bag is empty, {@code false} otherwise
+     */
+    public boolean isEmpty() {
+<span class="fc" id="L65">        return map.isEmpty();</span>
+    }
+
+    /**
      * Gets hash based on total weight and mapping.
      *
      * @return the hash
      */
     public int hashCode() {
-<span class="nc" id="L65">        return (int) totalWeight + map.hashCode();</span>
+<span class="nc" id="L74">        return (int) totalWeight + map.hashCode();</span>
     }
 
     /**
@@ -72,11 +81,11 @@ public class GrabBag {
      * @return {@code true} if bags are the same, {@code false} otherwise
      */
     public boolean equals(Object obj) {
-<span class="pc bpc" id="L75" title="1 of 2 branches missed.">        if (!(obj instanceof GrabBag)) {</span>
-<span class="nc" id="L76">            return false;</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">        if (!(obj instanceof GrabBag)) {</span>
+<span class="nc" id="L85">            return false;</span>
         }
-<span class="fc" id="L78">        GrabBag grabbag = (GrabBag) obj;</span>
-<span class="pc bpc" id="L79" title="2 of 4 branches missed.">        return grabbag.totalWeight == totalWeight &amp;&amp; grabbag.map.equals(map);</span>
+<span class="fc" id="L87">        GrabBag grabbag = (GrabBag) obj;</span>
+<span class="pc bpc" id="L88" title="2 of 4 branches missed.">        return grabbag.totalWeight == totalWeight &amp;&amp; grabbag.map.equals(map);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

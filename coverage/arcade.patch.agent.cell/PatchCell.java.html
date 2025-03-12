@@ -460,10 +460,12 @@ public abstract class PatchCell implements Cell {
 <span class="fc" id="L460">                    options.add(inds[i], 1);</span>
                 }
             }
-<span class="fc" id="L463">            return (PatchLocation) locs.get(options.next(random));</span>
-        } else {
-<span class="fc" id="L465">            return null;</span>
+<span class="fc bfc" id="L463" title="All 2 branches covered.">            if (!options.isEmpty()) {</span>
+<span class="fc" id="L464">                return (PatchLocation) locs.get(options.next(random));</span>
+            }
         }
+
+<span class="fc" id="L468">        return null;</span>
     }
 
     /**
@@ -473,23 +475,23 @@ public abstract class PatchCell implements Cell {
      * @return a {@code Bag} of free locations
      */
     public Bag findFreeLocations(Simulation sim) {
-<span class="fc" id="L476">        Bag freeLocations = new Bag();</span>
-<span class="fc" id="L477">        PatchLocation currentLocation = this.location;</span>
-<span class="fc bfc" id="L478" title="All 2 branches covered.">        double targetVolume = (state == State.PROLIFERATIVE) ? volume * 0.5 : volume;</span>
-<span class="fc bfc" id="L479" title="All 2 branches covered.">        int densityAdjustment = (state == State.PROLIFERATIVE) ? 1 : 0;</span>
+<span class="fc" id="L478">        Bag freeLocations = new Bag();</span>
+<span class="fc" id="L479">        PatchLocation currentLocation = this.location;</span>
+<span class="fc bfc" id="L480" title="All 2 branches covered.">        double targetVolume = (state == State.PROLIFERATIVE) ? volume * 0.5 : volume;</span>
+<span class="fc bfc" id="L481" title="All 2 branches covered.">        int densityAdjustment = (state == State.PROLIFERATIVE) ? 1 : 0;</span>
 
-<span class="fc bfc" id="L481" title="All 2 branches covered.">        if (checkLocation(</span>
+<span class="fc bfc" id="L483" title="All 2 branches covered.">        if (checkLocation(</span>
                 sim, currentLocation, 0, criticalHeight, pop, maxDensity - densityAdjustment)) {
-<span class="fc" id="L483">            freeLocations.add(currentLocation.getClone());</span>
+<span class="fc" id="L485">            freeLocations.add(currentLocation.getClone());</span>
         }
 
-<span class="fc bfc" id="L486" title="All 2 branches covered.">        for (Location neighborLocation : currentLocation.getNeighbors()) {</span>
-<span class="fc" id="L487">            PatchLocation neighbor = (PatchLocation) neighborLocation;</span>
-<span class="fc bfc" id="L488" title="All 2 branches covered.">            if (checkLocation(sim, neighbor, targetVolume, criticalHeight, pop, maxDensity)) {</span>
-<span class="fc" id="L489">                freeLocations.add(neighborLocation);</span>
+<span class="fc bfc" id="L488" title="All 2 branches covered.">        for (Location neighborLocation : currentLocation.getNeighbors()) {</span>
+<span class="fc" id="L489">            PatchLocation neighbor = (PatchLocation) neighborLocation;</span>
+<span class="fc bfc" id="L490" title="All 2 branches covered.">            if (checkLocation(sim, neighbor, targetVolume, criticalHeight, pop, maxDensity)) {</span>
+<span class="fc" id="L491">                freeLocations.add(neighborLocation);</span>
             }
-<span class="fc" id="L491">        }</span>
-<span class="fc" id="L492">        return freeLocations;</span>
+<span class="fc" id="L493">        }</span>
+<span class="fc" id="L494">        return freeLocations;</span>
     }
 
     /**
@@ -514,35 +516,35 @@ public abstract class PatchCell implements Cell {
             double maxHeight,
             int population,
             int maxDensity) {
-<span class="fc" id="L517">        double locationVolume = loc.getVolume();</span>
-<span class="fc" id="L518">        double locationArea = loc.getArea();</span>
-<span class="fc" id="L519">        PatchGrid grid = (PatchGrid) sim.getGrid();</span>
+<span class="fc" id="L519">        double locationVolume = loc.getVolume();</span>
+<span class="fc" id="L520">        double locationArea = loc.getArea();</span>
+<span class="fc" id="L521">        PatchGrid grid = (PatchGrid) sim.getGrid();</span>
 
-<span class="fc" id="L521">        Bag bag = new Bag(grid.getObjectsAtLocation(loc));</span>
+<span class="fc" id="L523">        Bag bag = new Bag(grid.getObjectsAtLocation(loc));</span>
 
-<span class="fc bfc" id="L523" title="All 2 branches covered.">        if (bag.numObjs != 0) {</span>
-<span class="fc" id="L524">            double proposedVolume = calculateTotalVolume(bag) + addedVolume;</span>
-<span class="fc" id="L525">            double proposedHeight = proposedVolume / locationArea;</span>
+<span class="fc bfc" id="L525" title="All 2 branches covered.">        if (bag.numObjs != 0) {</span>
+<span class="fc" id="L526">            double proposedVolume = calculateTotalVolume(bag) + addedVolume;</span>
+<span class="fc" id="L527">            double proposedHeight = proposedVolume / locationArea;</span>
 
-<span class="fc bfc" id="L527" title="All 4 branches covered.">            if (proposedVolume &gt; locationVolume || proposedHeight &gt; maxHeight) {</span>
-<span class="fc" id="L528">                return false;</span>
+<span class="fc bfc" id="L529" title="All 4 branches covered.">            if (proposedVolume &gt; locationVolume || proposedHeight &gt; maxHeight) {</span>
+<span class="fc" id="L530">                return false;</span>
             }
 
-<span class="fc" id="L531">            int count = 0;</span>
-<span class="fc bfc" id="L532" title="All 2 branches covered.">            for (Object obj : bag) {</span>
-<span class="fc" id="L533">                PatchCell cell = (PatchCell) obj;</span>
-<span class="fc bfc" id="L534" title="All 2 branches covered.">                if (proposedHeight &gt; cell.getCriticalHeight()) {</span>
-<span class="fc" id="L535">                    return false;</span>
+<span class="fc" id="L533">            int count = 0;</span>
+<span class="fc bfc" id="L534" title="All 2 branches covered.">            for (Object obj : bag) {</span>
+<span class="fc" id="L535">                PatchCell cell = (PatchCell) obj;</span>
+<span class="fc bfc" id="L536" title="All 2 branches covered.">                if (proposedHeight &gt; cell.getCriticalHeight()) {</span>
+<span class="fc" id="L537">                    return false;</span>
                 }
-<span class="fc bfc" id="L537" title="All 2 branches covered.">                if (cell.getPop() == population) {</span>
-<span class="fc" id="L538">                    count++;</span>
-<span class="fc bfc" id="L539" title="All 2 branches covered.">                    if (count &gt;= maxDensity) {</span>
-<span class="fc" id="L540">                        return false;</span>
+<span class="fc bfc" id="L539" title="All 2 branches covered.">                if (cell.getPop() == population) {</span>
+<span class="fc" id="L540">                    count++;</span>
+<span class="fc bfc" id="L541" title="All 2 branches covered.">                    if (count &gt;= maxDensity) {</span>
+<span class="fc" id="L542">                        return false;</span>
                     }
                 }
-<span class="fc" id="L543">            }</span>
+<span class="fc" id="L545">            }</span>
         }
-<span class="fc" id="L545">        return true;</span>
+<span class="fc" id="L547">        return true;</span>
     }
 
     /**
@@ -551,8 +553,8 @@ public abstract class PatchCell implements Cell {
      * @param newBindingFlag the target cell antigen binding state
      */
     public void setBindingFlag(PatchEnums.AntigenFlag newBindingFlag) {
-<span class="fc" id="L554">        this.bindingFlag = newBindingFlag;</span>
-<span class="fc" id="L555">    }</span>
+<span class="fc" id="L556">        this.bindingFlag = newBindingFlag;</span>
+<span class="fc" id="L557">    }</span>
 
     /**
      * Returns the cell binding flag.
@@ -560,7 +562,7 @@ public abstract class PatchCell implements Cell {
      * @return the cell antigen binding state
      */
     public PatchEnums.AntigenFlag getBindingFlag() {
-<span class="fc" id="L563">        return this.bindingFlag;</span>
+<span class="fc" id="L565">        return this.bindingFlag;</span>
     }
 
     /**
@@ -569,7 +571,7 @@ public abstract class PatchCell implements Cell {
      * @return the cell antigen binding state
      */
     public int getSynthesisDuration() {
-<span class="fc" id="L572">        return this.synthesisDuration;</span>
+<span class="fc" id="L574">        return this.synthesisDuration;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
