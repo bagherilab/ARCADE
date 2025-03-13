@@ -1,6 +1,7 @@
 package arcade.potts.agent.module;
 
 import java.util.EnumMap;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -19,6 +20,8 @@ import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
+import arcade.potts.util.PottsEnums.Region;
+import arcade.potts.util.PottsEnums.State;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -135,6 +138,11 @@ public class PottsModuleFlyGMCDifferentiationTest {
                         });
     }
 
+    @AfterEach
+    void tearDown() {
+        mockedConstruction.close();
+    }
+
     @Test
     public void addCell_called_callsExpectedMethods() {
         // When the module calls make() on the cell, return Quiescent PottsCellContainer mock
@@ -162,7 +170,7 @@ public class PottsModuleFlyGMCDifferentiationTest {
         PottsCellContainer constructed = mockedConstruction.constructed().get(0);
         PottsCellFlyNeuron diffCell =
                 (PottsCellFlyNeuron) constructed.convert(cellFactory, location, random);
-        verify(grid).addObject(diffCell, location);
+        verify(grid).addObject(diffCell, null);
         verify(potts).register(diffCell);
         verify(diffCell).reset(dummyIDs, dummyRegions);
         verify(diffCell).schedule(schedule);
