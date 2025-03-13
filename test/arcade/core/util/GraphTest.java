@@ -186,7 +186,6 @@ public class GraphTest {
         Edge edge = new Edge(node1, node2);
 
         graph.addEdge(edge);
-
         assertAll(
                 () -> assertTrue(graph.contains(node1)),
                 () -> assertTrue(graph.contains(node2)),

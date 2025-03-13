@@ -278,7 +278,6 @@ public final class Graph {
         setOutMap(edge.getFrom(), edge);
         setInMap(edge.getTo(), edge);
         setLinks(edge);
-        mergeNodes();
     }
 
     /**
@@ -866,7 +865,7 @@ public final class Graph {
          * @return a hash based on coordinates
          */
         public final int hashCode() {
-            return this.from.hashCode() << 16 + this.to.hashCode() << 16;
+            return this.from.hashCode() + this.to.hashCode() << 16;
         }
     }
 }
