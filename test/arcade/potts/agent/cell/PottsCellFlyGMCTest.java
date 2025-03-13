@@ -77,7 +77,7 @@ public class PottsCellFlyGMCTest {
 
     @Test
     public void constructor_invalidBasalApoptosisRate_throwsUnsupportedOperationException() {
-        doReturn(1.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(1.0).when(parametersMock).getDouble("proliferation/BASAL_APOPTOSIS_RATE");
         assertThrows(
                 InvalidParameterValueException.class,
                 () -> {

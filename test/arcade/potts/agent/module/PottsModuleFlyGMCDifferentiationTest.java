@@ -56,6 +56,8 @@ public class PottsModuleFlyGMCDifferentiationTest {
 
     private MersenneTwisterFast random;
 
+    private MockedConstruction<PottsCellContainer> mockedConstruction;
+
     @BeforeEach
     public final void setupMocks() {
         dummyIDs = new int[1][1][1];
@@ -116,12 +118,9 @@ public class PottsModuleFlyGMCDifferentiationTest {
         when(gmcCell.getParameters()).thenReturn(parameters);
 
         random = mock(MersenneTwisterFast.class);
-    }
 
-    @Test
-    public void addCell_called_callsExpectedMethods() {
         // Intercept construction of the differentiated cell container
-        try (MockedConstruction<PottsCellContainer> mockedConstruction =
+        mockedConstruction =
                 mockConstruction(
                         PottsCellContainer.class,
                         (mockContainer, context) -> {
@@ -133,38 +132,39 @@ public class PottsModuleFlyGMCDifferentiationTest {
                                             eq(location),
                                             any(MersenneTwisterFast.class)))
                                     .thenReturn(diffCell);
-                        })) {
+                        });
+    }
 
-            // When the module calls make() on the cell, return Quiescent PottsCellContainer mock
-            container = mock(PottsCellContainer.class);
-            when(gmcCell.make(eq(123), eq(State.QUIESCENT), any(MersenneTwisterFast.class)))
-                    .thenReturn(container);
-            newCell = mock(PottsCell.class);
-            when(container.convert(
-                            eq(cellFactory), eq(newLocation), any(MersenneTwisterFast.class)))
-                    .thenReturn(newCell);
+    @Test
+    public void addCell_called_callsExpectedMethods() {
+        // When the module calls make() on the cell, return Quiescent PottsCellContainer mock
+        container = mock(PottsCellContainer.class);
+        when(gmcCell.make(eq(123), eq(State.QUIESCENT), any(MersenneTwisterFast.class)))
+                .thenReturn(container);
+        newCell = mock(PottsCell.class);
+        when(container.convert(eq(cellFactory), eq(newLocation), any(MersenneTwisterFast.class)))
+                .thenReturn(newCell);
 
-            PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
-            module.addCell(random, sim);
-            verify(location).split(random);
-            verify(gmcCell).reset(dummyIDs, dummyRegions);
-            verify(gmcCell).make(123, State.QUIESCENT, random);
+        PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
+        module.addCell(random, sim);
+        verify(location).split(random);
+        verify(gmcCell).reset(dummyIDs, dummyRegions);
+        verify(gmcCell).make(123, State.QUIESCENT, random);
 
-            verify(grid).addObject(newCell, null);
-            verify(potts).register(newCell);
-            verify(newCell).reset(dummyIDs, dummyRegions);
-            verify(newCell).schedule(schedule);
+        verify(grid).addObject(newCell, null);
+        verify(potts).register(newCell);
+        verify(newCell).reset(dummyIDs, dummyRegions);
+        verify(newCell).schedule(schedule);
 
-            verify(grid).removeObject(gmcCell, location);
-            verify(gmcCell).stop();
+        verify(grid).removeObject(gmcCell, location);
+        verify(gmcCell).stop();
 
-            PottsCellContainer constructed = mockedConstruction.constructed().get(0);
-            PottsCellFlyNeuron diffCell =
-                    (PottsCellFlyNeuron) constructed.convert(cellFactory, location, random);
-            verify(grid).addObject(diffCell, location);
-            verify(potts).register(diffCell);
-            verify(diffCell).reset(dummyIDs, dummyRegions);
-            verify(diffCell).schedule(schedule);
-        }
+        PottsCellContainer constructed = mockedConstruction.constructed().get(0);
+        PottsCellFlyNeuron diffCell =
+                (PottsCellFlyNeuron) constructed.convert(cellFactory, location, random);
+        verify(grid).addObject(diffCell, location);
+        verify(potts).register(diffCell);
+        verify(diffCell).reset(dummyIDs, dummyRegions);
+        verify(diffCell).schedule(schedule);
     }
 }

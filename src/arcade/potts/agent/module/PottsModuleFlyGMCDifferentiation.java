@@ -77,7 +77,7 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationSi
                 (PottsCellFlyNeuron)
                         differentiatedGMCContainer.convert(sim.getCellFactory(), location, random);
 
-        sim.getGrid().addObject(differentiatedGMC, location);
+        sim.getGrid().addObject(differentiatedGMC, null);
         potts.register(differentiatedGMC);
         differentiatedGMC.reset(potts.ids, potts.regions);
         differentiatedGMC.schedule(sim.getSchedule());
