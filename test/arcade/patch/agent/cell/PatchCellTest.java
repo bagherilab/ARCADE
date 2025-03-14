@@ -9,14 +9,13 @@ import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.*;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
-import arcade.patch.agent.module.PatchModule;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.lattice.PatchLattice;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
-import arcade.patch.util.PatchEnums.Domain;
+import arcade.patch.util.PatchEnums;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -74,7 +73,7 @@ public class PatchCellTest {
                     cellCriticalHeight,
                     cellCycles);
 
-    static class PatchCellMock extends PatchCell {
+    static class PatchCellMock extends PatchCellTissue {
         PatchCellMock(PatchCellContainer container, Location location, Parameters parameters) {
             super(container, location, parameters, null);
         }
@@ -133,16 +132,10 @@ public class PatchCellTest {
     }
 
     @Test
-    public void step_calledWhenAgeGreaterThanApoptosisAge_setsApoptoticState() {
-        PatchModule module = mock(PatchModule.class);
+    public void setBindingFlag_called_setsFlag() {
         doReturn(0.0).when(parametersMock).getDouble(any(String.class));
         doReturn(0).when(parametersMock).getInt(any(String.class));
-        doReturn(10.0).when(parametersMock).getDouble("APOPTOSIS_AGE");
-        int age = 11;
-        ArrayList<State> relevantStates = new ArrayList<>();
-        relevantStates.add(State.QUIESCENT);
-        relevantStates.add(State.MIGRATORY);
-        relevantStates.add(State.PROLIFERATIVE);
+        PatchCell cell = new PatchCellMock(baseContainer, locationMock, parametersMock);
 
         for (State state : relevantStates) {
             PatchCellContainer container =
@@ -169,24 +162,16 @@ public class PatchCellTest {
                             })
                     .when(cell)
                     .setState(any(State.class));
+        cell.setBindingFlag(PatchEnums.AntigenFlag.BOUND_ANTIGEN);
 
-            cell.step(simMock);
-
-            assertEquals(State.APOPTOTIC, cell.getState());
-        }
+        assertEquals(PatchEnums.AntigenFlag.BOUND_ANTIGEN, cell.getBindingFlag());
     }
 
     @Test
-    public void step_calledWhenAgeLessThanApoptosisAge_doesNotSetState() {
-        PatchModule module = mock(PatchModule.class);
+    public void getBindingFlag_called_returnsFlag() {
         doReturn(0.0).when(parametersMock).getDouble(any(String.class));
         doReturn(0).when(parametersMock).getInt(any(String.class));
-        doReturn(10.0).when(parametersMock).getDouble("APOPTOSIS_AGE");
-        int age = 9;
-        ArrayList<State> relevantStates = new ArrayList<>();
-        relevantStates.add(State.QUIESCENT);
-        relevantStates.add(State.MIGRATORY);
-        relevantStates.add(State.PROLIFERATIVE);
+        PatchCell cell = new PatchCellMock(baseContainer, locationMock, parametersMock);
 
         for (State state : relevantStates) {
             PatchCellContainer container =
@@ -257,6 +242,9 @@ public class PatchCellTest {
         cell.step(simMock);
 
         verify(cell, times(0)).setState(any(State.class));
+        cell.setBindingFlag(PatchEnums.AntigenFlag.BOUND_ANTIGEN);
+
+        assertEquals(PatchEnums.AntigenFlag.BOUND_ANTIGEN, cell.getBindingFlag());
     }
 
     @Test
@@ -592,6 +580,42 @@ public class PatchCellTest {
         PatchLocation bestLocation = cell.selectBestLocation(simMock, randomMock);
 
         assertEquals(bestLocation, closerLocation);
+    }
+
+    @Test
+    public void selectBestLocation_calledWithMaxAffinityAndNoCloserLocation_returnNull() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(1.0).when(parametersMock).getDouble("AFFINITY");
+        doReturn(0.0).when(parametersMock).getDouble("ACCURACY");
+        doReturn(0.5).when(randomMock).nextDouble();
+        PatchLattice latticeMock = mock(PatchLattice.class);
+        MiniBox boxMock = mock(MiniBox.class);
+        doReturn(boxMock).when(latticeMock).getParameters();
+        doReturn(latticeMock).when(simMock).getLattice("GLUCOSE");
+        doReturn(100.).when(boxMock).getDouble("generator/CONCENTRATION");
+        PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
+        PatchLocation otherLocation1 = mock(PatchLocation.class);
+        PatchLocation otherLocation2 = mock(PatchLocation.class);
+
+        doReturn(1).when(locationMock).getPlanarIndex();
+        doReturn(1).when(otherLocation1).getPlanarIndex();
+        doReturn(1).when(otherLocation2).getPlanarIndex();
+        doReturn(50.).when(latticeMock).getAverageValue(locationMock);
+        doReturn(75.).when(latticeMock).getAverageValue(otherLocation1);
+        doReturn(25.).when(latticeMock).getAverageValue(otherLocation2);
+        doReturn(0.).when(locationMock).getPlanarDistance();
+        doReturn(1.).when(otherLocation1).getPlanarDistance();
+        doReturn(1.).when(otherLocation2).getPlanarDistance();
+
+        Bag locations = new Bag();
+        locations.add(otherLocation1);
+        locations.add(otherLocation2);
+        doReturn(locations).when(cell).findFreeLocations(simMock);
+
+        PatchLocation bestLocation = cell.selectBestLocation(simMock, randomMock);
+
+        assertEquals(bestLocation, null);
     }
 
     @Test
