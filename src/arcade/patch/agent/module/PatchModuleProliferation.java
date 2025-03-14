@@ -57,7 +57,8 @@ public class PatchModuleProliferation extends PatchModule {
         maxHeight = cell.getCriticalHeight();
         duration = 0;
         // Load parameters.
-        synthesisDuration = cell.getSynthesisDuration();
+        Parameters parameters = cell.getParameters();
+        synthesisDuration = parameters.getInt("proliferation/SYNTHESIS_DURATION");
     }
 
     @Override

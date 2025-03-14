@@ -19,7 +19,10 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModuleApoptosis;
 import arcade.patch.agent.module.PatchModuleMigration;
+import arcade.patch.agent.module.PatchModuleNecrosis;
 import arcade.patch.agent.module.PatchModuleProliferation;
+import arcade.patch.agent.module.PatchModuleQuiescence;
+import arcade.patch.agent.module.PatchModuleSenescence;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
@@ -83,9 +86,6 @@ public abstract class PatchCell implements Cell {
 
     /** Death age due to apoptosis [min]. */
     double apoptosisAge;
-
-    /** Time required for DNA synthesis [min]. */
-    final int synthesisDuration;
 
     /** Critical volume for cell [um<sup>3</sup>]. */
     final double criticalVolume;
@@ -347,6 +347,15 @@ public abstract class PatchCell implements Cell {
             case APOPTOTIC:
                 module = new PatchModuleApoptosis(this);
                 break;
+            case NECROTIC:
+                module = new PatchModuleNecrosis(this);
+                break;
+            case QUIESCENT:
+                module = new PatchModuleQuiescence(this);
+                break;
+            case SENESCENT:
+                module = new PatchModuleSenescence(this);
+                break;
             case CYTOTOXIC:
                 throw new UnsupportedOperationException();
             case STIMULATORY:
@@ -463,10 +472,12 @@ public abstract class PatchCell implements Cell {
                     options.add(inds[i], 1);
                 }
             }
-            return (PatchLocation) locs.get(options.next(random));
-        } else {
-            return null;
+            if (!options.isEmpty()) {
+                return (PatchLocation) locs.get(options.next(random));
+            }
         }
+
+        return null;
     }
 
     /**
@@ -564,14 +575,5 @@ public abstract class PatchCell implements Cell {
      */
     public PatchEnums.AntigenFlag getBindingFlag() {
         return this.bindingFlag;
-    }
-
-    /**
-     * Returns the synthesis duration period.
-     *
-     * @return the cell antigen binding state
-     */
-    public int getSynthesisDuration() {
-        return this.synthesisDuration;
     }
 }
