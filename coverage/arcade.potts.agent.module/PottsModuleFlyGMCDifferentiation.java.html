@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PottsModuleFlyGMCDifferentiation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.agent.module</a> &gt; <span class="el_source">PottsModuleFlyGMCDifferentiation.java</span></div><h1>PottsModuleFlyGMCDifferentiation.java</h1><pre class="source lang-java linenums">package arcade.potts.agent.module;
+
+import ec.util.MersenneTwisterFast;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.location.Location;
+import arcade.core.sim.Simulation;
+import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.agent.cell.PottsCellContainer;
+import arcade.potts.agent.cell.PottsCellFlyGMC;
+import arcade.potts.agent.cell.PottsCellFlyNeuron;
+import arcade.potts.env.location.PottsLocation2D;
+import arcade.potts.sim.Potts;
+import arcade.potts.sim.PottsSimulation;
+import arcade.potts.util.PottsEnums.State;
+
+/**
+ * Implementation of {@link PottsModuleProliferationSimple} for fly GMC agents. These cells divide
+ * into two {@link PottsCellFlyNeuron} cells. The links must be set in the setup file so that 100%
+ * of the daughter cells are Neurons.
+ */
+public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationSimple {
+
+    /**
+     * Creates a fly GMC proliferation module.
+     *
+     * @param cell the cell to which this module is attached
+     */
+    public PottsModuleFlyGMCDifferentiation(PottsCellFlyGMC cell) {
+<span class="fc" id="L29">        super(cell);</span>
+<span class="fc" id="L30">    }</span>
+
+    @Override
+    void addCell(MersenneTwisterFast random, Simulation sim) {
+<span class="fc" id="L34">        Potts potts = ((PottsSimulation) sim).getPotts();</span>
+
+        // Split current location
+<span class="fc" id="L37">        Location newLocation = ((PottsLocation2D) cell.getLocation()).split(random);</span>
+
+        // Reset current cell
+<span class="fc" id="L40">        cell.reset(potts.ids, potts.regions);</span>
+
+        // Create and schedule new neuron cell
+<span class="fc" id="L43">        int newID = sim.getID();</span>
+<span class="fc" id="L44">        CellContainer newContainer = cell.make(newID, State.QUIESCENT, random);</span>
+<span class="fc" id="L45">        PottsCell newCell =</span>
+<span class="fc" id="L46">                (PottsCell) newContainer.convert(sim.getCellFactory(), newLocation, random);</span>
+<span class="fc" id="L47">        sim.getGrid().addObject(newCell, null);</span>
+<span class="fc" id="L48">        potts.register(newCell);</span>
+<span class="fc" id="L49">        newCell.reset(potts.ids, potts.regions);</span>
+<span class="fc" id="L50">        newCell.schedule(sim.getSchedule());</span>
+
+        // remove old GMC cell from simulation
+<span class="fc" id="L53">        PottsCellFlyGMC oldCell = (PottsCellFlyGMC) cell;</span>
+<span class="fc" id="L54">        Location location = oldCell.getLocation();</span>
+<span class="fc" id="L55">        sim.getGrid().removeObject(oldCell, location);</span>
+<span class="fc" id="L56">        oldCell.stop();</span>
+
+        // create new neuron cell and add to simulation.
+<span class="fc" id="L59">        int newPop = oldCell.getLinks().next(random);</span>
+
+<span class="fc" id="L61">        PottsCellContainer differentiatedGMCContainer =</span>
+                new PottsCellContainer(
+<span class="fc" id="L63">                        oldCell.getID(),</span>
+<span class="fc" id="L64">                        oldCell.getParent(),</span>
+                        newPop,
+<span class="fc" id="L66">                        oldCell.getAge(),</span>
+<span class="fc" id="L67">                        oldCell.getDivisions(),</span>
+                        State.QUIESCENT,
+                        null,
+                        0,
+                        null,
+<span class="fc" id="L72">                        oldCell.getCriticalVolume(),</span>
+<span class="fc" id="L73">                        oldCell.getCriticalHeight(),</span>
+<span class="fc" id="L74">                        oldCell.getCriticalRegionVolumes(),</span>
+<span class="fc" id="L75">                        oldCell.getCriticalRegionHeights());</span>
+<span class="fc" id="L76">        PottsCellFlyNeuron differentiatedGMC =</span>
+                (PottsCellFlyNeuron)
+<span class="fc" id="L78">                        differentiatedGMCContainer.convert(sim.getCellFactory(), location, random);</span>
+
+<span class="fc" id="L80">        sim.getGrid().addObject(differentiatedGMC, null);</span>
+<span class="fc" id="L81">        potts.register(differentiatedGMC);</span>
+<span class="fc" id="L82">        differentiatedGMC.reset(potts.ids, potts.regions);</span>
+<span class="fc" id="L83">        differentiatedGMC.schedule(sim.getSchedule());</span>
+<span class="fc" id="L84">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -171,12 +171,14 @@ public final class PottsCellContainer implements CellContainer {
 <span class="fc" id="L171">        GrabBag links = factory.getLinks(pop);</span>
 
         // Make cell.
-<span class="pc bpc" id="L174" title="1 of 2 branches missed.">        switch (popParameters.get(&quot;CLASS&quot;)) {</span>
+<span class="pc bpc" id="L174" title="2 of 3 branches missed.">        switch (popParameters.get(&quot;CLASS&quot;)) {</span>
             case &quot;fly-neuron&quot;:
 <span class="nc" id="L176">                return new PottsCellFlyNeuron(this, location, parameters, links);</span>
+            case &quot;fly-gmc&quot;:
+<span class="nc" id="L178">                return new PottsCellFlyGMC(this, location, parameters, links);</span>
             default:
             case &quot;stem&quot;:
-<span class="fc" id="L179">                return new PottsCellStem(this, location, parameters, links);</span>
+<span class="fc" id="L181">                return new PottsCellStem(this, location, parameters, links);</span>
         }
     }
 }
