@@ -753,6 +753,42 @@ public class PatchCellTest {
     }
 
     @Test
+    public void selectBestLocation_calledWithMaxAffinityAndNoCloserLocation_returnNull() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(1.0).when(parametersMock).getDouble("AFFINITY");
+        doReturn(0.0).when(parametersMock).getDouble("ACCURACY");
+        doReturn(0.5).when(randomMock).nextDouble();
+        PatchLattice latticeMock = mock(PatchLattice.class);
+        MiniBox boxMock = mock(MiniBox.class);
+        doReturn(boxMock).when(latticeMock).getParameters();
+        doReturn(latticeMock).when(simMock).getLattice("GLUCOSE");
+        doReturn(100.).when(boxMock).getDouble("generator/CONCENTRATION");
+        PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
+        PatchLocation otherLocation1 = mock(PatchLocation.class);
+        PatchLocation otherLocation2 = mock(PatchLocation.class);
+
+        doReturn(1).when(locationMock).getPlanarIndex();
+        doReturn(1).when(otherLocation1).getPlanarIndex();
+        doReturn(1).when(otherLocation2).getPlanarIndex();
+        doReturn(50.).when(latticeMock).getAverageValue(locationMock);
+        doReturn(75.).when(latticeMock).getAverageValue(otherLocation1);
+        doReturn(25.).when(latticeMock).getAverageValue(otherLocation2);
+        doReturn(0.).when(locationMock).getPlanarDistance();
+        doReturn(1.).when(otherLocation1).getPlanarDistance();
+        doReturn(1.).when(otherLocation2).getPlanarDistance();
+
+        Bag locations = new Bag();
+        locations.add(otherLocation1);
+        locations.add(otherLocation2);
+        doReturn(locations).when(cell).findFreeLocations(simMock);
+
+        PatchLocation bestLocation = cell.selectBestLocation(simMock, randomMock);
+
+        assertEquals(bestLocation, null);
+    }
+
+    @Test
     public void selectBestLocation_calledWithNoFreeLocations_returnsNull() {
         doReturn(0.0).when(parametersMock).getDouble(any(String.class));
         doReturn(0).when(parametersMock).getInt(any(String.class));
