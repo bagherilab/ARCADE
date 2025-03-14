@@ -153,24 +153,14 @@ public final class PatchCellFactory implements CellFactory {
 <span class="fc" id="L153">        MiniBox population = popToParameters.get(pop);</span>
 <span class="fc" id="L154">        Parameters parameters = new Parameters(population, null, random);</span>
 
-<span class="fc" id="L156">        int divisions = parameters.getInt(&quot;DIVISION_POTENTIAL&quot;);</span>
-<span class="fc" id="L157">        double compression = parameters.getDouble(&quot;COMPRESSION_TOLERANCE&quot;);</span>
+<span class="fc" id="L156">        double compression = parameters.getDouble(&quot;COMPRESSION_TOLERANCE&quot;);</span>
 
-<span class="fc" id="L159">        double volume = parameters.getDouble(&quot;CELL_VOLUME&quot;);</span>
-<span class="fc" id="L160">        double height = parameters.getDouble(&quot;CELL_HEIGHT&quot;);</span>
-<span class="fc" id="L161">        int age = parameters.getInt(&quot;CELL_AGE&quot;);</span>
+<span class="fc" id="L158">        double volume = parameters.getDouble(&quot;CELL_VOLUME&quot;);</span>
+<span class="fc" id="L159">        double height = parameters.getDouble(&quot;CELL_HEIGHT&quot;);</span>
+<span class="fc" id="L160">        int age = parameters.getInt(&quot;CELL_AGE&quot;);</span>
 
-<span class="fc" id="L163">        return new PatchCellContainer(</span>
-                id,
-                0,
-                pop,
-                age,
-                divisions,
-                State.UNDEFINED,
-                volume,
-                height,
-                volume,
-                height + compression);
+<span class="fc" id="L162">        return new PatchCellContainer(</span>
+                id, 0, pop, age, 0, State.UNDEFINED, volume, height, volume, height + compression);
     }
 
     /**
@@ -179,43 +169,43 @@ public final class PatchCellFactory implements CellFactory {
      * @param series the simulation series
      */
     void parseValues(Series series) {
-<span class="fc" id="L182">        Set&lt;String&gt; keySet = series.populations.keySet();</span>
+<span class="fc" id="L172">        Set&lt;String&gt; keySet = series.populations.keySet();</span>
 
-<span class="pc bpc" id="L184" title="1 of 2 branches missed.">        for (String key : keySet) {</span>
-<span class="nc" id="L185">            MiniBox population = series.populations.get(key);</span>
-<span class="nc" id="L186">            int pop = population.getInt(&quot;CODE&quot;);</span>
-<span class="nc" id="L187">            popToIDs.put(pop, new HashSet&lt;&gt;());</span>
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">        for (String key : keySet) {</span>
+<span class="nc" id="L175">            MiniBox population = series.populations.get(key);</span>
+<span class="nc" id="L176">            int pop = population.getInt(&quot;CODE&quot;);</span>
+<span class="nc" id="L177">            popToIDs.put(pop, new HashSet&lt;&gt;());</span>
 
             // Set process versions if not specified.
-<span class="nc" id="L190">            MiniBox parameters = series.populations.get(key);</span>
+<span class="nc" id="L180">            MiniBox parameters = series.populations.get(key);</span>
 
-<span class="nc" id="L192">            String metabolismVersionKey = &quot;(PROCESS)&quot; + TAG_SEPARATOR + Domain.METABOLISM.name();</span>
-<span class="nc bnc" id="L193" title="All 2 branches missed.">            if (!parameters.contains(metabolismVersionKey)) {</span>
-<span class="nc" id="L194">                parameters.put(metabolismVersionKey, &quot;random&quot;);</span>
+<span class="nc" id="L182">            String metabolismVersionKey = &quot;(PROCESS)&quot; + TAG_SEPARATOR + Domain.METABOLISM.name();</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">            if (!parameters.contains(metabolismVersionKey)) {</span>
+<span class="nc" id="L184">                parameters.put(metabolismVersionKey, &quot;random&quot;);</span>
             }
 
-<span class="nc" id="L197">            String signalingVersionKey = &quot;(PROCESS)&quot; + TAG_SEPARATOR + Domain.SIGNALING.name();</span>
-<span class="nc bnc" id="L198" title="All 2 branches missed.">            if (!parameters.contains(signalingVersionKey)) {</span>
-<span class="nc" id="L199">                parameters.put(signalingVersionKey, &quot;random&quot;);</span>
+<span class="nc" id="L187">            String signalingVersionKey = &quot;(PROCESS)&quot; + TAG_SEPARATOR + Domain.SIGNALING.name();</span>
+<span class="nc bnc" id="L188" title="All 2 branches missed.">            if (!parameters.contains(signalingVersionKey)) {</span>
+<span class="nc" id="L189">                parameters.put(signalingVersionKey, &quot;random&quot;);</span>
             }
 
-<span class="nc" id="L202">            popToParameters.put(pop, parameters);</span>
+<span class="nc" id="L192">            popToParameters.put(pop, parameters);</span>
 
             // Get population links.
-<span class="nc" id="L205">            MiniBox linksBox = population.filter(&quot;(LINK)&quot;);</span>
-<span class="nc" id="L206">            ArrayList&lt;String&gt; linkKeys = linksBox.getKeys();</span>
-<span class="nc" id="L207">            GrabBag links = null;</span>
+<span class="nc" id="L195">            MiniBox linksBox = population.filter(&quot;(LINK)&quot;);</span>
+<span class="nc" id="L196">            ArrayList&lt;String&gt; linkKeys = linksBox.getKeys();</span>
+<span class="nc" id="L197">            GrabBag links = null;</span>
 
-<span class="nc bnc" id="L209" title="All 2 branches missed.">            if (linkKeys.size() &gt; 0) {</span>
-<span class="nc" id="L210">                links = new GrabBag();</span>
-<span class="nc bnc" id="L211" title="All 2 branches missed.">                for (String linkKey : linkKeys) {</span>
-<span class="nc" id="L212">                    int popLink = series.populations.get(linkKey).getInt(&quot;CODE&quot;);</span>
-<span class="nc" id="L213">                    links.add(popLink, linksBox.getDouble(linkKey));</span>
-<span class="nc" id="L214">                }</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">            if (linkKeys.size() &gt; 0) {</span>
+<span class="nc" id="L200">                links = new GrabBag();</span>
+<span class="nc bnc" id="L201" title="All 2 branches missed.">                for (String linkKey : linkKeys) {</span>
+<span class="nc" id="L202">                    int popLink = series.populations.get(linkKey).getInt(&quot;CODE&quot;);</span>
+<span class="nc" id="L203">                    links.add(popLink, linksBox.getDouble(linkKey));</span>
+<span class="nc" id="L204">                }</span>
             }
 
-<span class="nc" id="L217">            popToLinks.put(pop, links);</span>
-<span class="nc" id="L218">        }</span>
-<span class="fc" id="L219">    }</span>
+<span class="nc" id="L207">            popToLinks.put(pop, links);</span>
+<span class="nc" id="L208">        }</span>
+<span class="fc" id="L209">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

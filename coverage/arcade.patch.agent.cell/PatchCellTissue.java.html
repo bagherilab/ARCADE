@@ -70,9 +70,9 @@ public class PatchCellTissue extends PatchCell {
 
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-<span class="nc" id="L73">        divisions--;</span>
-<span class="nc bnc" id="L74" title="All 2 branches missed.">        int newPop = links == null ? pop : links.next(random);</span>
-<span class="nc" id="L75">        return new PatchCellContainer(</span>
+<span class="fc" id="L73">        divisions++;</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">        int newPop = links == null ? pop : links.next(random);</span>
+<span class="fc" id="L75">        return new PatchCellContainer(</span>
                 newID,
                 id,
                 newPop,
@@ -100,15 +100,15 @@ public class PatchCellTissue extends PatchCell {
 
         // Check energy status. If cell has less energy than threshold, it will
         // necrose. If overall energy is negative, then cell enters quiescence.
-<span class="pc bpc" id="L103" title="1 of 4 branches missed.">        if (state != State.APOPTOTIC &amp;&amp; energy &lt; 0) {</span>
-<span class="nc bnc" id="L104" title="All 2 branches missed.">            if (energy &lt; energyThreshold) {</span>
-<span class="nc bnc" id="L105" title="All 2 branches missed.">                if (simstate.random.nextDouble() &gt; necroticFraction) {</span>
-<span class="nc" id="L106">                    setState(State.APOPTOTIC);</span>
+<span class="fc bfc" id="L103" title="All 4 branches covered.">        if (state != State.APOPTOTIC &amp;&amp; energy &lt; 0) {</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">            if (energy &lt; energyThreshold) {</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">                if (simstate.random.nextDouble() &gt; necroticFraction) {</span>
+<span class="fc" id="L106">                    setState(State.APOPTOTIC);</span>
                 } else {
-<span class="nc" id="L108">                    setState(State.NECROTIC);</span>
+<span class="fc" id="L108">                    setState(State.NECROTIC);</span>
                 }
-<span class="nc bnc" id="L110" title="All 4 branches missed.">            } else if (state != State.QUIESCENT &amp;&amp; state != State.SENESCENT) {</span>
-<span class="nc" id="L111">                setState(State.QUIESCENT);</span>
+<span class="pc bpc" id="L110" title="1 of 4 branches missed.">            } else if (state != State.QUIESCENT &amp;&amp; state != State.SENESCENT) {</span>
+<span class="fc" id="L111">                setState(State.QUIESCENT);</span>
             }
         }
 
@@ -117,13 +117,13 @@ public class PatchCellTissue extends PatchCell {
 
         // Change state from undefined.
 <span class="fc bfc" id="L119" title="All 2 branches covered.">        if (state == State.UNDEFINED) {</span>
-<span class="pc bpc" id="L120" title="1 of 2 branches missed.">            if (flag == Flag.MIGRATORY) {</span>
-<span class="nc" id="L121">                setState(State.MIGRATORY);</span>
-<span class="pc bpc" id="L122" title="1 of 2 branches missed.">            } else if (divisions == 0) {</span>
-<span class="nc bnc" id="L123" title="All 2 branches missed.">                if (simstate.random.nextDouble() &gt; senescentFraction) {</span>
-<span class="nc" id="L124">                    setState(State.APOPTOTIC);</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">            if (flag == Flag.MIGRATORY) {</span>
+<span class="fc" id="L121">                setState(State.MIGRATORY);</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">            } else if (divisions == divisionPotential) {</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">                if (simstate.random.nextDouble() &gt; senescentFraction) {</span>
+<span class="fc" id="L124">                    setState(State.APOPTOTIC);</span>
                 } else {
-<span class="nc" id="L126">                    setState(State.SENESCENT);</span>
+<span class="fc" id="L126">                    setState(State.SENESCENT);</span>
                 }
             } else {
 <span class="fc" id="L129">                setState(State.PROLIFERATIVE);</span>

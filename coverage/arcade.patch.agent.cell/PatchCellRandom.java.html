@@ -44,7 +44,7 @@ public class PatchCellRandom extends PatchCell {
 
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-<span class="fc" id="L47">        divisions--;</span>
+<span class="fc" id="L47">        divisions++;</span>
 <span class="fc bfc" id="L48" title="All 2 branches covered.">        int newPop = links == null ? pop : links.next(random);</span>
 <span class="fc" id="L49">        return new PatchCellContainer(</span>
                 newID,
