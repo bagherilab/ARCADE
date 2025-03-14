@@ -37,11 +37,16 @@ import static arcade.patch.util.PatchEnums.State;
 /**
  * Implementation of {@link Cell} for generic cell agent.
  *
- * <p>Cells that become necrotic or senescent have a change to become apoptotic instead ({@code
+ * <p>
+ * Cells that become necrotic or senescent have a change to become apoptotic
+ * instead ({@code
  * NECROTIC_FRACTION} and {@code SENESCENT_FRACTION}, respectively).
  *
- * <p>Cell parameters are tracked using a map between the parameter name and value. Daughter cell
- * parameter values are drawn from a distribution centered on the parent cell parameter with the
+ * <p>
+ * Cell parameters are tracked using a map between the parameter name and value.
+ * Daughter cell
+ * parameter values are drawn from a distribution centered on the parent cell
+ * parameter with the
  * specified amount of heterogeneity ({@code HETEROGENEITY}).
  */
 public abstract class PatchCell implements Cell {
@@ -60,7 +65,9 @@ public abstract class PatchCell implements Cell {
     /** Cell population index. */
     final int pop;
 
-    /** Maximum number of cells from its population allowed in a {@link Location}. */
+    /**
+     * Maximum number of cells from its population allowed in a {@link Location}.
+     */
     final int maxDensity;
 
     /** Cell state. */
@@ -135,18 +142,21 @@ public abstract class PatchCell implements Cell {
     /**
      * Creates a {@code PatchCell} agent.
      *
-     * <p>Loaded parameters include:
+     * <p>
+     * Loaded parameters include:
      *
      * <ul>
-     *   <li>{@code NECROTIC_FRACTION} = fraction of necrotic cells that become apoptotic
-     *   <li>{@code SENESCENT_FRACTION} = fraction of senescent cells that become apoptotic
-     *   <li>{@code ENERGY_THRESHOLD} = maximum energy deficit before necrosis
+     * <li>{@code NECROTIC_FRACTION} = fraction of necrotic cells that become
+     * apoptotic
+     * <li>{@code SENESCENT_FRACTION} = fraction of senescent cells that become
+     * apoptotic
+     * <li>{@code ENERGY_THRESHOLD} = maximum energy deficit before necrosis
      * </ul>
      *
-     * @param container the cell container
-     * @param location the {@link Location} of the cell
+     * @param container  the cell container
+     * @param location   the {@link Location} of the cell
      * @param parameters the cell parameters
-     * @param links the map of population links
+     * @param links      the map of population links
      */
     public PatchCell(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
@@ -176,7 +186,6 @@ public abstract class PatchCell implements Cell {
         apoptosisAge = parameters.getDouble("APOPTOSIS_AGE");
         accuracy = parameters.getDouble("ACCURACY");
         affinity = parameters.getDouble("AFFINITY");
-        synthesisDuration = parameters.getInt("SYNTHESIS_DURATION");
         divisionPotential = parameters.getInt("DIVISION_POTENTIAL");
         int densityInput = parameters.getInt("MAX_DENSITY");
         maxDensity = (densityInput >= 0 ? densityInput : Integer.MAX_VALUE);
@@ -369,7 +378,7 @@ public abstract class PatchCell implements Cell {
     /**
      * Makes the specified {@link Process} object.
      *
-     * @param domain the process domain
+     * @param domain  the process domain
      * @param version the process version
      * @return the process instance
      */
@@ -424,17 +433,18 @@ public abstract class PatchCell implements Cell {
     /**
      * Selects best location for a cell to be added or move into.
      *
-     * <p>Each free location is scored based on glucose availability and distance from the center of
+     * <p>
+     * Each free location is scored based on glucose availability and distance from
+     * the center of
      * the simulation.
      *
-     * @param sim the simulation instance
+     * @param sim    the simulation instance
      * @param random the random number generator
      * @return the best location or null if no valid locations
      */
     public PatchLocation selectBestLocation(Simulation sim, MersenneTwisterFast random) {
         Bag locs = findFreeLocations(sim);
-        double maxGlucose =
-                sim.getLattice("GLUCOSE").getParameters().getDouble("generator/CONCENTRATION");
+        double maxGlucose = sim.getLattice("GLUCOSE").getParameters().getDouble("generator/CONCENTRATION");
         int currZ = location.getPlanarIndex();
         double currR = location.getPlanarDistance();
         int[] inds = new int[3];
@@ -454,10 +464,9 @@ public abstract class PatchCell implements Cell {
 
                 // Determine index for z position of location.
                 // 0: same z, 1: z + 1, 2: z - 1
-                int k =
-                        loc.getPlanarIndex() == currZ
-                                ? 0
-                                : loc.getPlanarIndex() == currZ + 1 ? 1 : 2;
+                int k = loc.getPlanarIndex() == currZ
+                        ? 0
+                        : loc.getPlanarIndex() == currZ + 1 ? 1 : 2;
 
                 // Check if location is more desirable than current best location in z plane.
                 if (score > scores[k]) {
@@ -509,16 +518,19 @@ public abstract class PatchCell implements Cell {
     /**
      * Determine if a patch location is free.
      *
-     * <p>A location is free if the proposed cell volume can fit in the location without exceeding
-     * the max volume of a location, exceeding constituents' critical heights, and exceeding the
+     * <p>
+     * A location is free if the proposed cell volume can fit in the location
+     * without exceeding
+     * the max volume of a location, exceeding constituents' critical heights, and
+     * exceeding the
      * population density is below the maximum.
      *
-     * @param sim the simulation instance
-     * @param loc the location
+     * @param sim         the simulation instance
+     * @param loc         the location
      * @param addedVolume the volume added to the location
-     * @param maxHeight the maximum height tolerance
-     * @param population the population index
-     * @param maxDensity the maximum density of population in the location
+     * @param maxHeight   the maximum height tolerance
+     * @param population  the population index
+     * @param maxDensity  the maximum density of population in the location
      * @return if the location is available for the cell
      */
     static boolean checkLocation(
