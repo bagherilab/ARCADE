@@ -46,27 +46,27 @@ public class PatchModuleApoptosis extends PatchModule {
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-<span class="nc bnc" id="L49" title="All 2 branches missed.">        if (ticker &gt; deathDuration) {</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (ticker &gt; deathDuration) {</span>
             // Induce one neighboring quiescent cell to proliferate.
-<span class="nc" id="L51">            ArrayList&lt;Location&gt; neighborhood = location.getNeighbors();</span>
-<span class="nc" id="L52">            neighborhood.add(location);</span>
-<span class="nc" id="L53">            Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocations(neighborhood);</span>
+<span class="fc" id="L51">            ArrayList&lt;Location&gt; neighborhood = location.getNeighbors();</span>
+<span class="fc" id="L52">            neighborhood.add(location);</span>
+<span class="fc" id="L53">            Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocations(neighborhood);</span>
 
-<span class="nc" id="L55">            bag.shuffle(random);</span>
-<span class="nc bnc" id="L56" title="All 2 branches missed.">            for (Object obj : bag) {</span>
-<span class="nc" id="L57">                Cell neighbor = (Cell) obj;</span>
-<span class="nc bnc" id="L58" title="All 2 branches missed.">                if (neighbor.getState() == State.QUIESCENT) {</span>
-<span class="nc" id="L59">                    neighbor.setState(State.PROLIFERATIVE);</span>
-<span class="nc" id="L60">                    break;</span>
+<span class="fc" id="L55">            bag.shuffle(random);</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">            for (Object obj : bag) {</span>
+<span class="fc" id="L57">                Cell neighbor = (Cell) obj;</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">                if (neighbor.getState() == State.QUIESCENT) {</span>
+<span class="fc" id="L59">                    neighbor.setState(State.PROLIFERATIVE);</span>
+<span class="fc" id="L60">                    break;</span>
                 }
 <span class="nc" id="L62">            }</span>
 
             // Remove current cell from simulation and schedule.
-<span class="nc" id="L65">            sim.getGrid().removeObject(cell, location);</span>
-<span class="nc" id="L66">            cell.stop();</span>
-<span class="nc" id="L67">        } else {</span>
-<span class="nc" id="L68">            ticker++;</span>
+<span class="fc" id="L65">            sim.getGrid().removeObject(cell, location);</span>
+<span class="fc" id="L66">            cell.stop();</span>
+<span class="fc" id="L67">        } else {</span>
+<span class="fc" id="L68">            ticker++;</span>
         }
-<span class="nc" id="L70">    }</span>
+<span class="fc" id="L70">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

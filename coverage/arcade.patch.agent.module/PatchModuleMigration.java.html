@@ -47,25 +47,25 @@ public class PatchModuleMigration extends PatchModule {
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-<span class="nc bnc" id="L50" title="All 2 branches missed.">        if (ticker &gt; movementDuration) {</span>
-<span class="nc" id="L51">            PatchLocation newLocation = cell.selectBestLocation(sim, random);</span>
-<span class="nc bnc" id="L52" title="All 2 branches missed.">            if (newLocation == null) {</span>
-<span class="nc bnc" id="L53" title="All 2 branches missed.">                if (cell instanceof PatchCellCART) {</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (ticker &gt; movementDuration) {</span>
+<span class="fc" id="L51">            PatchLocation newLocation = cell.selectBestLocation(sim, random);</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">            if (newLocation == null) {</span>
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">                if (cell instanceof PatchCellCART) {</span>
 <span class="nc" id="L54">                    cell.setState(State.PAUSED);</span>
                 } else {
-<span class="nc" id="L56">                    cell.setState(State.QUIESCENT);</span>
+<span class="fc" id="L56">                    cell.setState(State.QUIESCENT);</span>
                 }
             } else {
-<span class="nc bnc" id="L59" title="All 2 branches missed.">                if (!location.equals(newLocation)) {</span>
-<span class="nc" id="L60">                    sim.getGrid().moveObject(cell, location, newLocation);</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">                if (!location.equals(newLocation)) {</span>
+<span class="fc" id="L60">                    sim.getGrid().moveObject(cell, location, newLocation);</span>
 
                     // TODO: Update environment generator sites.
                 }
-<span class="nc" id="L64">                cell.setState(State.UNDEFINED);</span>
+<span class="fc" id="L64">                cell.setState(State.UNDEFINED);</span>
             }
-<span class="nc" id="L66">        } else {</span>
-<span class="nc" id="L67">            ticker++;</span>
+<span class="fc" id="L66">        } else {</span>
+<span class="fc" id="L67">            ticker++;</span>
         }
-<span class="nc" id="L69">    }</span>
+<span class="fc" id="L69">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
