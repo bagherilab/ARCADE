@@ -8,11 +8,8 @@ import arcade.patch.agent.cell.PatchCellCancer;
 /**
  * Extension of {@link PatchModule} for quiescence.
  *
- * <p>
- * During quiescence, cells cannot independently enter proliferative or
- * migratory states unless
- * they are {@link PatchCellCancer}. Quiescent cells can still become apoptotic
- * or necrotic. This
+ * <p>During quiescence, cells cannot independently enter proliferative or migratory states unless
+ * they are {@link PatchCellCancer}. Quiescent cells can still become apoptotic or necrotic. This
  * module does not have any behavior associated with it.
  */
 public class PatchModuleQuiescence extends PatchModule {
@@ -26,6 +23,5 @@ public class PatchModuleQuiescence extends PatchModule {
     }
 
     @Override
-    public void step(MersenneTwisterFast random, Simulation sim) {
-    }
+    public void step(MersenneTwisterFast random, Simulation sim) {}
 }
