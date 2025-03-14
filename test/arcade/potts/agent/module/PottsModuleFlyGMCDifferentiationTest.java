@@ -139,7 +139,7 @@ public class PottsModuleFlyGMCDifferentiationTest {
     }
 
     @AfterEach
-    void tearDown() {
+    final void tearDown() {
         mockedConstruction.close();
     }
 
