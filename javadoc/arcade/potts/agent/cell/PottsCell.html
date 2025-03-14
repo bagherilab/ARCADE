@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10,"i28":10,"i29":10,"i30":6,"i31":10,"i32":10,"i33":10,"i34":10,"i35":10,"i36":10};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10,"i28":10,"i29":10,"i30":10,"i31":10,"i32":10,"i33":6,"i34":10,"i35":10,"i36":10,"i37":10,"i38":10,"i39":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -135,7 +135,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </dl>
 <dl>
 <dt>Direct Known Subclasses:</dt>
-<dd><code><a href="PottsCellFlyNeuron.html" title="class in arcade.potts.agent.cell">PottsCellFlyNeuron</a></code>, <code><a href="PottsCellStem.html" title="class in arcade.potts.agent.cell">PottsCellStem</a></code></dd>
+<dd><code><a href="PottsCellFlyGMC.html" title="class in arcade.potts.agent.cell">PottsCellFlyGMC</a></code>, <code><a href="PottsCellFlyNeuron.html" title="class in arcade.potts.agent.cell">PottsCellFlyNeuron</a></code>, <code><a href="PottsCellStem.html" title="class in arcade.potts.agent.cell">PottsCellStem</a></code></dd>
 </dl>
 <hr>
 <pre>public abstract class <span class="typeNameLabel">PottsCell</span>
@@ -395,160 +395,181 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 </td>
 </tr>
 <tr id="i4" class="altColor">
+<td class="colFirst"><code>java.util.EnumMap&lt;<a href="../../util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,&#8203;java.lang.Double&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCriticalRegionHeights()">getCriticalRegionHeights</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Gets the critical region heights.</div>
+</td>
+</tr>
+<tr id="i5" class="rowColor">
+<td class="colFirst"><code>java.util.EnumMap&lt;<a href="../../util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,&#8203;java.lang.Double&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCriticalRegionVolumes()">getCriticalRegionVolumes</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Gets the critical region volumes.</div>
+</td>
+</tr>
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCriticalVolume()">getCriticalVolume</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the critical volume.</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCriticalVolume(arcade.potts.util.PottsEnums.Region)">getCriticalVolume</a></span>&#8203;(<a href="../../util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code></th>
 <td class="colLast">
 <div class="block">Gets the critical volume for a region.</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getDivisions()">getDivisions</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell divisions.</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getHeight()">getHeight</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell height.</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getHeight(arcade.potts.util.PottsEnums.Region)">getHeight</a></span>&#8203;(<a href="../../util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code></th>
 <td class="colLast">
 <div class="block">Gets the cell height for a region.</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getID()">getID</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the unique cell ID.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i12" class="altColor">
+<td class="colFirst"><code><a href="../../../core/util/GrabBag.html" title="class in arcade.core.util">GrabBag</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLinks()">getLinks</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Gets the links for the cell.</div>
+</td>
+</tr>
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code><a href="../../../core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLocation()">getLocation</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell location object.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code><a href="../../../core/agent/module/Module.html" title="interface in arcade.core.agent.module">Module</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getModule()">getModule</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell module object.</div>
 </td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code><a href="../../../core/util/Parameters.html" title="class in arcade.core.util">Parameters</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getParameters()">getParameters</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell parameters.</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getParent()">getParent</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell parent ID.</div>
 </td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i17" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPop()">getPop</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell population index.</div>
 </td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i18" class="altColor">
 <td class="colFirst"><code><a href="../../../core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getProcess(arcade.core.agent.process.ProcessDomain)">getProcess</a></span>&#8203;(<a href="../../../core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process">ProcessDomain</a>&nbsp;domain)</code></th>
 <td class="colLast">
 <div class="block">Gets the cell process object.</div>
 </td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i19" class="rowColor">
 <td class="colFirst"><code><a href="../../../core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getState()">getState</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell state.</div>
 </td>
 </tr>
-<tr id="i17" class="rowColor">
+<tr id="i20" class="altColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSurface()">getSurface</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell surface.</div>
 </td>
 </tr>
-<tr id="i18" class="altColor">
+<tr id="i21" class="rowColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSurface(arcade.potts.util.PottsEnums.Region)">getSurface</a></span>&#8203;(<a href="../../util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code></th>
 <td class="colLast">
 <div class="block">Gets the cell surface for a region.</div>
 </td>
 </tr>
-<tr id="i19" class="rowColor">
+<tr id="i22" class="altColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTargetSurface()">getTargetSurface</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the target surface.</div>
 </td>
 </tr>
-<tr id="i20" class="altColor">
+<tr id="i23" class="rowColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTargetSurface(arcade.potts.util.PottsEnums.Region)">getTargetSurface</a></span>&#8203;(<a href="../../util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code></th>
 <td class="colLast">
 <div class="block">Gets the target surface for a region.</div>
 </td>
 </tr>
-<tr id="i21" class="rowColor">
+<tr id="i24" class="altColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTargetVolume()">getTargetVolume</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the target volume.</div>
 </td>
 </tr>
-<tr id="i22" class="altColor">
+<tr id="i25" class="rowColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTargetVolume(arcade.potts.util.PottsEnums.Region)">getTargetVolume</a></span>&#8203;(<a href="../../util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code></th>
 <td class="colLast">
 <div class="block">Gets the target volume for a region.</div>
 </td>
 </tr>
-<tr id="i23" class="rowColor">
+<tr id="i26" class="altColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getVolume()">getVolume</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the cell volume.</div>
 </td>
 </tr>
-<tr id="i24" class="altColor">
+<tr id="i27" class="rowColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getVolume(arcade.potts.util.PottsEnums.Region)">getVolume</a></span>&#8203;(<a href="../../util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code></th>
 <td class="colLast">
 <div class="block">Gets the cell volume for a region.</div>
 </td>
 </tr>
-<tr id="i25" class="rowColor">
+<tr id="i28" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#hasRegions()">hasRegions</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Checks if the cell has regions.</div>
 </td>
 </tr>
-<tr id="i26" class="altColor">
+<tr id="i29" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#initialize(int%5B%5D%5B%5D%5B%5D,int%5B%5D%5B%5D%5B%5D)">initialize</a></span>&#8203;(int[][][]&nbsp;ids,
           int[][][]&nbsp;regions)</code></th>
@@ -556,7 +577,7 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <div class="block">Initializes the potts arrays with the cell.</div>
 </td>
 </tr>
-<tr id="i27" class="rowColor">
+<tr id="i30" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#reset(int%5B%5D%5B%5D%5B%5D,int%5B%5D%5B%5D%5B%5D)">reset</a></span>&#8203;(int[][][]&nbsp;ids,
      int[][][]&nbsp;regions)</code></th>
@@ -564,28 +585,28 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <div class="block">Resets the potts arrays with the cell.</div>
 </td>
 </tr>
-<tr id="i28" class="altColor">
+<tr id="i31" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#schedule(sim.engine.Schedule)">schedule</a></span>&#8203;(sim.engine.Schedule&nbsp;schedule)</code></th>
 <td class="colLast">
 <div class="block">Schedules the cell in the simulation.</div>
 </td>
 </tr>
-<tr id="i29" class="rowColor">
+<tr id="i32" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setState(arcade.core.agent.cell.CellState)">setState</a></span>&#8203;(<a href="../../../core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;newState)</code></th>
 <td class="colLast">
 <div class="block">Sets the cell state.</div>
 </td>
 </tr>
-<tr id="i30" class="altColor">
+<tr id="i33" class="rowColor">
 <td class="colFirst"><code>(package private) abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setStateModule(arcade.core.agent.cell.CellState)">setStateModule</a></span>&#8203;(<a href="../../../core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;newState)</code></th>
 <td class="colLast">
 <div class="block">Sets the state module for the cell.</div>
 </td>
 </tr>
-<tr id="i31" class="rowColor">
+<tr id="i34" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setTargets(double,double)">setTargets</a></span>&#8203;(double&nbsp;volume,
           double&nbsp;surface)</code></th>
@@ -593,7 +614,7 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <div class="block">Sets the target volume and surface for the cell.</div>
 </td>
 </tr>
-<tr id="i32" class="altColor">
+<tr id="i35" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setTargets(arcade.potts.util.PottsEnums.Region,double,double)">setTargets</a></span>&#8203;(<a href="../../util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region,
           double&nbsp;volume,
@@ -602,19 +623,19 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <div class="block">Sets the target volume and surface for a region.</div>
 </td>
 </tr>
-<tr id="i33" class="rowColor">
+<tr id="i36" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#step(sim.engine.SimState)">step</a></span>&#8203;(sim.engine.SimState&nbsp;simstate)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i34" class="altColor">
+<tr id="i37" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#stop()">stop</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Stop the cell from stepping.</div>
 </td>
 </tr>
-<tr id="i35" class="rowColor">
+<tr id="i38" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateTarget(double,double)">updateTarget</a></span>&#8203;(double&nbsp;rate,
             double&nbsp;scale)</code></th>
@@ -622,7 +643,7 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <div class="block">Updates target volume and surface area.</div>
 </td>
 </tr>
-<tr id="i36" class="altColor">
+<tr id="i39" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateTarget(arcade.potts.util.PottsEnums.Region,double,double)">updateTarget</a></span>&#8203;(<a href="../../util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region,
             double&nbsp;rate,
@@ -1307,6 +1328,48 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <dd><code>region</code> - the region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the critical region height</dd>
+</dl>
+</li>
+</ul>
+<a id="getCriticalRegionVolumes()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getCriticalRegionVolumes</h4>
+<pre class="methodSignature">public&nbsp;java.util.EnumMap&lt;<a href="../../util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,&#8203;java.lang.Double&gt;&nbsp;getCriticalRegionVolumes()</pre>
+<div class="block">Gets the critical region volumes.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the critical region volumes</dd>
+</dl>
+</li>
+</ul>
+<a id="getCriticalRegionHeights()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getCriticalRegionHeights</h4>
+<pre class="methodSignature">public&nbsp;java.util.EnumMap&lt;<a href="../../util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,&#8203;java.lang.Double&gt;&nbsp;getCriticalRegionHeights()</pre>
+<div class="block">Gets the critical region heights.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the critical region heights</dd>
+</dl>
+</li>
+</ul>
+<a id="getLinks()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getLinks</h4>
+<pre class="methodSignature">public&nbsp;<a href="../../../core/util/GrabBag.html" title="class in arcade.core.util">GrabBag</a>&nbsp;getLinks()</pre>
+<div class="block">Gets the links for the cell.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the links</dd>
 </dl>
 </li>
 </ul>
