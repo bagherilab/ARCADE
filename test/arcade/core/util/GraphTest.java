@@ -148,7 +148,7 @@ public class GraphTest {
 
         assertAll(
                 () -> assertTrue(edge0.hashCode() == edge2.hashCode()),
-                () -> assertFalse(edge0.hashCode() != edge1.hashCode()));
+                () -> assertFalse(edge0.hashCode() == edge1.hashCode()));
     }
 
     @Test
