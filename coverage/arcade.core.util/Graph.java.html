@@ -278,8 +278,7 @@ public final class Graph {
 <span class="fc" id="L278">        setOutMap(edge.getFrom(), edge);</span>
 <span class="fc" id="L279">        setInMap(edge.getTo(), edge);</span>
 <span class="fc" id="L280">        setLinks(edge);</span>
-<span class="fc" id="L281">        mergeNodes();</span>
-<span class="fc" id="L282">    }</span>
+<span class="fc" id="L281">    }</span>
 
     /**
      * Adds the edge to the bag for the mapping of OUT node to edge.
@@ -288,13 +287,13 @@ public final class Graph {
      * @param edge the edge
      */
     private void setOutMap(Node node, Edge edge) {
-<span class="fc" id="L291">        Bag objs = nodeToOutBag.get(node);</span>
-<span class="fc bfc" id="L292" title="All 2 branches covered.">        if (objs == null) {</span>
-<span class="fc" id="L293">            objs = new Bag(10);</span>
-<span class="fc" id="L294">            nodeToOutBag.put(node.duplicate(), objs);</span>
+<span class="fc" id="L290">        Bag objs = nodeToOutBag.get(node);</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">        if (objs == null) {</span>
+<span class="fc" id="L292">            objs = new Bag(10);</span>
+<span class="fc" id="L293">            nodeToOutBag.put(node.duplicate(), objs);</span>
         }
-<span class="fc" id="L296">        objs.add(edge);</span>
-<span class="fc" id="L297">    }</span>
+<span class="fc" id="L295">        objs.add(edge);</span>
+<span class="fc" id="L296">    }</span>
 
     /**
      * Adds the edge to the bag for the mapping of IN node to edge.
@@ -303,13 +302,13 @@ public final class Graph {
      * @param edge the edge
      */
     private void setInMap(Node node, Edge edge) {
-<span class="fc" id="L306">        Bag objs = nodeToInBag.get(node);</span>
-<span class="fc bfc" id="L307" title="All 2 branches covered.">        if (objs == null) {</span>
-<span class="fc" id="L308">            objs = new Bag(10);</span>
-<span class="fc" id="L309">            nodeToInBag.put(node.duplicate(), objs);</span>
+<span class="fc" id="L305">        Bag objs = nodeToInBag.get(node);</span>
+<span class="fc bfc" id="L306" title="All 2 branches covered.">        if (objs == null) {</span>
+<span class="fc" id="L307">            objs = new Bag(10);</span>
+<span class="fc" id="L308">            nodeToInBag.put(node.duplicate(), objs);</span>
         }
-<span class="fc" id="L311">        objs.add(edge);</span>
-<span class="fc" id="L312">    }</span>
+<span class="fc" id="L310">        objs.add(edge);</span>
+<span class="fc" id="L311">    }</span>
 
     /**
      * Adds links between edges in and out of the nodes for a given edge.
@@ -317,32 +316,32 @@ public final class Graph {
      * @param edge the edge
      */
     private void setLinks(Edge edge) {
-<span class="fc" id="L320">        Bag outTo = getEdgesOut(edge.getTo());</span>
-<span class="fc bfc" id="L321" title="All 2 branches covered.">        if (outTo != null) {</span>
-<span class="fc bfc" id="L322" title="All 2 branches covered.">            for (Object obj : outTo) {</span>
-<span class="fc" id="L323">                Edge e = (Edge) obj;</span>
-<span class="fc bfc" id="L324" title="All 2 branches covered.">                if (!e.edgesIn.contains(edge)) {</span>
-<span class="fc" id="L325">                    e.edgesIn.add(edge);</span>
+<span class="fc" id="L319">        Bag outTo = getEdgesOut(edge.getTo());</span>
+<span class="fc bfc" id="L320" title="All 2 branches covered.">        if (outTo != null) {</span>
+<span class="fc bfc" id="L321" title="All 2 branches covered.">            for (Object obj : outTo) {</span>
+<span class="fc" id="L322">                Edge e = (Edge) obj;</span>
+<span class="fc bfc" id="L323" title="All 2 branches covered.">                if (!e.edgesIn.contains(edge)) {</span>
+<span class="fc" id="L324">                    e.edgesIn.add(edge);</span>
                 }
-<span class="fc bfc" id="L327" title="All 2 branches covered.">                if (!edge.edgesOut.contains(e)) {</span>
-<span class="fc" id="L328">                    edge.edgesOut.add(e);</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">                if (!edge.edgesOut.contains(e)) {</span>
+<span class="fc" id="L327">                    edge.edgesOut.add(e);</span>
                 }
-<span class="fc" id="L330">            }</span>
+<span class="fc" id="L329">            }</span>
         }
 
-<span class="fc" id="L333">        Bag inFrom = getEdgesIn(edge.getFrom());</span>
-<span class="fc bfc" id="L334" title="All 2 branches covered.">        if (inFrom != null) {</span>
-<span class="fc bfc" id="L335" title="All 2 branches covered.">            for (Object obj : inFrom) {</span>
-<span class="fc" id="L336">                Edge e = (Edge) obj;</span>
-<span class="fc bfc" id="L337" title="All 2 branches covered.">                if (!e.edgesOut.contains(edge)) {</span>
-<span class="fc" id="L338">                    e.edgesOut.add(edge);</span>
+<span class="fc" id="L332">        Bag inFrom = getEdgesIn(edge.getFrom());</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">        if (inFrom != null) {</span>
+<span class="fc bfc" id="L334" title="All 2 branches covered.">            for (Object obj : inFrom) {</span>
+<span class="fc" id="L335">                Edge e = (Edge) obj;</span>
+<span class="fc bfc" id="L336" title="All 2 branches covered.">                if (!e.edgesOut.contains(edge)) {</span>
+<span class="fc" id="L337">                    e.edgesOut.add(edge);</span>
                 }
-<span class="fc bfc" id="L340" title="All 2 branches covered.">                if (!edge.edgesIn.contains(e)) {</span>
-<span class="fc" id="L341">                    edge.edgesIn.add(e);</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">                if (!edge.edgesIn.contains(e)) {</span>
+<span class="fc" id="L340">                    edge.edgesIn.add(e);</span>
                 }
-<span class="fc" id="L343">            }</span>
+<span class="fc" id="L342">            }</span>
         }
-<span class="fc" id="L345">    }</span>
+<span class="fc" id="L344">    }</span>
 
     /**
      * Removes edge from graph.
@@ -350,11 +349,11 @@ public final class Graph {
      * @param edge the edge to remove
      */
     public void removeEdge(Edge edge) {
-<span class="fc" id="L353">        allEdges.remove(edge);</span>
-<span class="fc" id="L354">        unsetOutMap(edge.getFrom(), edge);</span>
-<span class="fc" id="L355">        unsetInMap(edge.getTo(), edge);</span>
-<span class="fc" id="L356">        unsetLinks(edge);</span>
-<span class="fc" id="L357">    }</span>
+<span class="fc" id="L352">        allEdges.remove(edge);</span>
+<span class="fc" id="L353">        unsetOutMap(edge.getFrom(), edge);</span>
+<span class="fc" id="L354">        unsetInMap(edge.getTo(), edge);</span>
+<span class="fc" id="L355">        unsetLinks(edge);</span>
+<span class="fc" id="L356">    }</span>
 
     /**
      * Removes the edge from the bag for the mapping of OUT node to edge.
@@ -363,12 +362,12 @@ public final class Graph {
      * @param edge the edge
      */
     private void unsetOutMap(Node node, Edge edge) {
-<span class="fc" id="L366">        Bag objs = nodeToOutBag.get(node);</span>
-<span class="fc" id="L367">        objs.remove(edge);</span>
-<span class="fc bfc" id="L368" title="All 2 branches covered.">        if (objs.numObjs == 0) {</span>
-<span class="fc" id="L369">            nodeToOutBag.remove(node);</span>
+<span class="fc" id="L365">        Bag objs = nodeToOutBag.get(node);</span>
+<span class="fc" id="L366">        objs.remove(edge);</span>
+<span class="fc bfc" id="L367" title="All 2 branches covered.">        if (objs.numObjs == 0) {</span>
+<span class="fc" id="L368">            nodeToOutBag.remove(node);</span>
         }
-<span class="fc" id="L371">    }</span>
+<span class="fc" id="L370">    }</span>
 
     /**
      * Removes the edge from the bag for the mapping of IN node to edge.
@@ -377,12 +376,12 @@ public final class Graph {
      * @param edge the edge
      */
     private void unsetInMap(Node node, Edge edge) {
-<span class="fc" id="L380">        Bag objs = nodeToInBag.get(node);</span>
-<span class="fc" id="L381">        objs.remove(edge);</span>
-<span class="fc bfc" id="L382" title="All 2 branches covered.">        if (objs.numObjs == 0) {</span>
-<span class="fc" id="L383">            nodeToInBag.remove(node);</span>
+<span class="fc" id="L379">        Bag objs = nodeToInBag.get(node);</span>
+<span class="fc" id="L380">        objs.remove(edge);</span>
+<span class="fc bfc" id="L381" title="All 2 branches covered.">        if (objs.numObjs == 0) {</span>
+<span class="fc" id="L382">            nodeToInBag.remove(node);</span>
         }
-<span class="fc" id="L385">    }</span>
+<span class="fc" id="L384">    }</span>
 
     /**
      * Removes links between edges in and out of the nodes for a given edge.
@@ -390,24 +389,24 @@ public final class Graph {
      * @param edge the edge
      */
     private void unsetLinks(Edge edge) {
-<span class="fc" id="L393">        Bag outTo = getEdgesOut(edge.getTo());</span>
-<span class="fc bfc" id="L394" title="All 2 branches covered.">        if (outTo != null) {</span>
-<span class="fc bfc" id="L395" title="All 2 branches covered.">            for (Object obj : outTo) {</span>
-<span class="fc" id="L396">                Edge e = (Edge) obj;</span>
-<span class="fc" id="L397">                e.edgesIn.remove(edge);</span>
-<span class="fc" id="L398">                edge.edgesOut.remove(e);</span>
-<span class="fc" id="L399">            }</span>
+<span class="fc" id="L392">        Bag outTo = getEdgesOut(edge.getTo());</span>
+<span class="fc bfc" id="L393" title="All 2 branches covered.">        if (outTo != null) {</span>
+<span class="fc bfc" id="L394" title="All 2 branches covered.">            for (Object obj : outTo) {</span>
+<span class="fc" id="L395">                Edge e = (Edge) obj;</span>
+<span class="fc" id="L396">                e.edgesIn.remove(edge);</span>
+<span class="fc" id="L397">                edge.edgesOut.remove(e);</span>
+<span class="fc" id="L398">            }</span>
         }
 
-<span class="fc" id="L402">        Bag inFrom = getEdgesIn(edge.getFrom());</span>
-<span class="fc bfc" id="L403" title="All 2 branches covered.">        if (inFrom != null) {</span>
-<span class="fc bfc" id="L404" title="All 2 branches covered.">            for (Object obj : inFrom) {</span>
-<span class="fc" id="L405">                Edge e = (Edge) obj;</span>
-<span class="fc" id="L406">                e.edgesOut.remove(edge);</span>
-<span class="fc" id="L407">                edge.edgesIn.remove(e);</span>
-<span class="fc" id="L408">            }</span>
+<span class="fc" id="L401">        Bag inFrom = getEdgesIn(edge.getFrom());</span>
+<span class="fc bfc" id="L402" title="All 2 branches covered.">        if (inFrom != null) {</span>
+<span class="fc bfc" id="L403" title="All 2 branches covered.">            for (Object obj : inFrom) {</span>
+<span class="fc" id="L404">                Edge e = (Edge) obj;</span>
+<span class="fc" id="L405">                e.edgesOut.remove(edge);</span>
+<span class="fc" id="L406">                edge.edgesIn.remove(e);</span>
+<span class="fc" id="L407">            }</span>
         }
-<span class="fc" id="L410">    }</span>
+<span class="fc" id="L409">    }</span>
 
     /**
      * Clear an edge's links to other edges.
@@ -415,8 +414,8 @@ public final class Graph {
      * @param edge the edge
      */
     public void clearEdge(Edge edge) {
-<span class="fc" id="L418">        edge.clear();</span>
-<span class="fc" id="L419">    }</span>
+<span class="fc" id="L417">        edge.clear();</span>
+<span class="fc" id="L418">    }</span>
 
     /**
      * Find the first downstream node where two edges intersect.
@@ -426,7 +425,7 @@ public final class Graph {
      * @return the intersection node or null if no intersection
      */
     public Node findDownstreamIntersection(Edge edge1, Edge edge2) {
-<span class="fc" id="L429">        return findIntersection(edge1, edge2, Strategy.DOWNSTREAM);</span>
+<span class="fc" id="L428">        return findIntersection(edge1, edge2, Strategy.DOWNSTREAM);</span>
     }
 
     /**
@@ -437,7 +436,7 @@ public final class Graph {
      * @return the intersection node or null if no intersection
      */
     public Node findUpstreamIntersection(Edge edge1, Edge edge2) {
-<span class="fc" id="L440">        return findIntersection(edge1, edge2, Strategy.UPSTREAM);</span>
+<span class="fc" id="L439">        return findIntersection(edge1, edge2, Strategy.UPSTREAM);</span>
     }
 
     /**
@@ -450,15 +449,15 @@ public final class Graph {
      * @return the intersection node or null if no intersection
      */
     private Node findIntersection(Edge edge1, Edge edge2, Strategy strategy) {
-<span class="fc bfc" id="L453" title="All 2 branches covered.">        if (edge1.getNode(strategy).equals(edge2.getNode(strategy))) {</span>
-<span class="fc" id="L454">            return edge1.getNode(strategy);</span>
+<span class="fc bfc" id="L452" title="All 2 branches covered.">        if (edge1.getNode(strategy).equals(edge2.getNode(strategy))) {</span>
+<span class="fc" id="L453">            return edge1.getNode(strategy);</span>
         }
-<span class="fc" id="L456">        Bag allConnected = getConnectedNodes(edge1.getNode(strategy), strategy);</span>
-<span class="fc bfc" id="L457" title="All 2 branches covered.">        if (allConnected == null) {</span>
-<span class="fc" id="L458">            return null;</span>
+<span class="fc" id="L455">        Bag allConnected = getConnectedNodes(edge1.getNode(strategy), strategy);</span>
+<span class="fc bfc" id="L456" title="All 2 branches covered.">        if (allConnected == null) {</span>
+<span class="fc" id="L457">            return null;</span>
         }
-<span class="fc" id="L460">        Node intersection = breadthFirstSearch(edge2.getNode(strategy), allConnected, strategy);</span>
-<span class="fc" id="L461">        return intersection;</span>
+<span class="fc" id="L459">        Node intersection = breadthFirstSearch(edge2.getNode(strategy), allConnected, strategy);</span>
+<span class="fc" id="L460">        return intersection;</span>
     }
 
     /**
@@ -470,31 +469,31 @@ public final class Graph {
      * @return a bag of connected nodes
      */
     private Bag getConnectedNodes(Node node, Strategy strategy) {
-<span class="fc" id="L473">        Bag first = getEdges(node, strategy);</span>
-<span class="fc bfc" id="L474" title="All 2 branches covered.">        if (first == null) {</span>
-<span class="fc" id="L475">            return null;</span>
+<span class="fc" id="L472">        Bag first = getEdges(node, strategy);</span>
+<span class="fc bfc" id="L473" title="All 2 branches covered.">        if (first == null) {</span>
+<span class="fc" id="L474">            return null;</span>
         }
-<span class="fc" id="L477">        Bag visited = new Bag();</span>
-<span class="fc" id="L478">        Queue&lt;Node&gt; queue = new LinkedList&lt;&gt;();</span>
-<span class="fc bfc" id="L479" title="All 2 branches covered.">        for (Object e : first) {</span>
-<span class="fc" id="L480">            Edge edge = (Edge) e;</span>
-<span class="fc" id="L481">            queue.add(edge.getNode(strategy));</span>
-<span class="fc" id="L482">        }</span>
+<span class="fc" id="L476">        Bag visited = new Bag();</span>
+<span class="fc" id="L477">        Queue&lt;Node&gt; queue = new LinkedList&lt;&gt;();</span>
+<span class="fc bfc" id="L478" title="All 2 branches covered.">        for (Object e : first) {</span>
+<span class="fc" id="L479">            Edge edge = (Edge) e;</span>
+<span class="fc" id="L480">            queue.add(edge.getNode(strategy));</span>
+<span class="fc" id="L481">        }</span>
 
-<span class="fc bfc" id="L484" title="All 2 branches covered.">        while (!queue.isEmpty()) {</span>
-<span class="fc" id="L485">            Node active = queue.poll();</span>
-<span class="fc" id="L486">            visited.add(active);</span>
-<span class="fc bfc" id="L487" title="All 2 branches covered.">            if (getEdges(active, strategy) == null) {</span>
-<span class="fc" id="L488">                continue;</span>
+<span class="fc bfc" id="L483" title="All 2 branches covered.">        while (!queue.isEmpty()) {</span>
+<span class="fc" id="L484">            Node active = queue.poll();</span>
+<span class="fc" id="L485">            visited.add(active);</span>
+<span class="fc bfc" id="L486" title="All 2 branches covered.">            if (getEdges(active, strategy) == null) {</span>
+<span class="fc" id="L487">                continue;</span>
             }
-<span class="fc bfc" id="L490" title="All 2 branches covered.">            for (Object next : getEdges(active, strategy)) {</span>
-<span class="fc" id="L491">                Edge edge = (Edge) next;</span>
-<span class="fc bfc" id="L492" title="All 2 branches covered.">                if (!visited.contains(edge.getNode(strategy))) {</span>
-<span class="fc" id="L493">                    queue.add(edge.getNode(strategy));</span>
+<span class="fc bfc" id="L489" title="All 2 branches covered.">            for (Object next : getEdges(active, strategy)) {</span>
+<span class="fc" id="L490">                Edge edge = (Edge) next;</span>
+<span class="fc bfc" id="L491" title="All 2 branches covered.">                if (!visited.contains(edge.getNode(strategy))) {</span>
+<span class="fc" id="L492">                    queue.add(edge.getNode(strategy));</span>
                 }
-<span class="fc" id="L495">            }</span>
-<span class="fc" id="L496">        }</span>
-<span class="fc" id="L497">        return visited;</span>
+<span class="fc" id="L494">            }</span>
+<span class="fc" id="L495">        }</span>
+<span class="fc" id="L496">        return visited;</span>
     }
 
     /**
@@ -506,34 +505,34 @@ public final class Graph {
      * @return the target node or null if not found
      */
     private Node breadthFirstSearch(Node node, Bag targetNodes, Strategy strategy) {
-<span class="fc" id="L509">        Bag first = getEdges(node, strategy);</span>
-<span class="fc bfc" id="L510" title="All 2 branches covered.">        if (first == null) {</span>
-<span class="fc" id="L511">            return null;</span>
+<span class="fc" id="L508">        Bag first = getEdges(node, strategy);</span>
+<span class="fc bfc" id="L509" title="All 2 branches covered.">        if (first == null) {</span>
+<span class="fc" id="L510">            return null;</span>
         }
-<span class="fc" id="L513">        Bag visited = new Bag();</span>
-<span class="fc" id="L514">        Queue&lt;Node&gt; queue = new LinkedList&lt;&gt;();</span>
-<span class="fc bfc" id="L515" title="All 2 branches covered.">        for (Object e : first) {</span>
-<span class="fc" id="L516">            Edge edge = (Edge) e;</span>
-<span class="fc" id="L517">            queue.add(edge.getNode(strategy));</span>
-<span class="fc" id="L518">        }</span>
+<span class="fc" id="L512">        Bag visited = new Bag();</span>
+<span class="fc" id="L513">        Queue&lt;Node&gt; queue = new LinkedList&lt;&gt;();</span>
+<span class="fc bfc" id="L514" title="All 2 branches covered.">        for (Object e : first) {</span>
+<span class="fc" id="L515">            Edge edge = (Edge) e;</span>
+<span class="fc" id="L516">            queue.add(edge.getNode(strategy));</span>
+<span class="fc" id="L517">        }</span>
 
-<span class="fc bfc" id="L520" title="All 2 branches covered.">        while (!queue.isEmpty()) {</span>
-<span class="fc" id="L521">            Node active = queue.poll();</span>
-<span class="fc" id="L522">            visited.add(active);</span>
-<span class="fc bfc" id="L523" title="All 2 branches covered.">            if (targetNodes.contains(active)) {</span>
-<span class="fc" id="L524">                return active;</span>
+<span class="fc bfc" id="L519" title="All 2 branches covered.">        while (!queue.isEmpty()) {</span>
+<span class="fc" id="L520">            Node active = queue.poll();</span>
+<span class="fc" id="L521">            visited.add(active);</span>
+<span class="fc bfc" id="L522" title="All 2 branches covered.">            if (targetNodes.contains(active)) {</span>
+<span class="fc" id="L523">                return active;</span>
             }
-<span class="fc bfc" id="L526" title="All 2 branches covered.">            if (getEdges(active, strategy) == null) {</span>
-<span class="fc" id="L527">                continue;</span>
+<span class="fc bfc" id="L525" title="All 2 branches covered.">            if (getEdges(active, strategy) == null) {</span>
+<span class="fc" id="L526">                continue;</span>
             }
-<span class="fc bfc" id="L529" title="All 2 branches covered.">            for (Object next : getEdges(active, strategy)) {</span>
-<span class="fc" id="L530">                Edge edge = (Edge) next;</span>
-<span class="fc bfc" id="L531" title="All 2 branches covered.">                if (!visited.contains(edge.getNode(strategy))) {</span>
-<span class="fc" id="L532">                    queue.add(edge.getNode(strategy));</span>
+<span class="fc bfc" id="L528" title="All 2 branches covered.">            for (Object next : getEdges(active, strategy)) {</span>
+<span class="fc" id="L529">                Edge edge = (Edge) next;</span>
+<span class="fc bfc" id="L530" title="All 2 branches covered.">                if (!visited.contains(edge.getNode(strategy))) {</span>
+<span class="fc" id="L531">                    queue.add(edge.getNode(strategy));</span>
                 }
-<span class="fc" id="L534">            }</span>
-<span class="fc" id="L535">        }</span>
-<span class="fc" id="L536">        return null;</span>
+<span class="fc" id="L533">            }</span>
+<span class="fc" id="L534">        }</span>
+<span class="fc" id="L535">        return null;</span>
     }
 
     /**
@@ -542,9 +541,9 @@ public final class Graph {
      * @param edge the edge to reverse
      */
     public void reverseEdge(Edge edge) {
-<span class="fc" id="L545">        removeEdge(edge);</span>
-<span class="fc" id="L546">        addEdge(edge.reverse());</span>
-<span class="fc" id="L547">    }</span>
+<span class="fc" id="L544">        removeEdge(edge);</span>
+<span class="fc" id="L545">        addEdge(edge.reverse());</span>
+<span class="fc" id="L546">    }</span>
 
     /**
      * Displays the graph as a list of edges and nodes.
@@ -552,37 +551,37 @@ public final class Graph {
      * @return the string representation of the graph
      */
     public String toString() {
-<span class="fc" id="L555">        String s = &quot;&quot;;</span>
+<span class="fc" id="L554">        String s = &quot;&quot;;</span>
 
-<span class="fc" id="L557">        s += &quot;\nEDGES OUT\n\n&quot;;</span>
-<span class="fc" id="L558">        Set&lt;Node&gt; setFrom = nodeToOutBag.keySet();</span>
-<span class="fc" id="L559">        List&lt;Node&gt; sortedFrom = new ArrayList&lt;&gt;(setFrom);</span>
-<span class="fc" id="L560">        Collections.sort(sortedFrom);</span>
+<span class="fc" id="L556">        s += &quot;\nEDGES OUT\n\n&quot;;</span>
+<span class="fc" id="L557">        Set&lt;Node&gt; setFrom = nodeToOutBag.keySet();</span>
+<span class="fc" id="L558">        List&lt;Node&gt; sortedFrom = new ArrayList&lt;&gt;(setFrom);</span>
+<span class="fc" id="L559">        Collections.sort(sortedFrom);</span>
 
-<span class="fc bfc" id="L562" title="All 2 branches covered.">        for (Object obj : sortedFrom) {</span>
-<span class="fc" id="L563">            Bag b = nodeToOutBag.get(obj);</span>
-<span class="fc" id="L564">            s += obj.toString() + &quot; : &quot;;</span>
-<span class="fc bfc" id="L565" title="All 2 branches covered.">            for (int i = 0; i &lt; b.numObjs; i++) {</span>
-<span class="fc" id="L566">                s += b.get(i) + &quot; &quot;;</span>
+<span class="fc bfc" id="L561" title="All 2 branches covered.">        for (Object obj : sortedFrom) {</span>
+<span class="fc" id="L562">            Bag b = nodeToOutBag.get(obj);</span>
+<span class="fc" id="L563">            s += obj.toString() + &quot; : &quot;;</span>
+<span class="fc bfc" id="L564" title="All 2 branches covered.">            for (int i = 0; i &lt; b.numObjs; i++) {</span>
+<span class="fc" id="L565">                s += b.get(i) + &quot; &quot;;</span>
             }
-<span class="fc" id="L568">            s += &quot;\n&quot;;</span>
-<span class="fc" id="L569">        }</span>
+<span class="fc" id="L567">            s += &quot;\n&quot;;</span>
+<span class="fc" id="L568">        }</span>
 
-<span class="fc" id="L571">        s += &quot;\nEDGES IN\n\n&quot;;</span>
-<span class="fc" id="L572">        Set&lt;Node&gt; setTo = nodeToInBag.keySet();</span>
-<span class="fc" id="L573">        List&lt;Node&gt; sortedTo = new ArrayList&lt;&gt;(setTo);</span>
-<span class="fc" id="L574">        Collections.sort(sortedTo);</span>
+<span class="fc" id="L570">        s += &quot;\nEDGES IN\n\n&quot;;</span>
+<span class="fc" id="L571">        Set&lt;Node&gt; setTo = nodeToInBag.keySet();</span>
+<span class="fc" id="L572">        List&lt;Node&gt; sortedTo = new ArrayList&lt;&gt;(setTo);</span>
+<span class="fc" id="L573">        Collections.sort(sortedTo);</span>
 
-<span class="fc bfc" id="L576" title="All 2 branches covered.">        for (Object obj : sortedTo) {</span>
-<span class="fc" id="L577">            Bag b = nodeToInBag.get(obj);</span>
-<span class="fc" id="L578">            s += obj.toString() + &quot; : &quot;;</span>
-<span class="fc bfc" id="L579" title="All 2 branches covered.">            for (int i = 0; i &lt; b.numObjs; i++) {</span>
-<span class="fc" id="L580">                s += b.get(i) + &quot; &quot;;</span>
+<span class="fc bfc" id="L575" title="All 2 branches covered.">        for (Object obj : sortedTo) {</span>
+<span class="fc" id="L576">            Bag b = nodeToInBag.get(obj);</span>
+<span class="fc" id="L577">            s += obj.toString() + &quot; : &quot;;</span>
+<span class="fc bfc" id="L578" title="All 2 branches covered.">            for (int i = 0; i &lt; b.numObjs; i++) {</span>
+<span class="fc" id="L579">                s += b.get(i) + &quot; &quot;;</span>
             }
-<span class="fc" id="L582">            s += &quot;\n&quot;;</span>
-<span class="fc" id="L583">        }</span>
+<span class="fc" id="L581">            s += &quot;\n&quot;;</span>
+<span class="fc" id="L582">        }</span>
 
-<span class="fc" id="L585">        return s;</span>
+<span class="fc" id="L584">        return s;</span>
     }
 
     /**
@@ -607,11 +606,11 @@ public final class Graph {
          * @param y the y coordinate
          * @param z the z coordinate
          */
-<span class="fc" id="L610">        public Node(int x, int y, int z) {</span>
-<span class="fc" id="L611">            this.x = x;</span>
-<span class="fc" id="L612">            this.y = y;</span>
-<span class="fc" id="L613">            this.z = z;</span>
-<span class="fc" id="L614">        }</span>
+<span class="fc" id="L609">        public Node(int x, int y, int z) {</span>
+<span class="fc" id="L610">            this.x = x;</span>
+<span class="fc" id="L611">            this.y = y;</span>
+<span class="fc" id="L612">            this.z = z;</span>
+<span class="fc" id="L613">        }</span>
 
         /**
          * Gets the x coordinate of the node.
@@ -619,7 +618,7 @@ public final class Graph {
          * @return the x coordinate
          */
         public int getX() {
-<span class="fc" id="L622">            return x;</span>
+<span class="fc" id="L621">            return x;</span>
         }
 
         /**
@@ -628,7 +627,7 @@ public final class Graph {
          * @return the y coordinate
          */
         public int getY() {
-<span class="fc" id="L631">            return y;</span>
+<span class="fc" id="L630">            return y;</span>
         }
 
         /**
@@ -637,7 +636,7 @@ public final class Graph {
          * @return the z coordinate
          */
         public int getZ() {
-<span class="fc" id="L640">            return z;</span>
+<span class="fc" id="L639">            return z;</span>
         }
 
         /**
@@ -648,13 +647,13 @@ public final class Graph {
          *     comparison for x and y
          */
         public int compareTo(Node node) {
-<span class="fc" id="L651">            int xComp = Integer.compare(x, node.getX());</span>
-<span class="fc" id="L652">            int yComp = Integer.compare(y, node.getY());</span>
+<span class="fc" id="L650">            int xComp = Integer.compare(x, node.getX());</span>
+<span class="fc" id="L651">            int yComp = Integer.compare(y, node.getY());</span>
 
-<span class="fc bfc" id="L654" title="All 2 branches covered.">            if (xComp == 0) {</span>
-<span class="fc" id="L655">                return yComp;</span>
+<span class="fc bfc" id="L653" title="All 2 branches covered.">            if (xComp == 0) {</span>
+<span class="fc" id="L654">                return yComp;</span>
             } else {
-<span class="fc" id="L657">                return xComp;</span>
+<span class="fc" id="L656">                return xComp;</span>
             }
         }
 
@@ -664,7 +663,7 @@ public final class Graph {
          * @return a {@code Node} copy
          */
         public Node duplicate() {
-<span class="fc" id="L667">            return new Node(x, y, z);</span>
+<span class="fc" id="L666">            return new Node(x, y, z);</span>
         }
 
         /**
@@ -673,10 +672,10 @@ public final class Graph {
          * @param node the {@code Node} with coordinates to update with
          */
         public void update(Node node) {
-<span class="fc" id="L676">            this.x = node.x;</span>
-<span class="fc" id="L677">            this.y = node.y;</span>
-<span class="fc" id="L678">            this.z = node.z;</span>
-<span class="fc" id="L679">        }</span>
+<span class="fc" id="L675">            this.x = node.x;</span>
+<span class="fc" id="L676">            this.y = node.y;</span>
+<span class="fc" id="L677">            this.z = node.z;</span>
+<span class="fc" id="L678">        }</span>
 
         /**
          * Specifies object hashing based on coordinates.
@@ -684,7 +683,7 @@ public final class Graph {
          * @return a hash based on coordinates
          */
         public final int hashCode() {
-<span class="fc" id="L687">            return x + y &lt;&lt; 8 + z &lt;&lt; 16;</span>
+<span class="fc" id="L686">            return x + (y &lt;&lt; 8) + (z &lt;&lt; 16);</span>
         }
 
         /**
@@ -694,11 +693,11 @@ public final class Graph {
          * @return {@code true} if coordinates match, {@code false} otherwise
          */
         public final boolean equals(Object obj) {
-<span class="fc bfc" id="L697" title="All 2 branches covered.">            if (obj instanceof Node) {</span>
-<span class="fc" id="L698">                Node node = (Node) obj;</span>
-<span class="fc bfc" id="L699" title="All 6 branches covered.">                return node.x == x &amp;&amp; node.y == y &amp;&amp; node.z == z;</span>
+<span class="fc bfc" id="L696" title="All 2 branches covered.">            if (obj instanceof Node) {</span>
+<span class="fc" id="L697">                Node node = (Node) obj;</span>
+<span class="fc bfc" id="L698" title="All 6 branches covered.">                return node.x == x &amp;&amp; node.y == y &amp;&amp; node.z == z;</span>
             }
-<span class="fc" id="L701">            return false;</span>
+<span class="fc" id="L700">            return false;</span>
         }
 
         /**
@@ -707,7 +706,7 @@ public final class Graph {
          * @return a string representation of the node
          */
         public String toString() {
-<span class="fc" id="L710">            return &quot;(&quot; + x + &quot;,&quot; + y + &quot;,&quot; + z + &quot;)&quot;;</span>
+<span class="fc" id="L709">            return &quot;(&quot; + x + &quot;,&quot; + y + &quot;,&quot; + z + &quot;)&quot;;</span>
         }
     }
 
@@ -736,12 +735,12 @@ public final class Graph {
          * @param from the node the edge is from
          * @param to the node the edge is to
          */
-<span class="fc" id="L739">        public Edge(Node from, Node to) {</span>
-<span class="fc" id="L740">            this.from = from.duplicate();</span>
-<span class="fc" id="L741">            this.to = to.duplicate();</span>
-<span class="fc" id="L742">            edgesIn = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L743">            edgesOut = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L744">        }</span>
+<span class="fc" id="L738">        public Edge(Node from, Node to) {</span>
+<span class="fc" id="L739">            this.from = from.duplicate();</span>
+<span class="fc" id="L740">            this.to = to.duplicate();</span>
+<span class="fc" id="L741">            edgesIn = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L742">            edgesOut = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L743">        }</span>
 
         /**
          * Gets the node the edge points to based on the calculation strategy (e.g. upstream or
@@ -751,7 +750,7 @@ public final class Graph {
          * @return the node the edge points to
          */
         public Node getNode(Strategy strategy) {
-<span class="fc bfc" id="L754" title="All 2 branches covered.">            return (strategy == Strategy.UPSTREAM) ? from : to;</span>
+<span class="fc bfc" id="L753" title="All 2 branches covered.">            return (strategy == Strategy.UPSTREAM) ? from : to;</span>
         }
 
         /**
@@ -760,7 +759,7 @@ public final class Graph {
          * @return the node the edge points from
          */
         public Node getFrom() {
-<span class="fc" id="L763">            return from;</span>
+<span class="fc" id="L762">            return from;</span>
         }
 
         /**
@@ -769,7 +768,7 @@ public final class Graph {
          * @return the node the edge points to
          */
         public Node getTo() {
-<span class="fc" id="L772">            return to;</span>
+<span class="fc" id="L771">            return to;</span>
         }
 
         /**
@@ -778,8 +777,8 @@ public final class Graph {
          * @param to the node the edge points to
          */
         public void setTo(Node to) {
-<span class="fc" id="L781">            this.to = to;</span>
-<span class="fc" id="L782">        }</span>
+<span class="fc" id="L780">            this.to = to;</span>
+<span class="fc" id="L781">        }</span>
 
         /**
          * Sets the node the edge points from.
@@ -787,8 +786,8 @@ public final class Graph {
          * @param from the node the edge points from
          */
         public void setFrom(Node from) {
-<span class="fc" id="L790">            this.from = from;</span>
-<span class="fc" id="L791">        }</span>
+<span class="fc" id="L789">            this.from = from;</span>
+<span class="fc" id="L790">        }</span>
 
         /**
          * Gets list of edges based on calculation strategy (e.g. upstream or downstream).
@@ -797,7 +796,7 @@ public final class Graph {
          * @return the list of edges
          */
         public ArrayList&lt;Edge&gt; getEdges(Strategy strategy) {
-<span class="fc bfc" id="L800" title="All 2 branches covered.">            return (strategy == Strategy.UPSTREAM) ? edgesIn : edgesOut;</span>
+<span class="fc bfc" id="L799" title="All 2 branches covered.">            return (strategy == Strategy.UPSTREAM) ? edgesIn : edgesOut;</span>
         }
 
         /**
@@ -806,7 +805,7 @@ public final class Graph {
          * @return the list of edges
          */
         public ArrayList&lt;Edge&gt; getEdgesIn() {
-<span class="fc" id="L809">            return getEdges(Strategy.UPSTREAM);</span>
+<span class="fc" id="L808">            return getEdges(Strategy.UPSTREAM);</span>
         }
 
         /**
@@ -815,7 +814,7 @@ public final class Graph {
          * @return the list of edges
          */
         public ArrayList&lt;Edge&gt; getEdgesOut() {
-<span class="fc" id="L818">            return getEdges(Strategy.DOWNSTREAM);</span>
+<span class="fc" id="L817">            return getEdges(Strategy.DOWNSTREAM);</span>
         }
 
         /**
@@ -824,18 +823,18 @@ public final class Graph {
          * @return the reversed edge
          */
         Edge reverse() {
-<span class="fc" id="L827">            Node tempTo = to;</span>
-<span class="fc" id="L828">            Node tempFrom = from;</span>
-<span class="fc" id="L829">            to = tempFrom;</span>
-<span class="fc" id="L830">            from = tempTo;</span>
-<span class="fc" id="L831">            return this;</span>
+<span class="fc" id="L826">            Node tempTo = to;</span>
+<span class="fc" id="L827">            Node tempFrom = from;</span>
+<span class="fc" id="L828">            to = tempFrom;</span>
+<span class="fc" id="L829">            from = tempTo;</span>
+<span class="fc" id="L830">            return this;</span>
         }
 
         /** Removes the linked edges. */
         public void clear() {
-<span class="fc" id="L836">            edgesIn.clear();</span>
-<span class="fc" id="L837">            edgesOut.clear();</span>
-<span class="fc" id="L838">        }</span>
+<span class="fc" id="L835">            edgesIn.clear();</span>
+<span class="fc" id="L836">            edgesOut.clear();</span>
+<span class="fc" id="L837">        }</span>
 
         /**
          * Formats edge as a string.
@@ -843,7 +842,7 @@ public final class Graph {
          * @return a string representation of the edge
          */
         public String toString() {
-<span class="fc" id="L846">            return &quot;[&quot; + from.toString() + &quot;~&quot; + to.toString() + &quot;]&quot;;</span>
+<span class="fc" id="L845">            return &quot;[&quot; + from.toString() + &quot;~&quot; + to.toString() + &quot;]&quot;;</span>
         }
 
         /**
@@ -853,11 +852,11 @@ public final class Graph {
          * @return {@code true} if coordinates of both nodes match, {@code false} otherwise
          */
         public boolean equals(Object obj) {
-<span class="fc bfc" id="L856" title="All 2 branches covered.">            if (obj instanceof Edge) {</span>
-<span class="fc" id="L857">                Edge edge = (Edge) obj;</span>
-<span class="fc bfc" id="L858" title="All 4 branches covered.">                return to.equals(edge.to) &amp;&amp; from.equals(edge.from);</span>
+<span class="fc bfc" id="L855" title="All 2 branches covered.">            if (obj instanceof Edge) {</span>
+<span class="fc" id="L856">                Edge edge = (Edge) obj;</span>
+<span class="fc bfc" id="L857" title="All 4 branches covered.">                return to.equals(edge.to) &amp;&amp; from.equals(edge.from);</span>
             }
-<span class="fc" id="L860">            return false;</span>
+<span class="fc" id="L859">            return false;</span>
         }
 
         /**
@@ -866,7 +865,7 @@ public final class Graph {
          * @return a hash based on coordinates
          */
         public final int hashCode() {
-<span class="fc" id="L869">            return this.from.hashCode() &lt;&lt; 16 + this.to.hashCode() &lt;&lt; 16;</span>
+<span class="fc" id="L868">            return this.from.hashCode() + (this.to.hashCode() &lt;&lt; 16);</span>
         }
     }
 }
