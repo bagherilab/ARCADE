@@ -3,6 +3,8 @@ package arcade.patch.agent.cell;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import ec.util.MersenneTwisterFast;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModule;
@@ -20,6 +22,8 @@ import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.State;
 
 public class PatchCellCancerStemTest {
+    static final double EPSILON = 1E-8;
+
     static PatchSimulation simMock;
 
     static PatchLocation locationMock;
@@ -31,6 +35,8 @@ public class PatchCellCancerStemTest {
     static PatchProcessSignaling signalingMock;
 
     static PatchGrid gridMock;
+
+    static MersenneTwisterFast randomMock;
 
     static int cellID = randomIntBetween(1, 10);
 
@@ -63,6 +69,8 @@ public class PatchCellCancerStemTest {
         signalingMock = mock(PatchProcessSignaling.class);
         gridMock = mock(PatchGrid.class);
         doReturn(gridMock).when(simMock).getGrid();
+        randomMock = mock(MersenneTwisterFast.class);
+        simMock.random = randomMock;
     }
 
     @Test
@@ -109,5 +117,104 @@ public class PatchCellCancerStemTest {
 
             assertNotEquals(State.APOPTOTIC, cell.getState());
         }
+    }
+
+    @Test
+    public void make_called_createsContainer() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+
+        double volume = randomDoubleBetween(10, 100);
+        double height = randomDoubleBetween(10, 100);
+        double criticalVolume = randomDoubleBetween(10, 100);
+        double criticalHeight = randomDoubleBetween(10, 100);
+        State state1 = State.QUIESCENT;
+        State state2 = State.PROLIFERATIVE;
+
+        int newPop = cellPop + randomIntBetween(1, 10);
+        GrabBag links = new GrabBag();
+        links.add(cellPop, 1);
+        links.add(newPop, 1);
+        MersenneTwisterFast random = mock(MersenneTwisterFast.class);
+        when(random.nextDouble()).thenReturn(0.5);
+
+        PatchCellContainer cellContainer =
+                new PatchCellContainer(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellAge,
+                        cellDivisions,
+                        state1,
+                        volume,
+                        height,
+                        criticalVolume,
+                        criticalHeight);
+
+        PatchCellCancerStem cell =
+                new PatchCellCancerStem(cellContainer, locationMock, parametersMock, links);
+
+        PatchCellContainer container = cell.make(cellID + 1, state2, random);
+
+        assertEquals(cellID + 1, container.id);
+        assertEquals(cellID, container.parent);
+        assertEquals(newPop, container.pop);
+        assertEquals(cellAge, container.age);
+        assertEquals(cellDivisions + 1, container.divisions);
+        assertEquals(cellDivisions + 1, container.divisions);
+        assertEquals(state2, container.state);
+        assertEquals(volume, container.volume, EPSILON);
+        assertEquals(height, container.height, EPSILON);
+        assertEquals(criticalVolume, container.criticalVolume, EPSILON);
+        assertEquals(criticalHeight, container.criticalHeight, EPSILON);
+    }
+
+    @Test
+    public void make_calledWithLinks_createsContainer() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+
+        double volume = randomDoubleBetween(10, 100);
+        double height = randomDoubleBetween(10, 100);
+        double criticalVolume = randomDoubleBetween(10, 100);
+        double criticalHeight = randomDoubleBetween(10, 100);
+        State state1 = State.QUIESCENT;
+        State state2 = State.PROLIFERATIVE;
+
+        int newPop = cellPop + randomIntBetween(1, 10);
+        GrabBag links = new GrabBag();
+        links.add(cellPop, 1);
+        links.add(newPop, 1);
+        doReturn(0.7).when(randomMock).nextDouble();
+
+        PatchCellContainer cellContainer =
+                new PatchCellContainer(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellAge,
+                        cellDivisions,
+                        state1,
+                        volume,
+                        height,
+                        criticalVolume,
+                        criticalHeight);
+
+        PatchCellCancerStem cell =
+                new PatchCellCancerStem(cellContainer, locationMock, parametersMock, links);
+
+        PatchCellContainer container = cell.make(cellID + 1, state2, randomMock);
+
+        assertEquals(cellID + 1, container.id);
+        assertEquals(cellID, container.parent);
+        assertEquals(newPop, container.pop);
+        assertEquals(cellAge, container.age);
+        assertEquals(cellDivisions + 1, container.divisions);
+        assertEquals(cellDivisions + 1, container.divisions);
+        assertEquals(state2, container.state);
+        assertEquals(volume, container.volume, EPSILON);
+        assertEquals(height, container.height, EPSILON);
+        assertEquals(criticalVolume, container.criticalVolume, EPSILON);
+        assertEquals(criticalHeight, container.criticalHeight, EPSILON);
     }
 }

@@ -75,6 +75,9 @@ public abstract class PatchCell implements Cell {
     /** Number of divisions. */
     int divisions;
 
+    /** Maximum number of divisions. */
+    protected final int divisionPotential;
+
     /** Cell volume [um<sup>3</sup>]. */
     double volume;
 
@@ -173,7 +176,7 @@ public abstract class PatchCell implements Cell {
         apoptosisAge = parameters.getDouble("APOPTOSIS_AGE");
         accuracy = parameters.getDouble("ACCURACY");
         affinity = parameters.getDouble("AFFINITY");
-
+        divisionPotential = parameters.getInt("DIVISION_POTENTIAL");
         int densityInput = parameters.getInt("MAX_DENSITY");
         maxDensity = (densityInput >= 0 ? densityInput : Integer.MAX_VALUE);
 

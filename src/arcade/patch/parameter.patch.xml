@@ -45,7 +45,7 @@
     <population id="CONTACT_FRAC" value="0.2" description="fraction of cell surface contacting a bound cell during a binding event" />
 
     <!-- proliferation module parameters -->
-    <population.module module="proliferation" value="637" units="min" description="time required for DNA synthesis" />
+    <population.module module="proliferation" id="SYNTHESIS_DURATION" value="637" units="min" description="time required for DNA synthesis" />
 
     <!-- migration module parameters -->
     <population.module module="migration" id="MIGRATION_RATE" value="0.24" unit="um/min" description="cell migration rate" />
