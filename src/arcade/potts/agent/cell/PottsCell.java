@@ -324,6 +324,33 @@ public abstract class PottsCell implements Cell {
                 : 0);
     }
 
+    /**
+     * Gets the critical region volumes.
+     *
+     * @return the critical region volumes
+     */
+    public EnumMap<Region, Double> getCriticalRegionVolumes() {
+        return criticalRegionVolumes;
+    }
+
+    /**
+     * Gets the critical region heights.
+     *
+     * @return the critical region heights
+     */
+    public EnumMap<Region, Double> getCriticalRegionHeights() {
+        return criticalRegionHeights;
+    }
+
+    /**
+     * Gets the links for the cell.
+     *
+     * @return the links
+     */
+    public GrabBag getLinks() {
+        return links;
+    }
+
     @Override
     public void stop() {
         stopper.stop();
