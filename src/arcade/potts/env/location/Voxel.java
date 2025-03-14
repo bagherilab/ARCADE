@@ -5,18 +5,18 @@ import java.util.Comparator;
 /**
  * Representation of a voxel for locations.
  *
- * <p>Each voxel is defined by (x, y, z) coordinates. Two voxels objects are considered equal if
+ * <p>
+ * Each voxel is defined by (x, y, z) coordinates. Two voxels objects are
+ * considered equal if
  * they have matching (x, y, z) coordinates.
  */
 public final class Voxel {
     /** Comparator for voxels. */
-    public static final Comparator<Voxel> VOXEL_COMPARATOR =
-            (v1, v2) ->
-                    v1.z != v2.z
-                            ? Integer.compare(v1.z, v2.z)
-                            : v1.x != v2.x
-                                    ? Integer.compare(v1.x, v2.x)
-                                    : Integer.compare(v1.y, v2.y);
+    public static final Comparator<Voxel> VOXEL_COMPARATOR = (v1, v2) -> v1.z != v2.z
+            ? Integer.compare(v1.z, v2.z)
+            : v1.x != v2.x
+                    ? Integer.compare(v1.x, v2.x)
+                    : Integer.compare(v1.y, v2.y);
 
     /** Voxel x coordinate. */
     public final int x;
