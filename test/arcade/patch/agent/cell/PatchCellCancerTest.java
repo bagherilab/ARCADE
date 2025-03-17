@@ -2,6 +2,7 @@ package arcade.patch.agent.cell;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
@@ -56,6 +57,8 @@ public class PatchCellCancerTest {
 
     static State cellState = State.QUIESCENT;
 
+    static Bag cellCycles = new Bag();
+
     @BeforeAll
     public static void setupMocks() {
         simMock = mock(PatchSimulation.class);
@@ -99,7 +102,8 @@ public class PatchCellCancerTest {
                         volume,
                         height,
                         criticalVolume,
-                        criticalHeight);
+                        criticalHeight,
+                        cellCycles);
 
         PatchCellCancer cell =
                 new PatchCellCancer(cellContainer, locationMock, parametersMock, links);
@@ -148,7 +152,8 @@ public class PatchCellCancerTest {
                         volume,
                         height,
                         criticalVolume,
-                        criticalHeight);
+                        criticalHeight,
+                        cellCycles);
 
         PatchCellCancer cell =
                 new PatchCellCancer(cellContainer, locationMock, parametersMock, links);

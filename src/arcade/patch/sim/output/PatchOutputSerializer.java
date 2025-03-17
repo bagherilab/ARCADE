@@ -10,6 +10,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import sim.util.Bag;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.Series;
@@ -146,7 +147,12 @@ public final class PatchOutputSerializer {
             json.add("criticals", criticals);
 
             // TODO: add cycles
-
+            Bag cycles = src.cycles;
+            JsonArray jsonCycles = new JsonArray();
+            for (Object cycle : cycles) {
+                jsonCycles.add(cycle.toString());
+            }
+            json.add("cycles", jsonCycles);
             return json;
         }
     }

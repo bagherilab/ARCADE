@@ -120,11 +120,11 @@ public abstract class PatchCell implements Cell {
     /** Cell parameters. */
     final Parameters parameters;
 
+    /** List of cell cycle lengths (in minutes). */
+    public final Bag cycles = new Bag();
+
     /** Cell population links. */
     final GrabBag links;
-
-    /** List of cell cycle lengths (in minutes). */
-    private final Bag cycles = new Bag();
 
     /** If cell is stopped in the simulation. */
     private boolean isStopped;
@@ -403,7 +403,8 @@ public abstract class PatchCell implements Cell {
                 volume,
                 height,
                 criticalVolume,
-                criticalHeight);
+                criticalHeight,
+                cycles);
     }
 
     /**

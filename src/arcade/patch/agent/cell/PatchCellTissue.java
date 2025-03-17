@@ -82,7 +82,8 @@ public class PatchCellTissue extends PatchCell {
                 volume,
                 height,
                 criticalVolume,
-                criticalHeight);
+                criticalHeight,
+                cycles);
     }
 
     @Override
