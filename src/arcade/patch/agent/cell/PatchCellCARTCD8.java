@@ -13,6 +13,7 @@ import arcade.patch.util.PatchEnums.State;
 
 /** Extension of {@link PatchCellCART} for CD8 CART-cells with selected module versions. */
 public class PatchCellCARTCD8 extends PatchCellCART {
+
     /**
      * Creates a T cell {@code PatchCellCARTCD8} agent. *
      *
@@ -67,12 +68,13 @@ public class PatchCellCARTCD8 extends PatchCellCART {
         }
 
         super.lastActiveTicker++;
-        if (super.lastActiveTicker != 0 && super.lastActiveTicker % 1440 == 0) {
+
+        if (super.lastActiveTicker != 0 && super.lastActiveTicker % DAYS_IN_MINUTES == 0) {
             if (super.boundCARAntigensCount != 0) {
                 super.boundCARAntigensCount--;
             }
         }
-        if (super.lastActiveTicker / 1440 > 7) {
+        if (super.lastActiveTicker / DAYS_IN_MINUTES > 7) {
             super.activated = false;
         }
 
