@@ -25,6 +25,7 @@
     <population id="MAX_DENSITY" value="-1" description="maximum amount of cells in location, -1 means no limit" />
     <population id="ACCURACY" value="0.8" description="accuracy to select highest glucose concentration in future location" />
     <population id="AFFINITY" value="0.5" description="movement toward center affinity when selecting future location" />
+    <population id="MAX_DENSITY" value="54" description="maximum amount of cells in location, -1 means no limit" />
     <population id="SYNTHESIS_DURATION" value="637" units="min" description="time required for DNA synthesis" />
 
     <!-- CAR T specific parameters -->
@@ -46,6 +47,7 @@
     <population id="BOUND_TIME" value="UNIFORM(MIN=360-0,MAX=360+0)" description="6 hours" />
 
     <!-- proliferation module parameters -->
+    <population.module module="proliferation" id="SYNTHESIS_DURATION" value="637" units="min" description="time required for DNA synthesis" />
 
     <!-- migration module parameters -->
     <population.module module="migration" id="MIGRATION_RATE" value="0.24" unit="um/min" description="cell migration rate" />

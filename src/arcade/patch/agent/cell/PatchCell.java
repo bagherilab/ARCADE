@@ -20,7 +20,10 @@ import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModuleApoptosis;
 import arcade.patch.agent.module.PatchModuleCytotoxicity;
 import arcade.patch.agent.module.PatchModuleMigration;
+import arcade.patch.agent.module.PatchModuleNecrosis;
 import arcade.patch.agent.module.PatchModuleProliferation;
+import arcade.patch.agent.module.PatchModuleQuiescence;
+import arcade.patch.agent.module.PatchModuleSenescence;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
@@ -73,6 +76,9 @@ public abstract class PatchCell implements Cell {
     /** Number of divisions. */
     int divisions;
 
+    /** Maximum number of divisions. */
+    protected final int divisionPotential;
+
     /** Cell volume [um<sup>3</sup>]. */
     double volume;
 
@@ -81,9 +87,6 @@ public abstract class PatchCell implements Cell {
 
     /** Death age due to apoptosis [min]. */
     double apoptosisAge;
-
-    /** Time required for DNA synthesis [min]. */
-    final int synthesisDuration;
 
     /** Critical volume for cell [um<sup>3</sup>]. */
     final double criticalVolume;
@@ -174,8 +177,7 @@ public abstract class PatchCell implements Cell {
         apoptosisAge = parameters.getDouble("APOPTOSIS_AGE");
         accuracy = parameters.getDouble("ACCURACY");
         affinity = parameters.getDouble("AFFINITY");
-        synthesisDuration = parameters.getInt("SYNTHESIS_DURATION");
-
+        divisionPotential = parameters.getInt("DIVISION_POTENTIAL");
         int densityInput = parameters.getInt("MAX_DENSITY");
         maxDensity = (densityInput >= 0 ? densityInput : Integer.MAX_VALUE);
 
@@ -344,6 +346,15 @@ public abstract class PatchCell implements Cell {
                 break;
             case APOPTOTIC:
                 module = new PatchModuleApoptosis(this);
+                break;
+            case NECROTIC:
+                module = new PatchModuleNecrosis(this);
+                break;
+            case QUIESCENT:
+                module = new PatchModuleQuiescence(this);
+                break;
+            case SENESCENT:
+                module = new PatchModuleSenescence(this);
                 break;
             case CYTOTOXIC:
                 module = new PatchModuleCytotoxicity(this);
@@ -570,14 +581,5 @@ public abstract class PatchCell implements Cell {
      */
     public PatchEnums.AntigenFlag getBindingFlag() {
         return this.bindingFlag;
-    }
-
-    /**
-     * Returns the synthesis duration period.
-     *
-     * @return the cell antigen binding state
-     */
-    public int getSynthesisDuration() {
-        return this.synthesisDuration;
     }
 }
