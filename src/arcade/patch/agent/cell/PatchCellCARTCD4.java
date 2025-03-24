@@ -40,7 +40,7 @@ public class PatchCellCARTCD4 extends PatchCellCART {
 
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-        divisions--;
+        divisions++;
         return new PatchCellContainer(
                 newID,
                 id,
