@@ -50,7 +50,7 @@ import static arcade.patch.util.PatchEnums.State;
 public abstract class PatchCellCART extends PatchCell {
 
     /** Constant for amount of minutes in a day. */
-    protected final int DAYS_IN_MINUTES = 1440;
+    public static final int DAYS_IN_MINUTES = 1440;
 
     /** Cell activation flag. */
     protected boolean activated;
