@@ -17,7 +17,12 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
-import arcade.patch.agent.module.*;
+import arcade.patch.agent.module.PatchModuleApoptosis;
+import arcade.patch.agent.module.PatchModuleMigration;
+import arcade.patch.agent.module.PatchModuleNecrosis;
+import arcade.patch.agent.module.PatchModuleProliferation;
+import arcade.patch.agent.module.PatchModuleQuiescence;
+import arcade.patch.agent.module.PatchModuleSenescence;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
@@ -36,8 +41,8 @@ import static arcade.patch.util.PatchEnums.State;
  * NECROTIC_FRACTION} and {@code SENESCENT_FRACTION}, respectively).
  *
  * <p>Cell parameters are tracked using a map between the parameter name and value. Daughter cell
- * parameter values are drawn from a distribution centered on the parent cell. The parameter classes
- * have support for loading in distributions to reflect heterogeneity. ({@code HETEROGENEITY}).
+ * parameter values are drawn from a distribution centered on the parent cell parameter with the
+ * specified amount of heterogeneity ({@code HETEROGENEITY}).
  */
 public abstract class PatchCell implements Cell {
     /** Stopper used to stop this agent from being stepped in the schedule. */
@@ -70,6 +75,9 @@ public abstract class PatchCell implements Cell {
     /** Number of divisions. */
     int divisions;
 
+    /** Maximum number of divisions. */
+    protected final int divisionPotential;
+
     /** Cell volume [um<sup>3</sup>]. */
     double volume;
 
@@ -78,9 +86,6 @@ public abstract class PatchCell implements Cell {
 
     /** Death age due to apoptosis [min]. */
     double apoptosisAge;
-
-    /** Time required for DNA synthesis [min]. */
-    final int synthesisDuration;
 
     /** Critical volume for cell [um<sup>3</sup>]. */
     final double criticalVolume;
@@ -171,8 +176,7 @@ public abstract class PatchCell implements Cell {
         apoptosisAge = parameters.getDouble("APOPTOSIS_AGE");
         accuracy = parameters.getDouble("ACCURACY");
         affinity = parameters.getDouble("AFFINITY");
-        synthesisDuration = parameters.getInt("SYNTHESIS_DURATION");
-
+        divisionPotential = parameters.getInt("DIVISION_POTENTIAL");
         int densityInput = parameters.getInt("MAX_DENSITY");
         maxDensity = (densityInput >= 0 ? densityInput : Integer.MAX_VALUE);
 
@@ -362,6 +366,15 @@ public abstract class PatchCell implements Cell {
                 break;
             case APOPTOTIC:
                 module = new PatchModuleApoptosis(this);
+                break;
+            case NECROTIC:
+                module = new PatchModuleNecrosis(this);
+                break;
+            case QUIESCENT:
+                module = new PatchModuleQuiescence(this);
+                break;
+            case SENESCENT:
+                module = new PatchModuleSenescence(this);
                 break;
             case STIMULATORY:
                 module = new PatchModuleStimulation(this);
@@ -568,14 +581,5 @@ public abstract class PatchCell implements Cell {
      */
     public PatchEnums.AntigenFlag getBindingFlag() {
         return this.bindingFlag;
-    }
-
-    /**
-     * Returns the synthesis duration period.
-     *
-     * @return the cell antigen binding state
-     */
-    public int getSynthesisDuration() {
-        return this.synthesisDuration;
     }
 }

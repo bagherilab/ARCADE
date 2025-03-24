@@ -59,7 +59,7 @@ public class PatchCellCancer extends PatchCellTissue {
 
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-        divisions--;
+        divisions++;
         int newPop = links == null ? pop : links.next(random);
         return new PatchCellContainer(
                 newID,
