@@ -18,11 +18,13 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModuleApoptosis;
+import arcade.patch.agent.module.PatchModuleCytotoxicity;
 import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleNecrosis;
 import arcade.patch.agent.module.PatchModuleProliferation;
 import arcade.patch.agent.module.PatchModuleQuiescence;
 import arcade.patch.agent.module.PatchModuleSenescence;
+import arcade.patch.agent.module.PatchModuleStimulation;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
@@ -371,7 +373,11 @@ public abstract class PatchCell implements Cell {
                 module = new PatchModuleNecrosis(this);
                 break;
             case QUIESCENT:
-                module = new PatchModuleQuiescence(this);
+                if (this instanceof PatchCellCART) {
+                    this.setState(State.UNDEFINED);
+                } else {
+                    module = new PatchModuleQuiescence(this);
+                }
                 break;
             case SENESCENT:
                 module = new PatchModuleSenescence(this);
@@ -381,11 +387,6 @@ public abstract class PatchCell implements Cell {
                 break;
             case CYTOTOXIC:
                 module = new PatchModuleCytotoxicity(this);
-                break;
-            case QUIESCENT:
-                if (this instanceof PatchCellCART) {
-                    this.setState(State.UNDEFINED);
-                }
                 break;
             default:
                 module = null;
