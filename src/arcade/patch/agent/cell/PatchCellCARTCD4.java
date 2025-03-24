@@ -69,10 +69,10 @@ public class PatchCellCARTCD4 extends PatchCellCART {
 
         // Increase time since last active ticker
         super.lastActiveTicker++;
-        if (super.lastActiveTicker != 0 && super.lastActiveTicker % 1440 == 0) {
+        if (super.lastActiveTicker != 0 && super.lastActiveTicker % DAYS_IN_MINUTES == 0) {
             if (super.boundCARAntigensCount != 0) super.boundCARAntigensCount--;
         }
-        if (super.lastActiveTicker / 1440 >= 7) super.activated = false;
+        if (super.lastActiveTicker / DAYS_IN_MINUTES >= 7) super.activated = false;
 
         // Step metabolism process.
         super.processes.get(Domain.METABOLISM).step(simstate.random, sim);

@@ -67,12 +67,12 @@ public class PatchCellCARTCD8 extends PatchCellCART {
         }
 
         super.lastActiveTicker++;
-        if (super.lastActiveTicker != 0 && super.lastActiveTicker % 1440 == 0) {
+        if (super.lastActiveTicker != 0 && super.lastActiveTicker % DAYS_IN_MINUTES == 0) {
             if (super.boundCARAntigensCount != 0) {
                 super.boundCARAntigensCount--;
             }
         }
-        if (super.lastActiveTicker / 1440 > 7) {
+        if (super.lastActiveTicker / DAYS_IN_MINUTES >= 7) {
             super.activated = false;
         }
 
