@@ -74,7 +74,7 @@ public class PatchCellCARTCD8 extends PatchCellCART {
                 super.boundCARAntigensCount--;
             }
         }
-        if (super.lastActiveTicker / DAYS_IN_MINUTES > 7) {
+        if (super.lastActiveTicker / DAYS_IN_MINUTES >= 7) {
             super.activated = false;
         }
 
