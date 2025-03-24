@@ -36,7 +36,6 @@ public class PatchProcessQuorumSensingSource extends PatchProcessQuorumSensing {
         concs[SYNNOTCH] =
                 boundSynnotch
                         * 1E6
-                        * 1E4
                         * 1E15
                         / (cell.getVolume() * 6.022E23); // convert from molecules to microM
         concs[AUXIN_SOURCE] = 0;
@@ -64,7 +63,7 @@ public class PatchProcessQuorumSensingSource extends PatchProcessQuorumSensing {
 
         // update bound synnotch receptors
         this.boundSynnotch = (((PatchCellMacrophage) cell).getBoundSynNotchs());
-        concs[SYNNOTCH] = boundSynnotch * 1E6 * 1E4 * 1E15 / (cell.getVolume() * 6.022E23);
+        concs[SYNNOTCH] = boundSynnotch * 1E6 * 1E15 / (cell.getVolume() * 6.022E23);
     }
 
     @Override

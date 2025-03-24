@@ -112,7 +112,7 @@
     <population.process process="inflammation" id="GRANZ_SYNTHESIS_DELAY" value="15" unit="min" />
 
     <!-- quorum process parameters -->
-    <population.process process="quorum" id="ACTIVATION_THRESHOLD" value="1E-20" unit="units/cell" />
+    <population.process process="quorum" id="ACTIVATION_THRESHOLD" value="1E-8" unit="units/cell" />
 
     <!-- LAYERS ============================================================ -->
 
