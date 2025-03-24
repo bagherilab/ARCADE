@@ -352,7 +352,8 @@ public abstract class PatchCell implements Cell {
                 break;
             case QUIESCENT:
                 if (this instanceof PatchCellCART) {
-                    this.setState(State.UNDEFINED);
+                    throw new UnsupportedOperationException(
+                            "CART cells do not have corresponding state");
                 } else {
                     module = new PatchModuleQuiescence(this);
                 }
