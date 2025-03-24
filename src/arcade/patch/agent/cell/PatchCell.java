@@ -351,7 +351,11 @@ public abstract class PatchCell implements Cell {
                 module = new PatchModuleNecrosis(this);
                 break;
             case QUIESCENT:
-                module = new PatchModuleQuiescence(this);
+                if (this instanceof PatchCellCART) {
+                    this.setState(State.UNDEFINED);
+                } else {
+                    module = new PatchModuleQuiescence(this);
+                }
                 break;
             case SENESCENT:
                 module = new PatchModuleSenescence(this);
@@ -361,11 +365,6 @@ public abstract class PatchCell implements Cell {
                 break;
             case STIMULATORY:
                 throw new UnsupportedOperationException();
-            case QUIESCENT:
-                if (this instanceof PatchCellCART) {
-                    this.setState(State.UNDEFINED);
-                }
-                break;
             default:
                 module = null;
                 break;
