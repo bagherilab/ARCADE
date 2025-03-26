@@ -87,6 +87,7 @@ public class PatchCellCARTCD8Test {
         when(parameters.getInt("CARS")).thenReturn(50000);
         when(parameters.getDouble("APOPTOSIS_AGE")).thenReturn(120960.0);
         when(parameters.getInt("MAX_DENSITY")).thenReturn(54);
+        when(parameters.getInt("DIVISION_POTENTIAL")).thenReturn(10);
 
         cell = spy(new PatchCellCARTCD8(container, location, parameters));
 
@@ -155,11 +156,11 @@ public class PatchCellCARTCD8Test {
     }
 
     @Test
-    public void step_whenDivisionsAreZero_setsStateToSenescent()
+    public void step_whenDivisionPotentialMet_setsStateToSenescent()
             throws NoSuchFieldException, IllegalAccessException {
         Field div = PatchCell.class.getDeclaredField("divisions");
         div.setAccessible(true);
-        div.set(cell, 0);
+        div.set(cell, cell.divisionPotential);
         when(sim.random.nextDouble()).thenReturn(0.51);
 
         cell.step(sim);

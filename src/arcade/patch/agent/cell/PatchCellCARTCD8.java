@@ -102,7 +102,7 @@ public class PatchCellCARTCD8 extends PatchCellCART {
         super.processes.get(Domain.INFLAMMATION).step(simstate.random, sim);
 
         if (super.state == State.UNDEFINED || super.state == State.PAUSED) {
-            if (divisions == 0) {
+            if (divisions == divisionPotential) {
                 if (simstate.random.nextDouble() > super.senescentFraction) {
                     super.setState(State.APOPTOTIC);
                 } else {
