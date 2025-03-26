@@ -351,10 +351,6 @@ public abstract class PatchCell implements Cell {
                 module = new PatchModuleNecrosis(this);
                 break;
             case QUIESCENT:
-                if (this instanceof PatchCellCART) {
-                    throw new UnsupportedOperationException(
-                            "CART cells do not have corresponding state");
-                }
                 module = new PatchModuleQuiescence(this);
                 break;
             case SENESCENT:
