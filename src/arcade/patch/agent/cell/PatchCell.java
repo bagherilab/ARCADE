@@ -354,9 +354,8 @@ public abstract class PatchCell implements Cell {
                 if (this instanceof PatchCellCART) {
                     throw new UnsupportedOperationException(
                             "CART cells do not have corresponding state");
-                } else {
-                    module = new PatchModuleQuiescence(this);
                 }
+                module = new PatchModuleQuiescence(this);
                 break;
             case SENESCENT:
                 module = new PatchModuleSenescence(this);
