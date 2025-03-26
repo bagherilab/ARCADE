@@ -94,7 +94,7 @@
     <population.process process="inflammation" id="IL2_SYNTHESIS_DELAY" value="180" unit="min" />
 
     <!-- inflammation CD8 module -->
-    <population.process process="inflammation" id="GRANZ_SYNTHESIS_DELAY" value="15" unit="min" />
+    <population.process process="inflammation" id="GRANZ_SYNTHESIS_DELAY" value="15" unit="min" description="Time required for CAR T-cells to maintain bound contact with target antigen before activation signal induces granzyme production"/>
 
     <!-- LAYERS ============================================================ -->
 
