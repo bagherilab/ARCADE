@@ -45,7 +45,7 @@ public class PatchCellCARTCD8Test {
         int parentId = 1;
         int pop = 1;
         int age = randomIntBetween(1, 120950);
-        int divisions = 10;
+        int divisions = 0;
         double volume = randomDoubleBetween(100, 200);
         double height = randomDoubleBetween(4, 10);
         double criticalVolume = randomDoubleBetween(100, 200);
