@@ -8,6 +8,7 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.process.PatchProcess;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
@@ -50,78 +51,86 @@ public class PatchModuleProliferation extends PatchModule {
      * @param cell the {@link PatchCell} the module is associated with
      */
     public PatchModuleProliferation(PatchCell cell) {
-<span class="fc" id="L53">        super(cell);</span>
+<span class="fc" id="L54">        super(cell);</span>
 
         // Calculate thresholds.
-<span class="fc" id="L56">        targetVolume = 2 * cell.getCriticalVolume();</span>
-<span class="fc" id="L57">        maxHeight = cell.getCriticalHeight();</span>
-<span class="fc" id="L58">        duration = 0;</span>
+<span class="fc" id="L57">        targetVolume = 2 * cell.getCriticalVolume();</span>
+<span class="fc" id="L58">        maxHeight = cell.getCriticalHeight();</span>
+<span class="fc" id="L59">        duration = 0;</span>
         // Load parameters.
-<span class="fc" id="L60">        Parameters parameters = cell.getParameters();</span>
-<span class="fc" id="L61">        synthesisDuration = parameters.getInt(&quot;proliferation/SYNTHESIS_DURATION&quot;);</span>
-<span class="fc" id="L62">    }</span>
+<span class="fc" id="L61">        Parameters parameters = cell.getParameters();</span>
+<span class="fc" id="L62">        synthesisDuration = parameters.getInt(&quot;proliferation/SYNTHESIS_DURATION&quot;);</span>
+<span class="fc" id="L63">    }</span>
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-<span class="fc" id="L66">        Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocation(location);</span>
-<span class="fc" id="L67">        double totalVolume = PatchCell.calculateTotalVolume(bag);</span>
-<span class="fc" id="L68">        double currentHeight = totalVolume / location.getArea();</span>
-<span class="fc" id="L69">        duration++;</span>
+<span class="fc" id="L67">        Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocation(location);</span>
+<span class="fc" id="L68">        double totalVolume = PatchCell.calculateTotalVolume(bag);</span>
+<span class="fc" id="L69">        double currentHeight = totalVolume / location.getArea();</span>
+<span class="fc" id="L70">        duration++;</span>
         // Check if cell is no longer able to proliferate due to (i) other
         // condition that has caused its type to no longer be proliferative,
         // (ii) cell no longer exists at a tolerable height, or (iii) no
         // space in neighborhood to divide into. Otherwise, check if double
         // volume has been reached, and if so, create a new cell.
-<span class="fc bfc" id="L75" title="All 2 branches covered.">        if (currentHeight &gt; maxHeight) {</span>
-<span class="fc" id="L76">            cell.setState(State.QUIESCENT);</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        if (currentHeight &gt; maxHeight) {</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">            if (cell instanceof PatchCellCART) {</span>
+<span class="nc" id="L78">                cell.setState(State.PAUSED);</span>
+            } else {
+<span class="fc" id="L80">                cell.setState(State.QUIESCENT);</span>
+            }
         } else {
-<span class="fc" id="L78">            PatchLocation newLocation = cell.selectBestLocation(sim, random);</span>
+<span class="fc" id="L83">            PatchLocation newLocation = cell.selectBestLocation(sim, random);</span>
 
-<span class="fc bfc" id="L80" title="All 2 branches covered.">            if (newLocation == null) {</span>
-<span class="fc" id="L81">                cell.setState(State.QUIESCENT);</span>
-<span class="pc bpc" id="L82" title="1 of 2 branches missed.">            } else if (cell.getVolume() &gt;= targetVolume) {</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">                if (ticker &gt; synthesisDuration) {</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">            if (newLocation == null) {</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">                if (cell instanceof PatchCellCART) {</span>
+<span class="nc" id="L87">                    cell.setState(State.PAUSED);</span>
+                } else {
+<span class="fc" id="L89">                    cell.setState(State.QUIESCENT);</span>
+                }
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">            } else if (cell.getVolume() &gt;= targetVolume) {</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">                if (ticker &gt; synthesisDuration) {</span>
 
-<span class="fc" id="L85">                    cell.addCycle(duration);</span>
+<span class="fc" id="L94">                    cell.addCycle(duration);</span>
                     // Reset current cell.
-<span class="fc" id="L87">                    cell.setState(State.UNDEFINED);</span>
+<span class="fc" id="L96">                    cell.setState(State.UNDEFINED);</span>
 
                     // Create and schedule new cell.
-<span class="fc" id="L90">                    int newID = sim.getID();</span>
-<span class="fc" id="L91">                    CellContainer newContainer = cell.make(newID, State.UNDEFINED, random);</span>
-<span class="fc" id="L92">                    Parameters newParameters = cell.getParameters();</span>
-<span class="fc" id="L93">                    PatchCell newCell =</span>
+<span class="fc" id="L99">                    int newID = sim.getID();</span>
+<span class="fc" id="L100">                    CellContainer newContainer = cell.make(newID, State.UNDEFINED, random);</span>
+<span class="fc" id="L101">                    Parameters newParameters = cell.getParameters();</span>
+<span class="fc" id="L102">                    PatchCell newCell =</span>
                             (PatchCell)
-<span class="fc" id="L95">                                    newContainer.convert(</span>
-<span class="fc" id="L96">                                            sim.getCellFactory(),</span>
+<span class="fc" id="L104">                                    newContainer.convert(</span>
+<span class="fc" id="L105">                                            sim.getCellFactory(),</span>
                                             newLocation,
                                             random,
                                             newParameters);
-<span class="fc" id="L100">                    sim.getGrid().addObject(newCell, newLocation);</span>
-<span class="fc" id="L101">                    newCell.schedule(sim.getSchedule());</span>
+<span class="fc" id="L109">                    sim.getGrid().addObject(newCell, newLocation);</span>
+<span class="fc" id="L110">                    newCell.schedule(sim.getSchedule());</span>
 
                     // Update cell volume and energy based on split.
-<span class="fc" id="L104">                    double split = (random.nextDouble() / 10 + 0.45);</span>
-<span class="fc" id="L105">                    double volume = cell.getVolume();</span>
-<span class="fc" id="L106">                    double energy = cell.getEnergy();</span>
-<span class="fc" id="L107">                    cell.setVolume(volume * split);</span>
-<span class="fc" id="L108">                    cell.setEnergy(energy * split);</span>
-<span class="fc" id="L109">                    newCell.setVolume(volume * (1 - split));</span>
-<span class="fc" id="L110">                    newCell.setEnergy(energy * (1 - split));</span>
+<span class="fc" id="L113">                    double split = (random.nextDouble() / 10 + 0.45);</span>
+<span class="fc" id="L114">                    double volume = cell.getVolume();</span>
+<span class="fc" id="L115">                    double energy = cell.getEnergy();</span>
+<span class="fc" id="L116">                    cell.setVolume(volume * split);</span>
+<span class="fc" id="L117">                    cell.setEnergy(energy * split);</span>
+<span class="fc" id="L118">                    newCell.setVolume(volume * (1 - split));</span>
+<span class="fc" id="L119">                    newCell.setEnergy(energy * (1 - split));</span>
 
                     // Update processes.
-<span class="fc" id="L113">                    MiniBox processBox = newParameters.filter(&quot;(PROCESS)&quot;);</span>
-<span class="pc bpc" id="L114" title="1 of 2 branches missed.">                    for (String processKey : processBox.getKeys()) {</span>
-<span class="nc" id="L115">                        ProcessDomain domain = Domain.valueOf(processKey);</span>
-<span class="nc" id="L116">                        PatchProcess process = (PatchProcess) newCell.getProcess(domain);</span>
-<span class="nc" id="L117">                        process.update(cell.getProcess(domain));</span>
-<span class="nc" id="L118">                    }</span>
+<span class="fc" id="L122">                    MiniBox processBox = newParameters.filter(&quot;(PROCESS)&quot;);</span>
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">                    for (String processKey : processBox.getKeys()) {</span>
+<span class="nc" id="L124">                        ProcessDomain domain = Domain.valueOf(processKey);</span>
+<span class="nc" id="L125">                        PatchProcess process = (PatchProcess) newCell.getProcess(domain);</span>
+<span class="nc" id="L126">                        process.update(cell.getProcess(domain));</span>
+<span class="nc" id="L127">                    }</span>
                     // TODO: Update environment generator sites.
-<span class="fc" id="L120">                } else {</span>
-<span class="fc" id="L121">                    ticker++;</span>
+<span class="fc" id="L129">                } else {</span>
+<span class="fc" id="L130">                    ticker++;</span>
                 }
             }
         }
-<span class="fc" id="L125">    }</span>
+<span class="fc" id="L134">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

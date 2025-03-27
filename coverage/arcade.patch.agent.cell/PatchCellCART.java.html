@@ -48,6 +48,10 @@ import static arcade.patch.util.PatchEnums.State;
  * parameter classes have support for loading in distributions to reflect heterogeneity.
  */
 public abstract class PatchCellCART extends PatchCell {
+
+    /** Constant for amount of minutes in a day. */
+    public static final int MINUTES_IN_DAY = 1440;
+
     /** Cell activation flag. */
     protected boolean activated;
 
@@ -108,6 +112,9 @@ public abstract class PatchCellCART extends PatchCell {
     /** Fraction of proliferative cells that become apoptotic. */
     protected final double proliferativeFraction;
 
+    /** Target cell that current T cell is bound to. */
+    protected PatchCell boundTarget;
+
     /**
      * Creates a {@code PatchCellCART} agent. *
      *
@@ -116,8 +123,8 @@ public abstract class PatchCellCART extends PatchCell {
      * @param parameters the dictionary of parameters
      */
     public PatchCellCART(PatchCellContainer container, Location location, Parameters parameters) {
-<span class="nc" id="L119">        this(container, location, parameters, null);</span>
-<span class="nc" id="L120">    }</span>
+<span class="nc" id="L126">        this(container, location, parameters, null);</span>
+<span class="nc" id="L127">    }</span>
 
     /**
      * Creates a {@code PatchCellCART} agent. *
@@ -149,31 +156,32 @@ public abstract class PatchCellCART extends PatchCell {
      */
     public PatchCellCART(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
-<span class="fc" id="L152">        super(container, location, parameters, links);</span>
+<span class="fc" id="L159">        super(container, location, parameters, links);</span>
         // initialized non-loaded parameters
-<span class="fc" id="L154">        boundCARAntigensCount = 0;</span>
-<span class="fc" id="L155">        boundSelfAntigensCount = 0;</span>
-<span class="fc" id="L156">        lastActiveTicker = 0;</span>
-<span class="fc" id="L157">        activated = true;</span>
+<span class="fc" id="L161">        boundCARAntigensCount = 0;</span>
+<span class="fc" id="L162">        boundSelfAntigensCount = 0;</span>
+<span class="fc" id="L163">        lastActiveTicker = 0;</span>
+<span class="fc" id="L164">        activated = true;</span>
+<span class="fc" id="L165">        boundTarget = null;</span>
 
         // Set loaded parameters.
-<span class="fc" id="L160">        exhaustedFraction = parameters.getDouble(&quot;EXHAUSTED_FRAC&quot;);</span>
-<span class="fc" id="L161">        senescentFraction = parameters.getDouble(&quot;SENESCENT_FRACTION&quot;);</span>
-<span class="fc" id="L162">        anergicFraction = parameters.getDouble(&quot;ANERGIC_FRACTION&quot;);</span>
-<span class="fc" id="L163">        proliferativeFraction = parameters.getDouble(&quot;PROLIFERATIVE_FRACTION&quot;);</span>
-<span class="fc" id="L164">        selfReceptors = parameters.getInt(&quot;SELF_RECEPTORS&quot;);</span>
-<span class="fc" id="L165">        selfReceptorsStart = selfReceptors;</span>
-<span class="fc" id="L166">        searchAbility = parameters.getDouble(&quot;SEARCH_ABILITY&quot;);</span>
-<span class="fc" id="L167">        carAffinity = parameters.getDouble(&quot;CAR_AFFINITY&quot;);</span>
-<span class="fc" id="L168">        carAlpha = parameters.getDouble(&quot;CAR_ALPHA&quot;);</span>
-<span class="fc" id="L169">        carBeta = parameters.getDouble(&quot;CAR_BETA&quot;);</span>
-<span class="fc" id="L170">        selfReceptorAffinity = parameters.getDouble(&quot;SELF_RECEPTOR_AFFINITY&quot;);</span>
-<span class="fc" id="L171">        selfAlpha = parameters.getDouble(&quot;SELF_ALPHA&quot;);</span>
-<span class="fc" id="L172">        selfBeta = parameters.getDouble(&quot;SELF_BETA&quot;);</span>
-<span class="fc" id="L173">        contactFraction = parameters.getDouble(&quot;CONTACT_FRAC&quot;);</span>
-<span class="fc" id="L174">        maxAntigenBinding = parameters.getInt(&quot;MAX_ANTIGEN_BINDING&quot;);</span>
-<span class="fc" id="L175">        cars = parameters.getInt(&quot;CARS&quot;);</span>
-<span class="fc" id="L176">    }</span>
+<span class="fc" id="L168">        exhaustedFraction = parameters.getDouble(&quot;EXHAUSTED_FRAC&quot;);</span>
+<span class="fc" id="L169">        senescentFraction = parameters.getDouble(&quot;SENESCENT_FRACTION&quot;);</span>
+<span class="fc" id="L170">        anergicFraction = parameters.getDouble(&quot;ANERGIC_FRACTION&quot;);</span>
+<span class="fc" id="L171">        proliferativeFraction = parameters.getDouble(&quot;PROLIFERATIVE_FRACTION&quot;);</span>
+<span class="fc" id="L172">        selfReceptors = parameters.getInt(&quot;SELF_RECEPTORS&quot;);</span>
+<span class="fc" id="L173">        selfReceptorsStart = selfReceptors;</span>
+<span class="fc" id="L174">        searchAbility = parameters.getDouble(&quot;SEARCH_ABILITY&quot;);</span>
+<span class="fc" id="L175">        carAffinity = parameters.getDouble(&quot;CAR_AFFINITY&quot;);</span>
+<span class="fc" id="L176">        carAlpha = parameters.getDouble(&quot;CAR_ALPHA&quot;);</span>
+<span class="fc" id="L177">        carBeta = parameters.getDouble(&quot;CAR_BETA&quot;);</span>
+<span class="fc" id="L178">        selfReceptorAffinity = parameters.getDouble(&quot;SELF_RECEPTOR_AFFINITY&quot;);</span>
+<span class="fc" id="L179">        selfAlpha = parameters.getDouble(&quot;SELF_ALPHA&quot;);</span>
+<span class="fc" id="L180">        selfBeta = parameters.getDouble(&quot;SELF_BETA&quot;);</span>
+<span class="fc" id="L181">        contactFraction = parameters.getDouble(&quot;CONTACT_FRAC&quot;);</span>
+<span class="fc" id="L182">        maxAntigenBinding = parameters.getInt(&quot;MAX_ANTIGEN_BINDING&quot;);</span>
+<span class="fc" id="L183">        cars = parameters.getInt(&quot;CARS&quot;);</span>
+<span class="fc" id="L184">    }</span>
 
     /**
      * Determines if CAR T cell agent is bound to neighbor through receptor-target binding.
@@ -190,31 +198,31 @@ public abstract class PatchCellCART extends PatchCell {
     public PatchCellTissue bindTarget(
             Simulation sim, PatchLocation loc, MersenneTwisterFast random) {
 
-<span class="fc" id="L193">        double kDCAR = computeAffinity(carAffinity, loc);</span>
-<span class="fc" id="L194">        double kDSelf = computeAffinity(selfReceptorAffinity, loc);</span>
-<span class="fc" id="L195">        PatchGrid grid = (PatchGrid) sim.getGrid();</span>
+<span class="fc" id="L201">        double kDCAR = computeAffinity(carAffinity, loc);</span>
+<span class="fc" id="L202">        double kDSelf = computeAffinity(selfReceptorAffinity, loc);</span>
+<span class="fc" id="L203">        PatchGrid grid = (PatchGrid) sim.getGrid();</span>
 
-<span class="fc" id="L197">        Bag allAgents = grabAllTissueNeighbors(grid, loc);</span>
-<span class="fc" id="L198">        allAgents.remove(this);</span>
-<span class="fc" id="L199">        allAgents.shuffle(random);</span>
-<span class="fc" id="L200">        int neighbors = allAgents.size();</span>
+<span class="fc" id="L205">        Bag allAgents = grabAllTissueNeighbors(grid, loc);</span>
+<span class="fc" id="L206">        allAgents.remove(this);</span>
+<span class="fc" id="L207">        allAgents.shuffle(random);</span>
+<span class="fc" id="L208">        int neighbors = allAgents.size();</span>
 
-<span class="fc bfc" id="L202" title="All 2 branches covered.">        if (neighbors == 0) {</span>
-<span class="fc" id="L203">            super.setBindingFlag(AntigenFlag.UNBOUND);</span>
-<span class="fc" id="L204">            return null;</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">        if (neighbors == 0) {</span>
+<span class="fc" id="L211">            super.setBindingFlag(AntigenFlag.UNBOUND);</span>
+<span class="fc" id="L212">            return null;</span>
         } else {
-<span class="fc" id="L206">            int maxSearch = (int) Math.min(neighbors, searchAbility);</span>
-<span class="pc bpc" id="L207" title="1 of 2 branches missed.">            for (int i = 0; i &lt; maxSearch; i++) {</span>
-<span class="fc" id="L208">                Cell cell = (Cell) allAgents.get(i);</span>
-<span class="pc bpc" id="L209" title="2 of 4 branches missed.">                if (cell.getState() != State.APOPTOTIC &amp;&amp; cell.getState() != State.NECROTIC) {</span>
-<span class="fc" id="L210">                    PatchCellTissue tissueCell = (PatchCellTissue) cell;</span>
-<span class="fc" id="L211">                    double cARAntigens = tissueCell.getCarAntigens();</span>
-<span class="fc" id="L212">                    double selfTargets = tissueCell.getSelfAntigens();</span>
+<span class="fc" id="L214">            int maxSearch = (int) Math.min(neighbors, searchAbility);</span>
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">            for (int i = 0; i &lt; maxSearch; i++) {</span>
+<span class="fc" id="L216">                Cell cell = (Cell) allAgents.get(i);</span>
+<span class="pc bpc" id="L217" title="2 of 4 branches missed.">                if (cell.getState() != State.APOPTOTIC &amp;&amp; cell.getState() != State.NECROTIC) {</span>
+<span class="fc" id="L218">                    PatchCellTissue tissueCell = (PatchCellTissue) cell;</span>
+<span class="fc" id="L219">                    double cARAntigens = tissueCell.getCarAntigens();</span>
+<span class="fc" id="L220">                    double selfTargets = tissueCell.getSelfAntigens();</span>
 
-<span class="fc" id="L214">                    double probabilityCAR =</span>
-<span class="fc" id="L215">                            computeProbability(cARAntigens, kDCAR, cars, 5000, carAlpha, carBeta);</span>
-<span class="fc" id="L216">                    double probabilitySelf =</span>
-<span class="fc" id="L217">                            computeProbability(</span>
+<span class="fc" id="L222">                    double probabilityCAR =</span>
+<span class="fc" id="L223">                            computeProbability(cARAntigens, kDCAR, cars, 5000, carAlpha, carBeta);</span>
+<span class="fc" id="L224">                    double probabilitySelf =</span>
+<span class="fc" id="L225">                            computeProbability(</span>
                                     selfTargets,
                                     kDSelf,
                                     selfReceptors,
@@ -222,24 +230,24 @@ public abstract class PatchCellCART extends PatchCell {
                                     selfAlpha,
                                     selfBeta);
 
-<span class="fc" id="L225">                    double randomCAR = random.nextDouble();</span>
-<span class="fc" id="L226">                    double randomSelf = random.nextDouble();</span>
+<span class="fc" id="L233">                    double randomCAR = random.nextDouble();</span>
+<span class="fc" id="L234">                    double randomSelf = random.nextDouble();</span>
 
-<span class="fc bfc" id="L228" title="All 4 branches covered.">                    if (probabilityCAR &gt;= randomCAR &amp;&amp; probabilitySelf &lt; randomSelf) {</span>
-<span class="fc" id="L229">                        return bindToCARAntigen(tissueCell);</span>
-<span class="pc bpc" id="L230" title="1 of 4 branches missed.">                    } else if (probabilityCAR &gt;= randomCAR &amp;&amp; probabilitySelf &gt;= randomSelf) {</span>
-<span class="fc" id="L231">                        return bindToCARAndSelfAntigen(tissueCell);</span>
-<span class="pc bpc" id="L232" title="2 of 4 branches missed.">                    } else if (probabilityCAR &lt; randomCAR &amp;&amp; probabilitySelf &gt;= randomSelf) {</span>
-<span class="fc" id="L233">                        return bindToSelfAntigen(tissueCell);</span>
+<span class="fc bfc" id="L236" title="All 4 branches covered.">                    if (probabilityCAR &gt;= randomCAR &amp;&amp; probabilitySelf &lt; randomSelf) {</span>
+<span class="fc" id="L237">                        return bindToCARAntigen(tissueCell);</span>
+<span class="pc bpc" id="L238" title="1 of 4 branches missed.">                    } else if (probabilityCAR &gt;= randomCAR &amp;&amp; probabilitySelf &gt;= randomSelf) {</span>
+<span class="fc" id="L239">                        return bindToCARAndSelfAntigen(tissueCell);</span>
+<span class="pc bpc" id="L240" title="2 of 4 branches missed.">                    } else if (probabilityCAR &lt; randomCAR &amp;&amp; probabilitySelf &gt;= randomSelf) {</span>
+<span class="fc" id="L241">                        return bindToSelfAntigen(tissueCell);</span>
                     } else {
                         // cell doesn't bind to anything
-<span class="nc" id="L236">                        super.setBindingFlag(AntigenFlag.UNBOUND);</span>
+<span class="nc" id="L244">                        super.setBindingFlag(AntigenFlag.UNBOUND);</span>
                     }
                 }
             }
-<span class="nc" id="L240">            super.setBindingFlag(AntigenFlag.UNBOUND);</span>
+<span class="nc" id="L248">            super.setBindingFlag(AntigenFlag.UNBOUND);</span>
         }
-<span class="nc" id="L242">        return null;</span>
+<span class="nc" id="L250">        return null;</span>
     }
 
     /**
@@ -248,7 +256,7 @@ public abstract class PatchCellCART extends PatchCell {
      * @return the activation status
      */
     public boolean getActivationStatus() {
-<span class="fc" id="L251">        return this.activated;</span>
+<span class="fc" id="L259">        return this.activated;</span>
     }
 
     /**
@@ -258,13 +266,13 @@ public abstract class PatchCellCART extends PatchCell {
      * @param possibleAgents the bag of possible agents to check for tissue cells
      */
     private void grabTissueAgents(Bag tissueAgents, Bag possibleAgents) {
-<span class="fc bfc" id="L261" title="All 2 branches covered.">        for (Object agent : possibleAgents) {</span>
-<span class="fc" id="L262">            Cell cell = (Cell) agent;</span>
-<span class="pc bpc" id="L263" title="1 of 2 branches missed.">            if (cell instanceof PatchCellTissue) {</span>
-<span class="fc" id="L264">                tissueAgents.add(cell);</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">        for (Object agent : possibleAgents) {</span>
+<span class="fc" id="L270">            Cell cell = (Cell) agent;</span>
+<span class="pc bpc" id="L271" title="1 of 2 branches missed.">            if (cell instanceof PatchCellTissue) {</span>
+<span class="fc" id="L272">                tissueAgents.add(cell);</span>
             }
-<span class="fc" id="L266">        }</span>
-<span class="fc" id="L267">    }</span>
+<span class="fc" id="L274">        }</span>
+<span class="fc" id="L275">    }</span>
 
     /**
      * Computes the binding probability for the receptor with the given parameters.
@@ -284,10 +292,10 @@ public abstract class PatchCellCART extends PatchCell {
             int startingReceptors,
             double alpha,
             double beta) {
-<span class="fc" id="L287">        double bind =</span>
-<span class="fc" id="L288">                calculateMichaelisMenten(</span>
+<span class="fc" id="L295">        double bind =</span>
+<span class="fc" id="L296">                calculateMichaelisMenten(</span>
                         antigens, kD, currentReceptors, startingReceptors, alpha, beta);
-<span class="fc" id="L290">        return applySigmoid(bind);</span>
+<span class="fc" id="L298">        return applySigmoid(bind);</span>
     }
 
     /**
@@ -297,10 +305,10 @@ public abstract class PatchCellCART extends PatchCell {
      * @return the target tissue cell to bind to
      */
     private PatchCellTissue bindToCARAntigen(PatchCellTissue tissueCell) {
-<span class="fc" id="L300">        super.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);</span>
-<span class="fc" id="L301">        boundCARAntigensCount++;</span>
-<span class="fc" id="L302">        updateSelfReceptors();</span>
-<span class="fc" id="L303">        return tissueCell;</span>
+<span class="fc" id="L308">        super.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);</span>
+<span class="fc" id="L309">        boundCARAntigensCount++;</span>
+<span class="fc" id="L310">        updateSelfReceptors();</span>
+<span class="fc" id="L311">        return tissueCell;</span>
     }
 
     /**
@@ -310,11 +318,11 @@ public abstract class PatchCellCART extends PatchCell {
      * @return the target tissue cell to bind to
      */
     private PatchCellTissue bindToCARAndSelfAntigen(PatchCellTissue tissueCell) {
-<span class="fc" id="L313">        super.setBindingFlag(AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR);</span>
-<span class="fc" id="L314">        boundCARAntigensCount++;</span>
-<span class="fc" id="L315">        boundSelfAntigensCount++;</span>
-<span class="fc" id="L316">        updateSelfReceptors();</span>
-<span class="fc" id="L317">        return tissueCell;</span>
+<span class="fc" id="L321">        super.setBindingFlag(AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR);</span>
+<span class="fc" id="L322">        boundCARAntigensCount++;</span>
+<span class="fc" id="L323">        boundSelfAntigensCount++;</span>
+<span class="fc" id="L324">        updateSelfReceptors();</span>
+<span class="fc" id="L325">        return tissueCell;</span>
     }
 
     /**
@@ -324,9 +332,9 @@ public abstract class PatchCellCART extends PatchCell {
      * @return the target tissue cell to bind to
      */
     private PatchCellTissue bindToSelfAntigen(PatchCellTissue tissueCell) {
-<span class="fc" id="L327">        super.setBindingFlag(AntigenFlag.BOUND_CELL_RECEPTOR);</span>
-<span class="fc" id="L328">        boundSelfAntigensCount++;</span>
-<span class="fc" id="L329">        return tissueCell;</span>
+<span class="fc" id="L335">        super.setBindingFlag(AntigenFlag.BOUND_CELL_RECEPTOR);</span>
+<span class="fc" id="L336">        boundSelfAntigensCount++;</span>
+<span class="fc" id="L337">        return tissueCell;</span>
     }
 
     /**
@@ -337,14 +345,14 @@ public abstract class PatchCellCART extends PatchCell {
      * @return bag of all tissue cells in neighborhood and current location
      */
     private Bag grabAllTissueNeighbors(PatchGrid grid, PatchLocation loc) {
-<span class="fc" id="L340">        Bag neighbors = new Bag();</span>
-<span class="fc" id="L341">        grabTissueAgents(neighbors, grid.getObjectsAtLocation(loc));</span>
-<span class="pc bpc" id="L342" title="1 of 2 branches missed.">        for (Location neighborLocation : loc.getNeighbors()) {</span>
-<span class="nc" id="L343">            Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));</span>
-<span class="nc" id="L344">            grabTissueAgents(neighbors, bag);</span>
-<span class="nc" id="L345">        }</span>
+<span class="fc" id="L348">        Bag neighbors = new Bag();</span>
+<span class="fc" id="L349">        grabTissueAgents(neighbors, grid.getObjectsAtLocation(loc));</span>
+<span class="pc bpc" id="L350" title="1 of 2 branches missed.">        for (Location neighborLocation : loc.getNeighbors()) {</span>
+<span class="nc" id="L351">            Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));</span>
+<span class="nc" id="L352">            grabTissueAgents(neighbors, bag);</span>
+<span class="nc" id="L353">        }</span>
 
-<span class="fc" id="L347">        return neighbors;</span>
+<span class="fc" id="L355">        return neighbors;</span>
     }
 
     /**
@@ -365,7 +373,7 @@ public abstract class PatchCellCART extends PatchCell {
             int startReceptors,
             double alpha,
             double beta) {
-<span class="fc" id="L368">        return (targets * contactFraction / (affinity * beta + targets * contactFraction))</span>
+<span class="fc" id="L376">        return (targets * contactFraction / (affinity * beta + targets * contactFraction))</span>
                 * (currentReceptors / startReceptors)
                 * alpha;
     }
@@ -377,7 +385,7 @@ public abstract class PatchCellCART extends PatchCell {
      * @return the sigmoidal value
      */
     private double applySigmoid(double bindingCoefficient) {
-<span class="fc" id="L380">        return 2 * (1 / (1 + Math.exp(-1 * bindingCoefficient))) - 1;</span>
+<span class="fc" id="L388">        return 2 * (1 / (1 + Math.exp(-1 * bindingCoefficient))) - 1;</span>
     }
 
     /**
@@ -388,12 +396,27 @@ public abstract class PatchCellCART extends PatchCell {
      * @return the affinity per receptor molecule
      */
     private double computeAffinity(double affinity, PatchLocation loc) {
-<span class="fc" id="L391">        return affinity * (loc.getVolume() * 1e-15 * 6.022E23);</span>
+<span class="fc" id="L399">        return affinity * (loc.getVolume() * 1e-15 * 6.022E23);</span>
     }
 
     /** Randomly increases number of self receptors after CAR binding. */
     private void updateSelfReceptors() {
-<span class="fc" id="L396">        selfReceptors += (int) ((double) selfReceptorsStart * (0.95 + Math.random() / 10));</span>
-<span class="fc" id="L397">    }</span>
+<span class="fc" id="L404">        selfReceptors += (int) ((double) selfReceptorsStart * (0.95 + Math.random() / 10));</span>
+<span class="fc" id="L405">    }</span>
+
+    /**
+     * Returns bound cell.
+     *
+     * @return the bound cell
+     */
+    public PatchCell getBoundTarget() {
+<span class="fc" id="L413">        return this.boundTarget;</span>
+    }
+
+    /** Sets binding flag to unbound and binding target to null. */
+    public void unbind() {
+<span class="fc" id="L418">        super.setBindingFlag(AntigenFlag.UNBOUND);</span>
+<span class="fc" id="L419">        this.boundTarget = null;</span>
+<span class="fc" id="L420">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

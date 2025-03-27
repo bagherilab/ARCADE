@@ -18,6 +18,7 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModuleApoptosis;
+import arcade.patch.agent.module.PatchModuleCytotoxicity;
 import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleNecrosis;
 import arcade.patch.agent.module.PatchModuleProliferation;
@@ -124,7 +125,7 @@ public abstract class PatchCell implements Cell {
     final GrabBag links;
 
     /** List of cell cycle lengths (in minutes). */
-<span class="fc" id="L127">    private final Bag cycles = new Bag();</span>
+<span class="fc" id="L128">    private final Bag cycles = new Bag();</span>
 
     /** If cell is stopped in the simulation. */
     private boolean isStopped;
@@ -149,117 +150,117 @@ public abstract class PatchCell implements Cell {
      * @param links the map of population links
      */
     public PatchCell(
-<span class="fc" id="L152">            PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {</span>
-<span class="fc" id="L153">        this.id = container.id;</span>
-<span class="fc" id="L154">        this.parent = container.parent;</span>
-<span class="fc" id="L155">        this.pop = container.pop;</span>
-<span class="fc" id="L156">        this.age = container.age;</span>
-<span class="fc" id="L157">        this.energy = 0;</span>
-<span class="fc" id="L158">        this.divisions = container.divisions;</span>
-<span class="fc" id="L159">        this.location = (PatchLocation) location;</span>
-<span class="fc" id="L160">        this.volume = container.volume;</span>
-<span class="fc" id="L161">        this.height = container.height;</span>
-<span class="fc" id="L162">        this.criticalVolume = container.criticalVolume;</span>
-<span class="fc" id="L163">        this.criticalHeight = container.criticalHeight;</span>
-<span class="fc" id="L164">        this.flag = Flag.UNDEFINED;</span>
-<span class="fc" id="L165">        this.parameters = parameters;</span>
-<span class="fc" id="L166">        this.isStopped = false;</span>
-<span class="fc" id="L167">        this.bindingFlag = PatchEnums.AntigenFlag.UNDEFINED;</span>
-<span class="fc" id="L168">        this.links = links;</span>
+<span class="fc" id="L153">            PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {</span>
+<span class="fc" id="L154">        this.id = container.id;</span>
+<span class="fc" id="L155">        this.parent = container.parent;</span>
+<span class="fc" id="L156">        this.pop = container.pop;</span>
+<span class="fc" id="L157">        this.age = container.age;</span>
+<span class="fc" id="L158">        this.energy = 0;</span>
+<span class="fc" id="L159">        this.divisions = container.divisions;</span>
+<span class="fc" id="L160">        this.location = (PatchLocation) location;</span>
+<span class="fc" id="L161">        this.volume = container.volume;</span>
+<span class="fc" id="L162">        this.height = container.height;</span>
+<span class="fc" id="L163">        this.criticalVolume = container.criticalVolume;</span>
+<span class="fc" id="L164">        this.criticalHeight = container.criticalHeight;</span>
+<span class="fc" id="L165">        this.flag = Flag.UNDEFINED;</span>
+<span class="fc" id="L166">        this.parameters = parameters;</span>
+<span class="fc" id="L167">        this.isStopped = false;</span>
+<span class="fc" id="L168">        this.bindingFlag = PatchEnums.AntigenFlag.UNDEFINED;</span>
+<span class="fc" id="L169">        this.links = links;</span>
 
-<span class="fc" id="L170">        setState(container.state);</span>
+<span class="fc" id="L171">        setState(container.state);</span>
 
         // Set loaded parameters.
-<span class="fc" id="L173">        necroticFraction = parameters.getDouble(&quot;NECROTIC_FRACTION&quot;);</span>
-<span class="fc" id="L174">        senescentFraction = parameters.getDouble(&quot;SENESCENT_FRACTION&quot;);</span>
-<span class="fc" id="L175">        energyThreshold = -parameters.getDouble(&quot;ENERGY_THRESHOLD&quot;);</span>
-<span class="fc" id="L176">        apoptosisAge = parameters.getDouble(&quot;APOPTOSIS_AGE&quot;);</span>
-<span class="fc" id="L177">        accuracy = parameters.getDouble(&quot;ACCURACY&quot;);</span>
-<span class="fc" id="L178">        affinity = parameters.getDouble(&quot;AFFINITY&quot;);</span>
-<span class="fc" id="L179">        divisionPotential = parameters.getInt(&quot;DIVISION_POTENTIAL&quot;);</span>
-<span class="fc" id="L180">        int densityInput = parameters.getInt(&quot;MAX_DENSITY&quot;);</span>
-<span class="fc bfc" id="L181" title="All 2 branches covered.">        maxDensity = (densityInput &gt;= 0 ? densityInput : Integer.MAX_VALUE);</span>
+<span class="fc" id="L174">        necroticFraction = parameters.getDouble(&quot;NECROTIC_FRACTION&quot;);</span>
+<span class="fc" id="L175">        senescentFraction = parameters.getDouble(&quot;SENESCENT_FRACTION&quot;);</span>
+<span class="fc" id="L176">        energyThreshold = -parameters.getDouble(&quot;ENERGY_THRESHOLD&quot;);</span>
+<span class="fc" id="L177">        apoptosisAge = parameters.getDouble(&quot;APOPTOSIS_AGE&quot;);</span>
+<span class="fc" id="L178">        accuracy = parameters.getDouble(&quot;ACCURACY&quot;);</span>
+<span class="fc" id="L179">        affinity = parameters.getDouble(&quot;AFFINITY&quot;);</span>
+<span class="fc" id="L180">        divisionPotential = parameters.getInt(&quot;DIVISION_POTENTIAL&quot;);</span>
+<span class="fc" id="L181">        int densityInput = parameters.getInt(&quot;MAX_DENSITY&quot;);</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">        maxDensity = (densityInput &gt;= 0 ? densityInput : Integer.MAX_VALUE);</span>
 
         // Add cell processes.
-<span class="fc" id="L184">        processes = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L185">        MiniBox processBox = parameters.filter(&quot;(PROCESS)&quot;);</span>
+<span class="fc" id="L185">        processes = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L186">        MiniBox processBox = parameters.filter(&quot;(PROCESS)&quot;);</span>
 
-<span class="pc bpc" id="L187" title="1 of 2 branches missed.">        for (String processKey : processBox.getKeys()) {</span>
-<span class="nc" id="L188">            ProcessDomain domain = Domain.valueOf(processKey);</span>
-<span class="nc" id="L189">            String version = processBox.get(processKey);</span>
-<span class="nc" id="L190">            Process process = makeProcess(domain, version);</span>
-<span class="nc" id="L191">            processes.put(domain, process);</span>
-<span class="nc" id="L192">        }</span>
-<span class="fc" id="L193">    }</span>
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">        for (String processKey : processBox.getKeys()) {</span>
+<span class="nc" id="L189">            ProcessDomain domain = Domain.valueOf(processKey);</span>
+<span class="nc" id="L190">            String version = processBox.get(processKey);</span>
+<span class="nc" id="L191">            Process process = makeProcess(domain, version);</span>
+<span class="nc" id="L192">            processes.put(domain, process);</span>
+<span class="nc" id="L193">        }</span>
+<span class="fc" id="L194">    }</span>
 
     @Override
     public int getID() {
-<span class="nc" id="L197">        return id;</span>
+<span class="nc" id="L198">        return id;</span>
     }
 
     @Override
     public int getParent() {
-<span class="nc" id="L202">        return parent;</span>
+<span class="nc" id="L203">        return parent;</span>
     }
 
     @Override
     public int getPop() {
-<span class="fc" id="L207">        return pop;</span>
+<span class="fc" id="L208">        return pop;</span>
     }
 
     @Override
     public CellState getState() {
-<span class="fc" id="L212">        return state;</span>
+<span class="fc" id="L213">        return state;</span>
     }
 
     @Override
     public int getAge() {
-<span class="nc" id="L217">        return age;</span>
+<span class="fc" id="L218">        return age;</span>
     }
 
     @Override
     public int getDivisions() {
-<span class="nc" id="L222">        return divisions;</span>
+<span class="nc" id="L223">        return divisions;</span>
     }
 
     @Override
     public Location getLocation() {
-<span class="fc" id="L227">        return location;</span>
+<span class="fc" id="L228">        return location;</span>
     }
 
     @Override
     public Module getModule() {
-<span class="nc" id="L232">        return module;</span>
+<span class="nc" id="L233">        return module;</span>
     }
 
     @Override
     public Process getProcess(ProcessDomain domain) {
-<span class="nc" id="L237">        return processes.get(domain);</span>
+<span class="nc" id="L238">        return processes.get(domain);</span>
     }
 
     @Override
     public Parameters getParameters() {
-<span class="fc" id="L242">        return parameters;</span>
+<span class="fc" id="L243">        return parameters;</span>
     }
 
     @Override
     public double getVolume() {
-<span class="fc" id="L247">        return volume;</span>
+<span class="fc" id="L248">        return volume;</span>
     }
 
     @Override
     public double getHeight() {
-<span class="nc" id="L252">        return height;</span>
+<span class="nc" id="L253">        return height;</span>
     }
 
     @Override
     public double getCriticalVolume() {
-<span class="fc" id="L257">        return criticalVolume;</span>
+<span class="fc" id="L258">        return criticalVolume;</span>
     }
 
     @Override
     public double getCriticalHeight() {
-<span class="fc" id="L262">        return criticalHeight;</span>
+<span class="fc" id="L263">        return criticalHeight;</span>
     }
 
     /**
@@ -268,7 +269,7 @@ public abstract class PatchCell implements Cell {
      * @return the energy level
      */
     public double getEnergy() {
-<span class="fc" id="L271">        return energy;</span>
+<span class="fc" id="L272">        return energy;</span>
     }
 
     /**
@@ -277,8 +278,8 @@ public abstract class PatchCell implements Cell {
      * @param flag the target cell flag
      */
     public void setFlag(Flag flag) {
-<span class="fc" id="L280">        this.flag = flag;</span>
-<span class="fc" id="L281">    }</span>
+<span class="fc" id="L281">        this.flag = flag;</span>
+<span class="fc" id="L282">    }</span>
 
     /**
      * Sets the cell volume.
@@ -286,8 +287,8 @@ public abstract class PatchCell implements Cell {
      * @param volume the target cell volume
      */
     public void setVolume(double volume) {
-<span class="fc" id="L289">        this.volume = volume;</span>
-<span class="fc" id="L290">    }</span>
+<span class="fc" id="L290">        this.volume = volume;</span>
+<span class="fc" id="L291">    }</span>
 
     /**
      * Sets the cell energy level.
@@ -295,8 +296,8 @@ public abstract class PatchCell implements Cell {
      * @param energy the target energy level
      */
     public void setEnergy(double energy) {
-<span class="fc" id="L298">        this.energy = energy;</span>
-<span class="fc" id="L299">    }</span>
+<span class="fc" id="L299">        this.energy = energy;</span>
+<span class="fc" id="L300">    }</span>
 
     /**
      * Adds a completed cell cycle length [min] to the list of lengths.
@@ -304,8 +305,8 @@ public abstract class PatchCell implements Cell {
      * @param val the cell cycle length
      */
     public void addCycle(int val) {
-<span class="fc" id="L307">        cycles.add(val);</span>
-<span class="fc" id="L308">    }</span>
+<span class="fc" id="L308">        cycles.add(val);</span>
+<span class="fc" id="L309">    }</span>
 
     /**
      * Gets the list of cell cycle lengths.
@@ -313,14 +314,14 @@ public abstract class PatchCell implements Cell {
      * @return the list of cell cycle lengths
      */
     public Bag getCycles() {
-<span class="fc" id="L316">        return cycles;</span>
+<span class="fc" id="L317">        return cycles;</span>
     }
 
     @Override
     public void stop() {
-<span class="nc" id="L321">        stopper.stop();</span>
-<span class="nc" id="L322">        isStopped = true;</span>
-<span class="nc" id="L323">    }</span>
+<span class="nc" id="L322">        stopper.stop();</span>
+<span class="nc" id="L323">        isStopped = true;</span>
+<span class="nc" id="L324">    }</span>
 
     /**
      * Gets stopping status of the cell.
@@ -328,42 +329,43 @@ public abstract class PatchCell implements Cell {
      * @return if the cell has been stopped in the simulation
      */
     public boolean isStopped() {
-<span class="nc" id="L331">        return isStopped;</span>
+<span class="nc" id="L332">        return isStopped;</span>
     }
 
     @Override
     public void setState(CellState state) {
-<span class="fc" id="L336">        this.state = state;</span>
-<span class="fc" id="L337">        this.flag = Flag.UNDEFINED;</span>
+<span class="fc" id="L337">        this.state = state;</span>
+<span class="fc" id="L338">        this.flag = Flag.UNDEFINED;</span>
 
-<span class="pc bpc" id="L339" title="2 of 9 branches missed.">        switch ((State) state) {</span>
+<span class="pc bpc" id="L340" title="2 of 9 branches missed.">        switch ((State) state) {</span>
             case PROLIFERATIVE:
-<span class="fc" id="L341">                module = new PatchModuleProliferation(this);</span>
-<span class="fc" id="L342">                break;</span>
+<span class="fc" id="L342">                module = new PatchModuleProliferation(this);</span>
+<span class="fc" id="L343">                break;</span>
             case MIGRATORY:
-<span class="fc" id="L344">                module = new PatchModuleMigration(this);</span>
-<span class="fc" id="L345">                break;</span>
+<span class="fc" id="L345">                module = new PatchModuleMigration(this);</span>
+<span class="fc" id="L346">                break;</span>
             case APOPTOTIC:
-<span class="fc" id="L347">                module = new PatchModuleApoptosis(this);</span>
-<span class="fc" id="L348">                break;</span>
+<span class="fc" id="L348">                module = new PatchModuleApoptosis(this);</span>
+<span class="fc" id="L349">                break;</span>
             case NECROTIC:
-<span class="fc" id="L350">                module = new PatchModuleNecrosis(this);</span>
-<span class="fc" id="L351">                break;</span>
+<span class="fc" id="L351">                module = new PatchModuleNecrosis(this);</span>
+<span class="fc" id="L352">                break;</span>
             case QUIESCENT:
-<span class="fc" id="L353">                module = new PatchModuleQuiescence(this);</span>
-<span class="fc" id="L354">                break;</span>
+<span class="fc" id="L354">                module = new PatchModuleQuiescence(this);</span>
+<span class="fc" id="L355">                break;</span>
             case SENESCENT:
-<span class="fc" id="L356">                module = new PatchModuleSenescence(this);</span>
-<span class="fc" id="L357">                break;</span>
+<span class="fc" id="L357">                module = new PatchModuleSenescence(this);</span>
+<span class="fc" id="L358">                break;</span>
             case CYTOTOXIC:
-<span class="nc" id="L359">                throw new UnsupportedOperationException();</span>
+<span class="nc" id="L360">                module = new PatchModuleCytotoxicity(this);</span>
+<span class="nc" id="L361">                break;</span>
             case STIMULATORY:
-<span class="nc" id="L361">                throw new UnsupportedOperationException();</span>
+<span class="nc" id="L363">                throw new UnsupportedOperationException();</span>
             default:
-<span class="fc" id="L363">                module = null;</span>
+<span class="fc" id="L365">                module = null;</span>
                 break;
         }
-<span class="fc" id="L366">    }</span>
+<span class="fc" id="L368">    }</span>
 
     /**
      * Makes the specified {@link Process} object.
@@ -373,27 +375,27 @@ public abstract class PatchCell implements Cell {
      * @return the process instance
      */
     public Process makeProcess(ProcessDomain domain, String version) {
-<span class="nc bnc" id="L376" title="All 4 branches missed.">        switch ((Domain) domain) {</span>
+<span class="nc bnc" id="L378" title="All 4 branches missed.">        switch ((Domain) domain) {</span>
             case METABOLISM:
-<span class="nc" id="L378">                return PatchProcessMetabolism.make(this, version);</span>
+<span class="nc" id="L380">                return PatchProcessMetabolism.make(this, version);</span>
             case SIGNALING:
-<span class="nc" id="L380">                return PatchProcessSignaling.make(this, version);</span>
+<span class="nc" id="L382">                return PatchProcessSignaling.make(this, version);</span>
             case INFLAMMATION:
-<span class="nc" id="L382">                return PatchProcessInflammation.make(this, version);</span>
+<span class="nc" id="L384">                return PatchProcessInflammation.make(this, version);</span>
             case UNDEFINED:
             default:
-<span class="nc" id="L385">                return null;</span>
+<span class="nc" id="L387">                return null;</span>
         }
     }
 
     @Override
     public void schedule(Schedule schedule) {
-<span class="fc" id="L391">        stopper = schedule.scheduleRepeating(this, Ordering.CELLS.ordinal(), 1);</span>
-<span class="fc" id="L392">    }</span>
+<span class="fc" id="L393">        stopper = schedule.scheduleRepeating(this, Ordering.CELLS.ordinal(), 1);</span>
+<span class="fc" id="L394">    }</span>
 
     @Override
     public CellContainer convert() {
-<span class="nc" id="L396">        return new PatchCellContainer(</span>
+<span class="nc" id="L398">        return new PatchCellContainer(</span>
                 id,
                 parent,
                 pop,
@@ -413,11 +415,11 @@ public abstract class PatchCell implements Cell {
      * @return the total volume
      */
     public static double calculateTotalVolume(Bag bag) {
-<span class="fc" id="L416">        double totalVolume = 0;</span>
-<span class="fc bfc" id="L417" title="All 2 branches covered.">        for (Object obj : bag) {</span>
-<span class="fc" id="L418">            totalVolume += ((Cell) obj).getVolume();</span>
-<span class="fc" id="L419">        }</span>
-<span class="fc" id="L420">        return totalVolume;</span>
+<span class="fc" id="L418">        double totalVolume = 0;</span>
+<span class="fc bfc" id="L419" title="All 2 branches covered.">        for (Object obj : bag) {</span>
+<span class="fc" id="L420">            totalVolume += ((Cell) obj).getVolume();</span>
+<span class="fc" id="L421">        }</span>
+<span class="fc" id="L422">        return totalVolume;</span>
     }
 
     /**
@@ -431,52 +433,52 @@ public abstract class PatchCell implements Cell {
      * @return the best location or null if no valid locations
      */
     public PatchLocation selectBestLocation(Simulation sim, MersenneTwisterFast random) {
-<span class="fc" id="L434">        Bag locs = findFreeLocations(sim);</span>
-<span class="fc" id="L435">        double maxGlucose =</span>
-<span class="fc" id="L436">                sim.getLattice(&quot;GLUCOSE&quot;).getParameters().getDouble(&quot;generator/CONCENTRATION&quot;);</span>
-<span class="fc" id="L437">        int currZ = location.getPlanarIndex();</span>
-<span class="fc" id="L438">        double currR = location.getPlanarDistance();</span>
-<span class="fc" id="L439">        int[] inds = new int[3];</span>
-<span class="fc" id="L440">        double[] scores = new double[3];</span>
+<span class="fc" id="L436">        Bag locs = findFreeLocations(sim);</span>
+<span class="fc" id="L437">        double maxGlucose =</span>
+<span class="fc" id="L438">                sim.getLattice(&quot;GLUCOSE&quot;).getParameters().getDouble(&quot;generator/CONCENTRATION&quot;);</span>
+<span class="fc" id="L439">        int currZ = location.getPlanarIndex();</span>
+<span class="fc" id="L440">        double currR = location.getPlanarDistance();</span>
+<span class="fc" id="L441">        int[] inds = new int[3];</span>
+<span class="fc" id="L442">        double[] scores = new double[3];</span>
 
         // Check each free location for glucose and track the location with the
         // highest glucose concentration.
-<span class="fc bfc" id="L444" title="All 2 branches covered.">        if (locs.size() &gt; 0) {</span>
-<span class="fc bfc" id="L445" title="All 2 branches covered.">            for (int i = 0; i &lt; locs.numObjs; i++) {</span>
-<span class="fc" id="L446">                PatchLocation loc = (PatchLocation) (locs.get(i));</span>
+<span class="fc bfc" id="L446" title="All 2 branches covered.">        if (locs.size() &gt; 0) {</span>
+<span class="fc bfc" id="L447" title="All 2 branches covered.">            for (int i = 0; i &lt; locs.numObjs; i++) {</span>
+<span class="fc" id="L448">                PatchLocation loc = (PatchLocation) (locs.get(i));</span>
                 // Calculate score by introducing error to the location check
                 // and adding affinity to move toward center.
-<span class="fc" id="L449">                double normConc = sim.getLattice(&quot;GLUCOSE&quot;).getAverageValue(location) / maxGlucose;</span>
-<span class="fc" id="L450">                double gluc = (accuracy * normConc + (1 - accuracy) * random.nextDouble());</span>
-<span class="fc" id="L451">                double dist = ((currR - loc.getPlanarDistance()) + 1) / 2.0;</span>
-<span class="fc" id="L452">                double score = affinity * dist + (1 - affinity) * gluc;</span>
+<span class="fc" id="L451">                double normConc = sim.getLattice(&quot;GLUCOSE&quot;).getAverageValue(location) / maxGlucose;</span>
+<span class="fc" id="L452">                double gluc = (accuracy * normConc + (1 - accuracy) * random.nextDouble());</span>
+<span class="fc" id="L453">                double dist = ((currR - loc.getPlanarDistance()) + 1) / 2.0;</span>
+<span class="fc" id="L454">                double score = affinity * dist + (1 - affinity) * gluc;</span>
 
                 // Determine index for z position of location.
                 // 0: same z, 1: z + 1, 2: z - 1
                 int k =
-<span class="fc bfc" id="L457" title="All 2 branches covered.">                        loc.getPlanarIndex() == currZ</span>
-<span class="fc" id="L458">                                ? 0</span>
-<span class="fc bfc" id="L459" title="All 2 branches covered.">                                : loc.getPlanarIndex() == currZ + 1 ? 1 : 2;</span>
+<span class="fc bfc" id="L459" title="All 2 branches covered.">                        loc.getPlanarIndex() == currZ</span>
+<span class="fc" id="L460">                                ? 0</span>
+<span class="fc bfc" id="L461" title="All 2 branches covered.">                                : loc.getPlanarIndex() == currZ + 1 ? 1 : 2;</span>
 
                 // Check if location is more desirable than current best location in z plane.
-<span class="fc bfc" id="L462" title="All 2 branches covered.">                if (score &gt; scores[k]) {</span>
-<span class="fc" id="L463">                    scores[k] = score;</span>
-<span class="fc" id="L464">                    inds[k] = i;</span>
+<span class="fc bfc" id="L464" title="All 2 branches covered.">                if (score &gt; scores[k]) {</span>
+<span class="fc" id="L465">                    scores[k] = score;</span>
+<span class="fc" id="L466">                    inds[k] = i;</span>
                 }
             }
 
-<span class="fc" id="L468">            GrabBag options = new GrabBag();</span>
-<span class="fc bfc" id="L469" title="All 2 branches covered.">            for (int i = 0; i &lt; 3; i++) {</span>
-<span class="fc bfc" id="L470" title="All 2 branches covered.">                if (scores[i] != 0) {</span>
-<span class="fc" id="L471">                    options.add(inds[i], 1);</span>
+<span class="fc" id="L470">            GrabBag options = new GrabBag();</span>
+<span class="fc bfc" id="L471" title="All 2 branches covered.">            for (int i = 0; i &lt; 3; i++) {</span>
+<span class="fc bfc" id="L472" title="All 2 branches covered.">                if (scores[i] != 0) {</span>
+<span class="fc" id="L473">                    options.add(inds[i], 1);</span>
                 }
             }
-<span class="fc bfc" id="L474" title="All 2 branches covered.">            if (!options.isEmpty()) {</span>
-<span class="fc" id="L475">                return (PatchLocation) locs.get(options.next(random));</span>
+<span class="fc bfc" id="L476" title="All 2 branches covered.">            if (!options.isEmpty()) {</span>
+<span class="fc" id="L477">                return (PatchLocation) locs.get(options.next(random));</span>
             }
         }
 
-<span class="fc" id="L479">        return null;</span>
+<span class="fc" id="L481">        return null;</span>
     }
 
     /**
@@ -486,23 +488,23 @@ public abstract class PatchCell implements Cell {
      * @return a {@code Bag} of free locations
      */
     public Bag findFreeLocations(Simulation sim) {
-<span class="fc" id="L489">        Bag freeLocations = new Bag();</span>
-<span class="fc" id="L490">        PatchLocation currentLocation = this.location;</span>
-<span class="fc bfc" id="L491" title="All 2 branches covered.">        double targetVolume = (state == State.PROLIFERATIVE) ? volume * 0.5 : volume;</span>
-<span class="fc bfc" id="L492" title="All 2 branches covered.">        int densityAdjustment = (state == State.PROLIFERATIVE) ? 1 : 0;</span>
+<span class="fc" id="L491">        Bag freeLocations = new Bag();</span>
+<span class="fc" id="L492">        PatchLocation currentLocation = this.location;</span>
+<span class="fc bfc" id="L493" title="All 2 branches covered.">        double targetVolume = (state == State.PROLIFERATIVE) ? volume * 0.5 : volume;</span>
+<span class="fc bfc" id="L494" title="All 2 branches covered.">        int densityAdjustment = (state == State.PROLIFERATIVE) ? 1 : 0;</span>
 
-<span class="fc bfc" id="L494" title="All 2 branches covered.">        if (checkLocation(</span>
+<span class="fc bfc" id="L496" title="All 2 branches covered.">        if (checkLocation(</span>
                 sim, currentLocation, 0, criticalHeight, pop, maxDensity - densityAdjustment)) {
-<span class="fc" id="L496">            freeLocations.add(currentLocation.getClone());</span>
+<span class="fc" id="L498">            freeLocations.add(currentLocation.getClone());</span>
         }
 
-<span class="fc bfc" id="L499" title="All 2 branches covered.">        for (Location neighborLocation : currentLocation.getNeighbors()) {</span>
-<span class="fc" id="L500">            PatchLocation neighbor = (PatchLocation) neighborLocation;</span>
-<span class="fc bfc" id="L501" title="All 2 branches covered.">            if (checkLocation(sim, neighbor, targetVolume, criticalHeight, pop, maxDensity)) {</span>
-<span class="fc" id="L502">                freeLocations.add(neighborLocation);</span>
+<span class="fc bfc" id="L501" title="All 2 branches covered.">        for (Location neighborLocation : currentLocation.getNeighbors()) {</span>
+<span class="fc" id="L502">            PatchLocation neighbor = (PatchLocation) neighborLocation;</span>
+<span class="fc bfc" id="L503" title="All 2 branches covered.">            if (checkLocation(sim, neighbor, targetVolume, criticalHeight, pop, maxDensity)) {</span>
+<span class="fc" id="L504">                freeLocations.add(neighborLocation);</span>
             }
-<span class="fc" id="L504">        }</span>
-<span class="fc" id="L505">        return freeLocations;</span>
+<span class="fc" id="L506">        }</span>
+<span class="fc" id="L507">        return freeLocations;</span>
     }
 
     /**
@@ -527,35 +529,35 @@ public abstract class PatchCell implements Cell {
             double maxHeight,
             int population,
             int maxDensity) {
-<span class="fc" id="L530">        double locationVolume = loc.getVolume();</span>
-<span class="fc" id="L531">        double locationArea = loc.getArea();</span>
-<span class="fc" id="L532">        PatchGrid grid = (PatchGrid) sim.getGrid();</span>
+<span class="fc" id="L532">        double locationVolume = loc.getVolume();</span>
+<span class="fc" id="L533">        double locationArea = loc.getArea();</span>
+<span class="fc" id="L534">        PatchGrid grid = (PatchGrid) sim.getGrid();</span>
 
-<span class="fc" id="L534">        Bag bag = new Bag(grid.getObjectsAtLocation(loc));</span>
+<span class="fc" id="L536">        Bag bag = new Bag(grid.getObjectsAtLocation(loc));</span>
 
-<span class="fc bfc" id="L536" title="All 2 branches covered.">        if (bag.numObjs != 0) {</span>
-<span class="fc" id="L537">            double proposedVolume = calculateTotalVolume(bag) + addedVolume;</span>
-<span class="fc" id="L538">            double proposedHeight = proposedVolume / locationArea;</span>
+<span class="fc bfc" id="L538" title="All 2 branches covered.">        if (bag.numObjs != 0) {</span>
+<span class="fc" id="L539">            double proposedVolume = calculateTotalVolume(bag) + addedVolume;</span>
+<span class="fc" id="L540">            double proposedHeight = proposedVolume / locationArea;</span>
 
-<span class="fc bfc" id="L540" title="All 4 branches covered.">            if (proposedVolume &gt; locationVolume || proposedHeight &gt; maxHeight) {</span>
-<span class="fc" id="L541">                return false;</span>
+<span class="fc bfc" id="L542" title="All 4 branches covered.">            if (proposedVolume &gt; locationVolume || proposedHeight &gt; maxHeight) {</span>
+<span class="fc" id="L543">                return false;</span>
             }
 
-<span class="fc" id="L544">            int count = 0;</span>
-<span class="fc bfc" id="L545" title="All 2 branches covered.">            for (Object obj : bag) {</span>
-<span class="fc" id="L546">                PatchCell cell = (PatchCell) obj;</span>
-<span class="fc bfc" id="L547" title="All 2 branches covered.">                if (proposedHeight &gt; cell.getCriticalHeight()) {</span>
-<span class="fc" id="L548">                    return false;</span>
+<span class="fc" id="L546">            int count = 0;</span>
+<span class="fc bfc" id="L547" title="All 2 branches covered.">            for (Object obj : bag) {</span>
+<span class="fc" id="L548">                PatchCell cell = (PatchCell) obj;</span>
+<span class="fc bfc" id="L549" title="All 2 branches covered.">                if (proposedHeight &gt; cell.getCriticalHeight()) {</span>
+<span class="fc" id="L550">                    return false;</span>
                 }
-<span class="fc bfc" id="L550" title="All 2 branches covered.">                if (cell.getPop() == population) {</span>
-<span class="fc" id="L551">                    count++;</span>
-<span class="fc bfc" id="L552" title="All 2 branches covered.">                    if (count &gt;= maxDensity) {</span>
-<span class="fc" id="L553">                        return false;</span>
+<span class="fc bfc" id="L552" title="All 2 branches covered.">                if (cell.getPop() == population) {</span>
+<span class="fc" id="L553">                    count++;</span>
+<span class="fc bfc" id="L554" title="All 2 branches covered.">                    if (count &gt;= maxDensity) {</span>
+<span class="fc" id="L555">                        return false;</span>
                     }
                 }
-<span class="fc" id="L556">            }</span>
+<span class="fc" id="L558">            }</span>
         }
-<span class="fc" id="L558">        return true;</span>
+<span class="fc" id="L560">        return true;</span>
     }
 
     /**
@@ -564,8 +566,8 @@ public abstract class PatchCell implements Cell {
      * @param newBindingFlag the target cell antigen binding state
      */
     public void setBindingFlag(PatchEnums.AntigenFlag newBindingFlag) {
-<span class="fc" id="L567">        this.bindingFlag = newBindingFlag;</span>
-<span class="fc" id="L568">    }</span>
+<span class="fc" id="L569">        this.bindingFlag = newBindingFlag;</span>
+<span class="fc" id="L570">    }</span>
 
     /**
      * Returns the cell binding flag.
@@ -573,7 +575,7 @@ public abstract class PatchCell implements Cell {
      * @return the cell antigen binding state
      */
     public PatchEnums.AntigenFlag getBindingFlag() {
-<span class="fc" id="L576">        return this.bindingFlag;</span>
+<span class="fc" id="L578">        return this.bindingFlag;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

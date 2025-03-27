@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchCellCARTCD8.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.agent.cell</a> &gt; <span class="el_source">PatchCellCARTCD8.java</span></div><h1>PatchCellCARTCD8.java</h1><pre class="source lang-java linenums">package arcade.patch.agent.cell;
+
+import sim.engine.SimState;
+import ec.util.MersenneTwisterFast;
+import arcade.core.agent.cell.CellState;
+import arcade.core.env.location.Location;
+import arcade.core.sim.Simulation;
+import arcade.core.util.GrabBag;
+import arcade.core.util.Parameters;
+import arcade.patch.util.PatchEnums.AntigenFlag;
+import arcade.patch.util.PatchEnums.Domain;
+import arcade.patch.util.PatchEnums.State;
+
+/** Extension of {@link PatchCellCART} for CD8 CART-cells with selected module versions. */
+public class PatchCellCARTCD8 extends PatchCellCART {
+
+    /**
+     * Creates a T cell {@code PatchCellCARTCD8} agent. *
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     */
+    public PatchCellCARTCD8(
+            PatchCellContainer container, Location location, Parameters parameters) {
+<span class="fc" id="L26">        this(container, location, parameters, null);</span>
+<span class="fc" id="L27">    }</span>
+
+    /**
+     * Creates a T cell {@code PatchCellCARTCD8} agent. *
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
+    public PatchCellCARTCD8(
+            PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
+<span class="fc" id="L39">        super(container, location, parameters, links);</span>
+<span class="fc" id="L40">    }</span>
+
+    @Override
+    public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
+<span class="nc" id="L44">        divisions++;</span>
+<span class="nc" id="L45">        return new PatchCellContainer(</span>
+                newID,
+                id,
+                pop,
+                age,
+                divisions,
+                newState,
+                volume,
+                height,
+                criticalVolume,
+                criticalHeight);
+    }
+
+    @Override
+    public void step(SimState simstate) {
+<span class="fc" id="L60">        Simulation sim = (Simulation) simstate;</span>
+
+<span class="fc" id="L62">        super.age++;</span>
+
+<span class="pc bpc" id="L64" title="2 of 4 branches missed.">        if (state != State.APOPTOTIC &amp;&amp; age &gt; apoptosisAge) {</span>
+<span class="nc" id="L65">            setState(State.APOPTOTIC);</span>
+<span class="nc" id="L66">            super.unbind();</span>
+<span class="nc" id="L67">            this.activated = false;</span>
+        }
+
+<span class="fc" id="L70">        super.lastActiveTicker++;</span>
+
+<span class="pc bpc" id="L72" title="2 of 4 branches missed.">        if (super.lastActiveTicker != 0 &amp;&amp; super.lastActiveTicker % MINUTES_IN_DAY == 0) {</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">            if (super.boundCARAntigensCount != 0) {</span>
+<span class="nc" id="L74">                super.boundCARAntigensCount--;</span>
+            }
+        }
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">        if (super.lastActiveTicker / MINUTES_IN_DAY &gt;= 7) {</span>
+<span class="nc" id="L78">            super.activated = false;</span>
+        }
+
+<span class="fc" id="L81">        super.processes.get(Domain.METABOLISM).step(simstate.random, sim);</span>
+
+        // Check energy status. If cell has less energy than threshold, it will
+        // apoptose. If overall energy is negative, then cell enters quiescence.
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">        if (state != State.APOPTOTIC) {</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">            if (super.energy &lt; super.energyThreshold) {</span>
+
+<span class="fc" id="L88">                super.setState(State.APOPTOTIC);</span>
+<span class="fc" id="L89">                super.unbind();</span>
+<span class="fc" id="L90">                this.activated = false;</span>
+<span class="pc bpc" id="L91" title="4 of 10 branches missed.">            } else if (state != State.ANERGIC</span>
+                    &amp;&amp; state != State.SENESCENT
+                    &amp;&amp; state != State.EXHAUSTED
+                    &amp;&amp; state != State.STARVED
+                    &amp;&amp; energy &lt; 0) {
+
+<span class="fc" id="L97">                super.setState(State.STARVED);</span>
+<span class="fc" id="L98">                super.unbind();</span>
+<span class="pc bpc" id="L99" title="3 of 4 branches missed.">            } else if (state == State.STARVED &amp;&amp; energy &gt;= 0) {</span>
+<span class="nc" id="L100">                super.setState(State.UNDEFINED);</span>
+            }
+        }
+
+<span class="fc" id="L104">        super.processes.get(Domain.INFLAMMATION).step(simstate.random, sim);</span>
+
+<span class="pc bpc" id="L106" title="1 of 4 branches missed.">        if (super.state == State.UNDEFINED || super.state == State.PAUSED) {</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">            if (divisions == divisionPotential) {</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">                if (simstate.random.nextDouble() &gt; super.senescentFraction) {</span>
+<span class="fc" id="L109">                    super.setState(State.APOPTOTIC);</span>
+                } else {
+<span class="fc" id="L111">                    super.setState(State.SENESCENT);</span>
+                }
+<span class="fc" id="L113">                super.unbind();</span>
+<span class="fc" id="L114">                this.activated = false;</span>
+            } else {
+<span class="fc" id="L116">                PatchCellTissue target = super.bindTarget(sim, location, simstate.random);</span>
+<span class="fc" id="L117">                super.boundTarget = target;</span>
+
+                // If cell is bound to both antigen and self it will become anergic.
+<span class="fc bfc" id="L120" title="All 2 branches covered.">                if (super.getBindingFlag() == AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR) {</span>
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">                    if (simstate.random.nextDouble() &gt; super.anergicFraction) {</span>
+<span class="nc" id="L122">                        super.setState(State.APOPTOTIC);</span>
+                    } else {
+<span class="fc" id="L124">                        super.setState(State.ANERGIC);</span>
+                    }
+<span class="fc" id="L126">                    super.unbind();</span>
+<span class="fc" id="L127">                    this.activated = false;</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">                } else if (super.getBindingFlag() == AntigenFlag.BOUND_ANTIGEN) {</span>
+                    // If cell is only bound to target antigen, the cell
+                    // can potentially become properly activated.
+
+                    // Check overstimulation. If cell has bound to
+                    // target antigens too many times, becomes exhausted.
+<span class="fc bfc" id="L134" title="All 2 branches covered.">                    if (boundCARAntigensCount &gt; maxAntigenBinding) {</span>
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">                        if (simstate.random.nextDouble() &gt; super.exhaustedFraction) {</span>
+<span class="nc" id="L136">                            super.setState(State.APOPTOTIC);</span>
+                        } else {
+<span class="fc" id="L138">                            super.setState(State.EXHAUSTED);</span>
+                        }
+<span class="fc" id="L140">                        super.unbind();</span>
+<span class="fc" id="L141">                        this.activated = false;</span>
+                    } else {
+                        // if CD8 cell is properly activated, it can be cytotoxic
+<span class="fc" id="L144">                        this.lastActiveTicker = 0;</span>
+<span class="fc" id="L145">                        this.activated = true;</span>
+<span class="fc" id="L146">                        super.setState(State.CYTOTOXIC);</span>
+                    }
+                } else {
+                    // If self binding, unbind
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">                    if (super.getBindingFlag() == AntigenFlag.BOUND_CELL_RECEPTOR) {</span>
+<span class="nc" id="L151">                        super.unbind();</span>
+                    }
+                    // Check activation status. If cell has been activated before,
+                    // it will proliferate. If not, it will migrate.
+<span class="fc bfc" id="L155" title="All 2 branches covered.">                    if (activated) {</span>
+<span class="fc" id="L156">                        super.setState(State.PROLIFERATIVE);</span>
+                    } else {
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">                        if (simstate.random.nextDouble() &gt; super.proliferativeFraction) {</span>
+<span class="fc" id="L159">                            super.setState(State.MIGRATORY);</span>
+                        } else {
+<span class="nc" id="L161">                            super.setState(State.PROLIFERATIVE);</span>
+                        }
+                    }
+                }
+            }
+        }
+
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">        if (super.module != null) {</span>
+<span class="fc" id="L169">            super.module.step(simstate.random, sim);</span>
+        }
+<span class="fc" id="L171">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchProcessInflammationCD8.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.agent.process</a> &gt; <span class="el_source">PatchProcessInflammationCD8.java</span></div><h1>PatchProcessInflammationCD8.java</h1><pre class="source lang-java linenums">package arcade.patch.agent.process;
+
+import ec.util.MersenneTwisterFast;
+import arcade.core.agent.process.Process;
+import arcade.core.sim.Simulation;
+import arcade.core.util.Parameters;
+import arcade.patch.agent.cell.PatchCellCART;
+
+/**
+ * Extension of {@link PatchProcessInflammation} for CD8 CAR T-cells
+ *
+ * &lt;p&gt;{@code InflammationCD8} determines granzyme amounts produced for cytotoxic effector functions
+ * as a function of IL-2 bound and antigen-induced activation state.
+ */
+public class PatchProcessInflammationCD8 extends PatchProcessInflammation {
+    /** Moles of granzyme produced per moles IL-2 [mol granzyme/mol IL-2]. */
+    private static final double GRANZ_PER_IL2 = 0.005;
+
+    /** Delay in IL-2 synthesis after antigen-induced activation. */
+    private final int granzSynthesisDelay;
+
+    /** Amount of IL-2 bound in past being used for current granzyme production calculation. */
+    private double priorIL2granz;
+
+    /**
+     * Creates a CD8 {@link PatchProcessInflammation} module.
+     *
+     * &lt;p&gt;Initial amount of internal granzyme is set. Granzyme production parameters set.
+     *
+     * @param cell the {@link PatchCellCART} the module is associated with
+     */
+    public PatchProcessInflammationCD8(PatchCellCART cell) {
+<span class="fc" id="L33">        super(cell);</span>
+
+<span class="fc" id="L35">        Parameters parameters = cell.getParameters();</span>
+<span class="fc" id="L36">        this.granzSynthesisDelay = parameters.getInt(&quot;inflammation/GRANZ_SYNTHESIS_DELAY&quot;);</span>
+<span class="fc" id="L37">        this.priorIL2granz = 0;</span>
+
+<span class="fc" id="L39">        amts[GRANZYME] = 1; // [molecules]</span>
+<span class="fc" id="L40">        names.add(GRANZYME, &quot;granzyme&quot;);</span>
+<span class="fc" id="L41">    }</span>
+
+    @Override
+    public void stepProcess(MersenneTwisterFast random, Simulation sim) {
+
+        // Determine amount of granzyme production based on if cell is activated
+        // as a function of IL-2 production.
+<span class="fc" id="L48">        int granzIndex = (iL2Ticker % boundArray.length) - granzSynthesisDelay;</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">        if (granzIndex &lt; 0) {</span>
+<span class="nc" id="L50">            granzIndex += boundArray.length;</span>
+        }
+<span class="fc" id="L52">        priorIL2granz = boundArray[granzIndex];</span>
+
+<span class="fc bfc" id="L54" title="All 4 branches covered.">        if (active &amp;&amp; activeTicker &gt; granzSynthesisDelay) {</span>
+<span class="fc" id="L55">            amts[GRANZYME] += GRANZ_PER_IL2 * (priorIL2granz / iL2Receptors);</span>
+        }
+
+        // Update environment.
+        // Convert units back from molecules to molecules/cm^3.
+<span class="fc" id="L60">        double iL2Env = ((extIL2 - (extIL2 * fraction - amts[IL2_EXT])) * 1E12 / loc.getVolume());</span>
+<span class="fc" id="L61">        sim.getLattice(&quot;IL-2&quot;).setValue(loc, iL2Env);</span>
+<span class="fc" id="L62">    }</span>
+
+    @Override
+    public void update(Process mod) {
+<span class="fc" id="L66">        PatchProcessInflammationCD8 inflammation = (PatchProcessInflammationCD8) mod;</span>
+<span class="fc" id="L67">        double split = (this.cell.getVolume() / this.volume);</span>
+
+        // Update daughter cell inflammation as a fraction of parent.
+<span class="fc" id="L70">        this.amts[IL2RBGA] = inflammation.amts[IL2RBGA] * split;</span>
+<span class="fc" id="L71">        this.amts[IL2_IL2RBG] = inflammation.amts[IL2_IL2RBG] * split;</span>
+<span class="fc" id="L72">        this.amts[IL2_IL2RBGA] = inflammation.amts[IL2_IL2RBGA] * split;</span>
+<span class="fc" id="L73">        this.amts[IL2RBG] =</span>
+                iL2Receptors - this.amts[IL2RBGA] - this.amts[IL2_IL2RBG] - this.amts[IL2_IL2RBGA];
+<span class="fc" id="L75">        this.amts[IL2_INT_TOTAL] = this.amts[IL2_IL2RBG] + this.amts[IL2_IL2RBGA];</span>
+<span class="fc" id="L76">        this.amts[IL2R_TOTAL] = this.amts[IL2RBG] + this.amts[IL2RBGA];</span>
+<span class="fc" id="L77">        this.amts[GRANZYME] = inflammation.amts[GRANZYME] * split;</span>
+<span class="fc" id="L78">        this.boundArray = (inflammation.boundArray).clone();</span>
+
+        // Update parent cell with remaining fraction.
+<span class="fc" id="L81">        inflammation.amts[IL2RBGA] *= (1 - split);</span>
+<span class="fc" id="L82">        inflammation.amts[IL2_IL2RBG] *= (1 - split);</span>
+<span class="fc" id="L83">        inflammation.amts[IL2_IL2RBGA] *= (1 - split);</span>
+<span class="fc" id="L84">        inflammation.amts[IL2RBG] =</span>
+                iL2Receptors
+                        - inflammation.amts[IL2RBGA]
+                        - inflammation.amts[IL2_IL2RBG]
+                        - inflammation.amts[IL2_IL2RBGA];
+<span class="fc" id="L89">        inflammation.amts[IL2_INT_TOTAL] =</span>
+                inflammation.amts[IL2_IL2RBG] + inflammation.amts[IL2_IL2RBGA];
+<span class="fc" id="L91">        inflammation.amts[IL2R_TOTAL] = inflammation.amts[IL2RBG] + inflammation.amts[IL2RBGA];</span>
+<span class="fc" id="L92">        inflammation.amts[GRANZYME] *= (1 - split);</span>
+<span class="fc" id="L93">        inflammation.volume *= (1 - split);</span>
+<span class="fc" id="L94">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

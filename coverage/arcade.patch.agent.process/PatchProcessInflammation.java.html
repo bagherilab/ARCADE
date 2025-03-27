@@ -124,14 +124,14 @@ public abstract class PatchProcessInflammation extends PatchProcess {
      * bound and no three-chain receptors. Daughter cells split amounts of bound IL-2 and
      * three-chain receptors upon dividing.
      *
-     * @param c the {@link PatchCellCART} the module is associated with
+     * @param cell the {@link PatchCellCART} the module is associated with
      */
-    public PatchProcessInflammation(PatchCellCART c) {
-<span class="fc" id="L130">        super(c);</span>
-<span class="fc" id="L131">        this.loc = c.getLocation();</span>
-<span class="fc" id="L132">        this.cell = c;</span>
-<span class="fc" id="L133">        this.pop = c.getPop();</span>
-<span class="fc" id="L134">        this.volume = c.getVolume();</span>
+    public PatchProcessInflammation(PatchCellCART cell) {
+<span class="fc" id="L130">        super(cell);</span>
+<span class="fc" id="L131">        this.loc = cell.getLocation();</span>
+<span class="fc" id="L132">        this.cell = cell;</span>
+<span class="fc" id="L133">        this.pop = cell.getPop();</span>
+<span class="fc" id="L134">        this.volume = cell.getVolume();</span>
 <span class="fc" id="L135">        this.iL2Ticker = 0;</span>
 <span class="fc" id="L136">        this.activeTicker = 0;</span>
 
@@ -311,7 +311,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
             case &quot;CD4&quot;:
 <span class="nc" id="L312">                throw new UnsupportedOperationException();</span>
             case &quot;CD8&quot;:
-<span class="nc" id="L314">                throw new UnsupportedOperationException();</span>
+<span class="nc" id="L314">                return new PatchProcessInflammationCD8((PatchCellCART) cell);</span>
             default:
 <span class="nc" id="L316">                return null;</span>
         }

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchModuleCytotoxicity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.agent.module</a> &gt; <span class="el_source">PatchModuleCytotoxicity.java</span></div><h1>PatchModuleCytotoxicity.java</h1><pre class="source lang-java linenums">package arcade.patch.agent.module;
+
+import ec.util.MersenneTwisterFast;
+import arcade.core.sim.Simulation;
+import arcade.core.util.Parameters;
+import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.agent.cell.PatchCellCART;
+import arcade.patch.agent.cell.PatchCellTissue;
+import arcade.patch.agent.process.PatchProcessInflammation;
+import static arcade.patch.util.PatchEnums.Domain;
+import static arcade.patch.util.PatchEnums.State;
+
+/**
+ * Implementation of {@link Module} for killing tissue agents.
+ *
+ * &lt;p&gt;{@code PatchModuleCytotoxicity} is stepped once after a CD8 CAR T-cell binds to a target
+ * tissue cell. The {@code PatchModuleCytotoxicity} determines if cell has enough granzyme to kill.
+ * If so, it kills cell and calls the reset to neutral helper to return to neutral state. If not, it
+ * waits until it has enough granzyme to kill cell.
+ */
+public class PatchModuleCytotoxicity extends PatchModule {
+    /** Target cell cytotoxic CAR T-cell is bound to. */
+    PatchCellTissue target;
+
+    /** CAR T-cell inflammation module. */
+    PatchProcessInflammation inflammation;
+
+    /** Amount of granzyme inside CAR T-cell. */
+    double granzyme;
+
+    /** Average time that T cell is bound to target [min]. */
+    private final int timeDelay;
+
+    /** Ticker to keep track of the time delay [min]. */
+    private int ticker;
+
+    /**
+     * Creates a {@code PatchActionKill} for the given {@link PatchCellCART}.
+     *
+     * @param cell the {@link PatchCell} the helper is associated with
+     */
+    public PatchModuleCytotoxicity(PatchCell cell) {
+<span class="fc" id="L43">        super(cell);</span>
+<span class="fc" id="L44">        this.target = (PatchCellTissue) ((PatchCellCART) cell).getBoundTarget();</span>
+<span class="fc" id="L45">        this.inflammation = (PatchProcessInflammation) cell.getProcess(Domain.INFLAMMATION);</span>
+<span class="fc" id="L46">        this.granzyme = inflammation.getInternal(&quot;granzyme&quot;);</span>
+
+<span class="fc" id="L48">        Parameters parameters = cell.getParameters();</span>
+<span class="fc" id="L49">        this.timeDelay = parameters.getInt(&quot;BOUND_TIME&quot;);</span>
+<span class="fc" id="L50">        this.ticker = 0;</span>
+<span class="fc" id="L51">    }</span>
+
+    @Override
+    public void step(MersenneTwisterFast random, Simulation sim) {
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        if (cell.isStopped()) {</span>
+<span class="fc" id="L56">            return;</span>
+        }
+
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (target.isStopped()) {</span>
+<span class="fc" id="L60">            ((PatchCellCART) cell).unbind();</span>
+<span class="fc" id="L61">            cell.setState(State.UNDEFINED);</span>
+<span class="fc" id="L62">            return;</span>
+        }
+
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        if (ticker == 0) {</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">            if (granzyme &gt;= 1) {</span>
+<span class="fc" id="L67">                PatchCellTissue tissueCell = (PatchCellTissue) target;</span>
+<span class="fc" id="L68">                tissueCell.setState(State.APOPTOTIC);</span>
+<span class="fc" id="L69">                granzyme--;</span>
+<span class="fc" id="L70">                inflammation.setInternal(&quot;granzyme&quot;, granzyme);</span>
+<span class="fc" id="L71">            }</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        } else if (ticker &gt;= timeDelay) {</span>
+<span class="nc" id="L73">            ((PatchCellCART) cell).unbind();</span>
+<span class="nc" id="L74">            cell.setState(State.UNDEFINED);</span>
+        }
+
+<span class="fc" id="L77">        ticker++;</span>
+<span class="fc" id="L78">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
