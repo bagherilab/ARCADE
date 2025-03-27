@@ -124,14 +124,14 @@ public abstract class PatchProcessInflammation extends PatchProcess {
      * bound and no three-chain receptors. Daughter cells split amounts of bound IL-2 and
      * three-chain receptors upon dividing.
      *
-     * @param c the {@link PatchCellCART} the module is associated with
+     * @param cell the {@link PatchCellCART} the module is associated with
      */
-    public PatchProcessInflammation(PatchCellCART c) {
-        super(c);
-        this.loc = c.getLocation();
-        this.cell = c;
-        this.pop = c.getPop();
-        this.volume = c.getVolume();
+    public PatchProcessInflammation(PatchCellCART cell) {
+        super(cell);
+        this.loc = cell.getLocation();
+        this.cell = cell;
+        this.pop = cell.getPop();
+        this.volume = cell.getVolume();
         this.iL2Ticker = 0;
         this.activeTicker = 0;
 
@@ -140,6 +140,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         this.iL2Receptors = parameters.getDouble("inflammation/IL2_RECEPTORS");
         extIL2 = 0;
 
+        // Initial amounts of each species, all in molecules/cell.
         amts = new double[NUM_COMPONENTS];
         amts[IL2_INT_TOTAL] = 0;
         amts[IL2R_TOTAL] = iL2Receptors;
@@ -309,9 +310,9 @@ public abstract class PatchProcessInflammation extends PatchProcess {
     public static PatchProcess make(PatchCell cell, String version) {
         switch (version.toUpperCase()) {
             case "CD4":
-                throw new UnsupportedOperationException();
+                return new PatchProcessInflammationCD4((PatchCellCART) cell);
             case "CD8":
-                throw new UnsupportedOperationException();
+                return new PatchProcessInflammationCD8((PatchCellCART) cell);
             default:
                 return null;
         }

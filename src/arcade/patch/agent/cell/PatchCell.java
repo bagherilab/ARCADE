@@ -18,11 +18,13 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModuleApoptosis;
+import arcade.patch.agent.module.PatchModuleCytotoxicity;
 import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleNecrosis;
 import arcade.patch.agent.module.PatchModuleProliferation;
 import arcade.patch.agent.module.PatchModuleQuiescence;
 import arcade.patch.agent.module.PatchModuleSenescence;
+import arcade.patch.agent.module.PatchModuleStimulation;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
@@ -331,6 +333,27 @@ public abstract class PatchCell implements Cell {
         return isStopped;
     }
 
+    /**
+     * Makes the specified {@link Process} object.
+     *
+     * @param domain the process domain
+     * @param version the process version
+     * @return the process instance
+     */
+    public Process makeProcess(ProcessDomain domain, String version) {
+        switch ((Domain) domain) {
+            case METABOLISM:
+                return PatchProcessMetabolism.make(this, version);
+            case SIGNALING:
+                return PatchProcessSignaling.make(this, version);
+            case INFLAMMATION:
+                return PatchProcessInflammation.make(this, version);
+            case UNDEFINED:
+            default:
+                return null;
+        }
+    }
+
     @Override
     public void setState(CellState state) {
         this.state = state;
@@ -355,34 +378,15 @@ public abstract class PatchCell implements Cell {
             case SENESCENT:
                 module = new PatchModuleSenescence(this);
                 break;
-            case CYTOTOXIC:
-                throw new UnsupportedOperationException();
             case STIMULATORY:
-                throw new UnsupportedOperationException();
+                module = new PatchModuleStimulation(this);
+                break;
+            case CYTOTOXIC:
+                module = new PatchModuleCytotoxicity(this);
+                break;
             default:
                 module = null;
                 break;
-        }
-    }
-
-    /**
-     * Makes the specified {@link Process} object.
-     *
-     * @param domain the process domain
-     * @param version the process version
-     * @return the process instance
-     */
-    public Process makeProcess(ProcessDomain domain, String version) {
-        switch ((Domain) domain) {
-            case METABOLISM:
-                return PatchProcessMetabolism.make(this, version);
-            case SIGNALING:
-                return PatchProcessSignaling.make(this, version);
-            case INFLAMMATION:
-                return PatchProcessInflammation.make(this, version);
-            case UNDEFINED:
-            default:
-                return null;
         }
     }
 
