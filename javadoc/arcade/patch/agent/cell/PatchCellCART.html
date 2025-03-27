@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -138,6 +138,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt>All Implemented Interfaces:</dt>
 <dd><code><a href="../../../core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code>, <code>java.io.Serializable</code>, <code>sim.engine.Steppable</code></dd>
 </dl>
+<dl>
+<dt>Direct Known Subclasses:</dt>
+<dd><code><a href="PatchCellCARTCD8.html" title="class in arcade.patch.agent.cell">PatchCellCARTCD8</a></code></dd>
+</dl>
 <hr>
 <pre>public abstract class <span class="typeNameLabel">PatchCellCART</span>
 extends <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a></pre>
@@ -227,59 +231,73 @@ extends <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchC
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>protected <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#boundTarget">boundTarget</a></span></code></th>
+<td class="colLast">
+<div class="block">Target cell that current T cell is bound to.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>protected double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#carAffinity">carAffinity</a></span></code></th>
 <td class="colLast">
 <div class="block">binding affinity for CAR receptor.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#carAlpha">carAlpha</a></span></code></th>
 <td class="colLast">
 <div class="block">tuning factor for CAR binding.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#carBeta">carBeta</a></span></code></th>
 <td class="colLast">
 <div class="block">tuning factor for CAR binding.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#cars">cars</a></span></code></th>
 <td class="colLast">
 <div class="block">number of CARs on T cell surface.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#contactFraction">contactFraction</a></span></code></th>
 <td class="colLast">
 <div class="block">fraction of cell surface that contacts when binding.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#exhaustedFraction">exhaustedFraction</a></span></code></th>
 <td class="colLast">
 <div class="block">Fraction of exhausted cells that become apoptotic.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#lastActiveTicker">lastActiveTicker</a></span></code></th>
 <td class="colLast">
 <div class="block">simulation time since T cell was last activated.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#maxAntigenBinding">maxAntigenBinding</a></span></code></th>
 <td class="colLast">
 <div class="block">max antigens threshold for T cell exhaustion.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#MINUTES_IN_DAY">MINUTES_IN_DAY</a></span></code></th>
+<td class="colLast">
+<div class="block">Constant for amount of minutes in a day.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -474,6 +492,13 @@ extends <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchC
 </td>
 </tr>
 <tr id="i9" class="rowColor">
+<td class="colFirst"><code><a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoundTarget()">getBoundTarget</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Returns bound cell.</div>
+</td>
+</tr>
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>private sim.util.Bag</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#grabAllTissueNeighbors(arcade.patch.env.grid.PatchGrid,arcade.patch.env.location.PatchLocation)">grabAllTissueNeighbors</a></span>&#8203;(<a href="../../env/grid/PatchGrid.html" title="class in arcade.patch.env.grid">PatchGrid</a>&nbsp;grid,
                       <a href="../../env/location/PatchLocation.html" title="class in arcade.patch.env.location">PatchLocation</a>&nbsp;loc)</code></th>
@@ -481,7 +506,7 @@ extends <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchC
 <div class="block">Returns all tissue cells in neighborhood and current location.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>private void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#grabTissueAgents(sim.util.Bag,sim.util.Bag)">grabTissueAgents</a></span>&#8203;(sim.util.Bag&nbsp;tissueAgents,
                 sim.util.Bag&nbsp;possibleAgents)</code></th>
@@ -489,7 +514,14 @@ extends <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchC
 <div class="block">Adds only tissue cells to the provided bag.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i12" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#unbind()">unbind</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Sets binding flag to unbound and binding target to null.</div>
+</td>
+</tr>
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>private void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateSelfReceptors()">updateSelfReceptors</a></span>()</code></th>
 <td class="colLast">
@@ -541,6 +573,20 @@ extends <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchC
 <!--   -->
 </a>
 <h3>Field Detail</h3>
+<a id="MINUTES_IN_DAY">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>MINUTES_IN_DAY</h4>
+<pre>public static final&nbsp;int MINUTES_IN_DAY</pre>
+<div class="block">Constant for amount of minutes in a day.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../constant-values.html#arcade.patch.agent.cell.PatchCellCART.MINUTES_IN_DAY">Constant Field Values</a></dd>
+</dl>
+</li>
+</ul>
 <a id="activated">
 <!--   -->
 </a>
@@ -734,11 +780,21 @@ extends <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchC
 <a id="proliferativeFraction">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>proliferativeFraction</h4>
 <pre>protected final&nbsp;double proliferativeFraction</pre>
 <div class="block">Fraction of proliferative cells that become apoptotic.</div>
+</li>
+</ul>
+<a id="boundTarget">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>boundTarget</h4>
+<pre>protected&nbsp;<a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a> boundTarget</pre>
+<div class="block">Target cell that current T cell is bound to.</div>
 </li>
 </ul>
 </li>
@@ -1028,11 +1084,35 @@ extends <a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchC
 <a id="updateSelfReceptors()">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>updateSelfReceptors</h4>
 <pre class="methodSignature">private&nbsp;void&nbsp;updateSelfReceptors()</pre>
 <div class="block">Randomly increases number of self receptors after CAR binding.</div>
+</li>
+</ul>
+<a id="getBoundTarget()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getBoundTarget</h4>
+<pre class="methodSignature">public&nbsp;<a href="PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a>&nbsp;getBoundTarget()</pre>
+<div class="block">Returns bound cell.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the bound cell</dd>
+</dl>
+</li>
+</ul>
+<a id="unbind()">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>unbind</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;unbind()</pre>
+<div class="block">Sets binding flag to unbound and binding target to null.</div>
 </li>
 </ul>
 </li>
