@@ -156,7 +156,7 @@ public class PatchCellCARTCD8Test {
     }
 
     @Test
-    public void step_whenDivisionPotentialMet_setsStateToSenescent()
+    public void step_whenDivisionPotentialMet_setsStateToApoptotic()
             throws NoSuchFieldException, IllegalAccessException {
         Field div = PatchCell.class.getDeclaredField("divisions");
         div.setAccessible(true);
@@ -166,6 +166,21 @@ public class PatchCellCARTCD8Test {
         cell.step(sim);
 
         assertTrue(cell.getState() == State.APOPTOTIC);
+        assertEquals(AntigenFlag.UNBOUND, cell.getBindingFlag());
+        assertFalse(cell.getActivationStatus());
+    }
+
+    @Test
+    public void step_whenDivisionPotentialMet_setsStateToSenescent()
+            throws NoSuchFieldException, IllegalAccessException {
+        Field div = PatchCell.class.getDeclaredField("divisions");
+        div.setAccessible(true);
+        div.set(cell, cell.divisionPotential);
+        when(sim.random.nextDouble()).thenReturn(0.49);
+
+        cell.step(sim);
+
+        assertTrue(cell.getState() == State.SENESCENT);
         assertEquals(AntigenFlag.UNBOUND, cell.getBindingFlag());
         assertFalse(cell.getActivationStatus());
     }
