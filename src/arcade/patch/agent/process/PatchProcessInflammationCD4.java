@@ -14,22 +14,22 @@ import arcade.patch.agent.cell.PatchCellCART;
  */
 public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
 
-    /** Rate of IL-2 production due to antigen-induced activation */
-    private final double IL2_PROD_RATE_ACTIVE;
+    /** Rate of IL-2 production due to antigen-induced activation [molecules IL-2/cell/min]. */
+    private final double IL2ProdRateActive = 293.27;
 
-    /** Rate of IL-2 production due to IL-2 feedback */
-    private final double IL2_PROD_RATE_IL2;
+    /** Rate of IL-2 production due to IL-2 feedback [molecules IL-2/cell/min] */
+    private final double IL2ProdRateIl2 = 16.62;
 
-    /** Delay in IL-2 synthesis after antigen-induced activation */
-    private final int IL2_SYNTHESIS_DELAY;
+    /** Delay in IL-2 synthesis after antigen-induced activation. */
+    private final int IL2SynthesisDelay;
 
-    /** Total rate of IL-2 production */
+    /** Total rate of IL-2 production. */
     private double IL2ProdRate;
 
-    /** Total IL-2 produced in step */
+    /** Total IL-2 produced in step. */
     private double IL2Produced;
 
-    /** Amount of IL-2 bound in past being used for current IL-2 production calculation */
+    /** Amount of IL-2 bound in past being used for current IL-2 production calculation. */
     private double priorIL2prod;
 
     /**
@@ -44,9 +44,7 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
 
         // Set parameters.
         Parameters parameters = cell.getParameters();
-        this.IL2_PROD_RATE_IL2 = parameters.getDouble("inflammation/IL2_PROD_RATE_IL2");
-        this.IL2_PROD_RATE_ACTIVE = parameters.getDouble("inflammation/IL2_PROD_RATE_ACTIVE");
-        this.IL2_SYNTHESIS_DELAY = parameters.getInt("inflammation/IL2_SYNTHESIS_DELAY");
+        this.IL2SynthesisDelay = parameters.getInt("inflammation/IL2_SYNTHESIS_DELAY");
         IL2ProdRate = 0;
     }
 
@@ -54,17 +52,17 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
     public void stepProcess(MersenneTwisterFast random, Simulation sim) {
 
         // Determine IL-2 production rate as a function of IL-2 bound.
-        int prodIndex = (iL2Ticker % boundArray.length) - IL2_SYNTHESIS_DELAY;
+        int prodIndex = (iL2Ticker % boundArray.length) - IL2SynthesisDelay;
         if (prodIndex < 0) {
             prodIndex += boundArray.length;
         }
         priorIL2prod = boundArray[prodIndex];
-        IL2ProdRate = IL2_PROD_RATE_IL2 * (priorIL2prod / iL2Receptors);
+        IL2ProdRate = IL2ProdRateIl2 * (priorIL2prod / iL2Receptors);
 
         // Add IL-2 production rate dependent on antigen-induced
         // cell activation if cell is activated.
-        if (active && activeTicker >= IL2_SYNTHESIS_DELAY) {
-            IL2ProdRate += IL2_PROD_RATE_ACTIVE;
+        if (active && activeTicker >= IL2SynthesisDelay) {
+            IL2ProdRate += IL2ProdRateActive;
         }
 
         // Produce IL-2 to environment.
