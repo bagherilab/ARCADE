@@ -2,8 +2,6 @@ package arcade.patch.agent.cell;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import arcade.patch.agent.module.*;
 import sim.engine.Schedule;
 import sim.engine.Stoppable;
 import sim.util.Bag;
@@ -19,6 +17,7 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
+import arcade.patch.agent.module.*;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
