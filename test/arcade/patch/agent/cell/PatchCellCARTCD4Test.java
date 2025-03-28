@@ -27,13 +27,17 @@ import static arcade.patch.util.PatchEnums.State;
 public class PatchCellCARTCD4Test {
 
     private Parameters parameters;
+
     private PatchLocation location;
+
     private PatchCellContainer container;
+
     private PatchCellCARTCD4 cell;
+
     private PatchSimulation sim;
 
     @BeforeEach
-    public void setUp() throws NoSuchFieldException, IllegalAccessException {
+    public final void setUp() throws NoSuchFieldException, IllegalAccessException {
         parameters = spy(new Parameters(new MiniBox(), null, null));
         location = mock(PatchLocation.class);
 
