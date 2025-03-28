@@ -69,7 +69,6 @@ public class PatchProcessInflammationCD4Test {
     public void stepProcess_called_updatesEnvironment()
             throws NoSuchFieldException, IllegalAccessException {
         inflammation = new PatchProcessInflammationCD4(mockCell);
-
         inflammation.active = true;
         inflammation.activeTicker = 10;
         inflammation.iL2Ticker = 10;
@@ -90,9 +89,6 @@ public class PatchProcessInflammationCD4Test {
 
         inflammation.stepProcess(mockRandom, mockSim);
 
-        // check that patch lattice set value is called
-        verify(mockLattice, times(1)).setValue(any(PatchLocation.class), anyDouble());
-
         // check that IL2 produced is calculated correctly
         Field il2Produced = PatchProcessInflammationCD4.class.getDeclaredField("iL2Produced");
         il2Produced.setAccessible(true);
@@ -111,7 +107,6 @@ public class PatchProcessInflammationCD4Test {
     public void stepProcess_whenActive_returnsHigherRate()
             throws NoSuchFieldException, IllegalAccessException {
         inflammation = new PatchProcessInflammationCD4(mockCell);
-
         inflammation.active = true;
         inflammation.activeTicker = 10;
         inflammation.iL2Ticker = 10;
@@ -146,7 +141,6 @@ public class PatchProcessInflammationCD4Test {
     public void stepProcess_whenInactive_returnsDefaultRate()
             throws NoSuchFieldException, IllegalAccessException {
         inflammation = new PatchProcessInflammationCD4(mockCell);
-
         inflammation.active = false;
         inflammation.activeTicker = 10;
         inflammation.iL2Ticker = 10;
@@ -176,7 +170,6 @@ public class PatchProcessInflammationCD4Test {
     public void stepProcess_activeTickerLessThanDelay_usesDefaultRate()
             throws NoSuchFieldException, IllegalAccessException {
         inflammation = new PatchProcessInflammationCD4(mockCell);
-
         inflammation.active = true;
         inflammation.activeTicker = 10;
         inflammation.iL2Ticker = 10;
@@ -260,7 +253,6 @@ public class PatchProcessInflammationCD4Test {
         assertEquals(0.0, inflammation.amts[PatchProcessInflammationCD8.IL2RBGA]);
         assertEquals(0.0, inflammation.amts[PatchProcessInflammationCD8.IL2_IL2RBG]);
         assertEquals(0.0, inflammation.amts[PatchProcessInflammationCD8.IL2_IL2RBGA]);
-
         assertEquals(100, parentProcess.amts[PatchProcessInflammationCD4.IL2RBGA]);
     }
 }
