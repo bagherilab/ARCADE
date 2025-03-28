@@ -34,7 +34,7 @@ public class PatchProcessInflammationCD4Test {
     private PatchLocation mockLocation;
 
     @BeforeEach
-    public void setUp() {
+    public final void setUp() {
         mockCell = Mockito.mock(PatchCellCART.class);
         mockParameters = Mockito.mock(Parameters.class);
         mockSim = Mockito.mock(Simulation.class);
@@ -55,7 +55,8 @@ public class PatchProcessInflammationCD4Test {
     }
 
     @Test
-    public void constructor_called_setsParameters() throws NoSuchFieldException, IllegalAccessException {
+    public void constructor_called_setsParameters()
+            throws NoSuchFieldException, IllegalAccessException {
         inflammation = new PatchProcessInflammationCD4(mockCell);
         assertNotNull(inflammation);
 
