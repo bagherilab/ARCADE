@@ -108,7 +108,7 @@ public class PatchCellCARTCD4 extends PatchCellCART {
 
         // Change state from undefined.
         if (super.state == State.UNDEFINED || super.state == State.PAUSED) {
-            if (divisions == 0) {
+            if (divisions == divisionPotential) {
                 if (simstate.random.nextDouble() > super.senescentFraction) {
                     super.setState(State.APOPTOTIC);
                 } else {
