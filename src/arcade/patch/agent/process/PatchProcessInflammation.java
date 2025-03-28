@@ -309,7 +309,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
     public static PatchProcess make(PatchCell cell, String version) {
         switch (version.toUpperCase()) {
             case "CD4":
-                throw new UnsupportedOperationException();
+                return new PatchProcessInflammationCD4((PatchCellCART) cell);
             case "CD8":
                 return new PatchProcessInflammationCD8((PatchCellCART) cell);
             default:
