@@ -11,6 +11,7 @@ import arcade.patch.util.PatchEnums.AntigenFlag;
 import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.State;
 
+/** Extension of {@link PatchCellCART} for CD4 CART-cells with selected module versions. */
 public class PatchCellCARTCD4 extends PatchCellCART {
 
     /**
@@ -70,9 +71,13 @@ public class PatchCellCARTCD4 extends PatchCellCART {
         // Increase time since last active ticker
         super.lastActiveTicker++;
         if (super.lastActiveTicker != 0 && super.lastActiveTicker % MINUTES_IN_DAY == 0) {
-            if (super.boundCARAntigensCount != 0) super.boundCARAntigensCount--;
+            if (super.boundCARAntigensCount != 0) {
+                super.boundCARAntigensCount--;
+            }
         }
-        if (super.lastActiveTicker / MINUTES_IN_DAY >= 7) super.activated = false;
+        if (super.lastActiveTicker / MINUTES_IN_DAY >= 7) {
+            super.activated = false;
+        }
 
         // Step metabolism process.
         super.processes.get(Domain.METABOLISM).step(simstate.random, sim);
