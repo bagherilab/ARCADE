@@ -70,6 +70,7 @@ public class PatchModuleCytotoxicityTest {
         action.step(randomMock, sim);
 
         verify(mockTarget).setState(State.APOPTOTIC);
+        verify(mockCell).setState(State.UNDEFINED);
         verify(mockInflammation).setInternal("granzyme", 0.0);
     }
 }
