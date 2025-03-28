@@ -55,7 +55,7 @@ public class PatchProcessInflammationCD4Test {
     }
 
     @Test
-    public void constructor_setsParameters() throws NoSuchFieldException, IllegalAccessException {
+    public void constructor_called_setsParameters() throws NoSuchFieldException, IllegalAccessException {
         inflammation = new PatchProcessInflammationCD4(mockCell);
         assertNotNull(inflammation);
 
@@ -66,7 +66,7 @@ public class PatchProcessInflammationCD4Test {
     }
 
     @Test
-    public void stepProcess_updatesEnvironment()
+    public void stepProcess_called_updatesEnvironment()
             throws NoSuchFieldException, IllegalAccessException {
         inflammation = new PatchProcessInflammationCD4(mockCell);
 
