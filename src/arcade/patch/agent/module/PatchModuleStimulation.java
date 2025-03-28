@@ -52,7 +52,9 @@ public class PatchModuleStimulation extends PatchModule {
 
         if (ticker == 0) {
             target.setState(PatchEnums.State.QUIESCENT);
-        } else if (ticker >= timeDelay) {
+        }
+
+        if (ticker >= timeDelay) {
             ((PatchCellCART) cell).unbind();
             cell.setState(PatchEnums.State.UNDEFINED);
         }
