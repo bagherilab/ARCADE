@@ -16,7 +16,7 @@ import arcade.patch.util.PatchEnums;
  * is bound to, and sets the cell state back to undefined.
  */
 public class PatchModuleStimulation extends PatchModule {
-    /** Target cell cytotoxic CAR T-cell is bound to */
+    /** Target cell thgt CAR T-cell is bound to. */
     PatchCellTissue target;
 
     /** Time delay before calling the action [min]. */
@@ -24,12 +24,6 @@ public class PatchModuleStimulation extends PatchModule {
 
     /** Ticker to keep track of the time delay [min]. */
     private int ticker;
-
-    /** Average time that T cell is bound to target [min]. */
-    private double boundTime;
-
-    /** Range in bound time [min]. */
-    private double boundRange;
 
     /**
      * Creates a {@code PatchModuleStimulation} for the given {@link PatchCellCART}.
@@ -40,9 +34,7 @@ public class PatchModuleStimulation extends PatchModule {
         super(c);
         this.target = (PatchCellTissue) ((PatchCellCART) c).getBoundTarget();
         Parameters parameters = c.getParameters();
-        this.boundTime = parameters.getInt("BOUND_TIME");
-        this.boundRange = parameters.getInt("BOUND_RANGE");
-        this.timeDelay = 0;
+        this.timeDelay = parameters.getInt("BOUND_TIME");
         this.ticker = 0;
     }
 
@@ -59,8 +51,6 @@ public class PatchModuleStimulation extends PatchModule {
         }
 
         if (ticker == 0) {
-            this.timeDelay =
-                    (int) (boundTime + Math.round((boundRange * (2 * random.nextInt() - 1))));
             target.setState(PatchEnums.State.QUIESCENT);
         } else if (ticker >= timeDelay) {
             ((PatchCellCART) cell).unbind();
