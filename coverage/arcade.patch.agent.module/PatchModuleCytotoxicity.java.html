@@ -68,13 +68,15 @@ public class PatchModuleCytotoxicity extends PatchModule {
 <span class="fc" id="L68">                tissueCell.setState(State.APOPTOTIC);</span>
 <span class="fc" id="L69">                granzyme--;</span>
 <span class="fc" id="L70">                inflammation.setInternal(&quot;granzyme&quot;, granzyme);</span>
-<span class="fc" id="L71">            }</span>
-<span class="nc bnc" id="L72" title="All 2 branches missed.">        } else if (ticker &gt;= timeDelay) {</span>
-<span class="nc" id="L73">            ((PatchCellCART) cell).unbind();</span>
-<span class="nc" id="L74">            cell.setState(State.UNDEFINED);</span>
+            }
         }
 
-<span class="fc" id="L77">        ticker++;</span>
-<span class="fc" id="L78">    }</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        if (ticker &gt;= timeDelay) {</span>
+<span class="fc" id="L75">            ((PatchCellCART) cell).unbind();</span>
+<span class="fc" id="L76">            cell.setState(State.UNDEFINED);</span>
+        }
+
+<span class="fc" id="L79">        ticker++;</span>
+<span class="fc" id="L80">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
