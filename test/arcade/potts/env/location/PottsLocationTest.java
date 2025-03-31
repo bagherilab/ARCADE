@@ -1637,9 +1637,6 @@ public class PottsLocationTest {
         PottsLocationMock loc = new PottsLocationMock(voxelListAB);
         PottsLocationMock spyLocation = spy(loc);
         spyLocation.split(randomDoubleZero, mockPlane);
-        verify(spyLocation).split(
-                randomDoubleZero,
-                mockPlane,
-                .5);
+        verify(spyLocation).split(randomDoubleZero, mockPlane, .5);
     }
 }
