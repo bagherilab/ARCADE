@@ -1,5 +1,6 @@
 package arcade.patch.agent.module;
 
+import java.lang.reflect.Field;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
@@ -72,5 +73,18 @@ public class PatchModuleCytotoxicityTest {
         verify(mockTarget).setState(State.APOPTOTIC);
         verify(mockCell).setState(State.UNDEFINED);
         verify(mockInflammation).setInternal("granzyme", 0.0);
+    }
+
+    @Test
+    public void step_timeDelayNotReached_doesNotChangeCell()
+            throws IllegalAccessException, NoSuchFieldException {
+        Field delay = PatchModuleCytotoxicity.class.getDeclaredField("timeDelay");
+        delay.setAccessible(true);
+        delay.set(action, 1);
+
+        action.step(randomMock, sim);
+
+        verify(mockCell, never()).setState(any());
+        verify(mockCell, never()).unbind();
     }
 }
