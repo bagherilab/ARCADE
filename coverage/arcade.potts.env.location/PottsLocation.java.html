@@ -346,6 +346,20 @@ public abstract class PottsLocation implements Location {
      * Splits location voxels into two lists.
      *
      * &lt;p&gt;The location is split along the provided plane. One of the splits is assigned to the
+     * current location and the other is returned with the default split probability.
+     *
+     * @param random the seeded random number generator
+     * @param plane the plane of the split
+     * @return a location with the split voxels
+     */
+    public Location split(MersenneTwisterFast random, Plane plane) {
+<span class="fc" id="L356">        return split(random, plane, DEFAULT_SPLIT_SELECTION_PROBABILITY);</span>
+    }
+
+    /**
+     * Splits location voxels into two lists.
+     *
+     * &lt;p&gt;The location is split along the provided plane. One of the splits is assigned to the
      * current location and the other is returned with the given probability.
      *
      * &lt;p&gt;If the plane of division is through the center of the location, the resulting lists are
@@ -360,21 +374,21 @@ public abstract class PottsLocation implements Location {
      */
     public Location split(MersenneTwisterFast random, Plane plane, Double probability) {
         // Initialize lists of split voxels
-<span class="fc" id="L363">        ArrayList&lt;Voxel&gt; voxelsA = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L364">        ArrayList&lt;Voxel&gt; voxelsB = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L377">        ArrayList&lt;Voxel&gt; voxelsA = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L378">        ArrayList&lt;Voxel&gt; voxelsB = new ArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L366">        splitVoxels(plane, voxels, voxelsA, voxelsB, random);</span>
-<span class="fc" id="L367">        connectVoxels(voxelsA, voxelsB, this, random);</span>
+<span class="fc" id="L380">        splitVoxels(plane, voxels, voxelsA, voxelsB, random);</span>
+<span class="fc" id="L381">        connectVoxels(voxelsA, voxelsB, this, random);</span>
 
-<span class="fc" id="L369">        Voxel locCenter = getCenter();</span>
-<span class="pc bpc" id="L370" title="1 of 2 branches missed.">        if (plane.referencePoint.equals(locCenter)) {</span>
-<span class="nc" id="L371">            balanceVoxels(voxelsA, voxelsB, this, random);</span>
+<span class="fc" id="L383">        Voxel locCenter = getCenter();</span>
+<span class="pc bpc" id="L384" title="1 of 2 branches missed.">        if (plane.getReferencePoint().equals(locCenter)) {</span>
+<span class="nc" id="L385">            balanceVoxels(voxelsA, voxelsB, this, random);</span>
         }
 
         // Use the user-specified or default probability to determine the split
-<span class="fc bfc" id="L375" title="All 2 branches covered.">        return random.nextDouble() &lt; probability</span>
-<span class="fc" id="L376">                ? separateVoxels(voxelsA, voxelsB, random)</span>
-<span class="fc" id="L377">                : separateVoxels(voxelsB, voxelsA, random);</span>
+<span class="fc bfc" id="L389" title="All 2 branches covered.">        return random.nextDouble() &lt; probability</span>
+<span class="fc" id="L390">                ? separateVoxels(voxelsA, voxelsB, random)</span>
+<span class="fc" id="L391">                : separateVoxels(voxelsB, voxelsA, random);</span>
     }
 
     /**
@@ -386,15 +400,15 @@ public abstract class PottsLocation implements Location {
      * @return the center voxel, returns {@code null} if there are no voxels
      */
     public Voxel getCenter() {
-<span class="fc bfc" id="L389" title="All 2 branches covered.">        if (voxels.size() == 0) {</span>
-<span class="fc" id="L390">            return null;</span>
+<span class="fc bfc" id="L403" title="All 2 branches covered.">        if (voxels.size() == 0) {</span>
+<span class="fc" id="L404">            return null;</span>
         }
 
-<span class="fc" id="L393">        int x = (int) Math.round(cx);</span>
-<span class="fc" id="L394">        int y = (int) Math.round(cy);</span>
-<span class="fc" id="L395">        int z = (int) Math.round(cz);</span>
+<span class="fc" id="L407">        int x = (int) Math.round(cx);</span>
+<span class="fc" id="L408">        int y = (int) Math.round(cy);</span>
+<span class="fc" id="L409">        int z = (int) Math.round(cz);</span>
 
-<span class="fc" id="L397">        return new Voxel(x, y, z);</span>
+<span class="fc" id="L411">        return new Voxel(x, y, z);</span>
     }
 
     /**
@@ -418,34 +432,34 @@ public abstract class PottsLocation implements Location {
      * @return the offset voxel, returns {@code null} if there are no voxels
      */
     public Voxel getOffset(ArrayList&lt;Integer&gt; offsets) {
-<span class="fc bfc" id="L421" title="All 2 branches covered.">        if (voxels.size() == 0) {</span>
-<span class="fc" id="L422">            return null;</span>
+<span class="fc bfc" id="L435" title="All 2 branches covered.">        if (voxels.size() == 0) {</span>
+<span class="fc" id="L436">            return null;</span>
         }
 
-<span class="fc bfc" id="L425" title="All 6 branches covered.">        if (offsets == null || offsets.size() == 0 || offsets.size() &gt; 3) {</span>
-<span class="fc" id="L426">            throw new IllegalArgumentException(</span>
+<span class="fc bfc" id="L439" title="All 6 branches covered.">        if (offsets == null || offsets.size() == 0 || offsets.size() &gt; 3) {</span>
+<span class="fc" id="L440">            throw new IllegalArgumentException(</span>
                     &quot;Offsets must be an ArrayList containing exactly 1, 2 or 3 integers.&quot;);
         }
 
-<span class="fc bfc" id="L430" title="All 2 branches covered.">        if (offsets.size() == 1) {</span>
-<span class="fc" id="L431">            offsets.add(offsets.get(0));</span>
-<span class="fc" id="L432">            offsets.add(offsets.get(1));</span>
-<span class="fc bfc" id="L433" title="All 2 branches covered.">        } else if (offsets.size() == 2) {</span>
-<span class="fc" id="L434">            offsets.add(0);</span>
+<span class="fc bfc" id="L444" title="All 2 branches covered.">        if (offsets.size() == 1) {</span>
+<span class="fc" id="L445">            offsets.add(offsets.get(0));</span>
+<span class="fc" id="L446">            offsets.add(offsets.get(1));</span>
+<span class="fc bfc" id="L447" title="All 2 branches covered.">        } else if (offsets.size() == 2) {</span>
+<span class="fc" id="L448">            offsets.add(0);</span>
         }
 
-<span class="fc" id="L437">        int minX = voxels.stream().mapToInt(voxel -&gt; voxel.x).min().getAsInt();</span>
-<span class="fc" id="L438">        int maxX = voxels.stream().mapToInt(voxel -&gt; voxel.x).max().getAsInt();</span>
-<span class="fc" id="L439">        int minY = voxels.stream().mapToInt(voxel -&gt; voxel.y).min().getAsInt();</span>
-<span class="fc" id="L440">        int maxY = voxels.stream().mapToInt(voxel -&gt; voxel.y).max().getAsInt();</span>
-<span class="fc" id="L441">        int minZ = voxels.stream().mapToInt(voxel -&gt; voxel.z).min().getAsInt();</span>
-<span class="fc" id="L442">        int maxZ = voxels.stream().mapToInt(voxel -&gt; voxel.z).max().getAsInt();</span>
+<span class="fc" id="L451">        int minX = voxels.stream().mapToInt(voxel -&gt; voxel.x).min().getAsInt();</span>
+<span class="fc" id="L452">        int maxX = voxels.stream().mapToInt(voxel -&gt; voxel.x).max().getAsInt();</span>
+<span class="fc" id="L453">        int minY = voxels.stream().mapToInt(voxel -&gt; voxel.y).min().getAsInt();</span>
+<span class="fc" id="L454">        int maxY = voxels.stream().mapToInt(voxel -&gt; voxel.y).max().getAsInt();</span>
+<span class="fc" id="L455">        int minZ = voxels.stream().mapToInt(voxel -&gt; voxel.z).min().getAsInt();</span>
+<span class="fc" id="L456">        int maxZ = voxels.stream().mapToInt(voxel -&gt; voxel.z).max().getAsInt();</span>
 
-<span class="fc" id="L444">        int offsetX = (int) Math.round(minX + (maxX - minX) * (offsets.get(0) / 100.0));</span>
-<span class="fc" id="L445">        int offsetY = (int) Math.round(minY + (maxY - minY) * (offsets.get(1) / 100.0));</span>
-<span class="fc" id="L446">        int offsetZ = (int) Math.round(minZ + (maxZ - minZ) * (offsets.get(2) / 100.0));</span>
+<span class="fc" id="L458">        int offsetX = (int) Math.round(minX + (maxX - minX) * (offsets.get(0) / 100.0));</span>
+<span class="fc" id="L459">        int offsetY = (int) Math.round(minY + (maxY - minY) * (offsets.get(1) / 100.0));</span>
+<span class="fc" id="L460">        int offsetZ = (int) Math.round(minZ + (maxZ - minZ) * (offsets.get(2) / 100.0));</span>
 
-<span class="fc" id="L448">        return new Voxel(offsetX, offsetY, offsetZ);</span>
+<span class="fc" id="L462">        return new Voxel(offsetX, offsetY, offsetZ);</span>
     }
 
     /**
@@ -457,7 +471,7 @@ public abstract class PottsLocation implements Location {
      * @return the location centroid
      */
     public double[] getCentroid() {
-<span class="fc" id="L460">        return new double[] {cx, cy, cz};</span>
+<span class="fc" id="L474">        return new double[] {cx, cy, cz};</span>
     }
 
     /**
@@ -470,21 +484,21 @@ public abstract class PottsLocation implements Location {
      * @return the location centroid
      */
     public double[] getCentroid(Region region) {
-<span class="fc" id="L473">        return getCentroid();</span>
+<span class="fc" id="L487">        return getCentroid();</span>
     }
 
     /** Calculates the exact center of the location. */
     void calculateCenter() {
-<span class="fc bfc" id="L478" title="All 2 branches covered.">        if (voxels.size() == 0) {</span>
-<span class="fc" id="L479">            cx = 0;</span>
-<span class="fc" id="L480">            cy = 0;</span>
-<span class="fc" id="L481">            cx = 0;</span>
+<span class="fc bfc" id="L492" title="All 2 branches covered.">        if (voxels.size() == 0) {</span>
+<span class="fc" id="L493">            cx = 0;</span>
+<span class="fc" id="L494">            cy = 0;</span>
+<span class="fc" id="L495">            cx = 0;</span>
         } else {
-<span class="fc" id="L483">            cx = voxels.stream().mapToDouble(voxel -&gt; voxel.x).sum() / voxels.size();</span>
-<span class="fc" id="L484">            cy = voxels.stream().mapToDouble(voxel -&gt; voxel.y).sum() / voxels.size();</span>
-<span class="fc" id="L485">            cz = voxels.stream().mapToDouble(voxel -&gt; voxel.z).sum() / voxels.size();</span>
+<span class="fc" id="L497">            cx = voxels.stream().mapToDouble(voxel -&gt; voxel.x).sum() / voxels.size();</span>
+<span class="fc" id="L498">            cy = voxels.stream().mapToDouble(voxel -&gt; voxel.y).sum() / voxels.size();</span>
+<span class="fc" id="L499">            cz = voxels.stream().mapToDouble(voxel -&gt; voxel.z).sum() / voxels.size();</span>
         }
-<span class="fc" id="L487">    }</span>
+<span class="fc" id="L501">    }</span>
 
     /**
      * Updates the centroid of the location.
@@ -495,16 +509,16 @@ public abstract class PottsLocation implements Location {
      * @param change the direction of change (add = +1, remove = -1)
      */
     void updateCenter(int x, int y, int z, int change) {
-<span class="fc bfc" id="L498" title="All 2 branches covered.">        if (voxels.size() == 0) {</span>
-<span class="fc" id="L499">            cx = 0;</span>
-<span class="fc" id="L500">            cy = 0;</span>
-<span class="fc" id="L501">            cz = 0;</span>
+<span class="fc bfc" id="L512" title="All 2 branches covered.">        if (voxels.size() == 0) {</span>
+<span class="fc" id="L513">            cx = 0;</span>
+<span class="fc" id="L514">            cy = 0;</span>
+<span class="fc" id="L515">            cz = 0;</span>
         } else {
-<span class="fc" id="L503">            cx = (cx * (volume - change) + change * x) / volume;</span>
-<span class="fc" id="L504">            cy = (cy * (volume - change) + change * y) / volume;</span>
-<span class="fc" id="L505">            cz = (cz * (volume - change) + change * z) / volume;</span>
+<span class="fc" id="L517">            cx = (cx * (volume - change) + change * x) / volume;</span>
+<span class="fc" id="L518">            cy = (cy * (volume - change) + change * y) / volume;</span>
+<span class="fc" id="L519">            cz = (cz * (volume - change) + change * z) / volume;</span>
         }
-<span class="fc" id="L507">    }</span>
+<span class="fc" id="L521">    }</span>
 
     /**
      * Makes a new {@code PottsLocation} with the given voxels.
@@ -593,37 +607,37 @@ public abstract class PottsLocation implements Location {
      * @return the direction of the slice
      */
     Direction getDirection(MersenneTwisterFast random) {
-<span class="fc" id="L596">        HashMap&lt;Direction, Integer&gt; diameters = getDiameters();</span>
-<span class="fc" id="L597">        ArrayList&lt;Direction&gt; directions = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L610">        HashMap&lt;Direction, Integer&gt; diameters = getDiameters();</span>
+<span class="fc" id="L611">        ArrayList&lt;Direction&gt; directions = new ArrayList&lt;&gt;();</span>
 
         // Determine maximum diameter.
         int diameter;
-<span class="fc" id="L601">        int maximumDiameter = 0;</span>
-<span class="fc bfc" id="L602" title="All 2 branches covered.">        for (Direction direction : Direction.values()) {</span>
-<span class="fc" id="L603">            diameter = diameters.getOrDefault(direction, 0);</span>
-<span class="fc bfc" id="L604" title="All 2 branches covered.">            if (diameter &gt; maximumDiameter) {</span>
-<span class="fc" id="L605">                maximumDiameter = diameter;</span>
+<span class="fc" id="L615">        int maximumDiameter = 0;</span>
+<span class="fc bfc" id="L616" title="All 2 branches covered.">        for (Direction direction : Direction.values()) {</span>
+<span class="fc" id="L617">            diameter = diameters.getOrDefault(direction, 0);</span>
+<span class="fc bfc" id="L618" title="All 2 branches covered.">            if (diameter &gt; maximumDiameter) {</span>
+<span class="fc" id="L619">                maximumDiameter = diameter;</span>
             }
         }
 
         // Find all directions with the maximum diameter.
-<span class="fc bfc" id="L610" title="All 2 branches covered.">        for (Direction direction : Direction.values()) {</span>
-<span class="fc" id="L611">            diameter = diameters.getOrDefault(direction, 0);</span>
-<span class="fc bfc" id="L612" title="All 2 branches covered.">            if (diameter &gt;= DIAMETER_RATIO * maximumDiameter) {</span>
-<span class="fc" id="L613">                directions.add(direction);</span>
+<span class="fc bfc" id="L624" title="All 2 branches covered.">        for (Direction direction : Direction.values()) {</span>
+<span class="fc" id="L625">            diameter = diameters.getOrDefault(direction, 0);</span>
+<span class="fc bfc" id="L626" title="All 2 branches covered.">            if (diameter &gt;= DIAMETER_RATIO * maximumDiameter) {</span>
+<span class="fc" id="L627">                directions.add(direction);</span>
             }
         }
 
         // Randomly select one direction with the minimum diameter.
-<span class="fc" id="L618">        Direction d = directions.get(random.nextInt(directions.size()));</span>
+<span class="fc" id="L632">        Direction d = directions.get(random.nextInt(directions.size()));</span>
 
         // Convert diameter direction to slice direction.
-<span class="fc bfc" id="L621" title="All 2 branches covered.">        return (d == Direction.UNDEFINED ? Direction.random(random) : getSlice(d, diameters));</span>
+<span class="fc bfc" id="L635" title="All 2 branches covered.">        return (d == Direction.UNDEFINED ? Direction.random(random) : getSlice(d, diameters));</span>
     }
 
     @Override
     public LocationContainer convert(int id) {
-<span class="fc" id="L626">        return new PottsLocationContainer(id, getCenter(), voxels);</span>
+<span class="fc" id="L640">        return new PottsLocationContainer(id, getCenter(), voxels);</span>
     }
 
     /**
@@ -636,13 +650,13 @@ public abstract class PottsLocation implements Location {
      */
     Location separateVoxels(
             ArrayList&lt;Voxel&gt; voxelsA, ArrayList&lt;Voxel&gt; voxelsB, MersenneTwisterFast random) {
-<span class="fc" id="L639">        voxels.clear();</span>
-<span class="fc" id="L640">        voxels.addAll(voxelsA);</span>
-<span class="fc" id="L641">        volume = voxels.size();</span>
-<span class="fc" id="L642">        surface = calculateSurface();</span>
-<span class="fc" id="L643">        height = calculateHeight();</span>
-<span class="fc" id="L644">        calculateCenter();</span>
-<span class="fc" id="L645">        return makeLocation(voxelsB);</span>
+<span class="fc" id="L653">        voxels.clear();</span>
+<span class="fc" id="L654">        voxels.addAll(voxelsA);</span>
+<span class="fc" id="L655">        volume = voxels.size();</span>
+<span class="fc" id="L656">        surface = calculateSurface();</span>
+<span class="fc" id="L657">        height = calculateHeight();</span>
+<span class="fc" id="L658">        calculateCenter();</span>
+<span class="fc" id="L659">        return makeLocation(voxelsB);</span>
     }
 
     /**
@@ -663,21 +677,21 @@ public abstract class PottsLocation implements Location {
             ArrayList&lt;Voxel&gt; voxelsA,
             ArrayList&lt;Voxel&gt; voxelsB,
             MersenneTwisterFast random) {
-<span class="fc bfc" id="L666" title="All 2 branches covered.">        for (Voxel voxel : voxels) {</span>
-<span class="fc" id="L667">            double distance = plane.signedDistanceToPlane(new Double3D(voxel.x, voxel.y, voxel.z));</span>
-<span class="fc bfc" id="L668" title="All 2 branches covered.">            if (distance &lt; 0) {</span>
-<span class="fc" id="L669">                voxelsA.add(voxel);</span>
-<span class="fc bfc" id="L670" title="All 2 branches covered.">            } else if (distance &gt; 0) {</span>
-<span class="fc" id="L671">                voxelsB.add(voxel);</span>
+<span class="fc bfc" id="L680" title="All 2 branches covered.">        for (Voxel voxel : voxels) {</span>
+<span class="fc" id="L681">            double distance = plane.signedDistanceToPlane(new Double3D(voxel.x, voxel.y, voxel.z));</span>
+<span class="fc bfc" id="L682" title="All 2 branches covered.">            if (distance &lt; 0) {</span>
+<span class="fc" id="L683">                voxelsA.add(voxel);</span>
+<span class="fc bfc" id="L684" title="All 2 branches covered.">            } else if (distance &gt; 0) {</span>
+<span class="fc" id="L685">                voxelsB.add(voxel);</span>
             } else {
-<span class="fc bfc" id="L673" title="All 2 branches covered.">                if (random.nextDouble() &gt; 0.5) {</span>
-<span class="fc" id="L674">                    voxelsA.add(voxel);</span>
+<span class="fc bfc" id="L687" title="All 2 branches covered.">                if (random.nextDouble() &gt; 0.5) {</span>
+<span class="fc" id="L688">                    voxelsA.add(voxel);</span>
                 } else {
-<span class="fc" id="L676">                    voxelsB.add(voxel);</span>
+<span class="fc" id="L690">                    voxelsB.add(voxel);</span>
                 }
             }
-<span class="fc" id="L679">        }</span>
-<span class="fc" id="L680">    }</span>
+<span class="fc" id="L693">        }</span>
+<span class="fc" id="L694">    }</span>
 
     /**
      * Connects voxels in the splits.
@@ -696,29 +710,29 @@ public abstract class PottsLocation implements Location {
             PottsLocation location,
             MersenneTwisterFast random) {
         // Check that both coordinate lists are simply connected.
-<span class="fc" id="L699">        ArrayList&lt;Voxel&gt; unconnectedA = checkVoxels(voxelsA, location, random, true);</span>
-<span class="fc" id="L700">        ArrayList&lt;Voxel&gt; unconnectedB = checkVoxels(voxelsB, location, random, true);</span>
+<span class="fc" id="L713">        ArrayList&lt;Voxel&gt; unconnectedA = checkVoxels(voxelsA, location, random, true);</span>
+<span class="fc" id="L714">        ArrayList&lt;Voxel&gt; unconnectedB = checkVoxels(voxelsB, location, random, true);</span>
 
         // If either coordinate list is not connected, attempt to connect them
         // by adding in the unconnected coordinates of the other list.
-<span class="fc bfc" id="L704" title="All 4 branches covered.">        while (unconnectedA != null || unconnectedB != null) {</span>
+<span class="fc bfc" id="L718" title="All 4 branches covered.">        while (unconnectedA != null || unconnectedB != null) {</span>
             ArrayList&lt;Voxel&gt; unconnectedAB;
             ArrayList&lt;Voxel&gt; unconnectedBA;
 
-<span class="fc bfc" id="L708" title="All 2 branches covered.">            if (unconnectedA != null) {</span>
-<span class="fc" id="L709">                voxelsB.addAll(unconnectedA);</span>
+<span class="fc bfc" id="L722" title="All 2 branches covered.">            if (unconnectedA != null) {</span>
+<span class="fc" id="L723">                voxelsB.addAll(unconnectedA);</span>
             }
-<span class="fc" id="L711">            unconnectedBA = checkVoxels(voxelsB, location, random, true);</span>
+<span class="fc" id="L725">            unconnectedBA = checkVoxels(voxelsB, location, random, true);</span>
 
-<span class="fc bfc" id="L713" title="All 2 branches covered.">            if (unconnectedB != null) {</span>
-<span class="fc" id="L714">                voxelsA.addAll(unconnectedB);</span>
+<span class="fc bfc" id="L727" title="All 2 branches covered.">            if (unconnectedB != null) {</span>
+<span class="fc" id="L728">                voxelsA.addAll(unconnectedB);</span>
             }
-<span class="fc" id="L716">            unconnectedAB = checkVoxels(voxelsA, location, random, true);</span>
+<span class="fc" id="L730">            unconnectedAB = checkVoxels(voxelsA, location, random, true);</span>
 
-<span class="fc" id="L718">            unconnectedA = unconnectedAB;</span>
-<span class="fc" id="L719">            unconnectedB = unconnectedBA;</span>
-<span class="fc" id="L720">        }</span>
-<span class="fc" id="L721">    }</span>
+<span class="fc" id="L732">            unconnectedA = unconnectedAB;</span>
+<span class="fc" id="L733">            unconnectedB = unconnectedBA;</span>
+<span class="fc" id="L734">        }</span>
+<span class="fc" id="L735">    }</span>
 
     /**
      * Balances voxels in the splits.
@@ -739,73 +753,73 @@ public abstract class PottsLocation implements Location {
             ArrayList&lt;Voxel&gt; voxelsB,
             PottsLocation location,
             MersenneTwisterFast random) {
-<span class="fc" id="L742">        int nA = voxelsA.size();</span>
-<span class="fc" id="L743">        int nB = voxelsB.size();</span>
+<span class="fc" id="L756">        int nA = voxelsA.size();</span>
+<span class="fc" id="L757">        int nB = voxelsB.size();</span>
 
-<span class="fc bfc" id="L745" title="All 2 branches covered.">        while (Math.abs(nA - nB) &gt; Math.ceil((nA + nB) * BALANCE_DIFFERENCE)) {</span>
+<span class="fc bfc" id="L759" title="All 2 branches covered.">        while (Math.abs(nA - nB) &gt; Math.ceil((nA + nB) * BALANCE_DIFFERENCE)) {</span>
             ArrayList&lt;Voxel&gt; fromVoxels;
             ArrayList&lt;Voxel&gt; toVoxels;
 
-<span class="fc bfc" id="L749" title="All 2 branches covered.">            if (nA &gt; nB) {</span>
-<span class="fc" id="L750">                fromVoxels = voxelsA;</span>
-<span class="fc" id="L751">                toVoxels = voxelsB;</span>
+<span class="fc bfc" id="L763" title="All 2 branches covered.">            if (nA &gt; nB) {</span>
+<span class="fc" id="L764">                fromVoxels = voxelsA;</span>
+<span class="fc" id="L765">                toVoxels = voxelsB;</span>
             } else {
-<span class="fc" id="L753">                fromVoxels = voxelsB;</span>
-<span class="fc" id="L754">                toVoxels = voxelsA;</span>
+<span class="fc" id="L767">                fromVoxels = voxelsB;</span>
+<span class="fc" id="L768">                toVoxels = voxelsA;</span>
             }
 
             // Get all valid neighbor voxels.
-<span class="fc" id="L758">            LinkedHashSet&lt;Voxel&gt; neighborSet = new LinkedHashSet&lt;&gt;();</span>
-<span class="fc bfc" id="L759" title="All 2 branches covered.">            for (Voxel voxel : toVoxels) {</span>
-<span class="fc" id="L760">                ArrayList&lt;Voxel&gt; neighbors = location.getNeighbors(voxel);</span>
-<span class="fc bfc" id="L761" title="All 2 branches covered.">                for (Voxel neighbor : neighbors) {</span>
-<span class="fc bfc" id="L762" title="All 2 branches covered.">                    if (!toVoxels.contains(neighbor)) {</span>
-<span class="fc" id="L763">                        neighborSet.add(neighbor);</span>
+<span class="fc" id="L772">            LinkedHashSet&lt;Voxel&gt; neighborSet = new LinkedHashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L773" title="All 2 branches covered.">            for (Voxel voxel : toVoxels) {</span>
+<span class="fc" id="L774">                ArrayList&lt;Voxel&gt; neighbors = location.getNeighbors(voxel);</span>
+<span class="fc bfc" id="L775" title="All 2 branches covered.">                for (Voxel neighbor : neighbors) {</span>
+<span class="fc bfc" id="L776" title="All 2 branches covered.">                    if (!toVoxels.contains(neighbor)) {</span>
+<span class="fc" id="L777">                        neighborSet.add(neighbor);</span>
                     }
-<span class="fc" id="L765">                }</span>
-<span class="fc" id="L766">            }</span>
+<span class="fc" id="L779">                }</span>
+<span class="fc" id="L780">            }</span>
 
             // If one list is empty, add all voxels in other list as neighbors.
-<span class="fc bfc" id="L769" title="All 2 branches covered.">            if (toVoxels.size() == 0) {</span>
-<span class="fc" id="L770">                neighborSet.addAll(fromVoxels);</span>
+<span class="fc bfc" id="L783" title="All 2 branches covered.">            if (toVoxels.size() == 0) {</span>
+<span class="fc" id="L784">                neighborSet.addAll(fromVoxels);</span>
             }
 
-<span class="fc" id="L773">            ArrayList&lt;Voxel&gt; neighborList = new ArrayList&lt;&gt;(neighborSet);</span>
-<span class="fc" id="L774">            Utilities.shuffleList(neighborList, random);</span>
+<span class="fc" id="L787">            ArrayList&lt;Voxel&gt; neighborList = new ArrayList&lt;&gt;(neighborSet);</span>
+<span class="fc" id="L788">            Utilities.shuffleList(neighborList, random);</span>
 
             // Select a neighbor to move from one list to the other.
-<span class="fc" id="L777">            boolean added = false;</span>
-<span class="fc" id="L778">            ArrayList&lt;Voxel&gt; invalidCoords = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L779" title="All 2 branches covered.">            for (Voxel voxel : neighborList) {</span>
-<span class="fc bfc" id="L780" title="All 2 branches covered.">                if (fromVoxels.contains(voxel)) {</span>
-<span class="fc" id="L781">                    toVoxels.add(voxel);</span>
-<span class="fc" id="L782">                    fromVoxels.remove(voxel);</span>
+<span class="fc" id="L791">            boolean added = false;</span>
+<span class="fc" id="L792">            ArrayList&lt;Voxel&gt; invalidCoords = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L793" title="All 2 branches covered.">            for (Voxel voxel : neighborList) {</span>
+<span class="fc bfc" id="L794" title="All 2 branches covered.">                if (fromVoxels.contains(voxel)) {</span>
+<span class="fc" id="L795">                    toVoxels.add(voxel);</span>
+<span class="fc" id="L796">                    fromVoxels.remove(voxel);</span>
 
                     // Check that removal of coordinate does not cause the list
                     // to become unconnected.
-<span class="fc" id="L786">                    ArrayList&lt;Voxel&gt; unconnected = checkVoxels(fromVoxels, location, random, false);</span>
-<span class="fc bfc" id="L787" title="All 2 branches covered.">                    if (unconnected == null) {</span>
-<span class="fc" id="L788">                        added = true;</span>
-<span class="fc" id="L789">                        break;</span>
+<span class="fc" id="L800">                    ArrayList&lt;Voxel&gt; unconnected = checkVoxels(fromVoxels, location, random, false);</span>
+<span class="fc bfc" id="L801" title="All 2 branches covered.">                    if (unconnected == null) {</span>
+<span class="fc" id="L802">                        added = true;</span>
+<span class="fc" id="L803">                        break;</span>
                     } else {
-<span class="fc" id="L791">                        fromVoxels.add(voxel);</span>
-<span class="fc" id="L792">                        toVoxels.remove(voxel);</span>
-<span class="fc" id="L793">                        invalidCoords.add(voxel);</span>
+<span class="fc" id="L805">                        fromVoxels.add(voxel);</span>
+<span class="fc" id="L806">                        toVoxels.remove(voxel);</span>
+<span class="fc" id="L807">                        invalidCoords.add(voxel);</span>
                     }
                 }
-<span class="fc" id="L796">            }</span>
+<span class="fc" id="L810">            }</span>
 
-<span class="fc bfc" id="L798" title="All 2 branches covered.">            if (!added) {</span>
-<span class="fc" id="L799">                toVoxels.addAll(invalidCoords);</span>
-<span class="fc" id="L800">                fromVoxels.removeAll(invalidCoords);</span>
-<span class="fc" id="L801">                connectVoxels(voxelsA, voxelsB, location, random);</span>
-<span class="fc" id="L802">                break;</span>
+<span class="fc bfc" id="L812" title="All 2 branches covered.">            if (!added) {</span>
+<span class="fc" id="L813">                toVoxels.addAll(invalidCoords);</span>
+<span class="fc" id="L814">                fromVoxels.removeAll(invalidCoords);</span>
+<span class="fc" id="L815">                connectVoxels(voxelsA, voxelsB, location, random);</span>
+<span class="fc" id="L816">                break;</span>
             }
 
-<span class="fc" id="L805">            nA = voxelsA.size();</span>
-<span class="fc" id="L806">            nB = voxelsB.size();</span>
-<span class="fc" id="L807">        }</span>
-<span class="fc" id="L808">    }</span>
+<span class="fc" id="L819">            nA = voxelsA.size();</span>
+<span class="fc" id="L820">            nB = voxelsB.size();</span>
+<span class="fc" id="L821">        }</span>
+<span class="fc" id="L822">    }</span>
 
     /**
      * Checks voxels in the list for connectedness.
@@ -827,61 +841,61 @@ public abstract class PottsLocation implements Location {
             PottsLocation location,
             MersenneTwisterFast random,
             boolean update) {
-<span class="fc bfc" id="L830" title="All 2 branches covered.">        if (voxels.size() == 0) {</span>
-<span class="fc" id="L831">            return null;</span>
+<span class="fc bfc" id="L844" title="All 2 branches covered.">        if (voxels.size() == 0) {</span>
+<span class="fc" id="L845">            return null;</span>
         }
 
-<span class="fc" id="L834">        ArrayList&lt;Voxel&gt; unvisited = new ArrayList&lt;&gt;(voxels);</span>
-<span class="fc" id="L835">        ArrayList&lt;Voxel&gt; visited = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L848">        ArrayList&lt;Voxel&gt; unvisited = new ArrayList&lt;&gt;(voxels);</span>
+<span class="fc" id="L849">        ArrayList&lt;Voxel&gt; visited = new ArrayList&lt;&gt;();</span>
         ArrayList&lt;Voxel&gt; nextList;
         LinkedHashSet&lt;Voxel&gt; nextSet;
-<span class="fc" id="L838">        LinkedHashSet&lt;Voxel&gt; currSet = new LinkedHashSet&lt;&gt;();</span>
+<span class="fc" id="L852">        LinkedHashSet&lt;Voxel&gt; currSet = new LinkedHashSet&lt;&gt;();</span>
 
-<span class="fc" id="L840">        currSet.add(unvisited.get(random.nextInt(unvisited.size())));</span>
-<span class="fc" id="L841">        int currSize = currSet.size();</span>
+<span class="fc" id="L854">        currSet.add(unvisited.get(random.nextInt(unvisited.size())));</span>
+<span class="fc" id="L855">        int currSize = currSet.size();</span>
 
-<span class="fc bfc" id="L843" title="All 2 branches covered.">        while (currSize &gt; 0) {</span>
-<span class="fc" id="L844">            nextSet = new LinkedHashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L857" title="All 2 branches covered.">        while (currSize &gt; 0) {</span>
+<span class="fc" id="L858">            nextSet = new LinkedHashSet&lt;&gt;();</span>
 
             // Iterate through each coordinate in current coordinate set.
-<span class="fc bfc" id="L847" title="All 2 branches covered.">            for (Voxel voxel : currSet) {</span>
-<span class="fc" id="L848">                nextList = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L861" title="All 2 branches covered.">            for (Voxel voxel : currSet) {</span>
+<span class="fc" id="L862">                nextList = new ArrayList&lt;&gt;();</span>
 
                 // Iterate through each connected direction from current voxel
                 // and add to neighbor list if it exists.
-<span class="fc" id="L852">                ArrayList&lt;Voxel&gt; neighbors = location.getNeighbors(voxel);</span>
-<span class="fc bfc" id="L853" title="All 2 branches covered.">                for (Voxel neighbor : neighbors) {</span>
-<span class="fc bfc" id="L854" title="All 2 branches covered.">                    if (unvisited.contains(neighbor)) {</span>
-<span class="fc" id="L855">                        nextList.add(neighbor);</span>
+<span class="fc" id="L866">                ArrayList&lt;Voxel&gt; neighbors = location.getNeighbors(voxel);</span>
+<span class="fc bfc" id="L867" title="All 2 branches covered.">                for (Voxel neighbor : neighbors) {</span>
+<span class="fc bfc" id="L868" title="All 2 branches covered.">                    if (unvisited.contains(neighbor)) {</span>
+<span class="fc" id="L869">                        nextList.add(neighbor);</span>
                     }
-<span class="fc" id="L857">                }</span>
+<span class="fc" id="L871">                }</span>
 
                 // Updated next voxel set with list of neighbors.
-<span class="fc" id="L860">                nextSet.addAll(nextList);</span>
-<span class="fc" id="L861">                visited.add(voxel);</span>
-<span class="fc" id="L862">                unvisited.remove(voxel);</span>
-<span class="fc" id="L863">            }</span>
+<span class="fc" id="L874">                nextSet.addAll(nextList);</span>
+<span class="fc" id="L875">                visited.add(voxel);</span>
+<span class="fc" id="L876">                unvisited.remove(voxel);</span>
+<span class="fc" id="L877">            }</span>
 
-<span class="fc" id="L865">            currSet = nextSet;</span>
-<span class="fc" id="L866">            currSize = currSet.size();</span>
+<span class="fc" id="L879">            currSet = nextSet;</span>
+<span class="fc" id="L880">            currSize = currSet.size();</span>
         }
 
         // If not all coordinates have been visited, then the list of
         // coordinates is not connected.
-<span class="fc bfc" id="L871" title="All 2 branches covered.">        if (unvisited.size() != 0) {</span>
-<span class="fc bfc" id="L872" title="All 2 branches covered.">            if (unvisited.size() &gt; visited.size()) {</span>
-<span class="fc bfc" id="L873" title="All 2 branches covered.">                if (update) {</span>
-<span class="fc" id="L874">                    voxels.removeAll(visited);</span>
+<span class="fc bfc" id="L885" title="All 2 branches covered.">        if (unvisited.size() != 0) {</span>
+<span class="fc bfc" id="L886" title="All 2 branches covered.">            if (unvisited.size() &gt; visited.size()) {</span>
+<span class="fc bfc" id="L887" title="All 2 branches covered.">                if (update) {</span>
+<span class="fc" id="L888">                    voxels.removeAll(visited);</span>
                 }
-<span class="fc" id="L876">                return visited;</span>
+<span class="fc" id="L890">                return visited;</span>
             } else {
-<span class="fc bfc" id="L878" title="All 2 branches covered.">                if (update) {</span>
-<span class="fc" id="L879">                    voxels.removeAll(unvisited);</span>
+<span class="fc bfc" id="L892" title="All 2 branches covered.">                if (update) {</span>
+<span class="fc" id="L893">                    voxels.removeAll(unvisited);</span>
                 }
-<span class="fc" id="L881">                return unvisited;</span>
+<span class="fc" id="L895">                return unvisited;</span>
             }
         } else {
-<span class="fc" id="L884">            return null;</span>
+<span class="fc" id="L898">            return null;</span>
         }
     }
 }
