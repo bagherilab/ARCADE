@@ -1629,4 +1629,17 @@ public class PottsLocationTest {
         assertEquals(locVoxels, loc.voxels);
         assertEquals(splitVoxels, split.voxels);
     }
+
+    @Test
+    public void split_withPlaneNoSelectionProbability_callsSplitWithDefaultSelectionProbability() {
+        Plane mockPlane = mock(Plane.class);
+        when(mockPlane.getReferencePoint()).thenReturn(new Double3D(0, 0, 0));
+        PottsLocationMock loc = new PottsLocationMock(voxelListAB);
+        PottsLocationMock spyLocation = spy(loc);
+        spyLocation.split(randomDoubleZero, mockPlane);
+        verify(spyLocation).split(
+                randomDoubleZero,
+                mockPlane,
+                .5);
+    }
 }

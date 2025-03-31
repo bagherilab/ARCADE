@@ -47,6 +47,22 @@ public class PlaneTest {
     }
 
     @Test
+    public void getReferencePoint_givenPlane_returnsCorrectPoint() {
+        Double3D point = new Double3D(1, 2, 3);
+        Vector normalVector = new Vector(1, 0, 0);
+        Plane plane = new Plane(point, normalVector);
+        assertEquals(point, plane.getReferencePoint());
+    }
+
+    @Test
+    public void getUnitNormalVector_givenPlane_returnsCorrectUnitNormal() {
+        Double3D point = new Double3D(1, 2, 3);
+        Vector normalVector = new Vector(1, 0, 0);
+        Plane plane = new Plane(point, normalVector);
+        assertEquals(normalVector, plane.getUnitNormalVector());
+    }
+
+    @Test
     public void getVectorMagnitude_givenVector_returnsCorrectMagnitude() {
         double magnitude = Vector.getVectorMagnitude(new Vector(1, 2, 2));
         assertEquals(3, magnitude, EPSILON);
