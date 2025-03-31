@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -217,13 +217,27 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
+<td class="colFirst"><code>sim.util.Double3D</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getReferencePoint()">getReferencePoint</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Returns the reference point on the plane.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code><a href="Vector.html" title="class in arcade.core.util">Vector</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getUnitNormalVector()">getUnitNormalVector</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Returns the unit normal vector to the plane.</div>
+</td>
+</tr>
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#hashCode()">hashCode</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Returns a hash code for the plane.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#signedDistanceToPlane(sim.util.Double3D)">signedDistanceToPlane</a></span>&#8203;(sim.util.Double3D&nbsp;point)</code></th>
 <td class="colLast">
@@ -310,6 +324,34 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
+<a id="getReferencePoint()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getReferencePoint</h4>
+<pre class="methodSignature">public&nbsp;sim.util.Double3D&nbsp;getReferencePoint()</pre>
+<div class="block">Returns the reference point on the plane.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the reference point on the plane</dd>
+</dl>
+</li>
+</ul>
+<a id="getUnitNormalVector()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getUnitNormalVector</h4>
+<pre class="methodSignature">public&nbsp;<a href="Vector.html" title="class in arcade.core.util">Vector</a>&nbsp;getUnitNormalVector()</pre>
+<div class="block">Returns the unit normal vector to the plane.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the unit normal vector to the plane</dd>
+</dl>
+</li>
+</ul>
 <a id="signedDistanceToPlane(sim.util.Double3D)">
 <!--   -->
 </a>

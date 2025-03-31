@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":9,"i5":10,"i6":6,"i7":6,"i8":9,"i9":10,"i10":9,"i11":10,"i12":6,"i13":10,"i14":10,"i15":10,"i16":10,"i17":6,"i18":10,"i19":10,"i20":10,"i21":6,"i22":10,"i23":10,"i24":6,"i25":6,"i26":10,"i27":10,"i28":10,"i29":10,"i30":10,"i31":10,"i32":6,"i33":10,"i34":10,"i35":10,"i36":10,"i37":10,"i38":10,"i39":10,"i40":9,"i41":10,"i42":10,"i43":6,"i44":6};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":9,"i5":10,"i6":6,"i7":6,"i8":9,"i9":10,"i10":9,"i11":10,"i12":6,"i13":10,"i14":10,"i15":10,"i16":10,"i17":6,"i18":10,"i19":10,"i20":10,"i21":6,"i22":10,"i23":10,"i24":6,"i25":6,"i26":10,"i27":10,"i28":10,"i29":10,"i30":10,"i31":10,"i32":6,"i33":10,"i34":10,"i35":10,"i36":10,"i37":10,"i38":10,"i39":10,"i40":10,"i41":9,"i42":10,"i43":10,"i44":6,"i45":6};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -578,6 +578,14 @@ implements <a href="../../../core/env/location/Location.html" title="interface i
 </tr>
 <tr id="i37" class="rowColor">
 <td class="colFirst"><code><a href="../../../core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#split(ec.util.MersenneTwisterFast,arcade.core.util.Plane)">split</a></span>&#8203;(ec.util.MersenneTwisterFast&nbsp;random,
+     <a href="../../../core/util/Plane.html" title="class in arcade.core.util">Plane</a>&nbsp;plane)</code></th>
+<td class="colLast">
+<div class="block">Splits location voxels into two lists.</div>
+</td>
+</tr>
+<tr id="i38" class="altColor">
+<td class="colFirst"><code><a href="../../../core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#split(ec.util.MersenneTwisterFast,arcade.core.util.Plane,java.lang.Double)">split</a></span>&#8203;(ec.util.MersenneTwisterFast&nbsp;random,
      <a href="../../../core/util/Plane.html" title="class in arcade.core.util">Plane</a>&nbsp;plane,
      java.lang.Double&nbsp;probability)</code></th>
@@ -585,7 +593,7 @@ implements <a href="../../../core/env/location/Location.html" title="interface i
 <div class="block">Splits location voxels into two lists.</div>
 </td>
 </tr>
-<tr id="i38" class="altColor">
+<tr id="i39" class="rowColor">
 <td class="colFirst"><code><a href="../../../core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#split(ec.util.MersenneTwisterFast,java.util.ArrayList)">split</a></span>&#8203;(ec.util.MersenneTwisterFast&nbsp;random,
      java.util.ArrayList&lt;java.lang.Integer&gt;&nbsp;offsets)</code></th>
@@ -593,7 +601,7 @@ implements <a href="../../../core/env/location/Location.html" title="interface i
 <div class="block">Splits location voxels into two lists with given offset.</div>
 </td>
 </tr>
-<tr id="i39" class="rowColor">
+<tr id="i40" class="altColor">
 <td class="colFirst"><code><a href="../../../core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#split(ec.util.MersenneTwisterFast,java.util.ArrayList,arcade.potts.util.PottsEnums.Direction,java.lang.Double)">split</a></span>&#8203;(ec.util.MersenneTwisterFast&nbsp;random,
      java.util.ArrayList&lt;java.lang.Integer&gt;&nbsp;offsets,
@@ -603,7 +611,7 @@ implements <a href="../../../core/env/location/Location.html" title="interface i
 <div class="block">Splits location voxels into two lists with given offset, direction, and probability.</div>
 </td>
 </tr>
-<tr id="i40" class="altColor">
+<tr id="i41" class="rowColor">
 <td class="colFirst"><code>(package private) static void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#splitVoxels(arcade.core.util.Plane,java.util.ArrayList,java.util.ArrayList,java.util.ArrayList,ec.util.MersenneTwisterFast)">splitVoxels</a></span>&#8203;(<a href="../../../core/util/Plane.html" title="class in arcade.core.util">Plane</a>&nbsp;plane,
            java.util.ArrayList&lt;<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&gt;&nbsp;voxels,
@@ -614,7 +622,7 @@ implements <a href="../../../core/env/location/Location.html" title="interface i
 <div class="block">Splits the voxels in the location into two lists along a given plane.</div>
 </td>
 </tr>
-<tr id="i41" class="rowColor">
+<tr id="i42" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#update(int,int%5B%5D%5B%5D%5B%5D,int%5B%5D%5B%5D%5B%5D)">update</a></span>&#8203;(int&nbsp;id,
       int[][][]&nbsp;ids,
@@ -623,7 +631,7 @@ implements <a href="../../../core/env/location/Location.html" title="interface i
 <div class="block">Updates the array for the location.</div>
 </td>
 </tr>
-<tr id="i42" class="altColor">
+<tr id="i43" class="rowColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateCenter(int,int,int,int)">updateCenter</a></span>&#8203;(int&nbsp;x,
             int&nbsp;y,
@@ -633,14 +641,14 @@ implements <a href="../../../core/env/location/Location.html" title="interface i
 <div class="block">Updates the centroid of the location.</div>
 </td>
 </tr>
-<tr id="i43" class="rowColor">
+<tr id="i44" class="altColor">
 <td class="colFirst"><code>(package private) abstract int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateHeight(arcade.potts.env.location.Voxel)">updateHeight</a></span>&#8203;(<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&nbsp;voxel)</code></th>
 <td class="colLast">
 <div class="block">Calculates the local change in height of the location.</div>
 </td>
 </tr>
-<tr id="i44" class="altColor">
+<tr id="i45" class="rowColor">
 <td class="colFirst"><code>(package private) abstract int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateSurface(arcade.potts.env.location.Voxel)">updateSurface</a></span>&#8203;(<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&nbsp;voxel)</code></th>
 <td class="colLast">
@@ -1183,6 +1191,27 @@ implements <a href="../../../core/env/location/Location.html" title="interface i
 <dd><code>offsets</code> - the percentage offset in each direction for split point</dd>
 <dd><code>direction</code> - the direction of the split</dd>
 <dd><code>probability</code> - the probability to decide which split to return</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a location with the split voxels</dd>
+</dl>
+</li>
+</ul>
+<a id="split(ec.util.MersenneTwisterFast,arcade.core.util.Plane)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>split</h4>
+<pre class="methodSignature">public&nbsp;<a href="../../../core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>&nbsp;split&#8203;(ec.util.MersenneTwisterFast&nbsp;random,
+                      <a href="../../../core/util/Plane.html" title="class in arcade.core.util">Plane</a>&nbsp;plane)</pre>
+<div class="block">Splits location voxels into two lists.
+
+ <p>The location is split along the provided plane. One of the splits is assigned to the
+ current location and the other is returned with the default split probability.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>random</code> - the seeded random number generator</dd>
+<dd><code>plane</code> - the plane of the split</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>a location with the split voxels</dd>
 </dl>
