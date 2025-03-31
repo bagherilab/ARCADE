@@ -6,7 +6,7 @@ import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.cell.PatchCellTissue;
-import arcade.patch.util.PatchEnums;
+import arcade.patch.util.PatchEnums.State;
 
 /**
  * Implementation of {@link Module} for stimulatory T cell agents.
@@ -46,17 +46,17 @@ public class PatchModuleStimulation extends PatchModule {
 
         if (target.isStopped()) {
             ((PatchCellCART) cell).unbind();
-            cell.setState(PatchEnums.State.UNDEFINED);
+            cell.setState(State.UNDEFINED);
             return;
         }
 
         if (ticker == 0) {
-            target.setState(PatchEnums.State.QUIESCENT);
+            target.setState(State.QUIESCENT);
         }
 
         if (ticker >= timeDelay) {
             ((PatchCellCART) cell).unbind();
-            cell.setState(PatchEnums.State.UNDEFINED);
+            cell.setState(State.UNDEFINED);
         }
 
         ticker++;
