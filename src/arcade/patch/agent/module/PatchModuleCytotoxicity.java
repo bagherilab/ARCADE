@@ -69,7 +69,9 @@ public class PatchModuleCytotoxicity extends PatchModule {
                 granzyme--;
                 inflammation.setInternal("granzyme", granzyme);
             }
-        } else if (ticker >= timeDelay) {
+        }
+
+        if (ticker >= timeDelay) {
             ((PatchCellCART) cell).unbind();
             cell.setState(State.UNDEFINED);
         }
