@@ -346,6 +346,20 @@ public abstract class PottsLocation implements Location {
      * Splits location voxels into two lists.
      *
      * <p>The location is split along the provided plane. One of the splits is assigned to the
+     * current location and the other is returned with the default split probability.
+     *
+     * @param random the seeded random number generator
+     * @param plane the plane of the split
+     * @return a location with the split voxels
+     */
+    public Location split(MersenneTwisterFast random, Plane plane) {
+        return split(random, plane, DEFAULT_SPLIT_SELECTION_PROBABILITY);
+    }
+
+    /**
+     * Splits location voxels into two lists.
+     *
+     * <p>The location is split along the provided plane. One of the splits is assigned to the
      * current location and the other is returned with the given probability.
      *
      * <p>If the plane of division is through the center of the location, the resulting lists are
@@ -367,7 +381,7 @@ public abstract class PottsLocation implements Location {
         connectVoxels(voxelsA, voxelsB, this, random);
 
         Voxel locCenter = getCenter();
-        if (plane.referencePoint.equals(locCenter)) {
+        if (plane.getReferencePoint().equals(locCenter)) {
             balanceVoxels(voxelsA, voxelsB, this, random);
         }
 
