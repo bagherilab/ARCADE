@@ -99,4 +99,8 @@ public class PottsCellFlyStem extends PottsCell {
                 break;
         }
     }
+
+    public StemType getStemType() {
+        return stemType;
+    }
 }

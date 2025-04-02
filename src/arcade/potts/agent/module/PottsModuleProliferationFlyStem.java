@@ -56,8 +56,8 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
      */
     public static Voxel getCellSplitLocation(PottsCellFlyStem cell) {
         ArrayList<Integer> splitOffsetPercent = new ArrayList<>();
-        splitOffsetPercent.add(cell.stemType.splitOffsetPercentX);
-        splitOffsetPercent.add(cell.stemType.splitOffsetPercentY);
+        splitOffsetPercent.add(cell.getStemType().splitOffsetPercentX);
+        splitOffsetPercent.add(cell.getStemType().splitOffsetPercentY);
         return ((PottsLocation) cell.getLocation()).getOffset(splitOffsetPercent);
     }
 
@@ -69,7 +69,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
      * @return the division plane for the cell
      */
     public Plane getDivisionPlaneWithRotationalVariance(PottsCellFlyStem cell) {
-        Vector plainSplitNormal = cell.stemType.splitDirection.vector;
+        Vector plainSplitNormal = cell.getStemType().splitDirection.vector;
         Vector rotatedNormalVector =
                 Vector.rotateVectorAroundAxis(
                         plainSplitNormal,
@@ -101,10 +101,10 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         }
     }
 
-    private PottsLocation getBasallLocation(PottsLocation location1, PottsLocation location2) {
+    public static PottsLocation getBasalLocation(PottsLocation location1, PottsLocation location2) {
         double[] centroid1 = location1.getCentroid();
         double[] centroid2 = location2.getCentroid();
-        if (centroid1[1] < centroid2[1]) {
+        if (centroid1[1] > centroid2[1]) {
             return location1;
         } else {
             return location2;
@@ -136,7 +136,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         if (differentiationRuleset.equals("volume")) {
             gmcLoc = getSmallerLocation(daughterLoc, stemLoc);
         } else if (differentiationRuleset.equals("location")) {
-            gmcLoc = getBasallLocation(daughterLoc, stemLoc);
+            gmcLoc = getBasalLocation(daughterLoc, stemLoc);
         } else {
             throw new IllegalArgumentException(
                     "Invalid differentiation ruleset: " + differentiationRuleset);
