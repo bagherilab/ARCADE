@@ -9,12 +9,18 @@ import arcade.patch.agent.cell.PatchCellCART;
 /**
  * Extension of {@link arcade.patch.agent.process} for CD4 CAR T-cells
  *
- * <p>{@code InflammationCD4} determines IL-2 amounts produced for stimulatory effector functions as
+ * <p>
+ * {@code InflammationCD4} determines IL-2 amounts produced for stimulatory
+ * effector functions as
  * a antigen-induced activation state.
  */
+@SuppressWarnings("checkstyle:MemberNameCheck")
 public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
 
-    /** Rate of IL-2 production due to antigen-induced activation [molecules IL-2/cell/min]. */
+    /**
+     * Rate of IL-2 production due to antigen-induced activation [molecules
+     * IL-2/cell/min].
+     */
     private final double IL2ProdRateActive = 293.27;
 
     /** Rate of IL-2 production due to IL-2 feedback [molecules IL-2/cell/min]. */
@@ -26,13 +32,17 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
     /** Total rate of IL-2 production. */
     private double IL2ProdRate;
 
-    /** Amount of IL-2 bound in past being used for current IL-2 production calculation. */
+    /**
+     * Amount of IL-2 bound in past being used for current IL-2 production
+     * calculation.
+     */
     private double priorIL2prod;
 
     /**
      * Creates a CD4 {@link PatchProcessInflammation} module.
      *
-     * <p>IL-2 production rate parameters set.
+     * <p>
+     * IL-2 production rate parameters set.
      *
      * @param cell the {@link PatchCellCART} the module is associated with
      */
@@ -65,10 +75,9 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
         // Update environment.
         // Take current IL2 external concentration and add the amount produced,
         // then convert units back to molecules/cm^3.
-        double IL2Env =
-                (((extIL2 - (extIL2 * fraction - amts[IL2_EXT])) + IL2ProdRate)
-                        * 1E12
-                        / loc.getVolume());
+        double IL2Env = (((extIL2 - (extIL2 * fraction - amts[IL2_EXT])) + IL2ProdRate)
+                * 1E12
+                / loc.getVolume());
 
         sim.getLattice("IL-2").setValue(loc, IL2Env);
     }
@@ -83,8 +92,7 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
         this.amts[IL2RBGA] = inflammation.amts[IL2RBGA] * split;
         this.amts[IL2_IL2RBG] = inflammation.amts[IL2_IL2RBG] * split;
         this.amts[IL2_IL2RBGA] = inflammation.amts[IL2_IL2RBGA] * split;
-        this.amts[IL2RBG] =
-                iL2Receptors - this.amts[IL2RBGA] - this.amts[IL2_IL2RBG] - this.amts[IL2_IL2RBGA];
+        this.amts[IL2RBG] = iL2Receptors - this.amts[IL2RBGA] - this.amts[IL2_IL2RBG] - this.amts[IL2_IL2RBGA];
         this.amts[IL2_INT_TOTAL] = this.amts[IL2_IL2RBG] + this.amts[IL2_IL2RBGA];
         this.amts[IL2R_TOTAL] = this.amts[IL2RBG] + this.amts[IL2RBGA];
         this.boundArray = (inflammation.boundArray).clone();
@@ -93,13 +101,11 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
         inflammation.amts[IL2RBGA] *= (1 - split);
         inflammation.amts[IL2_IL2RBG] *= (1 - split);
         inflammation.amts[IL2_IL2RBGA] *= (1 - split);
-        inflammation.amts[IL2RBG] =
-                iL2Receptors
-                        - inflammation.amts[IL2RBGA]
-                        - inflammation.amts[IL2_IL2RBG]
-                        - inflammation.amts[IL2_IL2RBGA];
-        inflammation.amts[IL2_INT_TOTAL] =
-                inflammation.amts[IL2_IL2RBG] + inflammation.amts[IL2_IL2RBGA];
+        inflammation.amts[IL2RBG] = iL2Receptors
+                - inflammation.amts[IL2RBGA]
+                - inflammation.amts[IL2_IL2RBG]
+                - inflammation.amts[IL2_IL2RBGA];
+        inflammation.amts[IL2_INT_TOTAL] = inflammation.amts[IL2_IL2RBG] + inflammation.amts[IL2_IL2RBGA];
         inflammation.amts[IL2R_TOTAL] = inflammation.amts[IL2RBG] + inflammation.amts[IL2RBGA];
         inflammation.volume *= (1 - split);
     }
