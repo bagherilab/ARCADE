@@ -14,13 +14,13 @@ import arcade.patch.agent.cell.PatchCellCART;
  * effector functions as
  * a antigen-induced activation state.
  */
-@SuppressWarnings({ "membername" })
 public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
 
     /**
      * Rate of IL-2 production due to antigen-induced activation [molecules
      * IL-2/cell/min].
      */
+    @SuppressWarnings({ "membername" })
     private final double IL2ProdRateActive = 293.27;
 
     /** Rate of IL-2 production due to IL-2 feedback [molecules IL-2/cell/min]. */
