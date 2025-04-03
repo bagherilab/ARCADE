@@ -16,7 +16,8 @@ import arcade.patch.agent.cell.PatchCellCART;
  */
 public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
 
-    // CHECKSTYLE.OFF: checkstyle:MemberNameCheck
+    // CHECKSTYLE.OFF: MemberNameCheck
+
     /**
      * Rate of IL-2 production due to antigen-induced activation [molecules
      * IL-2/cell/min].
@@ -32,7 +33,8 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
     /** Total rate of IL-2 production. */
     private double IL2ProdRate;
 
-    // CHECKSTYLE.ON: checkstyle:MemberName
+    // CHECKSTYLE.ON: MemberNameCheck
+
     /**
      * Amount of IL-2 bound in past being used for current IL-2 production
      * calculation.
