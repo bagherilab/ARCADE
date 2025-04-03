@@ -14,20 +14,32 @@ import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 
 public class PottsCellFlyStemTest {
-
     static final double EPSILON = 1e-6;
+
     static MersenneTwisterFast random = new MersenneTwisterFast();
+
     static PottsLocation locationMock;
+
     static Parameters parametersMock;
+
     static GrabBag links;
+
     static int cellID = randomIntBetween(1, 10);
+
     static int cellParent = randomIntBetween(1, 10);
+
     static int cellPop = randomIntBetween(1, 10);
+
     static int cellAge = randomIntBetween(1, 1000);
+
     static int cellDivisions = randomIntBetween(1, 100);
+
     static double cellCriticalVolume = randomDoubleBetween(10, 100);
+
     static double cellCriticalHeight = randomDoubleBetween(10, 100);
+
     static State cellState = State.UNDEFINED;
+
     static PottsCellContainer baseContainer;
 
     @BeforeEach

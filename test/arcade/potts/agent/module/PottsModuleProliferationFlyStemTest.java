@@ -56,7 +56,7 @@ public class PottsModuleProliferationFlyStemTest {
     NormalDistribution dist;
 
     @BeforeEach
-    public void setup() {
+    public final void setup() {
         stemCell = mock(PottsCellFlyStem.class);
         stemLoc = mock(PottsLocation2D.class);
         daughterLoc = mock(PottsLocation.class);

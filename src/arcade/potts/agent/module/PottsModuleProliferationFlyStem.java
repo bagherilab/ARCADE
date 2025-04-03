@@ -110,13 +110,6 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The addCell method is overridden to implement specific behavior for fly stem cells in the
-     * proliferation process. Parameters are passed to the {@link PottsLocation2D#split} method
-     * according to the {@link PottsCellFlyStem} {@link StemType}
-     */
     @Override
     void addCell(MersenneTwisterFast random, Simulation sim) {
         Potts potts = ((PottsSimulation) sim).getPotts();

@@ -14,7 +14,10 @@ public class PottsCellFlyStem extends PottsCell {
 
     /** Enum outlining parameters for each cell type. */
     public enum StemType {
+        /** Wild type stem cell. */
         WT(50, 80, Direction.ZX_PLANE, 0.2),
+
+        /** mud Mutant stem cell. */
         MUDMUT(50, 50, Direction.YZ_PLANE, 0.5);
 
         /** Percentage x offset from cell edge where division will occur. */
@@ -23,7 +26,7 @@ public class PottsCellFlyStem extends PottsCell {
         /** Percentage y offset from cell edge where division will occur. */
         public final int splitOffsetPercentY;
 
-        /** Direction of division */
+        /** Direction of division. */
         public final Direction splitDirection;
 
         /**
@@ -123,7 +126,7 @@ public class PottsCellFlyStem extends PottsCell {
      *
      * @return the stem type of the cell
      */
-    public StemType getStemType() {
+    public final StemType getStemType() {
         return stemType;
     }
 }
