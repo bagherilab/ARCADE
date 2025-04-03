@@ -20,7 +20,7 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
      * Rate of IL-2 production due to antigen-induced activation [molecules
      * IL-2/cell/min].
      */
-    @SuppressWarnings("checkstyle:MemberName")
+    @SuppressWarnings("all")
     private final double IL2ProdRateActive = 293.27;
 
     /** Rate of IL-2 production due to IL-2 feedback [molecules IL-2/cell/min]. */
@@ -44,7 +44,7 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
      * <p>
      * IL-2 production rate parameters set.
      *
-     * @param cell the {@link PatchCellCART} the module is associated with
+     * @param cell the {@link PatchCellCART} the module is associated witg
      */
     public PatchProcessInflammationCD4(PatchCellCART cell) {
         super(cell);
