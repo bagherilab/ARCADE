@@ -21,6 +21,9 @@
         <property name="optional" value="false"/>
     </module>
 
+    <!-- Enable annotation to suppress warnings -->
+    <module name="SuppressWarningsFilter" />
+
     <!-- Checks whether files end with a new line -->
     <module name="NewlineAtEndOfFile" />
 
@@ -185,5 +188,8 @@
         <module name="CommentsIndentation" />
         <module name="TodoComment" />
         <module name="UpperEll" />
+
+        <!-- Add support for suppressing checks -->
+        <module name="SuppressWarningsHolder" />
     </module>
 </module>

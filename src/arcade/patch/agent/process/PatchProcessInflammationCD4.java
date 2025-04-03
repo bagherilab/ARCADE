@@ -24,12 +24,15 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
     private final double IL2ProdRateActive = 293.27;
 
     /** Rate of IL-2 production due to IL-2 feedback [molecules IL-2/cell/min]. */
+    @SuppressWarnings("checkstyle:membername")
     private final double IL2ProdRateMaxFeedback = 16.62;
 
     /** Delay in IL-2 synthesis after antigen-induced activation. */
+    @SuppressWarnings("checkstyle:membername")
     private final int IL2SynthesisDelay;
 
     /** Total rate of IL-2 production. */
+    @SuppressWarnings("checkstyle:membername")
     private double IL2ProdRate;
 
     /**
