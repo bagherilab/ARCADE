@@ -121,7 +121,7 @@ public class PottsCellFlyStem extends PottsCell {
         }
     }
 
-    /*
+    /**
      * Gets the stem type of the cell.
      *
      * @return the stem type of the cell
