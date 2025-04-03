@@ -12,14 +12,12 @@ import arcade.core.util.Vector;
 import arcade.core.util.distributions.NormalDistribution;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellFlyStem;
-import arcade.potts.agent.cell.PottsCellFlyStem.StemType;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.Direction;
-import arcade.potts.util.PottsEnums.State;
 import static arcade.potts.util.PottsEnums.State;
 
 /**
@@ -52,7 +50,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
     /**
      * Gets the voxel location the cell's plane of division will pass through.
      *
-     * @param cell
+     * @param cell the {@link PottsCellFlyStem} to get the division location for
      * @return the voxel location where the cell will split
      */
     public static Voxel getCellSplitLocation(PottsCellFlyStem cell) {

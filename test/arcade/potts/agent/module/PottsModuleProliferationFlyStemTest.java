@@ -33,17 +33,26 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 public class PottsModuleProliferationFlyStemTest {
-
     PottsCellFlyStem stemCell;
+
     PottsModuleProliferationFlyStem module;
+
     PottsLocation2D stemLoc;
+
     PottsLocation daughterLoc;
+
     Parameters parameters;
+
     Simulation sim;
+
     Potts potts;
+
     Grid grid;
+
     PottsCellFactory factory;
+
     MersenneTwisterFast random;
+
     NormalDistribution dist;
 
     @BeforeEach
