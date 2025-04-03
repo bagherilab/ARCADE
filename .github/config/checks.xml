@@ -191,5 +191,6 @@
 
         <!-- Add support for suppressing checks -->
         <module name="SuppressWarningsHolder" />
+        <module name="SuppressionCommentFilter" />
     </module>
 </module>
