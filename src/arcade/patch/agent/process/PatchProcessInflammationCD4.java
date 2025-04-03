@@ -12,7 +12,7 @@ import arcade.patch.agent.cell.PatchCellCART;
  * <p>{@code InflammationCD4} determines IL-2 amounts produced for stimulatory effector functions as
  * a antigen-induced activation state.
  */
-@SuppressWarnings("checkstyle:membername")
+@SuppressWarnings("checkstyle:MemberName")
 public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
 
     /** Rate of IL-2 production due to antigen-induced activation [molecules IL-2/cell/min]. */
