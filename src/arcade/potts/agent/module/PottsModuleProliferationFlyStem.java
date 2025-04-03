@@ -19,6 +19,7 @@ import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.State;
 import static arcade.potts.util.PottsEnums.State;
 
 /**
@@ -49,7 +50,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
     }
 
     /**
-     * Gets the voxel location where the cell will split
+     * Gets the voxel location the cell's plane of division will pass through.
      *
      * @param cell
      * @return the voxel location where the cell will split
@@ -63,7 +64,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
 
     /**
      * Gets the division plane for the cell after rotating the plane according to
-     * splitDirectionDistribution.
+     * splitDirectionDistribution. The plane is rotated around the XY plane.
      *
      * @param cell the {@link PottsCellFlyStem} to get the division plane for
      * @return the division plane for the cell
@@ -132,7 +133,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
 
         Location gmcLoc = null;
 
-        // logic to determine which location should be with which cell
+        // logic to determine which location should be with which cell());
         if (differentiationRuleset.equals("volume")) {
             gmcLoc = getSmallerLocation(daughterLoc, stemLoc);
         } else if (differentiationRuleset.equals("location")) {
