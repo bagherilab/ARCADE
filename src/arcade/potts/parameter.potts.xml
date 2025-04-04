@@ -62,6 +62,9 @@
     <population.module module="proliferation" id="BASAL_APOPTOSIS_RATE" value="0.00127128" units="hours^-1" conversion="DT" description="basal rate of apoptosis" />
     <population.module module="proliferation" id="NUCLEUS_GROWTH_RATE" value="30" units="um^3/hour" conversion="DS^-3.DT" description="basal rate of nucleus growth" />
     <population.module module="proliferation" id="NUCLEUS_CONDENSATION_FRACTION" value="0.5" description="fraction of nuclear volume when condensed" />
+    <population.module module="proliferation" id="DIV_ROTATION_DISTRIBUTION" value="NORMAL(MU=0,SIGMA=0)" units="degrees" description="distribution that determines if plane of division is rotated" />
+    <population.module module="proliferation" id="DIFFERENTIATION_RULESET" value="" description="rules cells follow when deciding which daughter cell will be which type" />
+
 
     <!-- apoptosis module parameters -->
     <population.module module="apoptosis" id="RATE_EARLY" value="4" units="steps/hour" conversion="DT" description="rate of events in early apoptosis phase" />

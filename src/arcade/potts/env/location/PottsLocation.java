@@ -660,6 +660,19 @@ public abstract class PottsLocation implements Location {
     }
 
     /**
+     * Swaps the voxels in this location with the voxels in another location.
+     *
+     * @param location the location to swap with
+     */
+    public void swapVoxels(PottsLocation location) {
+        ArrayList<Voxel> initVoxels = new ArrayList<>(voxels);
+        voxels.clear();
+        voxels.addAll(location.voxels);
+        location.voxels.clear();
+        location.voxels.addAll(initVoxels);
+    }
+
+    /**
      * Splits the voxels in the location into two lists along a given plane.
      *
      * <p>The voxels are split into two lists based on their position relative to the plane. Voxels
