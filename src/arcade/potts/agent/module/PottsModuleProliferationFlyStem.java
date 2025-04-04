@@ -18,7 +18,7 @@ import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.Direction;
-import static arcade.potts.util.PottsEnums.State;
+import arcade.potts.util.PottsEnums.State;
 
 /**
  * Extension of {@link PottsModuleProliferationSimple} with a custom addCell method for fly stem
@@ -91,6 +91,13 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         return splitDirectionDistribution.nextDouble();
     }
 
+    /**
+     * Gets the smaller location with fewer voxels and returns it.
+     *
+     * @param location1 the {@link PottsLocation} to compare to location2.
+     * @param location2 {@link PottsLocation} to compare to location1.
+     * @return the smaller location.
+     */
     public static PottsLocation getSmallerLocation(
             PottsLocation location1, PottsLocation location2) {
         if (location1.getVolume() < location2.getVolume()) {
@@ -100,6 +107,13 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         }
     }
 
+    /**
+     * Gets the location with the lower centroid and returns it.
+     *
+     * @param location1 {@link PottsLocation} to compare to location2.
+     * @param location2 {@link PottsLocation} to compare to location1.
+     * @return the basal location.
+     */
     public static PottsLocation getBasalLocation(PottsLocation location1, PottsLocation location2) {
         double[] centroid1 = location1.getCentroid();
         double[] centroid2 = location2.getCentroid();
