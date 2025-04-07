@@ -15,16 +15,16 @@ import arcade.patch.agent.cell.PatchCellCART;
 public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
 
     /** Rate of IL-2 production due to antigen-induced activation [molecules IL-2/cell/min]. */
-    private final double IL2ProdRateActive = 293.27;
+    private final double iL2ProdRateActive = 293.27;
 
     /** Rate of IL-2 production due to IL-2 feedback [molecules IL-2/cell/min]. */
-    private final double IL2ProdRateMaxFeedback = 16.62;
+    private final double iL2ProdRateMaxFeedback = 16.62;
 
     /** Delay in IL-2 synthesis after antigen-induced activation. */
-    private final int IL2SynthesisDelay;
+    private final int iL2SynthesisDelay;
 
     /** Total rate of IL-2 production. */
-    private double IL2ProdRate;
+    private double iL2ProdRate;
 
     /** Amount of IL-2 bound in past being used for current IL-2 production calculation. */
     private double priorIL2prod;
@@ -41,32 +41,32 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
 
         // Set parameters.
         Parameters parameters = cell.getParameters();
-        this.IL2SynthesisDelay = parameters.getInt("inflammation/IL2_SYNTHESIS_DELAY");
-        IL2ProdRate = 0;
+        this.iL2SynthesisDelay = parameters.getInt("inflammation/IL2_SYNTHESIS_DELAY");
+        iL2ProdRate = 0;
     }
 
     @Override
     public void stepProcess(MersenneTwisterFast random, Simulation sim) {
 
         // Determine IL-2 production rate as a function of IL-2 bound.
-        int prodIndex = (iL2Ticker % boundArray.length) - IL2SynthesisDelay;
+        int prodIndex = (iL2Ticker % boundArray.length) - iL2SynthesisDelay;
         if (prodIndex < 0) {
             prodIndex += boundArray.length;
         }
         priorIL2prod = boundArray[prodIndex];
-        IL2ProdRate = IL2ProdRateMaxFeedback * (priorIL2prod / iL2Receptors);
+        iL2ProdRate = iL2ProdRateMaxFeedback * (priorIL2prod / iL2Receptors);
 
         // Add IL-2 production rate dependent on antigen-induced
         // cell activation if cell is activated.
-        if (active && activeTicker >= IL2SynthesisDelay) {
-            IL2ProdRate += IL2ProdRateActive;
+        if (active && activeTicker >= iL2SynthesisDelay) {
+            iL2ProdRate += iL2ProdRateActive;
         }
 
         // Update environment.
         // Take current IL2 external concentration and add the amount produced,
         // then convert units back to molecules/cm^3.
         double IL2Env =
-                (((extIL2 - (extIL2 * fraction - amts[IL2_EXT])) + IL2ProdRate)
+                (((extIL2 - (extIL2 * fraction - amts[IL2_EXT])) + iL2ProdRate)
                         * 1E12
                         / loc.getVolume());
 
