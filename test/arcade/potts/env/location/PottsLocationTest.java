@@ -1394,7 +1394,7 @@ public class PottsLocationTest {
     void swapVoxels_validLists_swapsVoxels() {
         PottsLocationMock locA = new PottsLocationMock(voxelListA);
         PottsLocationMock locB = new PottsLocationMock(voxelListB);
-        locA.swapVoxels(locB);
+        PottsLocation.swapVoxels(locA, locB);
         assertEquals(voxelListB, locA.voxels);
         assertEquals(voxelListA, locB.voxels);
     }
