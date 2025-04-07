@@ -9,6 +9,8 @@ import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.Plane;
 import arcade.core.util.Vector;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Region;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
@@ -1388,6 +1390,15 @@ public class PottsLocationTest {
         assertEquals(8. / 3, split.cx, EPSILON);
         assertEquals(1. / 3, split.cy, EPSILON);
         assertEquals(3. / 3, split.cz, EPSILON);
+    }
+
+    @Test
+    void swapVoxels_validLists_swapsVoxels() {
+        PottsLocationMock locA = new PottsLocationMock(voxelListA);
+        PottsLocationMock locB = new PottsLocationMock(voxelListB);
+        locA.swapVoxels(locB);
+        assertEquals(voxelListB, locA.voxels);
+        assertEquals(voxelListA, locB.voxels);
     }
 
     @Test

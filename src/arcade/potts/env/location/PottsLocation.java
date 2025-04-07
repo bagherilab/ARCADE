@@ -10,6 +10,8 @@ import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.util.Plane;
 import arcade.core.util.Utilities;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Region;
 
@@ -657,6 +659,19 @@ public abstract class PottsLocation implements Location {
         height = calculateHeight();
         calculateCenter();
         return makeLocation(voxelsB);
+    }
+
+    /**
+     * Swaps the voxels in this location with the voxels in another location.
+     *
+     * @param location the location to swap with
+     */
+    public void swapVoxels(PottsLocation location) {
+        ArrayList<Voxel> initVoxels = new ArrayList<>(voxels);
+        voxels.clear();
+        voxels.addAll(location.voxels);
+        location.voxels.clear();
+        location.voxels.addAll(initVoxels);
     }
 
     /**
