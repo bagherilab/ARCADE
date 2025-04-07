@@ -50,6 +50,7 @@
     <population id="CRITICAL_HEIGHT_NUCLEUS" value="TRUNCATED_NORMAL(MU=6.5,SIGMA=1.5)" units="um" conversion="DS^-1" />
 
     <!-- proliferation module parameters -->
+    <population.module module="proliferation" id="SIZE_TARGET" value="2" description="target ratio of critical volume cell must reach before dividing" />
     <population.module module="proliferation" id="RATE_G1" value="8.33" units="steps/hour" conversion="DT" description="rate of events in proliferative G1 phase" />
     <population.module module="proliferation" id="RATE_S" value="4.35" units="steps/hour" conversion="DT" description="rate of events in proliferative S phase" />
     <population.module module="proliferation" id="RATE_G2" value="0.752" units="steps/hour" conversion="DT" description="rate of events in proliferative G2 phase" />
