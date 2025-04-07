@@ -15,11 +15,11 @@ import arcade.patch.util.PatchEnums.State;
 public class PatchCellCARTCD4 extends PatchCellCART {
 
     /**
-     * Creates a T cell {@code PatchCellCARTCD4} agent. *
+     * Creates a T cell {@code PatchCellCARTCD4} agent.
      *
      * @param container the cell container
      * @param location the {@link Location} of the cell
-     * @param parameters the dictionary of parameters
+     * @param parameters the {@link Parameters} of the cell
      */
     public PatchCellCARTCD4(
             PatchCellContainer container, Location location, Parameters parameters) {
@@ -31,7 +31,7 @@ public class PatchCellCARTCD4 extends PatchCellCART {
      *
      * @param container the cell container
      * @param location the {@link Location} of the cell
-     * @param parameters the dictionary of parameters
+     * @param parameters the {@link Parameters} of the cell
      * @param links the map of population links
      */
     public PatchCellCARTCD4(
