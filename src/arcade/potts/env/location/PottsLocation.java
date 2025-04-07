@@ -666,7 +666,8 @@ public abstract class PottsLocation implements Location {
      * @param location2 the other location to swap
      */
     public static void swapVoxels(PottsLocation location1, PottsLocation location2) {
-        ArrayList<Voxel> loc1InitVoxels = location1.voxels;
+        ArrayList<Voxel> loc1InitVoxels = new ArrayList<Voxel>();
+        loc1InitVoxels.addAll(location1.voxels);
         location1.voxels.clear();
         location1.voxels.addAll(location2.voxels);
         location2.voxels.clear();
