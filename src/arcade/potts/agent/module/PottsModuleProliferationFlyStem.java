@@ -151,8 +151,9 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         // if the gmc location is currently assigned to parent cell, swap the voxels
         // with the daughter cell location
         if (stemLoc == gmcLoc) {
-            ((PottsLocation) cell.getLocation())
-                    .swapVoxels(daughterLoc); // swaps the voxels of the two locations
+            PottsLocation.swapVoxels(
+                    (PottsLocation) cell.getLocation(),
+                    daughterLoc); // swaps the voxels of the two locations
         }
 
         // Reset current cell

@@ -257,11 +257,12 @@ public class PottsModuleProliferationFlyStemTest {
         when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random))).thenReturn(container);
         PottsCell newCell = mock(PottsCell.class);
         when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+        MockedStatic<PottsLocation> mockedStatic = mockStatic(PottsLocation.class);
 
         module.addCell(random, sim);
 
         // swapVoxels should be called
-        verify(stemLoc).swapVoxels(daughterLoc);
+        mockedStatic.verify(() -> PottsLocation.swapVoxels(stemLoc, daughterLoc));
 
         verify(stemCell).reset(potts.ids, potts.regions);
         verify(stemCell).make(42, State.PROLIFERATIVE, random);
@@ -287,11 +288,12 @@ public class PottsModuleProliferationFlyStemTest {
         when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random))).thenReturn(container);
         PottsCell newCell = mock(PottsCell.class);
         when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+        MockedStatic<PottsLocation> mockedStatic = mockStatic(PottsLocation.class);
 
         module.addCell(random, sim);
 
         // swapVoxels should NOT be called.
-        verify(stemLoc, never()).swapVoxels(any());
+        mockedStatic.verify(() -> PottsLocation.swapVoxels(stemLoc, daughterLoc), never());
 
         verify(stemCell).reset(potts.ids, potts.regions);
         verify(stemCell).make(42, State.PROLIFERATIVE, random);

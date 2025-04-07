@@ -672,6 +672,14 @@ public abstract class PottsLocation implements Location {
         location1.voxels.addAll(location2.voxels);
         location2.voxels.clear();
         location2.voxels.addAll(loc1InitVoxels);
+        location1.volume = location1.voxels.size();
+        location1.surface = location1.calculateSurface();
+        location1.height = location1.calculateHeight();
+        location1.calculateCenter();
+        location2.volume = location2.voxels.size();
+        location2.surface = location2.calculateSurface();
+        location2.height = location2.calculateHeight();
+        location2.calculateCenter();
     }
 
     /**

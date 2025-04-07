@@ -9,6 +9,8 @@ import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.Plane;
 import arcade.core.util.Vector;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Region;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
@@ -1391,12 +1393,27 @@ public class PottsLocationTest {
     }
 
     @Test
-    void swapVoxels_validLists_swapsVoxels() {
-        PottsLocationMock locA = new PottsLocationMock(voxelListA);
-        PottsLocationMock locB = new PottsLocationMock(voxelListB);
+    void swapVoxels_validLists_swapsVoxelsCallsUpdateMethodsOnBothLocations() {
+        PottsLocationMock locA = spy(new PottsLocationMock(voxelListA));
+        PottsLocationMock locB = spy(new PottsLocationMock(voxelListB));
+
         PottsLocation.swapVoxels(locA, locB);
+
+        // Ensure voxels are swapped
         assertEquals(voxelListB, locA.voxels);
         assertEquals(voxelListA, locB.voxels);
+
+        // Verify that recalculations are called on locA
+        assertEquals(locA.volume, voxelListB.size());
+        verify(locA).calculateSurface();
+        verify(locA).calculateHeight();
+        verify(locA).calculateCenter();
+
+        // And on locB
+        assertEquals(locB.volume, voxelListA.size());
+        verify(locB).calculateSurface();
+        verify(locB).calculateHeight();
+        verify(locB).calculateCenter();
     }
 
     @Test
