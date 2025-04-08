@@ -20,8 +20,6 @@ import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
-import arcade.potts.util.PottsEnums.Region;
-import arcade.potts.util.PottsEnums.State;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
