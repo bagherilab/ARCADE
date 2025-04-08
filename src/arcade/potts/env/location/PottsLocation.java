@@ -660,7 +660,8 @@ public abstract class PottsLocation implements Location {
     }
 
     /**
-     * Swaps the voxels in two locations and updates location attributes.
+     * Swaps the voxels in two locations and updates each location's size, surface, height, and
+     * center attributes.
      *
      * @param location1 one location to swap
      * @param location2 the other location to swap
