@@ -19,6 +19,7 @@ import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.Direction;
 import arcade.potts.util.PottsEnums.State;
+import static arcade.potts.agent.cell.PottsCellFlyStem.StemType;
 
 /**
  * Extension of {@link PottsModuleProliferationSimple} with a custom addCell method for fly stem
@@ -53,33 +54,41 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
      * @param cell the {@link PottsCellFlyStem} to get the division location for
      * @return the voxel location where the cell will split
      */
-    public static Voxel getCellSplitLocation(PottsCellFlyStem cell) {
+    public static Voxel getCellSplitLocation(StemType stemType, PottsCell cell) {
         ArrayList<Integer> splitOffsetPercent = new ArrayList<>();
-        splitOffsetPercent.add(cell.getStemType().splitOffsetPercentX);
-        splitOffsetPercent.add(cell.getStemType().splitOffsetPercentY);
+        splitOffsetPercent.add(stemType.splitOffsetPercentX);
+        splitOffsetPercent.add(stemType.splitOffsetPercentY);
         return ((PottsLocation) cell.getLocation()).getOffset(splitOffsetPercent);
     }
 
     /**
      * Gets the division plane for the cell after rotating the plane according to
-     * splitDirectionDistribution. The plane is rotated around the XY plane.
+     * splitDirectionDistribution. This follows WT division rules. The plane is rotated around the
+     * XY plane.
      *
      * @param cell the {@link PottsCellFlyStem} to get the division plane for
      * @return the division plane for the cell
      */
-    public Plane getDivisionPlaneWithRotationalVariance(PottsCellFlyStem cell) {
-        Vector plainSplitNormal = cell.getStemType().splitDirection.vector;
+    public Plane getWTDivisionPlaneWithRotationalVariance(PottsCellFlyStem cell, double offset) {
+        Vector plainSplitNormal = StemType.WT.splitDirection.vector;
         Vector rotatedNormalVector =
-                Vector.rotateVectorAroundAxis(
-                        plainSplitNormal,
-                        Direction.XY_PLANE.vector,
-                        getDivisionPlaneRotationOffset());
+                Vector.rotateVectorAroundAxis(plainSplitNormal, Direction.XY_PLANE.vector, offset);
         return new Plane(
                 new Double3D(
-                        getCellSplitLocation(cell).x,
-                        getCellSplitLocation(cell).y,
-                        getCellSplitLocation(cell).z),
+                        getCellSplitLocation(StemType.WT, cell).x,
+                        getCellSplitLocation(StemType.WT, cell).y,
+                        getCellSplitLocation(StemType.WT, cell).z),
                 rotatedNormalVector);
+    }
+
+    public Plane getMUDDivisionPlane(PottsCellFlyStem cell) {
+        Vector plainSplitNormal = StemType.MUDMUT.splitDirection.vector;
+        return new Plane(
+                new Double3D(
+                        getCellSplitLocation(StemType.MUDMUT, cell).x,
+                        getCellSplitLocation(StemType.MUDMUT, cell).y,
+                        getCellSplitLocation(StemType.MUDMUT, cell).z),
+                plainSplitNormal);
     }
 
     /**
@@ -129,7 +138,16 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         Potts potts = ((PottsSimulation) sim).getPotts();
 
         PottsCellFlyStem flyStemCell = (PottsCellFlyStem) cell;
-        Plane divisionPlane = getDivisionPlaneWithRotationalVariance(flyStemCell);
+
+        Plane divisionPlane = null;
+        double offset = getDivisionPlaneRotationOffset();
+
+        if (flyStemCell.getStemType() == StemType.WT
+                || (flyStemCell.getStemType() == StemType.MUDMUT && Math.abs(offset) < 45)) {
+            divisionPlane = getWTDivisionPlaneWithRotationalVariance(flyStemCell, offset);
+        } else if (flyStemCell.getStemType() == StemType.MUDMUT) {
+            divisionPlane = getMUDDivisionPlane(flyStemCell);
+        }
 
         // Split current location
         PottsLocation daughterLoc =
