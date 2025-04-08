@@ -1391,6 +1391,27 @@ public class PottsLocationTest {
     }
 
     @Test
+    void swapVoxels_validLists_swapsVoxelsCallsUpdateMethodsOnBothLocations() {
+        PottsLocationMock locA = spy(new PottsLocationMock(voxelListA));
+        PottsLocationMock locB = spy(new PottsLocationMock(voxelListB));
+
+        PottsLocation.swapVoxels(locA, locB);
+
+        assertEquals(voxelListB, locA.voxels);
+        assertEquals(voxelListA, locB.voxels);
+
+        assertEquals(locA.volume, voxelListB.size());
+        verify(locA).calculateSurface();
+        verify(locA).calculateHeight();
+        verify(locA).calculateCenter();
+
+        assertEquals(locB.volume, voxelListA.size());
+        verify(locB).calculateSurface();
+        verify(locB).calculateHeight();
+        verify(locB).calculateCenter();
+    }
+
+    @Test
     public void split_noOffsetsNoDirection_splitsVoxelsCorrectly() {
         ArrayList<Voxel> voxels = new ArrayList<>();
 
