@@ -74,12 +74,7 @@ public abstract class PottsLocation implements Location {
         setAttributes();
     }
 
-    /**
-     * Sets the {@code PottsLocation} attributes.
-     *
-     * @param id the location id
-     * @param voxels the list of voxels
-     */
+    /** Sets the {@code PottsLocation} attributes. */
     private void setAttributes() {
         this.volume = voxels.size();
         this.surface = calculateSurface();
