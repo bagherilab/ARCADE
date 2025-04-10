@@ -110,9 +110,7 @@ public class PatchCellCARTCD4Test {
                         any(Simulation.class),
                         any(PatchLocation.class),
                         any(MersenneTwisterFast.class));
-        when(random.nextDouble()).thenReturn(0.49);
         simMock.random = random;
-        cellMock.setState(State.UNDEFINED);
     }
 
     @Test
