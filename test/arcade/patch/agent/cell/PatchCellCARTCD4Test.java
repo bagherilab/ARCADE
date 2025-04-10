@@ -67,7 +67,6 @@ public class PatchCellCARTCD4Test {
 
         doReturn(0.0).when(parameters).getDouble(any(String.class));
         doReturn(0).when(parameters).getInt(any(String.class));
-        when(parameters.getDouble("HETEROGENEITY")).thenReturn(0.0);
         when(parameters.getDouble("ENERGY_THRESHOLD")).thenReturn(1.0);
         when(parameters.getDouble("NECROTIC_FRACTION")).thenReturn(0.5);
         when(parameters.getDouble("EXHAUSTED_FRAC")).thenReturn(0.5);
