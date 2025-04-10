@@ -26,20 +26,20 @@ import static arcade.patch.util.PatchEnums.State;
 
 public class PatchCellCARTCD4Test {
 
-    private Parameters parameters;
+    private Parameters parametersMock;
 
-    private PatchLocation location;
+    private PatchLocation locationMock;
 
     private PatchCellContainer container;
 
-    private PatchCellCARTCD4 cell;
+    private PatchCellCARTCD4 cellMock;
 
-    private PatchSimulation sim;
+    private PatchSimulation simMock;
 
     @BeforeEach
     public final void setUp() throws NoSuchFieldException, IllegalAccessException {
-        parameters = spy(new Parameters(new MiniBox(), null, null));
-        location = mock(PatchLocation.class);
+        parametersMock = spy(new Parameters(new MiniBox(), null, null));
+        locationMock = mock(PatchLocation.class);
 
         int id = 1;
         int parentId = 1;
@@ -65,95 +65,95 @@ public class PatchCellCARTCD4Test {
                         criticalVolume,
                         criticalHeight);
 
-        doReturn(0.0).when(parameters).getDouble(any(String.class));
-        doReturn(0).when(parameters).getInt(any(String.class));
-        when(parameters.getDouble("ENERGY_THRESHOLD")).thenReturn(1.0);
-        when(parameters.getDouble("NECROTIC_FRACTION")).thenReturn(0.5);
-        when(parameters.getDouble("EXHAUSTED_FRAC")).thenReturn(0.5);
-        when(parameters.getDouble("SENESCENT_FRACTION")).thenReturn(0.5);
-        when(parameters.getDouble("ANERGIC_FRACTION")).thenReturn(0.5);
-        when(parameters.getDouble("PROLIFERATIVE_FRACTION")).thenReturn(0.5);
-        when(parameters.getInt("SELF_RECEPTORS")).thenReturn(randomIntBetween(100, 200));
-        when(parameters.getDouble("SEARCH_ABILITY")).thenReturn(1.0);
-        when(parameters.getDouble("CAR_AFFINITY")).thenReturn(10 * Math.pow(10, -7));
-        when(parameters.getDouble("CAR_ALPHA")).thenReturn(3.0);
-        when(parameters.getDouble("CAR_BETA")).thenReturn(0.01);
-        when(parameters.getDouble("SELF_RECEPTOR_AFFINITY")).thenReturn(7.8E-6);
-        when(parameters.getDouble("SELF_ALPHA")).thenReturn(3.0);
-        when(parameters.getDouble("SELF_BETA")).thenReturn(0.02);
-        when(parameters.getDouble("CONTACT_FRAC")).thenReturn(7.8E-6);
-        when(parameters.getInt("MAX_ANTIGEN_BINDING")).thenReturn(10);
-        when(parameters.getInt("CARS")).thenReturn(50000);
-        when(parameters.getDouble("APOPTOSIS_AGE")).thenReturn(120960.0);
-        when(parameters.getInt("MAX_DENSITY")).thenReturn(54);
-        when(parameters.getInt("DIVISION_POTENTIAL")).thenReturn(10);
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        when(parametersMock.getDouble("ENERGY_THRESHOLD")).thenReturn(1.0);
+        when(parametersMock.getDouble("NECROTIC_FRACTION")).thenReturn(0.5);
+        when(parametersMock.getDouble("EXHAUSTED_FRAC")).thenReturn(0.5);
+        when(parametersMock.getDouble("SENESCENT_FRACTION")).thenReturn(0.5);
+        when(parametersMock.getDouble("ANERGIC_FRACTION")).thenReturn(0.5);
+        when(parametersMock.getDouble("PROLIFERATIVE_FRACTION")).thenReturn(0.5);
+        when(parametersMock.getInt("SELF_RECEPTORS")).thenReturn(randomIntBetween(100, 200));
+        when(parametersMock.getDouble("SEARCH_ABILITY")).thenReturn(1.0);
+        when(parametersMock.getDouble("CAR_AFFINITY")).thenReturn(10 * Math.pow(10, -7));
+        when(parametersMock.getDouble("CAR_ALPHA")).thenReturn(3.0);
+        when(parametersMock.getDouble("CAR_BETA")).thenReturn(0.01);
+        when(parametersMock.getDouble("SELF_RECEPTOR_AFFINITY")).thenReturn(7.8E-6);
+        when(parametersMock.getDouble("SELF_ALPHA")).thenReturn(3.0);
+        when(parametersMock.getDouble("SELF_BETA")).thenReturn(0.02);
+        when(parametersMock.getDouble("CONTACT_FRAC")).thenReturn(7.8E-6);
+        when(parametersMock.getInt("MAX_ANTIGEN_BINDING")).thenReturn(10);
+        when(parametersMock.getInt("CARS")).thenReturn(50000);
+        when(parametersMock.getDouble("APOPTOSIS_AGE")).thenReturn(120960.0);
+        when(parametersMock.getInt("MAX_DENSITY")).thenReturn(54);
+        when(parametersMock.getInt("DIVISION_POTENTIAL")).thenReturn(10);
 
-        cell = spy(new PatchCellCARTCD4(container, location, parameters));
+        cellMock = spy(new PatchCellCARTCD4(container, locationMock, parametersMock));
 
-        sim = mock(PatchSimulation.class);
-        cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
-        cell.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
-        cell.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
+        simMock = mock(PatchSimulation.class);
+        cellMock.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
+        cellMock.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
+        cellMock.processes.put(Domain.INFLAMMATION, mock(PatchProcessInflammation.class));
         PatchModule module = mock(PatchModule.class);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         doAnswer(
                         invocationOnMock -> {
-                            cell.state = invocationOnMock.getArgument(0);
-                            cell.module = module;
+                            cellMock.state = invocationOnMock.getArgument(0);
+                            cellMock.module = module;
                             return null;
                         })
-                .when(cell)
+                .when(cellMock)
                 .setState(any(State.class));
-        doReturn(new PatchCellTissue(container, location, parameters))
-                .when(cell)
+        doReturn(new PatchCellTissue(container, locationMock, parametersMock))
+                .when(cellMock)
                 .bindTarget(
                         any(Simulation.class),
                         any(PatchLocation.class),
                         any(MersenneTwisterFast.class));
         when(random.nextDouble()).thenReturn(0.49);
-        sim.random = random;
-        cell.setState(State.UNDEFINED);
+        simMock.random = random;
+        cellMock.setState(State.UNDEFINED);
     }
 
     @Test
     public void step_called_increasesAge() {
-        int initialAge = cell.getAge();
+        int initialAge = cellMock.getAge();
 
-        cell.step(sim);
+        cellMock.step(simMock);
 
-        assertEquals(initialAge + 1, cell.getAge());
+        assertEquals(initialAge + 1, cellMock.getAge());
     }
 
     @Test
     public void step_whenEnergyIsLow_setsStateToApoptotic() {
-        cell.setState(State.UNDEFINED);
+        cellMock.setState(State.UNDEFINED);
 
-        cell.setEnergy(-1 * randomIntBetween(2, 5));
+        cellMock.setEnergy(-1 * randomIntBetween(2, 5));
 
-        cell.step(sim);
+        cellMock.step(simMock);
 
-        assertEquals(State.APOPTOTIC, cell.getState());
-        assertEquals(AntigenFlag.UNBOUND, cell.getBindingFlag());
-        assertFalse(cell.getActivationStatus());
+        assertEquals(State.APOPTOTIC, cellMock.getState());
+        assertEquals(AntigenFlag.UNBOUND, cellMock.getBindingFlag());
+        assertFalse(cellMock.getActivationStatus());
     }
 
     @Test
     public void step_whenEnergyIsNegativeAndMoreThanThreshold_setsStateToStarved() {
-        cell.setEnergy(-0.5);
+        cellMock.setEnergy(-0.5);
 
-        cell.step(sim);
+        cellMock.step(simMock);
 
-        assertEquals(State.STARVED, cell.getState());
-        assertEquals(AntigenFlag.UNBOUND, cell.getBindingFlag());
+        assertEquals(State.STARVED, cellMock.getState());
+        assertEquals(AntigenFlag.UNBOUND, cellMock.getBindingFlag());
     }
 
     @Test
     public void step_whenEnergyIsNegativeAndLessThanThreshold_setsStateToApoptotic() {
-        cell.setEnergy(-1.5);
+        cellMock.setEnergy(-1.5);
 
-        cell.step(sim);
+        cellMock.step(simMock);
 
-        assertEquals(State.APOPTOTIC, cell.getState());
+        assertEquals(State.APOPTOTIC, cellMock.getState());
     }
 
     @Test
@@ -161,14 +161,14 @@ public class PatchCellCARTCD4Test {
             throws NoSuchFieldException, IllegalAccessException {
         Field div = PatchCell.class.getDeclaredField("divisions");
         div.setAccessible(true);
-        div.set(cell, cell.divisionPotential);
-        when(sim.random.nextDouble()).thenReturn(0.51);
+        div.set(cellMock, cellMock.divisionPotential);
+        when(simMock.random.nextDouble()).thenReturn(0.51);
 
-        cell.step(sim);
+        cellMock.step(simMock);
 
-        assertTrue(cell.getState() == State.APOPTOTIC);
-        assertEquals(AntigenFlag.UNBOUND, cell.getBindingFlag());
-        assertFalse(cell.getActivationStatus());
+        assertTrue(cellMock.getState() == State.APOPTOTIC);
+        assertEquals(AntigenFlag.UNBOUND, cellMock.getBindingFlag());
+        assertFalse(cellMock.getActivationStatus());
     }
 
     @Test
@@ -176,25 +176,25 @@ public class PatchCellCARTCD4Test {
             throws NoSuchFieldException, IllegalAccessException {
         Field div = PatchCell.class.getDeclaredField("divisions");
         div.setAccessible(true);
-        div.set(cell, cell.divisionPotential);
-        when(sim.random.nextDouble()).thenReturn(0.49);
+        div.set(cellMock, cellMock.divisionPotential);
+        when(simMock.random.nextDouble()).thenReturn(0.49);
 
-        cell.step(sim);
+        cellMock.step(simMock);
 
-        assertTrue(cell.getState() == State.SENESCENT);
-        assertEquals(AntigenFlag.UNBOUND, cell.getBindingFlag());
-        assertFalse(cell.getActivationStatus());
+        assertTrue(cellMock.getState() == State.SENESCENT);
+        assertEquals(AntigenFlag.UNBOUND, cellMock.getBindingFlag());
+        assertFalse(cellMock.getActivationStatus());
     }
 
     @Test
     public void step_whenBoundToBothAntigenAndSelf_setsStateToAnergic() {
-        cell.setBindingFlag(AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR);
+        cellMock.setBindingFlag(AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR);
 
-        cell.step(sim);
+        cellMock.step(simMock);
 
-        assertTrue(cell.getState() == State.APOPTOTIC || cell.getState() == State.ANERGIC);
-        assertEquals(AntigenFlag.UNBOUND, cell.getBindingFlag());
-        assertFalse(cell.getActivationStatus());
+        assertTrue(cellMock.getState() == State.APOPTOTIC || cellMock.getState() == State.ANERGIC);
+        assertEquals(AntigenFlag.UNBOUND, cellMock.getBindingFlag());
+        assertFalse(cellMock.getActivationStatus());
     }
 
     @Test
@@ -202,16 +202,16 @@ public class PatchCellCARTCD4Test {
             throws NoSuchFieldException, IllegalAccessException {
         Field boundAntigens = PatchCellCART.class.getDeclaredField("boundCARAntigensCount");
         boundAntigens.setAccessible(true);
-        boundAntigens.set(cell, 0);
-        cell.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);
+        boundAntigens.set(cellMock, 0);
+        cellMock.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);
         Schedule schedule = mock(Schedule.class);
         doReturn(true).when(schedule).scheduleOnce(any(Steppable.class));
-        doReturn(schedule).when(sim).getSchedule();
+        doReturn(schedule).when(simMock).getSchedule();
 
-        cell.step(sim);
+        cellMock.step(simMock);
 
-        assertEquals(State.STIMULATORY, cell.getState());
-        assertTrue(cell.getActivationStatus());
+        assertEquals(State.STIMULATORY, cellMock.getState());
+        assertTrue(cellMock.getActivationStatus());
     }
 
     @Test
@@ -219,39 +219,42 @@ public class PatchCellCARTCD4Test {
             throws NoSuchFieldException, IllegalAccessException {
         Field active = PatchCellCART.class.getDeclaredField("activated");
         active.setAccessible(true);
-        active.set(cell, true);
+        active.set(cellMock, true);
 
-        cell.step(sim);
+        cellMock.step(simMock);
 
-        assertEquals(State.PROLIFERATIVE, cell.getState());
+        assertEquals(State.PROLIFERATIVE, cellMock.getState());
     }
 
     @Test
     public void step_whenNotActivated_setsStateToMigratory()
             throws NoSuchFieldException, IllegalAccessException {
-        when(sim.random.nextDouble()).thenReturn(0.51);
+        when(simMock.random.nextDouble()).thenReturn(0.51);
         Field active = PatchCellCART.class.getDeclaredField("activated");
         active.setAccessible(true);
-        active.set(cell, false);
+        active.set(cellMock, false);
 
-        cell.step(sim);
+        cellMock.step(simMock);
 
-        assertTrue(cell.getState() == State.MIGRATORY || cell.getState() == State.PROLIFERATIVE);
+        assertTrue(
+                cellMock.getState() == State.MIGRATORY
+                        || cellMock.getState() == State.PROLIFERATIVE);
     }
 
     @Test
     public void step_whenOverstimulated_setsStateToExhausted()
             throws NoSuchFieldException, IllegalAccessException {
-        when(sim.random.nextDouble()).thenReturn(0.49);
+        when(simMock.random.nextDouble()).thenReturn(0.49);
         Field boundAntigens = PatchCellCART.class.getDeclaredField("boundCARAntigensCount");
         boundAntigens.setAccessible(true);
-        boundAntigens.set(cell, cell.maxAntigenBinding + 1);
-        cell.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);
+        boundAntigens.set(cellMock, cellMock.maxAntigenBinding + 1);
+        cellMock.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);
 
-        cell.step(sim);
+        cellMock.step(simMock);
 
-        assertTrue(cell.getState() == State.APOPTOTIC || cell.getState() == State.EXHAUSTED);
-        assertEquals(AntigenFlag.UNBOUND, cell.getBindingFlag());
-        assertFalse(cell.getActivationStatus());
+        assertTrue(
+                cellMock.getState() == State.APOPTOTIC || cellMock.getState() == State.EXHAUSTED);
+        assertEquals(AntigenFlag.UNBOUND, cellMock.getBindingFlag());
+        assertFalse(cellMock.getActivationStatus());
     }
 }
