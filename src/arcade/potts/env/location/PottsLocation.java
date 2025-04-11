@@ -71,6 +71,11 @@ public abstract class PottsLocation implements Location {
      */
     public PottsLocation(ArrayList<Voxel> voxels) {
         this.voxels = new ArrayList<>(voxels);
+        setAttributes();
+    }
+
+    /** Sets the {@code PottsLocation} attributes. */
+    public void setAttributes() {
         this.volume = voxels.size();
         this.surface = calculateSurface();
         this.height = calculateHeight();
@@ -657,6 +662,24 @@ public abstract class PottsLocation implements Location {
         height = calculateHeight();
         calculateCenter();
         return makeLocation(voxelsB);
+    }
+
+    /**
+     * Swaps the voxels in two locations and updates each location's size, surface, height, and
+     * center attributes.
+     *
+     * @param location1 one location to swap
+     * @param location2 the other location to swap
+     */
+    public static void swapVoxels(PottsLocation location1, PottsLocation location2) {
+        ArrayList<Voxel> tempVoxelList = new ArrayList<Voxel>();
+        tempVoxelList.addAll(location1.voxels);
+        location1.voxels.clear();
+        location1.voxels.addAll(location2.voxels);
+        location2.voxels.clear();
+        location2.voxels.addAll(tempVoxelList);
+        location1.setAttributes();
+        location2.setAttributes();
     }
 
     /**
