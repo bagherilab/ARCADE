@@ -252,10 +252,11 @@ extends <a href="PottsModuleProliferation.html" title="class in arcade.potts.age
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>(package private) static double</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SIZE_TARGET">SIZE_TARGET</a></span></code></th>
+<td class="colFirst"><code>(package private) double</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#sizeTarget">sizeTarget</a></span></code></th>
 <td class="colLast">
-<div class="block">Target ratio of critical volume for division size checkpoint.</div>
+<div class="block">Target ratio of critical volume for division size checkpoint (cell must reach CRITICAL_VOLUME
+ * SIZE_TARGET * SIZE_CHECKPOINT to divide).</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -415,18 +416,15 @@ extends <a href="PottsModuleProliferation.html" title="class in arcade.potts.age
 </dl>
 </li>
 </ul>
-<a id="SIZE_TARGET">
+<a id="sizeTarget">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>SIZE_TARGET</h4>
-<pre>static final&nbsp;double SIZE_TARGET</pre>
-<div class="block">Target ratio of critical volume for division size checkpoint.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../constant-values.html#arcade.potts.agent.module.PottsModuleProliferationSimple.SIZE_TARGET">Constant Field Values</a></dd>
-</dl>
+<h4>sizeTarget</h4>
+<pre>final&nbsp;double sizeTarget</pre>
+<div class="block">Target ratio of critical volume for division size checkpoint (cell must reach CRITICAL_VOLUME
+ * SIZE_TARGET * SIZE_CHECKPOINT to divide).</div>
 </li>
 </ul>
 <a id="rateG1">
