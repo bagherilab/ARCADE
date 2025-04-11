@@ -11,6 +11,9 @@ import arcade.potts.env.location.PottsLocations;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.agent.module.PottsModule.PoissonFactory;
@@ -50,6 +53,7 @@ public class PottsModuleProliferationSimpleTest {
         doReturn(pottsMock).when(simMock).getPotts();
 
         MiniBox defaults = new MiniBox();
+        defaults.put("proliferation/SIZE_TARGET", randomDoubleBetween(1, 2));
         defaults.put("proliferation/RATE_G1", randomDoubleBetween(1, 10));
         defaults.put("proliferation/RATE_S", randomDoubleBetween(1, 10));
         defaults.put("proliferation/RATE_G2", randomDoubleBetween(1, 10));
@@ -72,6 +76,7 @@ public class PottsModuleProliferationSimpleTest {
         doReturn(parameters).when(cell).getParameters();
         PottsModuleProliferationSimple module = new PottsModuleProliferationSimple(cell);
 
+        assertEquals(parameters.getDouble("proliferation/SIZE_TARGET"), module.sizeTarget);
         assertEquals(parameters.getDouble("proliferation/RATE_G1"), module.rateG1, EPSILON);
         assertEquals(parameters.getDouble("proliferation/RATE_S"), module.rateS, EPSILON);
         assertEquals(parameters.getDouble("proliferation/RATE_G2"), module.rateG2, EPSILON);
@@ -195,7 +200,7 @@ public class PottsModuleProliferationSimpleTest {
         module.currentSteps = 0;
         module.stepG1(random);
 
-        verify(cell, times(2)).updateTarget(module.cellGrowthRate, SIZE_TARGET);
+        verify(cell, times(2)).updateTarget(module.cellGrowthRate, module.sizeTarget);
     }
 
     @Test
@@ -219,7 +224,8 @@ public class PottsModuleProliferationSimpleTest {
         module.currentSteps = 0;
         module.stepG1(random);
 
-        verify(cell, times(2)).updateTarget(Region.NUCLEUS, module.nucleusGrowthRate, SIZE_TARGET);
+        verify(cell, times(2))
+                .updateTarget(Region.NUCLEUS, module.nucleusGrowthRate, module.sizeTarget);
     }
 
     @Test
@@ -302,7 +308,7 @@ public class PottsModuleProliferationSimpleTest {
         module.currentSteps = 0;
         module.stepS(random);
 
-        verify(cell, times(2)).updateTarget(module.cellGrowthRate, SIZE_TARGET);
+        verify(cell, times(2)).updateTarget(module.cellGrowthRate, module.sizeTarget);
     }
 
     @Test
@@ -321,7 +327,8 @@ public class PottsModuleProliferationSimpleTest {
         module.currentSteps = 0;
         module.stepS(random);
 
-        verify(cell, times(2)).updateTarget(Region.NUCLEUS, module.nucleusGrowthRate, SIZE_TARGET);
+        verify(cell, times(2))
+                .updateTarget(Region.NUCLEUS, module.nucleusGrowthRate, module.sizeTarget);
     }
 
     @Test
@@ -368,10 +375,11 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void stepG2_withTransitionNotArrested_updatesPhase() {
         int steps = randomIntBetween(1, parameters.getInt("proliferation/STEPS_G2"));
+        double sizeTarget = parameters.getDouble("proliferation/SIZE_TARGET");
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         double volume = randomDoubleBetween(0, 100);
-        doReturn((volume * SIZE_CHECKPOINT * SIZE_TARGET) + 1).when(cell).getVolume();
+        doReturn((volume * SIZE_CHECKPOINT * sizeTarget) + 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
 
         PottsModuleProliferationSimple module = spy(new PottsModuleProliferationSimple(cell));
@@ -395,7 +403,8 @@ public class PottsModuleProliferationSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         double volume = randomDoubleBetween(0, 100);
-        doReturn((volume * SIZE_CHECKPOINT * SIZE_TARGET) + 1).when(cell).getVolume();
+        double sizeTarget = parameters.getDouble("proliferation/SIZE_TARGET");
+        doReturn((volume * SIZE_CHECKPOINT * sizeTarget) + 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
 
         PottsModuleProliferationSimple module = spy(new PottsModuleProliferationSimple(cell));
@@ -417,10 +426,11 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void stepG2_withTransitionArrested_maintainsPhase() {
         int steps = randomIntBetween(1, parameters.getInt("proliferation/STEPS_G2"));
+        double sizeTarget = parameters.getDouble("proliferation/SIZE_TARGET");
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         double volume = randomDoubleBetween(0, 100);
-        doReturn((volume * SIZE_CHECKPOINT * SIZE_TARGET) - 1).when(cell).getVolume();
+        doReturn((volume * SIZE_CHECKPOINT * sizeTarget) - 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
 
         PottsModuleProliferationSimple module = spy(new PottsModuleProliferationSimple(cell));
@@ -442,16 +452,17 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void stepG2_withTransitionArrestedRegion_maintainsPhase() {
         int steps = randomIntBetween(1, parameters.getInt("proliferation/STEPS_G2"));
+        double sizeTarget = parameters.getDouble("proliferation/SIZE_TARGET");
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         doReturn(true).when(cell).hasRegions();
 
         double volume = randomDoubleBetween(0, 100);
-        doReturn((volume * SIZE_CHECKPOINT * SIZE_TARGET) + 1).when(cell).getVolume();
+        doReturn((volume * SIZE_CHECKPOINT * sizeTarget) + 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
 
         double regionVolume = randomDoubleBetween(0, 100);
-        doReturn((regionVolume * SIZE_CHECKPOINT * SIZE_TARGET) - 1)
+        doReturn((regionVolume * SIZE_CHECKPOINT * sizeTarget) - 1)
                 .when(cell)
                 .getVolume(Region.NUCLEUS);
         doReturn(regionVolume).when(cell).getCriticalVolume(Region.NUCLEUS);
@@ -476,8 +487,9 @@ public class PottsModuleProliferationSimpleTest {
     public void stepM_withoutTransitionArrested_maintainPhase() {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
+        double sizeTarget = parameters.getDouble("proliferation/SIZE_TARGET");
         double volume = randomDoubleBetween(0, 100);
-        doReturn((volume * SIZE_CHECKPOINT * SIZE_TARGET) - 1).when(cell).getVolume();
+        doReturn((volume * SIZE_CHECKPOINT * sizeTarget) - 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
 
         PottsModuleProliferationSimple module = spy(new PottsModuleProliferationSimple(cell));
@@ -511,7 +523,7 @@ public class PottsModuleProliferationSimpleTest {
         module.currentSteps = 0;
         module.stepG2(random);
 
-        verify(cell, times(2)).updateTarget(module.cellGrowthRate, SIZE_TARGET);
+        verify(cell, times(2)).updateTarget(module.cellGrowthRate, module.sizeTarget);
     }
 
     @Test
@@ -530,7 +542,8 @@ public class PottsModuleProliferationSimpleTest {
         module.currentSteps = 0;
         module.stepG2(random);
 
-        verify(cell, times(2)).updateTarget(Region.NUCLEUS, module.nucleusGrowthRate, SIZE_TARGET);
+        verify(cell, times(2))
+                .updateTarget(Region.NUCLEUS, module.nucleusGrowthRate, module.sizeTarget);
     }
 
     @Test
@@ -594,7 +607,7 @@ public class PottsModuleProliferationSimpleTest {
         module.currentSteps = 0;
         module.stepM(random, simMock);
 
-        verify(cell, times(2)).updateTarget(module.cellGrowthRate, SIZE_TARGET);
+        verify(cell, times(2)).updateTarget(module.cellGrowthRate, module.sizeTarget);
     }
 
     @Test
