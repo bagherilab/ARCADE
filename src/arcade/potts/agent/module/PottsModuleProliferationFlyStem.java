@@ -34,6 +34,12 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
     final String differentiationRuleset;
 
     /**
+     * Range of values considered equal when determining daughter cell identity. ex. if ruleset is
+     * location, range determines the distance between centroid y values that is considered equal.
+     */
+    final double range;
+
+    /**
      * Creates a simple proliferation {@code Module} for the given {@link PottsCellFlyStem}.
      *
      * @param cell the {@link PottsCellFlyStem} the module is associated with
@@ -46,6 +52,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
                 (NormalDistribution)
                         parameters.getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION");
         differentiationRuleset = parameters.getString("proliferation/DIFFERENTIATION_RULESET");
+        range = parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE");
     }
 
     /**
@@ -152,39 +159,84 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         // Split current location
         PottsLocation daughterLoc =
                 (PottsLocation) ((PottsLocation2D) cell.getLocation()).split(random, divisionPlane);
-        PottsLocation stemLoc = (PottsLocation) cell.getLocation();
+        PottsLocation parentLoc = (PottsLocation) cell.getLocation();
 
-        Location gmcLoc = null;
+        // Determine if daughter should be stem
+        boolean isDaughterStem = daughterStem(parentLoc, daughterLoc);
 
-        // logic to determine which location should be with which cell());
+        // If daughter is not stem, determine which location is GMC and make cells
+        if (isDaughterStem == false) {
+
+            Location gmcLoc = null;
+
+            // logic to determine which location should daughter cell
+            if (differentiationRuleset.equals("volume")) {
+                gmcLoc = getSmallerLocation(daughterLoc, parentLoc);
+            } else if (differentiationRuleset.equals("location")) {
+                gmcLoc = getBasalLocation(daughterLoc, parentLoc);
+            } else {
+                throw new IllegalArgumentException(
+                        "Invalid differentiation ruleset: " + differentiationRuleset);
+            }
+
+            // if the gmc location is currently assigned to parent cell, swap the voxels
+            // with the daughter cell location
+            if (parentLoc == gmcLoc) {
+                PottsLocation.swapVoxels(
+                        (PottsLocation) cell.getLocation(),
+                        daughterLoc); // swaps the voxels of the two locations
+            }
+
+            // Reset current cell
+            cell.reset(potts.ids, potts.regions);
+
+            // Create and schedule new cell
+            int newID = sim.getID();
+            CellContainer newContainer = cell.make(newID, State.PROLIFERATIVE, random);
+            PottsCell newCell =
+                    (PottsCell) newContainer.convert(sim.getCellFactory(), daughterLoc, random);
+            sim.getGrid().addObject(newCell, null);
+            potts.register(newCell);
+            newCell.reset(potts.ids, potts.regions);
+            newCell.schedule(sim.getSchedule());
+        } else if (isDaughterStem) {
+            // If daughter is stem, call make with parent pop as newPop
+            // Reset current cell
+            cell.reset(potts.ids, potts.regions);
+            // Create and schedule new cell
+            int newID = sim.getID();
+            CellContainer newContainer =
+                    ((PottsCellFlyStem) cell)
+                            .make(newID, State.PROLIFERATIVE, random, cell.getPop());
+            PottsCell newCell =
+                    (PottsCell) newContainer.convert(sim.getCellFactory(), daughterLoc, random);
+            sim.getGrid().addObject(newCell, null);
+            potts.register(newCell);
+            newCell.reset(potts.ids, potts.regions);
+            newCell.schedule(sim.getSchedule());
+        }
+    }
+
+    public boolean daughterStem(PottsLocation Location1, PottsLocation Location2) {
         if (differentiationRuleset.equals("volume")) {
-            gmcLoc = getSmallerLocation(daughterLoc, stemLoc);
+            double vol1 = Location1.getVolume();
+            double vol2 = Location2.getVolume();
+            if (Math.abs(vol1 - vol2) < range) {
+                return true;
+            } else {
+                return false;
+            }
         } else if (differentiationRuleset.equals("location")) {
-            gmcLoc = getBasalLocation(daughterLoc, stemLoc);
+            double[] centroid1 = Location1.getCentroid();
+            double[] centroid2 = Location2.getCentroid();
+            if (Math.abs(centroid1[1] - centroid2[1]) < range) {
+                return true;
+            } else {
+                return false;
+            }
         } else {
             throw new IllegalArgumentException(
                     "Invalid differentiation ruleset: " + differentiationRuleset);
         }
-
-        // if the gmc location is currently assigned to parent cell, swap the voxels
-        // with the daughter cell location
-        if (stemLoc == gmcLoc) {
-            PottsLocation.swapVoxels(
-                    (PottsLocation) cell.getLocation(),
-                    daughterLoc); // swaps the voxels of the two locations
-        }
-
-        // Reset current cell
-        cell.reset(potts.ids, potts.regions);
-
-        // Create and schedule new cell
-        int newID = sim.getID();
-        CellContainer newContainer = cell.make(newID, State.PROLIFERATIVE, random);
-        PottsCell newCell =
-                (PottsCell) newContainer.convert(sim.getCellFactory(), daughterLoc, random);
-        sim.getGrid().addObject(newCell, null);
-        potts.register(newCell);
-        newCell.reset(potts.ids, potts.regions);
-        newCell.schedule(sim.getSchedule());
     }
 }

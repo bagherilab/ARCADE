@@ -90,6 +90,13 @@ public class PottsCellFlyStem extends PottsCell {
 
         int newPop = links == null ? pop : links.next(random);
 
+        return make(newID, newState, random, newPop);
+    }
+
+    public PottsCellContainer make(
+            int newID, CellState newState, MersenneTwisterFast random, int newPop) {
+        divisions++;
+
         double daughterCellCriticalVolume =
                 criticalVolume * stemType.daughterCellCriticalVolumeProportion;
 
