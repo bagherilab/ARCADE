@@ -17,7 +17,10 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
     /** Threshold for critical volume size checkpoint. */
     static final double SIZE_CHECKPOINT = 0.95;
 
-    /** Target ratio of critical volume for division size checkpoint. */
+    /**
+     * Target ratio of critical volume for division size checkpoint (cell must reach CRITICAL_VOLUME
+     * * SIZE_TARGET * SIZE_CHECKPOINT to divide).
+     */
     final double sizeTarget;
 
     /** Event rate for G1 phase (steps/tick). */
