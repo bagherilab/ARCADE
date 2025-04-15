@@ -59,7 +59,6 @@ public class PatchCellCARTCD4 extends PatchCellCART {
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
 
-        // Increase age of cell.
         super.age++;
 
         if (state != State.APOPTOTIC && age > apoptosisAge) {
@@ -68,7 +67,6 @@ public class PatchCellCARTCD4 extends PatchCellCART {
             this.activated = false;
         }
 
-        // Increase time since last active ticker
         super.lastActiveTicker++;
         if (super.lastActiveTicker != 0 && super.lastActiveTicker % MINUTES_IN_DAY == 0) {
             if (super.boundCARAntigensCount != 0) {
@@ -79,11 +77,8 @@ public class PatchCellCARTCD4 extends PatchCellCART {
             super.activated = false;
         }
 
-        // Step metabolism process.
         super.processes.get(Domain.METABOLISM).step(simstate.random, sim);
 
-        // Check energy status. If cell has less energy than threshold, it will
-        // apoptose. If overall energy is negative, then cell enters quiescence.
         if (state != State.APOPTOTIC) {
             if (super.energy < super.energyThreshold) {
 
@@ -103,7 +98,6 @@ public class PatchCellCARTCD4 extends PatchCellCART {
             }
         }
 
-        // Step inflammation process.
         super.processes.get(Domain.INFLAMMATION).step(simstate.random, sim);
 
         // Change state from undefined.
@@ -117,11 +111,10 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                 super.unbind();
                 this.activated = false;
             } else {
-                // Cell attempts to bind to a target
                 PatchCellTissue target =
                         super.bindTarget(sim, location, new MersenneTwisterFast(simstate.seed()));
                 super.boundTarget = target;
-                // If cell is bound to both antigen and self it will become anergic.
+
                 if (super.getBindingFlag() == AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR) {
                     if (simstate.random.nextDouble() > super.anergicFraction) {
                         super.setState(State.APOPTOTIC);
@@ -131,11 +124,7 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                     super.unbind();
                     this.activated = false;
                 } else if (super.getBindingFlag() == AntigenFlag.BOUND_ANTIGEN) {
-                    // If cell is only bound to target antigen, the cell
-                    // can potentially become properly activated.
 
-                    // Check overstimulation. If cell has bound to
-                    // target antigens too many times, becomes exhausted.
                     if (boundCARAntigensCount > maxAntigenBinding) {
                         if (simstate.random.nextDouble() > super.exhaustedFraction) {
                             super.setState(State.APOPTOTIC);
@@ -145,18 +134,14 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                         super.unbind();
                         this.activated = false;
                     } else {
-                        // if CD4 cell is properly activated, it can stimulate
                         super.setState(State.STIMULATORY);
                         this.lastActiveTicker = 0;
                         this.activated = true;
                     }
                 } else {
-                    // If self binding, unbind
                     if (super.getBindingFlag() == AntigenFlag.BOUND_CELL_RECEPTOR) {
                         super.unbind();
                     }
-                    // Check activation status. If cell has been activated before,
-                    // it will proliferate. If not, it will migrate.
                     if (activated) {
                         super.setState(State.PROLIFERATIVE);
                     } else {
