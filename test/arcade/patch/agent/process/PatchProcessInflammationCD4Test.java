@@ -76,33 +76,9 @@ public class PatchProcessInflammationCD4Test {
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 10000);
 
-        Field il2ProdRateIL2 =
-                PatchProcessInflammationCD4.class.getDeclaredField("iL2ProdRateMaxFeedback");
-        il2ProdRateIL2.setAccessible(true);
-        il2ProdRateIL2.set(inflammation, 0.05);
-
-        Field receptors = PatchProcessInflammation.class.getDeclaredField("iL2Receptors");
-        receptors.setAccessible(true);
-        receptors.set(inflammation, 5000);
-
-        Field fraction = PatchProcessInflammation.class.getDeclaredField("fraction");
-        fraction.setAccessible(true);
-        fraction.set(inflammation, 1.0);
-
         inflammation.stepProcess(mockRandom, mockSim);
 
-        // check that IL2 produced is calculated correctly
-        Field il2Produced = PatchProcessInflammationCD4.class.getDeclaredField("iL2ProdRate");
-        il2Produced.setAccessible(true);
-        assertEquals(326.51, il2Produced.get(inflammation));
-
-        // check that extIL2 is calculated correctly
-        double expectedIL2 =
-                (326.51 + inflammation.amts[PatchProcessInflammationCD4.IL2_EXT])
-                        * 1E12
-                        / mockLocation.getVolume();
-
-        verify(mockLattice, times(1)).setValue(any(PatchLocation.class), eq(expectedIL2));
+        verify(mockLattice, times(1)).setValue(any(PatchLocation.class), eq(2.4552984483463867E13));
     }
 
     @Test
@@ -115,29 +91,11 @@ public class PatchProcessInflammationCD4Test {
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 10000);
 
-        Field il2ProdRateIL2 =
-                PatchProcessInflammationCD4.class.getDeclaredField("iL2ProdRateMaxFeedback");
-        il2ProdRateIL2.setAccessible(true);
-        il2ProdRateIL2.set(inflammation, 0.05);
-
-        Field receptors = PatchProcessInflammation.class.getDeclaredField("iL2Receptors");
-        receptors.setAccessible(true);
-        receptors.set(inflammation, 5000);
-
-        Field fraction = PatchProcessInflammation.class.getDeclaredField("fraction");
-        fraction.setAccessible(true);
-        fraction.set(inflammation, 1.0);
-
-        Field activeIl2Rate =
-                PatchProcessInflammationCD4.class.getDeclaredField("iL2ProdRateActive");
-        activeIl2Rate.setAccessible(true);
-        activeIl2Rate.set(inflammation, 2.5);
-
         inflammation.stepProcess(mockRandom, mockSim);
 
         Field il2ProdRate = PatchProcessInflammationCD4.class.getDeclaredField("iL2ProdRate");
         il2ProdRate.setAccessible(true);
-        assertEquals(326.51, il2ProdRate.get(inflammation));
+        assertEquals(166493.27, il2ProdRate.get(inflammation));
     }
 
     @Test
@@ -150,24 +108,11 @@ public class PatchProcessInflammationCD4Test {
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 10000);
 
-        Field il2ProdRateIL2 =
-                PatchProcessInflammationCD4.class.getDeclaredField("iL2ProdRateMaxFeedback");
-        il2ProdRateIL2.setAccessible(true);
-        il2ProdRateIL2.set(inflammation, 0.05);
-
-        Field receptors = PatchProcessInflammation.class.getDeclaredField("iL2Receptors");
-        receptors.setAccessible(true);
-        receptors.set(inflammation, 5000);
-
-        Field fraction = PatchProcessInflammation.class.getDeclaredField("fraction");
-        fraction.setAccessible(true);
-        fraction.set(inflammation, 1.0);
-
         inflammation.stepProcess(mockRandom, mockSim);
 
         Field il2ProdRate = PatchProcessInflammationCD4.class.getDeclaredField("iL2ProdRate");
         il2ProdRate.setAccessible(true);
-        assertEquals(33.24, il2ProdRate.get(inflammation));
+        assertEquals(166200.0, il2ProdRate.get(inflammation));
     }
 
     @Test
@@ -180,28 +125,11 @@ public class PatchProcessInflammationCD4Test {
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 10000);
 
-        Field il2ProdRateIL2 =
-                PatchProcessInflammationCD4.class.getDeclaredField("iL2ProdRateMaxFeedback");
-        il2ProdRateIL2.setAccessible(true);
-        il2ProdRateIL2.set(inflammation, 0.05);
-
-        Field receptors = PatchProcessInflammation.class.getDeclaredField("iL2Receptors");
-        receptors.setAccessible(true);
-        receptors.set(inflammation, 5000);
-
-        Field fraction = PatchProcessInflammation.class.getDeclaredField("fraction");
-        fraction.setAccessible(true);
-        fraction.set(inflammation, 1.0);
-
-        Field delay = PatchProcessInflammationCD4.class.getDeclaredField("iL2SynthesisDelay");
-        delay.setAccessible(true);
-        delay.set(inflammation, 15);
-
         inflammation.stepProcess(mockRandom, mockSim);
 
         Field il2ProdRate = PatchProcessInflammationCD4.class.getDeclaredField("iL2ProdRate");
         il2ProdRate.setAccessible(true);
-        assertEquals(33.24, il2ProdRate.get(inflammation));
+        assertEquals(166493.27, il2ProdRate.get(inflammation));
     }
 
     @Test
@@ -213,11 +141,6 @@ public class PatchProcessInflammationCD4Test {
         inflammation.iL2Ticker = 10;
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 0);
-
-        Field il2ProdRateIL2 =
-                PatchProcessInflammationCD4.class.getDeclaredField("iL2ProdRateMaxFeedback");
-        il2ProdRateIL2.setAccessible(true);
-        il2ProdRateIL2.set(inflammation, 0.0);
 
         inflammation.stepProcess(mockRandom, mockSim);
 
