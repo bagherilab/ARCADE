@@ -111,8 +111,7 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                 super.unbind();
                 this.activated = false;
             } else {
-                PatchCellTissue target =
-                        super.bindTarget(sim, location, new MersenneTwisterFast(simstate.seed()));
+                PatchCellTissue target = super.bindTarget(sim, location, simstate.random);
                 super.boundTarget = target;
 
                 if (super.getBindingFlag() == AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR) {
