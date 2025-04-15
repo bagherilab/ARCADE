@@ -219,14 +219,6 @@ public class PatchProcessInflammationCD4Test {
         il2ProdRateIL2.setAccessible(true);
         il2ProdRateIL2.set(inflammation, 0.0);
 
-        Field receptors = PatchProcessInflammation.class.getDeclaredField("iL2Receptors");
-        receptors.setAccessible(true);
-        receptors.set(inflammation, 5000);
-
-        Field fraction = PatchProcessInflammation.class.getDeclaredField("fraction");
-        fraction.setAccessible(true);
-        fraction.set(inflammation, 1.0);
-
         inflammation.stepProcess(mockRandom, mockSim);
 
         Field il2Produced = PatchProcessInflammationCD4.class.getDeclaredField("iL2ProdRate");
