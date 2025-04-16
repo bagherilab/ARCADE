@@ -74,12 +74,15 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
      * XY plane.
      *
      * @param cell the {@link PottsCellFlyStem} to get the division plane for
+     * @param rotationOffset the angle to rotate the plane
      * @return the division plane for the cell
      */
-    public Plane getWTDivisionPlaneWithRotationalVariance(PottsCellFlyStem cell, double offset) {
+    public Plane getWTDivisionPlaneWithRotationalVariance(
+            PottsCellFlyStem cell, double rotationOffset) {
         Vector plainSplitNormal = StemType.WT.splitDirection.vector;
         Vector rotatedNormalVector =
-                Vector.rotateVectorAroundAxis(plainSplitNormal, Direction.XY_PLANE.vector, offset);
+                Vector.rotateVectorAroundAxis(
+                        plainSplitNormal, Direction.XY_PLANE.vector, rotationOffset);
         return new Plane(
                 new Double3D(
                         getCellSplitLocation(StemType.WT, cell).x,
@@ -88,6 +91,13 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
                 rotatedNormalVector);
     }
 
+    /**
+     * Gets the division plane for the cell. This follows MUDMUT division rules. The division plane
+     * is not rotated.
+     *
+     * @param cell the {@link PottsCellFlyStem} to get the division plane for
+     * @return the division plane for the cell
+     */
     public Plane getMUDDivisionPlane(PottsCellFlyStem cell) {
         Vector plainSplitNormal = StemType.MUDMUT.splitDirection.vector;
         return new Plane(
@@ -218,25 +228,28 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
     }
 
     public boolean daughterStem(PottsLocation Location1, PottsLocation Location2) {
-        if (differentiationRuleset.equals("volume")) {
-            double vol1 = Location1.getVolume();
-            double vol2 = Location2.getVolume();
-            if (Math.abs(vol1 - vol2) < range) {
-                return true;
-            } else {
-                return false;
+        if (((PottsCellFlyStem) cell).getStemType() == StemType.WT) {
+            return false;
+        } else if (((PottsCellFlyStem) cell).getStemType() == StemType.MUDMUT) {
+            if (differentiationRuleset.equals("volume")) {
+                double vol1 = Location1.getVolume();
+                double vol2 = Location2.getVolume();
+                if (Math.abs(vol1 - vol2) < range) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else if (differentiationRuleset.equals("location")) {
+                double[] centroid1 = Location1.getCentroid();
+                double[] centroid2 = Location2.getCentroid();
+                if (Math.abs(centroid1[1] - centroid2[1]) < range) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
-        } else if (differentiationRuleset.equals("location")) {
-            double[] centroid1 = Location1.getCentroid();
-            double[] centroid2 = Location2.getCentroid();
-            if (Math.abs(centroid1[1] - centroid2[1]) < range) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            throw new IllegalArgumentException(
-                    "Invalid differentiation ruleset: " + differentiationRuleset);
         }
+        throw new IllegalArgumentException(
+                "Invalid differentiation ruleset: " + differentiationRuleset);
     }
 }

@@ -4,12 +4,18 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
+import java.util.ArrayList;
 import ec.util.MersenneTwisterFast;
+import sim.util.Double3D;
 import arcade.core.env.grid.Grid;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.core.util.Plane;
+import arcade.core.util.Vector;
 import arcade.core.util.distributions.NormalDistribution;
+import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.agent.cell.PottsCellFlyStem;
@@ -17,8 +23,12 @@ import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.env.location.Voxel;
+import arcade.potts.util.PottsEnums.State;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -134,181 +144,296 @@ public class PottsModuleProliferationFlyStemTest {
         assertEquals(loc2, PottsModuleProliferationFlyStem.getBasalLocation(loc1, loc2));
     }
 
-    // @Test
-    // public void getCellSplitLocation_WT_callsFunctionsWithCorrectParameters() {
-    //     when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
-    //     ArrayList<Integer> expectedOffset = new ArrayList<>();
-    //     expectedOffset.add(50); // WT splitOffsetPercentX
-    //     expectedOffset.add(80); // WT splitOffsetPercentY
-    //     PottsModuleProliferationFlyStemWT.getCellSplitLocation(stemCell);
-    //     verify(stemLoc).getOffset(expectedOffset);
-    // }
+    @Test
+    public void getCellSplitLocation_WT_callsFunctionsWithCorrectParameters() {
+        ArrayList<Integer> expectedOffset = new ArrayList<>();
+        expectedOffset.add(50); // WT splitOffsetPercentX
+        expectedOffset.add(80); // WT splitOffsetPercentY
+        PottsModuleProliferationFlyStem.getCellSplitLocation(PottsCellFlyStem.StemType.WT, stemCell);
+        verify(stemLoc).getOffset(expectedOffset);
+    }
 
-    // @Test
-    // public void getCellSplitLocation_MUDMUT_callsFunctionsWithCorrectParameters() {
-    //     when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
-    //     ArrayList<Integer> expectedOffset = new ArrayList<>();
-    //     expectedOffset.add(50); // MUDMUT splitOffsetPercentX
-    //     expectedOffset.add(50); // MUDMUT splitOffsetPercentY
-    //     PottsModuleProliferationFlyStemWT.getCellSplitLocation(stemCell);
-    //     verify(stemLoc).getOffset(expectedOffset);
-    // }
+    @Test
+    public void getCellSplitLocation_MUDMUT_callsFunctionsWithCorrectParameters() {
+        ArrayList<Integer> expectedOffset = new ArrayList<>();
+        expectedOffset.add(50); // MUDMUT splitOffsetPercentX
+        expectedOffset.add(50); // MUDMUT splitOffsetPercentY
+        PottsModuleProliferationFlyStem.getCellSplitLocation(PottsCellFlyStem.StemType.MUDMUT, stemCell);
+        verify(stemLoc).getOffset(expectedOffset);
+    }
 
-    // @Test
-    // public void
-    // getDivisionPlaneWithRotationalVariance_WT_callsRotateVectorWithCorrectParameters() {
-    //     when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
-    //     MockedStatic<Vector> mockedVector = mockStatic(Vector.class);
-    //     Vector dummyRotatedVector = new Vector(1, 1, 1);
-    //     mockedVector
-    //             .when(
-    //                     () ->
-    //                             Vector.rotateVectorAroundAxis(
-    //                                     any(Vector.class), any(Vector.class), anyDouble()))
-    //             .thenReturn(dummyRotatedVector);
+    @Test
+    public void
+    getWTDivisionPlaneWithRotationalVariance_called_callsRotateVectorWithCorrectParameters() {
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        MockedStatic<Vector> mockedVector = mockStatic(Vector.class);
+        Vector dummyRotatedVector = new Vector(1, 1, 1);
+        mockedVector
+                .when(
+                        () ->
+                                Vector.rotateVectorAroundAxis(
+                                        any(Vector.class), any(Vector.class), anyDouble()))
+                .thenReturn(dummyRotatedVector);
 
-    //     ArrayList<Integer> expectedOffset = new ArrayList<>();
-    //     expectedOffset.add(50);
-    //     expectedOffset.add(80);
-    //     Voxel dummyVoxel = mock(Voxel.class);
-    //     when(stemLoc.getOffset(expectedOffset)).thenReturn(dummyVoxel);
+        ArrayList<Integer> expectedOffset = new ArrayList<>();
+        expectedOffset.add(50);
+        expectedOffset.add(80);
+        Voxel dummyVoxel = mock(Voxel.class);
+        when(stemLoc.getOffset(expectedOffset)).thenReturn(dummyVoxel);
 
-    //     module = new PottsModuleProliferationFlyStemWT(stemCell);
-    //     module.getDivisionPlaneWithRotationalVariance(stemCell);
+        module = new PottsModuleProliferationFlyStem(stemCell);
+        module.getWTDivisionPlaneWithRotationalVariance(stemCell, .1);
 
-    //     // Capture the arguments passed to Vector.rotateVectorAroundAxis.
-    //     ArgumentCaptor<Vector> plainCaptor = ArgumentCaptor.forClass(Vector.class);
-    //     ArgumentCaptor<Vector> axisCaptor = ArgumentCaptor.forClass(Vector.class);
-    //     ArgumentCaptor<Double> offsetCaptor = ArgumentCaptor.forClass(Double.class);
-    //     mockedVector.verify(
-    //             () ->
-    //                     Vector.rotateVectorAroundAxis(
-    //                             plainCaptor.capture(),
-    //                             axisCaptor.capture(),
-    //                             offsetCaptor.capture()));
-    //     // Verify the plain vector is from the cell's stem type.
-    //     assertEquals(PottsCellFlyStem.StemType.WT.splitDirection.vector, plainCaptor.getValue());
-    //     // Verify the axis is Direction.XY_PLANE.vector.
-    //     assertEquals(Direction.XY_PLANE.vector, axisCaptor.getValue());
-    //     // Verify the rotation offset is 0.1 (as returned by dist.nextDouble()).
-    //     assertEquals(0.1, offsetCaptor.getValue());
-    // }
+        // Capture the arguments passed to Vector.rotateVectorAroundAxis.
+        ArgumentCaptor<Vector> plainCaptor = ArgumentCaptor.forClass(Vector.class);
+        ArgumentCaptor<Vector> axisCaptor = ArgumentCaptor.forClass(Vector.class);
+        ArgumentCaptor<Double> offsetCaptor = ArgumentCaptor.forClass(Double.class);
+        mockedVector.verify(
+                () ->
+                        Vector.rotateVectorAroundAxis(
+                                plainCaptor.capture(),
+                                axisCaptor.capture(),
+                                offsetCaptor.capture()));
 
-    // @Test
-    // public void
-    //
-    // getDivisionPlaneWIthRotationalVariance_MUDMUT_callsRotateVectorWithCorrectParameters() {
-    //     when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
-    //     MockedStatic<Vector> mockedVector = mockStatic(Vector.class);
-    //     Vector dummyRotatedVector = new Vector(1, 1, 1);
-    //     mockedVector
-    //             .when(
-    //                     () ->
-    //                             Vector.rotateVectorAroundAxis(
-    //                                     any(Vector.class), any(Vector.class), anyDouble()))
-    //             .thenReturn(dummyRotatedVector);
+        assertEquals(PottsCellFlyStem.StemType.WT.splitDirection.vector, plainCaptor.getValue());
+        assertEquals(Direction.XY_PLANE.vector, axisCaptor.getValue());
+        assertEquals(0.1, offsetCaptor.getValue());
+    }
 
-    //     ArrayList<Integer> expectedOffset = new ArrayList<>();
-    //     expectedOffset.add(50);
-    //     expectedOffset.add(50);
-    //     Voxel dummyVoxel = mock(Voxel.class);
-    //     when(stemLoc.getOffset(expectedOffset)).thenReturn(dummyVoxel);
+    @Test
+    public void getMUDDivisionPlane_called_makesCorrectPlane() {
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
 
-    //     module = new PottsModuleProliferationFlyStemWT(stemCell);
-    //     module.getDivisionPlaneWithRotationalVariance(stemCell);
+        Voxel divVoxel = new Voxel(1, 2, 3);
 
-    //     // Capture the arguments passed to Vector.rotateVectorAroundAxis.
-    //     ArgumentCaptor<Vector> plainCaptor = ArgumentCaptor.forClass(Vector.class);
-    //     ArgumentCaptor<Vector> axisCaptor = ArgumentCaptor.forClass(Vector.class);
-    //     ArgumentCaptor<Double> offsetCaptor = ArgumentCaptor.forClass(Double.class);
-    //     mockedVector.verify(
-    //             () ->
-    //                     Vector.rotateVectorAroundAxis(
-    //                             plainCaptor.capture(),
-    //                             axisCaptor.capture(),
-    //                             offsetCaptor.capture()));
-    //     // Verify the plain vector is from the cell's stem type.
-    //     assertEquals(
-    //             PottsCellFlyStem.StemType.MUDMUT.splitDirection.vector, plainCaptor.getValue());
-    //     // Verify the axis is Direction.XY_PLANE.vector.
-    //     assertEquals(Direction.XY_PLANE.vector, axisCaptor.getValue());
-    //     // Verify the rotation offset is 0.1 (as returned by dist.nextDouble()).
-    //     assertEquals(0.1, offsetCaptor.getValue());
-    // }
+        ArrayList<Integer> expectedOffset = new ArrayList<>();
+        expectedOffset.add(50); // MUDMUT splitOffsetPercentX
+        expectedOffset.add(50); // MUDMUT splitOffsetPercentY
+        when(stemLoc.getOffset(expectedOffset)).thenReturn(divVoxel);
 
-    // @Test
-    // public void addCell_volumeRulesetWithSwap_callsSwapVoxelsAndSchedulesNewCell() {
-    //     when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
-    //     module = spy(new PottsModuleProliferationFlyStemWT(stemCell));
-    //     Plane dummyDivisionPlane = mock(Plane.class);
-    //
-    // doReturn(dummyDivisionPlane).when(module).getDivisionPlaneWithRotationalVariance(stemCell);
+        module = new PottsModuleProliferationFlyStem(stemCell);
+        Plane mudDivisionPlane = module.getMUDDivisionPlane(stemCell);
 
-    //     when(stemLoc.getVolume()).thenReturn(10.0);
-    //     when(daughterLoc.getVolume()).thenReturn(20.0);
+        Vector expectedNormal = PottsCellFlyStem.StemType.MUDMUT.splitDirection.vector;
+        Double3D expectedPoint = new Double3D(1, 2, 3);
 
-    //     PottsCellContainer container = mock(PottsCellContainer.class);
-    //     when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random))).thenReturn(container);
-    //     PottsCell newCell = mock(PottsCell.class);
-    //     when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
-    //     MockedStatic<PottsLocation> mockedStatic = mockStatic(PottsLocation.class);
+        assertEquals(expectedPoint, mudDivisionPlane.getReferencePoint());
+        assertEquals(expectedNormal, mudDivisionPlane.getUnitNormalVector());
+    }
 
-    //     module.addCell(random, sim);
+    @Test
+    public void daughterStem_stemTypeWT_returnsFalse() {
+        when(((PottsCellFlyStem) stemCell).getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        module = new PottsModuleProliferationFlyStem(stemCell);
+        boolean isDaughterStem = module.daughterStem(stemLoc, daughterLoc);
+        assertFalse(isDaughterStem);
+    }
 
-    //     // swapVoxels should be called
-    //     mockedStatic.verify(() -> PottsLocation.swapVoxels(stemLoc, daughterLoc));
+    @Test
+    public void daughterStem_volumeRuleset_differenceWithinRange_returnsTrue() {
+        when(((PottsCellFlyStem) stemCell).getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE")).thenReturn(.5);
+        when(stemLoc.getVolume()).thenReturn(10.0);
+        when(daughterLoc.getVolume()).thenReturn(10.4); // range is assumed >= 0.5 for this to return true
+        module = new PottsModuleProliferationFlyStem(stemCell);
+        boolean result = module.daughterStem(stemLoc, daughterLoc);
+        assertTrue(result);
+    }
 
-    //     verify(stemCell).reset(potts.ids, potts.regions);
-    //     verify(stemCell).make(42, State.PROLIFERATIVE, random);
-    //     verify(grid).addObject(newCell, null);
-    //     verify(potts).register(newCell);
-    //     verify(newCell).reset(potts.ids, potts.regions);
-    //     verify(newCell).schedule(any());
-    // }
+    @Test
+    public void daughterStem_volumeRuleset_differenceOutsideRange_returnsFalse() {
+        when(((PottsCellFlyStem) stemCell).getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE")).thenReturn(.5);
+        when(stemLoc.getVolume()).thenReturn(10.0);
+        when(daughterLoc.getVolume()).thenReturn(11.0);
+        module = new PottsModuleProliferationFlyStem(stemCell);
+        boolean result = module.daughterStem(stemLoc, daughterLoc);
+        assertFalse(result);
+    }
 
-    // @Test
-    // public void addCell_locationRulesetNoSwap_callsNewCellCreationWithoutSwap() {
-    //
-    // when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("location");
-    //     Plane dummyDivisionPlane = mock(Plane.class);
-    //     module = spy(new PottsModuleProliferationFlyStemWT(stemCell));
-    //
-    // doReturn(dummyDivisionPlane).when(module).getDivisionPlaneWithRotationalVariance(stemCell);
+    @Test
+    public void daughterStem_locationRuleset_differenceWithinRange_returnsTrue() {
+        when(((PottsCellFlyStem) stemCell).getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("location");
+        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE")).thenReturn(.5);
+        when(stemLoc.getCentroid()).thenReturn(new double[] {0, 1.0, 0});
+        when(daughterLoc.getCentroid()).thenReturn(new double[] {0, 1.3, 0});
+        module = new PottsModuleProliferationFlyStem(stemCell);
+        boolean result = module.daughterStem(stemLoc, daughterLoc);
+        assertTrue(result);
+    }
 
-    //     double[] daughterCentroid = {0, 3, 0}; // basal
-    //     double[] stemCentroid = {0, 2, 0}; // apical
-    //     when(daughterLoc.getCentroid()).thenReturn(daughterCentroid);
-    //     when(stemLoc.getCentroid()).thenReturn(stemCentroid);
+    @Test
+    public void daughterStem_locationRuleset_differenceOutsideRange_returnsFalse() {
+        when(((PottsCellFlyStem) stemCell).getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("location");
+        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE")).thenReturn(.5);
+        when(stemLoc.getCentroid()).thenReturn(new double[] {0, 1.0, 0});
+        when(daughterLoc.getCentroid()).thenReturn(new double[] {0, 1.6, 0});
+        module = new PottsModuleProliferationFlyStem(stemCell);
+        boolean result = module.daughterStem(stemLoc, daughterLoc);
+        assertFalse(result);
+    }
 
-    //     PottsCellContainer container = mock(PottsCellContainer.class);
-    //     when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random))).thenReturn(container);
-    //     PottsCell newCell = mock(PottsCell.class);
-    //     when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
-    //     MockedStatic<PottsLocation> mockedStatic = mockStatic(PottsLocation.class);
+    @Test
+    public void daughterStem_invalidRuleset_throwsException() {
+        when(((PottsCellFlyStem) stemCell).getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("invalid_ruleset");
+        when(stemLoc.getCentroid()).thenReturn(new double[] {0, 1.0, 0});
+        when(daughterLoc.getCentroid()).thenReturn(new double[] {0, 1.3, 0});
+        module = new PottsModuleProliferationFlyStem(stemCell);
+        Exception exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> module.daughterStem(stemLoc, daughterLoc));
+        assertTrue(exception.getMessage().contains("Invalid differentiation ruleset"));
+    }
 
-    //     module.addCell(random, sim);
+    @Test
+    public void addCell_WTVolumeSwapLoc_usesWTDivisionPlaneandCreatesNewCell() {
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        module = spy(new PottsModuleProliferationFlyStem(stemCell));
 
-    //     // swapVoxels should NOT be called.
-    //     mockedStatic.verify(() -> PottsLocation.swapVoxels(stemLoc, daughterLoc), never());
+        Plane dummyPlane = mock(Plane.class);
+        doReturn(dummyPlane).when(module).getWTDivisionPlaneWithRotationalVariance(eq(stemCell), anyDouble());
+        doReturn(0.0).when(module).getDivisionPlaneRotationOffset();
+        doReturn(false).when(module).daughterStem(any(), any());
 
-    //     verify(stemCell).reset(potts.ids, potts.regions);
-    //     verify(stemCell).make(42, State.PROLIFERATIVE, random);
-    //     verify(grid).addObject(newCell, null);
-    //     verify(potts).register(newCell);
-    //     verify(newCell).reset(potts.ids, potts.regions);
-    //     verify(newCell).schedule(any());
-    // }
+        // must swap voxels
+        when(stemLoc.getVolume()).thenReturn(5.0);
+        when(daughterLoc.getVolume()).thenReturn(10.0);
 
-    // @Test
-    // public void addCell_invalidDifferentiationRuleset_throwsIllegalArgumentException() {
-    //     // Set an invalid ruleset value.
-    //
-    // when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("invalid");
-    //     module = spy(new PottsModuleProliferationFlyStemWT(stemCell));
-    //
-    // doReturn(mock(Plane.class)).when(module).getDivisionPlaneWithRotationalVariance(stemCell);
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCell newCell = mock(PottsCell.class);
+        when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random))).thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
 
-    //     // Expect an IllegalArgumentException when addCell is invoked.
-    //     assertThrows(IllegalArgumentException.class, () -> module.addCell(random, sim));
-    // }
+        try (MockedStatic<PottsLocation> mockedStatic = mockStatic(PottsLocation.class)) {
+            module.addCell(random, sim);
+            mockedStatic.verify(() -> PottsLocation.swapVoxels(stemLoc, daughterLoc));
+        }
+        verify(newCell).schedule(any());
+    }
+
+    @Test
+    public void addCell_WTVolumeNoSwapLoc_usesWTDivisionPlaneandCreatesNewCell() {
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        module = spy(new PottsModuleProliferationFlyStem(stemCell));
+
+        Plane dummyPlane = mock(Plane.class);
+        doReturn(dummyPlane).when(module).getWTDivisionPlaneWithRotationalVariance(eq(stemCell), anyDouble());
+        doReturn(0.0).when(module).getDivisionPlaneRotationOffset();
+        doReturn(false).when(module).daughterStem(any(), any());
+
+        // must not swap voxels
+        when(stemLoc.getVolume()).thenReturn(10.0);
+        when(daughterLoc.getVolume()).thenReturn(5.0);
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCell newCell = mock(PottsCell.class);
+        when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random))).thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+
+        try (MockedStatic<PottsLocation> mockedStatic = mockStatic(PottsLocation.class)) {
+            module.addCell(random, sim);
+            mockedStatic.verify(() -> PottsLocation.swapVoxels(stemLoc, daughterLoc), never());
+        }
+        verify(newCell).schedule(any());
+    }
+
+    @Test
+    public void addCell_MUDVolumeDifferentiatesSwapLoc_usesWTDivisionPlaneandCreatesNewCell() {
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        module = spy(new PottsModuleProliferationFlyStem(stemCell));
+
+        Plane dummyPlane = mock(Plane.class);
+        doReturn(dummyPlane).when(module).getWTDivisionPlaneWithRotationalVariance(eq(stemCell), anyDouble());
+        doReturn(0.0).when(module).getDivisionPlaneRotationOffset();
+        doReturn(false).when(module).daughterStem(any(), any());
+
+        // must swap voxels
+        when(stemLoc.getVolume()).thenReturn(5.0);
+        when(daughterLoc.getVolume()).thenReturn(10.0);
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCell newCell = mock(PottsCell.class);
+        when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random))).thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+
+        try (MockedStatic<PottsLocation> mockedStatic = mockStatic(PottsLocation.class)) {
+            module.addCell(random, sim);
+            mockedStatic.verify(() -> PottsLocation.swapVoxels(stemLoc, daughterLoc));
+        }
+        verify(newCell).schedule(any());
+    }
+
+    @Test
+    public void addCell_MUDVolumeDifferentiatesNoSwapLoc_usesWTDivisionPlaneandCreatesNewCell() {
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        module = spy(new PottsModuleProliferationFlyStem(stemCell));
+
+        Plane dummyPlane = mock(Plane.class);
+        doReturn(dummyPlane).when(module).getWTDivisionPlaneWithRotationalVariance(eq(stemCell), anyDouble());
+        doReturn(0.0).when(module).getDivisionPlaneRotationOffset();
+        doReturn(false).when(module).daughterStem(any(), any());
+
+        // must not swap voxels
+        when(stemLoc.getVolume()).thenReturn(10.0);
+        when(daughterLoc.getVolume()).thenReturn(5.0);
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCell newCell = mock(PottsCell.class);
+        when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random))).thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+
+        try (MockedStatic<PottsLocation> mockedStatic = mockStatic(PottsLocation.class)) {
+            module.addCell(random, sim);
+            mockedStatic.verify(() -> PottsLocation.swapVoxels(stemLoc, daughterLoc), never());
+        }
+        verify(newCell).schedule(any());
+    }
+
+    @Test
+    public void addCell_MUDVolumeDaughterIsStem_usesMUDDivisionPlaneAndCreatesStemCell() {
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        module = spy(new PottsModuleProliferationFlyStem(stemCell));
+
+        // MUD-style division plane because offset >= 45
+        Plane dummyPlane = mock(Plane.class);
+        doReturn(dummyPlane).when(module).getMUDDivisionPlane(eq(stemCell));
+        doReturn(90.0).when(module).getDivisionPlaneRotationOffset();
+        doReturn(true).when(module).daughterStem(any(), any());
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCell newCell = mock(PottsCell.class);
+        when(stemCell.getPop()).thenReturn(99);
+        when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random), eq(99))).thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+
+        module.addCell(random, sim);
+
+        verify(stemCell).reset(potts.ids, potts.regions);
+        verify(newCell).schedule(any());
+    }
+
+    @Test
+    public void addCell_invalidRuleset_throwsException() {
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("banana");
+        module = spy(new PottsModuleProliferationFlyStem(stemCell));
+
+        Plane dummyPlane = mock(Plane.class);
+        doReturn(dummyPlane).when(module).getWTDivisionPlaneWithRotationalVariance(eq(stemCell), anyDouble());
+        doReturn(0.0).when(module).getDivisionPlaneRotationOffset();
+        doReturn(false).when(module).daughterStem(any(), any());
+
+        assertThrows(IllegalArgumentException.class, () -> module.addCell(random, sim));
+    }
 }

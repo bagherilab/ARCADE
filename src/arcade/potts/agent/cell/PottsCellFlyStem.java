@@ -86,7 +86,6 @@ public class PottsCellFlyStem extends PottsCell {
 
     @Override
     public PottsCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-        divisions++;
 
         int newPop = links == null ? pop : links.next(random);
 

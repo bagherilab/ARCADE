@@ -65,7 +65,7 @@
     <population.module module="proliferation" id="NUCLEUS_CONDENSATION_FRACTION" value="0.5" description="fraction of nuclear volume when condensed" />
     <population.module module="proliferation" id="DIV_ROTATION_DISTRIBUTION" value="NORMAL(MU=0,SIGMA=0)" units="degrees" description="distribution that determines if plane of division is rotated" />
     <population.module module="proliferation" id="DIFFERENTIATION_RULESET" value="" description="rules cells follow when deciding which daughter cell will be which type" />
-    <population.module module="proliferation" id="DIFFERENTIATION_RULESET_EQUALITY_RANGE" value="0" description="rules cells follow when deciding which daughter cell will be which type" />
+    <population.module module="proliferation" id="DIFFERENTIATION_RULESET_EQUALITY_RANGE" value="0" description="range of voxels within which two locations are considered equal following fly stem division" />
 
 
     <!-- apoptosis module parameters -->
