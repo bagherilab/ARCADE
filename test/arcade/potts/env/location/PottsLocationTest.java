@@ -9,8 +9,6 @@ import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.Plane;
 import arcade.core.util.Vector;
-import arcade.potts.util.PottsEnums.Direction;
-import arcade.potts.util.PottsEnums.Region;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
