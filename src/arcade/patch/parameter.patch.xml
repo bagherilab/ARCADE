@@ -88,6 +88,9 @@
     <population.process process="inflammation" id="SHELL_THICKNESS" value="2.0" unit="um" />
     <population.process process="inflammation" id="IL2_RECEPTORS" value="2000" unit="IL-2 receptors/cell" />
 
+    <!-- inflammation CD4 module -->
+    <population.process process="inflammation" id="IL2_SYNTHESIS_DELAY" value="180" unit="min" description = "Delay in IL-2 synthesis after antigen-induced activation" />
+
     <!-- inflammation CD8 module -->
     <population.process process="inflammation" id="GRANZ_SYNTHESIS_DELAY" value="15" unit="min" description="Time required for CAR T-cells to maintain bound contact with target antigen before activation signal induces granzyme production"/>
 
