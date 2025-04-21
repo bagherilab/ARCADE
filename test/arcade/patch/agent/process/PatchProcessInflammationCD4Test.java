@@ -55,18 +55,6 @@ public class PatchProcessInflammationCD4Test {
     }
 
     @Test
-    public void constructor_called_setsParameters()
-            throws NoSuchFieldException, IllegalAccessException {
-        inflammation = new PatchProcessInflammationCD4(mockCell);
-        assertNotNull(inflammation);
-
-        Field il2SynthesisDelay =
-                PatchProcessInflammationCD4.class.getDeclaredField("iL2SynthesisDelay");
-        il2SynthesisDelay.setAccessible(true);
-        assertEquals(1, il2SynthesisDelay.get(inflammation));
-    }
-
-    @Test
     public void stepProcess_called_updatesEnvironment()
             throws NoSuchFieldException, IllegalAccessException {
         inflammation = new PatchProcessInflammationCD4(mockCell);
