@@ -301,20 +301,9 @@ public class PatchCellCARTCD4Test {
     }
 
     @Test
-    public void step_whenBoundToAntigen_setsStateToStimulatory()
-            throws NoSuchFieldException, IllegalAccessException {
+    public void step_whenBoundToAntigen_setsStateToStimulatory() {
         when(parametersMock.getDouble("APOPTOSIS_AGE")).thenReturn(100.0);
         when(parametersMock.getInt("SELF_RECEPTORS")).thenReturn(randomIntBetween(100, 200));
-        when(parametersMock.getDouble("SEARCH_ABILITY")).thenReturn(1.0);
-        when(parametersMock.getDouble("CAR_AFFINITY")).thenReturn(10 * Math.pow(10, -7));
-        when(parametersMock.getDouble("CAR_ALPHA")).thenReturn(3.0);
-        when(parametersMock.getDouble("CAR_BETA")).thenReturn(0.01);
-        when(parametersMock.getDouble("SELF_RECEPTOR_AFFINITY")).thenReturn(7.8E-6);
-        when(parametersMock.getDouble("SELF_ALPHA")).thenReturn(3.0);
-        when(parametersMock.getDouble("SELF_BETA")).thenReturn(0.02);
-        when(parametersMock.getDouble("CONTACT_FRAC")).thenReturn(7.8E-6);
-        when(parametersMock.getInt("MAX_ANTIGEN_BINDING")).thenReturn(10);
-        when(parametersMock.getInt("CARS")).thenReturn(50000);
         cellMock = spy(new PatchCellCARTCD4(container, locationMock, parametersMock));
         cellMock.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cellMock.processes.put(Domain.SIGNALING, mock(PatchProcessSignaling.class));
@@ -334,9 +323,6 @@ public class PatchCellCARTCD4Test {
                         any(Simulation.class),
                         any(PatchLocation.class),
                         any(MersenneTwisterFast.class));
-        Field boundAntigens = PatchCellCART.class.getDeclaredField("boundCARAntigensCount");
-        boundAntigens.setAccessible(true);
-        boundAntigens.set(cellMock, 0);
         cellMock.setBindingFlag(AntigenFlag.BOUND_ANTIGEN);
         Schedule schedule = mock(Schedule.class);
         doReturn(true).when(schedule).scheduleOnce(any(Steppable.class));
