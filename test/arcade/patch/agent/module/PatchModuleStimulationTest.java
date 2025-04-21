@@ -24,7 +24,7 @@ public class PatchModuleStimulationTest {
 
     private PatchModuleStimulation action;
 
-    private PatchSimulation sim;
+    private PatchSimulation simMock;
 
     private MersenneTwisterFast randomMock;
 
@@ -33,7 +33,7 @@ public class PatchModuleStimulationTest {
         mockCell = mock(PatchCellCART.class);
         mockTarget = mock(PatchCellTissue.class);
         mockInflammation = mock(PatchProcessInflammation.class);
-        sim = mock(PatchSimulation.class);
+        simMock = mock(PatchSimulation.class);
         randomMock = mock(MersenneTwisterFast.class);
         Parameters parameters = mock(Parameters.class);
         doReturn(0.0).when(parameters).getDouble(any(String.class));
@@ -51,7 +51,7 @@ public class PatchModuleStimulationTest {
     public void step_CARCellStopped_doesNotChangeCell() {
         when(mockCell.isStopped()).thenReturn(true);
 
-        action.step(randomMock, sim);
+        action.step(randomMock, simMock);
 
         verify(mockTarget, never()).setState(any());
     }
@@ -60,7 +60,7 @@ public class PatchModuleStimulationTest {
     public void step_targetCellStopped_doesNotChangeCell() {
         when(mockTarget.isStopped()).thenReturn(true);
 
-        action.step(randomMock, sim);
+        action.step(randomMock, simMock);
 
         verify(mockTarget, never()).setState(any());
         verify(mockCell).unbind();
@@ -73,7 +73,7 @@ public class PatchModuleStimulationTest {
         delay.setAccessible(true);
         delay.set(action, 1);
 
-        action.step(randomMock, sim);
+        action.step(randomMock, simMock);
 
         verify(mockCell, never()).setState(any());
         verify(mockCell, never()).unbind();
@@ -86,7 +86,7 @@ public class PatchModuleStimulationTest {
         PatchModuleQuiescence mockProcess = mock(PatchModuleQuiescence.class);
         when(mockTarget.getModule()).thenReturn(mockProcess);
 
-        action.step(randomMock, sim);
+        action.step(randomMock, simMock);
 
         verify(mockTarget).setState(PatchEnums.State.QUIESCENT);
         verify(mockCell).setState(PatchEnums.State.UNDEFINED);
