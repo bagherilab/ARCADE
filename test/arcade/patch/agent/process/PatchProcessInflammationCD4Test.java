@@ -1,6 +1,5 @@
 package arcade.patch.agent.process;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,22 +54,21 @@ public class PatchProcessInflammationCD4Test {
     }
 
     @Test
-    public void stepProcess_called_updatesEnvironment()
-            throws NoSuchFieldException, IllegalAccessException {
+    public void stepProcess_called_updatesEnvironment() {
         inflammation = new PatchProcessInflammationCD4(mockCell);
         inflammation.active = true;
         inflammation.activeTicker = 10;
         inflammation.iL2Ticker = 10;
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 0);
-        Field receptors = PatchProcessInflammation.class.getDeclaredField("iL2Receptors");
-        receptors.setAccessible(true);
-        receptors.set(inflammation, 5000);
+        when(mockParameters.getDouble("inflammation/iL2Receptors")).thenReturn(5000.0);
 
         inflammation.stepProcess(mockRandom, mockSim);
 
         verify(mockLattice, times(1))
-                .setValue(any(PatchLocation.class), doubleThat(value -> value >= 4E10));
+                .setValue(
+                        any(PatchLocation.class),
+                        doubleThat(val -> Math.abs(val - 4.325E10) < 1E7));
     }
 
     @Test
