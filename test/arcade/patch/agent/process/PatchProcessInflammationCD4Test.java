@@ -87,17 +87,15 @@ public class PatchProcessInflammationCD4Test {
     }
 
     @Test
-    public void update_withZeroVolume_splitsUnevenly() {
+    public void update_withUnevenVolume_splitsUnevenly() {
         inflammation = new PatchProcessInflammationCD4(mockCell);
         PatchProcessInflammationCD4 parentProcess = new PatchProcessInflammationCD4(mockCell);
         parentProcess.amts[PatchProcessInflammationCD4.IL2RBGA] = 100;
-        when(mockCell.getVolume()).thenReturn(0.0);
+        when(mockCell.getVolume()).thenReturn(cellVolume / 4);
 
         inflammation.update(parentProcess);
 
-        assertEquals(0.0, inflammation.amts[PatchProcessInflammationCD8.IL2RBGA]);
-        assertEquals(0.0, inflammation.amts[PatchProcessInflammationCD8.IL2_IL2RBG]);
-        assertEquals(0.0, inflammation.amts[PatchProcessInflammationCD8.IL2_IL2RBGA]);
-        assertEquals(100, parentProcess.amts[PatchProcessInflammationCD4.IL2RBGA]);
+        assertEquals(25, inflammation.amts[PatchProcessInflammationCD4.IL2RBGA]);
+        assertEquals(75, parentProcess.amts[PatchProcessInflammationCD4.IL2RBGA]);
     }
 }
