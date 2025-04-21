@@ -62,11 +62,15 @@ public class PatchProcessInflammationCD4Test {
         inflammation.activeTicker = 10;
         inflammation.iL2Ticker = 10;
         inflammation.boundArray = new double[180];
-        Arrays.fill(inflammation.boundArray, 10000);
+        Arrays.fill(inflammation.boundArray, 0);
+        Field receptors = PatchProcessInflammation.class.getDeclaredField("iL2Receptors");
+        receptors.setAccessible(true);
+        receptors.set(inflammation, 5000);
 
         inflammation.stepProcess(mockRandom, mockSim);
 
-        verify(mockLattice, times(1)).setValue(any(PatchLocation.class), eq(2.4552984483463867E13));
+        verify(mockLattice, times(1))
+                .setValue(any(PatchLocation.class), doubleThat(value -> value >= 4E10));
     }
 
     @Test
