@@ -309,7 +309,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
     public static PatchProcess make(PatchCell cell, String version) {
 <span class="nc bnc" id="L310" title="All 3 branches missed.">        switch (version.toUpperCase()) {</span>
             case &quot;CD4&quot;:
-<span class="nc" id="L312">                throw new UnsupportedOperationException();</span>
+<span class="nc" id="L312">                return new PatchProcessInflammationCD4((PatchCellCART) cell);</span>
             case &quot;CD8&quot;:
 <span class="nc" id="L314">                return new PatchProcessInflammationCD8((PatchCellCART) cell);</span>
             default:

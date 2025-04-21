@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchModuleStimulation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.agent.module</a> &gt; <span class="el_source">PatchModuleStimulation.java</span></div><h1>PatchModuleStimulation.java</h1><pre class="source lang-java linenums">package arcade.patch.agent.module;
+
+import ec.util.MersenneTwisterFast;
+import arcade.core.sim.Simulation;
+import arcade.core.util.Parameters;
+import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.agent.cell.PatchCellCART;
+import arcade.patch.agent.cell.PatchCellTissue;
+import arcade.patch.util.PatchEnums.State;
+
+/**
+ * Implementation of {@link Module} for stimulatory T cell agents.
+ *
+ * &lt;p&gt;{@code PatchModuleStimulation} is stepped once after a CD4 CAR T-cell gets stimulated. The
+ * {@code PatchModuleStimulation} activates the T cell, unbinds to any target cell that the T cell
+ * is bound to, and sets the cell state back to undefined.
+ */
+public class PatchModuleStimulation extends PatchModule {
+    /** Target cell thgt CAR T-cell is bound to. */
+    PatchCellTissue target;
+
+    /** Time delay before calling the action [min]. */
+    private int timeDelay;
+
+    /** Ticker to keep track of the time delay [min]. */
+    private int ticker;
+
+    /**
+     * Creates a {@code PatchModuleStimulation} for the given {@link PatchCellCART}.
+     *
+     * @param c the {@link PatchCellCART} the helper is associated with
+     */
+    public PatchModuleStimulation(PatchCell c) {
+<span class="fc" id="L34">        super(c);</span>
+<span class="fc" id="L35">        this.target = (PatchCellTissue) ((PatchCellCART) c).getBoundTarget();</span>
+<span class="fc" id="L36">        Parameters parameters = c.getParameters();</span>
+<span class="fc" id="L37">        this.timeDelay = parameters.getInt(&quot;BOUND_TIME&quot;);</span>
+<span class="fc" id="L38">        this.ticker = 0;</span>
+<span class="fc" id="L39">    }</span>
+
+    @Override
+    public void step(MersenneTwisterFast random, Simulation sim) {
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (cell.isStopped()) {</span>
+<span class="fc" id="L44">            return;</span>
+        }
+
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (target.isStopped()) {</span>
+<span class="fc" id="L48">            ((PatchCellCART) cell).unbind();</span>
+<span class="fc" id="L49">            cell.setState(State.UNDEFINED);</span>
+<span class="fc" id="L50">            return;</span>
+        }
+
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">        if (ticker == 0) {</span>
+<span class="fc" id="L54">            target.setState(State.QUIESCENT);</span>
+        }
+
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        if (ticker &gt;= timeDelay) {</span>
+<span class="fc" id="L58">            ((PatchCellCART) cell).unbind();</span>
+<span class="fc" id="L59">            cell.setState(State.UNDEFINED);</span>
+        }
+
+<span class="fc" id="L62">        ticker++;</span>
+<span class="fc" id="L63">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

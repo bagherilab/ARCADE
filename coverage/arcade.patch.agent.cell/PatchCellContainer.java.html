@@ -107,7 +107,7 @@ public final class PatchCellContainer implements CellContainer {
 <span class="nc" id="L107">        GrabBag links = factory.getLinks(pop);</span>
 
         // Make cell.
-<span class="nc bnc" id="L110" title="All 5 branches missed.">        switch (popParameters.get(&quot;CLASS&quot;)) {</span>
+<span class="nc bnc" id="L110" title="All 6 branches missed.">        switch (popParameters.get(&quot;CLASS&quot;)) {</span>
             default:
             case &quot;tissue&quot;:
 <span class="nc" id="L113">                return new PatchCellTissue(this, location, parameters, links);</span>
@@ -117,8 +117,10 @@ public final class PatchCellContainer implements CellContainer {
 <span class="nc" id="L117">                return new PatchCellCancerStem(this, location, parameters, links);</span>
             case &quot;cart_cd8&quot;:
 <span class="nc" id="L119">                return new PatchCellCARTCD8(this, location, parameters, links);</span>
+            case &quot;cart_cd4&quot;:
+<span class="nc" id="L121">                return new PatchCellCARTCD4(this, location, parameters, links);</span>
             case &quot;random&quot;:
-<span class="nc" id="L121">                return new PatchCellRandom(this, location, parameters, links);</span>
+<span class="nc" id="L123">                return new PatchCellRandom(this, location, parameters, links);</span>
         }
     }
 }
