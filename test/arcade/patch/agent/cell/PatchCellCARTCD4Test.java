@@ -103,7 +103,6 @@ public class PatchCellCARTCD4Test {
     @Test
     public void step_whenEnergyIsLow_setsStateToApoptotic() {
         when(parametersMock.getDouble("APOPTOSIS_AGE")).thenReturn(100.0);
-        ;
         when(parametersMock.getDouble("ENERGY_THRESHOLD")).thenReturn(1.0);
         cellMock = spy(new PatchCellCARTCD4(container, locationMock, parametersMock));
         cellMock.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
@@ -136,7 +135,6 @@ public class PatchCellCARTCD4Test {
     @Test
     public void step_whenEnergyIsNegativeAndMoreThanThreshold_setsStateToStarved() {
         when(parametersMock.getDouble("APOPTOSIS_AGE")).thenReturn(100.0);
-        ;
         when(parametersMock.getDouble("ENERGY_THRESHOLD")).thenReturn(1.0);
         when(parametersMock.getDouble("EXHAUSTED_FRAC")).thenReturn(0.5);
         cellMock = spy(new PatchCellCARTCD4(container, locationMock, parametersMock));
@@ -169,7 +167,6 @@ public class PatchCellCARTCD4Test {
     @Test
     public void step_whenEnergyIsNegativeAndLessThanThreshold_setsStateToApoptotic() {
         when(parametersMock.getDouble("APOPTOSIS_AGE")).thenReturn(100.0);
-        ;
         when(parametersMock.getDouble("ENERGY_THRESHOLD")).thenReturn(1.0);
         cellMock = spy(new PatchCellCARTCD4(container, locationMock, parametersMock));
         cellMock.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
@@ -201,7 +198,6 @@ public class PatchCellCARTCD4Test {
     public void step_whenDivisionPotentialMet_setsStateToApoptotic()
             throws NoSuchFieldException, IllegalAccessException {
         when(parametersMock.getDouble("APOPTOSIS_AGE")).thenReturn(100.0);
-        ;
         when(parametersMock.getInt("DIVISION_POTENTIAL")).thenReturn(10);
         when(parametersMock.getDouble("SENESCENT_FRACTION")).thenReturn(0.5);
         cellMock = spy(new PatchCellCARTCD4(container, locationMock, parametersMock));
@@ -239,7 +235,6 @@ public class PatchCellCARTCD4Test {
     public void step_whenDivisionPotentialMet_setsStateToSenescent()
             throws NoSuchFieldException, IllegalAccessException {
         when(parametersMock.getDouble("APOPTOSIS_AGE")).thenReturn(100.0);
-        ;
         when(parametersMock.getDouble("SENESCENT_FRACTION")).thenReturn(0.5);
         cellMock = spy(new PatchCellCARTCD4(container, locationMock, parametersMock));
         cellMock.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
@@ -275,7 +270,6 @@ public class PatchCellCARTCD4Test {
     @Test
     public void step_whenBoundToBothAntigenAndSelf_setsStateToAnergic() {
         when(parametersMock.getDouble("APOPTOSIS_AGE")).thenReturn(100.0);
-        ;
         when(parametersMock.getDouble("ANERGIC_FRACTION")).thenReturn(0.5);
         when(simMock.random.nextDouble()).thenReturn(0.49);
         cellMock = spy(new PatchCellCARTCD4(container, locationMock, parametersMock));
@@ -310,7 +304,6 @@ public class PatchCellCARTCD4Test {
     public void step_whenBoundToAntigen_setsStateToStimulatory()
             throws NoSuchFieldException, IllegalAccessException {
         when(parametersMock.getDouble("APOPTOSIS_AGE")).thenReturn(100.0);
-        ;
         when(parametersMock.getInt("SELF_RECEPTORS")).thenReturn(randomIntBetween(100, 200));
         when(parametersMock.getDouble("SEARCH_ABILITY")).thenReturn(1.0);
         when(parametersMock.getDouble("CAR_AFFINITY")).thenReturn(10 * Math.pow(10, -7));
@@ -359,7 +352,6 @@ public class PatchCellCARTCD4Test {
     public void step_whenActivated_setsStateToProliferative()
             throws NoSuchFieldException, IllegalAccessException {
         when(parametersMock.getDouble("APOPTOSIS_AGE")).thenReturn(100.0);
-        ;
         when(parametersMock.getDouble("PROLIFERATIVE_FRACTION")).thenReturn(0.5);
         cellMock = spy(new PatchCellCARTCD4(container, locationMock, parametersMock));
         cellMock.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
@@ -393,7 +385,6 @@ public class PatchCellCARTCD4Test {
     public void step_whenNotActivated_setsStateToMigratory()
             throws NoSuchFieldException, IllegalAccessException {
         when(parametersMock.getDouble("APOPTOSIS_AGE")).thenReturn(100.0);
-        ;
         when(parametersMock.getDouble("PROLIFERATIVE_FRACTION")).thenReturn(0.5);
         cellMock = spy(new PatchCellCARTCD4(container, locationMock, parametersMock));
         cellMock.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
@@ -428,7 +419,6 @@ public class PatchCellCARTCD4Test {
     public void step_whenOverstimulated_setsStateToExhausted()
             throws NoSuchFieldException, IllegalAccessException {
         when(parametersMock.getDouble("APOPTOSIS_AGE")).thenReturn(100.0);
-        ;
         when(parametersMock.getDouble("EXHAUSTED_FRAC")).thenReturn(0.5);
         cellMock = spy(new PatchCellCARTCD4(container, locationMock, parametersMock));
         cellMock.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
