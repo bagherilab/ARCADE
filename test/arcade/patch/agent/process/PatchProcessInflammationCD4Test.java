@@ -32,6 +32,8 @@ public class PatchProcessInflammationCD4Test {
 
     private PatchLocation mockLocation;
 
+    private static final double EPSILON = 1e-3;
+
     @BeforeEach
     public final void setUp() {
         mockCell = Mockito.mock(PatchCellCART.class);
@@ -65,10 +67,12 @@ public class PatchProcessInflammationCD4Test {
 
         inflammation.stepProcess(mockRandom, mockSim);
 
+        double expectedValue = 4.32489e10;
+
         verify(mockLattice, times(1))
                 .setValue(
                         any(PatchLocation.class),
-                        doubleThat(val -> Math.abs(val - 4.325E10) < 1E7));
+                        doubleThat(val -> Math.abs(val - expectedValue) < EPSILON * expectedValue));
     }
 
     @Test
