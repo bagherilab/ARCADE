@@ -63,7 +63,7 @@ public class PatchProcessInflammationCD4Test {
         inflammation.iL2Ticker = 10;
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 0);
-        when(mockParameters.getDouble("inflammation/iL2Receptors")).thenReturn(5000.0);
+        when(mockParameters.getDouble("inflammation/IL2_RECEPTORS")).thenReturn(5000.0);
 
         inflammation.stepProcess(mockRandom, mockSim);
 
@@ -71,7 +71,7 @@ public class PatchProcessInflammationCD4Test {
 
         verify(mockLattice, times(1))
                 .setValue(
-                        any(PatchLocation.class),
+                        eq(mockLocation),
                         doubleThat(val -> Math.abs(val - expectedValue) < EPSILON * expectedValue));
     }
 
