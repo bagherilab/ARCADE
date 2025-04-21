@@ -85,6 +85,9 @@ public abstract class Series {
     /** Snapshot interval in ticks. */
     private final int interval;
 
+    /** Variance only. */
+    private final int varianceOnly;
+
     /** Length of the simulation. */
     public final int length;
 
@@ -146,6 +149,12 @@ public abstract class Series {
                 (series.contains("interval")
                         ? series.getInt("interval")
                         : defaults.getInt("INTERVAL"));
+
+        // Set variance only.
+        this.varianceOnly =
+                (series.contains("varianceOnly")
+                        ? series.getInt("varianceOnly")
+                        : defaults.getInt("VARIANCE_ONLY"));
 
         // Set sizing.
         this.length =
