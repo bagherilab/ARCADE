@@ -40,8 +40,6 @@ import arcade.patch.util.PatchEnums.Ordering;
  * T-cell agents of specified dose and ratio next to source points or vasculature.
  */
 public class PatchActionTreat implements Action {
-    /** Serialization version identifier. */
-    private static final long serialVersionUID = 0;
 
     /** Delay before calling the helper (in minutes). */
     private final int delay;
@@ -80,7 +78,6 @@ public class PatchActionTreat implements Action {
      * @param parameters the component parameters dictionary
      */
     public PatchActionTreat(Series series, MiniBox parameters) {
-        // Set loaded parameters.
         this.delay = parameters.getInt("TIME_DELAY");
         this.dose = parameters.getInt("DOSE");
         this.treatFrac = parameters.getDouble("RATIO");
@@ -100,7 +97,6 @@ public class PatchActionTreat implements Action {
             latPositions = 16;
         }
 
-        // Initialize population register.
         populations = new ArrayList<>();
     }
 
@@ -115,7 +111,7 @@ public class PatchActionTreat implements Action {
     }
 
     /**
-     * Steps the helper to insert cells of the treatment population(s).
+     * Steps the action to insert cells of the treatment population(s).
      *
      * @param simstate the MASON simulation state
      */
@@ -146,6 +142,8 @@ public class PatchActionTreat implements Action {
         // Find sites without specified level of damage based on component type.
         switch (type) {
             case "source":
+                break;
+
             case "pattern":
                 double[][][] damage;
                 boolean[][][] sitesLat;
@@ -171,7 +169,7 @@ public class PatchActionTreat implements Action {
                     int z = coordinate.z;
                     if (sitesLat[z][coordinate.x][coordinate.y]
                             && damage[z][coordinate.x][coordinate.y] <= this.maxDamage) {
-                        addCellsIntoList(grid, loc, siteLocs0, siteLocs1, siteLocs2, siteLocs3);
+                        addLocationsIntoList(grid, loc, siteLocs0, siteLocs1, siteLocs2, siteLocs3);
                     }
                 }
                 break;
@@ -198,13 +196,14 @@ public class PatchActionTreat implements Action {
                         Location loc = (Location) locObj;
                         if (locs.contains(loc)) {
                             if (edge.getRadius() >= minDamageRadius) {
-                                addCellsIntoList(
+                                addLocationsIntoList(
                                         grid, loc, siteLocs0, siteLocs1, siteLocs2, siteLocs3);
                             }
                         }
                     }
                 }
                 break;
+
             default:
                 throw new IllegalArgumentException(
                         "Invalid component type: "
@@ -223,7 +222,17 @@ public class PatchActionTreat implements Action {
         insert(siteLocs, simstate);
     }
 
-    private void addCellsIntoList(
+    /**
+     * Helper method to sort locations into lists.
+     *
+     * @param grid the simulation grid
+     * @param loc the current location being looked at
+     * @param siteLocs0 the list of locations with 0 agents
+     * @param siteLocs1 the list of locations with 1 agent
+     * @param siteLocs2 the list of locations with 2 agents
+     * @param siteLocs3 the list of locations with 3 agents
+     */
+    private void addLocationsIntoList(
             PatchGrid grid,
             Location loc,
             ArrayList<Location> siteLocs0,
@@ -256,6 +265,12 @@ public class PatchActionTreat implements Action {
         // break;
     }
 
+    /**
+     * Helper method to add cells into the grid.
+     *
+     * @param coordinates the locations to insert the cells
+     * @param simstate the simulation state
+     */
     private void insert(ArrayList<Location> coordinates, SimState simstate) {
         PatchSimulation sim = (PatchSimulation) simstate;
         PatchGrid grid = (PatchGrid) sim.getGrid();
@@ -306,6 +321,13 @@ public class PatchActionTreat implements Action {
         }
     }
 
+    /**
+     * Helper method to check if location is available.
+     *
+     * @param grid the simulation grid
+     * @param loc the current location being looked at
+     * @return boolean indicating if location is free
+     */
     protected boolean checkLocationSpace(Location loc, PatchGrid grid) {
         boolean available;
         int locMax = this.maxConfluency;
