@@ -36,7 +36,7 @@ public class PatchActionTreatTest {
     PatchSeries series;
 
     @BeforeEach
-    public void setUp() throws NoSuchFieldException, IllegalAccessException {
+    public final void setUp() throws NoSuchFieldException, IllegalAccessException {
         parameters = mock(MiniBox.class);
         when(parameters.getInt("TIME_DELAY")).thenReturn(10);
         when(parameters.getInt("DOSE")).thenReturn(10);
@@ -108,7 +108,7 @@ public class PatchActionTreatTest {
     }
 
     @Test
-    public void schedule_callsScheduleOnAction()
+    public void schedule_called_schedulesOnAction()
             throws NoSuchFieldException, IllegalAccessException {
         action = new PatchActionTreat(series, parameters);
 
@@ -128,7 +128,7 @@ public class PatchActionTreatTest {
     }
 
     @Test
-    public void step_addsObjectsToSim() throws NoSuchFieldException, IllegalAccessException {
+    public void step_called_addsObjectsToSim() throws NoSuchFieldException, IllegalAccessException {
         action = new PatchActionTreat(series, parameters);
 
         ArrayList<MiniBox> populations = new ArrayList<>();
