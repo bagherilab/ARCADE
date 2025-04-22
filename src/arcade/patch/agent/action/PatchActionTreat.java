@@ -142,8 +142,6 @@ public class PatchActionTreat implements Action {
         // Find sites without specified level of damage based on component type.
         switch (type) {
             case "source":
-                break;
-
             case "pattern":
                 double[][][] damage;
                 boolean[][][] sitesLat;
