@@ -34,7 +34,7 @@ import arcade.patch.sim.PatchSimulation;
 import arcade.patch.util.PatchEnums.Ordering;
 
 /**
- * Implementation of {@link Action} for removing cell agents.
+ * Implementation of {@link Action} for inserting T cell agents.
  *
  * <p>The action is stepped once after {@code TIME_DELAY}. The {@code TreatAction} will add CAR
  * T-cell agents of specified dose and ratio next to source points or vasculature.
