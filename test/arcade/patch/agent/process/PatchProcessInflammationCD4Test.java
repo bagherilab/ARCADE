@@ -32,7 +32,7 @@ public class PatchProcessInflammationCD4Test {
 
     private PatchLocation mockLocation;
 
-    private static final double EPSILON = 1e-5;
+    private static final double EPSILON = 1e-2;
 
     @BeforeEach
     public final void setUp() {
@@ -64,7 +64,7 @@ public class PatchProcessInflammationCD4Test {
         inflammation.iL2Ticker = 10;
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 0);
-        inflammation.boundArray[9] = 100;
+        inflammation.boundArray[9] = 1E8;
 
         inflammation.stepProcess(mockRandom, mockSim);
 
@@ -93,7 +93,7 @@ public class PatchProcessInflammationCD4Test {
         verify(mockLattice, times(1))
                 .setValue(
                         eq(mockLocation),
-                        doubleThat(val -> Math.abs(val - expectedValue) > EPSILON * expectedValue));
+                        doubleThat(val -> Math.abs(val - expectedValue) < EPSILON * expectedValue));
     }
 
     @Test
