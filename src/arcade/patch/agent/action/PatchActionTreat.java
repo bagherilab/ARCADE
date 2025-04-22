@@ -40,41 +40,38 @@ import arcade.patch.util.PatchEnums.Ordering;
  * T-cell agents of specified dose and ratio next to source points or vasculature.
  */
 public class PatchActionTreat implements Action {
-    /** Serialization version identifier */
+    /** Serialization version identifier. */
     private static final long serialVersionUID = 0;
 
-    /** Delay before calling the helper (in minutes) */
+    /** Delay before calling the helper (in minutes). */
     private final int delay;
 
-    /** Total number of CAR T-cells to treat with */
+    /** Total number of CAR T-cells to treat with. */
     private final int dose;
 
-    /** List of fraction of each population to treat with. CD4 to CD8 ratio */
+    /** List of fraction of each population to treat with. CD4 to CD8 ratio. */
     private final double treatFrac;
 
-    /** Maximum damage value at which T-cells can spawn next to in source or pattern source */
+    /** Maximum damage value at which T-cells can spawn next to in source or pattern source. */
     private double max_damage;
 
-    /** Minimum radius value at which T- cells can spawn next to in graph source */
+    /** Minimum radius value at which T- cells can spawn next to in graph source. */
     private final double min_damage_radius;
 
-    /** Number of agent positions per lattice site */
+    /** Number of agent positions per lattice site. */
     private int latPositions;
 
-    /** Coordinate system used for simulation */
+    /** Coordinate system used for simulation. */
     private final String coord;
 
     /** List of populations. */
     private final ArrayList<MiniBox> populations;
 
-    /** parameters */
+    /** parameters. */
     MiniBox parameters;
 
-    /** Maximum confluency of cells in any location */
+    /** Maximum confluency of cells in any location. */
     final int maxConfluency;
-
-    /** location of available places to insert T cells. For testing purposes only */
-    private ArrayList<Location> siteLocations;
 
     /**
      * Creates an {@code Action} to add agents after a delay.
@@ -218,7 +215,6 @@ public class PatchActionTreat implements Action {
         siteLocs.addAll(siteLocs2);
         siteLocs.addAll(siteLocs1);
         siteLocs.addAll(siteLocs0);
-        siteLocations = (ArrayList<Location>) siteLocs.clone();
         insert(siteLocs, simstate);
     }
 
@@ -355,14 +351,5 @@ public class PatchActionTreat implements Action {
      */
     public ArrayList<MiniBox> getPopulations() {
         return populations;
-    }
-
-    /**
-     * Returns locations of sites available for insertion. Exists for testing purposes only
-     *
-     * @return Returns locations of sites available for insertion
-     */
-    public ArrayList<Location> getSiteLocs() {
-        return siteLocations;
     }
 }

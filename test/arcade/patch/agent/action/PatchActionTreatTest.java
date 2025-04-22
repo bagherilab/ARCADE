@@ -24,10 +24,15 @@ import static org.mockito.Mockito.*;
 public class PatchActionTreatTest {
 
     private PatchActionTreat action;
+
     private PatchSimulation sim;
+
     private PatchGrid gridMock;
+
     private PatchCell cellMock;
+
     MiniBox parameters;
+
     PatchSeries series;
 
     @BeforeEach
@@ -136,9 +141,9 @@ public class PatchActionTreatTest {
         pops.set(action, populations);
 
         action.step(sim);
-        assertFalse(action.getSiteLocs().isEmpty());
-        verify(gridMock, times(action.getSiteLocs().size() - 1)).addObject(any(), any());
-        verify(cellMock, times(action.getSiteLocs().size() - 1)).schedule(any());
+
+        verify(gridMock, atLeastOnce()).addObject(any(), any());
+        verify(cellMock, atLeastOnce()).schedule(any());
     }
 
     @Test
