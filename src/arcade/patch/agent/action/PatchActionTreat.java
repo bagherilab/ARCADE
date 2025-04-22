@@ -336,12 +336,12 @@ public class PatchActionTreat implements Action {
         int n = bag.numObjs; // number of agents in location
 
         if (n == 0) {
+            // no cells in location
             available = true;
-        } // no cells in location
-        else if (n >= locMax) {
+        } else if (n >= locMax) {
+            // location already full
             available = false;
-        } // location already full
-        else {
+        } else {
             available = true;
             double totalVol = PatchCell.calculateTotalVolume(bag);
             double currentHeight = totalVol / locArea;
