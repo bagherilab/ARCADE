@@ -57,17 +57,38 @@ public class PatchProcessInflammationCD4Test {
 
     @Test
     public void stepProcess_called_updatesEnvironment() {
+        when(mockParameters.getDouble("inflammation/IL2_RECEPTORS")).thenReturn(5000.0);
         inflammation = new PatchProcessInflammationCD4(mockCell);
         inflammation.active = true;
         inflammation.activeTicker = 10;
         inflammation.iL2Ticker = 10;
         inflammation.boundArray = new double[180];
         Arrays.fill(inflammation.boundArray, 0);
-        when(mockParameters.getDouble("inflammation/IL2_RECEPTORS")).thenReturn(5000.0);
+        inflammation.boundArray[9] = 100;
 
         inflammation.stepProcess(mockRandom, mockSim);
 
-        double expectedValue = 4.32489e10;
+        double expectedValue = 4.3297E10;
+
+        verify(mockLattice, times(1))
+                .setValue(
+                        eq(mockLocation),
+                        doubleThat(val -> Math.abs(val - expectedValue) < EPSILON * expectedValue));
+    }
+
+    @Test
+    public void stepProcess_noPriorIL2_updatesEnvironment() {
+        when(mockParameters.getDouble("inflammation/IL2_RECEPTORS")).thenReturn(5000.0);
+        inflammation = new PatchProcessInflammationCD4(mockCell);
+        inflammation.active = true;
+        inflammation.activeTicker = 10;
+        inflammation.iL2Ticker = 10;
+        inflammation.boundArray = new double[180];
+        Arrays.fill(inflammation.boundArray, 0);
+
+        inflammation.stepProcess(mockRandom, mockSim);
+
+        double expectedValue = 4.3248E10;
 
         verify(mockLattice, times(1))
                 .setValue(
