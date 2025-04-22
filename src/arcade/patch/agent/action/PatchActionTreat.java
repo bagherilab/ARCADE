@@ -205,6 +205,11 @@ public class PatchActionTreat implements Action {
                     }
                 }
                 break;
+            default:
+                throw new IllegalArgumentException(
+                        "Invalid component type: "
+                                + type
+                                + ". Must be of type source, pattern, or graph.");
         }
 
         Utilities.shuffleList(siteLocs3, sim.random);
