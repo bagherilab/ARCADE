@@ -167,10 +167,10 @@ public class PatchActionTreat implements Action {
                                             sim.locationFactory,
                                             sim.cellFactory.createCellForPopulation(
                                                     0, populations.get(0).getInt("CODE")));
-                    CoordinateXYZ coord = (CoordinateXYZ) loc.getSubcoordinate();
-                    int z = coord.z;
-                    if (sitesLat[z][coord.x][coord.y]
-                            && damage[z][coord.x][coord.y] <= this.maxDamage) {
+                    CoordinateXYZ coordinate = (CoordinateXYZ) loc.getSubcoordinate();
+                    int z = coordinate.z;
+                    if (sitesLat[z][coordinate.x][coordinate.y]
+                            && damage[z][coordinate.x][coordinate.y] <= this.maxDamage) {
                         addCellsIntoList(grid, loc, siteLocs0, siteLocs1, siteLocs2, siteLocs3);
                     }
                 }
@@ -285,7 +285,7 @@ public class PatchActionTreat implements Action {
             }
 
             PatchLocation loc = ((PatchLocation) coordinates.remove(0));
-            Coordinate coord = loc.getCoordinate();
+            Coordinate coordinate = loc.getCoordinate();
 
             // find available location space
             while (!coordinates.isEmpty() && !checkLocationSpace(loc, grid)) {
@@ -296,7 +296,7 @@ public class PatchActionTreat implements Action {
                 break;
             }
 
-            PatchLocationContainer locationContainer = new PatchLocationContainer(id, coord);
+            PatchLocationContainer locationContainer = new PatchLocationContainer(id, coordinate);
             PatchCellContainer cellContainer = sim.cellFactory.createCellForPopulation(id, pop);
             Location location = locationContainer.convert(sim.locationFactory, cellContainer);
             PatchCell cell =
