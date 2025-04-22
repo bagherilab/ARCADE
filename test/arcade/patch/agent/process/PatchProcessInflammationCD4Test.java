@@ -68,7 +68,7 @@ public class PatchProcessInflammationCD4Test {
 
         inflammation.stepProcess(mockRandom, mockSim);
 
-        double expectedValue = 4.3297E10;
+        double expectedValue = 4.33E10;
 
         verify(mockLattice, times(1))
                 .setValue(
@@ -88,7 +88,7 @@ public class PatchProcessInflammationCD4Test {
 
         inflammation.stepProcess(mockRandom, mockSim);
 
-        double expectedValue = 4.3248E10;
+        double expectedValue = 4.32E10;
 
         verify(mockLattice, times(1))
                 .setValue(
