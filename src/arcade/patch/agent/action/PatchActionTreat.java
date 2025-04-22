@@ -53,10 +53,10 @@ public class PatchActionTreat implements Action {
     private final double treatFrac;
 
     /** Maximum damage value at which T-cells can spawn next to in source or pattern source. */
-    private double max_damage;
+    private double maxDamage;
 
     /** Minimum radius value at which T- cells can spawn next to in graph source. */
-    private final double min_damage_radius;
+    private final double minDamageRadius;
 
     /** Number of agent positions per lattice site. */
     private int latPositions;
@@ -84,8 +84,8 @@ public class PatchActionTreat implements Action {
         this.delay = parameters.getInt("TIME_DELAY");
         this.dose = parameters.getInt("DOSE");
         this.treatFrac = parameters.getDouble("RATIO");
-        this.max_damage = parameters.getDouble("MAX_DAMAGE_SEED");
-        this.min_damage_radius = parameters.getDouble("MIN_RADIUS_SEED");
+        this.maxDamage = parameters.getDouble("MAX_DAMAGE_SEED");
+        this.minDamageRadius = parameters.getDouble("MIN_RADIUS_SEED");
         this.maxConfluency = 54;
         this.parameters = parameters;
 
@@ -170,15 +170,15 @@ public class PatchActionTreat implements Action {
                     CoordinateXYZ coord = (CoordinateXYZ) loc.getSubcoordinate();
                     int z = coord.z;
                     if (sitesLat[z][coord.x][coord.y]
-                            && damage[z][coord.x][coord.y] <= this.max_damage) {
+                            && damage[z][coord.x][coord.y] <= this.maxDamage) {
                         addCellsIntoList(grid, loc, siteLocs0, siteLocs1, siteLocs2, siteLocs3);
                     }
                 }
                 break;
 
             case "graph":
-                Graph G = ((PatchComponentSitesGraph) comp).getGraph();
-                Bag allEdges = new Bag(G.getAllEdges());
+                Graph graph = ((PatchComponentSitesGraph) comp).getGraph();
+                Bag allEdges = new Bag(graph.getAllEdges());
                 PatchComponentSitesGraph graphSites = (PatchComponentSitesGraph) comp;
 
                 for (Object edgeObj : allEdges) {
@@ -197,7 +197,7 @@ public class PatchActionTreat implements Action {
                     for (Object locObj : allEdgeLocs) {
                         Location loc = (Location) locObj;
                         if (locs.contains(loc)) {
-                            if (edge.getRadius() >= min_damage_radius) {
+                            if (edge.getRadius() >= minDamageRadius) {
                                 addCellsIntoList(
                                         grid, loc, siteLocs0, siteLocs1, siteLocs2, siteLocs3);
                             }
