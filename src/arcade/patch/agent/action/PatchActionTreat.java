@@ -368,13 +368,4 @@ public class PatchActionTreat implements Action {
 
         return available;
     }
-
-    /**
-     * Returns registered populations for the action. Exists for testing purposes only
-     *
-     * @return registered populations for the action
-     */
-    public ArrayList<MiniBox> getPopulations() {
-        return populations;
-    }
 }
