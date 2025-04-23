@@ -300,7 +300,6 @@ public class PatchActionTreat implements Action {
             PatchLocation loc = ((PatchLocation) coordinates.remove(0));
             Coordinate coordinate = loc.getCoordinate();
 
-            // find available location space
             while (!coordinates.isEmpty() && !checkLocationSpace(loc, grid)) {
                 loc = (PatchLocation) coordinates.remove(0);
             }
