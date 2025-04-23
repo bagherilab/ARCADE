@@ -132,7 +132,8 @@ public final class PatchCellFactory implements CellFactory {
             }
 
             int pop = population.getInt("CODE");
-
+            MiniBox popu = popToParameters.get(pop);
+            System.out.println("population: " + popu.getKeys());
             for (int i = 0; i < init; i++) {
                 PatchCellContainer container = createCellForPopulation(id, pop);
                 cells.put(id, container);

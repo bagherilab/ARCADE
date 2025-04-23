@@ -85,9 +85,6 @@ public abstract class Series {
     /** Snapshot interval in ticks. */
     private final int interval;
 
-    /** Variance only. */
-    private final int varianceOnly;
-
     /** Length of the simulation. */
     public final int length;
 
@@ -149,12 +146,6 @@ public abstract class Series {
                 (series.contains("interval")
                         ? series.getInt("interval")
                         : defaults.getInt("INTERVAL"));
-
-        // Set variance only.
-        this.varianceOnly =
-                (series.contains("varianceOnly")
-                        ? series.getInt("varianceOnly")
-                        : defaults.getInt("VARIANCE_ONLY"));
 
         // Set sizing.
         this.length =
@@ -326,8 +317,10 @@ public abstract class Series {
 
         if (match.find()) {
             box.put("(DISTRIBUTION)" + TAG_SEPARATOR + parameter, match.group(1).toUpperCase());
+            // System.out.println("(DISTRIBUTION)" + TAG_SEPARATOR + parameter);
             for (int i = 0; i < (match.groupCount() - 1) / 2; i++) {
                 int index = 2 * (i + 1);
+                // System.out.println(parameter + "_" + match.group(index));
                 box.put(parameter + "_" + match.group(index), match.group(index + 1));
             }
         } else {
@@ -335,6 +328,44 @@ public abstract class Series {
             if (scales.contains(parameter)) {
                 box.put(parameter, box.getDouble(parameter) * scales.getDouble(parameter));
             }
+        }
+    }
+
+    /**
+     * Parses parameter values based on default value.
+     *
+     * @param box the parameter map
+     * @param parameter the parameter name
+     * @param defaultParameter the default parameter value
+     * @param values the map of parameter values
+     * @param scales the map of parameter scaling
+     */
+    protected static void parseParameter(
+            MiniBox box,
+            String parameter,
+            String defaultParameter,
+            MiniBox values,
+            MiniBox scales,
+            MiniBox ICs) {
+        String value = values.contains(parameter) ? values.get(parameter) : defaultParameter;
+        Matcher match = Pattern.compile(DISTRIBUTION_REGEX).matcher(value);
+
+        if (match.find()) {
+            box.put("(DISTRIBUTION)" + TAG_SEPARATOR + parameter, match.group(1).toUpperCase());
+            // System.out.println("(DISTRIBUTION)" + TAG_SEPARATOR + parameter);
+            for (int i = 0; i < (match.groupCount() - 1) / 2; i++) {
+                int index = 2 * (i + 1);
+                // System.out.println(parameter + "_" + match.group(index));
+                box.put(parameter + "_" + match.group(index), match.group(index + 1));
+            }
+        } else {
+            box.put(parameter, value);
+            if (scales.contains(parameter)) {
+                box.put(parameter, box.getDouble(parameter) * scales.getDouble(parameter));
+            }
+        }
+        if (ICs.contains(parameter)) {
+            box.put(parameter + "_IC", true);
         }
     }
 

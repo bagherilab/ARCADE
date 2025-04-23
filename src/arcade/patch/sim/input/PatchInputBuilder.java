@@ -112,6 +112,7 @@ public final class PatchInputBuilder extends InputBuilder {
             case "component":
                 Box box = makeBox(atts);
                 setupLists.get(name + "s").add(box);
+                System.out.println(name + "s: " + atts.getValue("id"));
                 break;
             default:
                 break;

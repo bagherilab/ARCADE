@@ -1,5 +1,5 @@
 <set prefix="combined_">
-    <series name="grid" start="0" end="0" ticks="1" interval="1400" radius="10" margin="2" depth="1" varianceOnly="1">
+    <series name="grid" start="0" end="0" ticks="1" interval="1400" radius="10" margin="2" depth="1">
         <patch>
             <patch.parameter id="GEOMETRY" value="hex" />
         </patch>
@@ -16,8 +16,8 @@
                     <population.parameter id="CELL_AGE" value="UNIFORM(MIN=0,MAX=0)" />
                     <population.process id="METABOLISM" version="complex" />
                     <population.process id="SIGNALING" version="complex"  />
-                    <population.parameter id="proliferation/SYNTHESIS_DURATION" value="NORMAL(MU=637,SIGMA=20)" />
-                    <population.parameter id="metabolism/BASAL_ENERGY" value="NORMAL(MU=0.001,SIGMA=0.00008)" />
+                    <population.parameter id="proliferation/SYNTHESIS_DURATION" value="NORMAL(MU=600,SIGMA=20)" ic="MEAN"/>
+                    <population.parameter id="metabolism/BASAL_ENERGY" value="NORMAL(MU=0.001,SIGMA=0.00008)" ic="MEAN"/>
                     <population.parameter id="metabolism/PROLIFERATION_ENERGY" value="NORMAL(MU=0.001,SIGMA=0.00008)" />
                     <population.parameter id="metabolism/MIGRATION_ENERGY" value="NORMAL(MU=0.0002,SIGMA=0.000016)" />
                     <population.parameter id="metabolism/METABOLIC_PREFERENCE" value="NORMAL(MU=0.3,SIGMA=0.024)"/>

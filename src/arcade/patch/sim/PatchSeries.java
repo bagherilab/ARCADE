@@ -175,7 +175,8 @@ public final class PatchSeries extends Series {
             Box parameters = box.filterBoxByTag("PARAMETER");
             MiniBox parameterValues = parameters.getIdValForTagAtt("PARAMETER", "value");
             MiniBox parameterScales = parameters.getIdValForTagAtt("PARAMETER", "scale");
-
+            MiniBox parameterICs = parameters.getIdValForTagAtt("PARAMETER", "ic");
+            System.out.println("parameterICs: " + parameterICs.getKeys());
             // Apply conversion factors.
             for (String convert : populationConversions.getKeys()) {
                 double conversion = parseConversion(populationConversions.get(convert), ds, dt);
@@ -194,7 +195,8 @@ public final class PatchSeries extends Series {
                         parameter,
                         populationDefaults.get(parameter),
                         parameterValues,
-                        parameterScales);
+                        parameterScales,
+                        parameterICs);
             }
 
             // Get list of links, if valid.
