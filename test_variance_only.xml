@@ -5,28 +5,14 @@
         </patch>
         <agents>
             <populations>
-                <population id="cancerous" init="19" class="cancer">
+                <population id="cancerous" init="1" class="cancer">
                     <population.parameter id="CELL_VOLUME" value="NORMAL(MU=2250,SIGMA=200)" />
                     <population.parameter id="APOPTOSIS_AGE" value="NORMAL(MU=120960,SIGMA=10080)" />
                     <population.parameter id="NECROTIC_FRACTION" value="0.5" />
-                    <population.parameter id="ACCURACY" value="0.8" />
-                    <population.parameter id="AFFINITY" value="0.5" />
-                    <population.parameter id="COMPRESSION_TOLERANCE" value="4.35" />
-
                     <population.parameter id="CELL_AGE" value="UNIFORM(MIN=0,MAX=0)" />
-                    <population.process id="METABOLISM" version="complex" />
-                    <population.process id="SIGNALING" version="complex"  />
                     <population.parameter id="proliferation/SYNTHESIS_DURATION" value="NORMAL(MU=600,SIGMA=20)" ic="MU"/>
                     <population.parameter id="metabolism/BASAL_ENERGY" value="NORMAL(MU=0.001,SIGMA=0.00008)" ic="MU"/>
                     <population.parameter id="metabolism/PROLIFERATION_ENERGY" value="NORMAL(MU=0.001,SIGMA=0.00008)" />
-                    <population.parameter id="metabolism/MIGRATION_ENERGY" value="NORMAL(MU=0.0002,SIGMA=0.000016)" />
-                    <population.parameter id="metabolism/METABOLIC_PREFERENCE" value="NORMAL(MU=0.3,SIGMA=0.024)"/>
-                    <population.parameter id="metabolism/CONVERSION_FRACTION" value="NORMAL(MU=0.25,SIGMA=0.02)" />
-                    <population.parameter id="metabolism/RATIO_GLUCOSE_PYRUVATE" value="NORMAL(MU=0.5,SIGMA=0.04)" />
-                    <population.parameter id="metabolism/LACTATE_RATE" value="NORMAL(MU=0.1,SIGMA=0.008)" />
-                    <population.parameter id="metabolism/AUTOPHAGY_RATE" value="NORMAL(MU=0.0001,SIGMA=0.000008)" />
-                    <population.parameter id="metabolism/GLUCOSE_UPTAKE_RATE" value="NORMAL(MU=1.12,SIGMA=0.0896)" />
-                    <population.parameter id="metabolism/ATP_PRODUCTION_RATE" value="NORMAL(MU=8.927,SIGMA=0.71416)" />
                     <population.parameter id="signaling/MIGRATORY_THRESHOLD" value="NORMAL(MU=10,SIGMA=1)"/>
                 </population>
             </populations>

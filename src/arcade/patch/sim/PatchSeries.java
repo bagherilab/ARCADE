@@ -176,11 +176,6 @@ public final class PatchSeries extends Series {
             MiniBox parameterValues = parameters.getIdValForTagAtt("PARAMETER", "value");
             MiniBox parameterScales = parameters.getIdValForTagAtt("PARAMETER", "scale");
             MiniBox parameterICs = parameters.getIdValForTagAtt("PARAMETER", "ic");
-            System.out.println("parameterICs: " + parameterICs.getKeys());
-            System.out.println(
-                    "parameterICs values: " + parameterICs.get("proliferation/SYNTHESIS_DURATION"));
-            System.out.println(
-                    "parameterICs values: " + parameterICs.get("metabolism/MIGRATION_ENERGY"));
             // Apply conversion factors.
             for (String convert : populationConversions.getKeys()) {
                 double conversion = parseConversion(populationConversions.get(convert), ds, dt);
@@ -202,8 +197,6 @@ public final class PatchSeries extends Series {
                         parameterScales,
                         parameterICs);
             }
-            System.out.println("population: " + population.getKeys());
-            System.out.println("population: " + population.get("SYNTHESIS_DURATION_IC"));
 
             // Get list of links, if valid.
             MiniBox links = box.filterBoxByTag("LINK").getIdValForTagAtt("LINK", "weight");

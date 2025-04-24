@@ -21,15 +21,15 @@ public class DegenerateDistribution implements Distribution {
 
     /** Helper method to get the value from parameters based on IC type. */
     private static double getValueFromParameters(String name, MiniBox parameters) {
-        System.out.println("parameters: " + parameters.get("IC"));
-        if (parameters.get("IC") == "MU") {
+        String ic_type = parameters.get(name + "_IC");
+        if (ic_type.equals("MU")) {
             return parameters.getDouble(name + "_MU");
-        } else if (parameters.get("IC") == "MIN") {
+        } else if (ic_type.equals("MIN")) {
             return parameters.getDouble(name + "_MIN");
-        } else if (parameters.get("IC") == "MAX") {
+        } else if (ic_type.equals("MAX")) {
             return parameters.getDouble(name + "_MAX");
         } else {
-            throw new IllegalArgumentException("Invalid IC: " + parameters.get("IC"));
+            throw new IllegalArgumentException("Invalid IC: " + ic_type);
         }
     }
 

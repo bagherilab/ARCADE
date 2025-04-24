@@ -40,16 +40,13 @@ public class Parameters {
         MiniBox distributionsBox = popParameters.filter("(DISTRIBUTION)");
         for (String key : distributionsBox.getKeys()) {
             Distribution distribution;
-            System.out.println("Key: " + key);
             if (cellParameters != null && cellParameters.distributions.containsKey(key)) {
                 distribution = cellParameters.distributions.get(key).rebase(random);
             } else if (popParameters.contains(key + "_IC")) {
-                System.out.println("Key: " + key + "_IC");
                 distribution = new DegenerateDistribution(key, popParameters, random);
             } else {
                 distribution = popParameters.getDistribution(key, random);
             }
-
             distributions.put(key, distribution);
         }
     }
