@@ -352,10 +352,8 @@ public abstract class Series {
 
         if (match.find()) {
             box.put("(DISTRIBUTION)" + TAG_SEPARATOR + parameter, match.group(1).toUpperCase());
-            // System.out.println("(DISTRIBUTION)" + TAG_SEPARATOR + parameter);
             for (int i = 0; i < (match.groupCount() - 1) / 2; i++) {
                 int index = 2 * (i + 1);
-                // System.out.println(parameter + "_" + match.group(index));
                 box.put(parameter + "_" + match.group(index), match.group(index + 1));
             }
         } else {
@@ -365,7 +363,8 @@ public abstract class Series {
             }
         }
         if (ICs.contains(parameter)) {
-            box.put(parameter + "_IC", true);
+            System.out.println("Hello");
+            box.put(parameter + "_IC", ICs.get(parameter));
         }
     }
 
