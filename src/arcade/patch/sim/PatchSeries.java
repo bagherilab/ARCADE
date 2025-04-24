@@ -197,7 +197,14 @@ public final class PatchSeries extends Series {
                         parameterScales,
                         parameterICs);
             }
-
+            System.out.println(population.getKeys());
+            System.out.println(population.get("SYNTHESIS_DURATION"));
+            System.out.println(population.getDouble("SYNTHESIS_DURATION"));
+            System.out.println(population.get("SYNTHESIS_DURATION_IC"));
+            System.out.println(population.getDouble("SYNTHESIS_DURATION_IC"));
+            System.out.println(population.get("(DISTRIBUTION)/proliferation/SYNTHESIS_DURATION"));
+            System.out.println(
+                    population.getDouble("(DISTRIBUTION)/proliferation/SYNTHESIS_DURATION"));
             // Get list of links, if valid.
             MiniBox links = box.filterBoxByTag("LINK").getIdValForTagAtt("LINK", "weight");
             for (String link : links.getKeys()) {

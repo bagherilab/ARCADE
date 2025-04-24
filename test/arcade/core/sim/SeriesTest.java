@@ -694,6 +694,36 @@ public class SeriesTest {
     }
 
     @Test
+    public void parseParameter_withIC_putsICInBox() {
+        MiniBox box = new MiniBox();
+        String parameter = randomString();
+        double defaultParameter = randomDoubleBetween(0, 100);
+
+        MiniBox values = new MiniBox();
+        MiniBox scales = new MiniBox();
+        MiniBox ICs = new MiniBox();
+        ICs.put(parameter, "MU");
+        Series.parseParameter(box, parameter, "" + defaultParameter, values, scales, ICs);
+
+        assertEquals("MU", box.get(parameter + "_IC"));
+    }
+
+    @Test
+    public void parseParameter_withoutIC_doesNotPutICInBox() {
+        MiniBox box = new MiniBox();
+        String parameter = randomString();
+        double defaultParameter = randomDoubleBetween(0, 100);
+
+        MiniBox values = new MiniBox();
+        MiniBox scales = new MiniBox();
+        MiniBox ICs = new MiniBox();
+
+        Series.parseParameter(box, parameter, "" + defaultParameter, values, scales, ICs);
+
+        assertFalse(box.contains(parameter + "_IC"));
+    }
+
+    @Test
     public void parseConversion_invalidConversion_returnsOne() {
         assertEquals(1, Series.parseConversion(randomString(), DS, DZ, DT), EPSILON);
     }

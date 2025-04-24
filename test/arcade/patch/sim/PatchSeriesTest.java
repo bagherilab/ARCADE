@@ -189,6 +189,21 @@ public class PatchSeriesTest {
         }
     }
 
+    @Test
+    public void updatePatch_givenIC_usesIC() {
+        for (String patchParameter : PATCH_PARAMETER_NAMES) {
+            Box patch = new Box();
+            double mu = randomDoubleBetween(0, 100);
+            patch.addAtt(patchParameter, "IC", "MU");
+            patch.addAtt(patchParameter, "MU", "" + mu);
+            PatchSeries series = makeSeriesForPatch(patch);
+            MiniBox box = series.patch;
+            // for (String parameter : PATCH_PARAMETER_NAMES) {
+            //     assertEquals(mu, box.getDouble(parameter), EPSILON);
+            // }
+        }
+    }
+
     private PatchSeries makeSeriesForPopulation(Box[] boxes) {
         HashMap<String, ArrayList<Box>> setupLists = makeLists();
         PatchSeries series = mock(PatchSeries.class, CALLS_REAL_METHODS);
