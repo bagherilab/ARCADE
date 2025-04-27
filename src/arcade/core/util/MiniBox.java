@@ -108,10 +108,6 @@ public class MiniBox {
             double denominator =
                     (!split[1].matches(NUMBER_REGEX) ? Double.NaN : Double.parseDouble(split[1]));
             return (denominator == 0 ? Double.NaN : numerator / denominator);
-        } else if (contents.containsKey(id + "_IC")) {
-            Distribution distribution =
-                    new DegenerateDistribution(id, this, new MersenneTwisterFast());
-            return distribution.getExpected();
         } else if (contents.containsKey("(DISTRIBUTION)" + TAG_SEPARATOR + id)) {
             return getDistribution(id, new MersenneTwisterFast()).getExpected();
         }
