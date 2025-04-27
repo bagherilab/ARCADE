@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import ec.util.MersenneTwisterFast;
-import arcade.core.util.distributions.DegenerateDistribution;
 import arcade.core.util.distributions.Distribution;
 import arcade.core.util.distributions.NormalDistribution;
 import arcade.core.util.distributions.NormalFractionalDistribution;

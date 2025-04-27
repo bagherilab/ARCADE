@@ -40,6 +40,43 @@ public class PatchCellFactoryTest {
     }
 
     @Test
+    public void createCells_withICParameters_createsList() {
+        int count = randomIntBetween(1, 10);
+        PatchSeries series = createSeries(new int[] {count}, new String[] {"COUNT"});
+
+        double volumeMu = randomDoubleBetween(1, 10);
+        double volumeSigma = randomDoubleBetween(1, 10);
+        double height = randomDoubleBetween(1, 10);
+        int age = randomIntBetween(1, 100);
+        double compression = randomDoubleBetween(1, 10);
+
+        MiniBox parameters = new MiniBox();
+        parameters.put("(DISTRIBUTION)/CELL_VOLUME", "NORMAL");
+        parameters.put("CELL_VOLUME_MU", volumeMu);
+        parameters.put("CELL_VOLUME_SIGMA", volumeSigma);
+        parameters.put("CELL_VOLUME_IC", "MU");
+        parameters.put("CELL_HEIGHT", height);
+        parameters.put("CELL_AGE", age);
+        parameters.put("COMPRESSION_TOLERANCE", compression);
+
+        PatchCellFactory factory = new PatchCellFactory();
+        factory.popToIDs.put(1, new HashSet<>());
+        factory.popToParameters.put(1, parameters);
+        factory.createCells(series);
+
+        assertEquals(count, factory.cells.size());
+        assertEquals(count, factory.popToIDs.get(1).size());
+
+        for (int i : factory.popToIDs.get(1)) {
+            PatchCellContainer patchCellContainer = factory.cells.get(i);
+            assertEquals(volumeMu, patchCellContainer.criticalVolume, EPSILON);
+            assertEquals(height + compression, patchCellContainer.criticalHeight, EPSILON);
+            assertEquals(age, patchCellContainer.age);
+            assertEquals(0, patchCellContainer.divisions);
+        }
+    }
+
+    @Test
     public void createCells_onePopulationInitByCount_createsList() {
         int count = randomIntBetween(1, 10);
         PatchSeries series = createSeries(new int[] {count}, new String[] {"COUNT"});

@@ -63,6 +63,9 @@ public final class PatchCellFactory implements CellFactory {
             loadCells(series);
         } else {
             createCells(series);
+            // System.out.println("cells id: " + cells.get(1).id);
+            // System.out.println("cells size: " + cells.size());
+            // System.out.println("cells volume: " + cells.get(1).volume);
         }
     }
 
@@ -132,6 +135,12 @@ public final class PatchCellFactory implements CellFactory {
             }
 
             int pop = population.getInt("CODE");
+            MiniBox populationParameters = popToParameters.get(pop);
+            System.out.println(populationParameters.getKeys());
+            System.out.println(populationParameters.getDouble("CELL_VOLUME"));
+            System.out.println(populationParameters.getDouble("CELL_VOLUME_MU"));
+            System.out.println(populationParameters.getDouble("CELL_VOLUME_SIGMA"));
+
             for (int i = 0; i < init; i++) {
                 PatchCellContainer container = createCellForPopulation(id, pop);
                 cells.put(id, container);
@@ -151,7 +160,7 @@ public final class PatchCellFactory implements CellFactory {
     public PatchCellContainer createCellForPopulation(int id, int pop) {
         MiniBox population = popToParameters.get(pop);
         Parameters parameters = new Parameters(population, null, random);
-
+        System.out.println(parameters.getDouble("CELL_VOLUME"));
         double compression = parameters.getDouble("COMPRESSION_TOLERANCE");
 
         double volume = parameters.getDouble("CELL_VOLUME");
