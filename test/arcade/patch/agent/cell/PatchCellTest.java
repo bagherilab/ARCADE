@@ -151,6 +151,93 @@ public class PatchCellTest {
     }
 
     @Test
+    public void setState_proliferateWithIC_drawsFromDistribution() {
+        Schedule scheduleMock = mock(Schedule.class);
+        doReturn(cellID + 1).when(simMock).getID();
+        doReturn(scheduleMock).when(simMock).getSchedule();
+        doReturn(null).when(scheduleMock).scheduleRepeating(anyInt(), anyInt(), any());
+        PatchCellFactory factoryMock = mock(PatchCellFactory.class);
+        MiniBox popParameters = new MiniBox();
+        popParameters.put("(DISTRIBUTION)/NECROTIC_FRACTION", "NORMAL");
+        popParameters.put("NECROTIC_FRACTION_MU", 0.5);
+        popParameters.put("NECROTIC_FRACTION_SIGMA", 0.1);
+        doReturn(popParameters).when(factoryMock).getParameters(anyInt());
+        doReturn(factoryMock).when(simMock).getCellFactory();
+        doReturn(0.5).when(randomMock).nextDouble();
+
+        MiniBox population = new MiniBox();
+        double volume = 500;
+        population.put("COMPRESSION_TOLERANCE", 0);
+        population.put("(DISTRIBUTION)/NECROTIC_FRACTION", "NORMAL");
+        population.put("NECROTIC_FRACTION_MU", 0.5);
+        population.put("NECROTIC_FRACTION_SIGMA", 0.1);
+        population.put("NECROTIC_FRACTION_IC", "MU");
+        population.put("proliferation/SYNTHESIS_DURATION", 1);
+        population.put("SENESCENT_FRACTION", 0);
+        population.put("ENERGY_THRESHOLD", 0);
+        population.put("APOPTOSIS_AGE", 0);
+        population.put("ACCURACY", 0);
+        population.put("AFFINITY", 0);
+        population.put("DIVISION_POTENTIAL", 50);
+        population.put("MAX_DENSITY", 0);
+        population.put("CAR_ANTIGENS", 0);
+        population.put("SELF_TARGETS", 0);
+
+        Parameters parameters = new Parameters(population, null, randomMock);
+        double critHeight = 10;
+        double critVolume = 250;
+
+        doReturn(100.).when(locationMock).getArea();
+        PatchCellContainer container =
+                new PatchCellContainer(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellAge,
+                        cellDivisions,
+                        cellState,
+                        volume,
+                        cellHeight,
+                        critVolume,
+                        critHeight);
+        PatchCellContainer daughterContainer =
+                new PatchCellContainer(
+                        cellID + 1,
+                        cellParent,
+                        cellPop,
+                        cellAge,
+                        cellDivisions,
+                        State.UNDEFINED,
+                        volume,
+                        cellHeight,
+                        critVolume,
+                        critHeight);
+        PatchCell cell = spy(new PatchCellMock(container, locationMock, parameters));
+        PatchCellContainer containerMock = mock(PatchCellContainer.class);
+        PatchCell daughter = spy(new PatchCellMock(daughterContainer, locationMock, parameters));
+
+        doReturn(daughter)
+                .when(containerMock)
+                .convert(factoryMock, locationMock, randomMock, parameters);
+        doReturn(containerMock)
+                .when(cell)
+                .make(anyInt(), any(State.class), any(MersenneTwisterFast.class));
+        doReturn(locationMock).when(cell).selectBestLocation(simMock, randomMock);
+        Bag locationBag = new Bag();
+        locationBag.add(cell);
+        doReturn(locationBag).when(gridMock).getObjectsAtLocation(locationMock);
+
+        cell.setState(State.PROLIFERATIVE);
+        cell.module.step(randomMock, simMock);
+        cell.module.step(randomMock, simMock);
+        cell.module.step(randomMock, simMock);
+
+        assertEquals(State.UNDEFINED, cell.getState());
+        assertEquals(250, cell.getVolume());
+        assertEquals(0.5, daughter.getParameters().getDouble("NECROTIC_FRACTION"));
+    }
+
+    @Test
     public void setState_migration_movesCell() {
         doReturn(0.0).when(parametersMock).getDouble(any(String.class));
         doReturn(0).when(parametersMock).getInt(any(String.class));

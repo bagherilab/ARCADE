@@ -8,7 +8,6 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
-import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.process.PatchProcess;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
@@ -74,20 +73,12 @@ public class PatchModuleProliferation extends PatchModule {
         // space in neighborhood to divide into. Otherwise, check if double
         // volume has been reached, and if so, create a new cell.
         if (currentHeight > maxHeight) {
-            if (cell instanceof PatchCellCART) {
-                cell.setState(State.PAUSED);
-            } else {
-                cell.setState(State.QUIESCENT);
-            }
+            cell.setState(State.QUIESCENT);
         } else {
             PatchLocation newLocation = cell.selectBestLocation(sim, random);
 
             if (newLocation == null) {
-                if (cell instanceof PatchCellCART) {
-                    cell.setState(State.PAUSED);
-                } else {
-                    cell.setState(State.QUIESCENT);
-                }
+                cell.setState(State.QUIESCENT);
             } else if (cell.getVolume() >= targetVolume) {
                 if (ticker > synthesisDuration) {
 
