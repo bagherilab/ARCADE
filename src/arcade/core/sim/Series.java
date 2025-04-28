@@ -337,7 +337,7 @@ public abstract class Series {
      * @param defaultParameter the default parameter value
      * @param values the map of parameter values
      * @param scales the map of parameter scaling
-     * @param ICs the map of initial condition parameters
+     * @param ics the map of initial condition parameters
      */
     protected static void parseParameter(
             MiniBox box,
