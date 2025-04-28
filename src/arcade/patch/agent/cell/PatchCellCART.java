@@ -9,6 +9,8 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
+import arcade.patch.util.PatchEnums.AntigenFlag;
+import arcade.patch.util.PatchEnums.State;
 import static arcade.patch.util.PatchEnums.AntigenFlag;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -95,7 +97,7 @@ public abstract class PatchCellCART extends PatchCell {
     protected final int maxAntigenBinding;
 
     /** number of CARs on T cell surface. */
-    protected final int cars;
+    protected int cars;
 
     /** simulation time since T cell was last activated. */
     protected int lastActiveTicker;
@@ -202,7 +204,7 @@ public abstract class PatchCellCART extends PatchCell {
         double kDSelf = computeAffinity(selfReceptorAffinity, loc);
         PatchGrid grid = (PatchGrid) sim.getGrid();
 
-        Bag allAgents = grabAllTissueNeighbors(grid, loc);
+        Bag allAgents = getAllTissueNeighbors(grid, loc);
         allAgents.remove(this);
         allAgents.shuffle(random);
         int neighbors = allAgents.size();
@@ -257,21 +259,6 @@ public abstract class PatchCellCART extends PatchCell {
      */
     public boolean getActivationStatus() {
         return this.activated;
-    }
-
-    /**
-     * Adds only tissue cells to the provided bag.
-     *
-     * @param tissueAgents the bag to add tissue cells into
-     * @param possibleAgents the bag of possible agents to check for tissue cells
-     */
-    private void grabTissueAgents(Bag tissueAgents, Bag possibleAgents) {
-        for (Object agent : possibleAgents) {
-            Cell cell = (Cell) agent;
-            if (cell instanceof PatchCellTissue) {
-                tissueAgents.add(cell);
-            }
-        }
     }
 
     /**
@@ -338,18 +325,33 @@ public abstract class PatchCellCART extends PatchCell {
     }
 
     /**
+     * Adds only tissue cells to the provided bag. Helper method for bindTarget.
+     *
+     * @param tissueAgents the bag to add tissue cells into
+     * @param possibleAgents the bag of possible agents to check for tissue cells
+     */
+    public void getTissueAgents(Bag tissueAgents, Bag possibleAgents) {
+        for (Object agent : possibleAgents) {
+            Cell cell = (Cell) agent;
+            if (cell instanceof PatchCellTissue) {
+                tissueAgents.add(cell);
+            }
+        }
+    }
+
+    /**
      * Returns all tissue cells in neighborhood and current location.
      *
      * @param grid the grid used in the simulation
      * @param loc current location of the cell
      * @return bag of all tissue cells in neighborhood and current location
      */
-    private Bag grabAllTissueNeighbors(PatchGrid grid, PatchLocation loc) {
+    private Bag getAllTissueNeighbors(PatchGrid grid, PatchLocation loc) {
         Bag neighbors = new Bag();
-        grabTissueAgents(neighbors, grid.getObjectsAtLocation(loc));
+        getTissueAgents(neighbors, grid.getObjectsAtLocation(loc));
         for (Location neighborLocation : loc.getNeighbors()) {
             Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));
-            grabTissueAgents(neighbors, bag);
+            getTissueAgents(neighbors, bag);
         }
 
         return neighbors;

@@ -119,6 +119,12 @@ public final class PatchCellContainer implements CellContainer {
                 return new PatchCellCARTCD8(this, location, parameters, links);
             case "cart_cd4":
                 return new PatchCellCARTCD4(this, location, parameters, links);
+            case "combined":
+                return new PatchCellCARTCombined(this, location, parameters, links);
+            case "inducible_cart":
+                return new PatchCellCARTCombinedInducible(this, location, parameters, links);
+            case "inhibitory_cart":
+                return new PatchCellCARTCombinedInhibitory(this, location, parameters, links);
             case "random":
                 return new PatchCellRandom(this, location, parameters, links);
         }
