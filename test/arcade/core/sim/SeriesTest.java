@@ -701,9 +701,9 @@ public class SeriesTest {
 
         MiniBox values = new MiniBox();
         MiniBox scales = new MiniBox();
-        MiniBox ICs = new MiniBox();
-        ICs.put(parameter, "MU");
-        Series.parseParameter(box, parameter, "" + defaultParameter, values, scales, ICs);
+        MiniBox ics = new MiniBox();
+        ics.put(parameter, "MU");
+        Series.parseParameter(box, parameter, "" + defaultParameter, values, scales, ics);
 
         assertEquals("MU", box.get(parameter + "_IC"));
     }
@@ -716,9 +716,9 @@ public class SeriesTest {
 
         MiniBox values = new MiniBox();
         MiniBox scales = new MiniBox();
-        MiniBox ICs = new MiniBox();
+        MiniBox ics = new MiniBox();
 
-        Series.parseParameter(box, parameter, "" + defaultParameter, values, scales, ICs);
+        Series.parseParameter(box, parameter, "" + defaultParameter, values, scales, ics);
 
         assertFalse(box.contains(parameter + "_IC"));
     }

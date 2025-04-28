@@ -345,7 +345,7 @@ public abstract class Series {
             String defaultParameter,
             MiniBox values,
             MiniBox scales,
-            MiniBox ICs) {
+            MiniBox ics) {
         String value = values.contains(parameter) ? values.get(parameter) : defaultParameter;
         Matcher match = Pattern.compile(DISTRIBUTION_REGEX).matcher(value);
 
@@ -361,8 +361,8 @@ public abstract class Series {
                 box.put(parameter, box.getDouble(parameter) * scales.getDouble(parameter));
             }
         }
-        if (ICs.contains(parameter)) {
-            box.put(parameter + "_IC", ICs.get(parameter));
+        if (ics.contains(parameter)) {
+            box.put(parameter + "_IC", ics.get(parameter));
         }
     }
 

@@ -186,10 +186,8 @@ public abstract class PatchCell implements Cell {
         MiniBox processBox = parameters.filter("(PROCESS)");
 
         for (String processKey : processBox.getKeys()) {
-            System.out.println("processKey: " + processKey);
             ProcessDomain domain = Domain.valueOf(processKey);
             String version = processBox.get(processKey);
-            System.out.println("version: " + version);
             Process process = makeProcess(domain, version);
             processes.put(domain, process);
         }
