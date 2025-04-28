@@ -78,8 +78,8 @@ public class PatchModuleProliferation extends PatchModule {
                 cell.setState(State.PAUSED);
             } else {
                 cell.setState(State.QUIESCENT);
-            }        } 
-        else {
+            }
+        } else {
             PatchLocation newLocation = cell.selectBestLocation(sim, random);
 
             if (newLocation == null) {
