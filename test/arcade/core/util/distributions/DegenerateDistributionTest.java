@@ -9,7 +9,7 @@ import static arcade.core.ARCADETestUtilities.*;
 public class DegenerateDistributionTest {
 
     private static final double EPSILON = 1E-5;
-    
+
     private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast();
 
     @Test

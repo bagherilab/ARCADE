@@ -19,8 +19,9 @@ public class DegenerateDistribution implements Distribution {
         this(getValueFromParameters(name, parameters));
     }
 
-    /** Helper method to get the value from parameters based on IC type. 
-     * 
+    /**
+     * Helper method to get the value from parameters based on IC type.
+     *
      * @param name the distribution parameter name
      * @param parameters the distribution parameters dictionary
      * @return the value of the distribution
