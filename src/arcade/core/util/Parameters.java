@@ -42,6 +42,9 @@ public class Parameters {
             Distribution distribution;
             if (cellParameters != null && cellParameters.distributions.containsKey(key)) {
                 distribution = cellParameters.distributions.get(key).rebase(random);
+                if (distribution instanceof DegenerateDistribution) {
+                    distribution = popParameters.getDistribution(key, random);
+                }
             } else if (popParameters.contains(key + "_IC")) {
                 distribution = new DegenerateDistribution(key, popParameters, random);
             } else {
