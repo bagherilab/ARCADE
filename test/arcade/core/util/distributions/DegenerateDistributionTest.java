@@ -36,6 +36,18 @@ public class DegenerateDistributionTest {
     }
 
     @Test
+    public void constructor_withICNumber_setsValueFromNumber() {
+        MiniBox parameters = new MiniBox();
+        String name = randomString().toUpperCase();
+        String numberString = "50";
+        parameters.put(name + "_IC", numberString);
+
+        DegenerateDistribution dist = new DegenerateDistribution(name, parameters, RANDOM);
+
+        assertEquals(50, dist.getDoubleValue(), EPSILON);
+    }
+
+    @Test
     public void constructor_withICMIN_setsValueFromMIN() {
         MiniBox parameters = new MiniBox();
         String name = randomString().toUpperCase();

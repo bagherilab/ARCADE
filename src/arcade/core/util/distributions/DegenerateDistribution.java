@@ -35,7 +35,15 @@ public class DegenerateDistribution implements Distribution {
         } else if (icType.equals("MAX")) {
             return parameters.getDouble(name + "_MAX");
         } else {
-            throw new IllegalArgumentException("Invalid IC: " + icType);
+            try {
+                if (icType.contains(".")) {
+                    return Double.parseDouble(icType);
+                } else {
+                    return Integer.parseInt(icType);
+                }
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid IC value: " + icType, e);
+            }
         }
     }
 
