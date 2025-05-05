@@ -68,12 +68,13 @@ public class PatchProcessInflammationCD4Test {
 
         inflammation.stepProcess(mockRandom, mockSim);
 
-        double expectedValue = 4.91E13;
+        double expectedIL2Env = 4.91E13;
 
         verify(mockLattice, times(1))
                 .setValue(
                         eq(mockLocation),
-                        doubleThat(val -> Math.abs(val - expectedValue) < EPSILON * expectedValue));
+                        doubleThat(
+                                val -> Math.abs(val - expectedIL2Env) < EPSILON * expectedIL2Env));
     }
 
     @Test
@@ -88,12 +89,13 @@ public class PatchProcessInflammationCD4Test {
 
         inflammation.stepProcess(mockRandom, mockSim);
 
-        double expectedValue = 4.325E10;
+        double expectedIL2Env = 4.325E10;
 
         verify(mockLattice, times(1))
                 .setValue(
                         eq(mockLocation),
-                        doubleThat(val -> Math.abs(val - expectedValue) < EPSILON * expectedValue));
+                        doubleThat(
+                                val -> Math.abs(val - expectedIL2Env) < EPSILON * expectedIL2Env));
     }
 
     @Test
