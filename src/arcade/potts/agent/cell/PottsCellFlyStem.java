@@ -86,18 +86,21 @@ public class PottsCellFlyStem extends PottsCell {
 
     @Override
     public PottsCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-
-        int newPop = links == null ? pop : links.next(random);
-
-        return make(newID, newState, random, newPop);
+        throw new UnsupportedOperationException(
+                "make(int, CellState, MersenneTwisterFast) not supported. Please use make(int, CellState, MersenneTwisterFast, int, double) instead.");
+        // int newPop = links == null ? pop : links.next(random);
+        // return make(newID, newState, random, newPop);
     }
 
+    // TODO: Write a better test for this function
     public PottsCellContainer make(
-            int newID, CellState newState, MersenneTwisterFast random, int newPop) {
-        divisions++;
+            int newID,
+            CellState newState,
+            MersenneTwisterFast random,
+            int newPop,
+            double daughterCellCriticalVolume) {
 
-        double daughterCellCriticalVolume =
-                criticalVolume * stemType.daughterCellCriticalVolumeProportion;
+        divisions++;
 
         return new PottsCellContainer(
                 newID,
