@@ -50,14 +50,13 @@ public class PatchModuleMigration extends PatchModule {
     public void step(MersenneTwisterFast random, Simulation sim) {
         if (ticker > movementDuration) {
             PatchLocation newLocation = cell.selectBestLocation(sim, random);
-
             if (newLocation == null) {
                 if (cell instanceof PatchCellCART) {
                     cell.setState(State.PAUSED);
+                } else {
                     if (cell instanceof PatchCellMacrophage) {
                         ((PatchCellMacrophage) cell).resetBoundCell();
                     }
-                } else {
                     cell.setState(State.QUIESCENT);
                 }
             } else {

@@ -485,14 +485,33 @@ public abstract class PatchCell implements Cell {
         double targetVolume = (state == State.PROLIFERATIVE) ? volume * 0.5 : volume;
         int densityAdjustment = (state == State.PROLIFERATIVE) ? 1 : 0;
 
-        if (checkLocation(
-                sim, currentLocation, 0, criticalHeight, pop, maxDensity - densityAdjustment)) {
+        boolean available = false;
+        if (this instanceof PatchCellMacrophage) {
+            available = checkLocation(sim, currentLocation, pop, maxDensity - densityAdjustment);
+        } else {
+            available =
+                    checkLocation(
+                            sim,
+                            currentLocation,
+                            0,
+                            criticalHeight,
+                            pop,
+                            maxDensity - densityAdjustment);
+        }
+        if (available) {
             freeLocations.add(currentLocation.getClone());
         }
 
         for (Location neighborLocation : currentLocation.getNeighbors()) {
             PatchLocation neighbor = (PatchLocation) neighborLocation;
-            if (checkLocation(sim, neighbor, targetVolume, criticalHeight, pop, maxDensity)) {
+            available = false;
+            if (this instanceof PatchCellMacrophage) {
+                available = checkLocation(sim, neighbor, pop, maxDensity);
+            } else {
+                available =
+                        checkLocation(sim, neighbor, targetVolume, criticalHeight, pop, maxDensity);
+            }
+            if (available) {
                 freeLocations.add(neighborLocation);
             }
         }
@@ -541,6 +560,40 @@ public abstract class PatchCell implements Cell {
                 if (proposedHeight > cell.getCriticalHeight()) {
                     return false;
                 }
+                if (cell.getPop() == population) {
+                    count++;
+                    if (count >= maxDensity) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Determine if a patch location is free.
+     *
+     * <p>A location is free if the proposed cell volume can fit in the location without exceeding
+     * the max volume of a location, exceeding constituents' critical heights, and exceeding the
+     * population density is below the maximum.
+     *
+     * @param sim the simulation instance
+     * @param loc the location
+     * @param population the population index
+     * @param maxDensity the maximum density of population in the location
+     * @return if the location is available for the cell
+     */
+    static boolean checkLocation(
+            Simulation sim, PatchLocation loc, int population, int maxDensity) {
+        PatchGrid grid = (PatchGrid) sim.getGrid();
+
+        Bag bag = new Bag(grid.getObjectsAtLocation(loc));
+
+        if (bag.numObjs != 0) {
+            int count = 0;
+            for (Object obj : bag) {
+                PatchCell cell = (PatchCell) obj;
                 if (cell.getPop() == population) {
                     count++;
                     if (count >= maxDensity) {

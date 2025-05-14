@@ -237,7 +237,7 @@ public abstract class PatchCellMacrophage extends PatchCell {
     }
 
     public void resetBoundCell() {
-        if (boundCell != null) {
+        if (boundCell == null) {
             return;
         }
         ((PatchCellTissue) boundCell).updateSynNotchAntigens(boundSynNotch, 0);
