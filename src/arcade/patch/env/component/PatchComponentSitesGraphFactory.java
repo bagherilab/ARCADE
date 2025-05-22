@@ -18,13 +18,11 @@ import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.*;
 /**
  * Factory for building a {@link Graph} for {@link PatchComponentSitesGraph}.
  *
- * <p>
- * Graph can be initialized in two ways:
+ * <p>Graph can be initialized in two ways:
  *
  * <ul>
- * <li>pattern layout that matches the structure used by
- * {@link PatchComponentSitesPattern}
- * <li>root layout grown from a specified root system using motifs
+ *   <li>pattern layout that matches the structure used by {@link PatchComponentSitesPattern}
+ *   <li>root layout grown from a specified root system using motifs
  * </ul>
  */
 public abstract class PatchComponentSitesGraphFactory {
@@ -212,7 +210,7 @@ public abstract class PatchComponentSitesGraphFactory {
     /**
      * Calculates the column of the pattern based on offset and index.
      *
-     * @param i      the index in the x direction
+     * @param i the index in the x direction
      * @param offset the lattice offset
      * @return the column index
      */
@@ -221,8 +219,8 @@ public abstract class PatchComponentSitesGraphFactory {
     /**
      * Calculates the row of the pattern based on offset and index.
      *
-     * @param i      the index in the x direction
-     * @param j      the index in the y direction
+     * @param i the index in the x direction
+     * @param j the index in the y direction
      * @param offset the lattice offset
      * @return the row index
      */
@@ -241,8 +239,8 @@ public abstract class PatchComponentSitesGraphFactory {
      *
      * @param fromX the x coordinate of the node the edge is from
      * @param fromY the y coordinate of the node the edge is from
-     * @param toX   the x coordinate of the node the edge is to
-     * @param toY   the y coordinate of the node the edge is to
+     * @param toX the x coordinate of the node the edge is to
+     * @param toY the y coordinate of the node the edge is to
      * @return the code for the edge direction
      */
     abstract EdgeDirection getDirection(int fromX, int fromY, int toX, int toY);
@@ -250,12 +248,12 @@ public abstract class PatchComponentSitesGraphFactory {
     /**
      * Adds a root motif to the graph.
      *
-     * @param graph   the graph instance
-     * @param node0   the node the motif starts at
-     * @param dir     the direction code of the root
-     * @param type    the root type
+     * @param graph the graph instance
+     * @param node0 the node the motif starts at
+     * @param dir the direction code of the root
+     * @param type the root type
      * @param offsets the list of offsets for line roots, null otherwise
-     * @param random  the random number generator
+     * @param random the random number generator
      * @return the bag of active edges
      */
     abstract Bag addRoot(
@@ -269,12 +267,12 @@ public abstract class PatchComponentSitesGraphFactory {
     /**
      * Adds an edge motif to the graph.
      *
-     * @param graph  the graph instance
-     * @param node0  the node the motif starts at
-     * @param edge0  the edge the motif is being added to
-     * @param type   the edge type
-     * @param level  the graph resolution level
-     * @param motif  the motif type
+     * @param graph the graph instance
+     * @param node0 the node the motif starts at
+     * @param edge0 the edge the motif is being added to
+     * @param type the edge type
+     * @param level the graph resolution level
+     * @param motif the motif type
      * @param random the random number generator
      * @return the bag of active edges
      */
@@ -290,10 +288,10 @@ public abstract class PatchComponentSitesGraphFactory {
     /**
      * Adds a capillary segment joining edges of different types to the graph.
      *
-     * @param graph  the graph instance
-     * @param node0  the node the segment starts at
-     * @param dir    the direction code for the segment
-     * @param level  the graph resolution level
+     * @param graph the graph instance
+     * @param node0 the node the segment starts at
+     * @param dir the direction code for the segment
+     * @param level the graph resolution level
      * @param random the random number generator
      */
     abstract void addSegment(
@@ -306,11 +304,11 @@ public abstract class PatchComponentSitesGraphFactory {
     /**
      * Adds a connection joining edges of the same type to the graph.
      *
-     * @param graph  the graph instance
-     * @param node0  the node the connection starts at
-     * @param dir    the direction code for the segment
-     * @param type   the connection type
-     * @param level  the graph resolution level
+     * @param graph the graph instance
+     * @param node0 the node the connection starts at
+     * @param dir the direction code for the segment
+     * @param type the connection type
+     * @param level the graph resolution level
      * @param random the random number generator
      */
     abstract void addConnection(
@@ -332,7 +330,7 @@ public abstract class PatchComponentSitesGraphFactory {
     /**
      * Gets the length of the given edge.
      *
-     * @param edge  the edge object
+     * @param edge the edge object
      * @param level the graph resolution level
      * @return the length of the edge
      */
@@ -348,10 +346,10 @@ public abstract class PatchComponentSitesGraphFactory {
     /**
      * Creates a {@link Root} for graph sites using a root layout.
      *
-     * @param border  the border the root extends from
+     * @param border the border the root extends from
      * @param percent the percentage distance along the border
-     * @param type    the root type
-     * @param level   the graph resolution level
+     * @param type the root type
+     * @param level the graph resolution level
      * @return a {@link Root} object
      */
     abstract Root createRoot(Border border, double percent, EdgeType type, EdgeLevel level);
@@ -359,10 +357,10 @@ public abstract class PatchComponentSitesGraphFactory {
     /**
      * Creates offsets for a {@link Root} for graph sites using a root layout.
      *
-     * @param border  the border the root extends from
+     * @param border the border the root extends from
      * @param percent the percentage distance in the perpendicular direction
-     * @param level   the graph resolution level
-     * @param random  the random number generator
+     * @param level the graph resolution level
+     * @param random the random number generator
      * @return a list of offsets
      */
     abstract EdgeDirection[] createRootOffsets(
@@ -388,10 +386,10 @@ public abstract class PatchComponentSitesGraphFactory {
         /**
          * Creates a {@code Root} object for generating root graphs.
          *
-         * @param x    the x coordinate
-         * @param y    the y coordinate
+         * @param x the x coordinate
+         * @param y the y coordinate
          * @param type the edge type
-         * @param dir  the direction code of the root
+         * @param dir the direction code of the root
          */
         Root(int x, int y, EdgeType type, EdgeDirection dir) {
             node = new SiteNode(x, y, 0);
@@ -403,7 +401,7 @@ public abstract class PatchComponentSitesGraphFactory {
     /**
      * Gets direction code for an edge.
      *
-     * @param edge  the edge object
+     * @param edge the edge object
      * @param level the graph resolution level
      * @return the code for the edge direction
      */
@@ -414,8 +412,8 @@ public abstract class PatchComponentSitesGraphFactory {
     /**
      * Gets direction code for an edge.
      *
-     * @param from  the node the edge is from
-     * @param to    the node the edge is to
+     * @param from the node the edge is from
+     * @param to the node the edge is to
      * @param level the graph resolution level
      * @return the code for the edge direction
      */
@@ -428,9 +426,9 @@ public abstract class PatchComponentSitesGraphFactory {
     /**
      * Creates a node offset in the given direction.
      *
-     * @param node   the node of the initial location
+     * @param node the node of the initial location
      * @param offset the offset direction
-     * @param level  the graph resolution level
+     * @param level the graph resolution level
      * @return an offset node
      */
     SiteNode offsetNode(SiteNode node, EdgeDirection offset, EdgeLevel level) {
@@ -464,7 +462,7 @@ public abstract class PatchComponentSitesGraphFactory {
         }
 
         // Traverse graph from capillaries to calculate radii.
-        ArrayList<SiteEdge> caps = getEdgeByType(graph, new EdgeType[] { EdgeType.CAPILLARY });
+        ArrayList<SiteEdge> caps = getEdgeByType(graph, new EdgeType[] {EdgeType.CAPILLARY});
         updateRadii(graph, caps, CalculationType.UPSTREAM_PATTERN, random);
         updateRadii(graph, caps, CalculationType.DOWNSTREAM_PATTERN, random);
 
@@ -534,27 +532,30 @@ public abstract class PatchComponentSitesGraphFactory {
             for (SiteEdge edge1 : set) {
                 if (graph.getOutDegree(edge1.getTo()) == 1) {
                     int scale1 = scales.get(edge1);
-                    EdgeDirection dir1 = getDirection(
-                            edge1.getFrom().getX() / scale1,
-                            edge1.getFrom().getY() / scale1,
-                            edge1.getTo().getX() / scale1,
-                            edge1.getTo().getY() / scale1);
+                    EdgeDirection dir1 =
+                            getDirection(
+                                    edge1.getFrom().getX() / scale1,
+                                    edge1.getFrom().getY() / scale1,
+                                    edge1.getTo().getX() / scale1,
+                                    edge1.getTo().getY() / scale1);
 
                     SiteEdge edge2 = (SiteEdge) edge1.getEdgesOut().get(0);
                     int scale2 = scales.get(edge2);
-                    EdgeDirection dir2 = getDirection(
-                            edge2.getFrom().getX() / scale2,
-                            edge2.getFrom().getY() / scale2,
-                            edge2.getTo().getX() / scale2,
-                            edge2.getTo().getY() / scale2);
+                    EdgeDirection dir2 =
+                            getDirection(
+                                    edge2.getFrom().getX() / scale2,
+                                    edge2.getFrom().getY() / scale2,
+                                    edge2.getTo().getX() / scale2,
+                                    edge2.getTo().getY() / scale2);
 
                     // Join edges that are the same direction and type.
                     if (dir1 == dir2 && edge1.type == edge2.type) {
-                        SiteEdge join = new SiteEdge(
-                                edge1.getFrom(),
-                                edge2.getTo(),
-                                edge1.type,
-                                EdgeLevel.VARIABLE);
+                        SiteEdge join =
+                                new SiteEdge(
+                                        edge1.getFrom(),
+                                        edge2.getTo(),
+                                        edge1.type,
+                                        EdgeLevel.VARIABLE);
                         scales.put(join, scale1 + scale2);
 
                         // Set length to be sum and radius to be average of the
@@ -587,7 +588,7 @@ public abstract class PatchComponentSitesGraphFactory {
     /**
      * Initializes graph with edges and nodes in a root layout.
      *
-     * @param random      the random number generator
+     * @param random the random number generator
      * @param graphLayout the specification for layout of roots
      * @return a graph instance with root layout
      */
@@ -674,11 +675,11 @@ public abstract class PatchComponentSitesGraphFactory {
     /**
      * Updates hemodynamic properties for graph sites with root layouts.
      *
-     * @param graph    the graph instance
+     * @param graph the graph instance
      * @param arteries the list of artery edges
-     * @param veins    the list of vein edges
-     * @param level    the graph resolution level
-     * @param random   the random number generator
+     * @param veins the list of vein edges
+     * @param level the graph resolution level
+     * @param random the random number generator
      */
     private void updateRootGraph(
             Graph graph,
@@ -691,14 +692,14 @@ public abstract class PatchComponentSitesGraphFactory {
 
         // Store upper level capillaries.
         if (level != EdgeLevel.LEVEL_1) {
-            caps = getEdgeByType(graph, new EdgeType[] { EdgeType.CAPILLARY });
+            caps = getEdgeByType(graph, new EdgeType[] {EdgeType.CAPILLARY});
             for (SiteEdge edge : caps) {
                 graph.removeEdge(edge);
             }
         }
 
         // Get all leaves and update radii.
-        list = getLeavesByType(graph, new EdgeType[] { EdgeType.ARTERY, EdgeType.VEIN });
+        list = getLeavesByType(graph, new EdgeType[] {EdgeType.ARTERY, EdgeType.VEIN});
         updateRadii(graph, list, CalculationType.UPSTREAM_ALL);
 
         // Replace level 1 edges capillaries.
@@ -711,16 +712,17 @@ public abstract class PatchComponentSitesGraphFactory {
         addSegments(graph, level, random);
         addConnections(graph, level, random);
 
-        caps = getEdgeByType(graph, new EdgeType[] { EdgeType.CAPILLARY });
+        caps = getEdgeByType(graph, new EdgeType[] {EdgeType.CAPILLARY});
 
         // Get capillaries and arterioles and update radii.
         switch (level) {
             case LEVEL_1:
-                list = getEdgeByType(
-                        graph, new EdgeType[] { EdgeType.CAPILLARY, EdgeType.ARTERIOLE });
+                list =
+                        getEdgeByType(
+                                graph, new EdgeType[] {EdgeType.CAPILLARY, EdgeType.ARTERIOLE});
                 break;
             case LEVEL_2:
-                list = getEdgeByType(graph, new EdgeType[] { EdgeType.ARTERIOLE }, level);
+                list = getEdgeByType(graph, new EdgeType[] {EdgeType.ARTERIOLE}, level);
                 list.addAll(caps);
                 break;
             default:
@@ -735,10 +737,10 @@ public abstract class PatchComponentSitesGraphFactory {
         // Get capillaries and venules and update radii.
         switch (level) {
             case LEVEL_1:
-                list = getEdgeByType(graph, new EdgeType[] { EdgeType.CAPILLARY, EdgeType.VENULE });
+                list = getEdgeByType(graph, new EdgeType[] {EdgeType.CAPILLARY, EdgeType.VENULE});
                 break;
             case LEVEL_2:
-                list = getEdgeByType(graph, new EdgeType[] { EdgeType.VENULE }, level);
+                list = getEdgeByType(graph, new EdgeType[] {EdgeType.VENULE}, level);
                 list.addAll(caps);
                 break;
             default:
@@ -808,13 +810,14 @@ public abstract class PatchComponentSitesGraphFactory {
     /**
      * Refines the graph for graph sites with root layouts.
      *
-     * @param graph    the graph instance
+     * @param graph the graph instance
      * @param arteries the list of artery edges
-     * @param veins    the list of vein edges
+     * @param veins the list of vein edges
      */
     private void refineRootGraph(Graph graph, ArrayList<Root> arteries, ArrayList<Root> veins) {
         // Reverse edges that are veins and venules.
-        ArrayList<SiteEdge> reverse = getEdgeByType(graph, new EdgeType[] { EdgeType.VEIN, EdgeType.VENULE });
+        ArrayList<SiteEdge> reverse =
+                getEdgeByType(graph, new EdgeType[] {EdgeType.VEIN, EdgeType.VENULE});
         for (SiteEdge edge : reverse) {
             graph.reverseEdge(edge);
         }
@@ -823,7 +826,7 @@ public abstract class PatchComponentSitesGraphFactory {
         reversePressures(graph);
 
         // Check for non-connected graph.
-        ArrayList<SiteEdge> caps = getEdgeByType(graph, new EdgeType[] { EdgeType.CAPILLARY });
+        ArrayList<SiteEdge> caps = getEdgeByType(graph, new EdgeType[] {EdgeType.CAPILLARY});
         if (caps.size() < 1) {
             graph.clear();
             return;
@@ -843,7 +846,7 @@ public abstract class PatchComponentSitesGraphFactory {
         }
 
         // Get all capillaries and update radii.
-        ArrayList<SiteEdge> list = getEdgeByType(graph, new EdgeType[] { EdgeType.CAPILLARY });
+        ArrayList<SiteEdge> list = getEdgeByType(graph, new EdgeType[] {EdgeType.CAPILLARY});
         updateRadii(graph, list, CalculationType.UPSTREAM_ARTERIES);
         updateRadii(graph, list, CalculationType.DOWNSTREAM_VEINS);
 
@@ -952,16 +955,17 @@ public abstract class PatchComponentSitesGraphFactory {
     /**
      * Remodels sites based on shear stress.
      *
-     * @param graph  the graph instance
-     * @param level  the graph resolution level
+     * @param graph the graph instance
+     * @param level the graph resolution level
      * @param random the random number generator
      * @return the fraction of edges remodeled
      */
     private double remodelRootGraph(Graph graph, EdgeLevel level, MersenneTwisterFast random) {
         // Remove capillaries, arterioles, and venules.
-        ArrayList<SiteEdge> list = getEdgeByType(
-                graph,
-                new EdgeType[] { EdgeType.CAPILLARY, EdgeType.VENULE, EdgeType.ARTERIOLE });
+        ArrayList<SiteEdge> list =
+                getEdgeByType(
+                        graph,
+                        new EdgeType[] {EdgeType.CAPILLARY, EdgeType.VENULE, EdgeType.ARTERIOLE});
         for (SiteEdge edge : list) {
             graph.removeEdge(edge);
         }
@@ -1009,24 +1013,26 @@ public abstract class PatchComponentSitesGraphFactory {
         for (Object obj : allEdges) {
             SiteEdge edge = (SiteEdge) obj;
             if (edge.tag == EdgeTag.ADD && graph.getDegree(edge.getTo()) < 3) {
-                Bag bag1 = addMotif(
-                        graph,
-                        edge.getTo(),
-                        edge,
-                        edge.type,
-                        level,
-                        EdgeMotif.TRIPLE,
-                        random);
+                Bag bag1 =
+                        addMotif(
+                                graph,
+                                edge.getTo(),
+                                edge,
+                                edge.type,
+                                level,
+                                EdgeMotif.TRIPLE,
+                                random);
 
                 SiteEdge edge1 = (SiteEdge) bag1.get(0);
-                Bag bag2 = addMotif(
-                        graph,
-                        edge1.getTo(),
-                        edge,
-                        edge.type,
-                        level,
-                        EdgeMotif.DOUBLE,
-                        random);
+                Bag bag2 =
+                        addMotif(
+                                graph,
+                                edge1.getTo(),
+                                edge,
+                                edge.type,
+                                level,
+                                EdgeMotif.DOUBLE,
+                                random);
 
                 SiteEdge edge2 = (SiteEdge) bag2.get(0);
                 addMotif(graph, edge2.getTo(), edge, edge.type, level, EdgeMotif.SINGLE, random);
@@ -1110,10 +1116,10 @@ public abstract class PatchComponentSitesGraphFactory {
     /**
      * Adds motifs to graph until no additional motifs can be added.
      *
-     * @param graph  the graph instance
-     * @param bag    the current bag of active edges
-     * @param level  the graph resolution level
-     * @param motif  the motif code
+     * @param graph the graph instance
+     * @param bag the current bag of active edges
+     * @param level the graph resolution level
+     * @param motif the motif code
      * @param random the random number generator
      * @return the updated bag of active edges
      */
@@ -1162,8 +1168,8 @@ public abstract class PatchComponentSitesGraphFactory {
     /**
      * Adds segments to graph between arteries and veins.
      *
-     * @param graph  the graph instance
-     * @param level  the graph resolution level
+     * @param graph the graph instance
+     * @param level the graph resolution level
      * @param random the random number generator
      */
     private void addSegments(Graph graph, EdgeLevel level, MersenneTwisterFast random) {
@@ -1186,8 +1192,8 @@ public abstract class PatchComponentSitesGraphFactory {
     /**
      * Adds connections to graphs between arteries or between veins.
      *
-     * @param graph  the graph instance
-     * @param level  the graph resolution level
+     * @param graph the graph instance
+     * @param level the graph resolution level
      * @param random the random number generator
      */
     private void addConnections(Graph graph, EdgeLevel level, MersenneTwisterFast random) {
