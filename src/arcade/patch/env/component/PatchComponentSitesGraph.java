@@ -23,24 +23,36 @@ import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.*;
 /**
  * Extension of {@link PatchComponentSites} for graph sites.
  *
- * <p>Layout of the underlying graph is specified by {@code GRAPH_LAYOUT}. The pattern layout is
- * specified by using {@code "*"}. The root layout is specified by specifying roots:
+ * <p>
+ * Layout of the underlying graph is specified by {@code GRAPH_LAYOUT}. The
+ * pattern layout is
+ * specified by using {@code "*"}. The root layout is specified by specifying
+ * roots:
  *
  * <ul>
- *   <li>{@code [<BORDER> random <#>]} = random roots with {@code <#>} randomly spaced roots,
- *       randomly assigned as artery or vein
- *   <li>{@code [<BORDER> alternate <#>]} = alternating roots with {@code <#>} evenly spaced roots,
- *       alternating between arteries and veins
- *   <li>{@code [<BORDER> single <#><TYPE>]} = single {@code <TYPE>} root placed a distance {@code
+ * <li>{@code [<BORDER> random <#>]} = random roots with {@code <#>} randomly
+ * spaced roots,
+ * randomly assigned as artery or vein
+ * <li>{@code [<BORDER> alternate <#>]} = alternating roots with {@code <#>}
+ * evenly spaced roots,
+ * alternating between arteries and veins
+ * <li>{@code [<BORDER> single <#><TYPE>]} = single {@code <TYPE>} root placed a
+ * distance {@code
  *       <#>} percent across the specified border
- *   <li>{@code [<BORDER> line <#><TYPE><#>]} = line {@code <TYPE>} root placed a distance {@code
- *       <#>} (first number) percent across the specified border that spans a distance {@code <#>}
- *       (second number) percent across the environment in the direction normal to the specified
- *       border
+ * <li>{@code [<BORDER> line <#><TYPE><#>]} = line {@code <TYPE>} root placed a
+ * distance {@code
+ *       <#>} (first number) percent across the specified border that spans a
+ * distance {@code <#>}
+ * (second number) percent across the environment in the direction normal to the
+ * specified
+ * border
  * </ul>
  *
- * <p>The border {@code <BORDER>} can be {@code LEFT} (-x direction), {@code RIGHT} (+x direction),
- * {@code TOP} (-y direction), or {@code BOTTOM} (+y direction). The type {@code <TYPE>} can be
+ * <p>
+ * The border {@code <BORDER>} can be {@code LEFT} (-x direction), {@code RIGHT}
+ * (+x direction),
+ * {@code TOP} (-y direction), or {@code BOTTOM} (+y direction). The type
+ * {@code <TYPE>} can be
  * {@code A} / {@code a} for an artery or {@code V} / {@code v} for a vein.
  */
 public abstract class PatchComponentSitesGraph extends PatchComponentSites {
@@ -77,17 +89,18 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
     /**
      * Creates a {@link PatchComponentSites} using graph sites.
      *
-     * <p>Loaded parameters include:
+     * <p>
+     * Loaded parameters include:
      *
      * <ul>
-     *   <li>{@code GRAPH_LAYOUT} = graph layout type
-     *   <li>{@code OXYGEN_SOLUBILITY_PLASMA} = solubility of oxygen in plasma
-     *   <li>{@code OXYGEN_SOLUBILITY_TISSUE} = solubility of oxygen in tissue
+     * <li>{@code GRAPH_LAYOUT} = graph layout type
+     * <li>{@code OXYGEN_SOLUBILITY_PLASMA} = solubility of oxygen in plasma
+     * <li>{@code OXYGEN_SOLUBILITY_TISSUE} = solubility of oxygen in tissue
      * </ul>
      *
-     * @param series the simulation series
+     * @param series     the simulation series
      * @param parameters the component parameters dictionary
-     * @param random the random number generator
+     * @param random     the random number generator
      */
     public PatchComponentSitesGraph(Series series, MiniBox parameters, MersenneTwisterFast random) {
         super(series);
@@ -127,7 +140,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      * Gets the lattice coordinates spanned by an edge between two nodes.
      *
      * @param from the node the edge extends from
-     * @param to the node the edge extends to
+     * @param to   the node the edge extends to
      * @return the list of span coordinates
      */
     abstract ArrayList<CoordinateXYZ> getSpan(SiteNode from, SiteNode to);
@@ -157,8 +170,11 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
     /**
      * Initializes graph for representing sites.
      *
-     * <p>Calls the correct method to populate the graph with edges (either pattern or root layout).
-     * After the graph is defined, the corresponding indices in the lattice adjacent to edges are
+     * <p>
+     * Calls the correct method to populate the graph with edges (either pattern or
+     * root layout).
+     * After the graph is defined, the corresponding indices in the lattice adjacent
+     * to edges are
      * marked.
      *
      * @param random the random number generator
@@ -190,10 +206,13 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
     /**
      * Graph step that only considers differences in concentration.
      *
-     * <p>Method is equivalent to the step used with {@link
+     * <p>
+     * Method is equivalent to the step used with {@link
      * arcade.patch.env.component.PatchComponentSitesSource} and {@link
-     * arcade.patch.env.component.PatchComponentSitesPattern} where the amount of concentration
-     * added is the difference between the source concentration and the current concentration for a
+     * arcade.patch.env.component.PatchComponentSitesPattern} where the amount of
+     * concentration
+     * added is the difference between the source concentration and the current
+     * concentration for a
      * given molecule.
      */
     void simpleStep() {
@@ -233,8 +252,11 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
     /**
      * Graph step that uses traversals to calculate exact hemodynamics.
      *
-     * <p>Traversing the graph updates the concentrations of molecules in each edge. The amount of
-     * concentration added is a function of flow rate and permeability to the given molecule.
+     * <p>
+     * Traversing the graph updates the concentrations of molecules in each edge.
+     * The amount of
+     * concentration added is a function of flow rate and permeability to the given
+     * molecule.
      *
      * @param random the random number generator
      */
@@ -335,9 +357,8 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                     // Check for stability.
                     double max = latticePatchVolume / edge.area;
                     if (permeability > max) {
-                        intConcNew =
-                                (intConcNew * flow + latticePatchVolume * extConcNew)
-                                        / (flow + latticePatchVolume);
+                        intConcNew = (intConcNew * flow + latticePatchVolume * extConcNew)
+                                / (flow + latticePatchVolume);
                         extConcNew = intConcNew;
                     } else {
                         // Iterate for each second in the minute time step.
@@ -355,14 +376,12 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                         int k = coordinate.z;
 
                         if (layer.name.equalsIgnoreCase("OXYGEN")) {
-                            delta[k][i][j] +=
-                                    Math.max(
-                                            (extConcNew / oxySoluTissue
-                                                    - (current[k][i][j] + delta[k][i][j])),
-                                            0);
+                            delta[k][i][j] += Math.max(
+                                    (extConcNew / oxySoluTissue
+                                            - (current[k][i][j] + delta[k][i][j])),
+                                    0);
                         } else {
-                            delta[k][i][j] +=
-                                    Math.max((extConcNew - (current[k][i][j] + delta[k][i][j])), 0);
+                            delta[k][i][j] += Math.max((extConcNew - (current[k][i][j] + delta[k][i][j])), 0);
                         }
                     }
 
@@ -380,7 +399,8 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
     /**
      * Extension of {@link arcade.core.util.Graph.Node} for site nodes.
      *
-     * <p>Node tracks additional hemodynamic properties including pressure and oxygen.
+     * <p>
+     * Node tracks additional hemodynamic properties including pressure and oxygen.
      */
     public static class SiteNode extends Node {
         /** Node ID. */
@@ -436,12 +456,23 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         public double getPressure() {
             return pressure;
         }
+
+        /**
+         * Get the oxygen partial pressure of the node.
+         *
+         * @return the node oxygen partial pressure
+         */
+        public double getOxygen() {
+            return oxygen;
+        }
     }
 
     /**
      * Extension of {@link arcade.core.util.Graph.Edge} for site edges.
      *
-     * <p>Node tracks additional hemodynamic properties including radius, length, wall thickness,
+     * <p>
+     * Node tracks additional hemodynamic properties including radius, length, wall
+     * thickness,
      * shear stress, circumferential stress, and volumetric flow rate.
      */
     public static class SiteEdge extends Edge {
@@ -458,7 +489,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         boolean isIgnored;
 
         /** Edge type. */
-        final EdgeType type;
+        public final EdgeType type;
 
         /** Edge resolution level. */
         final EdgeLevel level;
@@ -470,22 +501,22 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         double radius;
 
         /** Vessel length [um]. */
-        double length;
+        public double length;
 
         /** Wall thickness [um]. */
         double wall;
 
         /** Shear stress in edge [mmHg]. */
-        double shear;
+        public double shear;
 
         /** Circumferential stress in edge [mmHg]. */
-        double circum;
+        public double circum;
 
         /** Volumetric flow rate in edge [um<sup>3</sup>/min]. */
-        double flow;
+        public double flow;
 
         /** Cross-sectional area of edge [um<sup>2</sup>]. */
-        double area;
+        public double area;
 
         /** Scaled shear stress. */
         double shearScaled;
@@ -499,9 +530,9 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         /**
          * Creates a {@link Edge} for graph sites.
          *
-         * @param from the node the edge is from
-         * @param to the node the edge is to
-         * @param type the edge type
+         * @param from  the node the edge is from
+         * @param to    the node the edge is to
+         * @param type  the edge type
          * @param level the graph resolution level
          */
         SiteEdge(Node from, Node to, EdgeType type, EdgeLevel level) {
@@ -743,9 +774,8 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         for (Object obj : in) {
             SiteEdge edge = (SiteEdge) obj;
             if (!edge.isIgnored) {
-                massIn +=
-                        edge.flow * getTotal(edge.getFrom().oxygen, oxySoluPlasma)
-                                - edge.transport.get(code);
+                massIn += edge.flow * getTotal(edge.getFrom().oxygen, oxySoluPlasma)
+                        - edge.transport.get(code);
             }
         }
 
