@@ -24,7 +24,7 @@ public final class PatchOutputSaver extends OutputSaver {
     }
 
     public void saveGraphComponents(int tick) {
-        LOGGER.info("Saving Graph Sites!");
+         raise UnsupportedOperationException("saveGraphComponents not implemented");
     }
 
     @Override
