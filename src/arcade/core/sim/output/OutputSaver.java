@@ -28,7 +28,7 @@ import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
  */
 public abstract class OutputSaver implements Steppable {
     /** Logger for {@code OutputSaver}. */
-    private static final Logger LOGGER = Logger.getLogger(OutputSaver.class.getName());
+    protected static final Logger LOGGER = Logger.getLogger(OutputSaver.class.getName());
 
     /** Number of elements to format in output string. */
     private static final int FORMAT_ELEMENTS = 6;

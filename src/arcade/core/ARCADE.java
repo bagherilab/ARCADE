@@ -56,6 +56,9 @@ public abstract class ARCADE {
     /** Version number. */
     public static final String VERSION = loadVersion();
 
+    /** Command line settings for ARCADE simulation */
+    protected MiniBox settings;
+
     /**
      * Gets the resource relative to the location of the class.
      *
@@ -139,13 +142,13 @@ public abstract class ARCADE {
         Box parameters = arcade.loadParameters(args[0]);
 
         // Parse arguments from command line.
-        MiniBox settings = arcade.parseArguments(args, commands);
+        arcade.settings = arcade.parseArguments(args, commands);
 
         // Build series
-        ArrayList<Series> series = arcade.buildSeries(parameters, settings);
+        ArrayList<Series> series = arcade.buildSeries(parameters);
 
         // Run series.
-        arcade.runSeries(series, settings);
+        arcade.runSeries(series);
     }
 
     /**
@@ -267,8 +270,7 @@ public abstract class ARCADE {
      * @param settings a container of parsed arguments
      * @return a list of {@link Series} instances
      */
-    ArrayList<Series> buildSeries(Box parameters, MiniBox settings)
-            throws IOException, SAXException {
+    ArrayList<Series> buildSeries(Box parameters) throws IOException, SAXException {
         String setupFile = settings.get("SETUP_FILE");
         String snapshotPath = settings.get("SNAPSHOT_PATH");
         boolean isVis = settings.contains("VIS");
@@ -290,7 +292,7 @@ public abstract class ARCADE {
      * @param series the list of {@link Series} instances
      * @param settings a container of parsed arguments
      */
-    void runSeries(ArrayList<Series> series, MiniBox settings) throws Exception {
+    void runSeries(ArrayList<Series> series) throws Exception {
         boolean isVis = settings.contains("VIS");
         String loadPath = settings.get("LOAD_PATH");
         boolean loadCells = settings.contains("LOAD_CELLS");
