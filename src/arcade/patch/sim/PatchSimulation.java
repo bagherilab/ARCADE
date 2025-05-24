@@ -369,9 +369,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
             series.saver.saveLocations(tick);
 
             PatchOutputSaver patchSaver = (PatchOutputSaver) series.saver;
-            if (patchSaver.saveGraph) {
-                patchSaver.saveGraphComponents(tick);
-            }
+            patchSaver.saveComponents(tick);
         }
     }
 }

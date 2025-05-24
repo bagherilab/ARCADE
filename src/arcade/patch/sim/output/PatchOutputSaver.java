@@ -33,18 +33,16 @@ public final class PatchOutputSaver extends OutputSaver {
      *
      * @param tick the simulation tick
      */
-    public void saveGraphComponents(int tick) {
+    public void saveComponents(int tick) {
         for (String componentKey : ((PatchSimulation) sim).getComponentKeys()) {
             Component component = sim.getComponent(componentKey);
-            if (component instanceof PatchComponentSitesGraph) {
+            if (component instanceof PatchComponentSitesGraph && saveGraph) {
                 String json =
                         gson.toJson(
                                 (PatchComponentSitesGraph) component,
                                 PatchComponentSitesGraph.class);
                 String path = prefix + String.format("_%06d." + componentKey + ".GRAPH.json", tick);
                 write(path, format(json, FORMAT_ELEMENTS));
-            } else {
-                continue;
             }
         }
     }
@@ -53,8 +51,6 @@ public final class PatchOutputSaver extends OutputSaver {
     public void step(SimState simstate) {
         super.step(simstate);
         int tick = (int) simstate.schedule.getTime();
-        if (saveGraph) {
-            saveGraphComponents(tick);
-        }
+        saveComponents(tick);
     }
 }
