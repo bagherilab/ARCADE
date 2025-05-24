@@ -1,4 +1,3 @@
 <commands>
     <switch id="SAVE_GRAPH" short="g" long="graph" help="Save the GRAPH output files" />
-    <switch id="SAVE_NUTRIENTS" short="n" long="nutrients" help="Save the NUTRIENT output files" />
 </commands>
