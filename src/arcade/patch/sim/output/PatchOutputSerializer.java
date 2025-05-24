@@ -10,7 +10,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.google.gson.reflect.TypeToken;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.Series;
@@ -26,7 +25,6 @@ import arcade.patch.env.location.PatchLocationContainer;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.util.PatchEnums.State;
 import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
-import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Container class for patch-specific object serializers.
@@ -42,9 +40,6 @@ import static arcade.patch.util.PatchEnums.State;
  * </ul>
  */
 public final class PatchOutputSerializer {
-
-    static Type DEFAULT_EDGE_TYPE = new TypeToken<ArrayList<LocationContainer>>() {}.getType();
-
     /** Hidden utility class constructor. */
     protected PatchOutputSerializer() {
         throw new UnsupportedOperationException();
@@ -162,6 +157,39 @@ public final class PatchOutputSerializer {
         }
     }
 
+    /**
+     * Serializer for {@link PatchComponentSitesGraph} objects.
+     *
+     * <p>The object is formatted as:
+     *
+     * <pre>
+     *     [
+     *         {
+     *             "from": (from),
+     *             "to": (to),
+     *             "type": (type),
+     *             "radius": (radius),
+     *             "length": (length),
+     *             "wall": (wall),
+     *             "shear": (shear),
+     *             "stress": (stress),
+     *             "flow": (flow),
+     *         },
+     *         {
+     *             "from": (from),
+     *             "to": (to),
+     *             "type": (type),
+     *             "radius": (radius),
+     *             "length": (length),
+     *             "wall": (wall),
+     *             "shear": (shear),
+     *             "stress": (stress),
+     *             "flow": (flow),
+     *         },
+     *         ...
+     *     ]
+     * </pre>
+     */
     static class SitesGraphSerializer implements JsonSerializer<PatchComponentSitesGraph> {
         @Override
         public JsonElement serialize(
@@ -178,6 +206,25 @@ public final class PatchOutputSerializer {
         }
     }
 
+    /**
+     * Serializer for {@link SiteEdge} objects.
+     *
+     * <p>The object is formatted as:
+     *
+     * <pre>
+     *     {
+     *         "from": (from),
+     *         "to": (to),
+     *         "type": (type),
+     *         "radius": (radius),
+     *         "length": (length),
+     *         "wall": (wall),
+     *         "shear": (shear),
+     *         "stress": (stress),
+     *         "flow": (flow),
+     *     }
+     * </pre>
+     */
     static class SiteEdgeSerializer implements JsonSerializer<SiteEdge> {
         @Override
         public JsonElement serialize(
@@ -198,6 +245,21 @@ public final class PatchOutputSerializer {
         }
     }
 
+    /**
+     * Serializer for {@link SiteNode} objects.
+     *
+     * <p>The object is formatted as:
+     *
+     * <pre>
+     *     {
+     *         "x": (x),
+     *         "y": (y),
+     *         "z": (z),
+     *         "pressure": (pressure),
+     *         "oxygen": (oxygen),
+     *     }
+     * </pre>
+     */
     static class SiteNodeSerializer implements JsonSerializer<SiteNode> {
         @Override
         public JsonElement serialize(

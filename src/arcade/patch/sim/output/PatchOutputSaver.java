@@ -26,6 +26,11 @@ public final class PatchOutputSaver extends OutputSaver {
         return PatchOutputSerializer.makeGSON();
     }
 
+    /**
+     * Save a list of {@link arcade.patch.env.component.PatchComponentSitesGraph} to a JSON.
+     *
+     * @param tick the simulation tick
+     */
     public void saveGraphComponents(int tick) {
         for (String componentKey : ((PatchSimulation) sim).getComponentKeys()) {
             Component component = sim.getComponent(componentKey);
