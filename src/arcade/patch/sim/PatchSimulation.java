@@ -3,6 +3,7 @@ package arcade.patch.sim;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import arcade.core.agent.action.Action;
@@ -146,6 +147,10 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     @Override
     public final Component getComponent(String key) {
         return components.get(key);
+    }
+
+    public Set<String> getComponentKeys() {
+        return components.keySet();
     }
 
     /**

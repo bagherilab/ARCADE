@@ -10,11 +10,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSerializer;
 import arcade.patch.agent.cell.PatchCellContainer;
+import arcade.patch.env.component.PatchComponentSitesGraph;
 import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
 import arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
 import arcade.patch.env.location.Coordinate;
@@ -22,6 +24,7 @@ import arcade.patch.env.location.CoordinateUVWZ;
 import arcade.patch.env.location.CoordinateXYZ;
 import arcade.patch.env.location.PatchLocationContainer;
 import arcade.patch.sim.PatchSeries;
+import arcade.patch.util.PatchEnums.State;
 import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -39,6 +42,9 @@ import static arcade.patch.util.PatchEnums.State;
  * </ul>
  */
 public final class PatchOutputSerializer {
+
+    static Type DEFAULT_EDGE_TYPE = new TypeToken<ArrayList<LocationContainer>>() {}.getType();
+
     /** Hidden utility class constructor. */
     protected PatchOutputSerializer() {
         throw new UnsupportedOperationException();
@@ -57,6 +63,9 @@ public final class PatchOutputSerializer {
         gsonBuilder.registerTypeAdapter(DEFAULT_LOCATION_TYPE, new LocationListSerializer());
         gsonBuilder.registerTypeAdapter(CoordinateXYZ.class, new CoordinateXYZSerializer());
         gsonBuilder.registerTypeAdapter(CoordinateUVWZ.class, new CoordinateUVWZSerializer());
+        gsonBuilder.registerTypeAdapter(PatchComponentSitesGraph.class, new SitesGraphSerializer());
+        gsonBuilder.registerTypeAdapter(SiteEdge.class, new SiteEdgeSerializer());
+        gsonBuilder.registerTypeAdapter(SiteNode.class, new SiteNodeSerializer());
         return gsonBuilder.create();
     }
 
@@ -148,6 +157,22 @@ public final class PatchOutputSerializer {
             json.add("criticals", criticals);
 
             // TODO: add cycles
+
+            return json;
+        }
+    }
+
+    static class SitesGraphSerializer implements JsonSerializer<PatchComponentSitesGraph> {
+        @Override
+        public JsonElement serialize(
+                PatchComponentSitesGraph src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonArray json = new JsonArray();
+
+            for (Object obj : src.getGraph().getAllEdges()) {
+                SiteEdge e = (SiteEdge) obj;
+                JsonElement edge = context.serialize(e, SiteEdge.class);
+                json.add(edge);
+            }
 
             return json;
         }
