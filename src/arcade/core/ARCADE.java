@@ -30,33 +30,23 @@ import arcade.potts.PottsARCADE;
 /**
  * Entry point class for ARCADE simulations.
  *
- * <p>
- * The class loads two XML files {@code command.xml} and {@code parameter.xml}
- * that specify the
- * command line parser options and the default parameter values, respectively.
- * The setup XML file is
- * then parsed to produce an array of {@link Series} objects, each of which
- * defines replicates
- * (differing only in random seed) of {@link arcade.core.sim.Simulation}
- * instances to run.
+ * <p>The class loads two XML files {@code command.xml} and {@code parameter.xml} that specify the
+ * command line parser options and the default parameter values, respectively. The setup XML file is
+ * then parsed to produce an array of {@link Series} objects, each of which defines replicates
+ * (differing only in random seed) of {@link arcade.core.sim.Simulation} instances to run.
  *
- * <p>
- * If the visualization flag is used, only the first valid {@link Series} in the
- * array is run.
+ * <p>If the visualization flag is used, only the first valid {@link Series} in the array is run.
  * Otherwise, all valid {@code Series} are run.
  *
- * <p>
- * An implementing package {@code <implementation>} extends this class to define
- * implementation
+ * <p>An implementing package {@code <implementation>} extends this class to define implementation
  * specific:
  *
  * <ul>
- * <li>{@code command.<implementation>.xml} with custom command line parameters
- * <li>{@code parameter.<implementation>.xml} with new default parameter values
- * <li>{@link InputBuilder} for building implementation series from the setup
- * XML
- * <li>{@link OutputLoader} for loading classes
- * <li>{@link OutputSaver} for saving classes
+ *   <li>{@code command.<implementation>.xml} with custom command line parameters
+ *   <li>{@code parameter.<implementation>.xml} with new default parameter values
+ *   <li>{@link InputBuilder} for building implementation series from the setup XML
+ *   <li>{@link OutputLoader} for loading classes
+ *   <li>{@link OutputSaver} for saving classes
  * </ul>
  */
 public abstract class ARCADE {
@@ -164,9 +154,7 @@ public abstract class ARCADE {
     /**
      * Gets full version number.
      *
-     * <p>
-     * If running with a jar, the version is pulled from the jar manifest.
-     * Otherwise, the version
+     * <p>If running with a jar, the version is pulled from the jar manifest. Otherwise, the version
      * is extracted using git.
      *
      * @return the version number
@@ -177,8 +165,9 @@ public abstract class ARCADE {
 
         try {
             if (classPath.startsWith("jar")) {
-                String manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1)
-                        + "/META-INF/MANIFEST.MF";
+                String manifestPath =
+                        classPath.substring(0, classPath.lastIndexOf("!") + 1)
+                                + "/META-INF/MANIFEST.MF";
                 Manifest manifest = new Manifest(new URL(manifestPath).openStream());
                 Attributes attr = manifest.getMainAttributes();
                 return attr.getValue("Implementation-Version");
@@ -263,7 +252,7 @@ public abstract class ARCADE {
     /**
      * Parses arguments using command line parser.
      *
-     * @param args     the list of arguments
+     * @param args the list of arguments
      * @param commands the command line parser settings
      * @return the container of parsed arguments
      */
@@ -296,9 +285,7 @@ public abstract class ARCADE {
     /**
      * Runs simulations for each {@link Series}.
      *
-     * <p>
-     * If the {@code --vis} flag is set, then only the first valid series is run.
-     * Otherwise, all
+     * <p>If the {@code --vis} flag is set, then only the first valid series is run. Otherwise, all
      * valid series in the list are run.
      *
      * @param series the list of {@link Series} instances
