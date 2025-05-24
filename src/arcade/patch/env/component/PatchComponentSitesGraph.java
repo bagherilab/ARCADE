@@ -467,7 +467,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         boolean isIgnored;
 
         /** Edge type. */
-        public final EdgeType type;
+        final EdgeType type;
 
         /** Edge resolution level. */
         final EdgeLevel level;
@@ -479,22 +479,22 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         double radius;
 
         /** Vessel length [um]. */
-        public double length;
+        double length;
 
         /** Wall thickness [um]. */
         double wall;
 
         /** Shear stress in edge [mmHg]. */
-        public double shear;
+        double shear;
 
         /** Circumferential stress in edge [mmHg]. */
-        public double circum;
+        double circum;
 
         /** Volumetric flow rate in edge [um<sup>3</sup>/min]. */
-        public double flow;
+        double flow;
 
         /** Cross-sectional area of edge [um<sup>2</sup>]. */
-        public double area;
+        double area;
 
         /** Scaled shear stress. */
         double shearScaled;
@@ -544,6 +544,15 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         }
 
         /**
+         * Gets the type of the edge.
+         *
+         * @return the edge type
+         */
+        public String getType() {
+            return type.toString();
+        }
+
+        /**
          * Get the radius of the edge.
          *
          * @return the edge radius
@@ -553,12 +562,48 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         }
 
         /**
+         * Get the length of the edge.
+         *
+         * @return the edge length
+         */
+        public double getLength() {
+            return length;
+        }
+
+        /**
          * Get the wall thickness of the edge.
          *
          * @return the edge wall thickness
          */
         public double getWall() {
             return wall;
+        }
+
+        /**
+         * Get the shear stress of the edge.
+         *
+         * @return the edge shear stress
+         */
+        public double getShear() {
+            return shear;
+        }
+
+        /**
+         * Get the circumferential stress of the edge.
+         *
+         * @return the edge circumferential stress
+         */
+        public double getCircum() {
+            return circum;
+        }
+
+        /**
+         * Get the volumetric flow rate of the edge.
+         *
+         * @return the edge volumetric flow rate
+         */
+        public double getFlow() {
+            return flow;
         }
     }
 

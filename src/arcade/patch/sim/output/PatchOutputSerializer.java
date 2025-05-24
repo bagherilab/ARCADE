@@ -233,13 +233,13 @@ public final class PatchOutputSerializer {
 
             json.add("from", context.serialize(src.getFrom()));
             json.add("to", context.serialize(src.getTo()));
-            json.addProperty("type", src.type.toString());
+            json.addProperty("type", src.getType());
             json.addProperty("radius", src.getRadius());
-            json.addProperty("length", src.length);
+            json.addProperty("length", src.getLength());
             json.addProperty("wall", src.getWall());
-            json.addProperty("shear", src.shear);
-            json.addProperty("stress", src.circum);
-            json.addProperty("flow", src.flow);
+            json.addProperty("shear", src.getShear());
+            json.addProperty("stress", src.getCircum());
+            json.addProperty("flow", src.getFlow());
 
             return json;
         }
