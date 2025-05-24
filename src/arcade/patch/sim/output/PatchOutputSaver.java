@@ -10,13 +10,15 @@ import arcade.patch.sim.PatchSimulation;
 
 /** Custom saver for patch-specific serialization. */
 public final class PatchOutputSaver extends OutputSaver {
+
+    /** {@code true} to save graph components, {@code false} otherwise. */
+    public boolean saveGraph;
+
     /**
      * Creates an {@code PatchOutputSaver} for the series.
      *
      * @param series the simulation series
      */
-    public boolean saveGraph;
-
     public PatchOutputSaver(Series series) {
         super(series);
     }
