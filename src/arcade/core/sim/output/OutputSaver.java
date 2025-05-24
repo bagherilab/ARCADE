@@ -31,10 +31,10 @@ public abstract class OutputSaver implements Steppable {
     protected static final Logger LOGGER = Logger.getLogger(OutputSaver.class.getName());
 
     /** Number of elements to format in output string. */
-    private static final int FORMAT_ELEMENTS = 6;
+    protected static final int FORMAT_ELEMENTS = 6;
 
     /** JSON representation. */
-    final Gson gson;
+    protected final Gson gson;
 
     /** {@link arcade.core.sim.Series} instance. */
     final Series series;
@@ -43,7 +43,7 @@ public abstract class OutputSaver implements Steppable {
     public String prefix;
 
     /** {@link arcade.core.sim.Simulation} instance. */
-    Simulation sim;
+    protected Simulation sim;
 
     /**
      * Creates an {@code OutputSaver} for the series.

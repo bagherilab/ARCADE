@@ -2,8 +2,11 @@ package arcade.patch.sim.output;
 
 import com.google.gson.Gson;
 import sim.engine.SimState;
+import arcade.core.env.component.Component;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSaver;
+import arcade.patch.env.component.PatchComponentSitesGraph;
+import arcade.patch.sim.PatchSimulation;
 
 /** Custom saver for patch-specific serialization. */
 public final class PatchOutputSaver extends OutputSaver {
@@ -24,7 +27,19 @@ public final class PatchOutputSaver extends OutputSaver {
     }
 
     public void saveGraphComponents(int tick) {
-        throw new UnsupportedOperationException("saveGraphComponents not implemented");
+        for (String componentKey : ((PatchSimulation) sim).getComponentKeys()) {
+            Component component = sim.getComponent(componentKey);
+            if (component instanceof PatchComponentSitesGraph) {
+                String json =
+                        gson.toJson(
+                                (PatchComponentSitesGraph) component,
+                                PatchComponentSitesGraph.class);
+                String path = prefix + String.format("_%06d." + componentKey + ".GRAPH.json", tick);
+                write(path, format(json, FORMAT_ELEMENTS));
+            } else {
+                continue;
+            }
+        }
     }
 
     @Override
