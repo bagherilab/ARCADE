@@ -35,7 +35,7 @@ public abstract class PatchComponentSitesGraphFactory {
     }
 
     /** Edge types. */
-    enum EdgeType {
+    public enum EdgeType {
         /** Code for arteriole edge type. */
         ARTERIOLE(EdgeCategory.ARTERY),
 

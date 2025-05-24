@@ -3,6 +3,7 @@ package arcade.patch.sim;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import arcade.core.agent.action.Action;
@@ -24,6 +25,7 @@ import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.lattice.PatchLattice;
 import arcade.patch.env.lattice.PatchLatticeFactory;
 import arcade.patch.env.location.PatchLocationFactory;
+import arcade.patch.sim.output.PatchOutputSaver;
 
 /** Abstract implementation for patch {@link Simulation} instances. */
 public abstract class PatchSimulation extends SimState implements Simulation {
@@ -145,6 +147,15 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     @Override
     public final Component getComponent(String key) {
         return components.get(key);
+    }
+
+    /**
+     * Gets the set of keys for the component hash set.
+     *
+     * @return the set of component keys
+     */
+    public Set<String> getComponentKeys() {
+        return components.keySet();
     }
 
     /**
@@ -356,6 +367,11 @@ public abstract class PatchSimulation extends SimState implements Simulation {
             int tick = (int) schedule.getTime() + 1;
             series.saver.saveCells(tick);
             series.saver.saveLocations(tick);
+
+            PatchOutputSaver patchSaver = (PatchOutputSaver) series.saver;
+            if (patchSaver.saveGraph) {
+                patchSaver.saveGraphComponents(tick);
+            }
         }
     }
 }
