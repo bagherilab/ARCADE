@@ -467,7 +467,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         boolean isIgnored;
 
         /** Edge type. */
-        public final EdgeType type;
+        final EdgeType type;
 
         /** Edge resolution level. */
         final EdgeLevel level;
@@ -479,22 +479,22 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         double radius;
 
         /** Vessel length [um]. */
-        public double length;
+        double length;
 
         /** Wall thickness [um]. */
         double wall;
 
         /** Shear stress in edge [mmHg]. */
-        public double shear;
+        double shear;
 
         /** Circumferential stress in edge [mmHg]. */
-        public double circum;
+        double circum;
 
         /** Volumetric flow rate in edge [um<sup>3</sup>/min]. */
-        public double flow;
+        double flow;
 
         /** Cross-sectional area of edge [um<sup>2</sup>]. */
-        public double area;
+        double area;
 
         /** Scaled shear stress. */
         double shearScaled;
