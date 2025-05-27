@@ -38,7 +38,7 @@ public abstract class PottsDrawer extends Drawer {
 
     /** Planes for visualization. */
     enum Plane {
-        /** Code for Z plane. */ 
+        /** Code for Z plane. */
         Z,
 
         /** Code for X plane. */

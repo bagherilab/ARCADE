@@ -30,14 +30,14 @@ public abstract class PatchComponentSitesGraphFactory {
     enum Border {
         /** Code for left (+x) border. */
         LEFT,
-		
-	/** Code for right (-x) border. */
+
+        /** Code for right (-x) border. */
         RIGHT,
 
-	/** Code for top (-y) border. */
+        /** Code for top (-y) border. */
         TOP,
 
-	/** Code for bottom (+y) border. */
+        /** Code for bottom (+y) border. */
         BOTTOM
     }
 
