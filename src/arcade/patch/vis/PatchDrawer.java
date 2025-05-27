@@ -45,20 +45,40 @@ public abstract class PatchDrawer extends Drawer {
 
     /** View options for cells. */
     enum CellView {
+        /** Code for encoding visualization by agent state.  */
         STATE,
+
+        /** Code for encoding visualization by agent age.  */
         AGE,
+
+        /** Code for encoding visualization by agent volume.  */
         VOLUME,
+
+        /** Code for encoding visualization by agent height.  */
         HEIGHT,
+
+        /** Code for encoding visualization by agent counts.  */
         COUNTS,
+
+        /** Code for encoding visualization by agent population.  */
         POPULATION,
+
+        /** Code for encoding visualization by agent energy.  */
         ENERGY,
+
+        /** Code for encoding visualization by agent divisions.  */
         DIVISIONS
     }
 
     /** View options for lattices. */
     enum LatticeView {
+        /** Code for encoding visualization by lattice concentrations.  */
         CONCENTRATION,
+
+        /** Code for encoding visualization by component sites.  */
         SITES,
+
+        /** Code for encoding visualization by component damage.  */
         DAMAGE
     }
 
