@@ -21,8 +21,6 @@ import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 import arcade.core.vis.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.Series.SEED_OFFSET;
