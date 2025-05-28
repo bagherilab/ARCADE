@@ -28,12 +28,23 @@ import arcade.core.util.MiniBox;
 public abstract class PatchComponentSitesPattern extends PatchComponentSites {
     /** Border directions. */
 <span class="nc" id="L30">    enum Border {</span>
-<span class="nc" id="L31">        LEFT,</span>
-<span class="nc" id="L32">        RIGHT,</span>
-<span class="nc" id="L33">        TOP,</span>
-<span class="nc" id="L34">        BOTTOM,</span>
-<span class="nc" id="L35">        UP,</span>
-<span class="nc" id="L36">        DOWN</span>
+        /** Code for left (+x) border. */
+<span class="nc" id="L32">        LEFT,</span>
+
+        /** Code for right (-x) border. */
+<span class="nc" id="L35">        RIGHT,</span>
+
+        /** Code for top (-y) border. */
+<span class="nc" id="L38">        TOP,</span>
+
+        /** Code for bottom (+y) border. */
+<span class="nc" id="L41">        BOTTOM,</span>
+
+        /** Code for upper (+z) border. */
+<span class="nc" id="L44">        UP,</span>
+
+        /** Code for downward (-z) border. */
+<span class="nc" id="L47">        DOWN</span>
     }
 
     /** Array holding locations of patterns. */
@@ -92,30 +103,30 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
      * @param parameters the component parameters dictionary
      */
     public PatchComponentSitesPattern(Series series, MiniBox parameters) {
-<span class="nc" id="L95">        super(series);</span>
+<span class="nc" id="L106">        super(series);</span>
 
         // Set loaded parameters.
-<span class="nc" id="L98">        fraction = parameters.getDouble(&quot;RELATIVE_FRACTION&quot;);</span>
-<span class="nc" id="L99">        weightGradient = parameters.getDouble(&quot;WEIGHT_GRADIENT&quot;);</span>
-<span class="nc" id="L100">        weightLocal = parameters.getDouble(&quot;WEIGHT_LOCAL&quot;);</span>
-<span class="nc" id="L101">        weightFlow = parameters.getDouble(&quot;WEIGHT_FLOW&quot;);</span>
-<span class="nc" id="L102">        damageScaling = parameters.getDouble(&quot;DAMAGE_SCALING&quot;);</span>
+<span class="nc" id="L109">        fraction = parameters.getDouble(&quot;RELATIVE_FRACTION&quot;);</span>
+<span class="nc" id="L110">        weightGradient = parameters.getDouble(&quot;WEIGHT_GRADIENT&quot;);</span>
+<span class="nc" id="L111">        weightLocal = parameters.getDouble(&quot;WEIGHT_LOCAL&quot;);</span>
+<span class="nc" id="L112">        weightFlow = parameters.getDouble(&quot;WEIGHT_FLOW&quot;);</span>
+<span class="nc" id="L113">        damageScaling = parameters.getDouble(&quot;DAMAGE_SCALING&quot;);</span>
 
         // Set booleans.
-<span class="nc bnc" id="L105" title="All 2 branches missed.">        calculateDamage = damageScaling != 0;</span>
-<span class="nc bnc" id="L106" title="All 2 branches missed.">        calculateLocal = weightLocal &gt; 0;</span>
-<span class="nc bnc" id="L107" title="All 2 branches missed.">        calculateFlow = weightFlow &gt; 0;</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        calculateDamage = damageScaling != 0;</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">        calculateLocal = weightLocal &gt; 0;</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        calculateFlow = weightFlow &gt; 0;</span>
 
         // Create and initialize arrays.
-<span class="nc" id="L110">        patterns = new boolean[latticeHeight][latticeLength][latticeWidth];</span>
-<span class="nc" id="L111">        anchors = new boolean[latticeHeight][latticeLength][latticeWidth];</span>
-<span class="nc" id="L112">        damageSingle = new double[latticeHeight][latticeLength][latticeWidth];</span>
-<span class="nc" id="L113">        damageTotal = new double[latticeHeight][latticeLength][latticeWidth];</span>
-<span class="nc" id="L114">        damageValues = new double[latticeHeight][latticeLength][latticeWidth];</span>
+<span class="nc" id="L121">        patterns = new boolean[latticeHeight][latticeLength][latticeWidth];</span>
+<span class="nc" id="L122">        anchors = new boolean[latticeHeight][latticeLength][latticeWidth];</span>
+<span class="nc" id="L123">        damageSingle = new double[latticeHeight][latticeLength][latticeWidth];</span>
+<span class="nc" id="L124">        damageTotal = new double[latticeHeight][latticeLength][latticeWidth];</span>
+<span class="nc" id="L125">        damageValues = new double[latticeHeight][latticeLength][latticeWidth];</span>
 
-<span class="nc" id="L116">        initializePatternArray();</span>
-<span class="nc" id="L117">        initializeDamageArrays();</span>
-<span class="nc" id="L118">    }</span>
+<span class="nc" id="L127">        initializePatternArray();</span>
+<span class="nc" id="L128">        initializeDamageArrays();</span>
+<span class="nc" id="L129">    }</span>
 
     /**
      * Gets the underlying pattern sites array.
@@ -123,7 +134,7 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
      * @return the pattern sites array
      */
     public boolean[][][] getPatterns() {
-<span class="nc" id="L126">        return patterns;</span>
+<span class="nc" id="L137">        return patterns;</span>
     }
 
     /**
@@ -132,7 +143,7 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
      * @return the pattern sites array
      */
     public boolean[][][] getAnchors() {
-<span class="nc" id="L135">        return anchors;</span>
+<span class="nc" id="L146">        return anchors;</span>
     }
 
     /**
@@ -141,7 +152,7 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
      * @return the pattern damage array
      */
     public double[][][] getDamage() {
-<span class="nc" id="L144">        return damageSingle;</span>
+<span class="nc" id="L155">        return damageSingle;</span>
     }
 
     /**
@@ -193,54 +204,54 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
 
     /** Initializes damage array to 1.0 (no damage). */
     void initializeDamageArrays() {
-<span class="nc bnc" id="L196" title="All 2 branches missed.">        for (int k = 0; k &lt; latticeHeight; k++) {</span>
-<span class="nc bnc" id="L197" title="All 2 branches missed.">            for (int i = 0; i &lt; latticeLength; i++) {</span>
-<span class="nc bnc" id="L198" title="All 2 branches missed.">                for (int j = 0; j &lt; latticeWidth; j++) {</span>
-<span class="nc" id="L199">                    damageValues[k][i][j] = 1.0;</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">        for (int k = 0; k &lt; latticeHeight; k++) {</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">            for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">                for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="nc" id="L210">                    damageValues[k][i][j] = 1.0;</span>
                 }
             }
         }
-<span class="nc" id="L203">    }</span>
+<span class="nc" id="L214">    }</span>
 
     @Override
     public void step(SimState simstate) {
         // Iterate through array to calculate damage, if needed.
-<span class="nc bnc" id="L208" title="All 2 branches missed.">        if (calculateDamage) {</span>
-<span class="nc bnc" id="L209" title="All 2 branches missed.">            for (int k = 0; k &lt; latticeHeight; k++) {</span>
-<span class="nc bnc" id="L210" title="All 2 branches missed.">                for (int i = 0; i &lt; latticeLength; i++) {</span>
-<span class="nc bnc" id="L211" title="All 2 branches missed.">                    for (int j = 0; j &lt; latticeWidth; j++) {</span>
-<span class="nc bnc" id="L212" title="All 2 branches missed.">                        if (anchors[k][i][j]) {</span>
-<span class="nc" id="L213">                            calculateDamage(i, j, k);</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">        if (calculateDamage) {</span>
+<span class="nc bnc" id="L220" title="All 2 branches missed.">            for (int k = 0; k &lt; latticeHeight; k++) {</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">                for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="nc bnc" id="L222" title="All 2 branches missed.">                    for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">                        if (anchors[k][i][j]) {</span>
+<span class="nc" id="L224">                            calculateDamage(i, j, k);</span>
                         }
 
-<span class="nc" id="L216">                        damageValues[k][i][j] =</span>
-<span class="nc" id="L217">                                1.0 / Math.exp(damageScaling * damageTotal[k][i][j]);</span>
+<span class="nc" id="L227">                        damageValues[k][i][j] =</span>
+<span class="nc" id="L228">                                1.0 / Math.exp(damageScaling * damageTotal[k][i][j]);</span>
                     }
                 }
             }
         }
 
-<span class="nc" id="L223">        double[][][] accumulation = new double[latticeHeight][latticeLength][latticeWidth];</span>
-<span class="nc" id="L224">        double[][][] flow = new double[latticeHeight][latticeLength][latticeWidth];</span>
-<span class="nc" id="L225">        EnumMap&lt;Border, Boolean&gt; borders = new EnumMap&lt;&gt;(Border.class);</span>
+<span class="nc" id="L234">        double[][][] accumulation = new double[latticeHeight][latticeLength][latticeWidth];</span>
+<span class="nc" id="L235">        double[][][] flow = new double[latticeHeight][latticeLength][latticeWidth];</span>
+<span class="nc" id="L236">        EnumMap&lt;Border, Boolean&gt; borders = new EnumMap&lt;&gt;(Border.class);</span>
 
         // Iterate through each layer and each array to assign updates.
-<span class="nc bnc" id="L228" title="All 2 branches missed.">        for (SiteLayer layer : layers) {</span>
-<span class="nc" id="L229">            double[][][] delta = layer.delta;</span>
-<span class="nc" id="L230">            double[][][] current = layer.current;</span>
-<span class="nc" id="L231">            double[][][] previous = layer.previous;</span>
-<span class="nc" id="L232">            double concentration = layer.concentration;</span>
-<span class="nc" id="L233">            double total = 0;</span>
+<span class="nc bnc" id="L239" title="All 2 branches missed.">        for (SiteLayer layer : layers) {</span>
+<span class="nc" id="L240">            double[][][] delta = layer.delta;</span>
+<span class="nc" id="L241">            double[][][] current = layer.current;</span>
+<span class="nc" id="L242">            double[][][] previous = layer.previous;</span>
+<span class="nc" id="L243">            double concentration = layer.concentration;</span>
+<span class="nc" id="L244">            double total = 0;</span>
 
             // Iterate to calculate accumulation.
-<span class="nc bnc" id="L236" title="All 4 branches missed.">            if (calculateLocal || calculateFlow) {</span>
-<span class="nc bnc" id="L237" title="All 2 branches missed.">                for (int k = 0; k &lt; latticeHeight; k += 2) {</span>
-<span class="nc bnc" id="L238" title="All 2 branches missed.">                    for (int i = 0; i &lt; latticeLength; i++) {</span>
-<span class="nc bnc" id="L239" title="All 2 branches missed.">                        for (int j = 0; j &lt; latticeWidth; j++) {</span>
-<span class="nc bnc" id="L240" title="All 2 branches missed.">                            if (patterns[k][i][j]) {</span>
-<span class="nc" id="L241">                                accumulation[k][i][j] =</span>
+<span class="nc bnc" id="L247" title="All 4 branches missed.">            if (calculateLocal || calculateFlow) {</span>
+<span class="nc bnc" id="L248" title="All 2 branches missed.">                for (int k = 0; k &lt; latticeHeight; k += 2) {</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">                    for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">                        for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="nc bnc" id="L251" title="All 2 branches missed.">                            if (patterns[k][i][j]) {</span>
+<span class="nc" id="L252">                                accumulation[k][i][j] =</span>
                                         (previous[k][i][j] - current[k][i][j]) / concentration;
-<span class="nc" id="L243">                                total += accumulation[k][i][j];</span>
+<span class="nc" id="L254">                                total += accumulation[k][i][j];</span>
                             }
                         }
                     }
@@ -248,37 +259,37 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
             }
 
             // Iterate through every other layer.
-<span class="nc bnc" id="L251" title="All 2 branches missed.">            for (int k = 0; k &lt; latticeHeight; k += 2) {</span>
+<span class="nc bnc" id="L262" title="All 2 branches missed.">            for (int k = 0; k &lt; latticeHeight; k += 2) {</span>
                 // Check if on up or down border of environment.
-<span class="nc bnc" id="L253" title="All 2 branches missed.">                borders.put(Border.UP, k == 0);</span>
-<span class="nc bnc" id="L254" title="All 2 branches missed.">                borders.put(Border.DOWN, k == latticeHeight - 1);</span>
+<span class="nc bnc" id="L264" title="All 2 branches missed.">                borders.put(Border.UP, k == 0);</span>
+<span class="nc bnc" id="L265" title="All 2 branches missed.">                borders.put(Border.DOWN, k == latticeHeight - 1);</span>
 
-<span class="nc bnc" id="L256" title="All 2 branches missed.">                for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="nc bnc" id="L267" title="All 2 branches missed.">                for (int i = 0; i &lt; latticeLength; i++) {</span>
                     // Check if on left or right border of environment.
-<span class="nc bnc" id="L258" title="All 2 branches missed.">                    borders.put(Border.LEFT, i == 0);</span>
-<span class="nc bnc" id="L259" title="All 2 branches missed.">                    borders.put(Border.RIGHT, i == latticeLength - 1);</span>
+<span class="nc bnc" id="L269" title="All 2 branches missed.">                    borders.put(Border.LEFT, i == 0);</span>
+<span class="nc bnc" id="L270" title="All 2 branches missed.">                    borders.put(Border.RIGHT, i == latticeLength - 1);</span>
 
-<span class="nc bnc" id="L261" title="All 2 branches missed.">                    for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">                    for (int j = 0; j &lt; latticeWidth; j++) {</span>
                         // Check if on top or bottom border of environment.
-<span class="nc bnc" id="L263" title="All 2 branches missed.">                        borders.put(Border.TOP, j == 0);</span>
-<span class="nc bnc" id="L264" title="All 2 branches missed.">                        borders.put(Border.BOTTOM, j == latticeWidth - 1);</span>
+<span class="nc bnc" id="L274" title="All 2 branches missed.">                        borders.put(Border.TOP, j == 0);</span>
+<span class="nc bnc" id="L275" title="All 2 branches missed.">                        borders.put(Border.BOTTOM, j == latticeWidth - 1);</span>
 
-<span class="nc bnc" id="L266" title="All 2 branches missed.">                        if (patterns[k][i][j]) {</span>
+<span class="nc bnc" id="L277" title="All 2 branches missed.">                        if (patterns[k][i][j]) {</span>
                             // Calculate flow.
-<span class="nc bnc" id="L268" title="All 4 branches missed.">                            if (anchors[k][i][j] &amp;&amp; calculateFlow) {</span>
-<span class="nc" id="L269">                                calculateFlow(i, j, k, flow[k], accumulation[k], borders);</span>
+<span class="nc bnc" id="L279" title="All 4 branches missed.">                            if (anchors[k][i][j] &amp;&amp; calculateFlow) {</span>
+<span class="nc" id="L280">                                calculateFlow(i, j, k, flow[k], accumulation[k], borders);</span>
                             }
 
                             // Calculate weight adjustments.
-<span class="nc" id="L273">                            double wg = 1 - current[k][i][j] / concentration;</span>
-<span class="nc" id="L274">                            double wl = accumulation[k][i][j];</span>
-<span class="nc bnc" id="L275" title="All 2 branches missed.">                            double wf = (total == 0 ? 0 : -flow[k][i][j] / total);</span>
-<span class="nc" id="L276">                            double w = weightGradient * wg + weightLocal * wl + weightFlow * wf;</span>
-<span class="nc" id="L277">                            double ww = 1.0 / (1.0 + Math.exp(-w));</span>
+<span class="nc" id="L284">                            double wg = 1 - current[k][i][j] / concentration;</span>
+<span class="nc" id="L285">                            double wl = accumulation[k][i][j];</span>
+<span class="nc bnc" id="L286" title="All 2 branches missed.">                            double wf = (total == 0 ? 0 : -flow[k][i][j] / total);</span>
+<span class="nc" id="L287">                            double w = weightGradient * wg + weightLocal * wl + weightFlow * wf;</span>
+<span class="nc" id="L288">                            double ww = 1.0 / (1.0 + Math.exp(-w));</span>
 
                             // Calculate final change.
-<span class="nc" id="L280">                            delta[k][i][j] =</span>
-<span class="nc" id="L281">                                    Math.max(</span>
+<span class="nc" id="L291">                            delta[k][i][j] =</span>
+<span class="nc" id="L292">                                    Math.max(</span>
                                             (concentration - previous[k][i][j])
                                                     * (ww * fraction + 1 - fraction)
                                                     * damageValues[k][i][j],
@@ -287,8 +298,8 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
                     }
                 }
             }
-<span class="nc" id="L290">        }</span>
-<span class="nc" id="L291">    }</span>
+<span class="nc" id="L301">        }</span>
+<span class="nc" id="L302">    }</span>
 
     // TODO add in damage increases for movement into and out of a location
     //        if (sim.getAgents().getNumObjectsAtLocation(newLoc) &gt; 1) {
