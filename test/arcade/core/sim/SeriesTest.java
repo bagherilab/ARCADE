@@ -21,6 +21,8 @@ import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 import arcade.core.vis.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.Series.SEED_OFFSET;
@@ -691,6 +693,27 @@ public class SeriesTest {
         assertEquals(distribution, box.get("(DISTRIBUTION)" + TAG_SEPARATOR + parameter));
         assertEquals(valueA, box.getDouble(parameter + "_A"), EPSILON);
         assertEquals(valueB, box.getDouble(parameter + "_B"), EPSILON);
+    }
+
+    @Test
+    public void parseParameter_withNegativeValueInDistribution_parsesSuccessfully() {
+        MiniBox box = new MiniBox();
+        String parameter = randomString();
+        String distribution = "UNIFORM";
+
+        double valueMin = -180.0;
+        double valueMax = 180.0;
+        String valueCode = String.format("%s(MIN=%f,MAX=%f)", distribution, valueMin, valueMax);
+
+        MiniBox values = new MiniBox();
+        values.put(parameter, valueCode);
+        MiniBox scales = new MiniBox();
+
+        Series.parseParameter(box, parameter, "", values, scales);
+
+        assertEquals(distribution, box.get("(DISTRIBUTION)" + TAG_SEPARATOR + parameter));
+        assertEquals(valueMin, box.getDouble(parameter + "_MIN"), EPSILON);
+        assertEquals(valueMax, box.getDouble(parameter + "_MAX"), EPSILON);
     }
 
     @Test
