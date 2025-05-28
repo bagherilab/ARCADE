@@ -5,8 +5,8 @@ import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
+import arcade.core.util.Vector;
 import arcade.potts.agent.module.PottsModuleProliferationFlyStem;
-import arcade.potts.util.PottsEnums.Direction;
 import arcade.potts.util.PottsEnums.State;
 
 /** Extension of {@link PottsCell} for fly stem cells. */
@@ -15,10 +15,10 @@ public class PottsCellFlyStem extends PottsCell {
     /** Enum outlining parameters for each cell type. */
     public enum StemType {
         /** Wild type stem cell. */
-        WT(50, 80, Direction.ZX_PLANE, 0.2),
+        WT(50, 80, 0, 0.2),
 
         /** mud Mutant stem cell. */
-        MUDMUT(50, 50, Direction.YZ_PLANE, 0.5);
+        MUDMUT(50, 50, -90, 0.5);
 
         /** Percentage x offset from cell edge where division will occur. */
         public final int splitOffsetPercentX;
@@ -26,8 +26,8 @@ public class PottsCellFlyStem extends PottsCell {
         /** Percentage y offset from cell edge where division will occur. */
         public final int splitOffsetPercentY;
 
-        /** Direction of division. */
-        public final Direction splitDirection;
+        /** Default direction of division is rotated this much off the apical vector. */
+        public final double splitDirectionRotation;
 
         /**
          * The proportion of the stem cell's critical volume that will be the daughter cell's
@@ -40,24 +40,26 @@ public class PottsCellFlyStem extends PottsCell {
          *
          * @param splitOffsetPercentX percentage x offset from cell edge where division will occur
          * @param splitOffsetPercentY percentage y offset from cell edge where division will occur
-         * @param splitDirection direction of division
+         * @param splitDirectionRotation the plan of division's rotation off the apical vector
          * @param daughterCellCriticalVolumeProportion proportion of the stem cell's critical volume
          *     that will be the daughter cell's critical volume
          */
         StemType(
                 int splitOffsetPercentX,
                 int splitOffsetPercentY,
-                Direction splitDirection,
+                double splitDirectionRotation,
                 double daughterCellCriticalVolumeProportion) {
             this.splitOffsetPercentX = splitOffsetPercentX;
             this.splitOffsetPercentY = splitOffsetPercentY;
-            this.splitDirection = splitDirection;
+            this.splitDirectionRotation = splitDirectionRotation;
             this.daughterCellCriticalVolumeProportion = daughterCellCriticalVolumeProportion;
         }
     }
 
     /** The type of stem cell. */
     public final StemType stemType;
+
+    private Vector apicalAxis;
 
     /**
      * Constructor for PottsCellFlyStem.
@@ -84,12 +86,38 @@ public class PottsCellFlyStem extends PottsCell {
         }
     }
 
+    public void setApicalAxis(Vector apicalAxis) {
+        // print apical axis to stdout
+        System.out.println(
+                "Cell "
+                        + id
+                        + " apical axis = "
+                        + apicalAxis.getX()
+                        + ","
+                        + apicalAxis.getY()
+                        + ","
+                        + apicalAxis.getZ());
+        this.apicalAxis = apicalAxis;
+    }
+
+    /**
+     * Gets the apical axis of the cell. If no apical axis is set, it returns a vector along the y
+     * axis as a default vector
+     *
+     * @return the apical axis of the cell
+     */
+    public Vector getApicalAxis() {
+        if (apicalAxis != null) {
+            return apicalAxis;
+        } else {
+            return new Vector(0, 1, 0);
+        }
+    }
+
     @Override
     public PottsCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
         throw new UnsupportedOperationException(
                 "make(int, CellState, MersenneTwisterFast) not supported. Please use make(int, CellState, MersenneTwisterFast, int, double) instead.");
-        // int newPop = links == null ? pop : links.next(random);
-        // return make(newID, newState, random, newPop);
     }
 
     // TODO: Write a better test for this function

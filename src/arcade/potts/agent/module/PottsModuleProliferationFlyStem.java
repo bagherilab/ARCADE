@@ -8,10 +8,12 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.core.util.Plane;
 import arcade.core.util.Vector;
+import arcade.core.util.distributions.Distribution;
 import arcade.core.util.distributions.NormalDistribution;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.agent.cell.PottsCellFlyStem;
+import arcade.potts.agent.cell.PottsCellFlyStem.StemType;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
@@ -33,6 +35,10 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
     /** Ruleset for determining which daughter cell is the GMC. Can be `volume` or `location`. */
     final String differentiationRuleset;
 
+    final String apicalAxisRuleset;
+
+    final Distribution apicalAxisRotationDistribution;
+
     /**
      * Range of values considered equal when determining daughter cell identity. ex. if ruleset is
      * location, range determines the distance between centroid y values that is considered equal.
@@ -53,6 +59,11 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
                         parameters.getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION");
         differentiationRuleset = parameters.getString("proliferation/DIFFERENTIATION_RULESET");
         range = parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE");
+        apicalAxisRuleset = parameters.getString("proliferation/APICAL_AXIS_RULESET");
+        apicalAxisRotationDistribution =
+                (Distribution)
+                        parameters.getDistribution(
+                                "proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION");
     }
 
     @Override
@@ -110,7 +121,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         cell.reset(potts.ids, potts.regions);
         int newID = sim.getID();
         int newPop = ((PottsCellFlyStem) cell).getLinks().next(random);
-        double criticalVolume = calculateGMCDaughterCellCriticalVolume(sim);
+        double criticalVolume = calculateGMCDaughterCellCriticalVolume();
         PottsCellContainer container =
                 ((PottsCellFlyStem) cell)
                         .make(newID, State.PROLIFERATIVE, random, newPop, criticalVolume);
@@ -137,6 +148,9 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
             MersenneTwisterFast random) {
         PottsCell newCell =
                 (PottsCell) container.convert(sim.getCellFactory(), daughterLoc, random);
+        if (newCell.getClass() == PottsCellFlyStem.class) {
+            ((PottsCellFlyStem) newCell).setApicalAxis(getDaughterCellApicalAxis(random));
+        }
         sim.getGrid().addObject(newCell, null);
         potts.register(newCell);
         newCell.reset(potts.ids, potts.regions);
@@ -169,7 +183,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
                 "Invalid differentiation ruleset: " + differentiationRuleset);
     }
 
-    private double calculateGMCDaughterCellCriticalVolume(Simulation sim) {
+    protected double calculateGMCDaughterCellCriticalVolume() {
         return ((PottsCellFlyStem) cell).getCriticalVolume()
                 * ((PottsCellFlyStem) cell).getStemType().daughterCellCriticalVolumeProportion;
     }
@@ -185,10 +199,10 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
      */
     public Plane getWTDivisionPlaneWithRotationalVariance(
             PottsCellFlyStem cell, double rotationOffset) {
-        Vector plainSplitNormal = StemType.WT.splitDirection.vector;
+        Vector apical_axis = cell.getApicalAxis();
         Vector rotatedNormalVector =
                 Vector.rotateVectorAroundAxis(
-                        plainSplitNormal, Direction.XY_PLANE.vector, rotationOffset);
+                        apical_axis, Direction.XY_PLANE.vector, rotationOffset);
         Voxel splitVoxel = getCellSplitVoxel(StemType.WT, cell);
         return new Plane(
                 new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), rotatedNormalVector);
@@ -202,9 +216,27 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
      * @return the division plane for the cell
      */
     public Plane getMUDDivisionPlane(PottsCellFlyStem cell) {
-        Vector plainSplitNormal = StemType.MUDMUT.splitDirection.vector;
+        Vector defaultNormal =
+                Vector.rotateVectorAroundAxis(
+                        cell.getApicalAxis(),
+                        Direction.XY_PLANE.vector,
+                        StemType.MUDMUT.splitDirectionRotation);
+        System.out.println(
+                "Cell apical axis = "
+                        + cell.getApicalAxis().getX()
+                        + ","
+                        + cell.getApicalAxis().getY()
+                        + ","
+                        + cell.getApicalAxis().getZ());
+        System.out.println(
+                "Default Normal = "
+                        + defaultNormal.getX()
+                        + ","
+                        + defaultNormal.getY()
+                        + ","
+                        + defaultNormal.getZ());
         Voxel splitVoxel = getCellSplitVoxel(StemType.MUDMUT, cell);
-        return new Plane(new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), plainSplitNormal);
+        return new Plane(new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), defaultNormal);
     }
 
     /**
@@ -214,6 +246,37 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
      */
     double sampleDivisionPlaneOffset() {
         return splitDirectionDistribution.nextDouble();
+    }
+
+    public Vector getDaughterCellApicalAxis(MersenneTwisterFast random) {
+        switch (apicalAxisRuleset) {
+            case "uniform":
+                Vector newRandomApicalAxis =
+                        Vector.rotateVectorAroundAxis(
+                                ((PottsCellFlyStem) cell).getApicalAxis(),
+                                Direction.XY_PLANE.vector,
+                                apicalAxisRotationDistribution.nextDouble());
+                return newRandomApicalAxis;
+            case "global":
+                return ((PottsCellFlyStem) cell).getApicalAxis();
+            case "rotation":
+                // double daughterApicalRotation =
+                //         ((NormalDistribution)
+                //                         cell.getParameters()
+                //                                 .getDistribution(
+                //
+                // "proliferation/DIV_ROTATION_DISTRIBUTION"))
+                //                 .nextDouble();
+                // Vector newRotatedApicalAxis =
+                //         Vector.rotateVectorAroundAxis(
+                //                 ((PottsCellFlyStem) cell).getApicalAxis(),
+                //                 Direction.XY_PLANE.vector,
+                //                 daughterApicalRotation);
+                // return newRotatedApicalAxis;
+            default:
+                throw new IllegalArgumentException(
+                        "Invalid apical axis ruleset: " + apicalAxisRuleset);
+        }
     }
 
     /**

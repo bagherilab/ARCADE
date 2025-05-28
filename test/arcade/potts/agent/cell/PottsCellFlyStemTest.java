@@ -92,63 +92,53 @@ public class PottsCellFlyStemTest {
                 () -> new PottsCellFlyStem(baseContainer, locationMock, parametersMock, links));
     }
 
-    //     @Test
-    //     public void make_calledWT_returnsCorrectNewContainer() {
-    //         doReturn("fly-stem-wt").when(parametersMock).getString("CLASS");
-    //         PottsCellFlyStem cell =
-    //                 new PottsCellFlyStem(baseContainer, locationMock, parametersMock, links);
-    //         PottsCellContainer container = cell.make(cellID, State.PROLIFERATIVE, random);
+    @Test
+    public void make_calledWT_returnsCorrectNewContainer() {
+        doReturn("fly-stem-wt").when(parametersMock).getString("CLASS");
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(baseContainer, locationMock, parametersMock, links);
+        PottsCellContainer container =
+                cell.make(cellID, State.PROLIFERATIVE, random, cellPop, cellCriticalVolume);
 
-    //         assertAll(
-    //                 () -> assertNotNull(container),
-    //                 () -> assertEquals(cellID, container.parent),
-    //                 () -> assertEquals(1, container.pop),
-    //                 () -> assertEquals(cellAge, container.age),
-    //                 () -> assertEquals(cellDivisions + 1, container.divisions),
-    //                 () -> assertEquals(State.PROLIFERATIVE, container.state),
-    //                 () -> assertNull(container.phase),
-    //                 () -> assertEquals(0, container.voxels),
-    //                 () -> assertNull(container.regionVoxels),
-    //                 () ->
-    //                         assertEquals(
-    //                                 cellCriticalVolume
-    //                                         * PottsCellFlyStem.StemType.WT
-    //                                                 .daughterCellCriticalVolumeProportion,
-    //                                 container.criticalVolume,
-    //                                 EPSILON),
-    //                 () -> assertEquals(cellCriticalHeight, container.criticalHeight, EPSILON),
-    //                 () -> assertNull(container.criticalRegionVolumes),
-    //                 () -> assertNull(container.criticalRegionHeights));
-    //     }
+        assertAll(
+                () -> assertNotNull(container),
+                () -> assertEquals(cellID, container.parent),
+                () -> assertEquals(cellPop, container.pop),
+                () -> assertEquals(cellAge, container.age),
+                () -> assertEquals(cellDivisions + 1, container.divisions),
+                () -> assertEquals(State.PROLIFERATIVE, container.state),
+                () -> assertNull(container.phase),
+                () -> assertEquals(0, container.voxels),
+                () -> assertNull(container.regionVoxels),
+                () -> assertEquals(cellCriticalVolume, container.criticalVolume, EPSILON),
+                () -> assertEquals(cellCriticalHeight, container.criticalHeight, EPSILON),
+                () -> assertNull(container.criticalRegionVolumes),
+                () -> assertNull(container.criticalRegionHeights));
+    }
 
-    //     @Test
-    //     public void make_calledMUDMUT_returnsCorrectNewContainer() {
-    //         doReturn("fly-stem-mudmut").when(parametersMock).getString("CLASS");
-    //         PottsCellFlyStem cell =
-    //                 new PottsCellFlyStem(baseContainer, locationMock, parametersMock, links);
-    //         PottsCellContainer container = cell.make(cellID, State.PROLIFERATIVE, random);
+    @Test
+    public void make_calledMUDMUT_returnsCorrectNewContainer() {
+        doReturn("fly-stem-mudmut").when(parametersMock).getString("CLASS");
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(baseContainer, locationMock, parametersMock, links);
+        PottsCellContainer container =
+                cell.make(cellID, State.PROLIFERATIVE, random, cellPop, cellCriticalVolume);
 
-    //         assertAll(
-    //                 () -> assertNotNull(container),
-    //                 () -> assertEquals(cellID, container.parent),
-    //                 () -> assertEquals(1, container.pop),
-    //                 () -> assertEquals(cellAge, container.age),
-    //                 () -> assertEquals(cellDivisions + 1, container.divisions),
-    //                 () -> assertEquals(State.PROLIFERATIVE, container.state),
-    //                 () -> assertNull(container.phase),
-    //                 () -> assertEquals(0, container.voxels),
-    //                 () -> assertNull(container.regionVoxels),
-    //                 () ->
-    //                         assertEquals(
-    //                                 cellCriticalVolume
-    //                                         * PottsCellFlyStem.StemType.MUDMUT
-    //                                                 .daughterCellCriticalVolumeProportion,
-    //                                 container.criticalVolume,
-    //                                 EPSILON),
-    //                 () -> assertEquals(cellCriticalHeight, container.criticalHeight, EPSILON),
-    //                 () -> assertNull(container.criticalRegionVolumes),
-    //                 () -> assertNull(container.criticalRegionHeights));
-    //     }
+        assertAll(
+                () -> assertNotNull(container),
+                () -> assertEquals(cellID, container.parent),
+                () -> assertEquals(cellPop, container.pop),
+                () -> assertEquals(cellAge, container.age),
+                () -> assertEquals(cellDivisions + 1, container.divisions),
+                () -> assertEquals(State.PROLIFERATIVE, container.state),
+                () -> assertNull(container.phase),
+                () -> assertEquals(0, container.voxels),
+                () -> assertNull(container.regionVoxels),
+                () -> assertEquals(cellCriticalVolume, container.criticalVolume),
+                () -> assertEquals(cellCriticalHeight, container.criticalHeight, EPSILON),
+                () -> assertNull(container.criticalRegionVolumes),
+                () -> assertNull(container.criticalRegionHeights));
+    }
 
     @Test
     void setStateModule_calledProliferative_createsProliferationModule() {

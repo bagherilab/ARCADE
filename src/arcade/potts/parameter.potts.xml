@@ -66,6 +66,8 @@
     <population.module module="proliferation" id="DIV_ROTATION_DISTRIBUTION" value="NORMAL(MU=0,SIGMA=0)" units="degrees" description="distribution that determines if plane of division is rotated" />
     <population.module module="proliferation" id="DIFFERENTIATION_RULESET" value="" description="rules cells follow when deciding which daughter cell will be which type" />
     <population.module module="proliferation" id="DIFFERENTIATION_RULESET_EQUALITY_RANGE" value="0" description="range of voxels within which two locations are considered equal following fly stem division" />
+    <population.module module="proliferation" id="APICAL_AXIS_RULESET" value="uniform" description="rule that determines how the daughter cell determines which direction is apical" />
+    <population.module module="proliferation" id="APICAL_AXIS_ROTATION_DISTRIBUTION" value="UNIFORM(MIN=0,MAX=0)" units="degrees" description="distribution that determines the degrees of rotation a daughter cell's apical axis is in comparison to it's parent cell's apical axis. This parameter is only used with the uniform or the normal APICAL_AXIS_RULESET" />
 
 
     <!-- apoptosis module parameters -->
