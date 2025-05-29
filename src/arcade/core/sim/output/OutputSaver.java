@@ -113,7 +113,7 @@ public abstract class OutputSaver implements Steppable {
     }
 
     /**
-     * Saves the relevant data
+     * Saves the relevant data.
      *
      * @param tick the simulation tick
      */
