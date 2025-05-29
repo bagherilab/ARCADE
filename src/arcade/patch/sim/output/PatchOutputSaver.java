@@ -16,7 +16,7 @@ public final class PatchOutputSaver extends OutputSaver {
     public boolean saveGraph;
 
     /** {@code true} to save lattices, {@code false} otherwise. */
-    public boolean saveLayers;
+    public boolean saveLattice;
 
     /**
      * Creates an {@code PatchOutputSaver} for the series.
@@ -67,6 +67,9 @@ public final class PatchOutputSaver extends OutputSaver {
         super.save(tick);
         if (saveGraph) {
             saveComponents(tick);
+        }
+        if (saveLattice) {
+            saveLayers(tick);
         }
     }
 
