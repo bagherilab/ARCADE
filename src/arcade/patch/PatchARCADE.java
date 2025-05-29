@@ -33,6 +33,7 @@ public final class PatchARCADE extends ARCADE {
     public OutputSaver getSaver(Series series) {
         PatchOutputSaver saver = new PatchOutputSaver(series);
         saver.saveGraph = settings.contains("SAVE_GRAPH");
+        saver.saveLattice = settings.contains("SAVE_LAYERS");
         return saver;
     }
 }

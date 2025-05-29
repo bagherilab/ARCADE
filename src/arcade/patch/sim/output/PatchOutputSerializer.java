@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSerializer;
@@ -21,10 +22,12 @@ import arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
 import arcade.patch.env.location.Coordinate;
 import arcade.patch.env.location.CoordinateUVWZ;
 import arcade.patch.env.location.CoordinateXYZ;
+import arcade.patch.env.location.PatchLocation;
 import arcade.patch.env.location.PatchLocationContainer;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.util.PatchEnums.State;
 import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
+import static arcade.patch.sim.PatchSimulation.PATCH_LAYER_TYPE;
 
 /**
  * Container class for patch-specific object serializers.
@@ -61,6 +64,7 @@ public final class PatchOutputSerializer {
         gsonBuilder.registerTypeAdapter(PatchComponentSitesGraph.class, new SitesGraphSerializer());
         gsonBuilder.registerTypeAdapter(SiteEdge.class, new SiteEdgeSerializer());
         gsonBuilder.registerTypeAdapter(SiteNode.class, new SiteNodeSerializer());
+        gsonBuilder.registerTypeAdapter(PATCH_LAYER_TYPE, new LayersSerializer());
         return gsonBuilder.create();
     }
 
@@ -320,6 +324,47 @@ public final class PatchOutputSerializer {
                 json.add(location);
             }
 
+            return json;
+        }
+    }
+
+    /**
+     * Serializer for collection of molecule layer values.
+     *
+     * <p>The object is formatted as:
+     *
+     * <pre>
+     *     [
+     *         {
+     *             "location": (coordinate of location),
+     *             "layers": {
+     *                 "(LATTICE NAME)" : (average value at location),
+     *                 "(LATTICE NAME)" : (average value at location),
+     *                 ...
+     *             }
+     *         },
+     *         ...
+     *     ]
+     * </pre>
+     */
+    static class LayersSerializer
+            implements JsonSerializer<HashMap<Location, HashMap<String, Double>>> {
+        @Override
+        public JsonElement serialize(
+                HashMap<Location, HashMap<String, Double>> src,
+                Type typeOfSrc,
+                JsonSerializationContext context) {
+            JsonArray json = new JsonArray();
+            for (Location loc : src.keySet()) {
+                JsonObject location = new JsonObject();
+                JsonObject layers = new JsonObject();
+                for (String key : src.get(loc).keySet()) {
+                    layers.addProperty(key, src.get(loc).get(key));
+                }
+                location.add("location", context.serialize(((PatchLocation) loc).getCoordinate()));
+                location.add("layers", layers);
+                json.add(location);
+            }
             return json;
         }
     }
