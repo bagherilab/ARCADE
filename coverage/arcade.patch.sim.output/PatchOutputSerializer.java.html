@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSerializer;
@@ -21,10 +22,12 @@ import arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
 import arcade.patch.env.location.Coordinate;
 import arcade.patch.env.location.CoordinateUVWZ;
 import arcade.patch.env.location.CoordinateXYZ;
+import arcade.patch.env.location.PatchLocation;
 import arcade.patch.env.location.PatchLocationContainer;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.util.PatchEnums.State;
 import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
+import static arcade.patch.sim.PatchSimulation.PATCH_LAYER_TYPE;
 
 /**
  * Container class for patch-specific object serializers.
@@ -41,8 +44,8 @@ import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
  */
 public final class PatchOutputSerializer {
     /** Hidden utility class constructor. */
-<span class="nc" id="L44">    protected PatchOutputSerializer() {</span>
-<span class="nc" id="L45">        throw new UnsupportedOperationException();</span>
+<span class="nc" id="L47">    protected PatchOutputSerializer() {</span>
+<span class="nc" id="L48">        throw new UnsupportedOperationException();</span>
     }
 
     /**
@@ -51,17 +54,18 @@ public final class PatchOutputSerializer {
      * @return a {@code Gson} instance
      */
     static Gson makeGSON() {
-<span class="fc" id="L54">        GsonBuilder gsonBuilder = OutputSerializer.makeGSONBuilder();</span>
-<span class="fc" id="L55">        gsonBuilder.registerTypeAdapter(PatchSeries.class, new PatchSeriesSerializer());</span>
-<span class="fc" id="L56">        gsonBuilder.registerTypeAdapter(CellContainer.class, new CellSerializer());</span>
-<span class="fc" id="L57">        gsonBuilder.registerTypeAdapter(PatchCellContainer.class, new PatchCellSerializer());</span>
-<span class="fc" id="L58">        gsonBuilder.registerTypeAdapter(DEFAULT_LOCATION_TYPE, new LocationListSerializer());</span>
-<span class="fc" id="L59">        gsonBuilder.registerTypeAdapter(CoordinateXYZ.class, new CoordinateXYZSerializer());</span>
-<span class="fc" id="L60">        gsonBuilder.registerTypeAdapter(CoordinateUVWZ.class, new CoordinateUVWZSerializer());</span>
-<span class="fc" id="L61">        gsonBuilder.registerTypeAdapter(PatchComponentSitesGraph.class, new SitesGraphSerializer());</span>
-<span class="fc" id="L62">        gsonBuilder.registerTypeAdapter(SiteEdge.class, new SiteEdgeSerializer());</span>
-<span class="fc" id="L63">        gsonBuilder.registerTypeAdapter(SiteNode.class, new SiteNodeSerializer());</span>
-<span class="fc" id="L64">        return gsonBuilder.create();</span>
+<span class="fc" id="L57">        GsonBuilder gsonBuilder = OutputSerializer.makeGSONBuilder();</span>
+<span class="fc" id="L58">        gsonBuilder.registerTypeAdapter(PatchSeries.class, new PatchSeriesSerializer());</span>
+<span class="fc" id="L59">        gsonBuilder.registerTypeAdapter(CellContainer.class, new CellSerializer());</span>
+<span class="fc" id="L60">        gsonBuilder.registerTypeAdapter(PatchCellContainer.class, new PatchCellSerializer());</span>
+<span class="fc" id="L61">        gsonBuilder.registerTypeAdapter(DEFAULT_LOCATION_TYPE, new LocationListSerializer());</span>
+<span class="fc" id="L62">        gsonBuilder.registerTypeAdapter(CoordinateXYZ.class, new CoordinateXYZSerializer());</span>
+<span class="fc" id="L63">        gsonBuilder.registerTypeAdapter(CoordinateUVWZ.class, new CoordinateUVWZSerializer());</span>
+<span class="fc" id="L64">        gsonBuilder.registerTypeAdapter(PatchComponentSitesGraph.class, new SitesGraphSerializer());</span>
+<span class="fc" id="L65">        gsonBuilder.registerTypeAdapter(SiteEdge.class, new SiteEdgeSerializer());</span>
+<span class="fc" id="L66">        gsonBuilder.registerTypeAdapter(SiteNode.class, new SiteNodeSerializer());</span>
+<span class="fc" id="L67">        gsonBuilder.registerTypeAdapter(PATCH_LAYER_TYPE, new LayersSerializer());</span>
+<span class="fc" id="L68">        return gsonBuilder.create();</span>
     }
 
     /**
@@ -80,22 +84,22 @@ public final class PatchOutputSerializer {
      *     ...
      * &lt;/pre&gt;
      */
-<span class="fc" id="L83">    static class PatchSeriesSerializer implements JsonSerializer&lt;PatchSeries&gt; {</span>
+<span class="fc" id="L87">    static class PatchSeriesSerializer implements JsonSerializer&lt;PatchSeries&gt; {</span>
         @Override
         public JsonElement serialize(
                 PatchSeries src, Type typeOfSrc, JsonSerializationContext context) {
-<span class="fc" id="L87">            JsonObject json = (JsonObject) context.serialize(src, Series.class);</span>
+<span class="fc" id="L91">            JsonObject json = (JsonObject) context.serialize(src, Series.class);</span>
 
             // Add additional sizing parameters.
-<span class="fc" id="L90">            JsonObject sizes = json.get(&quot;size&quot;).getAsJsonObject();</span>
-<span class="fc" id="L91">            sizes.addProperty(&quot;radius&quot;, src.radius);</span>
-<span class="fc" id="L92">            sizes.addProperty(&quot;depth&quot;, src.depth);</span>
+<span class="fc" id="L94">            JsonObject sizes = json.get(&quot;size&quot;).getAsJsonObject();</span>
+<span class="fc" id="L95">            sizes.addProperty(&quot;radius&quot;, src.radius);</span>
+<span class="fc" id="L96">            sizes.addProperty(&quot;depth&quot;, src.depth);</span>
 
             // Add patch parameters.
-<span class="fc" id="L95">            JsonElement patch = context.serialize(src.patch);</span>
-<span class="fc" id="L96">            json.add(&quot;patch&quot;, patch);</span>
+<span class="fc" id="L99">            JsonElement patch = context.serialize(src.patch);</span>
+<span class="fc" id="L100">            json.add(&quot;patch&quot;, patch);</span>
 
-<span class="fc" id="L98">            return json;</span>
+<span class="fc" id="L102">            return json;</span>
         }
     }
 
@@ -104,11 +108,11 @@ public final class PatchOutputSerializer {
      *
      * &lt;p&gt;Uses serialization for {@link PatchCellContainer}.
      */
-<span class="fc" id="L107">    static class CellSerializer implements JsonSerializer&lt;CellContainer&gt; {</span>
+<span class="fc" id="L111">    static class CellSerializer implements JsonSerializer&lt;CellContainer&gt; {</span>
         @Override
         public JsonElement serialize(
                 CellContainer src, Type typeOfSrc, JsonSerializationContext context) {
-<span class="nc" id="L111">            return context.serialize(src, PatchCellContainer.class);</span>
+<span class="nc" id="L115">            return context.serialize(src, PatchCellContainer.class);</span>
         }
     }
 
@@ -131,29 +135,29 @@ public final class PatchOutputSerializer {
      *     }
      * &lt;/pre&gt;
      */
-<span class="fc" id="L134">    static class PatchCellSerializer implements JsonSerializer&lt;PatchCellContainer&gt; {</span>
+<span class="fc" id="L138">    static class PatchCellSerializer implements JsonSerializer&lt;PatchCellContainer&gt; {</span>
         @Override
         public JsonElement serialize(
                 PatchCellContainer src, Type typeOfSrc, JsonSerializationContext context) {
-<span class="nc" id="L138">            JsonObject json = new JsonObject();</span>
+<span class="nc" id="L142">            JsonObject json = new JsonObject();</span>
 
-<span class="nc" id="L140">            json.addProperty(&quot;id&quot;, src.id);</span>
-<span class="nc" id="L141">            json.addProperty(&quot;parent&quot;, src.parent);</span>
-<span class="nc" id="L142">            json.addProperty(&quot;pop&quot;, src.pop);</span>
-<span class="nc" id="L143">            json.addProperty(&quot;age&quot;, src.age);</span>
-<span class="nc" id="L144">            json.addProperty(&quot;divisions&quot;, src.divisions);</span>
-<span class="nc" id="L145">            json.addProperty(&quot;state&quot;, ((State) src.state).name());</span>
-<span class="nc" id="L146">            json.addProperty(&quot;volume&quot;, src.volume);</span>
-<span class="nc" id="L147">            json.addProperty(&quot;height&quot;, src.height);</span>
+<span class="nc" id="L144">            json.addProperty(&quot;id&quot;, src.id);</span>
+<span class="nc" id="L145">            json.addProperty(&quot;parent&quot;, src.parent);</span>
+<span class="nc" id="L146">            json.addProperty(&quot;pop&quot;, src.pop);</span>
+<span class="nc" id="L147">            json.addProperty(&quot;age&quot;, src.age);</span>
+<span class="nc" id="L148">            json.addProperty(&quot;divisions&quot;, src.divisions);</span>
+<span class="nc" id="L149">            json.addProperty(&quot;state&quot;, ((State) src.state).name());</span>
+<span class="nc" id="L150">            json.addProperty(&quot;volume&quot;, src.volume);</span>
+<span class="nc" id="L151">            json.addProperty(&quot;height&quot;, src.height);</span>
 
-<span class="nc" id="L149">            JsonArray criticals = new JsonArray();</span>
-<span class="nc" id="L150">            criticals.add((int) (100 * src.criticalVolume) / 100.0);</span>
-<span class="nc" id="L151">            criticals.add((int) (100 * src.criticalHeight) / 100.0);</span>
-<span class="nc" id="L152">            json.add(&quot;criticals&quot;, criticals);</span>
+<span class="nc" id="L153">            JsonArray criticals = new JsonArray();</span>
+<span class="nc" id="L154">            criticals.add((int) (100 * src.criticalVolume) / 100.0);</span>
+<span class="nc" id="L155">            criticals.add((int) (100 * src.criticalHeight) / 100.0);</span>
+<span class="nc" id="L156">            json.add(&quot;criticals&quot;, criticals);</span>
 
             // TODO: add cycles
 
-<span class="nc" id="L156">            return json;</span>
+<span class="nc" id="L160">            return json;</span>
         }
     }
 
@@ -190,19 +194,19 @@ public final class PatchOutputSerializer {
      *     ]
      * &lt;/pre&gt;
      */
-<span class="fc" id="L193">    static class SitesGraphSerializer implements JsonSerializer&lt;PatchComponentSitesGraph&gt; {</span>
+<span class="fc" id="L197">    static class SitesGraphSerializer implements JsonSerializer&lt;PatchComponentSitesGraph&gt; {</span>
         @Override
         public JsonElement serialize(
                 PatchComponentSitesGraph src, Type typeOfSrc, JsonSerializationContext context) {
-<span class="nc" id="L197">            JsonArray json = new JsonArray();</span>
+<span class="nc" id="L201">            JsonArray json = new JsonArray();</span>
 
-<span class="nc bnc" id="L199" title="All 2 branches missed.">            for (Object obj : src.getGraph().getAllEdges()) {</span>
-<span class="nc" id="L200">                SiteEdge e = (SiteEdge) obj;</span>
-<span class="nc" id="L201">                JsonElement edge = context.serialize(e, SiteEdge.class);</span>
-<span class="nc" id="L202">                json.add(edge);</span>
-<span class="nc" id="L203">            }</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">            for (Object obj : src.getGraph().getAllEdges()) {</span>
+<span class="nc" id="L204">                SiteEdge e = (SiteEdge) obj;</span>
+<span class="nc" id="L205">                JsonElement edge = context.serialize(e, SiteEdge.class);</span>
+<span class="nc" id="L206">                json.add(edge);</span>
+<span class="nc" id="L207">            }</span>
 
-<span class="nc" id="L205">            return json;</span>
+<span class="nc" id="L209">            return json;</span>
         }
     }
 
@@ -225,23 +229,23 @@ public final class PatchOutputSerializer {
      *     }
      * &lt;/pre&gt;
      */
-<span class="fc" id="L228">    static class SiteEdgeSerializer implements JsonSerializer&lt;SiteEdge&gt; {</span>
+<span class="fc" id="L232">    static class SiteEdgeSerializer implements JsonSerializer&lt;SiteEdge&gt; {</span>
         @Override
         public JsonElement serialize(
                 SiteEdge src, Type typeOfSrc, JsonSerializationContext context) {
-<span class="nc" id="L232">            JsonObject json = new JsonObject();</span>
+<span class="nc" id="L236">            JsonObject json = new JsonObject();</span>
 
-<span class="nc" id="L234">            json.add(&quot;from&quot;, context.serialize(src.getFrom()));</span>
-<span class="nc" id="L235">            json.add(&quot;to&quot;, context.serialize(src.getTo()));</span>
-<span class="nc" id="L236">            json.addProperty(&quot;type&quot;, src.getType());</span>
-<span class="nc" id="L237">            json.addProperty(&quot;radius&quot;, src.getRadius());</span>
-<span class="nc" id="L238">            json.addProperty(&quot;length&quot;, src.getLength());</span>
-<span class="nc" id="L239">            json.addProperty(&quot;wall&quot;, src.getWall());</span>
-<span class="nc" id="L240">            json.addProperty(&quot;shear&quot;, src.getShear());</span>
-<span class="nc" id="L241">            json.addProperty(&quot;stress&quot;, src.getCircum());</span>
-<span class="nc" id="L242">            json.addProperty(&quot;flow&quot;, src.getFlow());</span>
+<span class="nc" id="L238">            json.add(&quot;from&quot;, context.serialize(src.getFrom()));</span>
+<span class="nc" id="L239">            json.add(&quot;to&quot;, context.serialize(src.getTo()));</span>
+<span class="nc" id="L240">            json.addProperty(&quot;type&quot;, src.getType());</span>
+<span class="nc" id="L241">            json.addProperty(&quot;radius&quot;, src.getRadius());</span>
+<span class="nc" id="L242">            json.addProperty(&quot;length&quot;, src.getLength());</span>
+<span class="nc" id="L243">            json.addProperty(&quot;wall&quot;, src.getWall());</span>
+<span class="nc" id="L244">            json.addProperty(&quot;shear&quot;, src.getShear());</span>
+<span class="nc" id="L245">            json.addProperty(&quot;stress&quot;, src.getCircum());</span>
+<span class="nc" id="L246">            json.addProperty(&quot;flow&quot;, src.getFlow());</span>
 
-<span class="nc" id="L244">            return json;</span>
+<span class="nc" id="L248">            return json;</span>
         }
     }
 
@@ -260,19 +264,19 @@ public final class PatchOutputSerializer {
      *     }
      * &lt;/pre&gt;
      */
-<span class="fc" id="L263">    static class SiteNodeSerializer implements JsonSerializer&lt;SiteNode&gt; {</span>
+<span class="fc" id="L267">    static class SiteNodeSerializer implements JsonSerializer&lt;SiteNode&gt; {</span>
         @Override
         public JsonElement serialize(
                 SiteNode src, Type typeOfSrc, JsonSerializationContext context) {
-<span class="nc" id="L267">            JsonObject json = new JsonObject();</span>
+<span class="nc" id="L271">            JsonObject json = new JsonObject();</span>
 
-<span class="nc" id="L269">            json.addProperty(&quot;x&quot;, src.getX());</span>
-<span class="nc" id="L270">            json.addProperty(&quot;y&quot;, src.getY());</span>
-<span class="nc" id="L271">            json.addProperty(&quot;z&quot;, src.getZ());</span>
-<span class="nc" id="L272">            json.addProperty(&quot;pressure&quot;, src.getPressure());</span>
-<span class="nc" id="L273">            json.addProperty(&quot;oxygen&quot;, src.getOxygen());</span>
+<span class="nc" id="L273">            json.addProperty(&quot;x&quot;, src.getX());</span>
+<span class="nc" id="L274">            json.addProperty(&quot;y&quot;, src.getY());</span>
+<span class="nc" id="L275">            json.addProperty(&quot;z&quot;, src.getZ());</span>
+<span class="nc" id="L276">            json.addProperty(&quot;pressure&quot;, src.getPressure());</span>
+<span class="nc" id="L277">            json.addProperty(&quot;oxygen&quot;, src.getOxygen());</span>
 
-<span class="nc" id="L275">            return json;</span>
+<span class="nc" id="L279">            return json;</span>
         }
     }
 
@@ -296,31 +300,72 @@ public final class PatchOutputSerializer {
      *     ]
      * &lt;/pre&gt;
      */
-<span class="fc" id="L299">    public static final class LocationListSerializer</span>
+<span class="fc" id="L303">    public static final class LocationListSerializer</span>
             implements JsonSerializer&lt;ArrayList&lt;LocationContainer&gt;&gt; {
         @Override
         public JsonElement serialize(
                 ArrayList&lt;LocationContainer&gt; src,
                 Type typeOfSrc,
                 JsonSerializationContext context) {
-<span class="fc" id="L306">            JsonArray json = new JsonArray();</span>
-<span class="fc" id="L307">            HashMap&lt;Coordinate, ArrayList&lt;Integer&gt;&gt; containerMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L310">            JsonArray json = new JsonArray();</span>
+<span class="fc" id="L311">            HashMap&lt;Coordinate, ArrayList&lt;Integer&gt;&gt; containerMap = new HashMap&lt;&gt;();</span>
 
-<span class="pc bpc" id="L309" title="1 of 2 branches missed.">            for (LocationContainer locationContainer : src) {</span>
-<span class="nc" id="L310">                PatchLocationContainer container = (PatchLocationContainer) locationContainer;</span>
-<span class="nc" id="L311">                ArrayList&lt;Integer&gt; ids =</span>
-<span class="nc" id="L312">                        containerMap.computeIfAbsent(container.coordinate, k -&gt; new ArrayList&lt;&gt;());</span>
-<span class="nc" id="L313">                ids.add(container.id);</span>
-<span class="nc" id="L314">            }</span>
+<span class="pc bpc" id="L313" title="1 of 2 branches missed.">            for (LocationContainer locationContainer : src) {</span>
+<span class="nc" id="L314">                PatchLocationContainer container = (PatchLocationContainer) locationContainer;</span>
+<span class="nc" id="L315">                ArrayList&lt;Integer&gt; ids =</span>
+<span class="nc" id="L316">                        containerMap.computeIfAbsent(container.coordinate, k -&gt; new ArrayList&lt;&gt;());</span>
+<span class="nc" id="L317">                ids.add(container.id);</span>
+<span class="nc" id="L318">            }</span>
 
-<span class="pc bpc" id="L316" title="1 of 2 branches missed.">            for (Coordinate coordinate : containerMap.keySet()) {</span>
-<span class="nc" id="L317">                JsonObject location = new JsonObject();</span>
-<span class="nc" id="L318">                location.add(&quot;coordinate&quot;, context.serialize(coordinate));</span>
-<span class="nc" id="L319">                location.add(&quot;ids&quot;, context.serialize(containerMap.get(coordinate)));</span>
-<span class="nc" id="L320">                json.add(location);</span>
-<span class="nc" id="L321">            }</span>
+<span class="pc bpc" id="L320" title="1 of 2 branches missed.">            for (Coordinate coordinate : containerMap.keySet()) {</span>
+<span class="nc" id="L321">                JsonObject location = new JsonObject();</span>
+<span class="nc" id="L322">                location.add(&quot;coordinate&quot;, context.serialize(coordinate));</span>
+<span class="nc" id="L323">                location.add(&quot;ids&quot;, context.serialize(containerMap.get(coordinate)));</span>
+<span class="nc" id="L324">                json.add(location);</span>
+<span class="nc" id="L325">            }</span>
 
-<span class="fc" id="L323">            return json;</span>
+<span class="fc" id="L327">            return json;</span>
+        }
+    }
+
+    /**
+     * Serializer for collection of molecule layer values.
+     *
+     * &lt;p&gt;The object is formatted as:
+     *
+     * &lt;pre&gt;
+     *     [
+     *         {
+     *             &quot;location&quot;: (coordinate of location),
+     *             &quot;layers&quot;: {
+     *                 &quot;(LATTICE NAME)&quot; : (average value at location),
+     *                 &quot;(LATTICE NAME)&quot; : (average value at location),
+     *                 ...
+     *             }
+     *         },
+     *         ...
+     *     ]
+     * &lt;/pre&gt;
+     */
+<span class="fc" id="L350">    static class LayersSerializer</span>
+            implements JsonSerializer&lt;HashMap&lt;Location, HashMap&lt;String, Double&gt;&gt;&gt; {
+        @Override
+        public JsonElement serialize(
+                HashMap&lt;Location, HashMap&lt;String, Double&gt;&gt; src,
+                Type typeOfSrc,
+                JsonSerializationContext context) {
+<span class="nc" id="L357">            JsonArray json = new JsonArray();</span>
+<span class="nc bnc" id="L358" title="All 2 branches missed.">            for (Location loc : src.keySet()) {</span>
+<span class="nc" id="L359">                JsonObject location = new JsonObject();</span>
+<span class="nc" id="L360">                JsonObject layers = new JsonObject();</span>
+<span class="nc bnc" id="L361" title="All 2 branches missed.">                for (String key : src.get(loc).keySet()) {</span>
+<span class="nc" id="L362">                    layers.addProperty(key, src.get(loc).get(key));</span>
+<span class="nc" id="L363">                }</span>
+<span class="nc" id="L364">                location.add(&quot;location&quot;, context.serialize(((PatchLocation) loc).getCoordinate()));</span>
+<span class="nc" id="L365">                location.add(&quot;layers&quot;, layers);</span>
+<span class="nc" id="L366">                json.add(location);</span>
+<span class="nc" id="L367">            }</span>
+<span class="nc" id="L368">            return json;</span>
         }
     }
 
@@ -333,15 +378,15 @@ public final class PatchOutputSerializer {
      *     [(x), (y), (z)]
      * &lt;/pre&gt;
      */
-<span class="fc" id="L336">    static class CoordinateXYZSerializer implements JsonSerializer&lt;CoordinateXYZ&gt; {</span>
+<span class="fc" id="L381">    static class CoordinateXYZSerializer implements JsonSerializer&lt;CoordinateXYZ&gt; {</span>
         @Override
         public JsonElement serialize(
                 CoordinateXYZ src, Type typeOfSrc, JsonSerializationContext context) {
-<span class="nc" id="L340">            JsonArray json = new JsonArray();</span>
-<span class="nc" id="L341">            json.add(src.x);</span>
-<span class="nc" id="L342">            json.add(src.y);</span>
-<span class="nc" id="L343">            json.add(src.z);</span>
-<span class="nc" id="L344">            return json;</span>
+<span class="nc" id="L385">            JsonArray json = new JsonArray();</span>
+<span class="nc" id="L386">            json.add(src.x);</span>
+<span class="nc" id="L387">            json.add(src.y);</span>
+<span class="nc" id="L388">            json.add(src.z);</span>
+<span class="nc" id="L389">            return json;</span>
         }
     }
 
@@ -354,16 +399,16 @@ public final class PatchOutputSerializer {
      *     [(u), (v), (w), (z)]
      * &lt;/pre&gt;
      */
-<span class="fc" id="L357">    static class CoordinateUVWZSerializer implements JsonSerializer&lt;CoordinateUVWZ&gt; {</span>
+<span class="fc" id="L402">    static class CoordinateUVWZSerializer implements JsonSerializer&lt;CoordinateUVWZ&gt; {</span>
         @Override
         public JsonElement serialize(
                 CoordinateUVWZ src, Type typeOfSrc, JsonSerializationContext context) {
-<span class="nc" id="L361">            JsonArray json = new JsonArray();</span>
-<span class="nc" id="L362">            json.add(src.u);</span>
-<span class="nc" id="L363">            json.add(src.v);</span>
-<span class="nc" id="L364">            json.add(src.w);</span>
-<span class="nc" id="L365">            json.add(src.z);</span>
-<span class="nc" id="L366">            return json;</span>
+<span class="nc" id="L406">            JsonArray json = new JsonArray();</span>
+<span class="nc" id="L407">            json.add(src.u);</span>
+<span class="nc" id="L408">            json.add(src.v);</span>
+<span class="nc" id="L409">            json.add(src.w);</span>
+<span class="nc" id="L410">            json.add(src.z);</span>
+<span class="nc" id="L411">            return json;</span>
         }
     }
 }
