@@ -132,7 +132,6 @@ public final class PatchCellFactory implements CellFactory {
             }
 
             int pop = population.getInt("CODE");
-
             for (int i = 0; i < init; i++) {
                 PatchCellContainer container = createCellForPopulation(id, pop);
                 cells.put(id, container);
@@ -152,9 +151,7 @@ public final class PatchCellFactory implements CellFactory {
     public PatchCellContainer createCellForPopulation(int id, int pop) {
         MiniBox population = popToParameters.get(pop);
         Parameters parameters = new Parameters(population, null, random);
-
         double compression = parameters.getDouble("COMPRESSION_TOLERANCE");
-
         double volume = parameters.getDouble("CELL_VOLUME");
         double height = parameters.getDouble("CELL_HEIGHT");
         int age = parameters.getInt("CELL_AGE");
