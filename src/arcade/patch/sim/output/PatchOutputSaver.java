@@ -36,7 +36,7 @@ public final class PatchOutputSaver extends OutputSaver {
     public void saveComponents(int tick) {
         for (String componentKey : ((PatchSimulation) sim).getComponentKeys()) {
             Component component = sim.getComponent(componentKey);
-            if (component instanceof PatchComponentSitesGraph) {
+            if (component instanceof PatchComponentSitesGraph && saveGraph) {
                 String json =
                         gson.toJson(
                                 (PatchComponentSitesGraph) component,
