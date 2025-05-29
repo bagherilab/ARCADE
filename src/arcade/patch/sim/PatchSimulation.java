@@ -33,7 +33,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     /** Hidden utility object type for gson implementation. */
     public static final Type PATCH_LAYER_TYPE =
             new TypeToken<HashMap<Location, HashMap<String, Double>>>() {}.getType();
- 
+
     /** {@link arcade.core.sim.Series} object containing this simulation. */
     final PatchSeries series;
 
