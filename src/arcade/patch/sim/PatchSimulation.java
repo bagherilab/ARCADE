@@ -149,6 +149,10 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         return components.get(key);
     }
 
+    public Set<String> getComponentKeys() {
+        return components.keySet();
+    }
+
     /**
      * Gets the set of keys for the component hash set.
      *

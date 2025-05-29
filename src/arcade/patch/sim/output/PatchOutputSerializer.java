@@ -10,6 +10,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.Series;
@@ -40,6 +41,9 @@ import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
  * </ul>
  */
 public final class PatchOutputSerializer {
+
+    static Type DEFAULT_EDGE_TYPE = new TypeToken<ArrayList<LocationContainer>>() {}.getType();
+
     /** Hidden utility class constructor. */
     protected PatchOutputSerializer() {
         throw new UnsupportedOperationException();
@@ -152,6 +156,22 @@ public final class PatchOutputSerializer {
             json.add("criticals", criticals);
 
             // TODO: add cycles
+
+            return json;
+        }
+    }
+
+    static class SitesGraphSerializer implements JsonSerializer<PatchComponentSitesGraph> {
+        @Override
+        public JsonElement serialize(
+                PatchComponentSitesGraph src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonArray json = new JsonArray();
+
+            for (Object obj : src.getGraph().getAllEdges()) {
+                SiteEdge e = (SiteEdge) obj;
+                JsonElement edge = context.serialize(e, SiteEdge.class);
+                json.add(edge);
+            }
 
             return json;
         }
