@@ -7,7 +7,7 @@ import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSaver;
 import arcade.patch.env.component.PatchComponentSitesGraph;
 import arcade.patch.sim.PatchSimulation;
-import static arcade.patch.sim.PatchSimulation.CUSTOM_LAYER_TYPE;
+import static arcade.patch.sim.PatchSimulation.PATCH_LAYER_TYPE;
 
 /** Custom saver for patch-specific serialization. */
 public final class PatchOutputSaver extends OutputSaver {
@@ -57,7 +57,7 @@ public final class PatchOutputSaver extends OutputSaver {
      * @param tick the simulation tick
      */
     public void saveLayers(int tick) {
-        String json = gson.toJson(((PatchSimulation) sim).getLayers(), CUSTOM_LAYER_TYPE);
+        String json = gson.toJson(((PatchSimulation) sim).getLayers(), PATCH_LAYER_TYPE);
         String patch = prefix + String.format("_%06d.LAYERS.json", tick);
         write(patch, format(json, FORMAT_ELEMENTS));
     }
