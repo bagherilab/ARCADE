@@ -15,13 +15,16 @@ import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSerializer;
 import arcade.patch.agent.cell.PatchCellContainer;
+import arcade.patch.env.component.PatchComponentSitesGraph;
+import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
+import arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
 import arcade.patch.env.location.Coordinate;
 import arcade.patch.env.location.CoordinateUVWZ;
 import arcade.patch.env.location.CoordinateXYZ;
 import arcade.patch.env.location.PatchLocationContainer;
 import arcade.patch.sim.PatchSeries;
+import arcade.patch.util.PatchEnums.State;
 import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
-import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Container class for patch-specific object serializers.
@@ -55,6 +58,9 @@ public final class PatchOutputSerializer {
         gsonBuilder.registerTypeAdapter(DEFAULT_LOCATION_TYPE, new LocationListSerializer());
         gsonBuilder.registerTypeAdapter(CoordinateXYZ.class, new CoordinateXYZSerializer());
         gsonBuilder.registerTypeAdapter(CoordinateUVWZ.class, new CoordinateUVWZSerializer());
+        gsonBuilder.registerTypeAdapter(PatchComponentSitesGraph.class, new SitesGraphSerializer());
+        gsonBuilder.registerTypeAdapter(SiteEdge.class, new SiteEdgeSerializer());
+        gsonBuilder.registerTypeAdapter(SiteNode.class, new SiteNodeSerializer());
         return gsonBuilder.create();
     }
 
@@ -146,6 +152,125 @@ public final class PatchOutputSerializer {
             json.add("criticals", criticals);
 
             // TODO: add cycles
+
+            return json;
+        }
+    }
+
+    /**
+     * Serializer for {@link PatchComponentSitesGraph} objects.
+     *
+     * <p>The object is formatted as:
+     *
+     * <pre>
+     *     [
+     *         {
+     *             "from": (from),
+     *             "to": (to),
+     *             "type": (type),
+     *             "radius": (radius),
+     *             "length": (length),
+     *             "wall": (wall),
+     *             "shear": (shear),
+     *             "stress": (stress),
+     *             "flow": (flow),
+     *         },
+     *         {
+     *             "from": (from),
+     *             "to": (to),
+     *             "type": (type),
+     *             "radius": (radius),
+     *             "length": (length),
+     *             "wall": (wall),
+     *             "shear": (shear),
+     *             "stress": (stress),
+     *             "flow": (flow),
+     *         },
+     *         ...
+     *     ]
+     * </pre>
+     */
+    static class SitesGraphSerializer implements JsonSerializer<PatchComponentSitesGraph> {
+        @Override
+        public JsonElement serialize(
+                PatchComponentSitesGraph src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonArray json = new JsonArray();
+
+            for (Object obj : src.getGraph().getAllEdges()) {
+                SiteEdge e = (SiteEdge) obj;
+                JsonElement edge = context.serialize(e, SiteEdge.class);
+                json.add(edge);
+            }
+
+            return json;
+        }
+    }
+
+    /**
+     * Serializer for {@link SiteEdge} objects.
+     *
+     * <p>The object is formatted as:
+     *
+     * <pre>
+     *     {
+     *         "from": (from),
+     *         "to": (to),
+     *         "type": (type),
+     *         "radius": (radius),
+     *         "length": (length),
+     *         "wall": (wall),
+     *         "shear": (shear),
+     *         "stress": (stress),
+     *         "flow": (flow),
+     *     }
+     * </pre>
+     */
+    static class SiteEdgeSerializer implements JsonSerializer<SiteEdge> {
+        @Override
+        public JsonElement serialize(
+                SiteEdge src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject json = new JsonObject();
+
+            json.add("from", context.serialize(src.getFrom()));
+            json.add("to", context.serialize(src.getTo()));
+            json.addProperty("type", src.getType());
+            json.addProperty("radius", src.getRadius());
+            json.addProperty("length", src.getLength());
+            json.addProperty("wall", src.getWall());
+            json.addProperty("shear", src.getShear());
+            json.addProperty("stress", src.getCircum());
+            json.addProperty("flow", src.getFlow());
+
+            return json;
+        }
+    }
+
+    /**
+     * Serializer for {@link SiteNode} objects.
+     *
+     * <p>The object is formatted as:
+     *
+     * <pre>
+     *     {
+     *         "x": (x),
+     *         "y": (y),
+     *         "z": (z),
+     *         "pressure": (pressure),
+     *         "oxygen": (oxygen),
+     *     }
+     * </pre>
+     */
+    static class SiteNodeSerializer implements JsonSerializer<SiteNode> {
+        @Override
+        public JsonElement serialize(
+                SiteNode src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject json = new JsonObject();
+
+            json.addProperty("x", src.getX());
+            json.addProperty("y", src.getY());
+            json.addProperty("z", src.getZ());
+            json.addProperty("pressure", src.getPressure());
+            json.addProperty("oxygen", src.getOxygen());
 
             return json;
         }

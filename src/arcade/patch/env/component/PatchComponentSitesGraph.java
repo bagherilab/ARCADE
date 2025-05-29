@@ -436,6 +436,15 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         public double getPressure() {
             return pressure;
         }
+
+        /**
+         * Get the oxygen partial pressure of the node.
+         *
+         * @return the node oxygen partial pressure
+         */
+        public double getOxygen() {
+            return oxygen;
+        }
     }
 
     /**
@@ -535,6 +544,15 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         }
 
         /**
+         * Gets the type of the edge.
+         *
+         * @return the edge type
+         */
+        public String getType() {
+            return type.toString();
+        }
+
+        /**
          * Get the radius of the edge.
          *
          * @return the edge radius
@@ -544,12 +562,48 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         }
 
         /**
+         * Get the length of the edge.
+         *
+         * @return the edge length
+         */
+        public double getLength() {
+            return length;
+        }
+
+        /**
          * Get the wall thickness of the edge.
          *
          * @return the edge wall thickness
          */
         public double getWall() {
             return wall;
+        }
+
+        /**
+         * Get the shear stress of the edge.
+         *
+         * @return the edge shear stress
+         */
+        public double getShear() {
+            return shear;
+        }
+
+        /**
+         * Get the circumferential stress of the edge.
+         *
+         * @return the edge circumferential stress
+         */
+        public double getCircum() {
+            return circum;
+        }
+
+        /**
+         * Get the volumetric flow rate of the edge.
+         *
+         * @return the edge volumetric flow rate
+         */
+        public double getFlow() {
+            return flow;
         }
     }
 

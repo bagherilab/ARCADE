@@ -31,6 +31,8 @@ public final class PatchARCADE extends ARCADE {
 
     @Override
     public OutputSaver getSaver(Series series) {
-        return new PatchOutputSaver(series);
+        PatchOutputSaver saver = new PatchOutputSaver(series);
+        saver.saveGraph = settings.contains("SAVE_GRAPH");
+        return saver;
     }
 }

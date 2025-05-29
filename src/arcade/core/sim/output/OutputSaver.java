@@ -28,13 +28,13 @@ import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
  */
 public abstract class OutputSaver implements Steppable {
     /** Logger for {@code OutputSaver}. */
-    private static final Logger LOGGER = Logger.getLogger(OutputSaver.class.getName());
+    protected static final Logger LOGGER = Logger.getLogger(OutputSaver.class.getName());
 
     /** Number of elements to format in output string. */
-    private static final int FORMAT_ELEMENTS = 6;
+    protected static final int FORMAT_ELEMENTS = 6;
 
     /** JSON representation. */
-    final Gson gson;
+    protected final Gson gson;
 
     /** {@link arcade.core.sim.Series} instance. */
     final Series series;
@@ -43,7 +43,7 @@ public abstract class OutputSaver implements Steppable {
     public String prefix;
 
     /** {@link arcade.core.sim.Simulation} instance. */
-    Simulation sim;
+    protected Simulation sim;
 
     /**
      * Creates an {@code OutputSaver} for the series.
@@ -109,6 +109,15 @@ public abstract class OutputSaver implements Steppable {
     @Override
     public void step(SimState simstate) {
         int tick = (int) simstate.schedule.getTime();
+        save(tick);
+    }
+
+    /**
+     * Saves the relevant data.
+     *
+     * @param tick the simulation tick
+     */
+    public void save(int tick) {
         saveCells(tick);
         saveLocations(tick);
     }
