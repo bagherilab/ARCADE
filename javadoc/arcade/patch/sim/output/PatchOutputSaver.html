@@ -173,6 +173,13 @@ extends <a href="../../../core/sim/output/OutputSaver.html" title="class in arca
 <div class="block"><code>true</code> to save graph components, <code>false</code> otherwise.</div>
 </td>
 </tr>
+<tr class="rowColor">
+<td class="colFirst"><code>boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#saveLattice">saveLattice</a></span></code></th>
+<td class="colLast">
+<div class="block"><code>true</code> to save lattices, <code>false</code> otherwise.</div>
+</td>
+</tr>
 </table>
 <ul class="blockList">
 <li class="blockList"><a id="fields.inherited.from.class.arcade.core.sim.output.OutputSaver">
@@ -244,9 +251,9 @@ extends <a href="../../../core/sim/output/OutputSaver.html" title="class in arca
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#step(sim.engine.SimState)">step</a></span>&#8203;(sim.engine.SimState&nbsp;simstate)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#saveLayers(int)">saveLayers</a></span>&#8203;(int&nbsp;tick)</code></th>
 <td class="colLast">
-<div class="block">Steps through cell rules.</div>
+<div class="block">Save the collection of <a href="../../env/lattice/PatchLattice.html" title="class in arcade.patch.env.lattice"><code>PatchLattice</code></a> to a JSON, by location.</div>
 </td>
 </tr>
 </table>
@@ -255,7 +262,7 @@ extends <a href="../../../core/sim/output/OutputSaver.html" title="class in arca
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;arcade.core.sim.output.<a href="../../../core/sim/output/OutputSaver.html" title="class in arcade.core.sim.output">OutputSaver</a></h3>
-<code><a href="../../../core/sim/output/OutputSaver.html#equip(arcade.core.sim.Simulation)">equip</a>, <a href="../../../core/sim/output/OutputSaver.html#format(java.lang.String,int)">format</a>, <a href="../../../core/sim/output/OutputSaver.html#saveCells(int)">saveCells</a>, <a href="../../../core/sim/output/OutputSaver.html#saveLocations(int)">saveLocations</a>, <a href="../../../core/sim/output/OutputSaver.html#saveSeries()">saveSeries</a>, <a href="../../../core/sim/output/OutputSaver.html#schedule(sim.engine.Schedule,double)">schedule</a>, <a href="../../../core/sim/output/OutputSaver.html#write(java.lang.String,java.lang.String)">write</a></code></li>
+<code><a href="../../../core/sim/output/OutputSaver.html#equip(arcade.core.sim.Simulation)">equip</a>, <a href="../../../core/sim/output/OutputSaver.html#format(java.lang.String,int)">format</a>, <a href="../../../core/sim/output/OutputSaver.html#saveCells(int)">saveCells</a>, <a href="../../../core/sim/output/OutputSaver.html#saveLocations(int)">saveLocations</a>, <a href="../../../core/sim/output/OutputSaver.html#saveSeries()">saveSeries</a>, <a href="../../../core/sim/output/OutputSaver.html#schedule(sim.engine.Schedule,double)">schedule</a>, <a href="../../../core/sim/output/OutputSaver.html#step(sim.engine.SimState)">step</a>, <a href="../../../core/sim/output/OutputSaver.html#write(java.lang.String,java.lang.String)">write</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a id="methods.inherited.from.class.java.lang.Object">
@@ -283,11 +290,21 @@ extends <a href="../../../core/sim/output/OutputSaver.html" title="class in arca
 <a id="saveGraph">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>saveGraph</h4>
 <pre>public&nbsp;boolean saveGraph</pre>
 <div class="block"><code>true</code> to save graph components, <code>false</code> otherwise.</div>
+</li>
+</ul>
+<a id="saveLattice">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>saveLattice</h4>
+<pre>public&nbsp;boolean saveLattice</pre>
+<div class="block"><code>true</code> to save lattices, <code>false</code> otherwise.</div>
 </li>
 </ul>
 </li>
@@ -355,10 +372,24 @@ extends <a href="../../../core/sim/output/OutputSaver.html" title="class in arca
 </dl>
 </li>
 </ul>
-<a id="save(int)">
+<a id="saveLayers(int)">
 <!--   -->
 </a>
 <ul class="blockList">
+<li class="blockList">
+<h4>saveLayers</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;saveLayers&#8203;(int&nbsp;tick)</pre>
+<div class="block">Save the collection of <a href="../../env/lattice/PatchLattice.html" title="class in arcade.patch.env.lattice"><code>PatchLattice</code></a> to a JSON, by location.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>tick</code> - the simulation tick</dd>
+</dl>
+</li>
+</ul>
+<a id="save(int)">
+<!--   -->
+</a>
+<ul class="blockListLast">
 <li class="blockList">
 <h4>save</h4>
 <pre class="methodSignature">public&nbsp;void&nbsp;save&#8203;(int&nbsp;tick)</pre>
@@ -369,25 +400,6 @@ extends <a href="../../../core/sim/output/OutputSaver.html" title="class in arca
 <dd><code><a href="../../../core/sim/output/OutputSaver.html#save(int)">save</a></code>&nbsp;in class&nbsp;<code><a href="../../../core/sim/output/OutputSaver.html" title="class in arcade.core.sim.output">OutputSaver</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>tick</code> - the simulation tick</dd>
-</dl>
-</li>
-</ul>
-<a id="step(sim.engine.SimState)">
-<!--   -->
-</a>
-<ul class="blockListLast">
-<li class="blockList">
-<h4>step</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;step&#8203;(sim.engine.SimState&nbsp;simstate)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../core/sim/output/OutputSaver.html#step(sim.engine.SimState)">OutputSaver</a></code></span></div>
-<div class="block">Steps through cell rules.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code>step</code>&nbsp;in interface&nbsp;<code>sim.engine.Steppable</code></dd>
-<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../core/sim/output/OutputSaver.html#step(sim.engine.SimState)">step</a></code>&nbsp;in class&nbsp;<code><a href="../../../core/sim/output/OutputSaver.html" title="class in arcade.core.sim.output">OutputSaver</a></code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>simstate</code> - the MASON simulation state</dd>
 </dl>
 </li>
 </ul>
