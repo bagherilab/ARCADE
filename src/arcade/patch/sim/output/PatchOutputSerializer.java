@@ -22,8 +22,6 @@ import arcade.patch.env.location.Coordinate;
 import arcade.patch.env.location.CoordinateUVWZ;
 import arcade.patch.env.location.CoordinateXYZ;
 import arcade.patch.env.location.PatchLocationContainer;
-import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
-import arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.util.PatchEnums.State;
 import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
@@ -31,18 +29,14 @@ import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 /**
  * Container class for patch-specific object serializers.
  *
- * <p>
- * Generic serializers include:
+ * <p>Generic serializers include:
  *
  * <ul>
- * <li>{@link PatchSeriesSerializer} for serializing {@link PatchSeries}
- * <li>{@link PatchCellSerializer} for serializing {@link PatchCellContainer}
- * <li>{@link LocationListSerializer} for serializing
- * {@link PatchLocationContainer} lists
- * <li>{@link CoordinateXYZSerializer} for serializing (x, y, z)
- * {@link Coordinate}
- * <li>{@link CoordinateUVWZSerializer} for serializing (u, v, w, z)
- * {@link Coordinate}
+ *   <li>{@link PatchSeriesSerializer} for serializing {@link PatchSeries}
+ *   <li>{@link PatchCellSerializer} for serializing {@link PatchCellContainer}
+ *   <li>{@link LocationListSerializer} for serializing {@link PatchLocationContainer} lists
+ *   <li>{@link CoordinateXYZSerializer} for serializing (x, y, z) {@link Coordinate}
+ *   <li>{@link CoordinateUVWZSerializer} for serializing (u, v, w, z) {@link Coordinate}
  * </ul>
  */
 public final class PatchOutputSerializer {
@@ -73,9 +67,7 @@ public final class PatchOutputSerializer {
     /**
      * Serializer for {@link PatchSeries} objects.
      *
-     * <p>
-     * The object is first serialized using the generic {@link Series} and
-     * patch-specific
+     * <p>The object is first serialized using the generic {@link Series} and patch-specific
      * contents are then appended:
      *
      * <pre>
@@ -110,8 +102,7 @@ public final class PatchOutputSerializer {
     /**
      * Serializer for {@link CellContainer} objects.
      *
-     * <p>
-     * Uses serialization for {@link PatchCellContainer}.
+     * <p>Uses serialization for {@link PatchCellContainer}.
      */
     static class CellSerializer implements JsonSerializer<CellContainer> {
         @Override
@@ -124,8 +115,7 @@ public final class PatchOutputSerializer {
     /**
      * Serializer for {@link PatchCellContainer} objects.
      *
-     * <p>
-     * The container object is formatted as:
+     * <p>The container object is formatted as:
      *
      * <pre>
      *     {
@@ -325,9 +315,7 @@ public final class PatchOutputSerializer {
     /**
      * Serializer for list of {@link PatchLocationContainer} objects.
      *
-     * <p>
-     * This serializer overrides the {@code LocationListSerializer} defined in
-     * {@link
+     * <p>This serializer overrides the {@code LocationListSerializer} defined in {@link
      * OutputSerializer}. The container object is formatted as:
      *
      * <pre>
@@ -356,7 +344,8 @@ public final class PatchOutputSerializer {
 
             for (LocationContainer locationContainer : src) {
                 PatchLocationContainer container = (PatchLocationContainer) locationContainer;
-                ArrayList<Integer> ids = containerMap.computeIfAbsent(container.coordinate, k -> new ArrayList<>());
+                ArrayList<Integer> ids =
+                        containerMap.computeIfAbsent(container.coordinate, k -> new ArrayList<>());
                 ids.add(container.id);
             }
 
@@ -374,8 +363,7 @@ public final class PatchOutputSerializer {
     /**
      * Serializer for {@link CoordinateXYZ} objects.
      *
-     * <p>
-     * The coordinate object is formatted as:
+     * <p>The coordinate object is formatted as:
      *
      * <pre>
      *     [(x), (y), (z)]
@@ -396,8 +384,7 @@ public final class PatchOutputSerializer {
     /**
      * Serializer for {@link CoordinateUVWZ} objects.
      *
-     * <p>
-     * The coordinate object is formatted as:
+     * <p>The coordinate object is formatted as:
      *
      * <pre>
      *     [(u), (v), (w), (z)]
