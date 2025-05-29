@@ -19,6 +19,8 @@ public final class PatchOutputSaver extends OutputSaver {
      *
      * @param series the simulation series
      */
+    public boolean saveGraph;
+
     public PatchOutputSaver(Series series) {
         super(series);
     }

@@ -25,6 +25,7 @@ import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.lattice.PatchLattice;
 import arcade.patch.env.lattice.PatchLatticeFactory;
 import arcade.patch.env.location.PatchLocationFactory;
+import arcade.patch.sim.output.PatchOutputSaver;
 
 /** Abstract implementation for patch {@link Simulation} instances. */
 public abstract class PatchSimulation extends SimState implements Simulation {
