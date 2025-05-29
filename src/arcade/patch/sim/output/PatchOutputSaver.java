@@ -22,9 +22,11 @@ public final class PatchOutputSaver extends OutputSaver {
     /** {@code true} to save lattices, {@code false} otherwise. */
     public boolean saveLayers;
 
+    /** Set of all possible locations in the simulation. */
     private Set<Location> possibleLocations;
 
-    static Type CUSTOM_LAYER_TYPE =
+    /** Hidden utility object type for gson implementation. */
+    static final Type CUSTOM_LAYER_TYPE =
             new TypeToken<HashMap<Location, HashMap<String, Double>>>() {}.getType();
 
     /**

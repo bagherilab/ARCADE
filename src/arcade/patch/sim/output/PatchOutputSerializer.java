@@ -448,26 +448,24 @@ public final class PatchOutputSerializer {
     }
 
     /**
-     * Serializer for {@link CoordinateXYZ} objects.
+     * Serializer for collection of molecule layer values.
      *
-     * <p>The coordinate object is formatted as:
+     * <p>The object is formatted as:
      *
      * <pre>
-     *     [(x), (y), (z)]
+     *     [
+     *         {
+     *             "location": (coordinate of location),
+     *             "layers": {
+     *                 "(LATTICE NAME)" : (average value at location),
+     *                 "(LATTICE NAME)" : (average value at location),
+     *                 ...
+     *             }
+     *         },
+     *         ...
+     *     ]
      * </pre>
      */
-    static class CoordinateXYZSerializer implements JsonSerializer<CoordinateXYZ> {
-        @Override
-        public JsonElement serialize(
-                CoordinateXYZ src, Type typeOfSrc, JsonSerializationContext context) {
-            JsonArray json = new JsonArray();
-            json.add(src.x);
-            json.add(src.y);
-            json.add(src.z);
-            return json;
-        }
-    }
-
     static class LayersSerializer
             implements JsonSerializer<HashMap<Location, HashMap<String, Double>>> {
         @Override
@@ -486,6 +484,27 @@ public final class PatchOutputSerializer {
                 location.add("layers", layers);
                 json.add(location);
             }
+            return json;
+        }
+    }
+
+    /**
+     * Serializer for {@link CoordinateXYZ} objects.
+     *
+     * <p>The coordinate object is formatted as:
+     *
+     * <pre>
+     *     [(x), (y), (z)]
+     * </pre>
+     */
+    static class CoordinateXYZSerializer implements JsonSerializer<CoordinateXYZ> {
+        @Override
+        public JsonElement serialize(
+                CoordinateXYZ src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonArray json = new JsonArray();
+            json.add(src.x);
+            json.add(src.y);
+            json.add(src.z);
             return json;
         }
     }

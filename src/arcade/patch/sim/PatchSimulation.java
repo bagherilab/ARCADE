@@ -138,6 +138,20 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         return lattices.get(key);
     }
 
+    /**
+     * Gets the set of keys for the lattice hash set.
+     *
+     * @return the set of lattice keys
+     */
+    public Set<String> getLatticeKeys() {
+        return lattices.keySet();
+    }
+
+    /**
+     * Get a (shallow) copy of the lattice map.
+     *
+     * @return a copy of the lattice map
+     */
     public HashMap<String, Lattice> getLatticesCopy() {
         return new HashMap<String, Lattice>(lattices);
     }
@@ -159,15 +173,6 @@ public abstract class PatchSimulation extends SimState implements Simulation {
      */
     public Set<String> getComponentKeys() {
         return components.keySet();
-    }
-
-    /*
-     * Gets the set of keys for the lattice hash set.
-     *
-     * @return the set of lattice keys
-     */
-    public Set<String> getLatticeKeys() {
-        return lattices.keySet();
     }
 
     /**
