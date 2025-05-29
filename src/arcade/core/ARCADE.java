@@ -57,7 +57,7 @@ public abstract class ARCADE {
     public static final String VERSION = loadVersion();
 
     /** Command line settings for ARCADE simulation. */
-    protected MiniBox settings;
+    protected MiniBox settings = new MiniBox();
 
     /**
      * Gets the resource relative to the location of the class.

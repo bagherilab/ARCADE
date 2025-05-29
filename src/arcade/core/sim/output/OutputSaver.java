@@ -109,6 +109,15 @@ public abstract class OutputSaver implements Steppable {
     @Override
     public void step(SimState simstate) {
         int tick = (int) simstate.schedule.getTime();
+        save(tick);
+    }
+
+    /**
+     * Saves the relevant data
+     *
+     * @param tick the simulation tick
+     */
+    public void save(int tick) {
         saveCells(tick);
         saveLocations(tick);
     }

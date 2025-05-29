@@ -48,9 +48,17 @@ public final class PatchOutputSaver extends OutputSaver {
     }
 
     @Override
+    public void save(int tick) {
+        super.save(tick);
+        if (saveGraph) {
+            saveComponents(tick);
+        }
+    }
+
+    @Override
     public void step(SimState simstate) {
         super.step(simstate);
         int tick = (int) simstate.schedule.getTime();
-        saveComponents(tick);
+        save(tick);
     }
 }
