@@ -61,7 +61,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     /**
      * Simulation instance for a {@link Series} for given random seed.
      *
-     * @param seed the random seed for random number generator
+     * @param seed   the random seed for random number generator
      * @param series the simulation series
      */
     public PatchSimulation(long seed, Series series) {
@@ -138,6 +138,10 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         return lattices.get(key);
     }
 
+    public HashMap<String, Lattice> getLatticesCopy() {
+        return new HashMap<String, Lattice>(lattices);
+    }
+
     @Override
     public final Action getAction(String key) {
         return actions.get(key);
@@ -158,6 +162,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     }
 
     /**
+<<<<<<< HEAD
      * Gets the set of keys for the component hash set.
      *
      * @return the set of component keys
@@ -168,6 +173,10 @@ public abstract class PatchSimulation extends SimState implements Simulation {
 
     /**
      * Called at the start of the simulation to set up agents and environment and schedule actions
+=======
+     * Called at the start of the simulation to set up agents and environment and
+     * schedule actions
+>>>>>>> 266c3e22 (resolve merge conflicts)
      * and components as needed.
      */
     @Override
@@ -231,7 +240,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
      * Creates an instance of the given action.
      *
      * @param actionClass the name of the action class
-     * @param parameters the dictionary of action parameters
+     * @param parameters  the dictionary of action parameters
      * @return a {@link Action} instance
      */
     public abstract Action makeAction(String actionClass, MiniBox parameters);
@@ -240,7 +249,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
      * Creates an instance of the given component.
      *
      * @param componentClass the name of the component class
-     * @param parameters the dictionary of component parameters
+     * @param parameters     the dictionary of component parameters
      * @return a {@link Component} instance
      */
     public abstract Component makeComponent(String componentClass, MiniBox parameters);

@@ -1,6 +1,7 @@
 package arcade.patch.sim.output;
 
 import com.google.gson.Gson;
+import java.util.HashMap;
 import sim.engine.SimState;
 import arcade.core.env.component.Component;
 import arcade.core.sim.Series;
@@ -29,7 +30,8 @@ public final class PatchOutputSaver extends OutputSaver {
     }
 
     /**
-     * Save a list of {@link arcade.patch.env.component.PatchComponentSitesGraph} to a JSON.
+     * Save a list of {@link arcade.patch.env.component.PatchComponentSitesGraph} to
+     * a JSON.
      *
      * @param tick the simulation tick
      */
@@ -37,12 +39,20 @@ public final class PatchOutputSaver extends OutputSaver {
         for (String componentKey : ((PatchSimulation) sim).getComponentKeys()) {
             Component component = sim.getComponent(componentKey);
             if (component instanceof PatchComponentSitesGraph && saveGraph) {
-                String json =
-                        gson.toJson(
-                                (PatchComponentSitesGraph) component,
-                                PatchComponentSitesGraph.class);
+                String json = gson.toJson(
+                        (PatchComponentSitesGraph) component,
+                        PatchComponentSitesGraph.class);
                 String path = prefix + String.format("_%06d." + componentKey + ".GRAPH.json", tick);
                 write(path, format(json, FORMAT_ELEMENTS));
+            }
+        }
+    }
+
+    public void saveLayers(int tick) {
+        HashMap<Location, HashMap<String, Double>> layers = new HashMap<>();
+        for (Location loc : sim.getAllLocations()) {
+            for (String key : sim.getLatticeKeys()) {
+                sim.getLattice(key).getAverageValue(loc);
             }
         }
     }
