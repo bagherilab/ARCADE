@@ -27,7 +27,7 @@ import arcade.patch.env.location.PatchLocationContainer;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.util.PatchEnums.State;
 import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
-import static arcade.patch.sim.output.PatchOutputSaver.CUSTOM_LAYER_TYPE;
+import static arcade.patch.sim.PatchSimulation.CUSTOM_LAYER_TYPE;
 
 /**
  * Container class for patch-specific object serializers.

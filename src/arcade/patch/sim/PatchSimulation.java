@@ -1,9 +1,11 @@
 package arcade.patch.sim;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import com.google.gson.reflect.TypeToken;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import arcade.core.agent.action.Action;
@@ -28,6 +30,10 @@ import arcade.patch.env.location.PatchLocationFactory;
 
 /** Abstract implementation for patch {@link Simulation} instances. */
 public abstract class PatchSimulation extends SimState implements Simulation {
+    /** Hidden utility object type for gson implementation. */
+    public static Type CUSTOM_LAYER_TYPE =
+            new TypeToken<HashMap<Location, HashMap<String, Double>>>() {}.getType();
+
     /** {@link arcade.core.sim.Series} object containing this simulation. */
     final PatchSeries series;
 

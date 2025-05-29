@@ -1,16 +1,13 @@
 package arcade.patch.sim.output;
 
-import java.lang.reflect.Type;
-import java.util.HashMap;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import sim.engine.SimState;
 import arcade.core.env.component.Component;
-import arcade.core.env.location.Location;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSaver;
 import arcade.patch.env.component.PatchComponentSitesGraph;
 import arcade.patch.sim.PatchSimulation;
+import static arcade.patch.sim.PatchSimulation.CUSTOM_LAYER_TYPE;
 
 /** Custom saver for patch-specific serialization. */
 public final class PatchOutputSaver extends OutputSaver {
@@ -20,10 +17,6 @@ public final class PatchOutputSaver extends OutputSaver {
 
     /** {@code true} to save lattices, {@code false} otherwise. */
     public boolean saveLayers;
-
-    /** Hidden utility object type for gson implementation. */
-    static final Type CUSTOM_LAYER_TYPE =
-            new TypeToken<HashMap<Location, HashMap<String, Double>>>() {}.getType();
 
     /**
      * Creates an {@code PatchOutputSaver} for the series.
