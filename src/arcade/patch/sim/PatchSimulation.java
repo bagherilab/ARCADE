@@ -122,8 +122,8 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     }
 
     /**
-     * Generate a hashmap of the layers keyed by location and by the layer ID. 
-     * 
+     * Generate a hashmap of the layers keyed by location and by the layer ID.
+     *
      * @return layers a hashmap of the layers hashed by location and by layer ID.
      */
     public final HashMap<Location, HashMap<String, Double>> getLayers() {
