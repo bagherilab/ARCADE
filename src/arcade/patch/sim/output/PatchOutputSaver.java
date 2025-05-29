@@ -2,7 +2,6 @@ package arcade.patch.sim.output;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
-import java.util.Set;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import sim.engine.SimState;
@@ -21,9 +20,6 @@ public final class PatchOutputSaver extends OutputSaver {
 
     /** {@code true} to save lattices, {@code false} otherwise. */
     public boolean saveLayers;
-
-    /** Set of all possible locations in the simulation. */
-    private Set<Location> possibleLocations;
 
     /** Hidden utility object type for gson implementation. */
     static final Type CUSTOM_LAYER_TYPE =
@@ -68,27 +64,7 @@ public final class PatchOutputSaver extends OutputSaver {
      * @param tick the simulation tick
      */
     public void saveLayers(int tick) {
-        PatchSimulation patchSim = (PatchSimulation) sim;
-        if (!saveLayers) {
-            return;
-        }
-
-        if (possibleLocations == null) {
-            possibleLocations = patchSim.getAllLocations();
-        }
-
-        HashMap<Location, HashMap<String, Double>> layers = new HashMap<>();
-        for (Location loc : possibleLocations) {
-            for (String key : patchSim.getLatticeKeys()) {
-                if (layers.containsKey(loc)) {
-                    layers.get(loc).put(key, sim.getLattice(key).getAverageValue(loc));
-                    continue;
-                }
-                layers.put(loc, new HashMap<>());
-                layers.get(loc).put(key, sim.getLattice(key).getAverageValue(loc));
-            }
-        }
-        String json = gson.toJson(layers, CUSTOM_LAYER_TYPE);
+        String json = gson.toJson(((PatchSimulation) sim).getLayers(), CUSTOM_LAYER_TYPE);
         String patch = prefix + String.format("_%06d.LAYERS.json", tick);
         write(patch, format(json, FORMAT_ELEMENTS));
     }

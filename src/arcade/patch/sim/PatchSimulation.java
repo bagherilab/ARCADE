@@ -58,6 +58,9 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     /** Lattice factory instance for the simulation. */
     public final PatchLatticeFactory latticeFactory;
 
+    /** List of all possible locations. */
+    private Set<Location> possibleLocations;
+
     /**
      * Simulation instance for a {@link Series} for given random seed.
      *
@@ -118,6 +121,32 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         return locationContainers;
     }
 
+    /**
+     * Generate a hashmap of the layers keyed by location and by the layer ID. 
+     * 
+     * @return layers a hashmap of the layers hashed by location and by layer ID.
+     */
+    public final HashMap<Location, HashMap<String, Double>> getLayers() {
+        // Cache all locations if we are saving nutrients.
+        if (possibleLocations == null) {
+            possibleLocations = getAllLocations();
+        }
+
+        HashMap<Location, HashMap<String, Double>> layers = new HashMap<>();
+        for (Location loc : possibleLocations) {
+            for (String key : getLatticeKeys()) {
+                if (layers.containsKey(loc)) {
+                    layers.get(loc).put(key, getLattice(key).getAverageValue(loc));
+                    continue;
+                }
+                layers.put(loc, new HashMap<>());
+                layers.get(loc).put(key, getLattice(key).getAverageValue(loc));
+            }
+        }
+
+        return layers;
+    }
+
     @Override
     public final CellFactory getCellFactory() {
         return cellFactory;
@@ -145,15 +174,6 @@ public abstract class PatchSimulation extends SimState implements Simulation {
      */
     public Set<String> getLatticeKeys() {
         return lattices.keySet();
-    }
-
-    /**
-     * Get a (shallow) copy of the lattice map.
-     *
-     * @return a copy of the lattice map
-     */
-    public HashMap<String, Lattice> getLatticesCopy() {
-        return new HashMap<String, Lattice>(lattices);
     }
 
     @Override
