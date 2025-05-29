@@ -1,7 +1,6 @@
 package arcade.patch.sim.output;
 
 import com.google.gson.Gson;
-import sim.engine.SimState;
 import arcade.core.env.component.Component;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSaver;
@@ -71,12 +70,5 @@ public final class PatchOutputSaver extends OutputSaver {
         if (saveLattice) {
             saveLayers(tick);
         }
-    }
-
-    @Override
-    public void step(SimState simstate) {
-        super.step(simstate);
-        int tick = (int) simstate.schedule.getTime();
-        save(tick);
     }
 }
