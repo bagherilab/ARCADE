@@ -184,6 +184,13 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>protected <a href="util/MiniBox.html" title="class in arcade.core.util">MiniBox</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#settings">settings</a></span></code></th>
+<td class="colLast">
+<div class="block">Command line settings for ARCADE simulation.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>static java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#VERSION">VERSION</a></span></code></th>
 <td class="colLast">
@@ -231,8 +238,7 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>(package private) java.util.ArrayList&lt;<a href="sim/Series.html" title="class in arcade.core.sim">Series</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#buildSeries(arcade.core.util.Box,arcade.core.util.MiniBox)">buildSeries</a></span>&#8203;(<a href="util/Box.html" title="class in arcade.core.util">Box</a>&nbsp;parameters,
-           <a href="util/MiniBox.html" title="class in arcade.core.util">MiniBox</a>&nbsp;settings)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#buildSeries(arcade.core.util.Box)">buildSeries</a></span>&#8203;(<a href="util/Box.html" title="class in arcade.core.util">Box</a>&nbsp;parameters)</code></th>
 <td class="colLast">
 <div class="block">Builds series based on setup file.</div>
 </td>
@@ -310,8 +316,7 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code>(package private) void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runSeries(java.util.ArrayList,arcade.core.util.MiniBox)">runSeries</a></span>&#8203;(java.util.ArrayList&lt;<a href="sim/Series.html" title="class in arcade.core.sim">Series</a>&gt;&nbsp;series,
-         <a href="util/MiniBox.html" title="class in arcade.core.util">MiniBox</a>&nbsp;settings)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runSeries(java.util.ArrayList)">runSeries</a></span>&#8203;(java.util.ArrayList&lt;<a href="sim/Series.html" title="class in arcade.core.sim">Series</a>&gt;&nbsp;series)</code></th>
 <td class="colLast">
 <div class="block">Runs simulations for each <a href="sim/Series.html" title="class in arcade.core.sim"><code>Series</code></a>.</div>
 </td>
@@ -360,11 +365,21 @@ extends java.lang.Object</pre>
 <a id="VERSION">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>VERSION</h4>
 <pre>public static final&nbsp;java.lang.String VERSION</pre>
 <div class="block">Version number.</div>
+</li>
+</ul>
+<a id="settings">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>settings</h4>
+<pre>protected&nbsp;<a href="util/MiniBox.html" title="class in arcade.core.util">MiniBox</a> settings</pre>
+<div class="block">Command line settings for ARCADE simulation.</div>
 </li>
 </ul>
 </li>
@@ -571,21 +586,19 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a id="buildSeries(arcade.core.util.Box,arcade.core.util.MiniBox)">
+<a id="buildSeries(arcade.core.util.Box)">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>buildSeries</h4>
-<pre class="methodSignature">java.util.ArrayList&lt;<a href="sim/Series.html" title="class in arcade.core.sim">Series</a>&gt;&nbsp;buildSeries&#8203;(<a href="util/Box.html" title="class in arcade.core.util">Box</a>&nbsp;parameters,
-                                        <a href="util/MiniBox.html" title="class in arcade.core.util">MiniBox</a>&nbsp;settings)
+<pre class="methodSignature">java.util.ArrayList&lt;<a href="sim/Series.html" title="class in arcade.core.sim">Series</a>&gt;&nbsp;buildSeries&#8203;(<a href="util/Box.html" title="class in arcade.core.util">Box</a>&nbsp;parameters)
                                  throws java.io.IOException,
                                         org.xml.sax.SAXException</pre>
 <div class="block">Builds series based on setup file.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>parameters</code> - a container of default parameter values</dd>
-<dd><code>settings</code> - a container of parsed arguments</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>a list of <a href="sim/Series.html" title="class in arcade.core.sim"><code>Series</code></a> instances</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
@@ -594,14 +607,13 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a id="runSeries(java.util.ArrayList,arcade.core.util.MiniBox)">
+<a id="runSeries(java.util.ArrayList)">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>runSeries</h4>
-<pre class="methodSignature">void&nbsp;runSeries&#8203;(java.util.ArrayList&lt;<a href="sim/Series.html" title="class in arcade.core.sim">Series</a>&gt;&nbsp;series,
-               <a href="util/MiniBox.html" title="class in arcade.core.util">MiniBox</a>&nbsp;settings)
+<pre class="methodSignature">void&nbsp;runSeries&#8203;(java.util.ArrayList&lt;<a href="sim/Series.html" title="class in arcade.core.sim">Series</a>&gt;&nbsp;series)
         throws java.lang.Exception</pre>
 <div class="block">Runs simulations for each <a href="sim/Series.html" title="class in arcade.core.sim"><code>Series</code></a>.
 
@@ -610,7 +622,6 @@ extends java.lang.Object</pre>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>series</code> - the list of <a href="sim/Series.html" title="class in arcade.core.sim"><code>Series</code></a> instances</dd>
-<dd><code>settings</code> - a container of parsed arguments</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.lang.Exception</code></dd>
 </dl>

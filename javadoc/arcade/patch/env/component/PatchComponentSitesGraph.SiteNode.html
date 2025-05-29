@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -269,12 +269,19 @@ extends <a href="../../../core/util/Graph.Node.html" title="class in arcade.core
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>double</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getOxygen()">getOxygen</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Get the oxygen partial pressure of the node.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPressure()">getPressure</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get the pressure of the node.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRoot()">getRoot</a></span>()</code></th>
 <td class="colLast">
@@ -444,7 +451,7 @@ extends <a href="../../../core/util/Graph.Node.html" title="class in arcade.core
 <a id="getPressure()">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>getPressure</h4>
 <pre class="methodSignature">public&nbsp;double&nbsp;getPressure()</pre>
@@ -452,6 +459,20 @@ extends <a href="../../../core/util/Graph.Node.html" title="class in arcade.core
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the node pressure</dd>
+</dl>
+</li>
+</ul>
+<a id="getOxygen()">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>getOxygen</h4>
+<pre class="methodSignature">public&nbsp;double&nbsp;getOxygen()</pre>
+<div class="block">Get the oxygen partial pressure of the node.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the node oxygen partial pressure</dd>
 </dl>
 </li>
 </ul>
