@@ -61,7 +61,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     /**
      * Simulation instance for a {@link Series} for given random seed.
      *
-     * @param seed   the random seed for random number generator
+     * @param seed the random seed for random number generator
      * @param series the simulation series
      */
     public PatchSimulation(long seed, Series series) {
@@ -161,22 +161,30 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         return components.keySet();
     }
 
-    /**
-<<<<<<< HEAD
-     * Gets the set of keys for the component hash set.
+    /*
+     * Gets the set of keys for the lattice hash set.
      *
-     * @return the set of component keys
+     * @return the set of lattice keys
      */
-    public Set<String> getComponentKeys() {
-        return components.keySet();
+    public Set<String> getLatticeKeys() {
+        return lattices.keySet();
+    }
+
+    /**
+     * Gets the set of all possible locations.
+     *
+     * @return the set of locations
+     */
+    public Set<Location> getAllLocations() {
+        Set<Location> locations = new HashSet<>();
+        for (LocationContainer container : locationFactory.locations.values()) {
+            locations.add(container.convert(locationFactory, null));
+        }
+        return locations;
     }
 
     /**
      * Called at the start of the simulation to set up agents and environment and schedule actions
-=======
-     * Called at the start of the simulation to set up agents and environment and
-     * schedule actions
->>>>>>> 266c3e22 (resolve merge conflicts)
      * and components as needed.
      */
     @Override
@@ -240,7 +248,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
      * Creates an instance of the given action.
      *
      * @param actionClass the name of the action class
-     * @param parameters  the dictionary of action parameters
+     * @param parameters the dictionary of action parameters
      * @return a {@link Action} instance
      */
     public abstract Action makeAction(String actionClass, MiniBox parameters);
@@ -249,7 +257,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
      * Creates an instance of the given component.
      *
      * @param componentClass the name of the component class
-     * @param parameters     the dictionary of component parameters
+     * @param parameters the dictionary of component parameters
      * @return a {@link Component} instance
      */
     public abstract Component makeComponent(String componentClass, MiniBox parameters);

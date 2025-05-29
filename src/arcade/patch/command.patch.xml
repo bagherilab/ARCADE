@@ -1,3 +1,4 @@
 <commands>
     <switch id="SAVE_GRAPH" short="g" long="graph" help="Save the GRAPH output files" />
+    <switch id="SAVE_LAYERS" short="l" long="layers" help="Save the LAYERS output files" />
 </commands>

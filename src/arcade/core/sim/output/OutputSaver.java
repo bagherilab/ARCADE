@@ -20,15 +20,10 @@ import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 /**
  * Custom saver for serializing objects to JSON.
  *
- * <p>
- * The saver is associated with an implementation-specific {@code Gson} instance
- * that defines
- * serialization of implementation-specific classes. The associated
- * {@link arcade.core.sim.Series}
- * instance is used to save static information specific to the series. The
- * equipped {@link
- * arcade.core.sim.Simulation} instance is called to get cells / locations that
- * are saved at a given
+ * <p>The saver is associated with an implementation-specific {@code Gson} instance that defines
+ * serialization of implementation-specific classes. The associated {@link arcade.core.sim.Series}
+ * instance is used to save static information specific to the series. The equipped {@link
+ * arcade.core.sim.Simulation} instance is called to get cells / locations that are saved at a given
  * tick.
  */
 public abstract class OutputSaver implements Steppable {
@@ -168,12 +163,10 @@ public abstract class OutputSaver implements Steppable {
     /**
      * Formats the arrays in the given string.
      *
-     * <p>
-     * Method reformats the output of GSON pretty printing by converting
-     * {@code [\n A,\n B,\n ...
+     * <p>Method reformats the output of GSON pretty printing by converting {@code [\n A,\n B,\n ...
      * N\n ]} to {@code [ A, B, ..., N ]} for lists of up to N elements.
      *
-     * @param string      the string to format
+     * @param string the string to format
      * @param maxElements the maximum number of elements to format.
      * @return the formatted string
      */
@@ -181,16 +174,18 @@ public abstract class OutputSaver implements Steppable {
         String formatted = string;
 
         for (int elements = 1; elements < maxElements + 1; elements++) {
-            String inputPattern = IntStream.rangeClosed(1, elements)
-                    .mapToObj(Integer::toString)
-                    .map(s -> "([\\-\\d\\.]+)")
-                    .collect(Collectors.joining(",\\n[\\s\\t]+"));
+            String inputPattern =
+                    IntStream.rangeClosed(1, elements)
+                            .mapToObj(Integer::toString)
+                            .map(s -> "([\\-\\d\\.]+)")
+                            .collect(Collectors.joining(",\\n[\\s\\t]+"));
             inputPattern = "\\[\\n[\\s\\t]+" + inputPattern + "\\n[\\s\\t]+\\]";
 
-            String outputPattern = IntStream.rangeClosed(1, elements)
-                    .mapToObj(Integer::toString)
-                    .map(s -> "$" + s)
-                    .collect(Collectors.joining(", "));
+            String outputPattern =
+                    IntStream.rangeClosed(1, elements)
+                            .mapToObj(Integer::toString)
+                            .map(s -> "$" + s)
+                            .collect(Collectors.joining(", "));
             outputPattern = "[" + outputPattern + "]";
 
             formatted = formatted.replaceAll(inputPattern, outputPattern);

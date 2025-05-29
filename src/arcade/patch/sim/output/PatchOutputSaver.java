@@ -1,9 +1,13 @@
 package arcade.patch.sim.output;
 
-import com.google.gson.Gson;
+import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.Set;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import sim.engine.SimState;
 import arcade.core.env.component.Component;
+import arcade.core.env.location.Location;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSaver;
 import arcade.patch.env.component.PatchComponentSitesGraph;
@@ -14,6 +18,14 @@ public final class PatchOutputSaver extends OutputSaver {
 
     /** {@code true} to save graph components, {@code false} otherwise. */
     public boolean saveGraph;
+
+    /** {@code true} to save lattices, {@code false} otherwise. */
+    public boolean saveLayers;
+
+    private Set<Location> possibleLocations;
+
+    static Type CUSTOM_LAYER_TYPE =
+            new TypeToken<HashMap<Location, HashMap<String, Double>>>() {}.getType();
 
     /**
      * Creates an {@code PatchOutputSaver} for the series.
@@ -30,8 +42,7 @@ public final class PatchOutputSaver extends OutputSaver {
     }
 
     /**
-     * Save a list of {@link arcade.patch.env.component.PatchComponentSitesGraph} to
-     * a JSON.
+     * Save a list of {@link arcade.patch.env.component.PatchComponentSitesGraph} to a JSON.
      *
      * @param tick the simulation tick
      */
@@ -39,22 +50,45 @@ public final class PatchOutputSaver extends OutputSaver {
         for (String componentKey : ((PatchSimulation) sim).getComponentKeys()) {
             Component component = sim.getComponent(componentKey);
             if (component instanceof PatchComponentSitesGraph && saveGraph) {
-                String json = gson.toJson(
-                        (PatchComponentSitesGraph) component,
-                        PatchComponentSitesGraph.class);
+                String json =
+                        gson.toJson(
+                                (PatchComponentSitesGraph) component,
+                                PatchComponentSitesGraph.class);
                 String path = prefix + String.format("_%06d." + componentKey + ".GRAPH.json", tick);
                 write(path, format(json, FORMAT_ELEMENTS));
             }
         }
     }
 
+    /**
+     * Save the collection of {@link arcade.patch.env.lattice.PatchLattice} to a JSON, by location.
+     *
+     * @param tick the simulation tick
+     */
     public void saveLayers(int tick) {
+        PatchSimulation patchSim = (PatchSimulation) sim;
+        if (!saveLayers) {
+            return;
+        }
+
+        if (possibleLocations == null) {
+            possibleLocations = patchSim.getAllLocations();
+        }
+
         HashMap<Location, HashMap<String, Double>> layers = new HashMap<>();
-        for (Location loc : sim.getAllLocations()) {
-            for (String key : sim.getLatticeKeys()) {
-                sim.getLattice(key).getAverageValue(loc);
+        for (Location loc : possibleLocations) {
+            for (String key : patchSim.getLatticeKeys()) {
+                if (layers.containsKey(loc)) {
+                    layers.get(loc).put(key, sim.getLattice(key).getAverageValue(loc));
+                    continue;
+                }
+                layers.put(loc, new HashMap<>());
+                layers.get(loc).put(key, sim.getLattice(key).getAverageValue(loc));
             }
         }
+        String json = gson.toJson(layers, CUSTOM_LAYER_TYPE);
+        String patch = prefix + String.format("_%06d.LAYERS.json", tick);
+        write(patch, format(json, FORMAT_ELEMENTS));
     }
 
     @Override
