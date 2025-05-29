@@ -56,6 +56,9 @@ import arcade.potts.PottsARCADE;
     /** Version number. */
 <span class="fc" id="L57">    public static final String VERSION = loadVersion();</span>
 
+    /** Command line settings for ARCADE simulation. */
+<span class="fc" id="L60">    protected MiniBox settings = new MiniBox();</span>
+
     /**
      * Gets the resource relative to the location of the class.
      *
@@ -93,60 +96,60 @@ import arcade.potts.PottsARCADE;
      * @param args list of command line arguments
      */
     public static void main(String[] args) throws Exception {
-<span class="fc" id="L96">        updateLogger();</span>
-<span class="fc" id="L97">        logger = Logger.getLogger(ARCADE.class.getName());</span>
+<span class="fc" id="L99">        updateLogger();</span>
+<span class="fc" id="L100">        logger = Logger.getLogger(ARCADE.class.getName());</span>
 
         // Check that arguments includes at least one entry.
-<span class="fc bfc" id="L100" title="All 2 branches covered.">        if (args.length == 0) {</span>
-<span class="fc" id="L101">            logger.warning(&quot;ARCADE simulation type must be specified&quot;);</span>
-<span class="fc" id="L102">            throw new InvalidParameterException();</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        if (args.length == 0) {</span>
+<span class="fc" id="L104">            logger.warning(&quot;ARCADE simulation type must be specified&quot;);</span>
+<span class="fc" id="L105">            throw new InvalidParameterException();</span>
         }
 
         // Display current model version and exit.
-<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        if (args[0].equals(&quot;--version&quot;)) {</span>
-<span class="nc" id="L107">            System.out.println(loadVersion());</span>
-<span class="nc" id="L108">            System.exit(0);</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if (args[0].equals(&quot;--version&quot;)) {</span>
+<span class="nc" id="L110">            System.out.println(loadVersion());</span>
+<span class="nc" id="L111">            System.exit(0);</span>
         }
 
         // Display help message if any help flags exist and exit.
-<span class="pc bpc" id="L112" title="3 of 6 branches missed.">        if (Arrays.stream(args).anyMatch(s -&gt; s.equals(&quot;-h&quot;) || s.equals(&quot;--help&quot;))) {</span>
-<span class="nc" id="L113">            System.out.println(renderHelp());</span>
-<span class="nc" id="L114">            System.exit(0);</span>
+<span class="pc bpc" id="L115" title="3 of 6 branches missed.">        if (Arrays.stream(args).anyMatch(s -&gt; s.equals(&quot;-h&quot;) || s.equals(&quot;--help&quot;))) {</span>
+<span class="nc" id="L116">            System.out.println(renderHelp());</span>
+<span class="nc" id="L117">            System.exit(0);</span>
         }
 
         // Extract ARCADE type.
         ARCADE arcade;
 
-<span class="fc bfc" id="L120" title="All 3 branches covered.">        switch (args[0]) {</span>
+<span class="fc bfc" id="L123" title="All 3 branches covered.">        switch (args[0]) {</span>
             case &quot;patch&quot;:
-<span class="fc" id="L122">                logger.info(&quot;running ARCADE [ patch | &quot; + VERSION + &quot; ] simulations&quot;);</span>
-<span class="fc" id="L123">                arcade = new PatchARCADE();</span>
-<span class="fc" id="L124">                break;</span>
+<span class="fc" id="L125">                logger.info(&quot;running ARCADE [ patch | &quot; + VERSION + &quot; ] simulations&quot;);</span>
+<span class="fc" id="L126">                arcade = new PatchARCADE();</span>
+<span class="fc" id="L127">                break;</span>
             case &quot;potts&quot;:
-<span class="fc" id="L126">                logger.info(&quot;running ARCADE [ potts | &quot; + VERSION + &quot; ] simulations&quot;);</span>
-<span class="fc" id="L127">                arcade = new PottsARCADE();</span>
-<span class="fc" id="L128">                break;</span>
+<span class="fc" id="L129">                logger.info(&quot;running ARCADE [ potts | &quot; + VERSION + &quot; ] simulations&quot;);</span>
+<span class="fc" id="L130">                arcade = new PottsARCADE();</span>
+<span class="fc" id="L131">                break;</span>
             default:
-<span class="fc" id="L130">                logger.warning(</span>
+<span class="fc" id="L133">                logger.warning(</span>
                         &quot;ARCADE implementation [ &quot;
                                 + args[0]
                                 + &quot; ] does not exist. Valid implementations: patch | potts&quot;);
-<span class="fc" id="L134">                throw new InvalidParameterException();</span>
+<span class="fc" id="L137">                throw new InvalidParameterException();</span>
         }
 
         // Load command and parameter XML files.
-<span class="fc" id="L138">        Box commands = arcade.loadCommands(args[0]);</span>
-<span class="fc" id="L139">        Box parameters = arcade.loadParameters(args[0]);</span>
+<span class="fc" id="L141">        Box commands = arcade.loadCommands(args[0]);</span>
+<span class="fc" id="L142">        Box parameters = arcade.loadParameters(args[0]);</span>
 
         // Parse arguments from command line.
-<span class="fc" id="L142">        MiniBox settings = arcade.parseArguments(args, commands);</span>
+<span class="fc" id="L145">        arcade.settings = arcade.parseArguments(args, commands);</span>
 
         // Build series
-<span class="fc" id="L145">        ArrayList&lt;Series&gt; series = arcade.buildSeries(parameters, settings);</span>
+<span class="fc" id="L148">        ArrayList&lt;Series&gt; series = arcade.buildSeries(parameters);</span>
 
         // Run series.
-<span class="fc" id="L148">        arcade.runSeries(series, settings);</span>
-<span class="fc" id="L149">    }</span>
+<span class="fc" id="L151">        arcade.runSeries(series);</span>
+<span class="fc" id="L152">    }</span>
 
     /**
      * Gets full version number.
@@ -157,32 +160,32 @@ import arcade.potts.PottsARCADE;
      * @return the version number
      */
     static String loadVersion() {
-<span class="fc" id="L160">        String className = ARCADE.class.getSimpleName() + &quot;.class&quot;;</span>
-<span class="fc" id="L161">        String classPath = Objects.requireNonNull(ARCADE.class.getResource(className)).toString();</span>
+<span class="fc" id="L163">        String className = ARCADE.class.getSimpleName() + &quot;.class&quot;;</span>
+<span class="fc" id="L164">        String classPath = Objects.requireNonNull(ARCADE.class.getResource(className)).toString();</span>
 
         try {
-<span class="pc bpc" id="L164" title="1 of 2 branches missed.">            if (classPath.startsWith(&quot;jar&quot;)) {</span>
-<span class="nc" id="L165">                String manifestPath =</span>
-<span class="nc" id="L166">                        classPath.substring(0, classPath.lastIndexOf(&quot;!&quot;) + 1)</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">            if (classPath.startsWith(&quot;jar&quot;)) {</span>
+<span class="nc" id="L168">                String manifestPath =</span>
+<span class="nc" id="L169">                        classPath.substring(0, classPath.lastIndexOf(&quot;!&quot;) + 1)</span>
                                 + &quot;/META-INF/MANIFEST.MF&quot;;
-<span class="nc" id="L168">                Manifest manifest = new Manifest(new URL(manifestPath).openStream());</span>
-<span class="nc" id="L169">                Attributes attr = manifest.getMainAttributes();</span>
-<span class="nc" id="L170">                return attr.getValue(&quot;Implementation-Version&quot;);</span>
+<span class="nc" id="L171">                Manifest manifest = new Manifest(new URL(manifestPath).openStream());</span>
+<span class="nc" id="L172">                Attributes attr = manifest.getMainAttributes();</span>
+<span class="nc" id="L173">                return attr.getValue(&quot;Implementation-Version&quot;);</span>
             } else {
-<span class="fc" id="L172">                Runtime runtime = Runtime.getRuntime();</span>
+<span class="fc" id="L175">                Runtime runtime = Runtime.getRuntime();</span>
 
-<span class="fc" id="L174">                InputStream inputStream = runtime.exec(&quot;git describe --tags&quot;).getInputStream();</span>
-<span class="fc" id="L175">                Scanner scanner = new Scanner(inputStream).useDelimiter(&quot;\\A&quot;);</span>
-<span class="pc bpc" id="L176" title="1 of 2 branches missed.">                String describe = scanner.hasNext() ? scanner.next() : &quot;&quot;;</span>
+<span class="fc" id="L177">                InputStream inputStream = runtime.exec(&quot;git describe --tags&quot;).getInputStream();</span>
+<span class="fc" id="L178">                Scanner scanner = new Scanner(inputStream).useDelimiter(&quot;\\A&quot;);</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">                String describe = scanner.hasNext() ? scanner.next() : &quot;&quot;;</span>
 
-<span class="fc" id="L178">                inputStream = runtime.exec(&quot;git status --porcelain&quot;).getInputStream();</span>
-<span class="fc" id="L179">                scanner = new Scanner(inputStream).useDelimiter(&quot;\\A&quot;);</span>
-<span class="pc bpc" id="L180" title="1 of 2 branches missed.">                String status = scanner.hasNext() ? scanner.next() : &quot;&quot;;</span>
+<span class="fc" id="L181">                inputStream = runtime.exec(&quot;git status --porcelain&quot;).getInputStream();</span>
+<span class="fc" id="L182">                scanner = new Scanner(inputStream).useDelimiter(&quot;\\A&quot;);</span>
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">                String status = scanner.hasNext() ? scanner.next() : &quot;&quot;;</span>
 
-<span class="nc bnc" id="L182" title="All 2 branches missed.">                return describe.trim().substring(1) + (status.isEmpty() ? &quot;&quot; : &quot;.dirty&quot;);</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">                return describe.trim().substring(1) + (status.isEmpty() ? &quot;&quot; : &quot;.dirty&quot;);</span>
             }
-<span class="fc" id="L184">        } catch (Exception e) {</span>
-<span class="fc" id="L185">            return &quot;&lt;undefined&gt;&quot;;</span>
+<span class="fc" id="L187">        } catch (Exception e) {</span>
+<span class="fc" id="L188">            return &quot;&lt;undefined&gt;&quot;;</span>
         }
     }
 
@@ -192,10 +195,10 @@ import arcade.potts.PottsARCADE;
      * @return the help message
      */
     static String renderHelp() throws IOException, SAXException {
-<span class="nc" id="L195">        InputLoader loader = new InputLoader();</span>
-<span class="nc" id="L196">        Box commands = loader.load(ARCADE.class.getResource(&quot;command.xml&quot;).toString());</span>
-<span class="nc" id="L197">        InputParser parser = new InputParser(commands);</span>
-<span class="nc" id="L198">        return parser.help(&quot;java -jar arcade-X.X.X.jar&quot;);</span>
+<span class="nc" id="L198">        InputLoader loader = new InputLoader();</span>
+<span class="nc" id="L199">        Box commands = loader.load(ARCADE.class.getResource(&quot;command.xml&quot;).toString());</span>
+<span class="nc" id="L200">        InputParser parser = new InputParser(commands);</span>
+<span class="nc" id="L201">        return parser.help(&quot;java -jar arcade-X.X.X.jar&quot;);</span>
     }
 
     /**
@@ -205,21 +208,21 @@ import arcade.potts.PottsARCADE;
      * @return a container of command line settings
      */
     Box loadCommands(String implementation) throws IOException, SAXException {
-<span class="fc" id="L208">        InputLoader loader = new InputLoader();</span>
+<span class="fc" id="L211">        InputLoader loader = new InputLoader();</span>
 
-<span class="fc" id="L210">        logger.info(&quot;loading framework command line parser from [ command.xml ]&quot;);</span>
-<span class="fc" id="L211">        Box commands = loader.load(ARCADE.class.getResource(&quot;command.xml&quot;).toString());</span>
+<span class="fc" id="L213">        logger.info(&quot;loading framework command line parser from [ command.xml ]&quot;);</span>
+<span class="fc" id="L214">        Box commands = loader.load(ARCADE.class.getResource(&quot;command.xml&quot;).toString());</span>
 
-<span class="fc" id="L213">        logger.info(</span>
+<span class="fc" id="L216">        logger.info(</span>
                 &quot;loading implementation [ &quot;
-<span class="fc" id="L215">                        + this.getClass().getSimpleName()</span>
+<span class="fc" id="L218">                        + this.getClass().getSimpleName()</span>
                         + &quot; ]&quot;
                         + &quot; command line parser from [ command.&quot;
                         + implementation
                         + &quot;.xml ]&quot;);
-<span class="fc" id="L220">        loader.load(this.getResource(&quot;command.&quot; + implementation + &quot;.xml&quot;), commands);</span>
+<span class="fc" id="L223">        loader.load(this.getResource(&quot;command.&quot; + implementation + &quot;.xml&quot;), commands);</span>
 
-<span class="fc" id="L222">        return commands;</span>
+<span class="fc" id="L225">        return commands;</span>
     }
 
     /**
@@ -229,21 +232,21 @@ import arcade.potts.PottsARCADE;
      * @return a container of default parameter values
      */
     Box loadParameters(String implementation) throws IOException, SAXException {
-<span class="fc" id="L232">        InputLoader loader = new InputLoader();</span>
+<span class="fc" id="L235">        InputLoader loader = new InputLoader();</span>
 
-<span class="fc" id="L234">        logger.info(&quot;loading framework default parameters from [ parameter.xml ]&quot;);</span>
-<span class="fc" id="L235">        Box parameters = loader.load(ARCADE.class.getResource(&quot;parameter.xml&quot;).toString());</span>
+<span class="fc" id="L237">        logger.info(&quot;loading framework default parameters from [ parameter.xml ]&quot;);</span>
+<span class="fc" id="L238">        Box parameters = loader.load(ARCADE.class.getResource(&quot;parameter.xml&quot;).toString());</span>
 
-<span class="fc" id="L237">        logger.info(</span>
+<span class="fc" id="L240">        logger.info(</span>
                 &quot;loading implementation [ &quot;
-<span class="fc" id="L239">                        + this.getClass().getSimpleName()</span>
+<span class="fc" id="L242">                        + this.getClass().getSimpleName()</span>
                         + &quot; ]&quot;
                         + &quot; default parameters from [ parameter.&quot;
                         + implementation
                         + &quot;.xml ]&quot;);
-<span class="fc" id="L244">        loader.load(this.getResource(&quot;parameter.&quot; + implementation + &quot;.xml&quot;), parameters);</span>
+<span class="fc" id="L247">        loader.load(this.getResource(&quot;parameter.&quot; + implementation + &quot;.xml&quot;), parameters);</span>
 
-<span class="fc" id="L246">        return parameters;</span>
+<span class="fc" id="L249">        return parameters;</span>
     }
 
     /**
@@ -255,30 +258,28 @@ import arcade.potts.PottsARCADE;
      */
     MiniBox parseArguments(String[] args, Box commands) {
         // Parse command line arguments.
-<span class="fc" id="L258">        logger.info(&quot;parsing command line arguments&quot;);</span>
-<span class="fc" id="L259">        InputParser parser = new InputParser(commands);</span>
-<span class="fc" id="L260">        return parser.parse(args);</span>
+<span class="fc" id="L261">        logger.info(&quot;parsing command line arguments&quot;);</span>
+<span class="fc" id="L262">        InputParser parser = new InputParser(commands);</span>
+<span class="fc" id="L263">        return parser.parse(args);</span>
     }
 
     /**
      * Builds series based on setup file.
      *
      * @param parameters a container of default parameter values
-     * @param settings a container of parsed arguments
      * @return a list of {@link Series} instances
      */
-    ArrayList&lt;Series&gt; buildSeries(Box parameters, MiniBox settings)
-            throws IOException, SAXException {
-<span class="fc" id="L272">        String setupFile = settings.get(&quot;SETUP_FILE&quot;);</span>
-<span class="fc" id="L273">        String snapshotPath = settings.get(&quot;SNAPSHOT_PATH&quot;);</span>
-<span class="fc" id="L274">        boolean isVis = settings.contains(&quot;VIS&quot;);</span>
+    ArrayList&lt;Series&gt; buildSeries(Box parameters) throws IOException, SAXException {
+<span class="fc" id="L273">        String setupFile = settings.get(&quot;SETUP_FILE&quot;);</span>
+<span class="fc" id="L274">        String snapshotPath = settings.get(&quot;SNAPSHOT_PATH&quot;);</span>
+<span class="fc" id="L275">        boolean isVis = settings.contains(&quot;VIS&quot;);</span>
 
-<span class="fc" id="L276">        InputBuilder builder = this.getBuilder();</span>
-<span class="fc bfc" id="L277" title="All 2 branches covered.">        builder.path = snapshotPath.endsWith(&quot;/&quot;) ? snapshotPath : (snapshotPath + &quot;/&quot;);</span>
-<span class="fc" id="L278">        builder.parameters = parameters;</span>
-<span class="fc" id="L279">        builder.isVis = isVis;</span>
+<span class="fc" id="L277">        InputBuilder builder = this.getBuilder();</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">        builder.path = snapshotPath.endsWith(&quot;/&quot;) ? snapshotPath : (snapshotPath + &quot;/&quot;);</span>
+<span class="fc" id="L279">        builder.parameters = parameters;</span>
+<span class="fc" id="L280">        builder.isVis = isVis;</span>
 
-<span class="fc" id="L281">        return builder.build(setupFile);</span>
+<span class="fc" id="L282">        return builder.build(setupFile);</span>
     }
 
     /**
@@ -288,9 +289,8 @@ import arcade.potts.PottsARCADE;
      * valid series in the list are run.
      *
      * @param series the list of {@link Series} instances
-     * @param settings a container of parsed arguments
      */
-    void runSeries(ArrayList&lt;Series&gt; series, MiniBox settings) throws Exception {
+    void runSeries(ArrayList&lt;Series&gt; series) throws Exception {
 <span class="fc" id="L294">        boolean isVis = settings.contains(&quot;VIS&quot;);</span>
 <span class="fc" id="L295">        String loadPath = settings.get(&quot;LOAD_PATH&quot;);</span>
 <span class="fc" id="L296">        boolean loadCells = settings.contains(&quot;LOAD_CELLS&quot;);</span>

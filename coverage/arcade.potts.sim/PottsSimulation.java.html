@@ -278,9 +278,8 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 <span class="fc" id="L278">            series.saver.schedule(schedule, series.getInterval());</span>
         } else {
 <span class="fc" id="L280">            int tick = (int) schedule.getTime() + 1;</span>
-<span class="fc" id="L281">            series.saver.saveCells(tick);</span>
-<span class="fc" id="L282">            series.saver.saveLocations(tick);</span>
+<span class="fc" id="L281">            series.saver.save(tick);</span>
         }
-<span class="fc" id="L284">    }</span>
+<span class="fc" id="L283">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

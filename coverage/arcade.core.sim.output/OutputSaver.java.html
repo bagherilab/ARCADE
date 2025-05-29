@@ -28,13 +28,13 @@ import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
  */
 public abstract class OutputSaver implements Steppable {
     /** Logger for {@code OutputSaver}. */
-<span class="fc" id="L31">    private static final Logger LOGGER = Logger.getLogger(OutputSaver.class.getName());</span>
+<span class="fc" id="L31">    protected static final Logger LOGGER = Logger.getLogger(OutputSaver.class.getName());</span>
 
     /** Number of elements to format in output string. */
-    private static final int FORMAT_ELEMENTS = 6;
+    protected static final int FORMAT_ELEMENTS = 6;
 
     /** JSON representation. */
-    final Gson gson;
+    protected final Gson gson;
 
     /** {@link arcade.core.sim.Series} instance. */
     final Series series;
@@ -43,7 +43,7 @@ public abstract class OutputSaver implements Steppable {
     public String prefix;
 
     /** {@link arcade.core.sim.Simulation} instance. */
-    Simulation sim;
+    protected Simulation sim;
 
     /**
      * Creates an {@code OutputSaver} for the series.
@@ -109,9 +109,18 @@ public abstract class OutputSaver implements Steppable {
     @Override
     public void step(SimState simstate) {
 <span class="fc" id="L111">        int tick = (int) simstate.schedule.getTime();</span>
-<span class="fc" id="L112">        saveCells(tick);</span>
-<span class="fc" id="L113">        saveLocations(tick);</span>
-<span class="fc" id="L114">    }</span>
+<span class="fc" id="L112">        save(tick);</span>
+<span class="fc" id="L113">    }</span>
+
+    /**
+     * Saves the relevant data.
+     *
+     * @param tick the simulation tick
+     */
+    public void save(int tick) {
+<span class="fc" id="L121">        saveCells(tick);</span>
+<span class="fc" id="L122">        saveLocations(tick);</span>
+<span class="fc" id="L123">    }</span>
 
     /**
      * Schedules the saver to take snapshots at the given interval.
@@ -120,8 +129,8 @@ public abstract class OutputSaver implements Steppable {
      * @param interval the interval (in ticks) between snapshots
      */
     public void schedule(Schedule schedule, double interval) {
-<span class="fc" id="L123">        schedule.scheduleRepeating(Schedule.EPOCH, -1, this, interval);</span>
-<span class="fc" id="L124">    }</span>
+<span class="fc" id="L132">        schedule.scheduleRepeating(Schedule.EPOCH, -1, this, interval);</span>
+<span class="fc" id="L133">    }</span>
 
     /**
      * Writes the contents to the given file path.
@@ -132,24 +141,24 @@ public abstract class OutputSaver implements Steppable {
     public void write(String filepath, String contents) {
         try {
             // Get writer
-<span class="fc" id="L135">            File outfile = new File(filepath);</span>
-<span class="fc" id="L136">            FileOutputStream fos = new FileOutputStream(outfile, false);</span>
-<span class="fc" id="L137">            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));</span>
+<span class="fc" id="L144">            File outfile = new File(filepath);</span>
+<span class="fc" id="L145">            FileOutputStream fos = new FileOutputStream(outfile, false);</span>
+<span class="fc" id="L146">            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));</span>
 
             // Write contents
-<span class="fc" id="L140">            bw.write(contents);</span>
+<span class="fc" id="L149">            bw.write(contents);</span>
 
             // Close streams.
-<span class="fc" id="L143">            bw.close();</span>
-<span class="fc" id="L144">            fos.close();</span>
+<span class="fc" id="L152">            bw.close();</span>
+<span class="fc" id="L153">            fos.close();</span>
 
-<span class="fc" id="L146">            LOGGER.info(&quot;file [ &quot; + filepath + &quot; ] successfully written&quot;);</span>
-<span class="fc" id="L147">        } catch (IOException ex) {</span>
-<span class="fc" id="L148">            LOGGER.severe(&quot;error writing [ &quot; + filepath + &quot; ] due to &quot; + ex.getClass().getName());</span>
-<span class="fc" id="L149">            ex.printStackTrace();</span>
-<span class="fc" id="L150">            series.isSkipped = true;</span>
-<span class="fc" id="L151">        }</span>
-<span class="fc" id="L152">    }</span>
+<span class="fc" id="L155">            LOGGER.info(&quot;file [ &quot; + filepath + &quot; ] successfully written&quot;);</span>
+<span class="fc" id="L156">        } catch (IOException ex) {</span>
+<span class="fc" id="L157">            LOGGER.severe(&quot;error writing [ &quot; + filepath + &quot; ] due to &quot; + ex.getClass().getName());</span>
+<span class="fc" id="L158">            ex.printStackTrace();</span>
+<span class="fc" id="L159">            series.isSkipped = true;</span>
+<span class="fc" id="L160">        }</span>
+<span class="fc" id="L161">    }</span>
 
     /**
      * Formats the arrays in the given string.
@@ -162,27 +171,27 @@ public abstract class OutputSaver implements Steppable {
      * @return the formatted string
      */
     protected static String format(String string, int maxElements) {
-<span class="fc" id="L165">        String formatted = string;</span>
+<span class="fc" id="L174">        String formatted = string;</span>
 
-<span class="fc bfc" id="L167" title="All 2 branches covered.">        for (int elements = 1; elements &lt; maxElements + 1; elements++) {</span>
-<span class="fc" id="L168">            String inputPattern =</span>
-<span class="fc" id="L169">                    IntStream.rangeClosed(1, elements)</span>
-<span class="fc" id="L170">                            .mapToObj(Integer::toString)</span>
-<span class="fc" id="L171">                            .map(s -&gt; &quot;([\\-\\d\\.]+)&quot;)</span>
-<span class="fc" id="L172">                            .collect(Collectors.joining(&quot;,\\n[\\s\\t]+&quot;));</span>
-<span class="fc" id="L173">            inputPattern = &quot;\\[\\n[\\s\\t]+&quot; + inputPattern + &quot;\\n[\\s\\t]+\\]&quot;;</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">        for (int elements = 1; elements &lt; maxElements + 1; elements++) {</span>
+<span class="fc" id="L177">            String inputPattern =</span>
+<span class="fc" id="L178">                    IntStream.rangeClosed(1, elements)</span>
+<span class="fc" id="L179">                            .mapToObj(Integer::toString)</span>
+<span class="fc" id="L180">                            .map(s -&gt; &quot;([\\-\\d\\.]+)&quot;)</span>
+<span class="fc" id="L181">                            .collect(Collectors.joining(&quot;,\\n[\\s\\t]+&quot;));</span>
+<span class="fc" id="L182">            inputPattern = &quot;\\[\\n[\\s\\t]+&quot; + inputPattern + &quot;\\n[\\s\\t]+\\]&quot;;</span>
 
-<span class="fc" id="L175">            String outputPattern =</span>
-<span class="fc" id="L176">                    IntStream.rangeClosed(1, elements)</span>
-<span class="fc" id="L177">                            .mapToObj(Integer::toString)</span>
-<span class="fc" id="L178">                            .map(s -&gt; &quot;$&quot; + s)</span>
-<span class="fc" id="L179">                            .collect(Collectors.joining(&quot;, &quot;));</span>
-<span class="fc" id="L180">            outputPattern = &quot;[&quot; + outputPattern + &quot;]&quot;;</span>
+<span class="fc" id="L184">            String outputPattern =</span>
+<span class="fc" id="L185">                    IntStream.rangeClosed(1, elements)</span>
+<span class="fc" id="L186">                            .mapToObj(Integer::toString)</span>
+<span class="fc" id="L187">                            .map(s -&gt; &quot;$&quot; + s)</span>
+<span class="fc" id="L188">                            .collect(Collectors.joining(&quot;, &quot;));</span>
+<span class="fc" id="L189">            outputPattern = &quot;[&quot; + outputPattern + &quot;]&quot;;</span>
 
-<span class="fc" id="L182">            formatted = formatted.replaceAll(inputPattern, outputPattern);</span>
+<span class="fc" id="L191">            formatted = formatted.replaceAll(inputPattern, outputPattern);</span>
         }
 
-<span class="fc" id="L185">        return formatted;</span>
+<span class="fc" id="L194">        return formatted;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

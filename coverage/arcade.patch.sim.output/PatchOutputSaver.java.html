@@ -1,23 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchOutputSaver.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.sim.output</a> &gt; <span class="el_source">PatchOutputSaver.java</span></div><h1>PatchOutputSaver.java</h1><pre class="source lang-java linenums">package arcade.patch.sim.output;
 
 import com.google.gson.Gson;
+import sim.engine.SimState;
+import arcade.core.env.component.Component;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSaver;
+import arcade.patch.env.component.PatchComponentSitesGraph;
+import arcade.patch.sim.PatchSimulation;
 
 /** Custom saver for patch-specific serialization. */
 public final class PatchOutputSaver extends OutputSaver {
+
+    /** {@code true} to save graph components, {@code false} otherwise. */
+    public boolean saveGraph;
+
     /**
      * Creates an {@code PatchOutputSaver} for the series.
      *
      * @param series the simulation series
      */
     public PatchOutputSaver(Series series) {
-<span class="fc" id="L15">        super(series);</span>
-<span class="fc" id="L16">    }</span>
+<span class="fc" id="L23">        super(series);</span>
+<span class="fc" id="L24">    }</span>
 
     @Override
     protected Gson makeGSON() {
-<span class="fc" id="L20">        return PatchOutputSerializer.makeGSON();</span>
+<span class="fc" id="L28">        return PatchOutputSerializer.makeGSON();</span>
     }
+
+    /**
+     * Save a list of {@link arcade.patch.env.component.PatchComponentSitesGraph} to a JSON.
+     *
+     * @param tick the simulation tick
+     */
+    public void saveComponents(int tick) {
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        for (String componentKey : ((PatchSimulation) sim).getComponentKeys()) {</span>
+<span class="nc" id="L38">            Component component = sim.getComponent(componentKey);</span>
+<span class="nc bnc" id="L39" title="All 4 branches missed.">            if (component instanceof PatchComponentSitesGraph &amp;&amp; saveGraph) {</span>
+<span class="nc" id="L40">                String json =</span>
+<span class="nc" id="L41">                        gson.toJson(</span>
+                                (PatchComponentSitesGraph) component,
+                                PatchComponentSitesGraph.class);
+<span class="nc" id="L44">                String path = prefix + String.format(&quot;_%06d.&quot; + componentKey + &quot;.GRAPH.json&quot;, tick);</span>
+<span class="nc" id="L45">                write(path, format(json, FORMAT_ELEMENTS));</span>
+            }
+<span class="nc" id="L47">        }</span>
+<span class="nc" id="L48">    }</span>
+
+    @Override
+    public void save(int tick) {
+<span class="fc" id="L52">        super.save(tick);</span>
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">        if (saveGraph) {</span>
+<span class="nc" id="L54">            saveComponents(tick);</span>
+        }
+<span class="fc" id="L56">    }</span>
+
+    @Override
+    public void step(SimState simstate) {
+<span class="fc" id="L60">        super.step(simstate);</span>
+<span class="fc" id="L61">        int tick = (int) simstate.schedule.getTime();</span>
+<span class="fc" id="L62">        save(tick);</span>
+<span class="fc" id="L63">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

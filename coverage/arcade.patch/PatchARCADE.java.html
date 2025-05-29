@@ -31,7 +31,9 @@ public final class PatchARCADE extends ARCADE {
 
     @Override
     public OutputSaver getSaver(Series series) {
-<span class="fc" id="L34">        return new PatchOutputSaver(series);</span>
+<span class="fc" id="L34">        PatchOutputSaver saver = new PatchOutputSaver(series);</span>
+<span class="fc" id="L35">        saver.saveGraph = settings.contains(&quot;SAVE_GRAPH&quot;);</span>
+<span class="fc" id="L36">        return saver;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
