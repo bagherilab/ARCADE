@@ -214,5 +214,10 @@ public abstract class PatchLattice implements Lattice {
         if (operations.containsKey(Category.DIFFUSER)) {
             operations.get(Category.DIFFUSER).step(simstate.random, sim);
         }
+
+        // Step decayer operation, if it exists.
+        if (operations.containsKey(Category.DECAYER)) {
+            operations.get(Category.DECAYER).step(simstate.random, sim);
+        }
     }
 }
