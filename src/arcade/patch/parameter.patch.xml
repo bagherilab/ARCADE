@@ -108,6 +108,9 @@
     <layer.operation operation="generator" id="CONCENTRATION" value="1.0" units="(variable)" description="maximum concentration" />
     <layer.operation operation="generator" id="PERMEABILITY" value="100.0" units="(variable)" description="molecule permeability" />
 
+    <!-- decayer operation parameters -->
+    <layer.operation operation="decayer" id="DECAY_RATE" value="1E-4" units="1/min" description="decay rate of molecule" />
+
     <!-- ACTIONS =========================================================== -->
 
     <!-- insert action parameters -->
