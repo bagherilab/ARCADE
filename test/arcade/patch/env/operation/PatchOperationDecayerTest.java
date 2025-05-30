@@ -1,6 +1,6 @@
 package arcade.patch.env.operation;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.MiniBox;
@@ -10,14 +10,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class PatchOperationDecayerTest {
-    PatchLattice latticeMock;
-    PatchSimulation simMock;
-    MersenneTwisterFast randomMock;
+    static PatchLattice latticeMock;
 
-    @BeforeEach
-    public void setUp() {
+    static PatchSimulation simMock;
+
+    static MersenneTwisterFast randomMock;
+
+    @BeforeAll
+    public static void setUpMocks() {
         latticeMock = mock(PatchLattice.class);
-
         simMock = mock(PatchSimulation.class);
         randomMock = mock(MersenneTwisterFast.class);
     }
