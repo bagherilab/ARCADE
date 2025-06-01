@@ -10,7 +10,7 @@ import arcade.patch.agent.cell.PatchCell;
  *
  * <p>The {@code PatchProcessSensingSimple} process adds VEGF to the environment, based on the
  * energy level of the cell. If a cell's energy is below 0 (energy-deficient and quiescent), VEGF is
- * added to the environment at the rate specified by the input parameter SECRETION_RATE.
+ * added to the environment at the rate specified by the input parameter VEGF_SECRETION_RATE.
  */
 public class PatchProcessSensingSimple extends PatchProcessSensing {
 
@@ -25,7 +25,7 @@ public class PatchProcessSensingSimple extends PatchProcessSensing {
      * <p>Loaded parameters include:
      *
      * <ul>
-     *   <li>{@code SECRETION_RATE} = rate of secretion of VEGF
+     *   <li>{@code VEGF_SECRETION_RATE} = rate of secretion of VEGF
      * </ul>
      *
      * @param cell the {@link PatchCell} the process is associated with
