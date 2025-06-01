@@ -39,8 +39,8 @@ public class PatchProcessSensingSimple extends PatchProcessSensing {
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
         if (cell.getEnergy() < 0) {
-            Double VEGF = sim.getLattice("VEGF").getAverageValue(location);
-            Double newVEGF = VEGF + secretionRate;
+            Double currVEGF = sim.getLattice("VEGF").getAverageValue(location);
+            Double newVEGF = currVEGF + secretionRate;
             sim.getLattice("VEGF").setValue(location, newVEGF);
         }
     }
