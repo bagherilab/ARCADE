@@ -31,7 +31,7 @@ public abstract class PatchProcessSensing extends PatchProcess {
     public static PatchProcess make(PatchCell cell, String version) {
         switch (version.toUpperCase()) {
             case "SIMPLE":
-                return new PatchProcessSignalingRandom(cell);
+                return new PatchProcessSensingSimple(cell);
             default:
                 return null;
         }
