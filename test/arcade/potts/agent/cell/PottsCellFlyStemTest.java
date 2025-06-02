@@ -6,6 +6,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
+import arcade.core.util.Vector;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.util.PottsEnums.State;
 import static org.junit.jupiter.api.Assertions.*;
@@ -141,9 +142,18 @@ public class PottsCellFlyStemTest {
     }
 
     @Test
-    void setStateModule_calledProliferative_createsProliferationModule() {
+    void make_noDaughterCellCriticalVolume_throwsUnsupportedOperationException() {
         doReturn("fly-stem-wt").when(parametersMock).getString("CLASS");
-        System.out.println("here");
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(baseContainer, locationMock, parametersMock, links);
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> cell.make(cellID, State.PROLIFERATIVE, random));
+    }
+
+    @Test
+    void setStateModule_called_createsProliferationModuleOrSetsNull() {
+        doReturn("fly-stem-wt").when(parametersMock).getString("CLASS");
         PottsCellFlyStem cell =
                 new PottsCellFlyStem(baseContainer, locationMock, parametersMock, links);
         for (State state : State.values()) {
@@ -163,5 +173,23 @@ public class PottsCellFlyStemTest {
         doReturn("fly-stem-mudmut").when(parametersMock).getString("CLASS");
         cell = new PottsCellFlyStem(baseContainer, locationMock, parametersMock, links);
         assertEquals(PottsCellFlyStem.StemType.MUDMUT, cell.getStemType());
+    }
+
+    @Test
+    void getApicalAxis_notSet_returnsDefault() {
+        doReturn("fly-stem-wt").when(parametersMock).getString("CLASS");
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(baseContainer, locationMock, parametersMock, links);
+        assertEquals(new Vector(0, 1, 0), cell.getApicalAxis());
+    }
+
+    @Test
+    void getApicalAxis_set_returnsStoredAxis() {
+        doReturn("fly-stem-wt").when(parametersMock).getString("CLASS");
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(baseContainer, locationMock, parametersMock, links);
+        Vector custom = new Vector(1, 2, 3);
+        cell.setApicalAxis(custom);
+        assertEquals(custom, cell.getApicalAxis());
     }
 }

@@ -10,10 +10,10 @@ import arcade.core.util.Plane;
 import arcade.core.util.Vector;
 import arcade.core.util.distributions.Distribution;
 import arcade.core.util.distributions.NormalDistribution;
+import arcade.core.util.distributions.UniformDistribution;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.agent.cell.PottsCellFlyStem;
-import arcade.potts.agent.cell.PottsCellFlyStem.StemType;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
@@ -133,7 +133,8 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
             case "volume":
                 return getSmallerLocation(parentLoc, daughterLoc);
             case "location":
-                return getBasalLocation(parentLoc, daughterLoc);
+                return getBasalLocation(
+                        parentLoc, daughterLoc, ((PottsCellFlyStem) cell).getApicalAxis());
             default:
                 throw new IllegalArgumentException(
                         "Invalid differentiation ruleset: " + differentiationRuleset);
@@ -221,20 +222,6 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
                         cell.getApicalAxis(),
                         Direction.XY_PLANE.vector,
                         StemType.MUDMUT.splitDirectionRotation);
-        System.out.println(
-                "Cell apical axis = "
-                        + cell.getApicalAxis().getX()
-                        + ","
-                        + cell.getApicalAxis().getY()
-                        + ","
-                        + cell.getApicalAxis().getZ());
-        System.out.println(
-                "Default Normal = "
-                        + defaultNormal.getX()
-                        + ","
-                        + defaultNormal.getY()
-                        + ","
-                        + defaultNormal.getZ());
         Voxel splitVoxel = getCellSplitVoxel(StemType.MUDMUT, cell);
         return new Plane(new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), defaultNormal);
     }
@@ -251,6 +238,10 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
     public Vector getDaughterCellApicalAxis(MersenneTwisterFast random) {
         switch (apicalAxisRuleset) {
             case "uniform":
+                if (!(apicalAxisRotationDistribution instanceof UniformDistribution)) {
+                    throw new IllegalArgumentException(
+                            "apicalAxisRotationDistribution must be a UniformDistribution under the uniform apical axis ruleset.");
+                }
                 Vector newRandomApicalAxis =
                         Vector.rotateVectorAroundAxis(
                                 ((PottsCellFlyStem) cell).getApicalAxis(),
@@ -260,19 +251,16 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
             case "global":
                 return ((PottsCellFlyStem) cell).getApicalAxis();
             case "rotation":
-                // double daughterApicalRotation =
-                //         ((NormalDistribution)
-                //                         cell.getParameters()
-                //                                 .getDistribution(
-                //
-                // "proliferation/DIV_ROTATION_DISTRIBUTION"))
-                //                 .nextDouble();
-                // Vector newRotatedApicalAxis =
-                //         Vector.rotateVectorAroundAxis(
-                //                 ((PottsCellFlyStem) cell).getApicalAxis(),
-                //                 Direction.XY_PLANE.vector,
-                //                 daughterApicalRotation);
-                // return newRotatedApicalAxis;
+                if (!(apicalAxisRotationDistribution instanceof NormalDistribution)) {
+                    throw new IllegalArgumentException(
+                            "apicalAxisRotationDistribution must be a NormalDistribution under the rotation apical axis ruleset.");
+                }
+                Vector newRotatedApicalAxis =
+                        Vector.rotateVectorAroundAxis(
+                                ((PottsCellFlyStem) cell).getApicalAxis(),
+                                Direction.XY_PLANE.vector,
+                                apicalAxisRotationDistribution.nextDouble());
+                return newRotatedApicalAxis;
             default:
                 throw new IllegalArgumentException(
                         "Invalid apical axis ruleset: " + apicalAxisRuleset);
@@ -285,11 +273,12 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
      * @param cell the {@link PottsCellFlyStem} to get the division location for
      * @return the voxel location where the cell will split
      */
-    public static Voxel getCellSplitVoxel(StemType stemType, PottsCell cell) {
+    public static Voxel getCellSplitVoxel(StemType stemType, PottsCellFlyStem cell) {
         ArrayList<Integer> splitOffsetPercent = new ArrayList<>();
         splitOffsetPercent.add(stemType.splitOffsetPercentX);
         splitOffsetPercent.add(stemType.splitOffsetPercentY);
-        return ((PottsLocation) cell.getLocation()).getOffset(splitOffsetPercent);
+        return ((PottsLocation2D) cell.getLocation())
+                .getOffsetInApicalFrame2D(splitOffsetPercent, cell.getApicalAxis());
     }
 
     /**
@@ -304,13 +293,23 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
     }
 
     /**
-     * Gets the location with the lower centroid and returns it.
+     * Gets the location that is lower along the apical axis.
      *
-     * @param loc1 {@link PottsLocation} to compare to location2.
-     * @param loc2 {@link PottsLocation} to compare to location1.
-     * @return the basal location.
+     * @param loc1 {@link PottsLocation} to compare.
+     * @param loc2 {@link PottsLocation} to compare.
+     * @param apicalAxis Unit {@link Vector} defining the apical-basal direction.
+     * @return the basal location (lower along the apical axis).
      */
-    public static PottsLocation getBasalLocation(PottsLocation loc1, PottsLocation loc2) {
-        return (loc1.getCentroid()[1] > loc2.getCentroid()[1]) ? loc1 : loc2;
+    public static PottsLocation getBasalLocation(
+            PottsLocation loc1, PottsLocation loc2, Vector apicalAxis) {
+        double[] centroid1 = loc1.getCentroid();
+        double[] centroid2 = loc2.getCentroid();
+        Vector c1 = new Vector(centroid1[0], centroid1[1], centroid1.length > 2 ? centroid1[2] : 0);
+        Vector c2 = new Vector(centroid2[0], centroid2[1], centroid2.length > 2 ? centroid2[2] : 0);
+
+        double proj1 = Vector.dotProduct(c1, apicalAxis);
+        double proj2 = Vector.dotProduct(c2, apicalAxis);
+
+        return (proj1 < proj2) ? loc2 : loc1; // higher projection = more basal
     }
 }

@@ -87,16 +87,6 @@ public class PottsCellFlyStem extends PottsCell {
     }
 
     public void setApicalAxis(Vector apicalAxis) {
-        // print apical axis to stdout
-        System.out.println(
-                "Cell "
-                        + id
-                        + " apical axis = "
-                        + apicalAxis.getX()
-                        + ","
-                        + apicalAxis.getY()
-                        + ","
-                        + apicalAxis.getZ());
         this.apicalAxis = apicalAxis;
     }
 
@@ -120,7 +110,6 @@ public class PottsCellFlyStem extends PottsCell {
                 "make(int, CellState, MersenneTwisterFast) not supported. Please use make(int, CellState, MersenneTwisterFast, int, double) instead.");
     }
 
-    // TODO: Write a better test for this function
     public PottsCellContainer make(
             int newID,
             CellState newState,
