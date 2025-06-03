@@ -133,6 +133,7 @@ public class PatchActionTreatTest {
 
     @Test
     public void step_called_addsObjectsToSim() throws NoSuchFieldException, IllegalAccessException {
+        when(parameters.getInt("MAX_DENSITY")).thenReturn(54);
         action = new PatchActionTreat(series, parameters);
 
         ArrayList<MiniBox> populations = new ArrayList<>();
@@ -153,6 +154,7 @@ public class PatchActionTreatTest {
     @Test
     public void step_zeroDose_doesNotAddObjects()
             throws NoSuchFieldException, IllegalAccessException {
+        when(parameters.getInt("MAX_DENSITY")).thenReturn(54);
         when(parameters.getInt("DOSE")).thenReturn(0);
         action = new PatchActionTreat(series, parameters);
 
@@ -196,10 +198,8 @@ public class PatchActionTreatTest {
     @Test
     public void checkLocation_maxConfluency_returnsUnavailable()
             throws NoSuchFieldException, IllegalAccessException {
+        when(parameters.getInt("MAX_DENSITY")).thenReturn(1);
         action = new PatchActionTreat(series, parameters);
-        Field density = PatchActionTreat.class.getDeclaredField("maxConfluency");
-        density.setAccessible(true);
-        density.set(action, 1);
 
         ArrayList<MiniBox> populations = new ArrayList<>();
         MiniBox populationMock = mock(MiniBox.class);
