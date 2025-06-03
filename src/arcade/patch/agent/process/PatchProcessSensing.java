@@ -9,9 +9,6 @@ import arcade.patch.agent.cell.PatchCell;
  * based on cell state or environmental conditions.
  */
 public abstract class PatchProcessSensing extends PatchProcess {
-    /** Step size for process [sec]. */
-    static final double STEP_SIZE = 1.0;
-
     /**
      * Creates a signaling {@link PatchProcessSensing} for the given cell.
      *
