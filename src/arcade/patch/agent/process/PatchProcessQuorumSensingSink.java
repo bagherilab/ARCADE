@@ -72,7 +72,9 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
                         double[] dydt = new double[NUM_COMPONENTS];
 
                         dydt[ACTIVATION] =
-                                (((PatchCellCART) cell).getActivationStatus() ? 1 : 0) * K_ACTIVE_EXPRESS_ACCELERATED * boundCAR
+                                (((PatchCellCART) cell).getActivationStatus() ? 1 : 0)
+                                                * K_ACTIVE_EXPRESS_ACCELERATED
+                                                * boundCAR
                                         + K_ACTIVE_EXPRESS * boundCAR
                                         - K_ACTIVE_DEGRADE * y[ACTIVATION];
 
@@ -104,8 +106,8 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
                         * 1E15
                         * 1E6
                         / (cell.getVolume() * 6.022E23);
-        //TODO: I added a fudge factor of 1E4 in here to get the correct number of CARS
-        //TODO: this will probably need to be a hill function
+        // TODO: I added a fudge factor of 1E4 in here to get the correct number of CARS
+        // TODO: this will probably need to be a hill function
         int numCars = (int) (1E6 * concs[CAR] * cell.getVolume() * 6.022E23 / (1E6 * 1E15));
 
         ((PatchCellCART) cell).setCars(numCars);
