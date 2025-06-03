@@ -25,7 +25,6 @@
     <population id="MAX_DENSITY" value="-1" description="maximum amount of cells in location, -1 means no limit" />
     <population id="ACCURACY" value="0.8" description="accuracy to select highest glucose concentration in future location" />
     <population id="AFFINITY" value="0.5" description="movement toward center affinity when selecting future location" />
-    <population id="MAX_DENSITY" value="54" description="maximum amount of cells in location, -1 means no limit" />
 
     <!-- CAR T specific parameters -->
     <population id="ANERGIC_FRACTION" value="0.5" description="fraction of anergic cells that become apoptotic" />
