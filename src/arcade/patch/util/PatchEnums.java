@@ -136,7 +136,7 @@ public final class PatchEnums {
         /** Code for signaling domain. */
         SIGNALING,
 
-        /** COde for sensing domain. */
+        /** Code for sensing domain. */
         SENSING;
 
         /**
