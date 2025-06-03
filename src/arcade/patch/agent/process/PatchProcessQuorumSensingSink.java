@@ -15,7 +15,7 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
     private static final double K_AUX_DEGRADE = 20.0 / (1E3 * 3600);
 
     /** Rate of CAR expression[/sec/step/divider] */
-    private static final double K_CAR_EXPRESS = 0.8 / (1E3 * 3600);
+    private static final double K_CAR_EXPRESS = 1000 * 0.8 / (1E3 * 3600);
 
     /** Rate of degradation of CAR [/sec/step/divider] */
     private static final double K_CAR_DEGRADE = 0.2 / (1E3 * 3600);
@@ -72,7 +72,7 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
                         double[] dydt = new double[NUM_COMPONENTS];
 
                         dydt[ACTIVATION] =
-                                K_ACTIVE_EXPRESS_ACCELERATED * boundCAR
+                                (((PatchCellCART) cell).getActivationStatus() ? 1 : 0) * K_ACTIVE_EXPRESS_ACCELERATED * boundCAR
                                         + K_ACTIVE_EXPRESS * boundCAR
                                         - K_ACTIVE_DEGRADE * y[ACTIVATION];
 
@@ -104,8 +104,9 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
                         * 1E15
                         * 1E6
                         / (cell.getVolume() * 6.022E23);
-
-        int numCars = (int) (concs[CAR] * cell.getVolume() * 6.022E23 / (1E6 * 1E15));
+        //TODO: I added a fudge factor of 1E4 in here to get the correct number of CARS
+        //TODO: this will probably need to be a hill function
+        int numCars = (int) (1E6 * concs[CAR] * cell.getVolume() * 6.022E23 / (1E6 * 1E15));
 
         ((PatchCellCART) cell).setCars(numCars);
     }

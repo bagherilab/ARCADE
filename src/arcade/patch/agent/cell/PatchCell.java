@@ -357,6 +357,7 @@ public abstract class PatchCell implements Cell {
 
         switch ((State) state) {
             case PROLIFERATIVE:
+            case PROLIFERATIVE_ACTIVE:
                 module = new PatchModuleProliferation(this);
                 break;
             case MIGRATORY:
@@ -482,8 +483,8 @@ public abstract class PatchCell implements Cell {
     public Bag findFreeLocations(Simulation sim) {
         Bag freeLocations = new Bag();
         PatchLocation currentLocation = this.location;
-        double targetVolume = (state == State.PROLIFERATIVE) ? volume * 0.5 : volume;
-        int densityAdjustment = (state == State.PROLIFERATIVE) ? 1 : 0;
+        double targetVolume = (state == State.PROLIFERATIVE || state == State.PROLIFERATIVE_ACTIVE) ? volume * 0.5 : volume;
+        int densityAdjustment = (state == State.PROLIFERATIVE || state == State.PROLIFERATIVE_ACTIVE) ? 1 : 0;
 
         boolean available = false;
         if (this instanceof PatchCellMacrophage) {

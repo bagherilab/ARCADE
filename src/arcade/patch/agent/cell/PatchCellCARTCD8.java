@@ -152,7 +152,7 @@ public class PatchCellCARTCD8 extends PatchCellCART {
                     // Check activation status. If cell has been activated before,
                     // it will proliferate. If not, it will migrate.
                     if (activated) {
-                        super.setState(State.PROLIFERATIVE);
+                        super.setState(State.PROLIFERATIVE_ACTIVE);
                     } else {
                         if (simstate.random.nextDouble() > super.proliferativeFraction) {
                             super.setState(State.MIGRATORY);

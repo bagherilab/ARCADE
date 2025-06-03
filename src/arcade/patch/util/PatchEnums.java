@@ -81,6 +81,8 @@ public final class PatchEnums {
         /** Code for proliferative cells. */
         PROLIFERATIVE,
 
+        PROLIFERATIVE_ACTIVE,
+
         /** Code for migratory cells. */
         MIGRATORY,
 

@@ -11,7 +11,7 @@ import arcade.patch.agent.cell.PatchCellMacrophage;
 public class PatchProcessQuorumSensingSource extends PatchProcessQuorumSensing {
 
     /** Rate of auxin expression[/min/step/divider] */
-    private static final double K_AUX_EXPRESS = 4.18 / (3600);
+    private static final double K_AUX_EXPRESS = 50 * 4.18 / (3600);
 
     /** Rate of degradation of auxin [/sec/step/divider] */
     private static final double K_AUX_DEGRADE = 20.0 / (1E3 * 3600);

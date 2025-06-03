@@ -177,7 +177,7 @@ public abstract class PatchProcessMetabolism extends PatchProcess {
         updateExternal(sim);
 
         // Check cell state.
-        isProliferative = cell.getState() == State.PROLIFERATIVE;
+        isProliferative = cell.getState() == State.PROLIFERATIVE || cell.getState() == State.PROLIFERATIVE_ACTIVE;
         isMigratory = cell.getState() == State.MIGRATORY;
 
         // Calculate energy consumption.

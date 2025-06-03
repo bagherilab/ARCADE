@@ -129,6 +129,10 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
         // floor small values to 0 to prevent underflow
         auxinConcLocation = auxinConcLocation > 1E-10 ? auxinConcLocation : 0;
 
+        if (auxinConcLocation > 0){
+            int a = 0;
+        }
+
         sim.getLattice("AUXIN").setValue(loc, auxinConcLocation);
     }
 
