@@ -140,73 +140,67 @@ public class PatchActionTreat implements Action {
         }
 
         // Find sites without specified level of damage based on component type.
-        switch (type) {
-            case "source":
-            case "pattern":
-                double[][][] damage;
-                boolean[][][] sitesLat;
+        if (type.equals("graph")) {
+            Graph graph = ((PatchComponentSitesGraph) comp).getGraph();
+            Bag allEdges = new Bag(graph.getAllEdges());
+            PatchComponentSitesGraph graphSites = (PatchComponentSitesGraph) comp;
 
-                if (type.equals("source")) {
-                    damage = ((PatchComponentSitesSource) comp).getDamage();
-                    sitesLat = ((PatchComponentSitesSource) comp).getSources();
+            for (Object edgeObj : allEdges) {
+                SiteEdge edge = (SiteEdge) edgeObj;
+                Bag allEdgeLocs = new Bag();
+                if (Objects.equals(coord, "Hex")) {
+                    allEdgeLocs.add(
+                            ((PatchComponentSitesGraphTri) graphSites)
+                                    .getSpan(edge.getFrom(), edge.getTo()));
                 } else {
-                    damage = ((PatchComponentSitesPattern) comp).getDamage();
-                    sitesLat = ((PatchComponentSitesPattern) comp).getPatterns();
+                    allEdgeLocs.add(
+                            ((PatchComponentSitesGraphRect) graphSites)
+                                    .getSpan(edge.getFrom(), edge.getTo()));
                 }
 
-                // Iterate through list of locations and remove locations not next to a site.
-                for (LocationContainer l : locs) {
-                    PatchLocationContainer contain = (PatchLocationContainer) l;
-                    PatchLocation loc =
-                            (PatchLocation)
-                                    contain.convert(
-                                            sim.locationFactory,
-                                            sim.cellFactory.createCellForPopulation(
-                                                    0, populations.get(0).getInt("CODE")));
-                    CoordinateXYZ coordinate = (CoordinateXYZ) loc.getSubcoordinate();
-                    int z = coordinate.z;
-                    if (sitesLat[z][coordinate.x][coordinate.y]
-                            && damage[z][coordinate.x][coordinate.y] <= this.maxDamage) {
-                        addLocationsIntoList(grid, loc, siteLocs0, siteLocs1, siteLocs2, siteLocs3);
-                    }
-                }
-                break;
-
-            case "graph":
-                Graph graph = ((PatchComponentSitesGraph) comp).getGraph();
-                Bag allEdges = new Bag(graph.getAllEdges());
-                PatchComponentSitesGraph graphSites = (PatchComponentSitesGraph) comp;
-
-                for (Object edgeObj : allEdges) {
-                    SiteEdge edge = (SiteEdge) edgeObj;
-                    Bag allEdgeLocs = new Bag();
-                    if (Objects.equals(coord, "Hex")) {
-                        allEdgeLocs.add(
-                                ((PatchComponentSitesGraphTri) graphSites)
-                                        .getSpan(edge.getFrom(), edge.getTo()));
-                    } else {
-                        allEdgeLocs.add(
-                                ((PatchComponentSitesGraphRect) graphSites)
-                                        .getSpan(edge.getFrom(), edge.getTo()));
-                    }
-
-                    for (Object locObj : allEdgeLocs) {
-                        Location loc = (Location) locObj;
-                        if (locs.contains(loc)) {
-                            if (edge.getRadius() >= minDamageRadius) {
-                                addLocationsIntoList(
-                                        grid, loc, siteLocs0, siteLocs1, siteLocs2, siteLocs3);
-                            }
+                for (Object locObj : allEdgeLocs) {
+                    Location loc = (Location) locObj;
+                    if (locs.contains(loc)) {
+                        if (edge.getRadius() >= minDamageRadius) {
+                            addLocationsIntoList(
+                                    grid, loc, siteLocs0, siteLocs1, siteLocs2, siteLocs3);
                         }
                     }
                 }
-                break;
+            }
+        } else if (type.equals("source") || type.equals("pattern")) {
+            double[][][] damage;
+            boolean[][][] sitesLat;
 
-            default:
-                throw new IllegalArgumentException(
-                        "Invalid component type: "
-                                + type
-                                + ". Must be of type source, pattern, or graph.");
+            if (type.equals("source")) {
+                damage = ((PatchComponentSitesSource) comp).getDamage();
+                sitesLat = ((PatchComponentSitesSource) comp).getSources();
+            } else {
+                damage = ((PatchComponentSitesPattern) comp).getDamage();
+                sitesLat = ((PatchComponentSitesPattern) comp).getPatterns();
+            }
+
+            // Iterate through list of locations and remove locations not next to a site.
+            for (LocationContainer l : locs) {
+                PatchLocationContainer contain = (PatchLocationContainer) l;
+                PatchLocation loc =
+                        (PatchLocation)
+                                contain.convert(
+                                        sim.locationFactory,
+                                        sim.cellFactory.createCellForPopulation(
+                                                0, populations.get(0).getInt("CODE")));
+                CoordinateXYZ coordinate = (CoordinateXYZ) loc.getSubcoordinate();
+                int z = coordinate.z;
+                if (sitesLat[z][coordinate.x][coordinate.y]
+                        && damage[z][coordinate.x][coordinate.y] <= this.maxDamage) {
+                    addLocationsIntoList(grid, loc, siteLocs0, siteLocs1, siteLocs2, siteLocs3);
+                }
+            }
+        } else {
+            throw new IllegalArgumentException(
+                    "Invalid component type: "
+                            + type
+                            + ". Must be of type source, pattern, or graph.");
         }
 
         Utilities.shuffleList(siteLocs3, sim.random);
