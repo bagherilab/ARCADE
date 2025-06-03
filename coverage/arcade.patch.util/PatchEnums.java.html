@@ -134,7 +134,10 @@ public final class PatchEnums {
 <span class="fc" id="L134">        INFLAMMATION,</span>
 
         /** Code for signaling domain. */
-<span class="fc" id="L137">        SIGNALING;</span>
+<span class="fc" id="L137">        SIGNALING,</span>
+
+        /** Code for sensing domain. */
+<span class="fc" id="L140">        SENSING;</span>
 
         /**
          * Randomly selects a {@code Domain}.
@@ -143,20 +146,20 @@ public final class PatchEnums {
          * @return a random {@code Domain}
          */
         public static Domain random(MersenneTwisterFast rng) {
-<span class="fc" id="L146">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+<span class="fc" id="L149">            return values()[rng.nextInt(values().length - 1) + 1];</span>
         }
     }
 
     /** State change flags for patch simulations. */
-<span class="fc" id="L151">    public enum Flag {</span>
+<span class="fc" id="L154">    public enum Flag {</span>
         /** Code for undefined flag. */
-<span class="fc" id="L153">        UNDEFINED,</span>
+<span class="fc" id="L156">        UNDEFINED,</span>
 
         /** Code for proliferative flag. */
-<span class="fc" id="L156">        PROLIFERATIVE,</span>
+<span class="fc" id="L159">        PROLIFERATIVE,</span>
 
         /** Code for migratory flag. */
-<span class="fc" id="L159">        MIGRATORY;</span>
+<span class="fc" id="L162">        MIGRATORY;</span>
 
         /**
          * Randomly selects a {@code Flag}.
@@ -165,26 +168,26 @@ public final class PatchEnums {
          * @return a random {@code Flag}
          */
         public static Flag random(MersenneTwisterFast rng) {
-<span class="fc" id="L168">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+<span class="fc" id="L171">            return values()[rng.nextInt(values().length - 1) + 1];</span>
         }
     }
 
     /** Antigen binding for CART simulations. */
-<span class="fc" id="L173">    public enum AntigenFlag {</span>
+<span class="fc" id="L176">    public enum AntigenFlag {</span>
         /** Code for undefined flag. */
-<span class="fc" id="L175">        UNDEFINED,</span>
+<span class="fc" id="L178">        UNDEFINED,</span>
 
         /** Code for cell bound to antigen. */
-<span class="fc" id="L178">        BOUND_ANTIGEN,</span>
+<span class="fc" id="L181">        BOUND_ANTIGEN,</span>
 
         /** Code for cell bound to self. */
-<span class="fc" id="L181">        BOUND_CELL_RECEPTOR,</span>
+<span class="fc" id="L184">        BOUND_CELL_RECEPTOR,</span>
 
         /** Code for cell bound to self and antigen. */
-<span class="fc" id="L184">        BOUND_ANTIGEN_CELL_RECEPTOR,</span>
+<span class="fc" id="L187">        BOUND_ANTIGEN_CELL_RECEPTOR,</span>
 
         /** Code for cell bound to nothing. */
-<span class="fc" id="L187">        UNBOUND;</span>
+<span class="fc" id="L190">        UNBOUND;</span>
 
         /**
          * Randomly selects a {@code AntigenFlag}.
@@ -193,20 +196,20 @@ public final class PatchEnums {
          * @return a random {@code AntigenFlag}
          */
         public static AntigenFlag random(MersenneTwisterFast rng) {
-<span class="fc" id="L196">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+<span class="fc" id="L199">            return values()[rng.nextInt(values().length - 1) + 1];</span>
         }
     }
 
     /** Operation category codes for patch simulations. */
-<span class="fc" id="L201">    public enum Category implements OperationCategory {</span>
+<span class="fc" id="L204">    public enum Category implements OperationCategory {</span>
         /** Code for undefined category. */
-<span class="fc" id="L203">        UNDEFINED,</span>
+<span class="fc" id="L206">        UNDEFINED,</span>
 
         /** Code for metabolism category. */
-<span class="fc" id="L206">        DIFFUSER,</span>
+<span class="fc" id="L209">        DIFFUSER,</span>
 
         /** Code for signaling category. */
-<span class="fc" id="L209">        GENERATOR;</span>
+<span class="fc" id="L212">        GENERATOR;</span>
 
         /**
          * Randomly selects a {@code Category}.
@@ -215,7 +218,7 @@ public final class PatchEnums {
          * @return a random {@code Operation}
          */
         public static Category random(MersenneTwisterFast rng) {
-<span class="fc" id="L218">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+<span class="fc" id="L221">            return values()[rng.nextInt(values().length - 1) + 1];</span>
         }
     }
 }
