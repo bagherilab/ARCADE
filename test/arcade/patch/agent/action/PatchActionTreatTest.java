@@ -173,6 +173,7 @@ public class PatchActionTreatTest {
     @Test
     public void checkLocationSpace_withEmptySpaces_returnsAvailable()
             throws NoSuchFieldException, IllegalAccessException {
+        when(parameters.getInt("MAX_DENSITY")).thenReturn(54);
         action = new PatchActionTreat(series, parameters);
         ArrayList<MiniBox> populations = new ArrayList<>();
         MiniBox populationMock = mock(MiniBox.class);
