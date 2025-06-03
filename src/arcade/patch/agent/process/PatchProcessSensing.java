@@ -13,7 +13,7 @@ public abstract class PatchProcessSensing extends PatchProcess {
     static final double STEP_SIZE = 1.0;
 
     /**
-     * Creates a signaling {@link PatchProcess} for the given cell.
+     * Creates a signaling {@link PatchProcessSensing} for the given cell.
      *
      * @param cell the {@link PatchCell} the process is associated with
      */
