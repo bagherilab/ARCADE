@@ -1,6 +1,7 @@
 package arcade.patch.agent.action;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Objects;
 import sim.engine.Schedule;
 import sim.engine.SimState;
@@ -123,11 +124,6 @@ public class PatchActionTreat implements Action {
         PatchComponentSites comp = (PatchComponentSites) sim.getComponent("SITES");
 
         ArrayList<LocationContainer> locs = sim.getLocations();
-
-        ArrayList<Location> siteLocs0 = new ArrayList<Location>();
-        ArrayList<Location> siteLocs1 = new ArrayList<Location>();
-        ArrayList<Location> siteLocs2 = new ArrayList<Location>();
-        ArrayList<Location> siteLocs3 = new ArrayList<Location>();
         ArrayList<Location> siteLocs = new ArrayList<Location>();
 
         // Determine type of sites component implemented.
@@ -162,8 +158,9 @@ public class PatchActionTreat implements Action {
                     Location loc = (Location) locObj;
                     if (locs.contains(loc)) {
                         if (edge.getRadius() >= minDamageRadius) {
-                            addLocationsIntoList(
-                                    grid, loc, siteLocs0, siteLocs1, siteLocs2, siteLocs3);
+                            for (int p = 0; p < latPositions; p++) {
+                                siteLocs.add(loc);
+                            }
                         }
                     }
                 }
@@ -193,7 +190,9 @@ public class PatchActionTreat implements Action {
                 int z = coordinate.z;
                 if (sitesLat[z][coordinate.x][coordinate.y]
                         && damage[z][coordinate.x][coordinate.y] <= this.maxDamage) {
-                    addLocationsIntoList(grid, loc, siteLocs0, siteLocs1, siteLocs2, siteLocs3);
+                    for (int p = 0; p < latPositions; p++) {
+                        siteLocs.add(loc);
+                    }
                 }
             }
         } else {
@@ -203,58 +202,23 @@ public class PatchActionTreat implements Action {
                             + ". Must be of type source, pattern, or graph.");
         }
 
-        Utilities.shuffleList(siteLocs3, sim.random);
-        Utilities.shuffleList(siteLocs2, sim.random);
-        Utilities.shuffleList(siteLocs1, sim.random);
-        Utilities.shuffleList(siteLocs0, sim.random);
-        siteLocs.addAll(siteLocs3);
-        siteLocs.addAll(siteLocs2);
-        siteLocs.addAll(siteLocs1);
-        siteLocs.addAll(siteLocs0);
+        Utilities.shuffleList(siteLocs, sim.random);
+        // sort locations in descending order from highest to lowest density
+        siteLocs.sort(Comparator.comparingInt(l -> -computeDensity(grid, l)));
         insert(siteLocs, simstate);
     }
 
     /**
-     * Helper method to sort locations into lists.
+     * Helper method to sort locations.
      *
      * @param grid the simulation grid
-     * @param loc the current location being looked at
-     * @param siteLocs0 the list of locations with 0 agents
-     * @param siteLocs1 the list of locations with 1 agent
-     * @param siteLocs2 the list of locations with 2 agents
-     * @param siteLocs3 the list of locations with 3 agents
+     * @param loc the current location being looked
+     * @return the density of agents at the location
      */
-    private void addLocationsIntoList(
-            PatchGrid grid,
-            Location loc,
-            ArrayList<Location> siteLocs0,
-            ArrayList<Location> siteLocs1,
-            ArrayList<Location> siteLocs2,
-            ArrayList<Location> siteLocs3) {
+    private int computeDensity(PatchGrid grid, Location loc) {
         Bag bag = new Bag(grid.getObjectsAtLocation(loc));
         int numAgents = bag.numObjs;
-
-        if (numAgents == 0) {
-            for (int p = 0; p < latPositions; p++) {
-                siteLocs0.add(loc);
-            }
-        } else if (numAgents == 1) {
-            for (int p = 0; p < latPositions; p++) {
-                siteLocs1.add(loc);
-            }
-        } else if (numAgents == 2) {
-            for (int p = 0; p < latPositions; p++) {
-                siteLocs2.add(loc);
-            }
-        } else {
-            for (int p = 0; p < latPositions; p++) {
-                siteLocs3.add(loc);
-            }
-        }
-        // Remove break statement if more than one per hex can appear
-        // with break statement, each location can only be added to list once
-        // without it, places with more vasc sites get added more times to list
-        // break;
+        return numAgents;
     }
 
     /**
