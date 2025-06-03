@@ -134,7 +134,10 @@ public final class PatchEnums {
         INFLAMMATION,
 
         /** Code for signaling domain. */
-        SIGNALING;
+        SIGNALING,
+
+        /** Code for sensing domain. */
+        SENSING;
 
         /**
          * Randomly selects a {@code Domain}.
