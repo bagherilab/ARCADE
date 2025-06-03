@@ -83,7 +83,7 @@ public class PatchActionTreat implements Action {
         this.treatFrac = parameters.getDouble("RATIO");
         this.maxDamage = parameters.getDouble("MAX_DAMAGE_SEED");
         this.minDamageRadius = parameters.getDouble("MIN_RADIUS_SEED");
-        this.maxConfluency = 54;
+        this.maxConfluency = parameters.getInt("MAX_DENSITY");
         this.parameters = parameters;
 
         this.coord =
