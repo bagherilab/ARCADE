@@ -330,6 +330,43 @@ public abstract class Series {
     }
 
     /**
+     * Parses parameter values based on default value.
+     *
+     * @param box the parameter map
+     * @param parameter the parameter name
+     * @param defaultParameter the default parameter value
+     * @param values the map of parameter values
+     * @param scales the map of parameter scaling
+     * @param ics the map of initial condition parameters
+     */
+    protected static void parseParameter(
+            MiniBox box,
+            String parameter,
+            String defaultParameter,
+            MiniBox values,
+            MiniBox scales,
+            MiniBox ics) {
+        String value = values.contains(parameter) ? values.get(parameter) : defaultParameter;
+        Matcher match = Pattern.compile(DISTRIBUTION_REGEX).matcher(value);
+
+        if (match.find()) {
+            box.put("(DISTRIBUTION)" + TAG_SEPARATOR + parameter, match.group(1).toUpperCase());
+            for (int i = 0; i < (match.groupCount() - 1) / 2; i++) {
+                int index = 2 * (i + 1);
+                box.put(parameter + "_" + match.group(index), match.group(index + 1));
+            }
+        } else {
+            box.put(parameter, value);
+            if (scales.contains(parameter)) {
+                box.put(parameter, box.getDouble(parameter) * scales.getDouble(parameter));
+            }
+        }
+        if (ics.contains(parameter)) {
+            box.put(parameter + "_IC", ics.get(parameter));
+        }
+    }
+
+    /**
      * Updates conversion string into a value.
      *
      * <p>Conversion string is in the form of {@code D^N} where {@code D} is either {@code DS},
