@@ -243,6 +243,12 @@ public class PatchActionTreat implements Action {
             if (className.equals("cart_cd8")) {
                 cd8Code = population.getInt("CODE");
             }
+            if (className.equals("killer")) {
+                cd8Code = population.getInt("CODE");
+            }
+            if (className.equals("synnotch")) {
+                cd8Code = population.getInt("CODE");
+            }
         }
 
         for (int i = 0; i < dose; i++) {
