@@ -209,7 +209,10 @@ public final class PatchEnums {
         DIFFUSER,
 
         /** Code for signaling category. */
-        GENERATOR;
+        GENERATOR,
+
+        /** Code for decayer category. */
+        DECAYER;
 
         /**
          * Randomly selects a {@code Category}.
