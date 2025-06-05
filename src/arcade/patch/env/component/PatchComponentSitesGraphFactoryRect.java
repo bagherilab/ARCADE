@@ -14,9 +14,11 @@ import static arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.*;
 
 /**
- * Concrete implementation of {@link PatchComponentSitesGraphFactory} for rectangular geometry.
+ * Concrete implementation of {@link PatchComponentSitesGraphFactory} for
+ * rectangular geometry.
  *
- * <p>For pattern layout, the graph is given by:
+ * <p>
+ * For pattern layout, the graph is given by:
  *
  * <pre>
  *                         _ _ _ _
@@ -34,108 +36,108 @@ import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.*;
  *                       \ _ _ _ _ /
  * </pre>
  *
- * <p>For root layouts, each node has eight possible orientations for the edge: left, right, up,
- * down, up left, up right, down left, and down right. When initializing roots from a border, only
+ * <p>
+ * For root layouts, each node has eight possible orientations for the edge:
+ * left, right, up,
+ * down, up left, up right, down left, and down right. When initializing roots
+ * from a border, only
  * certain orientations are possible:
  *
  * <ul>
- *   <li>left border = right, up right, down right
- *   <li>right border = left, up left, down left
- *   <li>top border = down, down right, down left
- *   <li>bottom border = up, up right, up left
+ * <li>left border = right, up right, down right
+ * <li>right border = left, up left, down left
+ * <li>top border = down, down right, down left
+ * <li>bottom border = up, up right, up left
  * </ul>
  */
 public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGraphFactory {
     /** List of all possible edge directions. */
-    private static final EnumSet<EdgeDirection> EDGE_DIRECTIONS =
-            EnumSet.of(
-                    EdgeDirection.UP,
-                    EdgeDirection.UP_RIGHT,
-                    EdgeDirection.RIGHT,
-                    EdgeDirection.DOWN_RIGHT,
-                    EdgeDirection.DOWN,
-                    EdgeDirection.DOWN_LEFT,
-                    EdgeDirection.LEFT,
-                    EdgeDirection.UP_LEFT);
+    private static final EnumSet<EdgeDirection> EDGE_DIRECTIONS = EnumSet.of(
+            EdgeDirection.UP,
+            EdgeDirection.UP_RIGHT,
+            EdgeDirection.RIGHT,
+            EdgeDirection.DOWN_RIGHT,
+            EdgeDirection.DOWN,
+            EdgeDirection.DOWN_LEFT,
+            EdgeDirection.LEFT,
+            EdgeDirection.UP_LEFT);
 
     /** Map of edge directions to their reverse direction. */
-    private static final EnumSet<EdgeDirection> SINGLE_EDGE_DIRECTIONS =
-            EnumSet.of(
-                    EdgeDirection.UP_RIGHT,
-                    EdgeDirection.DOWN_RIGHT,
-                    EdgeDirection.DOWN_LEFT,
-                    EdgeDirection.UP_LEFT);
+    private static final EnumSet<EdgeDirection> SINGLE_EDGE_DIRECTIONS = EnumSet.of(
+            EdgeDirection.UP_RIGHT,
+            EdgeDirection.DOWN_RIGHT,
+            EdgeDirection.DOWN_LEFT,
+            EdgeDirection.UP_LEFT);
 
     /** Map of edge directions to their reverse direction. */
-    private static final EnumMap<EdgeDirection, EdgeDirection> REVERSE_EDGE_DIRECTIONS =
-            new EnumMap<EdgeDirection, EdgeDirection>(EdgeDirection.class) {
-                {
-                    put(EdgeDirection.UP, EdgeDirection.DOWN);
-                    put(EdgeDirection.UP_RIGHT, EdgeDirection.DOWN_LEFT);
-                    put(EdgeDirection.RIGHT, EdgeDirection.LEFT);
-                    put(EdgeDirection.DOWN_RIGHT, EdgeDirection.UP_LEFT);
-                    put(EdgeDirection.DOWN, EdgeDirection.UP);
-                    put(EdgeDirection.DOWN_LEFT, EdgeDirection.UP_RIGHT);
-                    put(EdgeDirection.LEFT, EdgeDirection.RIGHT);
-                    put(EdgeDirection.UP_LEFT, EdgeDirection.DOWN_RIGHT);
-                }
-            };
+    private static final EnumMap<EdgeDirection, EdgeDirection> REVERSE_EDGE_DIRECTIONS = new EnumMap<EdgeDirection, EdgeDirection>(
+            EdgeDirection.class) {
+        {
+            put(EdgeDirection.UP, EdgeDirection.DOWN);
+            put(EdgeDirection.UP_RIGHT, EdgeDirection.DOWN_LEFT);
+            put(EdgeDirection.RIGHT, EdgeDirection.LEFT);
+            put(EdgeDirection.DOWN_RIGHT, EdgeDirection.UP_LEFT);
+            put(EdgeDirection.DOWN, EdgeDirection.UP);
+            put(EdgeDirection.DOWN_LEFT, EdgeDirection.UP_RIGHT);
+            put(EdgeDirection.LEFT, EdgeDirection.RIGHT);
+            put(EdgeDirection.UP_LEFT, EdgeDirection.DOWN_RIGHT);
+        }
+    };
 
     /** List of coordinate offsets for each direction. */
-    private static final EnumMap<EdgeDirection, int[]> OFFSETS =
-            new EnumMap<EdgeDirection, int[]>(EdgeDirection.class) {
-                {
-                    put(EdgeDirection.UP, new int[] {0, -1, 0});
-                    put(EdgeDirection.UP_RIGHT, new int[] {1, -1, 0});
-                    put(EdgeDirection.RIGHT, new int[] {1, 0, 0});
-                    put(EdgeDirection.DOWN_RIGHT, new int[] {1, 1, 0});
-                    put(EdgeDirection.DOWN, new int[] {0, 1, 0});
-                    put(EdgeDirection.DOWN_LEFT, new int[] {-1, 1, 0});
-                    put(EdgeDirection.LEFT, new int[] {-1, 0, 0});
-                    put(EdgeDirection.UP_LEFT, new int[] {-1, -1, 0});
-                }
-            };
+    private static final EnumMap<EdgeDirection, int[]> OFFSETS = new EnumMap<EdgeDirection, int[]>(
+            EdgeDirection.class) {
+        {
+            put(EdgeDirection.UP, new int[] { 0, -1, 0 });
+            put(EdgeDirection.UP_RIGHT, new int[] { 1, -1, 0 });
+            put(EdgeDirection.RIGHT, new int[] { 1, 0, 0 });
+            put(EdgeDirection.DOWN_RIGHT, new int[] { 1, 1, 0 });
+            put(EdgeDirection.DOWN, new int[] { 0, 1, 0 });
+            put(EdgeDirection.DOWN_LEFT, new int[] { -1, 1, 0 });
+            put(EdgeDirection.LEFT, new int[] { -1, 0, 0 });
+            put(EdgeDirection.UP_LEFT, new int[] { -1, -1, 0 });
+        }
+    };
 
     /** List of offset directions for root directions. */
-    private static final EnumMap<EdgeDirection, EdgeDirection[]> ROOT_OFFSETS =
-            new EnumMap<EdgeDirection, EdgeDirection[]>(EdgeDirection.class) {
-                {
-                    put(
-                            EdgeDirection.UP,
-                            new EdgeDirection[] {EdgeDirection.UP_RIGHT, EdgeDirection.UP_LEFT});
-                    put(
-                            EdgeDirection.UP_RIGHT,
-                            new EdgeDirection[] {EdgeDirection.RIGHT, EdgeDirection.UP});
-                    put(
-                            EdgeDirection.RIGHT,
-                            new EdgeDirection[] {EdgeDirection.DOWN_RIGHT, EdgeDirection.UP_RIGHT});
-                    put(
-                            EdgeDirection.DOWN_RIGHT,
-                            new EdgeDirection[] {EdgeDirection.DOWN, EdgeDirection.RIGHT});
-                    put(
-                            EdgeDirection.DOWN,
-                            new EdgeDirection[] {
-                                EdgeDirection.DOWN_LEFT, EdgeDirection.DOWN_RIGHT
-                            });
-                    put(
-                            EdgeDirection.DOWN_LEFT,
-                            new EdgeDirection[] {EdgeDirection.LEFT, EdgeDirection.DOWN});
-                    put(
-                            EdgeDirection.LEFT,
-                            new EdgeDirection[] {EdgeDirection.UP_LEFT, EdgeDirection.DOWN_LEFT});
-                    put(
-                            EdgeDirection.UP_LEFT,
-                            new EdgeDirection[] {EdgeDirection.UP, EdgeDirection.LEFT});
-                }
-            };
+    private static final EnumMap<EdgeDirection, EdgeDirection[]> ROOT_OFFSETS = new EnumMap<EdgeDirection, EdgeDirection[]>(
+            EdgeDirection.class) {
+        {
+            put(
+                    EdgeDirection.UP,
+                    new EdgeDirection[] { EdgeDirection.UP_RIGHT, EdgeDirection.UP_LEFT });
+            put(
+                    EdgeDirection.UP_RIGHT,
+                    new EdgeDirection[] { EdgeDirection.RIGHT, EdgeDirection.UP });
+            put(
+                    EdgeDirection.RIGHT,
+                    new EdgeDirection[] { EdgeDirection.DOWN_RIGHT, EdgeDirection.UP_RIGHT });
+            put(
+                    EdgeDirection.DOWN_RIGHT,
+                    new EdgeDirection[] { EdgeDirection.DOWN, EdgeDirection.RIGHT });
+            put(
+                    EdgeDirection.DOWN,
+                    new EdgeDirection[] {
+                            EdgeDirection.DOWN_LEFT, EdgeDirection.DOWN_RIGHT
+                    });
+            put(
+                    EdgeDirection.DOWN_LEFT,
+                    new EdgeDirection[] { EdgeDirection.LEFT, EdgeDirection.DOWN });
+            put(
+                    EdgeDirection.LEFT,
+                    new EdgeDirection[] { EdgeDirection.UP_LEFT, EdgeDirection.DOWN_LEFT });
+            put(
+                    EdgeDirection.UP_LEFT,
+                    new EdgeDirection[] { EdgeDirection.UP, EdgeDirection.LEFT });
+        }
+    };
 
     /** Array positions for edge directions. */
-    private static final EdgeDirection[][] DIRS =
-            new EdgeDirection[][] {
-                {EdgeDirection.UP_LEFT, EdgeDirection.UP, EdgeDirection.UP_RIGHT},
-                {EdgeDirection.LEFT, EdgeDirection.UNDEFINED, EdgeDirection.RIGHT},
-                {EdgeDirection.DOWN_LEFT, EdgeDirection.DOWN, EdgeDirection.DOWN_RIGHT},
-            };
+    private static final EdgeDirection[][] DIRS = new EdgeDirection[][] {
+            { EdgeDirection.UP_LEFT, EdgeDirection.UP, EdgeDirection.UP_RIGHT },
+            { EdgeDirection.LEFT, EdgeDirection.UNDEFINED, EdgeDirection.RIGHT },
+            { EdgeDirection.DOWN_LEFT, EdgeDirection.DOWN, EdgeDirection.DOWN_RIGHT },
+    };
 
     /** List of edge lengths. */
     private final double[] edgeLengths;
@@ -147,7 +149,7 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
      */
     public PatchComponentSitesGraphFactoryRect(Series series) {
         super(series);
-        edgeLengths = new double[] {series.ds, series.ds * Math.sqrt(2)};
+        edgeLengths = new double[] { series.ds, series.ds * Math.sqrt(2) };
     }
 
     @Override
@@ -155,12 +157,17 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
         return OFFSETS.get(offset);
     }
 
+    @Override
+    EnumMap<EdgeDirection, int[]> getOffsets() {
+        return OFFSETS;
+    }
+
     /**
      * Checks if there is an edge in the cross diagonal.
      *
      * @param graph the graph instance
-     * @param from the node the edge is from
-     * @param to the node the edge is to
+     * @param from  the node the edge is from
+     * @param to    the node the edge is to
      * @param level the graph resolution level
      * @return {@code true} if no cross diagonal edge, {@code false} otherwise
      */
@@ -244,24 +251,24 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
                     int row = calcRow(i, j, offset);
 
                     if (col == 0 && row == 5) {
-                        edges.add(new int[] {i, j, k, i + 1, j, k});
+                        edges.add(new int[] { i, j, k, i + 1, j, k });
                     } else if (col == 1 && row == 5) {
-                        edges.add(new int[] {i, j, k, i + 1, j, k});
+                        edges.add(new int[] { i, j, k, i + 1, j, k });
                     } else if (col == 2 && row == 5) {
-                        edges.add(new int[] {i, j, k, i + 1, j, k});
+                        edges.add(new int[] { i, j, k, i + 1, j, k });
                     } else if (col == 3 && row == 5) {
-                        edges.add(new int[] {i, j, k, i + 1, j, k});
+                        edges.add(new int[] { i, j, k, i + 1, j, k });
                     } else if (col == 5 && row == 4) {
-                        edges.add(new int[] {i, j, k, i, j - 1, k});
+                        edges.add(new int[] { i, j, k, i, j - 1, k });
                     } else if (col == 5 && row == 0) {
-                        edges.add(new int[] {i, j, k, i, j + 1, k});
+                        edges.add(new int[] { i, j, k, i, j + 1, k });
                     } else if (col == 5 && row == 1) {
-                        edges.add(new int[] {i, j, k, i + 1, j + 1, k});
+                        edges.add(new int[] { i, j, k, i + 1, j + 1, k });
                     } else if (col == 5 && row == 3) {
-                        edges.add(new int[] {i, j, k, i + 1, j - 1, k});
+                        edges.add(new int[] { i, j, k, i + 1, j - 1, k });
                     } else if (col == 4 && row == 5) {
-                        edges.add(new int[] {i, j, k, i + 1, j - 1, k});
-                        edges.add(new int[] {i, j, k, i + 1, j + 1, k});
+                        edges.add(new int[] { i, j, k, i + 1, j - 1, k });
+                        edges.add(new int[] { i, j, k, i + 1, j + 1, k });
                     }
                 }
             }
@@ -279,10 +286,9 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
                 // Add edge to graph.
                 SiteNode from = new SiteNode(e[0], e[1], e[2]);
                 SiteNode to = new SiteNode(e[3], e[4], e[5]);
-                EdgeType type =
-                        (e[0] == thresh
-                                ? EdgeType.CAPILLARY
-                                : (e[0] < thresh ? EdgeType.ARTERY : EdgeType.VEIN));
+                EdgeType type = (e[0] == thresh
+                        ? EdgeType.CAPILLARY
+                        : (e[0] < thresh ? EdgeType.ARTERY : EdgeType.VEIN));
                 SiteEdge edge = new SiteEdge(from, to, type, EdgeLevel.VARIABLE);
                 graph.addEdge(edge);
             }
@@ -360,31 +366,27 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
         // Get direction list.
         switch (border) {
             case LEFT:
-                directions =
-                        new EdgeDirection[] {
-                            EdgeDirection.UP_RIGHT, EdgeDirection.RIGHT, EdgeDirection.DOWN_RIGHT
-                        };
+                directions = new EdgeDirection[] {
+                        EdgeDirection.UP_RIGHT, EdgeDirection.RIGHT, EdgeDirection.DOWN_RIGHT
+                };
                 index = 1;
                 break;
             case RIGHT:
-                directions =
-                        new EdgeDirection[] {
-                            EdgeDirection.UP_LEFT, EdgeDirection.LEFT, EdgeDirection.DOWN_LEFT
-                        };
+                directions = new EdgeDirection[] {
+                        EdgeDirection.UP_LEFT, EdgeDirection.LEFT, EdgeDirection.DOWN_LEFT
+                };
                 index = 1;
                 break;
             case TOP:
-                directions =
-                        new EdgeDirection[] {
-                            EdgeDirection.DOWN_LEFT, EdgeDirection.DOWN, EdgeDirection.DOWN_RIGHT
-                        };
+                directions = new EdgeDirection[] {
+                        EdgeDirection.DOWN_LEFT, EdgeDirection.DOWN, EdgeDirection.DOWN_RIGHT
+                };
                 index = 0;
                 break;
             case BOTTOM:
-                directions =
-                        new EdgeDirection[] {
-                            EdgeDirection.UP_LEFT, EdgeDirection.UP, EdgeDirection.UP_RIGHT
-                        };
+                directions = new EdgeDirection[] {
+                        EdgeDirection.UP_LEFT, EdgeDirection.UP, EdgeDirection.UP_RIGHT
+                };
                 index = 0;
                 break;
             default:
@@ -446,7 +448,8 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
             return bag;
         }
 
-        // Add the two leaves of the tripod if line is 0, otherwise add in the root line.
+        // Add the two leaves of the tripod if line is 0, otherwise add in the root
+        // line.
         if (offsets == null) {
             for (EdgeDirection offset : ROOT_OFFSETS.get(dir)) {
                 SiteNode node2 = offsetNode(node1, offset, level);

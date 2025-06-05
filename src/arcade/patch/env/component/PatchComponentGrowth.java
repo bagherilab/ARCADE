@@ -1,40 +1,43 @@
-package arcade.env.comp;
-
-import static arcade.env.comp.GraphSites.CAP_RADIUS;
-import static arcade.env.comp.GraphSites.CAP_RADIUS_MIN;
-import static arcade.env.comp.GraphSites.CAP_RADIUS_MAX;
-
-import static arcade.env.comp.GraphSitesUtilities.calcThickness;
-import static arcade.env.comp.GraphSitesUtilities.path;
-import static arcade.env.comp.GraphSitesUtilities.reversePressures;
-import static arcade.env.comp.GraphSitesUtilities.getPath;
-import static arcade.env.comp.GraphSitesUtilities.updateGraph;
-import static arcade.env.comp.GraphSitesUtilities.calcFlows;
-import static arcade.env.comp.GraphSitesUtilities.calcPressure;
-import static arcade.env.comp.GraphSitesUtilities.calcPressures;
-import static arcade.env.comp.GraphSitesUtilities.calcStress;
-import static arcade.env.comp.GraphSitesUtilities.calculateLocalFlow;
+package arcade.patch.env.component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.EnumMap;
 import java.util.logging.Logger;
-
-import arcade.env.comp.GraphSites.Root;
-import arcade.env.comp.GraphSites.SiteEdge;
-import arcade.env.comp.GraphSites.SiteNode;
-import arcade.env.lat.Lattice;
-import arcade.env.loc.Location;
-import arcade.sim.Simulation;
-import arcade.util.Graph;
-import arcade.util.MiniBox;
-import arcade.util.Solver;
-import arcade.util.Solver.Function;
 import ec.util.MersenneTwisterFast;
 import sim.util.Bag;
+import sim.engine.Schedule;
 import sim.engine.SimState;
-
+import arcade.core.sim.Simulation;
+import arcade.core.sim.Series;
+import arcade.core.util.Graph;
+import arcade.core.util.MiniBox;
+import arcade.core.util.Solver;
+import arcade.core.util.Solver.Function;
+import arcade.core.env.location.Location;
+import arcade.core.env.lattice.Lattice;
+import arcade.core.env.component.Component;
+import arcade.patch.sim.PatchSimulation;
+import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
+import arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.Root;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeDirection;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.CAPILLARY_RADIUS;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MINIMUM_CAPILLARY_RADIUS;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MAXIMUM_CAPILLARY_RADIUS;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculateThicknesses;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.path;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.reversePressures;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.path;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.updateGraph;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculateFlows;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculatePressure;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculatePressures;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculateStresses;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculateLocalFlow;
+import static arcade.patch.util.PatchEnums.Ordering;
 
 /**
  * Implementation of {@link Component} for degrading graph edges.
@@ -48,8 +51,8 @@ import sim.engine.SimState;
  * from the graph, then only the stresses in the graph are recalculated.
  * Otherwise, all hemodynamic properties are recalculated.
  */
-public class GrowthComponent implements Component {
-    private static Logger LOGGER = Logger.getLogger(GrowthComponent.class.getName());
+public class PatchComponentGrowth implements Component {
+    private static Logger LOGGER = Logger.getLogger(PatchComponentGrowth.class.getName());
 
     /** Calculation strategies. */
     public enum Calculation {
@@ -58,6 +61,18 @@ public class GrowthComponent implements Component {
 
         /** Code for downstream direction strategy. */
         DIVERT
+    }
+
+    /** Strategy for direction of migration. */
+    public enum MigrationDirection {
+        /** Code for random direction. */
+        RANDOM,
+
+        /** Code for deterministic direction. */
+        DETERMINISTIC,
+
+        /** Code for biased random direction. */
+        BIASED;
     }
 
     private final double migrationRate;
@@ -69,126 +84,121 @@ public class GrowthComponent implements Component {
     private int interval;
     private double edgeSize;
     /** The associated {@link GraphSites} object. */
-    private GraphSites sites;
+    private PatchComponentSitesGraph sites;
 
     /** The {@link Graph} object representing the sites. */
     private Graph graph;
 
-    private HashMap<SiteNode, ArrayList<SiteEdge>> angioMap;
+    private HashMap<SiteNode, ArrayList<SiteEdge>> angioMap = new HashMap<>();
     private ArrayList<SiteEdge> tempEdges;
 
-    private int[][] offsets;
+    private EnumMap<EdgeDirection, int[]> offsets;
     private final int level = 1;
-    private final int default_type = 0; //Capillary type
+    private final int default_type = 0; // Capillary type
 
     private final MiniBox specs;
 
-    private ArrayList<SiteEdge> added = new ArrayList<>();
+    private int numOffsets;
 
-    public GrowthComponent(MiniBox component) {
+    public PatchComponentGrowth(Series series, MiniBox parameters) {
         // Set loaded parameters.
-        migrationRate = component.getDouble("MIGRATION_RATE");
-        vegfThreshold = component.getDouble("VEGF_THRESHOLD");
-        walkType = component.get("WALK_TYPE");
-        maxLength = component.getDouble("MAX_LENGTH");
-        angioMap = new HashMap<>();
-
-		// Get list of specifications.
-		specs = new MiniBox();
-		String[] specList = new String[] { "MIGRATION_RATE", "VEGF_THRESHOLD", "WALK_TYPE", "MAX_LENGTH" };
-		for (String spec : specList) { specs.put(spec, component.get(spec)); }
+        migrationRate = parameters.getDouble("MIGRATION_RATE");
+        vegfThreshold = parameters.getDouble("VEGF_THRESHOLD");
+        walkType = parameters.get("WALK_TYPE");
+        maxLength = parameters.getDouble("MAX_LENGTH");
     }
 
-	/**
-	 * Component does not have a relevant field; returns {@code null}.
-	 *
-	 * @return  {@code null}
-	 */
-	public double[][][] getField() { return null; }
+    /**
+     * Component does not have a relevant field; returns {@code null}.
+     *
+     * @return {@code null}
+     */
+    public double[][][] getField() {
+        return null;
+    }
 
     @Override
-    public void scheduleComponent(Simulation sim) {
-		Component comp = sim.getEnvironment("sites").getComponent("sites");
-		if (!(comp instanceof GraphSites)) {
-			LOGGER.warning("cannot schedule GROWTH component for non-graph sites");
-			return;
-		}
-
-		sites = (GraphSites) comp;
-        offsets = sites.getOffsets();
-        edgeSize = sites.getGridSize();
-        maxEdges = (int) Math.floor(maxLength / edgeSize);
-        interval = calculateInterval();
-        ((SimState)sim).schedule.scheduleRepeating(1, Simulation.ORDERING_COMPONENT - 3, this, interval);
-        ((SimState)sim).schedule.scheduleOnce((state) -> graph = sites.getGraph(), Simulation.ORDERING_COMPONENT - 3);
+    public void schedule(Schedule schedule) {
+        interval = migrationRate < edgeSize ? 60 : 30;
+        schedule.scheduleRepeating(this, Ordering.LAST_COMPONENT.ordinal() - 3, interval);
     }
 
-    private int calculateInterval() {
-        if (migrationRate < edgeSize) {
-            return 60;
-        } else {
+    @Override
+    public void register(Simulation sim, String layer) {
+        PatchSimulation patchSim = (PatchSimulation) sim;
+        Component component = sim.getComponent(layer);
 
-            return 30;
+        if (!(component instanceof PatchComponentSitesGraph)) {
+            return;
         }
+
+        sites = (PatchComponentSitesGraph) component;
+        graph = sites.graph;
+        offsets = sites.graphFactory.getOffsets();
+        numOffsets = offsets.keySet().size();
+        edgeSize = sim.getSeries().ds;
+        maxEdges = (int) Math.floor(maxLength / edgeSize);
+
     }
 
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * Degradation component does not use this method.
-	 */
-	public void updateComponent(Simulation sim, Location oldLoc, Location newLoc) { }
-
     @Override
-    public void step(final SimState state) {
-        final Simulation sim = (Simulation) state;
-        final Lattice vegf_lattice = sim.getEnvironment("vegf");
-        final MersenneTwisterFast random = state.random;
+    public void step(final SimState simstate) {
+        final Simulation sim = (Simulation) simstate;
+        final Lattice vegfLattice = sim.getLattice("VEGF");
+        final MersenneTwisterFast random = simstate.random;
+
         ArrayList<SiteNode> nodesToRemove = new ArrayList<>();
 
-        final double tick = sim.getTime();
+        final double tick = (int) simstate.schedule.getTime() + 1;
 
-        // if (((int) tick - 1) % (12*60) == 0) {
-        //     LOGGER.info((int)(tick - 1) + " | number of nodes to check: " +  graph.getAllNodes().size());
-        // }
+        LinkedHashSet<SiteNode> set = new LinkedHashSet<>();
 
-		LinkedHashSet<SiteNode> set = new LinkedHashSet<>();
+        for (Object obj : graph.getAllEdges()) {
+            SiteEdge edge = (SiteEdge) obj;
+            if (edge.isIgnored) {
+                continue;
+            }
+            SiteNode from = edge.getFrom();
+            SiteNode to = edge.getTo();
+            from.id = -1;
+            to.id = -1;
 
-
-		for (Object obj : graph.getAllEdges()) {
-			SiteEdge edge = (SiteEdge)obj;
-			if (edge.isIgnored) { continue; }
-			SiteNode from = edge.getFrom();
-			SiteNode to = edge.getTo();
-			from.id = -1;
-			to.id = -1;
-
-			if ((graph.getDegree(from) < 3) && !from.isRoot && !(graph.getInDegree(from) == 0 && graph.getOutDegree(from) == 1)) { set.add(from); }
-			if ((graph.getDegree(to) < 3) && !to.isRoot && !(graph.getInDegree(to) == 1 && graph.getOutDegree(to) == 0)) { set.add(to); }
-		}
+            if ((graph.getDegree(from) < 3) && !from.isRoot
+                    && !(graph.getInDegree(from) == 0 && graph.getOutDegree(from) == 1)) {
+                set.add(from);
+            }
+            if ((graph.getDegree(to) < 3) && !to.isRoot
+                    && !(graph.getInDegree(to) == 1 && graph.getOutDegree(to) == 0)) {
+                set.add(to);
+            }
+        }
 
         for (SiteNode node : set) {
-            if (checkNodeSkipStatus(node, tick)) { continue; }
+            if (checkNodeSkipStatus(node, tick)) {
+                continue;
+            }
 
-            ArrayList<ArrayList<Double>> vegfList = getVEGFList(vegf_lattice, node);
+            ArrayList<ArrayList<Double>> vegfList = getVEGFList(vegfLattice, node);
 
             if (averageListArrays(vegfList) > vegfThreshold) {
                 angioMap.put(node, new ArrayList<>());
-                ArrayList<Integer> skipDirList = new ArrayList<Integer>();
+                ArrayList<EdgeDirection> skipDirList = new ArrayList<EdgeDirection>();
 
                 Bag in = graph.getEdgesIn(node);
                 Bag out = graph.getEdgesOut(node);
 
-                if (in != null){
-                    for (Object edge : in){
-                        SiteEdge inEdge = (SiteEdge)edge;
-                        skipDirList.add(sites.getOppositeDirection(inEdge, inEdge.level));
+                if (in != null) {
+                    for (Object edge : in) {
+                        SiteEdge inEdge = (SiteEdge) edge;
+                        skipDirList.add(sites.graphFactory.getOppositeDirection(inEdge, inEdge.level));
+
                     }
                 }
-                if (out != null){
-                    for (Object edge : out){
-                        SiteEdge outEdge = (SiteEdge)edge;
-                        skipDirList.add(sites.getDirection(outEdge, outEdge.level));
+                if (out != null) {
+                    for (Object edge : out) {
+                        SiteEdge outEdge = (SiteEdge) edge;
+                        skipDirList.add(sites.graphFactory.getDirection(outEdge, outEdge.level));
+
                     }
                 }
 
@@ -217,8 +227,8 @@ public class GrowthComponent implements Component {
 
         addTemporaryEdges();
 
-        for (Map.Entry<SiteNode, ArrayList<SiteEdge>> entry : angioMap.entrySet()){
-            //grab final node in each list and add edge, check for perfusion
+        for (Map.Entry<SiteNode, ArrayList<SiteEdge>> entry : angioMap.entrySet()) {
+            // grab final node in each list and add edge, check for perfusion
             SiteNode keyNode = entry.getKey();
 
             if (checkForIgnoredEdges(keyNode)) {
@@ -231,20 +241,23 @@ public class GrowthComponent implements Component {
             SiteEdge newEdge;
             if (edgeList.size() > 0) {
                 tipNode = edgeList.get(edgeList.size() - 1).getTo();
+            } else {
+                tipNode = keyNode;
             }
-            else { tipNode = keyNode; }
 
-            if (tick - tipNode.lastUpdate < migrationRate) { continue; }
+            if (tick - tipNode.lastUpdate < migrationRate) {
+                continue;
+            }
 
             newEdge = createNewEdge(keyNode.sproutDir, tipNode, tick);
 
-            if (edgeList.size() > maxEdges || newEdge == null || graph.getDegree(keyNode) > 3 ) {
-                // LOGGER.info("Removing " + keyNode + " from angiomap, unsuccessful perfusion.");
+            if (edgeList.size() > maxEdges || newEdge == null || graph.getDegree(keyNode) > 3) {
+                // LOGGER.info("Removing " + keyNode + " from angiomap, unsuccessful
+                // perfusion.");
                 nodesToRemove.add(keyNode);
-            }
-            else {
+            } else {
                 edgeList.add(newEdge);
-                if (newEdge.isAnastomotic){
+                if (newEdge.isAnastomotic) {
                     keyNode.anastomosis = true;
                     addFlag = true;
                 }
@@ -258,7 +271,9 @@ public class GrowthComponent implements Component {
             // LOGGER.info("*****Adding edges to graph.****** Time: " + tick);
             // LOGGER.info("Current graph size: " + graph.getAllEdges().size());
             for (SiteNode sproutNode : angioMap.keySet()) {
-                if (nodesToRemove.contains(sproutNode)) { continue; }
+                if (nodesToRemove.contains(sproutNode)) {
+                    continue;
+                }
                 if (sproutNode.anastomosis) {
                     int leadingIndex = angioMap.get(sproutNode).size() - 1;
                     if (leadingIndex < 0) {
@@ -268,14 +283,16 @@ public class GrowthComponent implements Component {
                     SiteNode finalNode = angioMap.get(sproutNode).get(leadingIndex).getTo();
                     SiteNode init, fin;
 
-                    calcPressures(graph);
+                    calculatePressures(graph);
                     boolean reversed = reversePressures(graph);
-                    if (reversed) { calcPressures(graph); }
+                    if (reversed) {
+                        calculatePressures(graph);
+                    }
                     calcFlows(graph, sites);
                     calcStress(graph);
 
                     // maybe try to redo by iterating through list rather than using final node
-                    if (!graph.containsNode(finalNode)){
+                    if (!graph.containsNode(finalNode)) {
                         // LOGGER.info("CONNECTING TWO ANGIOGENIC NODES");
                         SiteNode targetNode = findKeyNodeInMap(finalNode, sproutNode);
                         if (targetNode == null) {
@@ -299,13 +316,16 @@ public class GrowthComponent implements Component {
 
                         nodesToRemove.add(sproutNode);
                         nodesToRemove.add(targetNode);
-                    }
-                    else {
+                    } else {
                         if (sproutNode.pressure == 0) {
-                            if (graph.getEdgesOut(sproutNode) != null) {sproutNode = ((SiteEdge) graph.getEdgesOut(sproutNode).get(0)).getFrom();}
+                            if (graph.getEdgesOut(sproutNode) != null) {
+                                sproutNode = ((SiteEdge) graph.getEdgesOut(sproutNode).get(0)).getFrom();
+                            }
                         }
                         if (finalNode.pressure == 0) {
-                            if (graph.getEdgesOut(finalNode) != null) {finalNode = ((SiteEdge) graph.getEdgesOut(finalNode).get(0)).getFrom();}
+                            if (graph.getEdgesOut(finalNode) != null) {
+                                finalNode = ((SiteEdge) graph.getEdgesOut(finalNode).get(0)).getFrom();
+                            }
                         }
                         // path(graph, finalNode, sproutNode);
                         if (sproutNode.pressure < finalNode.pressure) {
@@ -340,31 +360,40 @@ public class GrowthComponent implements Component {
         }
     }
 
-    private boolean checkForIgnoredEdges(SiteNode node){
+    private boolean checkForIgnoredEdges(SiteNode node) {
         Bag in = graph.getEdgesIn(node);
         Bag out = graph.getEdgesOut(node);
-        if (in != null){
-            for (Object edge : in){
-                SiteEdge inEdge = (SiteEdge)edge;
-                if (inEdge.isIgnored) { return true; }
+        if (in != null) {
+            for (Object edge : in) {
+                SiteEdge inEdge = (SiteEdge) edge;
+                if (inEdge.isIgnored) {
+                    return true;
+                }
             }
         }
-        if (out != null){
-            for (Object edge : out){
-                SiteEdge outEdge = (SiteEdge)edge;
-                if (outEdge.isIgnored) { return true; }
+        if (out != null) {
+            for (Object edge : out) {
+                SiteEdge outEdge = (SiteEdge) edge;
+                if (outEdge.isIgnored) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
     private boolean checkNodeSkipStatus(SiteNode node, double tick) {
-            if (angioMap.keySet().contains(node)) { return true; }
-            if (node.isRoot) {return true; }
-            if ((tick - node.addTime ) < (72*60)) { return true; }
-            return false;
+        if (angioMap.keySet().contains(node)) {
+            return true;
+        }
+        if (node.isRoot) {
+            return true;
+        }
+        if ((tick - node.addTime) < (72 * 60)) {
+            return true;
+        }
+        return false;
     }
-
 
     private void reverseAllEdges(SiteNode node) {
         for (SiteEdge edge : angioMap.get(node)) {
@@ -372,11 +401,14 @@ public class GrowthComponent implements Component {
         }
     }
 
-
-    private SiteNode findKeyNodeInMap(SiteNode targetNode, SiteNode skipNode){
+    private SiteNode findKeyNodeInMap(SiteNode targetNode, SiteNode skipNode) {
         for (SiteNode keyNode : angioMap.keySet()) {
-            if (keyNode == skipNode) { continue; }
-            if (keyNode == targetNode ) { return keyNode; }
+            if (keyNode == skipNode) {
+                continue;
+            }
+            if (keyNode == targetNode) {
+                return keyNode;
+            }
             if (edgeListContainsNode(angioMap.get(keyNode), targetNode)) {
                 return keyNode;
             }
@@ -384,7 +416,7 @@ public class GrowthComponent implements Component {
         return null;
     }
 
-    private boolean edgeListContainsNode(ArrayList<SiteEdge> edgeList, SiteNode targetNode){
+    private boolean edgeListContainsNode(ArrayList<SiteEdge> edgeList, SiteNode targetNode) {
         for (SiteEdge edge : edgeList) {
             if (edge.getTo() == targetNode) {
                 return true;
@@ -396,7 +428,7 @@ public class GrowthComponent implements Component {
 
     private void addTemporaryEdges() {
         tempEdges = new ArrayList<>();
-        for (Map.Entry<SiteNode, ArrayList<SiteEdge>> entry : angioMap.entrySet()){
+        for (Map.Entry<SiteNode, ArrayList<SiteEdge>> entry : angioMap.entrySet()) {
             ArrayList<SiteEdge> edgeList = entry.getValue();
             tempEdges.addAll(edgeList);
             addEdgeList(edgeList);
@@ -404,7 +436,9 @@ public class GrowthComponent implements Component {
     }
 
     private void removeTemporaryEdges() {
-        if (tempEdges.isEmpty()) { return; }
+        if (tempEdges.isEmpty()) {
+            return;
+        }
         removeEdgeList(tempEdges);
         tempEdges.clear();
     }
@@ -416,31 +450,31 @@ public class GrowthComponent implements Component {
     }
 
     private int performRandomWalk(final MersenneTwisterFast random, final SiteNode node,
-            final ArrayList<Double> valList, final double tick, ArrayList<Integer> skipList) {
+            final ArrayList<Double> valList, final double tick, ArrayList<EdgeDirection> skipList) {
         int randDir;
-        do{
-            randDir = random.nextInt(offsets.length);
+        do {
+            randDir = random.nextInt(offsets.keySet().size());
         } while (!skipList.contains(randDir));
         return randDir;
     }
 
     private int performBiasedWalk(final MersenneTwisterFast random, final SiteNode node,
-            final ArrayList<Double> valList, final double tick, ArrayList<Integer> skipList) {
-        for (final int dir : skipList) {
+            final ArrayList<Double> valList, final double tick, ArrayList<EdgeDirection> skipList) {
+        for (final EdgeDirection dir : skipList) {
             valList.set(dir, 0.0);
         }
         final ArrayList<Double> seqList = normalizeSequentialList(valList);
         final double val = random.nextDouble();
-        for (int i=0; i < offsets.length; i++) {
+        for (int i = 0; i < numOffsets; i++) {
             if (val < seqList.get(i)) {
                 return i;
             }
         }
-        return offsets.length - 1;
+        return numOffsets - 1;
     }
 
     private int performDeterministicWalk(final MersenneTwisterFast random, final SiteNode node,
-            final ArrayList<Double> valList, final double tick, ArrayList<Integer> skipList) {
+            final ArrayList<Double> valList, final double tick, ArrayList<EdgeDirection> skipList) {
         for (final int dir : skipList) {
             valList.set(dir, 0.0);
         }
@@ -451,7 +485,7 @@ public class GrowthComponent implements Component {
     private ArrayList<ArrayList<Double>> getVEGFList(final Lattice lattice, final SiteNode node) {
         double[][][] field = lattice.getField();
         final ArrayList<ArrayList<Double>> vegfList = new ArrayList<>();
-        for (int dir=0; dir < offsets.length; dir++) {
+        for (int dir = 0; dir < numOffsets; dir++) {
             SiteNode proposed = sites.offsetNode(node, dir, level);
             if (sites.checkNode(proposed)) {
                 final ArrayList<int[]> span = sites.getSpan(node, proposed);
@@ -472,7 +506,7 @@ public class GrowthComponent implements Component {
     private int getMaxKey(final ArrayList<Double> map) {
         int maxDir = 0;
         double maxVal = 0;
-        for (int i=0; i < offsets.length; i++) {
+        for (int i = 0; i < numOffsets; i++) {
             if (map.get(i) > maxVal) {
                 maxDir = i;
                 maxVal = map.get(i);
@@ -483,7 +517,7 @@ public class GrowthComponent implements Component {
 
     private ArrayList<Double> getListAverages(final ArrayList<ArrayList<Double>> map) {
         final ArrayList<Double> averageList = new ArrayList<>();
-        for (int i=0; i < offsets.length; i++) {
+        for (int i = 0; i < numOffsets; i++) {
             double sum = 0;
             for (final double value : map.get(i)) {
                 sum += value;
@@ -497,7 +531,7 @@ public class GrowthComponent implements Component {
         final ArrayList<Double> normalizedList = new ArrayList<>();
         final double norm = sumList(map);
         double prev = 0;
-        for (int i=0; i < offsets.length; i++) {
+        for (int i = 0; i < numOffsets; i++) {
             normalizedList.add(i, prev + map.get(i) / norm);
             prev = prev + map.get(i) / norm;
         }
@@ -506,7 +540,7 @@ public class GrowthComponent implements Component {
 
     private double sumList(final ArrayList<Double> map) {
         double sum = 0;
-        for (int i=0; i < offsets.length; i++) {
+        for (int i = 0; i < numOffsets; i++) {
             sum += map.get(i);
         }
         return sum;
@@ -515,7 +549,7 @@ public class GrowthComponent implements Component {
     private double averageListArrays(final ArrayList<ArrayList<Double>> map) {
         double sum = 0;
         int count = 0;
-        for (int i=0; i < offsets.length; i++) {
+        for (int i = 0; i < numOffsets; i++) {
             for (final double value : map.get(i)) {
                 sum += value;
                 count++;
@@ -536,58 +570,59 @@ public class GrowthComponent implements Component {
 
         ArrayList<SiteEdge> added = new ArrayList<>();
 
-        //check for cycle
+        // check for cycle
         path(graph, end, start);
         if (end.prev != null) {
             // LOGGER.info("Cycle detected, not adding edge");
             return;
         }
 
-        Graph tempG = sites.newGraph();
-        for (SiteEdge e : list){
+        Graph tempG = sites.graphFactory.newGraph();
+        for (SiteEdge e : list) {
             tempG.addEdge(e);
         }
         // LOGGER.info("" + tempG);
         path(tempG, start, end);
         SiteNode n = end;
-        while (n != start){
-            added.add(new SiteEdge(n.prev, n, 0, level, false));
+        while (n != start) {
+            added.add(new SiteEdge(n.prev n, 0, level, false));
             n = n.prev;
             if (n != start) {
-                if (n== null) {
+                if (n == null) {
                     return;
                 }
-                n.addTime = tick;
+                n.addTime = (int) tick;
             }
         }
 
-
         double otherRadius = 0;
         Bag outEdges = graph.getEdgesOut(start);
-        if (outEdges != null){
-                otherRadius = ((SiteEdge)outEdges.get(0)).radius;
+        if (outEdges != null) {
+            otherRadius = ((SiteEdge) outEdges.get(0)).radius;
+        } else {
+            return;
         }
-        else { return; }
 
         for (SiteEdge edge : added) {
             edge.isAngiogenic = true;
-            edge.radius = (otherRadius > CAP_RADIUS) ? CAP_RADIUS : calculateEvenSplitRadius((SiteEdge) outEdges.get(0));
+            edge.radius = (otherRadius > CAP_RADIUS) ? CAP_RADIUS
+                    : calculateEvenSplitRadius((SiteEdge) outEdges.get(0));
             edge.wall = calcThickness(edge.radius);
             edge.span = sites.getSpan(edge.getFrom(), edge.getTo());
             edge.length = sites.getLength(edge, 1);
 
-            //update later (updateSpans method should take care of most of these, need to check for perfusion first)
+            // update later (updateSpans method should take care of most of these, need to
+            // check for perfusion first)
             edge.isPerfused = true;
             edge.fraction = new double[sites.NUM_MOLECULES];
             edge.transport = new double[sites.NUM_MOLECULES];
-            for (int[] coor: edge.span){ //i don't think i need this?
+            for (int[] coor : edge.span) { // i don't think i need this?
                 int i = coor[0];
                 int j = coor[1];
                 int k = coor[2];
                 sites.sites[k][i][j]++;
             }
         }
-
 
         if (start.pressure * end.pressure <= 0) {
             return;
@@ -600,11 +635,11 @@ public class GrowthComponent implements Component {
                 updateRootsAndRadii(added, start, end);
                 break;
             case DIVERT:
-                SiteNode intersection = (SiteNode) graph.findDownstreamIntersection((SiteEdge) outEdges.get(0), (SiteEdge) added.get(0));
-                if (intersection != null){
+                SiteNode intersection = (SiteNode) graph.findDownstreamIntersection((SiteEdge) outEdges.get(0),
+                        (SiteEdge) added.get(0));
+                if (intersection != null) {
                     recalcRadii(added, start, end, intersection);
-                }
-                else {
+                } else {
                     removeEdgeList(added);
                 }
                 break;
@@ -612,15 +647,20 @@ public class GrowthComponent implements Component {
 
     }
 
-    private double calculateEvenSplitRadius(SiteEdge edge){
+    private double calculateEvenSplitRadius(SiteEdge edge) {
         double radius = edge.radius;
         double length = edge.length;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
         double flow = calculateLocalFlow(radius, length, deltaP);
-        double newRadius = Solver.bisection((double r) -> flow - 2 * calculateLocalFlow(r, length, deltaP), 1E-6, 5*CAP_RADIUS_MAX, 1E-6);
-        // LOGGER.info("splitting radius, for checking if it happens directly before bisection failing");
-        // double newRadius = Solver.bisection((double r) -> Math.pow(flow - 2 * calculateLocalFlow(r, length, deltaP), 2), 0, CAP_RADIUS_MAX);
-        // double newRadius = Solver.boundedGradientDescent((double r) -> Math.pow(flow - 2 * calculateLocalFlow(r, length, deltaP), 2), radius, 1E-17, CAP_RADIUS_MIN, CAP_RADIUS_MAX);
+        double newRadius = Solver.bisection((double r) -> flow - 2 * calculateLocalFlow(r, length, deltaP), 1E-6,
+                5 * CAP_RADIUS_MAX, 1E-6);
+        // LOGGER.info("splitting radius, for checking if it happens directly before
+        // bisection failing");
+        // double newRadius = Solver.bisection((double r) -> Math.pow(flow - 2 *
+        // calculateLocalFlow(r, length, deltaP), 2), 0, CAP_RADIUS_MAX);
+        // double newRadius = Solver.boundedGradientDescent((double r) -> Math.pow(flow
+        // - 2 * calculateLocalFlow(r, length, deltaP), 2), radius, 1E-17,
+        // CAP_RADIUS_MIN, CAP_RADIUS_MAX);
         return newRadius;
     }
 
@@ -635,7 +675,7 @@ public class GrowthComponent implements Component {
         if (edges == null) {
             return;
         }
-        if (edges.size() < 2 ) {
+        if (edges.size() < 2) {
             return;
         }
 
@@ -650,7 +690,9 @@ public class GrowthComponent implements Component {
         ArrayList<ArrayList<SiteEdge>> pathsArteries = new ArrayList<>();
         for (Root artery : arteries) {
             ArrayList<SiteEdge> path = getPath(graph, artery.node, start);
-            if (path.isEmpty()) { continue; }
+            if (path.isEmpty()) {
+                continue;
+            }
             pathsArteries.add(path);
             num_arteries++;
         }
@@ -686,7 +728,9 @@ public class GrowthComponent implements Component {
         ArrayList<ArrayList<SiteEdge>> pathsVeins = new ArrayList<>();
         for (Root vein : veins) {
             ArrayList<SiteEdge> path = getPath(graph, end, vein.node);
-            if (path.isEmpty()) { continue; }
+            if (path.isEmpty()) {
+                continue;
+            }
             pathsVeins.add(path);
             num_veins++;
         }
@@ -721,7 +765,7 @@ public class GrowthComponent implements Component {
         }
     }
 
-    private void recalcRadii(ArrayList<SiteEdge> ignoredEdges, SiteNode start, SiteNode end, SiteNode intersection){
+    private void recalcRadii(ArrayList<SiteEdge> ignoredEdges, SiteNode start, SiteNode end, SiteNode intersection) {
 
         updateGraph(graph, sites);
         Bag edges = graph.getEdgesOut(start);
@@ -729,55 +773,68 @@ public class GrowthComponent implements Component {
         if (edges == null) {
             return;
         }
-        if (edges.size() < 2 ) {
+        if (edges.size() < 2) {
             return;
         }
-        // if (((SiteEdge) edges.get(0)).isIgnored || ((SiteEdge) edges.get(1)).isIgnored) {
-        //     return;
+        // if (((SiteEdge) edges.get(0)).isIgnored || ((SiteEdge)
+        // edges.get(1)).isIgnored) {
+        // return;
         // }
 
         Integer angioIndex = ignoredEdges.contains(edges.get(0)) ? 0 : 1;
         Integer nonAngioIndex = angioIndex ^ 1;
         double deltaP = start.pressure - end.pressure;
-        // double deltaP = ((SiteNode) graph.lookupNode(start)).pressure - ((SiteNode) graph.lookupNode(end)).pressure;
+        // double deltaP = ((SiteNode) graph.lookupNode(start)).pressure - ((SiteNode)
+        // graph.lookupNode(end)).pressure;
         Double divertedFlow = calculateLocalFlow(CAP_RADIUS, ignoredEdges, deltaP);
         Double originalFlow = ((SiteEdge) edges.get(nonAngioIndex)).flow;
-        if (divertedFlow > originalFlow) {return ;}
+        if (divertedFlow > originalFlow) {
+            return;
+        }
         if (intersection != null) {
             if (intersection.isRoot) {
-                updateRadiusToRoot((SiteEdge) edges.get(angioIndex), sites.veins.get(0).node, divertedFlow, false, ignoredEdges);
+                updateRadiusToRoot((SiteEdge) edges.get(angioIndex), sites.veins.get(0).node, divertedFlow, false,
+                        ignoredEdges);
                 return;
-                // updateRadiusToRoot((SiteEdge) edges.get(angioIndex), intersection, divertedFlow, false, ignoredEdges);
-                // updateRadiusToRoot((SiteEdge) edges.get(nonAngioIndex), intersection, divertedFlow, true, ignoredEdges);
+                // updateRadiusToRoot((SiteEdge) edges.get(angioIndex), intersection,
+                // divertedFlow, false, ignoredEdges);
+                // updateRadiusToRoot((SiteEdge) edges.get(nonAngioIndex), intersection,
+                // divertedFlow, true, ignoredEdges);
             }
 
-            if (updateRadius((SiteEdge) edges.get(nonAngioIndex), intersection, divertedFlow, true, ignoredEdges) == -1){
+            if (updateRadius((SiteEdge) edges.get(nonAngioIndex), intersection, divertedFlow, true,
+                    ignoredEdges) == -1) {
                 return;
-            };
+            }
+            ;
 
-            if (updateRadius((SiteEdge) edges.get(angioIndex), intersection, divertedFlow, false, ignoredEdges) == -1){
-                // LOGGER.info("Failed to update radius when increasing size, something seems up");
-            };
-        }
-        else {
+            if (updateRadius((SiteEdge) edges.get(angioIndex), intersection, divertedFlow, false, ignoredEdges) == -1) {
+                // LOGGER.info("Failed to update radius when increasing size, something seems
+                // up");
+            }
+            ;
+        } else {
             // maybe also TODO: check for perfusion first
-            // TODO: check to add flow to radius with new flow after changes to other potential edge, need to do this math out?
+            // TODO: check to add flow to radius with new flow after changes to other
+            // potential edge, need to do this math out?
             // this should only work for single vein simulations
             SiteNode boundary = sites.veins.get(0).node;
             path(graph, start, boundary);
             if (boundary.prev != null && ((SiteEdge) edges.get(angioIndex)).radius > CAP_RADIUS_MIN) {
                 // LOGGER.info("Calculating additional flow to vein");
-                updateRadiusToRoot((SiteEdge) edges.get(angioIndex), sites.veins.get(0).node, divertedFlow, false, ignoredEdges);
-            }
-            else{
+                updateRadiusToRoot((SiteEdge) edges.get(angioIndex), sites.veins.get(0).node, divertedFlow, false,
+                        ignoredEdges);
+            } else {
                 return;
             }
-            // updateRadiusToRoot((SiteEdge) edges.get(nonAngioIndex), intersection, divertedFlow, true, ignoredEdges);
+            // updateRadiusToRoot((SiteEdge) edges.get(nonAngioIndex), intersection,
+            // divertedFlow, true, ignoredEdges);
         }
 
     }
 
-    private int updateRadius(SiteEdge edge, SiteNode intersection, double flow, boolean decrease, ArrayList<SiteEdge> ignored){
+    private int updateRadius(SiteEdge edge, SiteNode intersection, double flow, boolean decrease,
+            ArrayList<SiteEdge> ignored) {
         ArrayList<SiteEdge> edgesToUpdate = getPath(graph, edge.getTo(), intersection);
         edgesToUpdate.add(0, edge);
 
@@ -788,11 +845,14 @@ public class GrowthComponent implements Component {
         return updateRadiiOfEdgeList(edges, flow, decrease, new ArrayList<>());
     }
 
-    private int updateRadiiOfEdgeList(ArrayList<SiteEdge> edges, double flow, boolean decrease, ArrayList<SiteEdge> ignored){
+    private int updateRadiiOfEdgeList(ArrayList<SiteEdge> edges, double flow, boolean decrease,
+            ArrayList<SiteEdge> ignored) {
         ArrayList<Double> oldRadii = new ArrayList<>();
-        for (SiteEdge e : edges){
+        for (SiteEdge e : edges) {
             oldRadii.add(e.radius);
-            if (ignored.contains(e)) { continue; }
+            if (ignored.contains(e)) {
+                continue;
+            }
             if (calculateRadius(e, flow, decrease) == -1) {
                 resetRadii(edges, oldRadii);
                 return -1;
@@ -801,14 +861,15 @@ public class GrowthComponent implements Component {
         return 0;
     }
 
-    private int calculateRadius(SiteEdge edge, double flow, boolean decrease){
+    private int calculateRadius(SiteEdge edge, double flow, boolean decrease) {
         int sign = decrease ? -1 : 1;
         double originalRadius = edge.radius;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
         double originalFlow = calculateLocalFlow(originalRadius, edge.length, deltaP);
         Function f = (double r) -> originalFlow + sign * flow - calculateLocalFlow(r, edge.length, deltaP);
         double newRadius;
-        newRadius = Solver.bisection(f, 1E-6, 5*CAP_RADIUS_MAX, 1E-6);
+        newRadius = Solver.bisection(f, 1E-6, 5 * MAXIMUM_CAPILLARY_RADIUS, 1E-6);
+
         if (newRadius == 1E-6) {
             return -1;
         }
@@ -816,22 +877,23 @@ public class GrowthComponent implements Component {
         return 0;
     }
 
-    private int calculateVeinRootRadius(SiteEdge edge, double flow, boolean decrease){
+    private int calculateVeinRootRadius(SiteEdge edge, double flow, boolean decrease) {
         int sign = decrease ? -1 : 1;
         double originalRadius = edge.radius;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
         double originalFlow = calculateLocalFlow(originalRadius, edge.length, deltaP);
 
-        Function f = (double r) -> originalFlow + sign * flow - calculateLocalFlow(r, edge.length, edge.getFrom().pressure - calcPressure(r, edge.type));
+        Function f = (double r) -> originalFlow + sign * flow
+                - calculateLocalFlow(r, edge.length, edge.getFrom().pressure - calculatePressure(r, edge.type));
 
-        double newRadius = Solver.bisection(f, .5*originalRadius, 1.5*originalRadius, 1E-6);
+        double newRadius = Solver.bisection(f, .5 * originalRadius, 1.5 * originalRadius, 1E-6);
 
-        if (newRadius == .5*originalRadius || newRadius == Double.NaN) {
+        if (newRadius == .5 * originalRadius || newRadius == Double.NaN) {
             return -1;
         }
 
         edge.radius = newRadius;
-        edge.getTo().pressure = calcPressure(newRadius, edge.type);
+        edge.getTo().pressure = calculatePressure(newRadius, edge.type);
         return 0;
     }
 
@@ -841,35 +903,40 @@ public class GrowthComponent implements Component {
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
         double originalFlow = calculateLocalFlow(originalRadius, edge.length, deltaP);
 
-        Function f = (double r) -> originalFlow + sign * flow - calculateLocalFlow(r, edge.length, calcPressure(r, edge.type) - edge.getTo().pressure);
+        Function f = (double r) -> originalFlow + sign * flow
+                - calculateLocalFlow(r, edge.length, calculatePressure(r, edge.type) - edge.getTo().pressure);
 
-        double newRadius = Solver.bisection(f, .5*originalRadius, 1.5*originalRadius, 1E-6);
-        if (newRadius == .5*originalRadius || newRadius == Double.NaN || newRadius ==  1.5*originalRadius) {
+        double newRadius = Solver.bisection(f, .5 * originalRadius, 1.5 * originalRadius, 1E-6);
+        if (newRadius == .5 * originalRadius || newRadius == Double.NaN || newRadius == 1.5 * originalRadius) {
             return -1;
         }
 
         edge.radius = newRadius;
-        edge.getFrom().pressure = calcPressure(newRadius, edge.type);
+        edge.getFrom().pressure = calculatePressure(newRadius, edge.type);
         return 0;
     }
 
-    private void updateRadiusToRoot(SiteEdge edge, SiteNode intersection, double flow, boolean decrease, ArrayList<SiteEdge> ignored){
+    private void updateRadiusToRoot(SiteEdge edge, SiteNode intersection, double flow, boolean decrease,
+            ArrayList<SiteEdge> ignored) {
         ArrayList<Root> veins = sites.veins;
         ArrayList<Double> oldRadii = new ArrayList<>();
-        for (Root vein: veins){
+        for (Root vein : veins) {
             ArrayList<SiteEdge> path = getPath(graph, edge.getTo(), vein.node);
-            if (path.isEmpty()) {continue;}
+            if (path.isEmpty()) {
+                continue;
+            }
             path.add(0, edge);
-            for (SiteEdge e: path){
+            for (SiteEdge e : path) {
                 oldRadii.add(e.radius);
-                if (ignored.contains(e)) { continue; }
-                if (e.getTo().isRoot){
+                if (ignored.contains(e)) {
+                    continue;
+                }
+                if (e.getTo().isRoot) {
                     if (calculateVeinRootRadius(e, flow, decrease) == -1) {
                         resetRadii(path, oldRadii);
                         return;
                     }
-                }
-                else {
+                } else {
                     if (calculateRadius(e, flow, decrease) == -1) {
                         resetRadii(path, oldRadii);
                         return;
@@ -880,25 +947,28 @@ public class GrowthComponent implements Component {
         }
     }
 
-    private void resetRadii(ArrayList<SiteEdge> edges, ArrayList<Double> oldRadii){
-        for (int i = 0; i < oldRadii.size(); i++){
+    private void resetRadii(ArrayList<SiteEdge> edges, ArrayList<Double> oldRadii) {
+        for (int i = 0; i < oldRadii.size(); i++) {
             edges.get(i).radius = oldRadii.get(i);
         }
     }
 
-    private void addEdgeList(final ArrayList<SiteEdge> list, boolean updateProperties, int edgeType) {
+    private void addEdgeList(ArrayList<SiteEdge> list, boolean updateProperties, EdgeType edgeType) {
         for (SiteEdge edge : list) {
             graph.addEdge(edge);
         }
     }
 
-    private SiteEdge createNewEdge(final int dir, final SiteNode node, final double tick) {
-        SiteNode proposed = sites.offsetNode(node, dir, level);
+    private SiteEdge createNewEdge(EdgeDirection direction, SiteNode node, int tick) {
+        SiteNode proposed = sites.graphFactory.offsetNode(node, dir, level);
         proposed.lastUpdate = tick;
         if (sites.checkNode(proposed) && graph.getDegree(node) < 3) {
             SiteEdge edge;
-            if (graph.containsNode(proposed)){
-                if (graph.getDegree(proposed) > 2 || graph.getEdgesOut(proposed) == null || graph.getEdgesIn(proposed) == null) { return null; }
+            if (graph.containsNode(proposed)) {
+                if (graph.getDegree(proposed) > 2 || graph.getEdgesOut(proposed) == null
+                        || graph.getEdgesIn(proposed) == null) {
+                    return null;
+                }
                 SiteNode existing = (SiteNode) graph.lookupNode(proposed);
                 edge = new SiteEdge(node, existing, default_type, level, false);
                 edge.isAnastomotic = true;
@@ -911,28 +981,25 @@ public class GrowthComponent implements Component {
         return null;
     }
 
-
-
     /**
-	 * {@inheritDoc}
-	 * <p>
-	 * The JSON is formatted as:
-	 * <pre>
-	 *     {
-	 *         "type": "GROWTH",
-	 *         "interval": interval,
-	 *         "specs" : {
-	 *             "SPEC_NAME": spec value,
-	 *             "SPEC_NAME": spec value,
-	 *             ...
-	 *         }
-	 *     }
-	 * </pre>
-	 */
-	public String toJSON() {
-		String format = "{ " + "\"type\": \"GROWTH\", " + "\"interval\": %d, " + "\"specs\": %s " + "}";
-		return String.format(format, interval, specs.toJSON());
-	}
+     * {@inheritDoc}
+     * <p>
+     * The JSON is formatted as:
+     * 
+     * <pre>
+     *     {
+     *         "type": "GROWTH",
+     *         "interval": interval,
+     *         "specs" : {
+     *             "SPEC_NAME": spec value,
+     *             "SPEC_NAME": spec value,
+     *             ...
+     *         }
+     *     }
+     * </pre>
+     */
+    public String toJSON() {
+        String format = "{ " + "\"type\": \"GROWTH\", " + "\"interval\": %d, " + "\"specs\": %s " + "}";
+        return String.format(format, interval, specs.toJSON());
+    }
 }
-
-
