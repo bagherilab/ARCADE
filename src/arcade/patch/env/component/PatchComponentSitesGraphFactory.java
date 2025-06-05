@@ -1,6 +1,7 @@
 package arcade.patch.env.component;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.regex.Matcher;
@@ -252,6 +253,17 @@ public abstract class PatchComponentSitesGraphFactory {
     abstract EdgeDirection getDirection(int fromX, int fromY, int toX, int toY);
 
     /**
+     * Gets the opposite direction of the given edge.
+     *
+     * @param edge the edge object
+     * @param level the graph resolution level
+     * @return the code for the opposite edge direction
+     */
+    public EdgeDirection getOppositeDirection(SiteEdge edge, EdgeLevel level) {
+        return getDirection(edge.getTo(), edge.getFrom(), level);
+    }
+
+    /**
      * Adds a root motif to the graph.
      *
      * @param graph the graph instance
@@ -332,6 +344,13 @@ public abstract class PatchComponentSitesGraphFactory {
      * @return the list of coordinate changes
      */
     abstract int[] getOffset(EdgeDirection offset);
+
+    /**
+     * Get a map of possible offset directions to their corresponding coordinate changes.
+     *
+     * @return the map of offset directions to their corresponding coordinate changes
+     */
+    abstract EnumMap<EdgeDirection, int[]> getOffsets();
 
     /**
      * Gets the length of the given edge.
