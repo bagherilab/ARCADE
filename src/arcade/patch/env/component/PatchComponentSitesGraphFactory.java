@@ -57,7 +57,10 @@ public abstract class PatchComponentSitesGraphFactory {
         VEIN(EdgeCategory.VEIN),
 
         /** Code for venule edge type. */
-        VENULE(EdgeCategory.VEIN);
+        VENULE(EdgeCategory.VEIN),
+
+        /** Code for angiogenic edge type. */
+        ANGIOGENIC(EdgeCategory.CAPILLARY);
 
         /** Edge category corresponding to the edge type. */
         final EdgeCategory category;
