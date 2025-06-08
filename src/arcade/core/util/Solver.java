@@ -428,9 +428,10 @@ public class Solver {
      * @param a the lower bound on the interval
      * @param b the upper bound on the interval
      * @param maxIters the maximum number of iterations
+     * @param tolerance the error tolerance
      * @return the root of the function
      */
-    public static double bisection(Function func, double a, double b, int maxIters) {
+    public static double bisection(Function func, double a, double b, int maxIters, double tolerance) {
         double c;
         double fc;
         int i = 0;
@@ -452,7 +453,7 @@ public class Solver {
             fc = func.f(c);
 
             // Check for exit conditions.
-            if (fc == 0 || (b - a) / 2 < DELTA) {
+            if (fc == 0 || (b - a) / 2 < tolerance) {
                 return c;
             } else {
                 if (Math.signum(fc) == Math.signum(func.f(a))) {
@@ -469,7 +470,7 @@ public class Solver {
     }
 
     /**
-     * Finds root using bisection method with default maximum iterations.
+     * Finds root using bisection method with default maximum iterations and tolerance.
      *
      * <p>Root is found by repeatedly bisecting the interval and selecting the interval in which the
      * function changes sign. If no root is found, the simulation will throw an ArithmeticException.
@@ -480,6 +481,38 @@ public class Solver {
      * @return the root of the function
      */
     public static double bisection(Function func, double a, double b) {
-        return bisection(func, a, b, MAX_ITERS);
+        return bisection(func, a, b, MAX_ITERS, TOLERANCE);
+    }
+
+    /**
+     * Finds root using bisection method with default maximum iterations.
+     *
+     * <p>Root is found by repeatedly bisecting the interval and selecting the interval in which the
+     * function changes sign. If no root is found, the simulation will throw an ArithmeticException.
+     *
+     * @param func the function
+     * @param a the lower bound on the interval
+     * @param b the upper bound on the interval
+     * @param tolerance the error tolerance
+     * @return the root of the function
+     */
+    public static double bisection(Function func, double a, double b, double tolerance) {
+        return bisection(func, a, b, MAX_ITERS, tolerance);
+    }
+
+    /**
+     * Finds root using bisection method with default tolerance.
+     *
+     * <p>Root is found by repeatedly bisecting the interval and selecting the interval in which the
+     * function changes sign. If no root is found, the simulation will throw an ArithmeticException.
+     *
+     * @param func the function
+     * @param a the lower bound on the interval
+     * @param b the upper bound on the interval
+     * @param maxIters the maximum number of iterations
+     * @return the root of the function
+     */
+    public static double bisection(Function func, double a, double b, int maxIters) {
+        return bisection(func, a, b, maxIters, TOLERANCE);
     }
 }

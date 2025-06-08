@@ -33,6 +33,9 @@ public final class Graph {
     /** Collection of all {@code Edge} objects in a graph. */
     private final Bag allEdges;
 
+    /** Map of {@code Node} objects, for lookup. */
+    private final Map<String, Node> nodes;
+
     /** Map of {@code Node} OUT to bag of {@code Edge} objects. */
     private final Map<Node, Bag> nodeToOutBag;
 
@@ -44,6 +47,7 @@ public final class Graph {
         allEdges = new Bag();
         nodeToOutBag = new HashMap<>();
         nodeToInBag = new HashMap<>();
+        nodes = new HashMap<>();
     }
 
     /**
@@ -91,6 +95,14 @@ public final class Graph {
      */
     public boolean contains(Edge edge) {
         return checkEdge(edge);
+    }
+
+    public Node lookup(int x, int y, int z){
+        return nodes.get("(" + x + "," + y + "," + z + ")");
+    }
+
+    public Node lookup(Node node){
+        return nodes.get(node.toString());
     }
 
     /**
@@ -257,6 +269,8 @@ public final class Graph {
                     e.setTo(join);
                 }
             }
+
+            nodes.put(join.toString(), join);
         }
     }
 
@@ -280,6 +294,25 @@ public final class Graph {
         setOutMap(edge.getFrom(), edge);
         setInMap(edge.getTo(), edge);
         setLinks(edge);
+        addNodes(edge);
+    }
+
+
+    private void addNodes(Edge edge){
+        Node from = edge.getFrom();
+        Node to = edge.getTo();
+        if (!nodes.containsKey(from.toString())){
+            nodes.put(from.toString(), from);
+        }
+        else {
+            from = nodes.get(from.toString());
+        }
+        if (!nodes.containsKey(to.toString())){
+            nodes.put(to.toString(), to);
+        }
+        else {
+            to = nodes.get(to.toString());
+        }
     }
 
     /**
@@ -748,6 +781,13 @@ public final class Graph {
         public Edge(Node from, Node to) {
             this.from = from.duplicate();
             this.to = to.duplicate();
+            edgesIn = new ArrayList<>();
+            edgesOut = new ArrayList<>();
+        }
+
+        public Edge(Node from, Node to, boolean duplicate) {
+            this.from = duplicate ? from.duplicate() : from;
+            this.to = duplicate ? to.duplicate() : to;
             edgesIn = new ArrayList<>();
             edgesOut = new ArrayList<>();
         }

@@ -59,8 +59,12 @@ public abstract class PatchComponentSitesGraphFactory {
         VEIN(EdgeCategory.VEIN),
 
         /** Code for venule edge type. */
-        VENULE(EdgeCategory.VEIN);
+        VENULE(EdgeCategory.VEIN),
 
+        /** Code for angiogenic edge type. */
+        ANGIOGENIC(EdgeCategory.CAPILLARY);
+
+        /** Code for capillary edge type. */
         /** Edge category corresponding to the edge type. */
         final EdgeCategory category;
 
@@ -190,6 +194,12 @@ public abstract class PatchComponentSitesGraphFactory {
 
     /** Width of the array (y direction). */
     final int latticeWidth;
+
+    /** List of pointers to artery node and edge objects. */
+    ArrayList<Root> arteries;
+
+    /** List of pointers to vein node and edge objects. */
+    ArrayList<Root> veins;
 
     /**
      * Creates a factory for making {@link Graph} sites.
@@ -624,8 +634,8 @@ public abstract class PatchComponentSitesGraphFactory {
             leaves.addAll(bag);
         }
 
-        ArrayList<Root> arteries = new ArrayList<>();
-        ArrayList<Root> veins = new ArrayList<>();
+        arteries = new ArrayList<>();
+        veins = new ArrayList<>();
         boolean hasArtery = false;
         boolean hasVein = false;
 
@@ -663,19 +673,19 @@ public abstract class PatchComponentSitesGraphFactory {
         addMotifs(graph, leaves2, EdgeLevel.LEVEL_1, EdgeMotif.SINGLE, random);
 
         // Calculate radii, pressure, and shears.
-        updateRootGraph(graph, arteries, veins, EdgeLevel.LEVEL_1, random);
+        updateRootGraph(graph,EdgeLevel.LEVEL_1, random);
 
         // Iterative remodeling.
         int iter = 0;
         double frac = 1.0;
         while (frac > REMODELING_FRACTION && iter < MAX_ITERATIONS) {
             frac = remodelRootGraph(graph, EdgeLevel.LEVEL_1, random);
-            updateRootGraph(graph, arteries, veins, EdgeLevel.LEVEL_1, random);
+            updateRootGraph(graph, EdgeLevel.LEVEL_1, random);
             iter++;
         }
 
         // Prune network for perfused segments and recalculate properties.
-        refineRootGraph(graph, arteries, veins);
+        refineRootGraph(graph);
 
         // Subdivide growth sites and add new motifs.
         Bag midpoints = subdivideRootGraph(graph, EdgeLevel.LEVEL_1);
@@ -684,10 +694,10 @@ public abstract class PatchComponentSitesGraphFactory {
         addMotifs(graph, midpoints2, EdgeLevel.LEVEL_2, EdgeMotif.SINGLE, random);
 
         // Calculate radii, pressure, and shears.
-        updateRootGraph(graph, arteries, veins, EdgeLevel.LEVEL_2, random);
+        updateRootGraph(graph, EdgeLevel.LEVEL_2, random);
 
         // Prune network for perfused segments and recalculate properties.
-        refineRootGraph(graph, arteries, veins);
+        refineRootGraph(graph);
 
         return graph;
     }
@@ -703,8 +713,6 @@ public abstract class PatchComponentSitesGraphFactory {
      */
     private void updateRootGraph(
             Graph graph,
-            ArrayList<Root> arteries,
-            ArrayList<Root> veins,
             EdgeLevel level,
             MersenneTwisterFast random) {
         ArrayList<SiteEdge> list;
@@ -833,7 +841,7 @@ public abstract class PatchComponentSitesGraphFactory {
      * @param arteries the list of artery edges
      * @param veins    the list of vein edges
      */
-    private void refineRootGraph(Graph graph, ArrayList<Root> arteries, ArrayList<Root> veins) {
+    private void refineRootGraph(Graph graph) {
         // Reverse edges that are veins and venules.
         ArrayList<SiteEdge> reverse = getEdgeByType(graph, new EdgeType[] { EdgeType.VEIN, EdgeType.VENULE });
         for (SiteEdge edge : reverse) {

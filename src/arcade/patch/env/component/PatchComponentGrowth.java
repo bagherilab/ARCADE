@@ -20,17 +20,21 @@ import arcade.core.env.location.Location;
 import arcade.core.env.lattice.Lattice;
 import arcade.core.env.component.Component;
 import arcade.patch.sim.PatchSimulation;
+import arcade.patch.env.location.CoordinateXYZ;
 import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
 import arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
 import arcade.patch.env.component.PatchComponentSitesGraphFactory.Root;
 import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeDirection;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeLevel;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeType;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.CAPILLARY_RADIUS;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MINIMUM_CAPILLARY_RADIUS;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MAXIMUM_CAPILLARY_RADIUS;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculateThickness;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculateThicknesses;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.path;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.reversePressures;
-import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.path;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.getPath;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.updateGraph;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculateFlows;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculatePressure;
@@ -54,6 +58,10 @@ import static arcade.patch.util.PatchEnums.Ordering;
 public class PatchComponentGrowth implements Component {
     private static Logger LOGGER = Logger.getLogger(PatchComponentGrowth.class.getName());
 
+    private final EdgeLevel DEFAULT_EDGE_LEVEL = EdgeLevel.LEVEL_1;
+
+    private final EdgeType DEFAULT_EDGE_TYPE = EdgeType.ANGIOGENIC;
+
     /** Calculation strategies. */
     public enum Calculation {
         /** Code for upstream calculation strategy. */
@@ -75,14 +83,27 @@ public class PatchComponentGrowth implements Component {
         BIASED;
     }
 
-    private final double migrationRate;
-    private final double vegfThreshold;
-    private final String walkType;
-    private final double maxLength;
+    /** Rate of migration. */
+    private double migrationRate;
+
+    /**
+     * Angiogenesis threshold for vegf concentration near SiteNode to initiate
+     * migration.
+     */
+    private double vegfThreshold;
+
+    /** Direction of migration. */
+    private MigrationDirection walkType;
+
+    /** Maximum length of migration. */
+    private double maxLength;
 
     private int maxEdges;
+
     private int interval;
+
     private double edgeSize;
+
     /** The associated {@link GraphSites} object. */
     private PatchComponentSitesGraph sites;
 
@@ -92,19 +113,17 @@ public class PatchComponentGrowth implements Component {
     private HashMap<SiteNode, ArrayList<SiteEdge>> angioMap = new HashMap<>();
     private ArrayList<SiteEdge> tempEdges;
 
-    private EnumMap<EdgeDirection, int[]> offsets;
-    private final int level = 1;
-    private final int default_type = 0; // Capillary type
-
-    private final MiniBox specs;
+    private ArrayList<SiteEdge> added = new ArrayList<>();
 
     private int numOffsets;
+    private ArrayList<EdgeDirection> offsetDirections;
+    private EnumMap<EdgeDirection, int[]> offsets;
 
     public PatchComponentGrowth(Series series, MiniBox parameters) {
         // Set loaded parameters.
         migrationRate = parameters.getDouble("MIGRATION_RATE");
         vegfThreshold = parameters.getDouble("VEGF_THRESHOLD");
-        walkType = parameters.get("WALK_TYPE");
+        walkType = MigrationDirection.valueOf(parameters.get("WALK_TYPE"));
         maxLength = parameters.getDouble("MAX_LENGTH");
     }
 
@@ -125,7 +144,6 @@ public class PatchComponentGrowth implements Component {
 
     @Override
     public void register(Simulation sim, String layer) {
-        PatchSimulation patchSim = (PatchSimulation) sim;
         Component component = sim.getComponent(layer);
 
         if (!(component instanceof PatchComponentSitesGraph)) {
@@ -135,21 +153,25 @@ public class PatchComponentGrowth implements Component {
         sites = (PatchComponentSitesGraph) component;
         graph = sites.graph;
         offsets = sites.graphFactory.getOffsets();
-        numOffsets = offsets.keySet().size();
+
+        offsetDirections = new ArrayList<>(offsets.keySet());
+        offsetDirections.remove(EdgeDirection.UNDEFINED);
+        numOffsets = offsetDirections.size();
+
         edgeSize = sim.getSeries().ds;
         maxEdges = (int) Math.floor(maxLength / edgeSize);
-
     }
 
     @Override
-    public void step(final SimState simstate) {
-        final Simulation sim = (Simulation) simstate;
-        final Lattice vegfLattice = sim.getLattice("VEGF");
-        final MersenneTwisterFast random = simstate.random;
+    public void step(SimState simstate) {
+        Simulation sim = (Simulation) simstate;
+        int tick = (int) simstate.schedule.getTime();
+
+        Lattice vegfLattice = sim.getLattice("VEGF");
+
+        MersenneTwisterFast random = simstate.random;
 
         ArrayList<SiteNode> nodesToRemove = new ArrayList<>();
-
-        final double tick = (int) simstate.schedule.getTime() + 1;
 
         LinkedHashSet<SiteNode> set = new LinkedHashSet<>();
 
@@ -178,9 +200,9 @@ public class PatchComponentGrowth implements Component {
                 continue;
             }
 
-            ArrayList<ArrayList<Double>> vegfList = getVEGFList(vegfLattice, node);
+            EnumMap<EdgeDirection, ArrayList<Double>> vegfMap = buildDirectionalVEGFMap(vegfLattice, node);
 
-            if (averageListArrays(vegfList) > vegfThreshold) {
+            if (averageDirectionalMap(vegfMap) > vegfThreshold) {
                 angioMap.put(node, new ArrayList<>());
                 ArrayList<EdgeDirection> skipDirList = new ArrayList<EdgeDirection>();
 
@@ -198,28 +220,24 @@ public class PatchComponentGrowth implements Component {
                     for (Object edge : out) {
                         SiteEdge outEdge = (SiteEdge) edge;
                         skipDirList.add(sites.graphFactory.getDirection(outEdge, outEdge.level));
-
                     }
                 }
 
-                ArrayList<Double> vegfAverages = getListAverages(vegfList);
+                EnumMap<EdgeDirection, Double> vegfAverages = getDirectionalAverages(vegfMap);
 
-                int newDir;
-                switch (walkType.toUpperCase()) {
-                    case "RANDOM":
-                        newDir = performRandomWalk(random, node, vegfAverages, tick, skipDirList);
+                switch (walkType) {
+                    case RANDOM:
+                        node.sproutDir = performRandomWalk(random, node, vegfAverages, tick, skipDirList);
                         break;
-                    case "BIASED":
-                        newDir = performBiasedWalk(random, node, vegfAverages, tick, skipDirList);
+                    case BIASED:
+                        node.sproutDir = performBiasedWalk(random, node, vegfAverages, tick, skipDirList);
                         break;
-                    case "MAX":
-                        newDir = performDeterministicWalk(random, node, vegfAverages, tick, skipDirList);
+                    case DETERMINISTIC:
+                        node.sproutDir = performDeterministicWalk(random, node, vegfAverages, tick, skipDirList);
                         break;
                     default:
-                        LOGGER.warning("invalid walk type: " + walkType + "; using default of MAX.");
-                        newDir = performDeterministicWalk(random, node, vegfAverages, tick, skipDirList);
+                        node.sproutDir = performDeterministicWalk(random, node, vegfAverages, tick, skipDirList);
                 }
-                node.sproutDir = newDir;
             }
         }
 
@@ -228,7 +246,7 @@ public class PatchComponentGrowth implements Component {
         addTemporaryEdges();
 
         for (Map.Entry<SiteNode, ArrayList<SiteEdge>> entry : angioMap.entrySet()) {
-            // grab final node in each list and add edge, check for perfusion
+            // grab node in each list and add edge, check for perfusion
             SiteNode keyNode = entry.getKey();
 
             if (checkForIgnoredEdges(keyNode)) {
@@ -288,11 +306,11 @@ public class PatchComponentGrowth implements Component {
                     if (reversed) {
                         calculatePressures(graph);
                     }
-                    calcFlows(graph, sites);
-                    calcStress(graph);
+                    calculateFlows(graph);
+                    calculateStresses(graph);
 
-                    // maybe try to redo by iterating through list rather than using final node
-                    if (!graph.containsNode(finalNode)) {
+                    // maybe try to redo by iterating through list rather than using node
+                    if (!graph.contains(finalNode)) {
                         // LOGGER.info("CONNECTING TWO ANGIOGENIC NODES");
                         SiteNode targetNode = findKeyNodeInMap(finalNode, sproutNode);
                         if (targetNode == null) {
@@ -356,7 +374,7 @@ public class PatchComponentGrowth implements Component {
         // Otherwise, recalculate calculate stresses.
         if (!added.isEmpty()) {
             // LOGGER.info("*****Updating graph.****** Time: " + tick);
-            updateGraph(graph, sites, added);
+            updateGraph(graph);
         }
     }
 
@@ -382,7 +400,7 @@ public class PatchComponentGrowth implements Component {
         return false;
     }
 
-    private boolean checkNodeSkipStatus(SiteNode node, double tick) {
+    private boolean checkNodeSkipStatus(SiteNode node, int tick) {
         if (angioMap.keySet().contains(node)) {
             return true;
         }
@@ -409,14 +427,14 @@ public class PatchComponentGrowth implements Component {
             if (keyNode == targetNode) {
                 return keyNode;
             }
-            if (edgeListContainsNode(angioMap.get(keyNode), targetNode)) {
+            if (edgeListcontains(angioMap.get(keyNode), targetNode)) {
                 return keyNode;
             }
         }
         return null;
     }
 
-    private boolean edgeListContainsNode(ArrayList<SiteEdge> edgeList, SiteNode targetNode) {
+    private boolean edgeListcontains(ArrayList<SiteEdge> edgeList, SiteNode targetNode) {
         for (SiteEdge edge : edgeList) {
             if (edge.getTo() == targetNode) {
                 return true;
@@ -449,108 +467,109 @@ public class PatchComponentGrowth implements Component {
         }
     }
 
-    private int performRandomWalk(final MersenneTwisterFast random, final SiteNode node,
-            final ArrayList<Double> valList, final double tick, ArrayList<EdgeDirection> skipList) {
-        int randDir;
+    private EdgeDirection performRandomWalk(MersenneTwisterFast random, SiteNode node,
+            EnumMap<EdgeDirection, Double> valList, int tick, ArrayList<EdgeDirection> skipList) {
+        EdgeDirection randDir;
         do {
-            randDir = random.nextInt(offsets.keySet().size());
+            randDir = offsetDirections.get(random.nextInt(numOffsets));
         } while (!skipList.contains(randDir));
         return randDir;
     }
 
-    private int performBiasedWalk(final MersenneTwisterFast random, final SiteNode node,
-            final ArrayList<Double> valList, final double tick, ArrayList<EdgeDirection> skipList) {
-        for (final EdgeDirection dir : skipList) {
-            valList.set(dir, 0.0);
+    private EdgeDirection performBiasedWalk(MersenneTwisterFast random, SiteNode node,
+            EnumMap<EdgeDirection, Double> valList, int tick, ArrayList<EdgeDirection> skipList) {
+        for (EdgeDirection dir : skipList) {
+            valList.put(dir, 0.0);
         }
-        final ArrayList<Double> seqList = normalizeSequentialList(valList);
-        final double val = random.nextDouble();
-        for (int i = 0; i < numOffsets; i++) {
-            if (val < seqList.get(i)) {
-                return i;
+        EnumMap<EdgeDirection, Double> seqMap = normalizeDirectionalMap(valList);
+        double val = random.nextDouble();
+        for (EdgeDirection dir : offsetDirections) {
+            if (val < seqMap.get(dir)) {
+                return dir;
             }
         }
-        return numOffsets - 1;
+        // otherwise return last direction
+        return offsetDirections.get(offsetDirections.size() - 1);
     }
 
-    private int performDeterministicWalk(final MersenneTwisterFast random, final SiteNode node,
-            final ArrayList<Double> valList, final double tick, ArrayList<EdgeDirection> skipList) {
-        for (final int dir : skipList) {
-            valList.set(dir, 0.0);
+    private EdgeDirection performDeterministicWalk(MersenneTwisterFast random, SiteNode node,
+            EnumMap<EdgeDirection, Double> valList, int tick, ArrayList<EdgeDirection> skipList) {
+        for (EdgeDirection dir : skipList) {
+            valList.put(dir, 0.0);
         }
-        final int maxDir = getMaxKey(valList);
+        EdgeDirection maxDir = getMaxKey(valList);
         return maxDir;
     }
 
-    private ArrayList<ArrayList<Double>> getVEGFList(final Lattice lattice, final SiteNode node) {
+    private EnumMap<EdgeDirection, ArrayList<Double>> buildDirectionalVEGFMap(Lattice lattice, SiteNode node) {
         double[][][] field = lattice.getField();
-        final ArrayList<ArrayList<Double>> vegfList = new ArrayList<>();
-        for (int dir = 0; dir < numOffsets; dir++) {
-            SiteNode proposed = sites.offsetNode(node, dir, level);
-            if (sites.checkNode(proposed)) {
-                final ArrayList<int[]> span = sites.getSpan(node, proposed);
-                vegfList.add(dir, new ArrayList<>());
-                for (final int[] coords : span) {
-                    int i = coords[0];
-                    int j = coords[1];
-                    int k = coords[2];
-                    vegfList.get(dir).add(field[k][i][j]);
+        EnumMap<EdgeDirection, ArrayList<Double>> vegfMap = new EnumMap<>(EdgeDirection.class);
+        for (EdgeDirection dir : offsetDirections) {
+            SiteNode proposed = sites.graphFactory.offsetNode(node, dir, DEFAULT_EDGE_LEVEL);
+            if (sites.graphFactory.checkNode(proposed)) {
+                ArrayList<CoordinateXYZ> span = sites.getSpan(node, proposed);
+                vegfMap.put(dir, new ArrayList<>());
+                for (CoordinateXYZ coordinate : span) {
+                    int i = coordinate.x;
+                    int j = coordinate.y;
+                    int k = coordinate.z;
+                    vegfMap.get(dir).add(field[k][i][j]);
                 }
             } else {
-                vegfList.add(dir, new ArrayList<>(0));
+                vegfMap.put(dir, new ArrayList<>(0));
             }
         }
-        return vegfList;
+        return vegfMap;
     }
 
-    private int getMaxKey(final ArrayList<Double> map) {
-        int maxDir = 0;
+    private EnumMap<EdgeDirection, Double> getDirectionalAverages(EnumMap<EdgeDirection, ArrayList<Double>> map) {
+        EnumMap<EdgeDirection, Double> averageMap = new EnumMap<>(EdgeDirection.class);
+        for (EdgeDirection dir : offsetDirections) {
+            double sum = 0;
+            for (double value : map.get(dir)) {
+                sum += value;
+            }
+            averageMap.put(dir, sum / map.get(dir).size());
+        }
+        return averageMap;
+    }
+
+    private EdgeDirection getMaxKey(EnumMap<EdgeDirection, Double> map) {
+        EdgeDirection maxDir = EdgeDirection.UNDEFINED;
         double maxVal = 0;
-        for (int i = 0; i < numOffsets; i++) {
-            if (map.get(i) > maxVal) {
-                maxDir = i;
-                maxVal = map.get(i);
+        for (EdgeDirection dir : offsetDirections) {
+            if (map.get(dir) > maxVal) {
+                maxDir = dir;
+                maxVal = map.get(dir);
             }
         }
         return maxDir;
     }
 
-    private ArrayList<Double> getListAverages(final ArrayList<ArrayList<Double>> map) {
-        final ArrayList<Double> averageList = new ArrayList<>();
-        for (int i = 0; i < numOffsets; i++) {
-            double sum = 0;
-            for (final double value : map.get(i)) {
-                sum += value;
-            }
-            averageList.add(i, sum / map.get(i).size());
-        }
-        return averageList;
-    }
-
-    private ArrayList<Double> normalizeSequentialList(final ArrayList<Double> map) {
-        final ArrayList<Double> normalizedList = new ArrayList<>();
-        final double norm = sumList(map);
+    private EnumMap<EdgeDirection, Double> normalizeDirectionalMap(EnumMap<EdgeDirection, Double> map) {
+        EnumMap<EdgeDirection, Double> normalizedMap = new EnumMap<>(EdgeDirection.class);
+        double norm = sumMap(map);
         double prev = 0;
-        for (int i = 0; i < numOffsets; i++) {
-            normalizedList.add(i, prev + map.get(i) / norm);
-            prev = prev + map.get(i) / norm;
+        for (EdgeDirection dir : offsetDirections) {
+            prev = prev + map.get(dir) / norm;
+            normalizedMap.put(dir, prev);
         }
-        return normalizedList;
+        return normalizedMap;
     }
 
-    private double sumList(final ArrayList<Double> map) {
+    private double sumMap(EnumMap<EdgeDirection, Double> map) {
         double sum = 0;
-        for (int i = 0; i < numOffsets; i++) {
-            sum += map.get(i);
+        for (EdgeDirection dir : offsetDirections) {
+            sum += map.get(dir);
         }
         return sum;
     }
 
-    private double averageListArrays(final ArrayList<ArrayList<Double>> map) {
+    private double averageDirectionalMap(EnumMap<EdgeDirection, ArrayList<Double>> map) {
         double sum = 0;
         int count = 0;
-        for (int i = 0; i < numOffsets; i++) {
-            for (final double value : map.get(i)) {
+        for (EdgeDirection dir : offsetDirections) {
+            for (double value : map.get(dir)) {
                 sum += value;
                 count++;
             }
@@ -558,15 +577,15 @@ public class PatchComponentGrowth implements Component {
         return sum / count;
     }
 
-    private void addEdgeList(final ArrayList<SiteEdge> list) {
+    private void addEdgeList(ArrayList<SiteEdge> list) {
         addEdgeList(list, false);
     }
 
-    private void addEdgeList(final ArrayList<SiteEdge> list, boolean updateProperties) {
-        addEdgeList(list, updateProperties, default_type);
+    private void addEdgeList(ArrayList<SiteEdge> list, boolean updateProperties) {
+        addEdgeList(list, updateProperties, DEFAULT_EDGE_TYPE);
     }
 
-    private void addAngioEdges(ArrayList<SiteEdge> list, SiteNode start, SiteNode end, double tick, Calculation calc) {
+    private void addAngioEdges(ArrayList<SiteEdge> list, SiteNode start, SiteNode end, int tick, Calculation calc) {
 
         ArrayList<SiteEdge> added = new ArrayList<>();
 
@@ -577,7 +596,7 @@ public class PatchComponentGrowth implements Component {
             return;
         }
 
-        Graph tempG = sites.graphFactory.newGraph();
+        Graph tempG = new Graph();
         for (SiteEdge e : list) {
             tempG.addEdge(e);
         }
@@ -585,7 +604,7 @@ public class PatchComponentGrowth implements Component {
         path(tempG, start, end);
         SiteNode n = end;
         while (n != start) {
-            added.add(new SiteEdge(n.prev n, 0, level, false));
+            added.add(new SiteEdge(n.prev, n, DEFAULT_EDGE_TYPE, DEFAULT_EDGE_LEVEL));
             n = n.prev;
             if (n != start) {
                 if (n == null) {
@@ -604,24 +623,15 @@ public class PatchComponentGrowth implements Component {
         }
 
         for (SiteEdge edge : added) {
-            edge.isAngiogenic = true;
-            edge.radius = (otherRadius > CAP_RADIUS) ? CAP_RADIUS
+            edge.radius = (otherRadius > CAPILLARY_RADIUS) ? CAPILLARY_RADIUS
                     : calculateEvenSplitRadius((SiteEdge) outEdges.get(0));
-            edge.wall = calcThickness(edge.radius);
+            edge.wall = calculateThickness(edge);
             edge.span = sites.getSpan(edge.getFrom(), edge.getTo());
-            edge.length = sites.getLength(edge, 1);
+            edge.length = sites.graphFactory.getLength(edge, DEFAULT_EDGE_LEVEL);
 
             // update later (updateSpans method should take care of most of these, need to
             // check for perfusion first)
             edge.isPerfused = true;
-            edge.fraction = new double[sites.NUM_MOLECULES];
-            edge.transport = new double[sites.NUM_MOLECULES];
-            for (int[] coor : edge.span) { // i don't think i need this?
-                int i = coor[0];
-                int j = coor[1];
-                int k = coor[2];
-                sites.sites[k][i][j]++;
-            }
         }
 
         if (start.pressure * end.pressure <= 0) {
@@ -653,19 +663,19 @@ public class PatchComponentGrowth implements Component {
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
         double flow = calculateLocalFlow(radius, length, deltaP);
         double newRadius = Solver.bisection((double r) -> flow - 2 * calculateLocalFlow(r, length, deltaP), 1E-6,
-                5 * CAP_RADIUS_MAX, 1E-6);
+                5 * MAXIMUM_CAPILLARY_RADIUS, 1E-6);
         // LOGGER.info("splitting radius, for checking if it happens directly before
         // bisection failing");
         // double newRadius = Solver.bisection((double r) -> Math.pow(flow - 2 *
-        // calculateLocalFlow(r, length, deltaP), 2), 0, CAP_RADIUS_MAX);
+        // calculateLocalFlow(r, length, deltaP), 2), 0, MAXIMUM_CAPILLARY_RADIUS);
         // double newRadius = Solver.boundedGradientDescent((double r) -> Math.pow(flow
         // - 2 * calculateLocalFlow(r, length, deltaP), 2), radius, 1E-17,
-        // CAP_RADIUS_MIN, CAP_RADIUS_MAX);
+        // MINIMUM_CAPILLARY_RADIUS, MAXIMUM_CAPILLARY_RADIUS);
         return newRadius;
     }
 
     private void updateRootsAndRadii(ArrayList<SiteEdge> addedEdges, SiteNode start, SiteNode end) {
-        updateGraph(graph, sites);
+        updateGraph(graph);
         ArrayList<Double> oldRadii = new ArrayList<>();
         ArrayList<SiteEdge> updatedEdges = new ArrayList<>();
         Boolean failed = false;
@@ -680,12 +690,10 @@ public class PatchComponentGrowth implements Component {
         }
 
         Double deltaP = start.pressure - end.pressure;
-        Double newFlow = calculateLocalFlow(CAP_RADIUS, addedEdges, deltaP);
+        Double newFlow = calculateLocalFlow(CAPILLARY_RADIUS, addedEdges, deltaP);
 
-        ArrayList<Root> arteries = sites.arteries;
-        Integer num_arteries = 0;
-        ArrayList<Root> veins = sites.veins;
-        Integer num_veins = 0;
+        ArrayList<Root> arteries = sites.graphFactory.arteries;
+        ArrayList<Root> veins = sites.graphFactory.veins;
 
         ArrayList<ArrayList<SiteEdge>> pathsArteries = new ArrayList<>();
         for (Root artery : arteries) {
@@ -694,10 +702,10 @@ public class PatchComponentGrowth implements Component {
                 continue;
             }
             pathsArteries.add(path);
-            num_arteries++;
         }
 
-        Double arteryFlow = newFlow / num_arteries;
+        Double arteryFlow = newFlow / arteries.size();
+
         for (ArrayList<SiteEdge> path : pathsArteries) {
             if (!path.get(0).getFrom().isRoot) {
                 throw new ArithmeticException("Root is not the start of the path");
@@ -732,10 +740,9 @@ public class PatchComponentGrowth implements Component {
                 continue;
             }
             pathsVeins.add(path);
-            num_veins++;
         }
 
-        Double veinFlow = newFlow / num_veins;
+        Double veinFlow = newFlow / veins.size();
 
         for (ArrayList<SiteEdge> path : pathsVeins) {
             if (!path.get(0).getFrom().isRoot) {
@@ -754,7 +761,7 @@ public class PatchComponentGrowth implements Component {
             }
         }
 
-        if (num_arteries == 0 || num_veins == 0) {
+        if (arteries.size() == 0 || veins.size() == 0) {
             LOGGER.info("No arteries or veins found, not updating roots");
             failed = true;
         }
@@ -767,7 +774,7 @@ public class PatchComponentGrowth implements Component {
 
     private void recalcRadii(ArrayList<SiteEdge> ignoredEdges, SiteNode start, SiteNode end, SiteNode intersection) {
 
-        updateGraph(graph, sites);
+        updateGraph(graph);
         Bag edges = graph.getEdgesOut(start);
 
         if (edges == null) {
@@ -784,16 +791,16 @@ public class PatchComponentGrowth implements Component {
         Integer angioIndex = ignoredEdges.contains(edges.get(0)) ? 0 : 1;
         Integer nonAngioIndex = angioIndex ^ 1;
         double deltaP = start.pressure - end.pressure;
-        // double deltaP = ((SiteNode) graph.lookupNode(start)).pressure - ((SiteNode)
-        // graph.lookupNode(end)).pressure;
-        Double divertedFlow = calculateLocalFlow(CAP_RADIUS, ignoredEdges, deltaP);
+        // double deltaP = ((SiteNode) graph.lookup(start)).pressure - ((SiteNode)
+        // graph.lookup(end)).pressure;
+        Double divertedFlow = calculateLocalFlow(CAPILLARY_RADIUS, ignoredEdges, deltaP);
         Double originalFlow = ((SiteEdge) edges.get(nonAngioIndex)).flow;
         if (divertedFlow > originalFlow) {
             return;
         }
         if (intersection != null) {
             if (intersection.isRoot) {
-                updateRadiusToRoot((SiteEdge) edges.get(angioIndex), sites.veins.get(0).node, divertedFlow, false,
+                updateRadiusToRoot((SiteEdge) edges.get(angioIndex), sites.graphFactory.veins.get(0).node, divertedFlow, false,
                         ignoredEdges);
                 return;
                 // updateRadiusToRoot((SiteEdge) edges.get(angioIndex), intersection,
@@ -818,11 +825,11 @@ public class PatchComponentGrowth implements Component {
             // TODO: check to add flow to radius with new flow after changes to other
             // potential edge, need to do this math out?
             // this should only work for single vein simulations
-            SiteNode boundary = sites.veins.get(0).node;
+            SiteNode boundary = sites.graphFactory.veins.get(0).node;
             path(graph, start, boundary);
-            if (boundary.prev != null && ((SiteEdge) edges.get(angioIndex)).radius > CAP_RADIUS_MIN) {
+            if (boundary.prev != null && ((SiteEdge) edges.get(angioIndex)).radius > MINIMUM_CAPILLARY_RADIUS) {
                 // LOGGER.info("Calculating additional flow to vein");
-                updateRadiusToRoot((SiteEdge) edges.get(angioIndex), sites.veins.get(0).node, divertedFlow, false,
+                updateRadiusToRoot((SiteEdge) edges.get(angioIndex), sites.graphFactory.veins.get(0).node, divertedFlow, false,
                         ignoredEdges);
             } else {
                 return;
@@ -884,16 +891,17 @@ public class PatchComponentGrowth implements Component {
         double originalFlow = calculateLocalFlow(originalRadius, edge.length, deltaP);
 
         Function f = (double r) -> originalFlow + sign * flow
-                - calculateLocalFlow(r, edge.length, edge.getFrom().pressure - calculatePressure(r, edge.type));
+                - calculateLocalFlow(r, edge.length,
+                        edge.getFrom().pressure - calculatePressure(r, edge.type.category));
 
-        double newRadius = Solver.bisection(f, .5 * originalRadius, 1.5 * originalRadius, 1E-6);
+        double newRadius = Solver.bisection(f, .5 * originalRadius, 1.5 * originalRadius);
 
         if (newRadius == .5 * originalRadius || newRadius == Double.NaN) {
             return -1;
         }
 
         edge.radius = newRadius;
-        edge.getTo().pressure = calculatePressure(newRadius, edge.type);
+        edge.getTo().pressure = calculatePressure(newRadius, edge.type.category);
         return 0;
     }
 
@@ -904,21 +912,21 @@ public class PatchComponentGrowth implements Component {
         double originalFlow = calculateLocalFlow(originalRadius, edge.length, deltaP);
 
         Function f = (double r) -> originalFlow + sign * flow
-                - calculateLocalFlow(r, edge.length, calculatePressure(r, edge.type) - edge.getTo().pressure);
+                - calculateLocalFlow(r, edge.length, calculatePressure(r, edge.type.category) - edge.getTo().pressure);
 
-        double newRadius = Solver.bisection(f, .5 * originalRadius, 1.5 * originalRadius, 1E-6);
+        double newRadius = Solver.bisection(f, .5 * originalRadius, 1.5 * originalRadius);
         if (newRadius == .5 * originalRadius || newRadius == Double.NaN || newRadius == 1.5 * originalRadius) {
             return -1;
         }
 
         edge.radius = newRadius;
-        edge.getFrom().pressure = calculatePressure(newRadius, edge.type);
+        edge.getFrom().pressure = calculatePressure(newRadius, edge.type.category);
         return 0;
     }
 
     private void updateRadiusToRoot(SiteEdge edge, SiteNode intersection, double flow, boolean decrease,
             ArrayList<SiteEdge> ignored) {
-        ArrayList<Root> veins = sites.veins;
+        ArrayList<Root> veins = sites.graphFactory.veins;
         ArrayList<Double> oldRadii = new ArrayList<>();
         for (Root vein : veins) {
             ArrayList<SiteEdge> path = getPath(graph, edge.getTo(), vein.node);
@@ -960,46 +968,24 @@ public class PatchComponentGrowth implements Component {
     }
 
     private SiteEdge createNewEdge(EdgeDirection direction, SiteNode node, int tick) {
-        SiteNode proposed = sites.graphFactory.offsetNode(node, dir, level);
+        SiteNode proposed = sites.graphFactory.offsetNode(node, direction, DEFAULT_EDGE_LEVEL);
         proposed.lastUpdate = tick;
-        if (sites.checkNode(proposed) && graph.getDegree(node) < 3) {
+        if (sites.graphFactory.checkNode(proposed) && graph.getDegree(node) < 3) {
             SiteEdge edge;
-            if (graph.containsNode(proposed)) {
+            if (graph.contains(proposed)) {
                 if (graph.getDegree(proposed) > 2 || graph.getEdgesOut(proposed) == null
                         || graph.getEdgesIn(proposed) == null) {
                     return null;
                 }
-                SiteNode existing = (SiteNode) graph.lookupNode(proposed);
-                edge = new SiteEdge(node, existing, default_type, level, false);
+                SiteNode existing = (SiteNode) graph.lookup(proposed);
+                edge = new SiteEdge(node, existing, DEFAULT_EDGE_TYPE, DEFAULT_EDGE_LEVEL);
                 edge.isAnastomotic = true;
                 return edge;
             }
-            edge = new SiteEdge(node, proposed, default_type, level, false);
+            edge = new SiteEdge(node, proposed, DEFAULT_EDGE_TYPE, DEFAULT_EDGE_LEVEL);
 
             return edge;
         }
         return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * The JSON is formatted as:
-     * 
-     * <pre>
-     *     {
-     *         "type": "GROWTH",
-     *         "interval": interval,
-     *         "specs" : {
-     *             "SPEC_NAME": spec value,
-     *             "SPEC_NAME": spec value,
-     *             ...
-     *         }
-     *     }
-     * </pre>
-     */
-    public String toJSON() {
-        String format = "{ " + "\"type\": \"GROWTH\", " + "\"interval\": %d, " + "\"specs\": %s " + "}";
-        return String.format(format, interval, specs.toJSON());
     }
 }

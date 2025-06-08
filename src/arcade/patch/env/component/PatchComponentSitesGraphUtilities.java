@@ -1,14 +1,23 @@
 package arcade.patch.env.component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.Graph;
+import arcade.core.util.Graph.Edge;
 import arcade.core.util.Graph.Strategy;
 import arcade.core.util.Matrix;
 import arcade.core.util.Solver;
+import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
+import arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeCategory;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeLevel;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeType;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.Root;
+
 import static arcade.core.util.Graph.Edge;
 import static arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
 import static arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
@@ -591,9 +600,19 @@ abstract class PatchComponentSitesGraphUtilities {
     static void calculateThicknesses(Graph graph) {
         for (Object obj : graph.getAllEdges()) {
             SiteEdge edge = (SiteEdge) obj;
-            double d = 2 * edge.radius;
-            edge.wall = d * (0.267 - 0.084 * Math.log10(d));
+            edge.wall = calculateThickness(edge);
         }
+    }
+
+    /**
+     * Calculates the thickness of an edge.
+     *
+     * @param edge the edge object
+     * @return the thickness of the edge
+     */
+    static double calculateThickness(SiteEdge edge) {
+        double d = 2 * edge.radius;
+        return d * (0.267 - 0.084 * Math.log10(d));
     }
 
     /**
@@ -946,6 +965,25 @@ abstract class PatchComponentSitesGraphUtilities {
                 }
             }
         }
+    }
+
+    static ArrayList<SiteEdge> getPath(Graph graph, SiteNode start, SiteNode end){
+        path(graph, start, end);
+        ArrayList<SiteEdge> path = new ArrayList<>();
+        SiteNode node = end;
+        while (node != null && node != start) {
+            Bag b = graph.getEdgesIn(node);
+            if (b.numObjs == 1) {  path.add((SiteEdge)b.objs[0]); }
+            else if (b.numObjs == 2) {
+                SiteEdge edgeA = ((SiteEdge)b.objs[0]);
+                SiteEdge edgeB = ((SiteEdge)b.objs[1]);
+                if (edgeA.getFrom() == node.prev) { path.add(edgeA); }
+                else { path.add(edgeB); }
+            }
+            node = node.prev;
+        }
+        Collections.reverse(path);
+        return path;
     }
 
     /**
