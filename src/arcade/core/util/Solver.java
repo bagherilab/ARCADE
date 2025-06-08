@@ -431,7 +431,8 @@ public class Solver {
      * @param tolerance the error tolerance
      * @return the root of the function
      */
-    public static double bisection(Function func, double a, double b, int maxIters, double tolerance) {
+    public static double bisection(
+            Function func, double a, double b, int maxIters, double tolerance) {
         double c;
         double fc;
         int i = 0;

@@ -17,7 +17,6 @@ import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeCategory;
 import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeLevel;
 import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeType;
 import arcade.patch.env.component.PatchComponentSitesGraphFactory.Root;
-
 import static arcade.core.util.Graph.Edge;
 import static arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
 import static arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
@@ -124,16 +123,12 @@ abstract class PatchComponentSitesGraphUtilities {
     /**
      * Calculates node pressure for a given radius.
      *
-     * <p>
-     * Equation based on the paper: Welter M, Fredrich T, Rinneberg H, and Rieger H.
-     * (2016).
-     * Computational model for tumor oxygenation applied to clinical data on breast
-     * tumor hemoglobin
-     * concentrations suggests vascular dilatation and compression. <em>PLOS
-     * ONE</em>, 11(8),
+     * <p>Equation based on the paper: Welter M, Fredrich T, Rinneberg H, and Rieger H. (2016).
+     * Computational model for tumor oxygenation applied to clinical data on breast tumor hemoglobin
+     * concentrations suggests vascular dilatation and compression. <em>PLOS ONE</em>, 11(8),
      * e0161267.
      *
-     * @param radius   the radius of the edge
+     * @param radius the radius of the edge
      * @param category the edge category
      * @return the edge pressure
      */
@@ -144,11 +139,8 @@ abstract class PatchComponentSitesGraphUtilities {
     /**
      * Calculates relative viscosity for a given radius.
      *
-     * <p>
-     * Equation based on the paper: Pries AR, Secomb TW, Gessner T, Sperandio MB,
-     * Gross JF, and
-     * Gaehtgens P. (1994). Resistance to blood flow in microvessels in vivo.
-     * <em>Circulation
+     * <p>Equation based on the paper: Pries AR, Secomb TW, Gessner T, Sperandio MB, Gross JF, and
+     * Gaehtgens P. (1994). Resistance to blood flow in microvessels in vivo. <em>Circulation
      * Research</em>, 75(5), 904-915.
      *
      * @param radius the radius of the edge
@@ -156,9 +148,10 @@ abstract class PatchComponentSitesGraphUtilities {
      */
     private static double calculateViscosity(double radius) {
         double diameter = 2 * radius;
-        double mu45 = 6 * Math.exp(-0.085 * diameter)
-                + 3.2
-                - 2.44 * Math.exp(-0.06 * Math.pow(diameter, 0.645));
+        double mu45 =
+                6 * Math.exp(-0.085 * diameter)
+                        + 3.2
+                        - 2.44 * Math.exp(-0.06 * Math.pow(diameter, 0.645));
         double fR = Math.pow(diameter / (diameter - 1.1), 2);
         return (1 + (mu45 - 1) * fR) * fR;
     }
@@ -205,7 +198,7 @@ abstract class PatchComponentSitesGraphUtilities {
     /**
      * Gets the total amount of oxygen in blood (fmol/um<sup>3</sup>).
      *
-     * @param pressure   the oxygen partial pressure
+     * @param pressure the oxygen partial pressure
      * @param solubility the oxygen solubility in blood
      * @return the total amount of oxygen
      */
@@ -217,7 +210,7 @@ abstract class PatchComponentSitesGraphUtilities {
      * Gets the maximum (for arteries) or minimum (for veins) pressure across roots.
      *
      * @param roots the list of roots
-     * @param type  the root type
+     * @param type the root type
      * @return the root pressure
      */
     private static double getRootPressure(ArrayList<Root> roots, EdgeCategory type) {
@@ -242,12 +235,10 @@ abstract class PatchComponentSitesGraphUtilities {
     /**
      * Sets the pressure of roots.
      *
-     * <p>
-     * Method assumes that the root node has already been set to the correct node
-     * object.
+     * <p>Method assumes that the root node has already been set to the correct node object.
      *
      * @param roots the list of roots
-     * @param type  the root type
+     * @param type the root type
      * @return the pressure assigned to the roots
      */
     static double setRootPressures(ArrayList<Root> roots, EdgeCategory type) {
@@ -262,9 +253,9 @@ abstract class PatchComponentSitesGraphUtilities {
     /**
      * Sets the pressure of leaves.
      *
-     * @param graph          the graph object
+     * @param graph the graph object
      * @param arteryPressure the pressure at the arteries
-     * @param veinPressure   the pressure at the veins
+     * @param veinPressure the pressure at the veins
      */
     static void setLeafPressures(Graph graph, double arteryPressure, double veinPressure) {
         for (Object obj : graph.getAllEdges()) {
@@ -305,9 +296,9 @@ abstract class PatchComponentSitesGraphUtilities {
     /**
      * Marks edges that perfused between given arteries and veins.
      *
-     * @param graph    the graph object
+     * @param graph the graph object
      * @param arteries the list of arteries
-     * @param veins    the list of veins
+     * @param veins the list of veins
      */
     static void checkPerfused(Graph graph, ArrayList<Root> arteries, ArrayList<Root> veins) {
         // Reset all edges.
@@ -400,9 +391,7 @@ abstract class PatchComponentSitesGraphUtilities {
     /**
      * Calculates pressures at nodes.
      *
-     * <p>
-     * Sets up a system of linear equations for the current graph structure using
-     * mass balances
+     * <p>Sets up a system of linear equations for the current graph structure using mass balances
      * at each node.
      *
      * @param graph the graph object
@@ -549,9 +538,7 @@ abstract class PatchComponentSitesGraphUtilities {
         }
     }
 
-    /**
-     * Solve for Radius while maintaining mass balance
-     */
+    /** Solve for Radius while maintaining mass balance */
     static double calculateLocalFlow(double radius, ArrayList<SiteEdge> edges, double deltaP) {
         double length = 0;
 
@@ -567,8 +554,7 @@ abstract class PatchComponentSitesGraphUtilities {
     }
 
     /**
-     * Calculates flow rate (in um<sup>3</sup>/min) and area (in um<sup>2</sup>) for
-     * all edges.
+     * Calculates flow rate (in um<sup>3</sup>/min) and area (in um<sup>2</sup>) for all edges.
      *
      * @param graph the graph object
      */
@@ -619,8 +605,8 @@ abstract class PatchComponentSitesGraphUtilities {
      * Gets in degree for edge in given calculation direction.
      *
      * @param graph the graph object
-     * @param edge  the edge object
-     * @param dir   the calculation direction
+     * @param edge the edge object
+     * @param dir the calculation direction
      * @return the edge in degree
      */
     private static int getInDegree(Graph graph, SiteEdge edge, Strategy dir) {
@@ -638,8 +624,8 @@ abstract class PatchComponentSitesGraphUtilities {
      * Gets out degree for edge in given calculation direction.
      *
      * @param graph the graph object
-     * @param edge  the edge object
-     * @param dir   the calculation direction
+     * @param edge the edge object
+     * @param dir the calculation direction
      * @return the edge out degree
      */
     private static int getOutDegree(Graph graph, SiteEdge edge, Strategy dir) {
@@ -656,11 +642,11 @@ abstract class PatchComponentSitesGraphUtilities {
     /**
      * Calculate the radii (in um) using Murray's law.
      *
-     * @param graph     the graph object
-     * @param edge      the starting edge for the calculation
-     * @param dir       the direction of the calculation
+     * @param graph the graph object
+     * @param edge the starting edge for the calculation
+     * @param dir the direction of the calculation
      * @param fromcheck the number of edges in to the selected node
-     * @param tocheck   the number of edges out of the selected node
+     * @param tocheck the number of edges out of the selected node
      * @return the list of children edges
      */
     private static ArrayList<SiteEdge> calculateRadius(
@@ -698,17 +684,19 @@ abstract class PatchComponentSitesGraphUtilities {
             if (in == 1 && out == 1 && edge.radius != 0) {
                 e.radius = edge.radius;
             } else if (in == fromcheck && out == tocheck) {
-                ArrayList<Edge> b = (dir == Strategy.DOWNSTREAM ? edge.getEdgesOut() : edge.getEdgesIn());
+                ArrayList<Edge> b =
+                        (dir == Strategy.DOWNSTREAM ? edge.getEdgesOut() : edge.getEdgesIn());
                 double r1 = ((SiteEdge) b.get(0)).radius;
                 double r2 = ((SiteEdge) b.get(1)).radius;
 
                 if (e.radius == 0 && edge.radius != 0) {
                     if (r1 == 0 && r2 != 0) {
                         if (edge.radius > r2) {
-                            e.radius = Math.pow(
-                                    Math.pow(edge.radius, MURRAY_EXPONENT)
-                                            - Math.pow(r2, MURRAY_EXPONENT),
-                                    1 / MURRAY_EXPONENT);
+                            e.radius =
+                                    Math.pow(
+                                            Math.pow(edge.radius, MURRAY_EXPONENT)
+                                                    - Math.pow(r2, MURRAY_EXPONENT),
+                                            1 / MURRAY_EXPONENT);
                             if (Math.abs(e.radius - r2) < DELTA_TOLERANCE) {
                                 e.radius = r2;
                             }
@@ -716,10 +704,11 @@ abstract class PatchComponentSitesGraphUtilities {
                                 e.radius = MINIMUM_CAPILLARY_RADIUS;
                             }
                         } else if (edge.radius < r2) {
-                            e.radius = Math.pow(
-                                    Math.pow(r2, MURRAY_EXPONENT)
-                                            - Math.pow(edge.radius, MURRAY_EXPONENT),
-                                    1 / MURRAY_EXPONENT);
+                            e.radius =
+                                    Math.pow(
+                                            Math.pow(r2, MURRAY_EXPONENT)
+                                                    - Math.pow(edge.radius, MURRAY_EXPONENT),
+                                            1 / MURRAY_EXPONENT);
                             if (Math.abs(e.radius - edge.radius) < DELTA_TOLERANCE) {
                                 e.radius = edge.radius;
                             }
@@ -731,10 +720,11 @@ abstract class PatchComponentSitesGraphUtilities {
                         }
                     } else if (r1 != 0 && r2 == 0) {
                         if (edge.radius > r1) {
-                            e.radius = Math.pow(
-                                    Math.pow(edge.radius, MURRAY_EXPONENT)
-                                            - Math.pow(r1, MURRAY_EXPONENT),
-                                    1 / MURRAY_EXPONENT);
+                            e.radius =
+                                    Math.pow(
+                                            Math.pow(edge.radius, MURRAY_EXPONENT)
+                                                    - Math.pow(r1, MURRAY_EXPONENT),
+                                            1 / MURRAY_EXPONENT);
                             if (Math.abs(e.radius - r1) < DELTA_TOLERANCE) {
                                 e.radius = r1;
                             }
@@ -742,10 +732,11 @@ abstract class PatchComponentSitesGraphUtilities {
                                 e.radius = MINIMUM_CAPILLARY_RADIUS;
                             }
                         } else if (edge.radius < r1) {
-                            e.radius = Math.pow(
-                                    Math.pow(r1, MURRAY_EXPONENT)
-                                            - Math.pow(edge.radius, MURRAY_EXPONENT),
-                                    1 / MURRAY_EXPONENT);
+                            e.radius =
+                                    Math.pow(
+                                            Math.pow(r1, MURRAY_EXPONENT)
+                                                    - Math.pow(edge.radius, MURRAY_EXPONENT),
+                                            1 / MURRAY_EXPONENT);
                             if (Math.abs(e.radius - edge.radius) < DELTA_TOLERANCE) {
                                 e.radius = edge.radius;
                             }
@@ -767,9 +758,10 @@ abstract class PatchComponentSitesGraphUtilities {
                 double r1 = ((SiteEdge) b.get(0)).radius;
                 double r2 = ((SiteEdge) b.get(1)).radius;
                 if (r1 != 0 && r2 != 0) {
-                    e.radius = Math.pow(
-                            Math.pow(r1, MURRAY_EXPONENT) + Math.pow(r2, MURRAY_EXPONENT),
-                            1 / MURRAY_EXPONENT);
+                    e.radius =
+                            Math.pow(
+                                    Math.pow(r1, MURRAY_EXPONENT) + Math.pow(r2, MURRAY_EXPONENT),
+                                    1 / MURRAY_EXPONENT);
                 }
             }
 
@@ -789,11 +781,11 @@ abstract class PatchComponentSitesGraphUtilities {
     /**
      * Assigns the radii (in um) using Murray's law without splits.
      *
-     * @param graph     the graph object
-     * @param edge      the starting edge for the calculation
-     * @param dir       the direction of the calculation
+     * @param graph the graph object
+     * @param edge the starting edge for the calculation
+     * @param dir the direction of the calculation
      * @param fromcheck the number of edges in to the selected node
-     * @param tocheck   the number of edges out of the selected node
+     * @param tocheck the number of edges out of the selected node
      * @return the list of children edges
      */
     private static ArrayList<SiteEdge> assignRadius(
@@ -832,9 +824,10 @@ abstract class PatchComponentSitesGraphUtilities {
                 double r1 = ((SiteEdge) b.get(0)).radius;
                 double r2 = ((SiteEdge) b.get(1)).radius;
                 if (r1 != 0 && r2 != 0) {
-                    e.radius = Math.pow(
-                            Math.pow(r1, MURRAY_EXPONENT) + Math.pow(r2, MURRAY_EXPONENT),
-                            1 / MURRAY_EXPONENT);
+                    e.radius =
+                            Math.pow(
+                                    Math.pow(r1, MURRAY_EXPONENT) + Math.pow(r2, MURRAY_EXPONENT),
+                                    1 / MURRAY_EXPONENT);
                 }
             }
 
@@ -849,9 +842,9 @@ abstract class PatchComponentSitesGraphUtilities {
     /**
      * Traverses through the graph and marks visited nodes.
      *
-     * @param graph    the graph object
-     * @param gs       the graph sites object
-     * @param node     the starting node for the traversal
+     * @param graph the graph object
+     * @param gs the graph sites object
+     * @param node the starting node for the traversal
      * @param splitCol the column in the pattern layout
      * @param splitRow the row in the pattern layout
      */
@@ -898,7 +891,7 @@ abstract class PatchComponentSitesGraphUtilities {
      *
      * @param graph the graph object
      * @param start the start node
-     * @param end   the end node
+     * @param end the end node
      */
     static void path(Graph graph, SiteNode start, SiteNode end) {
         // Reset all distances.
@@ -967,18 +960,22 @@ abstract class PatchComponentSitesGraphUtilities {
         }
     }
 
-    static ArrayList<SiteEdge> getPath(Graph graph, SiteNode start, SiteNode end){
+    static ArrayList<SiteEdge> getPath(Graph graph, SiteNode start, SiteNode end) {
         path(graph, start, end);
         ArrayList<SiteEdge> path = new ArrayList<>();
         SiteNode node = end;
         while (node != null && node != start) {
             Bag b = graph.getEdgesIn(node);
-            if (b.numObjs == 1) {  path.add((SiteEdge)b.objs[0]); }
-            else if (b.numObjs == 2) {
-                SiteEdge edgeA = ((SiteEdge)b.objs[0]);
-                SiteEdge edgeB = ((SiteEdge)b.objs[1]);
-                if (edgeA.getFrom() == node.prev) { path.add(edgeA); }
-                else { path.add(edgeB); }
+            if (b.numObjs == 1) {
+                path.add((SiteEdge) b.objs[0]);
+            } else if (b.numObjs == 2) {
+                SiteEdge edgeA = ((SiteEdge) b.objs[0]);
+                SiteEdge edgeB = ((SiteEdge) b.objs[1]);
+                if (edgeA.getFrom() == node.prev) {
+                    path.add(edgeA);
+                } else {
+                    path.add(edgeB);
+                }
             }
             node = node.prev;
         }
@@ -991,7 +988,7 @@ abstract class PatchComponentSitesGraphUtilities {
      *
      * @param graph the graph object
      * @param start the start node
-     * @param path  the list of edges in the path
+     * @param path the list of edges in the path
      */
     static void traverse(Graph graph, SiteNode start, ArrayList<SiteEdge> path) {
         Bag bag = graph.getEdgesOut(start);
@@ -1020,8 +1017,8 @@ abstract class PatchComponentSitesGraphUtilities {
      * Updates radii for the graph using Murray's law without variation.
      *
      * @param graph the graph object
-     * @param list  the list of edges
-     * @param code  the update code
+     * @param list the list of edges
+     * @param code the update code
      */
     static void updateRadii(Graph graph, ArrayList<SiteEdge> list, CalculationType code) {
         updateRadii(graph, list, code, null);
@@ -1030,14 +1027,12 @@ abstract class PatchComponentSitesGraphUtilities {
     /**
      * Updates radii for the graph using Murray's law.
      *
-     * <p>
-     * The graph sites object contains an instance of a random number generator in
-     * order to
+     * <p>The graph sites object contains an instance of a random number generator in order to
      * ensure simulations with the same random seed are the same.
      *
-     * @param graph  the graph object
-     * @param list   the list of edges
-     * @param code   the update code
+     * @param graph the graph object
+     * @param list the list of edges
+     * @param code the update code
      * @param random the random number generator
      */
     static void updateRadii(
@@ -1222,14 +1217,12 @@ abstract class PatchComponentSitesGraphUtilities {
     }
 
     /**
-     * Iterates through nodes to eliminate low flow edges preventing graph
-     * traversal.
+     * Iterates through nodes to eliminate low flow edges preventing graph traversal.
      *
-     * @param graph     the graph object
-     * @param nodes     the set of nodes
-     * @param removeMin {@code true} if minimum flow edges should be removed,
-     *                  {@code false}
-     *                  otherwise
+     * @param graph the graph object
+     * @param nodes the set of nodes
+     * @param removeMin {@code true} if minimum flow edges should be removed, {@code false}
+     *     otherwise
      */
     static void updateTraverse(Graph graph, LinkedHashSet<SiteNode> nodes, boolean removeMin) {
         double minFlow = Double.MAX_VALUE;

@@ -14,9 +14,7 @@ import sim.util.Bag;
 /**
  * Container class for directed graph using nodes as hashes.
  *
- * <p>
- * {@code Edge} objects represent edges in the graph and {@code Node} objects
- * represent nodes in
+ * <p>{@code Edge} objects represent edges in the graph and {@code Node} objects represent nodes in
  * the graph. Nodes may have more than one edge in or out.
  */
 public final class Graph {
@@ -97,11 +95,11 @@ public final class Graph {
         return checkEdge(edge);
     }
 
-    public Node lookup(int x, int y, int z){
+    public Node lookup(int x, int y, int z) {
         return nodes.get("(" + x + "," + y + "," + z + ")");
     }
 
-    public Node lookup(Node node){
+    public Node lookup(Node node) {
         return nodes.get(node.toString());
     }
 
@@ -117,7 +115,7 @@ public final class Graph {
     /**
      * Gets all edges in the graph based on the given node and category.
      *
-     * @param node     the node to get edges from
+     * @param node the node to get edges from
      * @param strategy the category of edges to get
      * @return a bag containing the edges
      */
@@ -179,7 +177,7 @@ public final class Graph {
      * Checks if the graph has an edge between the given nodes.
      *
      * @param from the node the edge points from
-     * @param to   the node the edge points to
+     * @param to the node the edge points to
      * @return {@code true} if edge exists, {@code false} otherwise
      */
     public boolean hasEdge(Node from, Node to) {
@@ -211,8 +209,7 @@ public final class Graph {
     /**
      * Filters this graph for edges and copies them to the given graph object.
      *
-     * <p>
-     * Notes that the links in the subgraph are not correct.
+     * <p>Notes that the links in the subgraph are not correct.
      *
      * @param g the graph to add filtered edges to
      * @param f the edge filter
@@ -236,12 +233,13 @@ public final class Graph {
     private Set<Node> retrieveNodes() {
         Set<Node> sOut = nodeToOutBag.keySet();
         Set<Node> sIn = nodeToInBag.keySet();
-        Set<Node> set = new LinkedHashSet<Node>() {
-            {
-                addAll(sOut);
-                addAll(sIn);
-            }
-        };
+        Set<Node> set =
+                new LinkedHashSet<Node>() {
+                    {
+                        addAll(sOut);
+                        addAll(sIn);
+                    }
+                };
 
         return set;
     }
@@ -278,7 +276,7 @@ public final class Graph {
      * Adds edge to graph based on nodes.
      *
      * @param from the node to add as the from node.
-     * @param to   the node to add as the to node.
+     * @param to the node to add as the to node.
      */
     public void addEdge(Node from, Node to) {
         addEdge(new Edge(from, to));
@@ -297,20 +295,17 @@ public final class Graph {
         addNodes(edge);
     }
 
-
-    private void addNodes(Edge edge){
+    private void addNodes(Edge edge) {
         Node from = edge.getFrom();
         Node to = edge.getTo();
-        if (!nodes.containsKey(from.toString())){
+        if (!nodes.containsKey(from.toString())) {
             nodes.put(from.toString(), from);
-        }
-        else {
+        } else {
             from = nodes.get(from.toString());
         }
-        if (!nodes.containsKey(to.toString())){
+        if (!nodes.containsKey(to.toString())) {
             nodes.put(to.toString(), to);
-        }
-        else {
+        } else {
             to = nodes.get(to.toString());
         }
     }
@@ -475,12 +470,11 @@ public final class Graph {
     }
 
     /**
-     * Find the first node where two edges intersect based on a calulcation strategy
-     * (upstream or
+     * Find the first node where two edges intersect based on a calulcation strategy (upstream or
      * downstream).
      *
-     * @param edge1    first edge to start from
-     * @param edge2    second edge to start from
+     * @param edge1 first edge to start from
+     * @param edge2 second edge to start from
      * @param strategy the direction to search
      * @return the intersection node or null if no intersection
      */
@@ -497,11 +491,10 @@ public final class Graph {
     }
 
     /**
-     * Get all nodes connected to the given node based on a calculation strategy
-     * (e.g. upstream or
+     * Get all nodes connected to the given node based on a calculation strategy (e.g. upstream or
      * downstream).
      *
-     * @param node     the node to start from
+     * @param node the node to start from
      * @param strategy the direction to search
      * @return a bag of connected nodes
      */
@@ -534,12 +527,11 @@ public final class Graph {
     }
 
     /**
-     * Breadth first search from node according to strategy for a subset of target
-     * nodes.
+     * Breadth first search from node according to strategy for a subset of target nodes.
      *
-     * @param node        the node to start from
+     * @param node the node to start from
      * @param targetNodes the bag of potential intersection nodes
-     * @param strategy    the direction to search
+     * @param strategy the direction to search
      * @return the target node or null if not found
      */
     private Node breadthFirstSearch(Node node, Bag targetNodes, Strategy strategy) {
@@ -625,8 +617,7 @@ public final class Graph {
     /**
      * Nested class representing a graph node.
      *
-     * <p>
-     * The node tracks its corresponding position in the lattice.
+     * <p>The node tracks its corresponding position in the lattice.
      */
     public static class Node implements Comparable<Node> {
         /** Coordinate in x direction. */
@@ -682,9 +673,8 @@ public final class Graph {
          * Compares a node to this node.
          *
          * @param node the node to compare
-         * @return zero if the x and y coordinates are equal, otherwise the result of
-         *         integer
-         *         comparison for x and y
+         * @return zero if the x and y coordinates are equal, otherwise the result of integer
+         *     comparison for x and y
          */
         public int compareTo(Node node) {
             int xComp = Integer.compare(x, node.getX());
@@ -707,8 +697,7 @@ public final class Graph {
         }
 
         /**
-         * Updates the position of this {@code Node} with coordinate from given
-         * {@code Node}.
+         * Updates the position of this {@code Node} with coordinate from given {@code Node}.
          *
          * @param node the {@code Node} with coordinates to update with
          */
@@ -754,9 +743,7 @@ public final class Graph {
     /**
      * Nested class representing a graph edge.
      *
-     * <p>
-     * The edge tracks its corresponding nodes as well as the edges into the FROM
-     * node and out of
+     * <p>The edge tracks its corresponding nodes as well as the edges into the FROM node and out of
      * the TO node.
      */
     public static class Edge {
@@ -776,7 +763,7 @@ public final class Graph {
          * Creates an {@code Edge} between two {@link Node} objects.
          *
          * @param from the node the edge is from
-         * @param to   the node the edge is to
+         * @param to the node the edge is to
          */
         public Edge(Node from, Node to) {
             this.from = from.duplicate();
@@ -793,8 +780,7 @@ public final class Graph {
         }
 
         /**
-         * Gets the node the edge points to based on the calculation strategy (e.g.
-         * upstream or
+         * Gets the node the edge points to based on the calculation strategy (e.g. upstream or
          * downstream).
          *
          * @param strategy the calculation strategy
@@ -841,8 +827,7 @@ public final class Graph {
         }
 
         /**
-         * Gets list of edges based on calculation strategy (e.g. upstream or
-         * downstream).
+         * Gets list of edges based on calculation strategy (e.g. upstream or downstream).
          *
          * @param strategy the calculation strategy
          * @return the list of edges
@@ -901,8 +886,7 @@ public final class Graph {
          * Checks if two nodes are equal based on to and from nodes.
          *
          * @param obj the object to check
-         * @return {@code true} if coordinates of both nodes match, {@code false}
-         *         otherwise
+         * @return {@code true} if coordinates of both nodes match, {@code false} otherwise
          */
         public boolean equals(Object obj) {
             if (obj instanceof Edge) {
