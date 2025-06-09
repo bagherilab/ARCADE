@@ -4,6 +4,7 @@ import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.HashSet;
 import ec.util.MersenneTwisterFast;
+import arcade.core.util.distributions.DegenerateDistribution;
 import arcade.core.util.distributions.Distribution;
 
 /**
@@ -39,13 +40,16 @@ public class Parameters {
         MiniBox distributionsBox = popParameters.filter("(DISTRIBUTION)");
         for (String key : distributionsBox.getKeys()) {
             Distribution distribution;
-
             if (cellParameters != null && cellParameters.distributions.containsKey(key)) {
                 distribution = cellParameters.distributions.get(key).rebase(random);
+                if (distribution instanceof DegenerateDistribution) {
+                    distribution = popParameters.getDistribution(key, random);
+                }
+            } else if (popParameters.contains(key + "_IC")) {
+                distribution = new DegenerateDistribution(key, popParameters, random);
             } else {
                 distribution = popParameters.getDistribution(key, random);
             }
-
             distributions.put(key, distribution);
         }
     }
