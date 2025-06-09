@@ -17,10 +17,18 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
-import arcade.patch.agent.module.*;
+import arcade.patch.agent.module.PatchModuleApoptosis;
+import arcade.patch.agent.module.PatchModuleCytotoxicity;
+import arcade.patch.agent.module.PatchModuleMigration;
+import arcade.patch.agent.module.PatchModuleNecrosis;
+import arcade.patch.agent.module.PatchModuleProliferation;
+import arcade.patch.agent.module.PatchModuleQuiescence;
+import arcade.patch.agent.module.PatchModuleSenescence;
+import arcade.patch.agent.module.PatchModuleStimulation;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessQuorumSensing;
+import arcade.patch.agent.process.PatchProcessSensing;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
@@ -37,8 +45,8 @@ import static arcade.patch.util.PatchEnums.State;
  * NECROTIC_FRACTION} and {@code SENESCENT_FRACTION}, respectively).
  *
  * <p>Cell parameters are tracked using a map between the parameter name and value. Daughter cell
- * parameter values are drawn from a distribution centered on the parent cell. The parameter classes
- * have support for loading in distributions to reflect heterogeneity. ({@code HETEROGENEITY}).
+ * parameter values are drawn from a distribution centered on the parent cell parameter with the
+ * specified amount of heterogeneity ({@code HETEROGENEITY}).
  */
 public abstract class PatchCell implements Cell {
     /** Stopper used to stop this agent from being stepped in the schedule. */
@@ -70,6 +78,9 @@ public abstract class PatchCell implements Cell {
 
     /** Number of divisions. */
     int divisions;
+
+    /** Maximum number of divisions. */
+    protected final int divisionPotential;
 
     /** Cell volume [um<sup>3</sup>]. */
     double volume;
@@ -137,6 +148,7 @@ public abstract class PatchCell implements Cell {
      *   <li>{@code NECROTIC_FRACTION} = fraction of necrotic cells that become apoptotic
      *   <li>{@code SENESCENT_FRACTION} = fraction of senescent cells that become apoptotic
      *   <li>{@code ENERGY_THRESHOLD} = maximum energy deficit before necrosis
+     *   <li>{@code HETEROGENEITY} = variation in cell agent parameters
      * </ul>
      *
      * @param container the cell container
@@ -172,6 +184,7 @@ public abstract class PatchCell implements Cell {
         apoptosisAge = parameters.getDouble("APOPTOSIS_AGE");
         accuracy = parameters.getDouble("ACCURACY");
         affinity = parameters.getDouble("AFFINITY");
+        divisionPotential = parameters.getInt("DIVISION_POTENTIAL");
         synthesisDuration = parameters.getInt("SYNTHESIS_DURATION");
         int densityInput = parameters.getInt("MAX_DENSITY");
         maxDensity = (densityInput >= 0 ? densityInput : Integer.MAX_VALUE);
@@ -348,6 +361,7 @@ public abstract class PatchCell implements Cell {
             default:
                 return null;
         }
+        isStopped = true;
     }
 
     @Override
@@ -375,11 +389,42 @@ public abstract class PatchCell implements Cell {
             case QUIESCENT:
                 if (this instanceof PatchCellCART) {
                     this.setState(State.UNDEFINED);
+                } else {
+                    module = new PatchModuleQuiescence(this);
                 }
+                break;
+            case NECROTIC:
+                module = new PatchModuleNecrosis(this);
+                break;
+            case SENESCENT:
+                module = new PatchModuleSenescence(this);
                 break;
             default:
                 module = null;
                 break;
+        }
+    }
+
+    /**
+     * Makes the specified {@link Process} object.
+     *
+     * @param domain the process domain
+     * @param version the process version
+     * @return the process instance
+     */
+    public Process makeProcess(ProcessDomain domain, String version) {
+        switch ((Domain) domain) {
+            case METABOLISM:
+                return PatchProcessMetabolism.make(this, version);
+            case SIGNALING:
+                return PatchProcessSignaling.make(this, version);
+            case INFLAMMATION:
+                return PatchProcessInflammation.make(this, version);
+            case SENSING:
+                return PatchProcessSensing.make(this, version);
+            case UNDEFINED:
+            default:
+                return null;
         }
     }
 
@@ -468,10 +513,12 @@ public abstract class PatchCell implements Cell {
                     options.add(inds[i], 1);
                 }
             }
-            return (PatchLocation) locs.get(options.next(random));
-        } else {
-            return null;
+            if (!options.isEmpty()) {
+                return (PatchLocation) locs.get(options.next(random));
+            }
         }
+
+        return null;
     }
 
     /**
@@ -636,4 +683,5 @@ public abstract class PatchCell implements Cell {
     public int getSynthesisDuration() {
         return this.synthesisDuration;
     }
+
 }

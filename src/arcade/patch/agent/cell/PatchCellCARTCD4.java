@@ -11,14 +11,15 @@ import arcade.patch.util.PatchEnums.AntigenFlag;
 import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.State;
 
+/** Extension of {@link PatchCellCART} for CD4 CART-cells with selected module versions. */
 public class PatchCellCARTCD4 extends PatchCellCART {
 
     /**
-     * Creates a T cell {@code PatchCellCARTCD4} agent. *
+     * Creates a T cell {@code PatchCellCARTCD4} agent.
      *
      * @param container the cell container
      * @param location the {@link Location} of the cell
-     * @param parameters the dictionary of parameters
+     * @param parameters the {@link Parameters} of the cell
      */
     public PatchCellCARTCD4(
             PatchCellContainer container, Location location, Parameters parameters) {
@@ -30,7 +31,7 @@ public class PatchCellCARTCD4 extends PatchCellCART {
      *
      * @param container the cell container
      * @param location the {@link Location} of the cell
-     * @param parameters the dictionary of parameters
+     * @param parameters the {@link Parameters} of the cell
      * @param links the map of population links
      */
     public PatchCellCARTCD4(
@@ -40,7 +41,7 @@ public class PatchCellCARTCD4 extends PatchCellCART {
 
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-        divisions--;
+        divisions++;
         return new PatchCellContainer(
                 newID,
                 id,
@@ -58,7 +59,6 @@ public class PatchCellCARTCD4 extends PatchCellCART {
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
 
-        // Increase age of cell.
         super.age++;
 
         if (state != State.APOPTOTIC && age > apoptosisAge) {
@@ -67,18 +67,18 @@ public class PatchCellCARTCD4 extends PatchCellCART {
             this.activated = false;
         }
 
-        // Increase time since last active ticker
         super.lastActiveTicker++;
-        if (super.lastActiveTicker != 0 && super.lastActiveTicker % 1440 == 0) {
-            if (super.boundCARAntigensCount != 0) super.boundCARAntigensCount--;
+        if (super.lastActiveTicker != 0 && super.lastActiveTicker % MINUTES_IN_DAY == 0) {
+            if (super.boundCARAntigensCount != 0) {
+                super.boundCARAntigensCount--;
+            }
         }
-        if (super.lastActiveTicker / 1440 >= 7) super.activated = false;
+        if (super.lastActiveTicker / MINUTES_IN_DAY >= 7) {
+            super.activated = false;
+        }
 
-        // Step metabolism process.
         super.processes.get(Domain.METABOLISM).step(simstate.random, sim);
 
-        // Check energy status. If cell has less energy than threshold, it will
-        // apoptose. If overall energy is negative, then cell enters quiescence.
         if (state != State.APOPTOTIC) {
             if (super.energy < super.energyThreshold) {
 
@@ -98,12 +98,11 @@ public class PatchCellCARTCD4 extends PatchCellCART {
             }
         }
 
-        // Step inflammation process.
         super.processes.get(Domain.INFLAMMATION).step(simstate.random, sim);
 
         // Change state from undefined.
         if (super.state == State.UNDEFINED || super.state == State.PAUSED) {
-            if (divisions == 0) {
+            if (divisions == divisionPotential) {
                 if (simstate.random.nextDouble() > super.senescentFraction) {
                     super.setState(State.APOPTOTIC);
                 } else {
@@ -112,11 +111,9 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                 super.unbind();
                 this.activated = false;
             } else {
-                // Cell attempts to bind to a target
-                PatchCellTissue target =
-                        super.bindTarget(sim, location, new MersenneTwisterFast(simstate.seed()));
+                PatchCellTissue target = super.bindTarget(sim, location, simstate.random);
                 super.boundTarget = target;
-                // If cell is bound to both antigen and self it will become anergic.
+
                 if (super.getBindingFlag() == AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR) {
                     if (simstate.random.nextDouble() > super.anergicFraction) {
                         super.setState(State.APOPTOTIC);
@@ -126,11 +123,7 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                     super.unbind();
                     this.activated = false;
                 } else if (super.getBindingFlag() == AntigenFlag.BOUND_ANTIGEN) {
-                    // If cell is only bound to target antigen, the cell
-                    // can potentially become properly activated.
 
-                    // Check overstimulation. If cell has bound to
-                    // target antigens too many times, becomes exhausted.
                     if (boundCARAntigensCount > maxAntigenBinding) {
                         if (simstate.random.nextDouble() > super.exhaustedFraction) {
                             super.setState(State.APOPTOTIC);
@@ -140,20 +133,16 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                         super.unbind();
                         this.activated = false;
                     } else {
-                        // if CD4 cell is properly activated, it can stimulate
                         super.setState(State.STIMULATORY);
                         this.lastActiveTicker = 0;
                         this.activated = true;
                     }
                 } else {
-                    // If self binding, unbind
                     if (super.getBindingFlag() == AntigenFlag.BOUND_CELL_RECEPTOR) {
                         super.unbind();
                     }
-                    // Check activation status. If cell has been activated before,
-                    // it will proliferate. If not, it will migrate.
                     if (activated) {
-                        super.setState(State.PROLIFERATIVE);
+                        super.setState(State.PROLIFERATIVE_ACTIVE);
                     } else {
                         if (simstate.random.nextDouble() > super.proliferativeFraction) {
                             super.setState(State.MIGRATORY);

@@ -74,7 +74,7 @@ public class PatchCellTissue extends PatchCell {
 
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-        divisions--;
+        divisions++;
         int newPop = links == null ? pop : links.next(random);
         return new PatchCellContainer(
                 newID,
@@ -123,7 +123,7 @@ public class PatchCellTissue extends PatchCell {
         if (state == State.UNDEFINED) {
             if (flag == Flag.MIGRATORY) {
                 setState(State.MIGRATORY);
-            } else if (divisions == 0) {
+            } else if (divisions == divisionPotential) {
                 if (simstate.random.nextDouble() > senescentFraction) {
                     setState(State.APOPTOTIC);
                 } else {

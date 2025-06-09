@@ -20,14 +20,19 @@ import static arcade.core.ARCADETestUtilities.randomDoubleBetween;
 public class PatchProcessInflammationCD8Test {
 
     private PatchProcessInflammationCD8 inflammation;
+
     private PatchCellCART mockCell;
+
     private Parameters mockParameters;
+
     private Simulation mockSimulation;
+
     private MersenneTwisterFast mockRandom;
+
     private double cellVolume;
 
     @BeforeEach
-    public void setUp() {
+    public final void setUp() {
         mockCell = Mockito.mock(PatchCellCART.class);
         mockParameters = Mockito.mock(Parameters.class);
         mockSimulation = Mockito.mock(Simulation.class);
@@ -48,7 +53,8 @@ public class PatchProcessInflammationCD8Test {
     }
 
     @Test
-    public void constructor_setsParameters() throws NoSuchFieldException, IllegalAccessException {
+    public void constructor_called_setsParameters()
+            throws NoSuchFieldException, IllegalAccessException {
         inflammation = new PatchProcessInflammationCD8(mockCell);
         assertNotNull(inflammation);
 
@@ -58,13 +64,13 @@ public class PatchProcessInflammationCD8Test {
         prior.setAccessible(true);
         assertEquals(0.0, prior.get(inflammation));
 
-        Field delay = PatchProcessInflammationCD8.class.getDeclaredField("GRANZ_SYNTHESIS_DELAY");
+        Field delay = PatchProcessInflammationCD8.class.getDeclaredField("granzSynthesisDelay");
         delay.setAccessible(true);
         assertEquals(1, delay.get(inflammation));
     }
 
     @Test
-    public void stepProcess_updatesEnvironment()
+    public void stepProcess_called_updatesEnvironment()
             throws NoSuchFieldException, IllegalAccessException {
         inflammation = new PatchProcessInflammationCD8(mockCell);
         inflammation.active = true;

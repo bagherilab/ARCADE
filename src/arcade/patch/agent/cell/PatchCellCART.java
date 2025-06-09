@@ -48,6 +48,10 @@ import static arcade.patch.util.PatchEnums.State;
  * parameter classes have support for loading in distributions to reflect heterogeneity.
  */
 public abstract class PatchCellCART extends PatchCell {
+
+    /** Constant for amount of minutes in a day. */
+    public static final int MINUTES_IN_DAY = 1440;
+
     /** Cell activation flag. */
     protected boolean activated;
 

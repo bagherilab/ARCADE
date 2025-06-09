@@ -104,15 +104,16 @@
     <population.process process="inflammation" id="IL2_RECEPTORS" value="2000" unit="IL-2 receptors/cell" />
 
     <!-- inflammation CD4 module -->
-    <population.process process="inflammation" id="IL2_PROD_RATE_IL2" value="16.62" unit="molecules IL-2/cell/min" />
-    <population.process process="inflammation" id="IL2_PROD_RATE_ACTIVE" value="293.27" unit="molecules IL-2/cell/min" />
-    <population.process process="inflammation" id="IL2_SYNTHESIS_DELAY" value="180" unit="min" />
+    <population.process process="inflammation" id="IL2_SYNTHESIS_DELAY" value="180" unit="min" description = "Delay in IL-2 synthesis after antigen-induced activation" />
 
     <!-- inflammation CD8 module -->
-    <population.process process="inflammation" id="GRANZ_SYNTHESIS_DELAY" value="15" unit="min" />
+    <population.process process="inflammation" id="GRANZ_SYNTHESIS_DELAY" value="15" unit="min" description="Time required for CAR T-cells to maintain bound contact with target antigen before activation signal induces granzyme production"/>
 
     <!-- quorum process parameters -->
     <population.process process="quorum" id="ACTIVATION_THRESHOLD" value="1E-8" unit="units/cell" />
+
+    <!-- sensing process parameters -->
+    <population.process process="sensing" id="VEGF_SECRETION_RATE" value="100" unit="pg/ml/min" description="secretion rate of VEGF" />
 
     <!-- LAYERS ============================================================ -->
 
@@ -125,7 +126,9 @@
     <!-- generator operation parameters -->
     <layer.operation operation="generator" id="CONCENTRATION" value="1.0" units="(variable)" description="maximum concentration" />
     <layer.operation operation="generator" id="PERMEABILITY" value="100.0" units="(variable)" description="molecule permeability" />
-    <layer.operation operation="generator" id="DECAY_RATE" value="0" units="(variable)" description="molecule permeability" />
+
+    <!-- decayer operation parameters -->
+    <layer.operation operation="decayer" id="DECAY_RATE" value="1E-4" units="1/min" description="decay rate of molecule" />
 
     <!-- ACTIONS =========================================================== -->
 

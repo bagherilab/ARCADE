@@ -3,6 +3,7 @@ package arcade.patch.agent.cell;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import sim.engine.Schedule;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
@@ -147,6 +148,276 @@ public class PatchCellTest {
         cell.setBindingFlag(PatchEnums.AntigenFlag.BOUND_ANTIGEN);
 
         assertEquals(PatchEnums.AntigenFlag.BOUND_ANTIGEN, cell.getBindingFlag());
+    }
+
+    @Test
+    public void setState_migration_movesCell() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(2.0).when(parametersMock).getDouble("migration/MIGRATION_RATE");
+        doReturn(2.0).when(locationMock).getCoordinateSize();
+
+        PatchLocation newLocation = mock(PatchLocation.class);
+
+        PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
+        doReturn(newLocation).when(cell).selectBestLocation(simMock, randomMock);
+        cell.setState(State.MIGRATORY);
+
+        cell.module.step(randomMock, simMock);
+        cell.module.step(randomMock, simMock);
+        verify(gridMock, never()).moveObject(cell, locationMock, newLocation);
+
+        cell.module.step(randomMock, simMock);
+        verify(gridMock).moveObject(cell, locationMock, newLocation);
+        assertEquals(State.UNDEFINED, cell.getState());
+    }
+
+    @Test
+    public void setState_migrationIfNoNewLocation_setQuiescent() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(2.0).when(parametersMock).getDouble("migration/MIGRATION_RATE");
+        doReturn(0.0).when(locationMock).getCoordinateSize();
+
+        PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
+        doReturn(null).when(cell).selectBestLocation(simMock, randomMock);
+        cell.setState(State.MIGRATORY);
+
+        cell.module.step(randomMock, simMock);
+        cell.module.step(randomMock, simMock);
+
+        assertEquals(State.QUIESCENT, cell.getState());
+    }
+
+    @Test
+    public void setState_migrationIfCurrentLocationIsBestLocation_setsUndefinedCellState() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(2.0).when(parametersMock).getDouble("migration/MIGRATION_RATE");
+        doReturn(0.0).when(locationMock).getCoordinateSize();
+
+        PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
+        doReturn(locationMock).when(cell).selectBestLocation(simMock, randomMock);
+        cell.setState(State.MIGRATORY);
+
+        cell.module.step(randomMock, simMock);
+        cell.module.step(randomMock, simMock);
+
+        assertEquals(State.UNDEFINED, cell.getState());
+    }
+
+    @Test
+    public void setState_necrosis_stopsCell() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
+        doNothing().when(cell).stop();
+
+        cell.setState(State.NECROTIC);
+        cell.module.step(randomMock, simMock);
+
+        verify(cell).stop();
+    }
+
+    @Test
+    public void setState_apoptosis_stopsAndRemovesCellAndSetsNeighborToProliferate() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(1).when(parametersMock).getInt("apoptosis/DEATH_DURATION");
+
+        PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
+        cell.setState(State.APOPTOTIC);
+        PatchCell neighbor = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
+        doNothing().when(cell).stop();
+
+        ArrayList<Location> neighborhood = new ArrayList<Location>();
+        doReturn(neighborhood).when(locationMock).getNeighbors();
+        Bag neighbors = new Bag();
+        neighbors.add(neighbor);
+        doReturn(neighbors).when(gridMock).getObjectsAtLocations(neighborhood);
+
+        cell.module.step(randomMock, simMock);
+        cell.module.step(randomMock, simMock);
+        verify(gridMock, never()).removeObject(cell, locationMock);
+
+        cell.module.step(randomMock, simMock);
+        verify(neighbor).setState(State.PROLIFERATIVE);
+        verify(gridMock).removeObject(cell, locationMock);
+        verify(cell).stop();
+    }
+
+    @Test
+    public void setState_proliferation_createsCell() {
+        Schedule scheduleMock = mock(Schedule.class);
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(1).when(parametersMock).getInt("proliferation/SYNTHESIS_DURATION");
+        doReturn(cellID + 1).when(simMock).getID();
+        doReturn(scheduleMock).when(simMock).getSchedule();
+        doReturn(null).when(scheduleMock).scheduleRepeating(anyInt(), anyInt(), any());
+        PatchCellFactory factoryMock = mock(PatchCellFactory.class);
+        doReturn(factoryMock).when(simMock).getCellFactory();
+        doReturn(0.5).when(randomMock).nextDouble();
+
+        double volume = 500;
+        double critHeight = 10;
+        double critVolume = 250;
+
+        doReturn(100.).when(locationMock).getArea();
+        PatchCellContainer container =
+                new PatchCellContainer(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellAge,
+                        cellDivisions,
+                        cellState,
+                        volume,
+                        cellHeight,
+                        critVolume,
+                        critHeight);
+
+        PatchCellContainer daughterContainer =
+                new PatchCellContainer(
+                        cellID + 1,
+                        cellParent,
+                        cellPop,
+                        cellAge,
+                        cellDivisions,
+                        State.UNDEFINED,
+                        volume,
+                        cellHeight,
+                        critVolume,
+                        critHeight);
+
+        PatchCell cell = spy(new PatchCellMock(container, locationMock, parametersMock));
+        cell.setEnergy(200.);
+
+        PatchCellContainer containerMock = mock(PatchCellContainer.class);
+
+        PatchCell daughter =
+                spy(new PatchCellMock(daughterContainer, locationMock, parametersMock));
+
+        doReturn(daughter)
+                .when(containerMock)
+                .convert(factoryMock, locationMock, randomMock, parametersMock);
+        doReturn(containerMock)
+                .when(cell)
+                .make(anyInt(), any(State.class), any(MersenneTwisterFast.class));
+        doReturn(locationMock).when(cell).selectBestLocation(simMock, randomMock);
+        Bag locationBag = new Bag();
+        locationBag.add(cell);
+        doReturn(locationBag).when(gridMock).getObjectsAtLocation(locationMock);
+        cell.setState(State.PROLIFERATIVE);
+
+        cell.module.step(randomMock, simMock);
+        cell.module.step(randomMock, simMock);
+        cell.module.step(randomMock, simMock);
+
+        verify(cell).addCycle(3);
+        assertEquals(State.UNDEFINED, cell.getState());
+        assertEquals(250, cell.getVolume());
+        assertEquals(100, cell.getEnergy());
+        assertEquals(250, daughter.getVolume());
+        assertEquals(100, daughter.getEnergy());
+    }
+
+    @Test
+    public void setState_proliferationWithNoFreeLocation_setQuiescent() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(1).when(parametersMock).getInt("proliferation/SYNTHESIS_DURATION");
+
+        double volume = 500;
+        double critHeight = 10;
+        double critVolume = 250;
+
+        doReturn(100.).when(locationMock).getArea();
+        PatchCellContainer container =
+                new PatchCellContainer(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellAge,
+                        cellDivisions,
+                        cellState,
+                        volume,
+                        cellHeight,
+                        critVolume,
+                        critHeight);
+
+        PatchCell cell = spy(new PatchCellMock(container, locationMock, parametersMock));
+        Bag locationBag = new Bag();
+        locationBag.add(cell);
+        doReturn(locationBag).when(gridMock).getObjectsAtLocation(locationMock);
+        doReturn(null).when(cell).selectBestLocation(simMock, randomMock);
+
+        cell.setState(State.PROLIFERATIVE);
+        cell.module.step(randomMock, simMock);
+
+        assertEquals(State.QUIESCENT, cell.getState());
+    }
+
+    @Test
+    public void setState_proliferativeWhenHeightExceedsCriticalHeight_setQuiescent() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(1).when(parametersMock).getInt("proliferation/SYNTHESIS_DURATION");
+
+        double volume = 500;
+        double critHeight = 4;
+
+        doReturn(100.).when(locationMock).getArea();
+        PatchCellContainer container =
+                new PatchCellContainer(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellAge,
+                        cellDivisions,
+                        cellState,
+                        volume,
+                        cellHeight,
+                        cellCriticalVolume,
+                        critHeight);
+
+        PatchCell cell = spy(new PatchCellMock(container, locationMock, parametersMock));
+        Bag locationBag = new Bag();
+        locationBag.add(cell);
+        doReturn(locationBag).when(gridMock).getObjectsAtLocation(locationMock);
+
+        cell.setState(State.PROLIFERATIVE);
+        cell.module.step(randomMock, simMock);
+
+        assertEquals(State.QUIESCENT, cell.getState());
+    }
+
+    @Test
+    public void setState_quiescent_setQuiescent() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(0.0).when(locationMock).getCoordinateSize();
+
+        PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
+        cell.setState(State.QUIESCENT);
+
+        cell.module.step(randomMock, simMock);
+
+        assertEquals(State.QUIESCENT, cell.getState());
+    }
+
+    @Test
+    public void setState_senescent_setSenescent() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(0.0).when(locationMock).getCoordinateSize();
+
+        PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
+        cell.setState(State.SENESCENT);
+
+        cell.module.step(randomMock, simMock);
+
+        assertEquals(State.SENESCENT, cell.getState());
     }
 
     @Test
@@ -479,6 +750,42 @@ public class PatchCellTest {
         PatchLocation bestLocation = cell.selectBestLocation(simMock, randomMock);
 
         assertEquals(bestLocation, closerLocation);
+    }
+
+    @Test
+    public void selectBestLocation_calledWithMaxAffinityAndNoCloserLocation_returnNull() {
+        doReturn(0.0).when(parametersMock).getDouble(any(String.class));
+        doReturn(0).when(parametersMock).getInt(any(String.class));
+        doReturn(1.0).when(parametersMock).getDouble("AFFINITY");
+        doReturn(0.0).when(parametersMock).getDouble("ACCURACY");
+        doReturn(0.5).when(randomMock).nextDouble();
+        PatchLattice latticeMock = mock(PatchLattice.class);
+        MiniBox boxMock = mock(MiniBox.class);
+        doReturn(boxMock).when(latticeMock).getParameters();
+        doReturn(latticeMock).when(simMock).getLattice("GLUCOSE");
+        doReturn(100.).when(boxMock).getDouble("generator/CONCENTRATION");
+        PatchCell cell = spy(new PatchCellMock(baseContainer, locationMock, parametersMock));
+        PatchLocation otherLocation1 = mock(PatchLocation.class);
+        PatchLocation otherLocation2 = mock(PatchLocation.class);
+
+        doReturn(1).when(locationMock).getPlanarIndex();
+        doReturn(1).when(otherLocation1).getPlanarIndex();
+        doReturn(1).when(otherLocation2).getPlanarIndex();
+        doReturn(50.).when(latticeMock).getAverageValue(locationMock);
+        doReturn(75.).when(latticeMock).getAverageValue(otherLocation1);
+        doReturn(25.).when(latticeMock).getAverageValue(otherLocation2);
+        doReturn(0.).when(locationMock).getPlanarDistance();
+        doReturn(1.).when(otherLocation1).getPlanarDistance();
+        doReturn(1.).when(otherLocation2).getPlanarDistance();
+
+        Bag locations = new Bag();
+        locations.add(otherLocation1);
+        locations.add(otherLocation2);
+        doReturn(locations).when(cell).findFreeLocations(simMock);
+
+        PatchLocation bestLocation = cell.selectBestLocation(simMock, randomMock);
+
+        assertEquals(bestLocation, null);
     }
 
     @Test

@@ -1,6 +1,5 @@
 package arcade.patch.agent.process;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,16 +17,25 @@ import static arcade.core.ARCADETestUtilities.randomDoubleBetween;
 public class PatchProcessInflammationCD4Test {
 
     private PatchProcessInflammationCD4 inflammation;
+
     private PatchCellCART mockCell;
+
     private PatchLattice mockLattice;
+
     private Parameters mockParameters;
+
     private Simulation mockSim;
+
     private MersenneTwisterFast mockRandom;
+
     private double cellVolume;
+
     private PatchLocation mockLocation;
 
+    private static final double EPSILON = 1e-3;
+
     @BeforeEach
-    public void setUp() {
+    public final void setUp() {
         mockCell = Mockito.mock(PatchCellCART.class);
         mockParameters = Mockito.mock(Parameters.class);
         mockSim = Mockito.mock(Simulation.class);
@@ -48,204 +56,46 @@ public class PatchProcessInflammationCD4Test {
     }
 
     @Test
-    public void constructor_setsParameters() throws NoSuchFieldException, IllegalAccessException {
+    public void stepProcess_called_updatesEnvironment() {
+        when(mockParameters.getDouble("inflammation/IL2_RECEPTORS")).thenReturn(5000.0);
         inflammation = new PatchProcessInflammationCD4(mockCell);
-        assertNotNull(inflammation);
-
-        Field il2ProdRate = PatchProcessInflammationCD4.class.getDeclaredField("IL2ProdRate");
-        il2ProdRate.setAccessible(true);
-        assertEquals(0.0, il2ProdRate.get(inflammation));
-
-        Field il2ProdRateIL2 =
-                PatchProcessInflammationCD4.class.getDeclaredField("IL2_PROD_RATE_IL2");
-        il2ProdRateIL2.setAccessible(true);
-        assertEquals(1.0, il2ProdRateIL2.get(inflammation));
-
-        Field il2ProdRateActive =
-                PatchProcessInflammationCD4.class.getDeclaredField("IL2_PROD_RATE_ACTIVE");
-        il2ProdRateActive.setAccessible(true);
-        assertEquals(1.0, il2ProdRateActive.get(inflammation));
-
-        Field il2SynthesisDelay =
-                PatchProcessInflammationCD4.class.getDeclaredField("IL2_SYNTHESIS_DELAY");
-        il2SynthesisDelay.setAccessible(true);
-        assertEquals(1, il2SynthesisDelay.get(inflammation));
-    }
-
-    @Test
-    public void stepProcess_updatesEnvironment()
-            throws NoSuchFieldException, IllegalAccessException {
-        inflammation = new PatchProcessInflammationCD4(mockCell);
-
         inflammation.active = true;
         inflammation.activeTicker = 10;
         inflammation.iL2Ticker = 10;
         inflammation.boundArray = new double[180];
-        Arrays.fill(inflammation.boundArray, 10000);
-
-        Field il2ProdRateIL2 =
-                PatchProcessInflammationCD4.class.getDeclaredField("IL2_PROD_RATE_IL2");
-        il2ProdRateIL2.setAccessible(true);
-        il2ProdRateIL2.set(inflammation, 0.05);
-
-        Field receptors = PatchProcessInflammation.class.getDeclaredField("iL2Receptors");
-        receptors.setAccessible(true);
-        receptors.set(inflammation, 5000);
-
-        Field fraction = PatchProcessInflammation.class.getDeclaredField("fraction");
-        fraction.setAccessible(true);
-        fraction.set(inflammation, 1.0);
+        Arrays.fill(inflammation.boundArray, 0);
+        inflammation.boundArray[9] = 1E8;
 
         inflammation.stepProcess(mockRandom, mockSim);
 
-        // check that patch lattice set value is called
-        verify(mockLattice, times(1)).setValue(any(PatchLocation.class), anyDouble());
+        double expectedIL2Env = 4.91E13;
 
-        // check that IL2 produced is calculated correctly
-        Field il2Produced = PatchProcessInflammationCD4.class.getDeclaredField("IL2Produced");
-        il2Produced.setAccessible(true);
-        assertEquals(1.1, il2Produced.get(inflammation));
-
-        // check that extIL2 is calculated correctly
-        double expectedIL2 =
-                (1.1 + inflammation.amts[PatchProcessInflammationCD4.IL2_EXT])
-                        * 1E12
-                        / mockLocation.getVolume();
-        assertEquals(expectedIL2, inflammation.getIL2EnvTesting());
+        verify(mockLattice, times(1))
+                .setValue(
+                        eq(mockLocation),
+                        doubleThat(
+                                val -> Math.abs(val - expectedIL2Env) < EPSILON * expectedIL2Env));
     }
 
     @Test
-    public void stepProcess_whenActive_returnsHigherRate()
-            throws NoSuchFieldException, IllegalAccessException {
+    public void stepProcess_noPriorIL2_updatesEnvironment() {
+        when(mockParameters.getDouble("inflammation/IL2_RECEPTORS")).thenReturn(5000.0);
         inflammation = new PatchProcessInflammationCD4(mockCell);
-
         inflammation.active = true;
         inflammation.activeTicker = 10;
         inflammation.iL2Ticker = 10;
         inflammation.boundArray = new double[180];
-        Arrays.fill(inflammation.boundArray, 10000);
-
-        Field il2ProdRateIL2 =
-                PatchProcessInflammationCD4.class.getDeclaredField("IL2_PROD_RATE_IL2");
-        il2ProdRateIL2.setAccessible(true);
-        il2ProdRateIL2.set(inflammation, 0.05);
-
-        Field receptors = PatchProcessInflammation.class.getDeclaredField("iL2Receptors");
-        receptors.setAccessible(true);
-        receptors.set(inflammation, 5000);
-
-        Field fraction = PatchProcessInflammation.class.getDeclaredField("fraction");
-        fraction.setAccessible(true);
-        fraction.set(inflammation, 1.0);
-
-        Field activeIl2Rate =
-                PatchProcessInflammationCD4.class.getDeclaredField("IL2_PROD_RATE_ACTIVE");
-        activeIl2Rate.setAccessible(true);
-        activeIl2Rate.set(inflammation, 2.5);
+        Arrays.fill(inflammation.boundArray, 0);
 
         inflammation.stepProcess(mockRandom, mockSim);
 
-        Field il2ProdRate = PatchProcessInflammationCD4.class.getDeclaredField("IL2ProdRate");
-        il2ProdRate.setAccessible(true);
-        assertEquals(2.6, il2ProdRate.get(inflammation));
-    }
+        double expectedIL2Env = 4.325E10;
 
-    @Test
-    public void stepProcess_whenInactive_returnsDefaultRate()
-            throws NoSuchFieldException, IllegalAccessException {
-        inflammation = new PatchProcessInflammationCD4(mockCell);
-
-        inflammation.active = false;
-        inflammation.activeTicker = 10;
-        inflammation.iL2Ticker = 10;
-        inflammation.boundArray = new double[180];
-        Arrays.fill(inflammation.boundArray, 10000);
-
-        Field il2ProdRateIL2 =
-                PatchProcessInflammationCD4.class.getDeclaredField("IL2_PROD_RATE_IL2");
-        il2ProdRateIL2.setAccessible(true);
-        il2ProdRateIL2.set(inflammation, 0.05);
-
-        Field receptors = PatchProcessInflammation.class.getDeclaredField("iL2Receptors");
-        receptors.setAccessible(true);
-        receptors.set(inflammation, 5000);
-
-        Field fraction = PatchProcessInflammation.class.getDeclaredField("fraction");
-        fraction.setAccessible(true);
-        fraction.set(inflammation, 1.0);
-
-        inflammation.stepProcess(mockRandom, mockSim);
-
-        Field il2ProdRate = PatchProcessInflammationCD4.class.getDeclaredField("IL2ProdRate");
-        il2ProdRate.setAccessible(true);
-        assertEquals(0.1, il2ProdRate.get(inflammation));
-    }
-
-    @Test
-    public void stepProcess_activeTickerLessThanDelay_usesDefaultRate()
-            throws NoSuchFieldException, IllegalAccessException {
-        inflammation = new PatchProcessInflammationCD4(mockCell);
-
-        inflammation.active = true;
-        inflammation.activeTicker = 10;
-        inflammation.iL2Ticker = 10;
-        inflammation.boundArray = new double[180];
-        Arrays.fill(inflammation.boundArray, 10000);
-
-        Field il2ProdRateIL2 =
-                PatchProcessInflammationCD4.class.getDeclaredField("IL2_PROD_RATE_IL2");
-        il2ProdRateIL2.setAccessible(true);
-        il2ProdRateIL2.set(inflammation, 0.05);
-
-        Field receptors = PatchProcessInflammation.class.getDeclaredField("iL2Receptors");
-        receptors.setAccessible(true);
-        receptors.set(inflammation, 5000);
-
-        Field fraction = PatchProcessInflammation.class.getDeclaredField("fraction");
-        fraction.setAccessible(true);
-        fraction.set(inflammation, 1.0);
-
-        Field delay = PatchProcessInflammationCD4.class.getDeclaredField("IL2_SYNTHESIS_DELAY");
-        delay.setAccessible(true);
-        delay.set(inflammation, 15);
-
-        inflammation.stepProcess(mockRandom, mockSim);
-
-        Field il2ProdRate = PatchProcessInflammationCD4.class.getDeclaredField("IL2ProdRate");
-        il2ProdRate.setAccessible(true);
-        assertEquals(0.1, il2ProdRate.get(inflammation));
-    }
-
-    @Test
-    public void stepProcess_withZeroIL2ProdRate_returnsZero()
-            throws NoSuchFieldException, IllegalAccessException {
-        when(mockParameters.getDouble("inflammation/IL2_PROD_RATE_IL2")).thenReturn(0.0);
-        when(mockParameters.getDouble("inflammation/IL2_PROD_RATE_ACTIVE")).thenReturn(0.0);
-        inflammation = new PatchProcessInflammationCD4(mockCell);
-
-        inflammation.active = true;
-        inflammation.activeTicker = 10;
-        inflammation.iL2Ticker = 10;
-        inflammation.boundArray = new double[180];
-        Arrays.fill(inflammation.boundArray, 10000);
-
-        Field receptors = PatchProcessInflammation.class.getDeclaredField("iL2Receptors");
-        receptors.setAccessible(true);
-        receptors.set(inflammation, 5000);
-
-        Field fraction = PatchProcessInflammation.class.getDeclaredField("fraction");
-        fraction.setAccessible(true);
-        fraction.set(inflammation, 1.0);
-
-        inflammation.stepProcess(mockRandom, mockSim);
-
-        Field il2ProdRate = PatchProcessInflammationCD4.class.getDeclaredField("IL2ProdRate");
-        il2ProdRate.setAccessible(true);
-        assertEquals(0.0, il2ProdRate.get(inflammation));
-
-        Field il2Produced = PatchProcessInflammationCD4.class.getDeclaredField("IL2Produced");
-        il2Produced.setAccessible(true);
-        assertEquals(0.0, il2Produced.get(inflammation));
+        verify(mockLattice, times(1))
+                .setValue(
+                        eq(mockLocation),
+                        doubleThat(
+                                val -> Math.abs(val - expectedIL2Env) < EPSILON * expectedIL2Env));
     }
 
     @Test
@@ -262,18 +112,15 @@ public class PatchProcessInflammationCD4Test {
     }
 
     @Test
-    public void update_withZeroVolume_splitsUnevenly() {
+    public void update_withUnevenVolume_splitsUnevenly() {
         inflammation = new PatchProcessInflammationCD4(mockCell);
         PatchProcessInflammationCD4 parentProcess = new PatchProcessInflammationCD4(mockCell);
         parentProcess.amts[PatchProcessInflammationCD4.IL2RBGA] = 100;
-        when(mockCell.getVolume()).thenReturn(0.0);
+        when(mockCell.getVolume()).thenReturn(cellVolume / 4);
 
         inflammation.update(parentProcess);
 
-        assertEquals(0.0, inflammation.amts[PatchProcessInflammationCD8.IL2RBGA]);
-        assertEquals(0.0, inflammation.amts[PatchProcessInflammationCD8.IL2_IL2RBG]);
-        assertEquals(0.0, inflammation.amts[PatchProcessInflammationCD8.IL2_IL2RBGA]);
-
-        assertEquals(100, parentProcess.amts[PatchProcessInflammationCD4.IL2RBGA]);
+        assertEquals(25, inflammation.amts[PatchProcessInflammationCD4.IL2RBGA]);
+        assertEquals(75, parentProcess.amts[PatchProcessInflammationCD4.IL2RBGA]);
     }
 }

@@ -38,6 +38,10 @@ public class ARCADETest {
 
         MockARCADE() {}
 
+        MockARCADE(MiniBox parsed) {
+            settings = parsed;
+        }
+
         MockARCADE(Path path) {
             resource = path.toAbsolutePath().toString();
         }
@@ -160,8 +164,8 @@ public class ARCADETest {
         settings.put("SETUP_FILE", SETUP_FILE);
         settings.put("SNAPSHOT_PATH", SNAPSHOT_PATH);
 
-        ARCADE arcade = new MockARCADE();
-        ArrayList<Series> series = arcade.buildSeries(parameters, settings);
+        ARCADE arcade = new MockARCADE(settings);
+        ArrayList<Series> series = arcade.buildSeries(parameters);
 
         assertEquals(1, series.size());
         assertFalse(series.get(0).isVis);
@@ -175,8 +179,8 @@ public class ARCADETest {
         settings.put("SNAPSHOT_PATH", SNAPSHOT_PATH);
         settings.put("VIS", "");
 
-        ARCADE arcade = new MockARCADE();
-        ArrayList<Series> series = arcade.buildSeries(parameters, settings);
+        ARCADE arcade = new MockARCADE(settings);
+        ArrayList<Series> series = arcade.buildSeries(parameters);
 
         assertEquals(1, series.size());
         assertTrue(series.get(0).isVis);
@@ -189,8 +193,8 @@ public class ARCADETest {
         settings.put("SETUP_FILE", SETUP_FILE);
         settings.put("SNAPSHOT_PATH", SNAPSHOT_PATH + "/");
 
-        ARCADE arcade = new MockARCADE();
-        ArrayList<Series> series = arcade.buildSeries(parameters, settings);
+        ARCADE arcade = new MockARCADE(settings);
+        ArrayList<Series> series = arcade.buildSeries(parameters);
 
         assertEquals(1, series.size());
         assertFalse(series.get(0).isVis);
@@ -203,8 +207,8 @@ public class ARCADETest {
 
         MiniBox settings = new MiniBox();
 
-        ARCADE arcade = new MockARCADE();
-        arcade.runSeries(series, settings);
+        ARCADE arcade = new MockARCADE(settings);
+        arcade.runSeries(series);
 
         verify(series.get(0)).runSims();
         verify(series.get(0), never()).runVis();
@@ -218,8 +222,9 @@ public class ARCADETest {
 
         MiniBox settings = new MiniBox();
 
-        ARCADE arcade = new MockARCADE();
-        arcade.runSeries(series, settings);
+        ARCADE arcade = new MockARCADE(settings);
+        arcade.settings = settings;
+        arcade.runSeries(series);
 
         verify(series.get(0), never()).runSims();
         verify(series.get(0), never()).runVis();
@@ -232,8 +237,9 @@ public class ARCADETest {
 
         MiniBox settings = new MiniBox();
 
-        ARCADE arcade = new MockARCADE();
-        arcade.runSeries(series, settings);
+        ARCADE arcade = new MockARCADE(settings);
+        arcade.settings = settings;
+        arcade.runSeries(series);
 
         verify(series.get(0).saver).saveSeries();
     }
@@ -246,8 +252,9 @@ public class ARCADETest {
         MiniBox settings = new MiniBox();
         settings.put("VIS", "");
 
-        ARCADE arcade = new MockARCADE();
-        arcade.runSeries(series, settings);
+        ARCADE arcade = new MockARCADE(settings);
+        arcade.settings = settings;
+        arcade.runSeries(series);
 
         verify(series.get(0), never()).runSims();
         verify(series.get(0)).runVis();
@@ -262,8 +269,9 @@ public class ARCADETest {
         MiniBox settings = new MiniBox();
         settings.put("VIS", "");
 
-        ARCADE arcade = new MockARCADE();
-        arcade.runSeries(series, settings);
+        ARCADE arcade = new MockARCADE(settings);
+        arcade.settings = settings;
+        arcade.runSeries(series);
 
         verify(series.get(0), never()).runSims();
         verify(series.get(0), never()).runVis();
@@ -277,8 +285,9 @@ public class ARCADETest {
         MiniBox settings = new MiniBox();
         settings.put("VIS", "");
 
-        ARCADE arcade = new MockARCADE();
-        arcade.runSeries(series, settings);
+        ARCADE arcade = new MockARCADE(settings);
+        arcade.settings = settings;
+        arcade.runSeries(series);
 
         assertNull(series.get(0).saver);
     }
@@ -293,8 +302,8 @@ public class ARCADETest {
 
         MiniBox settings = new MiniBox();
 
-        ARCADE arcade = new MockARCADE();
-        arcade.runSeries(series, settings);
+        ARCADE arcade = new MockARCADE(settings);
+        arcade.runSeries(series);
 
         for (int i = 0; i < n; i++) {
             verify(series.get(i)).runSims();
@@ -312,8 +321,8 @@ public class ARCADETest {
         MiniBox settings = new MiniBox();
         settings.put("VIS", "");
 
-        ARCADE arcade = new MockARCADE();
-        arcade.runSeries(series, settings);
+        ARCADE arcade = new MockARCADE(settings);
+        arcade.runSeries(series);
 
         verify(series.get(0)).runVis();
         for (int i = 1; i < n; i++) {
@@ -329,8 +338,8 @@ public class ARCADETest {
         MiniBox settings = new MiniBox();
         settings.put("LOAD_CELLS", "");
 
-        ARCADE arcade = new MockARCADE();
-        arcade.runSeries(series, settings);
+        ARCADE arcade = new MockARCADE(settings);
+        arcade.runSeries(series);
 
         assertTrue(series.get(0).loader.loadCells);
         assertFalse(series.get(0).loader.loadLocations);
@@ -344,8 +353,8 @@ public class ARCADETest {
         MiniBox settings = new MiniBox();
         settings.put("LOAD_LOCATIONS", "");
 
-        ARCADE arcade = new MockARCADE();
-        arcade.runSeries(series, settings);
+        ARCADE arcade = new MockARCADE(settings);
+        arcade.runSeries(series);
 
         assertFalse(series.get(0).loader.loadCells);
         assertTrue(series.get(0).loader.loadLocations);
@@ -360,8 +369,8 @@ public class ARCADETest {
         settings.put("LOAD_CELLS", "");
         settings.put("LOAD_LOCATIONS", "");
 
-        ARCADE arcade = new MockARCADE();
-        arcade.runSeries(series, settings);
+        ARCADE arcade = new MockARCADE(settings);
+        arcade.runSeries(series);
 
         assertTrue(series.get(0).loader.loadCells);
         assertTrue(series.get(0).loader.loadLocations);

@@ -7,7 +7,8 @@ import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.cell.PatchCellTissue;
 import arcade.patch.agent.process.PatchProcessInflammation;
-import arcade.patch.util.PatchEnums;
+import static arcade.patch.util.PatchEnums.Domain;
+import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Implementation of {@link Module} for killing tissue agents.
@@ -18,42 +19,34 @@ import arcade.patch.util.PatchEnums;
  * waits until it has enough granzyme to kill cell.
  */
 public class PatchModuleCytotoxicity extends PatchModule {
-    /** Target cell cytotoxic CAR T-cell is bound to */
+    /** Target cell cytotoxic CAR T-cell is bound to. */
     PatchCellTissue target;
 
-    /** CAR T-cell inflammation module */
+    /** CAR T-cell inflammation module. */
     PatchProcessInflammation inflammation;
 
-    /** Amount of granzyme inside CAR T-cell */
+    /** Amount of granzyme inside CAR T-cell. */
     double granzyme;
 
-    /** Time delay before calling the action [min]. */
-    private int timeDelay;
+    /** Average time that T cell is bound to target [min]. */
+    private final int timeDelay;
 
     /** Ticker to keep track of the time delay [min]. */
     private int ticker;
 
-    /** Average time that T cell is bound to target [min]. */
-    private double boundTime;
-
-    /** Range in bound time [min]. */
-    private double boundRange;
-
     /**
      * Creates a {@code PatchActionKill} for the given {@link PatchCellCART}.
      *
-     * @param c the {@link PatchCell} the helper is associated with
+     * @param cell the {@link PatchCell} the helper is associated with
      */
-    public PatchModuleCytotoxicity(PatchCell c) {
-        super(c);
-        this.target = (PatchCellTissue) ((PatchCellCART) c).getBoundTarget();
-        this.inflammation = (PatchProcessInflammation) c.getProcess(PatchEnums.Domain.INFLAMMATION);
+    public PatchModuleCytotoxicity(PatchCell cell) {
+        super(cell);
+        this.target = (PatchCellTissue) ((PatchCellCART) cell).getBoundTarget();
+        this.inflammation = (PatchProcessInflammation) cell.getProcess(Domain.INFLAMMATION);
         this.granzyme = inflammation.getInternal("granzyme");
 
-        Parameters parameters = c.getParameters();
-        this.boundTime = parameters.getInt("BOUND_TIME");
-        this.boundRange = parameters.getInt("BOUND_RANGE");
-        this.timeDelay = 0;
+        Parameters parameters = cell.getParameters();
+        this.timeDelay = parameters.getInt("BOUND_TIME");
         this.ticker = 0;
     }
 
@@ -65,22 +58,22 @@ public class PatchModuleCytotoxicity extends PatchModule {
 
         if (target.isStopped()) {
             ((PatchCellCART) cell).unbind();
-            cell.setState(PatchEnums.State.UNDEFINED);
+            cell.setState(State.UNDEFINED);
             return;
         }
 
         if (ticker == 0) {
-            this.timeDelay =
-                    (int) (boundTime + Math.round((boundRange * (2 * random.nextInt() - 1))));
             if (granzyme >= 1) {
                 PatchCellTissue tissueCell = (PatchCellTissue) target;
-                tissueCell.setState(PatchEnums.State.APOPTOTIC);
+                tissueCell.setState(State.APOPTOTIC);
                 granzyme--;
                 inflammation.setInternal("granzyme", granzyme);
             }
-        } else if (ticker >= timeDelay) {
+        }
+
+        if (ticker >= timeDelay) {
             ((PatchCellCART) cell).unbind();
-            cell.setState(PatchEnums.State.UNDEFINED);
+            cell.setState(State.UNDEFINED);
         }
 
         ticker++;

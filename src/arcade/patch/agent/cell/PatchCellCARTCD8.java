@@ -11,7 +11,9 @@ import arcade.patch.util.PatchEnums.AntigenFlag;
 import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.State;
 
+/** Extension of {@link PatchCellCART} for CD8 CART-cells with selected module versions. */
 public class PatchCellCARTCD8 extends PatchCellCART {
+
     /**
      * Creates a T cell {@code PatchCellCARTCD8} agent. *
      *
@@ -39,7 +41,7 @@ public class PatchCellCARTCD8 extends PatchCellCART {
 
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-        divisions--;
+        divisions++;
         return new PatchCellContainer(
                 newID,
                 id,
@@ -57,7 +59,6 @@ public class PatchCellCARTCD8 extends PatchCellCART {
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
 
-        // Increase age of cell.
         super.age++;
 
         if (state != State.APOPTOTIC && age > apoptosisAge) {
@@ -66,14 +67,17 @@ public class PatchCellCARTCD8 extends PatchCellCART {
             this.activated = false;
         }
 
-        // Increase time since last active ticker
         super.lastActiveTicker++;
-        if (super.lastActiveTicker != 0 && super.lastActiveTicker % 1440 == 0) {
-            if (super.boundCARAntigensCount != 0) super.boundCARAntigensCount--;
-        }
-        if (super.lastActiveTicker / 1440 > 7) super.activated = false;
 
-        // Step metabolism process.
+        if (super.lastActiveTicker != 0 && super.lastActiveTicker % MINUTES_IN_DAY == 0) {
+            if (super.boundCARAntigensCount != 0) {
+                super.boundCARAntigensCount--;
+            }
+        }
+        if (super.lastActiveTicker / MINUTES_IN_DAY >= 7) {
+            super.activated = false;
+        }
+
         super.processes.get(Domain.METABOLISM).step(simstate.random, sim);
 
         // Check energy status. If cell has less energy than threshold, it will
@@ -97,12 +101,10 @@ public class PatchCellCARTCD8 extends PatchCellCART {
             }
         }
 
-        // Step inflammation process.
         super.processes.get(Domain.INFLAMMATION).step(simstate.random, sim);
 
-        // Change state from undefined.
         if (super.state == State.UNDEFINED || super.state == State.PAUSED) {
-            if (divisions == 0) {
+            if (divisions == divisionPotential) {
                 if (simstate.random.nextDouble() > super.senescentFraction) {
                     super.setState(State.APOPTOTIC);
                 } else {
@@ -111,7 +113,6 @@ public class PatchCellCARTCD8 extends PatchCellCART {
                 super.unbind();
                 this.activated = false;
             } else {
-                // Cell attempts to bind to a target
                 PatchCellTissue target = super.bindTarget(sim, location, simstate.random);
                 super.boundTarget = target;
 
@@ -164,7 +165,6 @@ public class PatchCellCARTCD8 extends PatchCellCART {
             }
         }
 
-        // Step the module for the cell state.
         if (super.module != null) {
             super.module.step(simstate.random, sim);
         }
