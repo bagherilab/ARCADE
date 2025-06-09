@@ -27,7 +27,6 @@ import arcade.patch.agent.module.PatchModuleSenescence;
 import arcade.patch.agent.module.PatchModuleStimulation;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
-import arcade.patch.agent.process.PatchProcessQuorumSensing;
 import arcade.patch.agent.process.PatchProcessSensing;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
@@ -338,30 +337,6 @@ public abstract class PatchCell implements Cell {
      */
     public boolean isStopped() {
         return isStopped;
-    }
-
-    /**
-     * Makes the specified {@link Process} object.
-     *
-     * @param domain the process domain
-     * @param version the process version
-     * @return the process instance
-     */
-    public Process makeProcess(ProcessDomain domain, String version) {
-        switch ((Domain) domain) {
-            case METABOLISM:
-                return PatchProcessMetabolism.make(this, version);
-            case SIGNALING:
-                return PatchProcessSignaling.make(this, version);
-            case INFLAMMATION:
-                return PatchProcessInflammation.make(this, version);
-            case QUORUM:
-                return PatchProcessQuorumSensing.make(this, version);
-            case UNDEFINED:
-            default:
-                return null;
-        }
-        isStopped = true;
     }
 
     @Override
@@ -683,5 +658,4 @@ public abstract class PatchCell implements Cell {
     public int getSynthesisDuration() {
         return this.synthesisDuration;
     }
-
 }
