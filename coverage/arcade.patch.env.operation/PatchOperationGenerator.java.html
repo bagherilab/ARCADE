@@ -44,24 +44,24 @@ public class PatchOperationGenerator extends PatchOperation {
      * @param lattice the {@link PatchLattice} the operation is associated with
      */
     public PatchOperationGenerator(PatchLattice lattice) {
-<span class="nc" id="L47">        super(lattice);</span>
+<span class="fc" id="L47">        super(lattice);</span>
 
         // Get generator parameters.
-<span class="nc" id="L50">        MiniBox parameters = lattice.getParameters();</span>
-<span class="nc" id="L51">        concentration = parameters.getDouble(&quot;generator/CONCENTRATION&quot;);</span>
-<span class="nc" id="L52">        permeability = parameters.getDouble(&quot;generator/PERMEABILITY&quot;);</span>
+<span class="fc" id="L50">        MiniBox parameters = lattice.getParameters();</span>
+<span class="fc" id="L51">        concentration = parameters.getDouble(&quot;generator/CONCENTRATION&quot;);</span>
+<span class="fc" id="L52">        permeability = parameters.getDouble(&quot;generator/PERMEABILITY&quot;);</span>
 
         // Set lattice field.
-<span class="nc" id="L55">        this.latticeCurrent = lattice.getField();</span>
-<span class="nc" id="L56">        this.latticeDelta = new double[latticeHeight][latticeLength][latticeWidth];</span>
+<span class="fc" id="L55">        this.latticeCurrent = lattice.getField();</span>
+<span class="fc" id="L56">        this.latticeDelta = new double[latticeHeight][latticeLength][latticeWidth];</span>
 
-<span class="nc bnc" id="L58" title="All 2 branches missed.">        if (lattice.getOperation(Category.DIFFUSER) != null) {</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">        if (lattice.getOperation(Category.DIFFUSER) != null) {</span>
 <span class="nc" id="L59">            Operation diffuser = lattice.getOperation(Category.DIFFUSER);</span>
 <span class="nc" id="L60">            this.latticePrevious = ((PatchOperationDiffuser) diffuser).latticeNew;</span>
 <span class="nc" id="L61">        } else {</span>
-<span class="nc" id="L62">            this.latticePrevious = new double[latticeHeight][latticeLength][latticeWidth];</span>
+<span class="fc" id="L62">            this.latticePrevious = new double[latticeHeight][latticeLength][latticeWidth];</span>
         }
-<span class="nc" id="L64">    }</span>
+<span class="fc" id="L64">    }</span>
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {

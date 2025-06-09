@@ -16,22 +16,22 @@ public class PatchOperationDiffuserRect extends PatchOperationDiffuser {
      * @param dz the spatial scaling (z direction)
      */
     public PatchOperationDiffuserRect(PatchLattice lattice, double ds, double dz) {
-<span class="nc" id="L19">        super(lattice);</span>
+<span class="fc" id="L19">        super(lattice);</span>
 
         // Calculate dimensionless rate and various multipliers.
-<span class="nc" id="L22">        rate = (diffusivity) / (ds * ds);</span>
-<span class="nc bnc" id="L23" title="All 2 branches missed.">        alpha = (latticeHeight &gt; 1 ? (2 * ds * ds) / (dz * dz) : 0);</span>
-<span class="nc" id="L24">        beta = 4 + 2 * alpha;</span>
+<span class="fc" id="L22">        rate = (diffusivity) / (ds * ds);</span>
+<span class="pc bpc" id="L23" title="1 of 2 branches missed.">        alpha = (latticeHeight &gt; 1 ? (2 * ds * ds) / (dz * dz) : 0);</span>
+<span class="fc" id="L24">        beta = 4 + 2 * alpha;</span>
 
         // Determine if solution is stable. If no, adjust for pseudo-steady.
-<span class="nc" id="L27">        double lambda = rate * beta;</span>
-<span class="nc bnc" id="L28" title="All 6 branches missed.">        if (lambda &gt;= 1 | lambda &lt; 0) {</span>
+<span class="fc" id="L27">        double lambda = rate * beta;</span>
+<span class="pc bpc" id="L28" title="3 of 6 branches missed.">        if (lambda &gt;= 1 | lambda &lt; 0) {</span>
 <span class="nc" id="L29">            rate = 1.0 / beta; // rate is now an average of neighbors</span>
 <span class="nc" id="L30">            adjust = 0; // adjust old concentration in calculation</span>
         } else {
-<span class="nc" id="L32">            adjust = 1;</span>
+<span class="fc" id="L32">            adjust = 1;</span>
         }
-<span class="nc" id="L34">    }</span>
+<span class="fc" id="L34">    }</span>
 
     @Override
     public double calcSum(int i, int j, double[][] field) {

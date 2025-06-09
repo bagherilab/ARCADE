@@ -2,6 +2,7 @@
 
 import arcade.core.env.operation.Operation;
 import arcade.core.util.MiniBox;
+import arcade.patch.env.operation.PatchOperationDecayer;
 import arcade.patch.env.operation.PatchOperationDiffuserRect;
 import arcade.patch.env.operation.PatchOperationGenerator;
 import arcade.patch.util.PatchEnums.Category;
@@ -20,18 +21,20 @@ public class PatchLatticeRect extends PatchLattice {
      */
     public PatchLatticeRect(
             int length, int width, int height, double ds, double dz, MiniBox parameters) {
-<span class="nc" id="L23">        super(length, width, height, ds, dz, parameters);</span>
-<span class="nc" id="L24">    }</span>
+<span class="fc" id="L24">        super(length, width, height, ds, dz, parameters);</span>
+<span class="fc" id="L25">    }</span>
 
     @Override
     public Operation makeOperation(Category category, String version) {
-<span class="nc bnc" id="L28" title="All 3 branches missed.">        switch (category) {</span>
+<span class="pc bpc" id="L29" title="1 of 4 branches missed.">        switch (category) {</span>
             case DIFFUSER:
-<span class="nc" id="L30">                return new PatchOperationDiffuserRect(this, ds, dz);</span>
+<span class="fc" id="L31">                return new PatchOperationDiffuserRect(this, ds, dz);</span>
             case GENERATOR:
-<span class="nc" id="L32">                return new PatchOperationGenerator(this);</span>
+<span class="fc" id="L33">                return new PatchOperationGenerator(this);</span>
+            case DECAYER:
+<span class="fc" id="L35">                return new PatchOperationDecayer(this);</span>
             default:
-<span class="nc" id="L34">                return null;</span>
+<span class="nc" id="L37">                return null;</span>
         }
     }
 }

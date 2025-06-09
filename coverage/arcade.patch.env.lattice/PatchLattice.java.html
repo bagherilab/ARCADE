@@ -65,26 +65,26 @@ public abstract class PatchLattice implements Lattice {
      * @param parameters the dictionary of parameters
      */
     public PatchLattice(
-<span class="nc" id="L68">            int length, int width, int height, double ds, double dz, MiniBox parameters) {</span>
-<span class="nc" id="L69">        this.length = length;</span>
-<span class="nc" id="L70">        this.width = width;</span>
-<span class="nc" id="L71">        this.height = height;</span>
-<span class="nc" id="L72">        this.ds = ds;</span>
-<span class="nc" id="L73">        this.dz = dz;</span>
-<span class="nc" id="L74">        this.parameters = parameters;</span>
+<span class="fc" id="L68">            int length, int width, int height, double ds, double dz, MiniBox parameters) {</span>
+<span class="fc" id="L69">        this.length = length;</span>
+<span class="fc" id="L70">        this.width = width;</span>
+<span class="fc" id="L71">        this.height = height;</span>
+<span class="fc" id="L72">        this.ds = ds;</span>
+<span class="fc" id="L73">        this.dz = dz;</span>
+<span class="fc" id="L74">        this.parameters = parameters;</span>
 
-<span class="nc" id="L76">        field = new double[height][length][width];</span>
+<span class="fc" id="L76">        field = new double[height][length][width];</span>
 
         // Add lattice operations.
-<span class="nc" id="L79">        operations = new HashMap&lt;&gt;();</span>
-<span class="nc" id="L80">        MiniBox operationBox = parameters.filter(&quot;(OPERATION)&quot;);</span>
-<span class="nc bnc" id="L81" title="All 2 branches missed.">        for (String operationKey : operationBox.getKeys()) {</span>
-<span class="nc" id="L82">            Category category = Category.valueOf(operationKey);</span>
-<span class="nc" id="L83">            String version = operationBox.get(operationKey);</span>
-<span class="nc" id="L84">            Operation operation = makeOperation(category, version);</span>
-<span class="nc" id="L85">            operations.put(category, operation);</span>
-<span class="nc" id="L86">        }</span>
-<span class="nc" id="L87">    }</span>
+<span class="fc" id="L79">        operations = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L80">        MiniBox operationBox = parameters.filter(&quot;(OPERATION)&quot;);</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        for (String operationKey : operationBox.getKeys()) {</span>
+<span class="fc" id="L82">            Category category = Category.valueOf(operationKey);</span>
+<span class="fc" id="L83">            String version = operationBox.get(operationKey);</span>
+<span class="fc" id="L84">            Operation operation = makeOperation(category, version);</span>
+<span class="fc" id="L85">            operations.put(category, operation);</span>
+<span class="fc" id="L86">        }</span>
+<span class="fc" id="L87">    }</span>
 
     /**
      * Makes the specified {@link Operation} object.
@@ -97,32 +97,32 @@ public abstract class PatchLattice implements Lattice {
 
     @Override
     public double[][][] getField() {
-<span class="nc" id="L100">        return field;</span>
+<span class="fc" id="L100">        return field;</span>
     }
 
     @Override
     public int getLength() {
-<span class="nc" id="L105">        return length;</span>
+<span class="fc" id="L105">        return length;</span>
     }
 
     @Override
     public int getWidth() {
-<span class="nc" id="L110">        return width;</span>
+<span class="fc" id="L110">        return width;</span>
     }
 
     @Override
     public int getHeight() {
-<span class="nc" id="L115">        return height;</span>
+<span class="fc" id="L115">        return height;</span>
     }
 
     @Override
     public Operation getOperation(OperationCategory category) {
-<span class="nc" id="L120">        return operations.get(category);</span>
+<span class="fc" id="L120">        return operations.get(category);</span>
     }
 
     @Override
     public MiniBox getParameters() {
-<span class="nc" id="L125">        return parameters;</span>
+<span class="fc" id="L125">        return parameters;</span>
     }
 
     @Override
@@ -214,6 +214,11 @@ public abstract class PatchLattice implements Lattice {
 <span class="nc bnc" id="L214" title="All 2 branches missed.">        if (operations.containsKey(Category.DIFFUSER)) {</span>
 <span class="nc" id="L215">            operations.get(Category.DIFFUSER).step(simstate.random, sim);</span>
         }
-<span class="nc" id="L217">    }</span>
+
+        // Step decayer operation, if it exists.
+<span class="nc bnc" id="L219" title="All 2 branches missed.">        if (operations.containsKey(Category.DECAYER)) {</span>
+<span class="nc" id="L220">            operations.get(Category.DECAYER).step(simstate.random, sim);</span>
+        }
+<span class="nc" id="L222">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

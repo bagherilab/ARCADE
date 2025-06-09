@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchOperationDecayer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.operation</a> &gt; <span class="el_source">PatchOperationDecayer.java</span></div><h1>PatchOperationDecayer.java</h1><pre class="source lang-java linenums">package arcade.patch.env.operation;
+
+import ec.util.MersenneTwisterFast;
+import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
+import arcade.patch.env.lattice.PatchLattice;
+
+/**
+ * Extension of {@link PatchOperation} for natural decay to support including the half-life of
+ * certain biomolecules.
+ *
+ * &lt;p&gt;Operation updates the associated lattice field with values based on the current concentration
+ * and the decay rate. Operation is independent of underlying geometry.
+ */
+public class PatchOperationDecayer extends PatchOperation {
+    /** Array holding current concentration values. */
+    public final double[][][] latticeCurrent;
+
+    /** Degradation rate for molecule in lattice. */
+    private final double decayRate;
+
+    /**
+     * Creates a decayer {@link PatchOperation} for the given lattice. Molecules degrade at a rate
+     * [1/min], stepped once a minute.
+     *
+     * &lt;p&gt;Loaded parameters include:
+     *
+     * &lt;ul&gt;
+     *   &lt;li&gt;{@code DECAY_RATE} = Decay rate of molecule
+     * &lt;/ul&gt;
+     *
+     * @param lattice the {@link PatchLattice} the operation is associated with
+     */
+    public PatchOperationDecayer(PatchLattice lattice) {
+<span class="fc" id="L35">        super(lattice);</span>
+
+        // Get generator parameters.
+<span class="fc" id="L38">        MiniBox parameters = lattice.getParameters();</span>
+<span class="fc" id="L39">        decayRate = parameters.getDouble(&quot;decayer/DECAY_RATE&quot;);</span>
+
+        // Set lattice field.
+<span class="fc" id="L42">        this.latticeCurrent = lattice.getField();</span>
+<span class="fc" id="L43">    }</span>
+
+    @Override
+    public void step(MersenneTwisterFast random, Simulation sim) {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        for (int k = 0; k &lt; latticeHeight; k++) {</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">            for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">                for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="fc" id="L50">                    latticeCurrent[k][i][j] -= decayRate * latticeCurrent[k][i][j];</span>
+                }
+            }
+        }
+<span class="fc" id="L54">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

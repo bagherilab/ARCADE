@@ -27,35 +27,35 @@ public class PatchOperationDiffuserTri extends PatchOperationDiffuser {
      * @param dz the spatial scaling (z direction)
      */
     public PatchOperationDiffuserTri(PatchLattice lattice, double ds, double dz) {
-<span class="nc" id="L30">        super(lattice);</span>
+<span class="fc" id="L30">        super(lattice);</span>
 
         // Calculate dimensionless rate and various multipliers.
-<span class="nc" id="L33">        rate = (4 * diffusivity) / (3 * ds * ds);</span>
-<span class="nc bnc" id="L34" title="All 2 branches missed.">        alpha = (latticeHeight &gt; 1 ? (3 * ds * ds) / (2 * dz * dz) : 0);</span>
-<span class="nc" id="L35">        beta = 3 + 2 * alpha;</span>
+<span class="fc" id="L33">        rate = (4 * diffusivity) / (3 * ds * ds);</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">        alpha = (latticeHeight &gt; 1 ? (3 * ds * ds) / (2 * dz * dz) : 0);</span>
+<span class="fc" id="L35">        beta = 3 + 2 * alpha;</span>
 
         // Determine if solution is stable. If no, adjust for pseudo-steady.
-<span class="nc" id="L38">        double lambda = rate * beta;</span>
-<span class="nc bnc" id="L39" title="All 6 branches missed.">        if (lambda &gt;= 1 | lambda &lt; 0) {</span>
+<span class="fc" id="L38">        double lambda = rate * beta;</span>
+<span class="pc bpc" id="L39" title="3 of 6 branches missed.">        if (lambda &gt;= 1 | lambda &lt; 0) {</span>
 <span class="nc" id="L40">            rate = 1.0 / beta; // rate is now an average of neighbors</span>
 <span class="nc" id="L41">            adjust = 0; // adjust old concentration in calculation</span>
         } else {
-<span class="nc" id="L43">            adjust = 1;</span>
+<span class="fc" id="L43">            adjust = 1;</span>
         }
 
         // Create orientation lattice.
-<span class="nc" id="L47">        direction = new byte[latticeLength][latticeWidth];</span>
-<span class="nc bnc" id="L48" title="All 2 branches missed.">        for (int i = 0; i &lt; latticeLength; i++) {</span>
-<span class="nc bnc" id="L49" title="All 2 branches missed.">            for (int j = 0; j &lt; latticeWidth; j++) {</span>
-<span class="nc bnc" id="L50" title="All 2 branches missed.">                direction[i][j] = (byte) (((i + j) &amp; 1) == 0 ? -1 : 1);</span>
-<span class="nc bnc" id="L51" title="All 4 branches missed.">                if (topBorder[j] == 0 &amp;&amp; direction[i][j] == -1) {</span>
-<span class="nc" id="L52">                    direction[i][j] = (byte) 0;</span>
-<span class="nc bnc" id="L53" title="All 4 branches missed.">                } else if (bottomBorder[j] == 0 &amp;&amp; direction[i][j] == 1) {</span>
-<span class="nc" id="L54">                    direction[i][j] = (byte) 0;</span>
+<span class="fc" id="L47">        direction = new byte[latticeLength][latticeWidth];</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">            for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">                direction[i][j] = (byte) (((i + j) &amp; 1) == 0 ? -1 : 1);</span>
+<span class="fc bfc" id="L51" title="All 4 branches covered.">                if (topBorder[j] == 0 &amp;&amp; direction[i][j] == -1) {</span>
+<span class="fc" id="L52">                    direction[i][j] = (byte) 0;</span>
+<span class="fc bfc" id="L53" title="All 4 branches covered.">                } else if (bottomBorder[j] == 0 &amp;&amp; direction[i][j] == 1) {</span>
+<span class="fc" id="L54">                    direction[i][j] = (byte) 0;</span>
                 }
             }
         }
-<span class="nc" id="L58">    }</span>
+<span class="fc" id="L58">    }</span>
 
     @Override
     public double calcSum(int i, int j, double[][] field) {

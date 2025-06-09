@@ -209,7 +209,10 @@ public final class PatchEnums {
 <span class="fc" id="L209">        DIFFUSER,</span>
 
         /** Code for signaling category. */
-<span class="fc" id="L212">        GENERATOR;</span>
+<span class="fc" id="L212">        GENERATOR,</span>
+
+        /** Code for decayer category. */
+<span class="fc" id="L215">        DECAYER;</span>
 
         /**
          * Randomly selects a {@code Category}.
@@ -218,7 +221,7 @@ public final class PatchEnums {
          * @return a random {@code Operation}
          */
         public static Category random(MersenneTwisterFast rng) {
-<span class="fc" id="L221">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+<span class="fc" id="L224">            return values()[rng.nextInt(values().length - 1) + 1];</span>
         }
     }
 }

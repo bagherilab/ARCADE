@@ -72,46 +72,46 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
      * @param lattice the {@link PatchLattice} the operation is associated with
      */
     public PatchOperationDiffuser(PatchLattice lattice) {
-<span class="nc" id="L75">        super(lattice);</span>
+<span class="fc" id="L75">        super(lattice);</span>
 
         // Get diffuser parameters.
-<span class="nc" id="L78">        MiniBox parameters = lattice.getParameters();</span>
-<span class="nc" id="L79">        diffusivity = parameters.getDouble(&quot;diffuser/DIFFUSIVITY&quot;);</span>
+<span class="fc" id="L78">        MiniBox parameters = lattice.getParameters();</span>
+<span class="fc" id="L79">        diffusivity = parameters.getDouble(&quot;diffuser/DIFFUSIVITY&quot;);</span>
 
         // Set lattice fields.
-<span class="nc" id="L82">        this.latticeCurrent = lattice.getField();</span>
+<span class="fc" id="L82">        this.latticeCurrent = lattice.getField();</span>
 
-<span class="nc bnc" id="L84" title="All 2 branches missed.">        if (lattice.getOperation(Category.GENERATOR) != null) {</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">        if (lattice.getOperation(Category.GENERATOR) != null) {</span>
 <span class="nc" id="L85">            Operation generator = lattice.getOperation(Category.GENERATOR);</span>
 <span class="nc" id="L86">            this.latticeNew = ((PatchOperationGenerator) generator).latticePrevious;</span>
 <span class="nc" id="L87">        } else {</span>
-<span class="nc" id="L88">            this.latticeNew = new double[latticeHeight][latticeLength][latticeWidth];</span>
+<span class="fc" id="L88">            this.latticeNew = new double[latticeHeight][latticeLength][latticeWidth];</span>
         }
 
         // Set up border arrays for up and down (z direction).
-<span class="nc" id="L92">        upBorder = new byte[latticeHeight];</span>
-<span class="nc" id="L93">        downBorder = new byte[latticeHeight];</span>
-<span class="nc bnc" id="L94" title="All 2 branches missed.">        for (int k = 0; k &lt; latticeHeight; k++) {</span>
-<span class="nc bnc" id="L95" title="All 2 branches missed.">            upBorder[k] = (byte) (k == latticeHeight - 1 ? 0 : 1);</span>
-<span class="nc bnc" id="L96" title="All 2 branches missed.">            downBorder[k] = (byte) (k == 0 ? 0 : 1);</span>
+<span class="fc" id="L92">        upBorder = new byte[latticeHeight];</span>
+<span class="fc" id="L93">        downBorder = new byte[latticeHeight];</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        for (int k = 0; k &lt; latticeHeight; k++) {</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">            upBorder[k] = (byte) (k == latticeHeight - 1 ? 0 : 1);</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">            downBorder[k] = (byte) (k == 0 ? 0 : 1);</span>
         }
 
         // Set up border arrays for left and right (x direction).
-<span class="nc" id="L100">        leftBorder = new byte[latticeLength];</span>
-<span class="nc" id="L101">        rightBorder = new byte[latticeLength];</span>
-<span class="nc bnc" id="L102" title="All 2 branches missed.">        for (int i = 0; i &lt; latticeLength; i++) {</span>
-<span class="nc bnc" id="L103" title="All 2 branches missed.">            leftBorder[i] = (byte) (i == 0 ? 0 : 1);</span>
-<span class="nc bnc" id="L104" title="All 2 branches missed.">            rightBorder[i] = (byte) (i == latticeLength - 1 ? 0 : 1);</span>
+<span class="fc" id="L100">        leftBorder = new byte[latticeLength];</span>
+<span class="fc" id="L101">        rightBorder = new byte[latticeLength];</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">            leftBorder[i] = (byte) (i == 0 ? 0 : 1);</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">            rightBorder[i] = (byte) (i == latticeLength - 1 ? 0 : 1);</span>
         }
 
         // Set up border arrays for top and bottom (y direction).
-<span class="nc" id="L108">        topBorder = new byte[latticeWidth];</span>
-<span class="nc" id="L109">        bottomBorder = new byte[latticeWidth];</span>
-<span class="nc bnc" id="L110" title="All 2 branches missed.">        for (int j = 0; j &lt; latticeWidth; j++) {</span>
-<span class="nc bnc" id="L111" title="All 2 branches missed.">            topBorder[j] = (byte) (j == 0 ? 0 : 1);</span>
-<span class="nc bnc" id="L112" title="All 2 branches missed.">            bottomBorder[j] = (byte) (j == latticeWidth - 1 ? 0 : 1);</span>
+<span class="fc" id="L108">        topBorder = new byte[latticeWidth];</span>
+<span class="fc" id="L109">        bottomBorder = new byte[latticeWidth];</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">            topBorder[j] = (byte) (j == 0 ? 0 : 1);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">            bottomBorder[j] = (byte) (j == latticeWidth - 1 ? 0 : 1);</span>
         }
-<span class="nc" id="L114">    }</span>
+<span class="fc" id="L114">    }</span>
 
     /**
      * Calculate the sum of neighboring locations in 2D plane.
