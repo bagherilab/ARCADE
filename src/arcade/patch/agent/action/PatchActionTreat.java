@@ -137,34 +137,7 @@ public class PatchActionTreat implements Action {
 
         // Find sites without specified level of damage based on component type.
         if (type.equals("graph")) {
-            Graph graph = ((PatchComponentSitesGraph) comp).getGraph();
-            Bag allEdges = new Bag(graph.getAllEdges());
-            PatchComponentSitesGraph graphSites = (PatchComponentSitesGraph) comp;
-
-            for (Object edgeObj : allEdges) {
-                SiteEdge edge = (SiteEdge) edgeObj;
-                Bag allEdgeLocs = new Bag();
-                if (Objects.equals(coord, "Hex")) {
-                    allEdgeLocs.add(
-                            ((PatchComponentSitesGraphTri) graphSites)
-                                    .getSpan(edge.getFrom(), edge.getTo()));
-                } else {
-                    allEdgeLocs.add(
-                            ((PatchComponentSitesGraphRect) graphSites)
-                                    .getSpan(edge.getFrom(), edge.getTo()));
-                }
-
-                for (Object locObj : allEdgeLocs) {
-                    Location loc = (Location) locObj;
-                    if (locs.contains(loc)) {
-                        if (edge.getRadius() >= minDamageRadius) {
-                            for (int p = 0; p < latPositions; p++) {
-                                siteLocs.add(loc);
-                            }
-                        }
-                    }
-                }
-            }
+            findGraphSites(comp, locs, siteLocs);
         } else if (type.equals("source") || type.equals("pattern")) {
             double[][][] damage;
             boolean[][][] sitesLat;
@@ -176,25 +149,7 @@ public class PatchActionTreat implements Action {
                 damage = ((PatchComponentSitesPattern) comp).getDamage();
                 sitesLat = ((PatchComponentSitesPattern) comp).getPatterns();
             }
-
-            // Iterate through list of locations and remove locations not next to a site.
-            for (LocationContainer l : locs) {
-                PatchLocationContainer contain = (PatchLocationContainer) l;
-                PatchLocation loc =
-                        (PatchLocation)
-                                contain.convert(
-                                        sim.locationFactory,
-                                        sim.cellFactory.createCellForPopulation(
-                                                0, populations.get(0).getInt("CODE")));
-                CoordinateXYZ coordinate = (CoordinateXYZ) loc.getSubcoordinate();
-                int z = coordinate.z;
-                if (sitesLat[z][coordinate.x][coordinate.y]
-                        && damage[z][coordinate.x][coordinate.y] <= this.maxDamage) {
-                    for (int p = 0; p < latPositions; p++) {
-                        siteLocs.add(loc);
-                    }
-                }
-            }
+            pruneSite(locs, sim, damage, sitesLat, siteLocs);
         } else {
             throw new IllegalArgumentException(
                     "Invalid component type: "
@@ -206,6 +161,82 @@ public class PatchActionTreat implements Action {
         // sort locations in descending order from highest to lowest density
         siteLocs.sort(Comparator.comparingInt(l -> -computeDensity(grid, l)));
         insert(siteLocs, simstate);
+    }
+
+    /**
+     * Helper method to check if radius is wide enough for T-cells to pass through.
+     *
+     * @param comp the component
+     * @param locs the locations to check
+     * @param siteLocs the locations that meet the criteria
+     */
+    private void findGraphSites(
+            PatchComponentSites comp,
+            ArrayList<LocationContainer> locs,
+            ArrayList<Location> siteLocs) {
+        Graph graph = ((PatchComponentSitesGraph) comp).getGraph();
+        Bag allEdges = new Bag(graph.getAllEdges());
+        PatchComponentSitesGraph graphSites = (PatchComponentSitesGraph) comp;
+
+        for (Object edgeObj : allEdges) {
+            SiteEdge edge = (SiteEdge) edgeObj;
+            Bag allEdgeLocs = new Bag();
+            if (Objects.equals(coord, "Hex")) {
+                allEdgeLocs.add(
+                        ((PatchComponentSitesGraphTri) graphSites)
+                                .getSpan(edge.getFrom(), edge.getTo()));
+            } else {
+                allEdgeLocs.add(
+                        ((PatchComponentSitesGraphRect) graphSites)
+                                .getSpan(edge.getFrom(), edge.getTo()));
+            }
+
+            for (Object locObj : allEdgeLocs) {
+                Location loc = (Location) locObj;
+                if (locs.contains(loc)) {
+                    if (edge.getRadius() >= minDamageRadius) {
+                        for (int p = 0; p < latPositions; p++) {
+                            siteLocs.add(loc);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Helper method to remove locations that are not next to a site or have too much damage for
+     * T-cells to pass through.
+     *
+     * @param locs the locations to check
+     * @param sim the simuation instance
+     * @param damage the damage array for sites
+     * @param sitesLat the lattice array for sites
+     * @param siteLocs the locations that meet the criteria
+     */
+    public void pruneSite(
+            ArrayList<LocationContainer> locs,
+            PatchSimulation sim,
+            double[][][] damage,
+            boolean[][][] sitesLat,
+            ArrayList<Location> siteLocs) {
+        for (LocationContainer l : locs) {
+            PatchLocationContainer contain = (PatchLocationContainer) l;
+            PatchLocation loc =
+                    (PatchLocation)
+                            contain.convert(
+                                    sim.locationFactory,
+                                    sim.cellFactory.createCellForPopulation(
+                                            0, populations.get(0).getInt("CODE")));
+            CoordinateXYZ coordinate = (CoordinateXYZ) loc.getSubcoordinate();
+            int z = coordinate.z;
+            if (sitesLat[z][coordinate.x][coordinate.y]
+                    && damage[z][coordinate.x][coordinate.y] <= this.maxDamage) {
+                for (int p = 0; p < latPositions; p++) {
+                    siteLocs.add(loc);
+                }
+            }
+        }
     }
 
     /**
