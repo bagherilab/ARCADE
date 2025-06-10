@@ -95,10 +95,24 @@ public final class Graph {
         return checkEdge(edge);
     }
 
+    /**
+     * Retrieve the node object for the given coordinates. Returns null if no node exists.
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @return the node object
+     */
     public Node lookup(int x, int y, int z) {
         return nodes.get("(" + x + "," + y + "," + z + ")");
     }
 
+    /**
+     * Retrieve the node object for the given coordinates. Returns null if no node exists.
+     *
+     * @param node to lookup an original node
+     * @return the node object
+     */
     public Node lookup(Node node) {
         return nodes.get(node.toString());
     }
@@ -383,6 +397,23 @@ public final class Graph {
         unsetOutMap(edge.getFrom(), edge);
         unsetInMap(edge.getTo(), edge);
         unsetLinks(edge);
+        removeNodes(edge);
+    }
+
+    /**
+     * Remove any detached nodes from the graph.
+     *
+     * @param edge
+     */
+    private void removeNodes(Edge edge) {
+        Node from = edge.getFrom();
+        Node to = edge.getTo();
+        if (!nodeToInBag.containsKey(from) && !nodeToOutBag.containsKey(from)) {
+            nodes.remove(from.toString());
+        }
+        if (!nodeToInBag.containsKey(to) && !nodeToOutBag.containsKey(to)) {
+            nodes.remove(to.toString());
+        }
     }
 
     /**
