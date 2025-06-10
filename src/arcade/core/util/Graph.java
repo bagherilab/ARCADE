@@ -309,6 +309,11 @@ public final class Graph {
         addNodes(edge);
     }
 
+    /**
+     * Helper function to adds the nodes from an edge to a graph.
+     *
+     * @param edge the edge to add
+     */
     private void addNodes(Edge edge) {
         Node from = edge.getFrom();
         Node to = edge.getTo();

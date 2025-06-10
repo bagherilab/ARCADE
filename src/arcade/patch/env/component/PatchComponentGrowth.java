@@ -43,18 +43,27 @@ import static arcade.patch.util.PatchEnums.Ordering;
 /**
  * Implementation of {@link Component} for degrading graph edges.
  *
- * <p>This component can only be used with {@link GraphSites}. The component is stepped every {@code
- * DEGRADATION_INTERVAL} ticks. wall thickness of edges that are adjacent to a location with
- * cancerous cells is decreased ({@code DEGRADATION_RATE}). Edges that are below a minimum wall
- * thickness and have a shear stress below the shear threshold ({@code SHEAR_THRESHOLD}) are removed
- * from the graph. At the end of a step, if no edges have been removed from the graph, then only the
- * stresses in the graph are recalculated. Otherwise, all hemodynamic properties are recalculated.
+ * <p>
+ * This component can only be used with {@link GraphSites}. The component is
+ * stepped every {@code
+ * DEGRADATION_INTERVAL} ticks. wall thickness of edges that are adjacent to a
+ * location with
+ * cancerous cells is decreased ({@code DEGRADATION_RATE}). Edges that are below
+ * a minimum wall
+ * thickness and have a shear stress below the shear threshold
+ * ({@code SHEAR_THRESHOLD}) are removed
+ * from the graph. At the end of a step, if no edges have been removed from the
+ * graph, then only the
+ * stresses in the graph are recalculated. Otherwise, all hemodynamic properties
+ * are recalculated.
  */
 public class PatchComponentGrowth implements Component {
     private static Logger LOGGER = Logger.getLogger(PatchComponentGrowth.class.getName());
 
+    /** Default edge level to add to the graph from this component. */
     private final EdgeLevel DEFAULT_EDGE_LEVEL = EdgeLevel.LEVEL_1;
 
+    /** Default edge type to add to the graph from this component. */
     private final EdgeType DEFAULT_EDGE_TYPE = EdgeType.ANGIOGENIC;
 
     /** Calculation strategies. */
@@ -81,7 +90,10 @@ public class PatchComponentGrowth implements Component {
     /** Rate of migration. */
     private double migrationRate;
 
-    /** Angiogenesis threshold for vegf concentration near SiteNode to initiate migration. */
+    /**
+     * Angiogenesis threshold for vegf concentration near SiteNode to initiate
+     * migration.
+     */
     private double vegfThreshold;
 
     /** Direction of migration. */
@@ -90,10 +102,16 @@ public class PatchComponentGrowth implements Component {
     /** Maximum length of migration. */
     private double maxLength;
 
+    /**
+     * Maximum number of edges to be added to the graph from a sprout, based on
+     * maxLength.
+     */
     private int maxEdges;
 
+    /** Interval at which to step the component, based on migration rate. */
     private int interval;
 
+    /** The size of an edge, based on the grid size. */
     private double edgeSize;
 
     /** The associated {@link GraphSites} object. */
@@ -102,15 +120,41 @@ public class PatchComponentGrowth implements Component {
     /** The {@link Graph} object representing the sites. */
     private Graph graph;
 
+    /**
+     * Persistent map of angiographic edges, keyed by the node they originate from.
+     */
     private HashMap<SiteNode, ArrayList<SiteEdge>> angioMap = new HashMap<>();
+
+    /** List of temporary edges to be added to the graph this step. */
     private ArrayList<SiteEdge> tempEdges;
 
+    /** List of edges that have been added to the graph this step. */
     private ArrayList<SiteEdge> added = new ArrayList<>();
 
+    /** Number of offsets to be used in the migration. */
     private int numOffsets;
+
+    /** List of directions to be used in the migration. */
     private ArrayList<EdgeDirection> offsetDirections;
+
+    /** Map of offsets to be used in the migration. */
     private EnumMap<EdgeDirection, int[]> offsets;
 
+    /**
+     * Creates a growth component for a {@link PatchComponentSitesGraph}.
+     *
+     * Loaded parameters include:
+     * <ul>
+     * <li>MIGRATION_RATE</li> = How quickly the tip cells migrate.
+     * <li>VEGF_THRESHOLD</li> = The threshold for the average VEGF concentration
+     * surrounding a node.
+     * <li>WALK_TYPE</li> = How the directional migration is to be performed.
+     * <li>MAX_LENGTH</li> = The maximum length of migration.
+     * </ul>
+     *
+     * @param series     {@link Series} object.
+     * @param parameters {@link MiniBox} object.
+     */
     public PatchComponentGrowth(Series series, MiniBox parameters) {
         // Set loaded parameters.
         migrationRate = parameters.getDouble("MIGRATION_RATE");
@@ -194,8 +238,7 @@ public class PatchComponentGrowth implements Component {
                 continue;
             }
 
-            EnumMap<EdgeDirection, ArrayList<Double>> vegfMap =
-                    buildDirectionalVEGFMap(vegfLattice, node);
+            EnumMap<EdgeDirection, ArrayList<Double>> vegfMap = buildDirectionalVEGFMap(vegfLattice, node);
 
             if (averageDirectionalMap(vegfMap) > vegfThreshold) {
                 angioMap.put(node, new ArrayList<>());
@@ -222,22 +265,18 @@ public class PatchComponentGrowth implements Component {
 
                 switch (walkType) {
                     case RANDOM:
-                        node.sproutDir =
-                                performRandomWalk(random, node, vegfAverages, tick, skipDirList);
+                        node.sproutDir = performRandomWalk(random, node, vegfAverages, tick, skipDirList);
                         break;
                     case BIASED:
-                        node.sproutDir =
-                                performBiasedWalk(random, node, vegfAverages, tick, skipDirList);
+                        node.sproutDir = performBiasedWalk(random, node, vegfAverages, tick, skipDirList);
                         break;
                     case DETERMINISTIC:
-                        node.sproutDir =
-                                performDeterministicWalk(
-                                        random, node, vegfAverages, tick, skipDirList);
+                        node.sproutDir = performDeterministicWalk(
+                                random, node, vegfAverages, tick, skipDirList);
                         break;
                     default:
-                        node.sproutDir =
-                                performDeterministicWalk(
-                                        random, node, vegfAverages, tick, skipDirList);
+                        node.sproutDir = performDeterministicWalk(
+                                random, node, vegfAverages, tick, skipDirList);
                 }
             }
         }
@@ -338,14 +377,12 @@ public class PatchComponentGrowth implements Component {
                     } else {
                         if (sproutNode.pressure == 0) {
                             if (graph.getEdgesOut(sproutNode) != null) {
-                                sproutNode =
-                                        ((SiteEdge) graph.getEdgesOut(sproutNode).get(0)).getFrom();
+                                sproutNode = ((SiteEdge) graph.getEdgesOut(sproutNode).get(0)).getFrom();
                             }
                         }
                         if (finalNode.pressure == 0) {
                             if (graph.getEdgesOut(finalNode) != null) {
-                                finalNode =
-                                        ((SiteEdge) graph.getEdgesOut(finalNode).get(0)).getFrom();
+                                finalNode = ((SiteEdge) graph.getEdgesOut(finalNode).get(0)).getFrom();
                             }
                         }
                         // path(graph, finalNode, sproutNode);
@@ -382,6 +419,12 @@ public class PatchComponentGrowth implements Component {
         }
     }
 
+    /**
+     * Checks if the node has any edges that are marked as ignored.
+     *
+     * @param node {@link SiteNode} object.
+     * @return {@code true} if the node has any connected ignored edges.
+     */
     private boolean checkForIgnoredEdges(SiteNode node) {
         Bag in = graph.getEdgesIn(node);
         Bag out = graph.getEdgesOut(node);
@@ -404,6 +447,7 @@ public class PatchComponentGrowth implements Component {
         return false;
     }
 
+    /** Criteria for skipping a node during the migration checks. */
     private boolean checkNodeSkipStatus(SiteNode node, int tick) {
         if (angioMap.keySet().contains(node)) {
             return true;
@@ -417,12 +461,25 @@ public class PatchComponentGrowth implements Component {
         return false;
     }
 
+    /**
+     * Reverses all edges in the angioMap for a given node.
+     *
+     * @param node {@link SiteNode} object.
+     */
     private void reverseAllEdges(SiteNode node) {
         for (SiteEdge edge : angioMap.get(node)) {
             edge.reverse();
         }
     }
 
+    /**
+     * Private helper function for finding the key node in the angioMap for a given
+     * target node and skip node.
+     *
+     * @param targetNode {@link SiteNode} object.
+     * @param skipNode   {@link SiteNode} object.
+     * @return {@link SiteNode} object.
+     */
     private SiteNode findKeyNodeInMap(SiteNode targetNode, SiteNode skipNode) {
         for (SiteNode keyNode : angioMap.keySet()) {
             if (keyNode == skipNode) {
@@ -438,6 +495,14 @@ public class PatchComponentGrowth implements Component {
         return null;
     }
 
+    /**
+     * Private helper function for checking if an edge list contains a given target
+     * node.
+     *
+     * @param edgeList   {@link ArrayList} of {@link SiteEdge} objects.
+     * @param targetNode {@link SiteNode} object.
+     * @return {@code true} if the edge list contains the target node.
+     */
     private boolean edgeListcontains(ArrayList<SiteEdge> edgeList, SiteNode targetNode) {
         for (SiteEdge edge : edgeList) {
             if (edge.getTo() == targetNode) {
@@ -447,6 +512,9 @@ public class PatchComponentGrowth implements Component {
         return false;
     }
 
+    /**
+     * Adds all temporary edges to the graph.
+     */
     private void addTemporaryEdges() {
         tempEdges = new ArrayList<>();
         for (Map.Entry<SiteNode, ArrayList<SiteEdge>> entry : angioMap.entrySet()) {
@@ -456,6 +524,9 @@ public class PatchComponentGrowth implements Component {
         }
     }
 
+    /**
+     * Removes all temporary edges from the graph.
+     */
     private void removeTemporaryEdges() {
         if (tempEdges.isEmpty()) {
             return;
@@ -464,12 +535,28 @@ public class PatchComponentGrowth implements Component {
         tempEdges.clear();
     }
 
+    /**
+     * Removes all edges in an edge list from the graph.
+     *
+     * @param edgeList {@link ArrayList} of {@link SiteEdge} objects.
+     */
     private void removeEdgeList(ArrayList<SiteEdge> edgeList) {
         for (SiteEdge edge : edgeList) {
             graph.removeEdge(edge);
         }
     }
 
+    /**
+     * Private helper function for choosing a sprout direction randomly on the from
+     * the node.
+     *
+     * @param random   {@link MersenneTwisterFast} object.
+     * @param node     {@link SiteNode} object.
+     * @param valList  {@link EnumMap} of {@link EdgeDirection} to double values.
+     * @param tick     {@code int} object.
+     * @param skipList {@link ArrayList} of {@link EdgeDirection} objects.
+     * @return {@link EdgeDirection} object.
+     */
     private EdgeDirection performRandomWalk(
             MersenneTwisterFast random,
             SiteNode node,
@@ -483,6 +570,18 @@ public class PatchComponentGrowth implements Component {
         return randDir;
     }
 
+    /**
+     * Private helper function for choosing a sprout direction biased on the VEGF
+     * concentration around
+     * the node.
+     *
+     * @param random   {@link MersenneTwisterFast} object.
+     * @param node     {@link SiteNode} object.
+     * @param valList  {@link EnumMap} of {@link EdgeDirection} to double values.
+     * @param tick     {@code int} object.
+     * @param skipList {@link ArrayList} of {@link EdgeDirection} objects.
+     * @return {@link EdgeDirection} object.
+     */
     private EdgeDirection performBiasedWalk(
             MersenneTwisterFast random,
             SiteNode node,
@@ -503,6 +602,18 @@ public class PatchComponentGrowth implements Component {
         return offsetDirections.get(offsetDirections.size() - 1);
     }
 
+    /**
+     * Private helper function for choosing a sprout direction deterministically on
+     * the VEGF concentration
+     * around the node.
+     *
+     * @param random   {@link MersenneTwisterFast} object.
+     * @param node     {@link SiteNode} object.
+     * @param valList  {@link EnumMap} of {@link EdgeDirection} to double values.
+     * @param tick     {@code int} object.
+     * @param skipList {@link ArrayList} of {@link EdgeDirection} objects.
+     * @return {@link EdgeDirection} object.
+     */
     private EdgeDirection performDeterministicWalk(
             MersenneTwisterFast random,
             SiteNode node,
@@ -516,6 +627,15 @@ public class PatchComponentGrowth implements Component {
         return maxDir;
     }
 
+    /**
+     * Private helper function for building a map of VEGF concentration values for a
+     * given node.
+     *
+     * @param lattice {@link Lattice} object.
+     * @param node    {@link SiteNode} object.
+     * @return {@link EnumMap} of {@link EdgeDirection} to {@link ArrayList} of
+     *         double values.
+     */
     private EnumMap<EdgeDirection, ArrayList<Double>> buildDirectionalVEGFMap(
             Lattice lattice, SiteNode node) {
         double[][][] field = lattice.getField();
@@ -538,6 +658,14 @@ public class PatchComponentGrowth implements Component {
         return vegfMap;
     }
 
+    /**
+     * Private helper function for getting the average VEGF concentration values for
+     * a given map.
+     *
+     * @param map {@link EnumMap} of {@link EdgeDirection} to {@link ArrayList} of
+     *            double values.
+     * @return {@link EnumMap} of {@link EdgeDirection} to double values.
+     */
     private EnumMap<EdgeDirection, Double> getDirectionalAverages(
             EnumMap<EdgeDirection, ArrayList<Double>> map) {
         EnumMap<EdgeDirection, Double> averageMap = new EnumMap<>(EdgeDirection.class);
@@ -551,6 +679,13 @@ public class PatchComponentGrowth implements Component {
         return averageMap;
     }
 
+    /**
+     * Private helper function for getting the maximum VEGF concentration value for
+     * a given map.
+     *
+     * @param map {@link EnumMap} of {@link EdgeDirection} to double values.
+     * @return {@link EdgeDirection} object.
+     */
     private EdgeDirection getMaxKey(EnumMap<EdgeDirection, Double> map) {
         EdgeDirection maxDir = EdgeDirection.UNDEFINED;
         double maxVal = 0;
@@ -563,6 +698,12 @@ public class PatchComponentGrowth implements Component {
         return maxDir;
     }
 
+    /**
+     * Private helper function for normalizing a map of VEGF concentration values.
+     *
+     * @param map {@link EnumMap} of {@link EdgeDirection} to double values.
+     * @return {@link EnumMap} of {@link EdgeDirection} to double values.
+     */
     private EnumMap<EdgeDirection, Double> normalizeDirectionalMap(
             EnumMap<EdgeDirection, Double> map) {
         EnumMap<EdgeDirection, Double> normalizedMap = new EnumMap<>(EdgeDirection.class);
@@ -575,6 +716,12 @@ public class PatchComponentGrowth implements Component {
         return normalizedMap;
     }
 
+    /**
+     * Private helper function for summing a map of VEGF concentration values.
+     *
+     * @param map {@link EnumMap} of {@link EdgeDirection} to double values.
+     * @return {@code double} object.
+     */
     private double sumMap(EnumMap<EdgeDirection, Double> map) {
         double sum = 0;
         for (EdgeDirection dir : offsetDirections) {
@@ -583,6 +730,13 @@ public class PatchComponentGrowth implements Component {
         return sum;
     }
 
+    /**
+     * Private helper function for averaging a map of VEGF concentration values.
+     *
+     * @param map {@link EnumMap} of {@link EdgeDirection} to {@link ArrayList} of
+     *            double values.
+     * @return {@code double} object.
+     */
     private double averageDirectionalMap(EnumMap<EdgeDirection, ArrayList<Double>> map) {
         double sum = 0;
         int count = 0;
@@ -595,14 +749,34 @@ public class PatchComponentGrowth implements Component {
         return sum / count;
     }
 
+    /**
+     * Private helper function for adding an edge list to the graph.
+     *
+     * @param list {@link ArrayList} of {@link SiteEdge} objects.
+     */
     private void addEdgeList(ArrayList<SiteEdge> list) {
         addEdgeList(list, false);
     }
 
+    /**
+     * Private helper function for adding an edge list to the graph.
+     *
+     * @param list             {@link ArrayList} of {@link SiteEdge} objects.
+     * @param updateProperties {@code boolean} object.
+     */
     private void addEdgeList(ArrayList<SiteEdge> list, boolean updateProperties) {
         addEdgeList(list, updateProperties, DEFAULT_EDGE_TYPE);
     }
 
+    /**
+     * Private helper function for adding an edge list to the graph.
+     *
+     * @param list  {@link ArrayList} of {@link SiteEdge} objects.
+     * @param start {@link SiteNode} object.
+     * @param end   {@link SiteNode} object.
+     * @param tick  {@code int} object.
+     * @param calc  {@link Calculation} object.
+     */
     private void addAngioEdges(
             ArrayList<SiteEdge> list, SiteNode start, SiteNode end, int tick, Calculation calc) {
 
@@ -642,10 +816,9 @@ public class PatchComponentGrowth implements Component {
         }
 
         for (SiteEdge edge : added) {
-            edge.radius =
-                    (otherRadius > CAPILLARY_RADIUS)
-                            ? CAPILLARY_RADIUS
-                            : calculateEvenSplitRadius((SiteEdge) outEdges.get(0));
+            edge.radius = (otherRadius > CAPILLARY_RADIUS)
+                    ? CAPILLARY_RADIUS
+                    : calculateEvenSplitRadius((SiteEdge) outEdges.get(0));
             edge.wall = calculateThickness(edge);
             edge.span = sites.getSpan(edge.getFrom(), edge.getTo());
             edge.length = sites.graphFactory.getLength(edge, DEFAULT_EDGE_LEVEL);
@@ -666,10 +839,8 @@ public class PatchComponentGrowth implements Component {
                 updateRootsAndRadii(added, start, end);
                 break;
             case DIVERT:
-                SiteNode intersection =
-                        (SiteNode)
-                                graph.findDownstreamIntersection(
-                                        (SiteEdge) outEdges.get(0), (SiteEdge) added.get(0));
+                SiteNode intersection = (SiteNode) graph.findDownstreamIntersection(
+                        (SiteEdge) outEdges.get(0), (SiteEdge) added.get(0));
                 if (intersection != null) {
                     recalcRadii(added, start, end, intersection);
                 } else {
@@ -679,17 +850,22 @@ public class PatchComponentGrowth implements Component {
         }
     }
 
+    /**
+     * Private helper function for calculating the even split radius of an edge.
+     *
+     * @param edge {@link SiteEdge} object.
+     * @return {@code double} object.
+     */
     private double calculateEvenSplitRadius(SiteEdge edge) {
         double radius = edge.radius;
         double length = edge.length;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
         double flow = calculateLocalFlow(radius, length, deltaP);
-        double newRadius =
-                Solver.bisection(
-                        (double r) -> flow - 2 * calculateLocalFlow(r, length, deltaP),
-                        1E-6,
-                        5 * MAXIMUM_CAPILLARY_RADIUS,
-                        1E-6);
+        double newRadius = Solver.bisection(
+                (double r) -> flow - 2 * calculateLocalFlow(r, length, deltaP),
+                1E-6,
+                5 * MAXIMUM_CAPILLARY_RADIUS,
+                1E-6);
         // LOGGER.info("splitting radius, for checking if it happens directly before
         // bisection failing");
         // double newRadius = Solver.bisection((double r) -> Math.pow(flow - 2 *
@@ -700,6 +876,13 @@ public class PatchComponentGrowth implements Component {
         return newRadius;
     }
 
+    /**
+     * Private helper function for updating the roots and radii of an edge list.
+     *
+     * @param addedEdges {@link ArrayList} of {@link SiteEdge} objects.
+     * @param start      {@link SiteNode} object.
+     * @param end        {@link SiteNode} object.
+     */
     private void updateRootsAndRadii(ArrayList<SiteEdge> addedEdges, SiteNode start, SiteNode end) {
         updateGraph(graph);
         ArrayList<Double> oldRadii = new ArrayList<>();
@@ -798,6 +981,14 @@ public class PatchComponentGrowth implements Component {
         }
     }
 
+    /**
+     * Private helper function for recalculating the radii of an edge list.
+     *
+     * @param ignoredEdges {@link ArrayList} of {@link SiteEdge} objects.
+     * @param start        {@link SiteNode} object.
+     * @param end          {@link SiteNode} object.
+     * @param intersection {@link SiteNode} object.
+     */
     private void recalcRadii(
             ArrayList<SiteEdge> ignoredEdges, SiteNode start, SiteNode end, SiteNode intersection) {
 
@@ -841,23 +1032,21 @@ public class PatchComponentGrowth implements Component {
             }
 
             if (updateRadius(
-                            (SiteEdge) edges.get(nonAngioIndex),
-                            intersection,
-                            divertedFlow,
-                            true,
-                            ignoredEdges)
-                    == -1) {
+                    (SiteEdge) edges.get(nonAngioIndex),
+                    intersection,
+                    divertedFlow,
+                    true,
+                    ignoredEdges) == -1) {
                 return;
             }
             ;
 
             if (updateRadius(
-                            (SiteEdge) edges.get(angioIndex),
-                            intersection,
-                            divertedFlow,
-                            false,
-                            ignoredEdges)
-                    == -1) {
+                    (SiteEdge) edges.get(angioIndex),
+                    intersection,
+                    divertedFlow,
+                    false,
+                    ignoredEdges) == -1) {
                 // LOGGER.info("Failed to update radius when increasing size, something seems
                 // up");
             }
@@ -886,6 +1075,16 @@ public class PatchComponentGrowth implements Component {
         }
     }
 
+    /**
+     * Private helper function for updating the radius of an edge.
+     *
+     * @param edge         {@link SiteEdge} object.
+     * @param intersection {@link SiteNode} object.
+     * @param flow         {@code double} object.
+     * @param decrease     {@code boolean} object.
+     * @param ignored      {@link ArrayList} of {@link SiteEdge} objects.
+     * @return {@code int} object.
+     */
     private int updateRadius(
             SiteEdge edge,
             SiteNode intersection,
@@ -898,10 +1097,27 @@ public class PatchComponentGrowth implements Component {
         return updateRadiiOfEdgeList(edgesToUpdate, flow, decrease, ignored);
     }
 
+    /**
+     * Private helper function for updating the radii of an edge list.
+     *
+     * @param edges    {@link ArrayList} of {@link SiteEdge} objects.
+     * @param flow     {@code double} object.
+     * @param decrease {@code boolean} object.
+     * @return {@code int} object.
+     */
     private int updateRadiiOfEdgeList(ArrayList<SiteEdge> edges, double flow, boolean decrease) {
         return updateRadiiOfEdgeList(edges, flow, decrease, new ArrayList<>());
     }
 
+    /**
+     * Private helper function for updating the radii of an edge list.
+     *
+     * @param edges    {@link ArrayList} of {@link SiteEdge} objects.
+     * @param flow     {@code double} object.
+     * @param decrease {@code boolean} object.
+     * @param ignored  {@link ArrayList} of {@link SiteEdge} objects.
+     * @return {@code int} object.
+     */
     private int updateRadiiOfEdgeList(
             ArrayList<SiteEdge> edges, double flow, boolean decrease, ArrayList<SiteEdge> ignored) {
         ArrayList<Double> oldRadii = new ArrayList<>();
@@ -918,14 +1134,20 @@ public class PatchComponentGrowth implements Component {
         return 0;
     }
 
+    /**
+     * Private helper function for calculating the radius of an edge.
+     *
+     * @param edge     {@link SiteEdge} object.
+     * @param flow     {@code double} object.
+     * @param decrease {@code boolean} object.
+     * @return {@code int} object.
+     */
     private int calculateRadius(SiteEdge edge, double flow, boolean decrease) {
         int sign = decrease ? -1 : 1;
         double originalRadius = edge.radius;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
         double originalFlow = calculateLocalFlow(originalRadius, edge.length, deltaP);
-        Function f =
-                (double r) ->
-                        originalFlow + sign * flow - calculateLocalFlow(r, edge.length, deltaP);
+        Function f = (double r) -> originalFlow + sign * flow - calculateLocalFlow(r, edge.length, deltaP);
         double newRadius;
         newRadius = Solver.bisection(f, 1E-6, 5 * MAXIMUM_CAPILLARY_RADIUS, 1E-6);
 
@@ -936,21 +1158,27 @@ public class PatchComponentGrowth implements Component {
         return 0;
     }
 
+    /**
+     * Private helper function for calculating the radius of an edge.
+     *
+     * @param edge     {@link SiteEdge} object.
+     * @param flow     {@code double} object.
+     * @param decrease {@code boolean} object.
+     * @return {@code int} object.
+     */
     private int calculateVeinRootRadius(SiteEdge edge, double flow, boolean decrease) {
         int sign = decrease ? -1 : 1;
         double originalRadius = edge.radius;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
         double originalFlow = calculateLocalFlow(originalRadius, edge.length, deltaP);
 
-        Function f =
-                (double r) ->
-                        originalFlow
-                                + sign * flow
-                                - calculateLocalFlow(
-                                        r,
-                                        edge.length,
-                                        edge.getFrom().pressure
-                                                - calculatePressure(r, edge.type.category));
+        Function f = (double r) -> originalFlow
+                + sign * flow
+                - calculateLocalFlow(
+                        r,
+                        edge.length,
+                        edge.getFrom().pressure
+                                - calculatePressure(r, edge.type.category));
 
         double newRadius = Solver.bisection(f, .5 * originalRadius, 1.5 * originalRadius);
 
@@ -963,21 +1191,27 @@ public class PatchComponentGrowth implements Component {
         return 0;
     }
 
+    /**
+     * Private helper function for calculating the radius of an edge.
+     *
+     * @param edge     {@link SiteEdge} object.
+     * @param flow     {@code double} object.
+     * @param decrease {@code boolean} object.
+     * @return {@code int} object.
+     */
     private int calculateArteryRootRadius(SiteEdge edge, double flow, boolean decrease) {
         int sign = decrease ? -1 : 1;
         double originalRadius = edge.radius;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
         double originalFlow = calculateLocalFlow(originalRadius, edge.length, deltaP);
 
-        Function f =
-                (double r) ->
-                        originalFlow
-                                + sign * flow
-                                - calculateLocalFlow(
-                                        r,
-                                        edge.length,
-                                        calculatePressure(r, edge.type.category)
-                                                - edge.getTo().pressure);
+        Function f = (double r) -> originalFlow
+                + sign * flow
+                - calculateLocalFlow(
+                        r,
+                        edge.length,
+                        calculatePressure(r, edge.type.category)
+                                - edge.getTo().pressure);
 
         double newRadius = Solver.bisection(f, .5 * originalRadius, 1.5 * originalRadius);
         if (newRadius == .5 * originalRadius
@@ -991,6 +1225,15 @@ public class PatchComponentGrowth implements Component {
         return 0;
     }
 
+    /**
+     * Private helper function for updating the radius of an edge.
+     *
+     * @param edge         {@link SiteEdge} object.
+     * @param intersection {@link SiteNode} object.
+     * @param flow         {@code double} object.
+     * @param decrease     {@code boolean} object.
+     * @param ignored      {@link ArrayList} of {@link SiteEdge} objects.
+     */
     private void updateRadiusToRoot(
             SiteEdge edge,
             SiteNode intersection,
@@ -1026,12 +1269,25 @@ public class PatchComponentGrowth implements Component {
         }
     }
 
+    /**
+     * Private helper function for resetting the radii of an edge list.
+     *
+     * @param edges    {@link ArrayList} of {@link SiteEdge} objects.
+     * @param oldRadii {@link ArrayList} of {@code double} objects.
+     */
     private void resetRadii(ArrayList<SiteEdge> edges, ArrayList<Double> oldRadii) {
         for (int i = 0; i < oldRadii.size(); i++) {
             edges.get(i).radius = oldRadii.get(i);
         }
     }
 
+    /**
+     * Private helper function for adding an edge list to the graph.
+     * 
+     * @param list             {@link ArrayList} of {@link SiteEdge} objects.
+     * @param updateProperties {@code boolean} object.
+     * @param edgeType         {@link EdgeType} object.
+     */
     private void addEdgeList(
             ArrayList<SiteEdge> list, boolean updateProperties, EdgeType edgeType) {
         for (SiteEdge edge : list) {
@@ -1039,6 +1295,14 @@ public class PatchComponentGrowth implements Component {
         }
     }
 
+    /**
+     * Private helper function for creating a new edge.
+     *
+     * @param direction {@link EdgeDirection} object.
+     * @param node      {@link SiteNode} object.
+     * @param tick      {@code int} object.
+     * @return {@link SiteEdge} object.
+     */
     private SiteEdge createNewEdge(EdgeDirection direction, SiteNode node, int tick) {
         SiteNode proposed = sites.graphFactory.offsetNode(node, direction, DEFAULT_EDGE_LEVEL);
         proposed.lastUpdate = tick;

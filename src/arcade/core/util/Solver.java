@@ -482,7 +482,7 @@ public class Solver {
      * @return the root of the function
      */
     public static double bisection(Function func, double a, double b) {
-        return bisection(func, a, b, MAX_ITERS, TOLERANCE);
+        return bisection(func, a, b, MAX_ITERS, DELTA);
     }
 
     /**
