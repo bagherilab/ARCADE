@@ -408,7 +408,9 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         /** Direction of the angiogenic sprout. */
         EdgeDirection sproutDir;
 
-        /** {@ True} if the angiogenic sprrout is anastomotic/perfused, {@code false} otherwise. */
+        /**
+         * {@code true} if the angiogenic sprout is anastomotic/perfused, {@code false} otherwise.
+         */
         boolean anastomosis;
 
         /** Parent node. */

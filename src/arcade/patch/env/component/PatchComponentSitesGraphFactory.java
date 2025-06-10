@@ -259,7 +259,7 @@ public abstract class PatchComponentSitesGraphFactory {
      * Gets the opposite direction of the given edge.
      *
      * @param edge the edge object
-     * @param scale the graph resolution level
+     * @param level the graph resolution level
      * @return the code for the opposite edge direction
      */
     public EdgeDirection getOppositeDirection(SiteEdge edge, EdgeLevel level) {
@@ -704,8 +704,6 @@ public abstract class PatchComponentSitesGraphFactory {
      * Updates hemodynamic properties for graph sites with root layouts.
      *
      * @param graph the graph instance
-     * @param arteries the list of artery edges
-     * @param veins the list of vein edges
      * @param level the graph resolution level
      * @param random the random number generator
      */
@@ -834,8 +832,6 @@ public abstract class PatchComponentSitesGraphFactory {
      * Refines the graph for graph sites with root layouts.
      *
      * @param graph the graph instance
-     * @param arteries the list of artery edges
-     * @param veins the list of vein edges
      */
     private void refineRootGraph(Graph graph) {
         // Reverse edges that are veins and venules.

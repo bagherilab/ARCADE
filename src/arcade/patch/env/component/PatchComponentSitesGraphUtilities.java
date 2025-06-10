@@ -7,16 +7,9 @@ import java.util.LinkedHashSet;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.Graph;
-import arcade.core.util.Graph.Edge;
 import arcade.core.util.Graph.Strategy;
 import arcade.core.util.Matrix;
 import arcade.core.util.Solver;
-import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
-import arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
-import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeCategory;
-import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeLevel;
-import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeType;
-import arcade.patch.env.component.PatchComponentSitesGraphFactory.Root;
 import static arcade.core.util.Graph.Edge;
 import static arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
 import static arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
@@ -166,6 +159,13 @@ abstract class PatchComponentSitesGraphUtilities {
         return getCoefficient(edge.radius, edge.length);
     }
 
+    /**
+     * Gets flow rate coefficient in units of um<sup>3</sup>/(mmHg min).
+     *
+     * @param radius the edge radius
+     * @param length the edge length
+     * @return the flow rate coefficient
+     */
     private static double getCoefficient(double radius, double length) {
         double mu = PLASMA_VISCOSITY * calculateViscosity(radius) / 60;
         return (Math.PI * Math.pow(radius, 4)) / (8 * mu * length);
@@ -538,7 +538,14 @@ abstract class PatchComponentSitesGraphUtilities {
         }
     }
 
-    /** Solve for Radius while maintaining mass balance */
+    /**
+     * Calculate the the flow rate for a given set of edges without any branches.
+     *
+     * @param radius the radius of the edges
+     * @param edges the list of edges
+     * @param deltaP the pressure change
+     * @return the flow rate (in um<sup>3</sup>/min)
+     */
     static double calculateLocalFlow(double radius, ArrayList<SiteEdge> edges, double deltaP) {
         double length = 0;
 
@@ -549,6 +556,14 @@ abstract class PatchComponentSitesGraphUtilities {
         return getCoefficient(radius, length) * (deltaP);
     }
 
+    /**
+     * Calculate the the flow rate for a given edge without any branches.
+     *
+     * @param radius the radius of the edge
+     * @param length the length of the edge
+     * @param deltaP the pressure change
+     * @return the flow rate (in um<sup>3</sup>/min)
+     */
     static double calculateLocalFlow(double radius, double length, double deltaP) {
         return getCoefficient(radius, length) * deltaP;
     }
@@ -960,6 +975,14 @@ abstract class PatchComponentSitesGraphUtilities {
         }
     }
 
+    /**
+     * Get the path between two nodes in the graph.
+     *
+     * @param graph the graph object
+     * @param start the start node
+     * @param end the end node
+     * @return the list of edges in the path
+     */
     static ArrayList<SiteEdge> getPath(Graph graph, SiteNode start, SiteNode end) {
         path(graph, start, end);
         ArrayList<SiteEdge> path = new ArrayList<>();
