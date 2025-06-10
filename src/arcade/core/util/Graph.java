@@ -791,7 +791,8 @@ public final class Graph {
         private final ArrayList<Edge> edgesOut;
 
         /**
-         * Creates an {@code Edge} between two {@link Node} objects.
+         * Creates an {@code Edge} between two {@link Node} objects. Default behavior is to
+         * duplicate nodes.
          *
          * @param from the node the edge is from
          * @param to the node the edge is to
@@ -803,6 +804,14 @@ public final class Graph {
             edgesOut = new ArrayList<>();
         }
 
+        /**
+         * Creates an {@code Edge} object for graph sites. Used in cases where a new node object is
+         * not needed.
+         *
+         * @param from the node the edge is from
+         * @param to the node the edge is to
+         * @param duplicate {@code true} if nodes should be duplicated, {@code false} otherwise
+         */
         public Edge(Node from, Node to, boolean duplicate) {
             this.from = duplicate ? from.duplicate() : from;
             this.to = duplicate ? to.duplicate() : to;
