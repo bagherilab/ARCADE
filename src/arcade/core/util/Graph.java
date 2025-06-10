@@ -397,16 +397,16 @@ public final class Graph {
         unsetOutMap(edge.getFrom(), edge);
         unsetInMap(edge.getTo(), edge);
         unsetLinks(edge);
-        removeNode(edge.getFrom());
-        removeNode(edge.getTo());
+        removeNodeIfDetached(edge.getFrom());
+        removeNodeIfDetached(edge.getTo());
     }
 
     /**
-     * Remove any detached nodes from the graph when removing an edge.
+     * Remove a node if it is detached from the graph.
      *
-     * @param Node the edge with nodes to check
+     * @param Node the node to check
      */
-    private void removeNode(Node node) {
+    private void removeNodeIfDetached(Node node) {
         if (!nodeToInBag.containsKey(node) && !nodeToOutBag.containsKey(node)) {
             nodes.remove(node.toString());
         }
