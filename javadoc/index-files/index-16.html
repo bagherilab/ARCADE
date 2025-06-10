@@ -939,6 +939,15 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Creates an operation for a <a href="../arcade/patch/env/lattice/PatchLattice.html" title="class in arcade.patch.env.lattice"><code>PatchLattice</code></a> category.</div>
 </dd>
+<dt><a href="../arcade/patch/env/operation/PatchOperationDecayer.html" title="class in arcade.patch.env.operation"><span class="typeNameLink">PatchOperationDecayer</span></a> - Class in <a href="../arcade/patch/env/operation/package-summary.html">arcade.patch.env.operation</a></dt>
+<dd>
+<div class="block">Extension of <a href="../arcade/patch/env/operation/PatchOperation.html" title="class in arcade.patch.env.operation"><code>PatchOperation</code></a> for natural decay to support including the half-life of
+ certain biomolecules.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/env/operation/PatchOperationDecayer.html#%3Cinit%3E(arcade.patch.env.lattice.PatchLattice)">PatchOperationDecayer(PatchLattice)</a></span> - Constructor for class arcade.patch.env.operation.<a href="../arcade/patch/env/operation/PatchOperationDecayer.html" title="class in arcade.patch.env.operation">PatchOperationDecayer</a></dt>
+<dd>
+<div class="block">Creates a decayer <a href="../arcade/patch/env/operation/PatchOperation.html" title="class in arcade.patch.env.operation"><code>PatchOperation</code></a> for the given lattice.</div>
+</dd>
 <dt><a href="../arcade/patch/env/operation/PatchOperationDiffuser.html" title="class in arcade.patch.env.operation"><span class="typeNameLink">PatchOperationDiffuser</span></a> - Class in <a href="../arcade/patch/env/operation/package-summary.html">arcade.patch.env.operation</a></dt>
 <dd>
 <div class="block">Extension of <a href="../arcade/patch/env/operation/PatchOperation.html" title="class in arcade.patch.env.operation"><code>PatchOperation</code></a> for diffusion.</div>
@@ -1090,7 +1099,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </dd>
 <dt><a href="../arcade/patch/agent/process/PatchProcessMetabolism.html" title="class in arcade.patch.agent.process"><span class="typeNameLink">PatchProcessMetabolism</span></a> - Class in <a href="../arcade/patch/agent/process/package-summary.html">arcade.patch.agent.process</a></dt>
 <dd>
-<div class="block">Implementation of <code>Process</code> for cell metabolism.</div>
+<div class="block">Abstract implementation of <code>Process</code> for cell metabolism.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessMetabolism.html#%3Cinit%3E(arcade.patch.agent.cell.PatchCell)">PatchProcessMetabolism(PatchCell)</a></span> - Constructor for class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessMetabolism.html" title="class in arcade.patch.agent.process">PatchProcessMetabolism</a></dt>
 <dd>
@@ -1136,9 +1145,25 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Creates a simple metabolism <code>Process</code> for the given <a href="../arcade/patch/agent/cell/PatchCell.html" title="class in arcade.patch.agent.cell"><code>PatchCell</code></a>.</div>
 </dd>
+<dt><a href="../arcade/patch/agent/process/PatchProcessSensing.html" title="class in arcade.patch.agent.process"><span class="typeNameLink">PatchProcessSensing</span></a> - Class in <a href="../arcade/patch/agent/process/package-summary.html">arcade.patch.agent.process</a></dt>
+<dd>
+<div class="block">Abstract implementation of <code>Process</code> for <a href="../arcade/patch/agent/cell/PatchCell.html" title="class in arcade.patch.agent.cell"><code>PatchCell</code></a> sensing.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessSensing.html#%3Cinit%3E(arcade.patch.agent.cell.PatchCell)">PatchProcessSensing(PatchCell)</a></span> - Constructor for class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessSensing.html" title="class in arcade.patch.agent.process">PatchProcessSensing</a></dt>
+<dd>
+<div class="block">Creates a signaling <a href="../arcade/patch/agent/process/PatchProcessSensing.html" title="class in arcade.patch.agent.process"><code>PatchProcessSensing</code></a> for the given cell.</div>
+</dd>
+<dt><a href="../arcade/patch/agent/process/PatchProcessSensingSimple.html" title="class in arcade.patch.agent.process"><span class="typeNameLink">PatchProcessSensingSimple</span></a> - Class in <a href="../arcade/patch/agent/process/package-summary.html">arcade.patch.agent.process</a></dt>
+<dd>
+<div class="block">Extension of <a href="../arcade/patch/agent/process/PatchProcessSensing.html" title="class in arcade.patch.agent.process"><code>PatchProcessSensing</code></a> for simple sensing.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessSensingSimple.html#%3Cinit%3E(arcade.patch.agent.cell.PatchCell)">PatchProcessSensingSimple(PatchCell)</a></span> - Constructor for class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessSensingSimple.html" title="class in arcade.patch.agent.process">PatchProcessSensingSimple</a></dt>
+<dd>
+<div class="block">Creates a simple sensing <code>Process</code> for the given <a href="../arcade/patch/agent/cell/PatchCell.html" title="class in arcade.patch.agent.cell"><code>PatchCell</code></a>.</div>
+</dd>
 <dt><a href="../arcade/patch/agent/process/PatchProcessSignaling.html" title="class in arcade.patch.agent.process"><span class="typeNameLink">PatchProcessSignaling</span></a> - Class in <a href="../arcade/patch/agent/process/package-summary.html">arcade.patch.agent.process</a></dt>
 <dd>
-<div class="block">Implementation of <code>Process</code> for cell metabolism.</div>
+<div class="block">Abstract implementation of <code>Process</code> for cell signaling.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessSignaling.html#%3Cinit%3E(arcade.patch.agent.cell.PatchCell)">PatchProcessSignaling(PatchCell)</a></span> - Constructor for class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessSignaling.html" title="class in arcade.patch.agent.process">PatchProcessSignaling</a></dt>
 <dd>
