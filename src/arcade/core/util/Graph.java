@@ -98,9 +98,9 @@ public final class Graph {
     /**
      * Retrieve the node object for the given coordinates. Returns null if no node exists.
      *
-     * @param x
-     * @param y
-     * @param z
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
      * @return the node object
      */
     public Node lookup(int x, int y, int z) {
@@ -397,22 +397,18 @@ public final class Graph {
         unsetOutMap(edge.getFrom(), edge);
         unsetInMap(edge.getTo(), edge);
         unsetLinks(edge);
-        removeNodes(edge);
+        removeNode(edge.getFrom());
+        removeNode(edge.getTo());
     }
 
     /**
-     * Remove any detached nodes from the graph.
+     * Remove any detached nodes from the graph when removing an edge.
      *
-     * @param edge
+     * @param Node the edge with nodes to check
      */
-    private void removeNodes(Edge edge) {
-        Node from = edge.getFrom();
-        Node to = edge.getTo();
-        if (!nodeToInBag.containsKey(from) && !nodeToOutBag.containsKey(from)) {
-            nodes.remove(from.toString());
-        }
-        if (!nodeToInBag.containsKey(to) && !nodeToOutBag.containsKey(to)) {
-            nodes.remove(to.toString());
+    private void removeNode(Node node) {
+        if (!nodeToInBag.containsKey(node) && !nodeToOutBag.containsKey(node)) {
+            nodes.remove(node.toString());
         }
     }
 
