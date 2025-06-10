@@ -4,7 +4,7 @@ import java.util.List;
 import arcade.patch.agent.cell.PatchCell;
 
 /**
- * Implementation of {@link Process} for cell metabolism.
+ * Abstract implementation of {@link Process} for cell signaling.
  *
  * <p>The {@code PatchProcessSignaling} process can be used for networks comprising a system of
  * ODEs.

@@ -93,6 +93,9 @@
     <!-- inflammation CD8 module -->
     <population.process process="inflammation" id="GRANZ_SYNTHESIS_DELAY" value="15" unit="min" description="Time required for CAR T-cells to maintain bound contact with target antigen before activation signal induces granzyme production"/>
 
+    <!-- metabolism process parameters -->
+    <population.process process="sensing" id="VEGF_SECRETION_RATE" value="100" unit="pg/ml/min" description="secretion rate of VEGF" />
+
     <!-- LAYERS ============================================================ -->
 
     <!-- default parameters for layers -->
@@ -104,6 +107,9 @@
     <!-- generator operation parameters -->
     <layer.operation operation="generator" id="CONCENTRATION" value="1.0" units="(variable)" description="maximum concentration" />
     <layer.operation operation="generator" id="PERMEABILITY" value="100.0" units="(variable)" description="molecule permeability" />
+
+    <!-- decayer operation parameters -->
+    <layer.operation operation="decayer" id="DECAY_RATE" value="1E-4" units="1/min" description="decay rate of molecule" />
 
     <!-- ACTIONS =========================================================== -->
 
