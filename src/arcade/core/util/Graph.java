@@ -404,7 +404,7 @@ public final class Graph {
     /**
      * Remove a node if it is detached from the graph.
      *
-     * @param Node the node to check
+     * @param node the node to check
      */
     private void removeNodeIfDetached(Node node) {
         if (!nodeToInBag.containsKey(node) && !nodeToOutBag.containsKey(node)) {

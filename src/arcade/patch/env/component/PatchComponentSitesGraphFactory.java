@@ -62,7 +62,6 @@ public abstract class PatchComponentSitesGraphFactory {
         /** Code for angiogenic edge type. */
         ANGIOGENIC(EdgeCategory.CAPILLARY);
 
-        /** Code for capillary edge type. */
         /** Edge category corresponding to the edge type. */
         final EdgeCategory category;
 
