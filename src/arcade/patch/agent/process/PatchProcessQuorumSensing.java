@@ -54,10 +54,10 @@ public abstract class PatchProcessQuorumSensing extends PatchProcess {
     static final double STEP_SIZE = 1.0 / STEP_DIVIDER;
 
     /** Rate of auxin flow [microMolar/min] */
-    protected static final double AUX_FLOW_RATE_SEEKER = 2.09 / (1E6 * 3600);
+    protected static final double AUX_FLOW_RATE_SEEKER = 200.9 / (1E6 * 3600);
 
     /** Rate of auxin flow [molecule/min] */
-    protected final double AUX_FLOW_RATE_KILLER = 2.09 / (1E6 * 3600);
+    protected final double AUX_FLOW_RATE_KILLER = 200.9 / (1E6 * 3600);
 
     /** Location of cell. */
     protected Location loc;

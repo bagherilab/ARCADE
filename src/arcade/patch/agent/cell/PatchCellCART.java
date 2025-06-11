@@ -115,6 +115,8 @@ public abstract class PatchCellCART extends PatchCell {
     /** Target cell that current T cell is bound to. */
     protected PatchCell boundTarget;
 
+    private final int startReceptors;
+
     /**
      * Creates a {@code PatchCellCART} agent. *
      *
@@ -181,6 +183,7 @@ public abstract class PatchCellCART extends PatchCell {
         contactFraction = parameters.getDouble("CONTACT_FRAC");
         maxAntigenBinding = parameters.getInt("MAX_ANTIGEN_BINDING");
         cars = parameters.getInt("CARS");
+        startReceptors = parameters.getInt("START_RECEPTORS");
     }
 
     /**
@@ -220,7 +223,8 @@ public abstract class PatchCellCART extends PatchCell {
                     double selfTargets = tissueCell.getSelfAntigens();
 
                     double probabilityCAR =
-                            computeProbability(cARAntigens, kDCAR, cars, 5000, carAlpha, carBeta);
+                            computeProbability(
+                                    cARAntigens, kDCAR, cars, startReceptors, carAlpha, carBeta);
                     double probabilitySelf =
                             computeProbability(
                                     selfTargets,

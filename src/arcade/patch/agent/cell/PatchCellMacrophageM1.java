@@ -43,7 +43,7 @@ public class PatchCellMacrophageM1 extends PatchCellMacrophage {
 
     @Override
     public CellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-        divisions--;
+        divisions++;
         return new PatchCellContainer(
                 newID,
                 id,
@@ -105,7 +105,7 @@ public class PatchCellMacrophageM1 extends PatchCellMacrophage {
         if (state == PatchEnums.State.QUIESCENT || state == PatchEnums.State.UNDEFINED) {
             if (simstate.random.nextDouble() > 0.5) {
                 setState(PatchEnums.State.MIGRATORY);
-            } else if (divisions == 0) {
+            } else if (divisions == divisionPotential) {
                 if (simstate.random.nextDouble() > senescentFraction) {
                     setState(PatchEnums.State.APOPTOTIC);
                 } else {

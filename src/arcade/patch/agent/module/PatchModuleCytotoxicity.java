@@ -1,5 +1,11 @@
 package arcade.patch.agent.module;
 
+import java.io.IOException;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
@@ -19,6 +25,8 @@ import static arcade.patch.util.PatchEnums.State;
  * waits until it has enough granzyme to kill cell.
  */
 public class PatchModuleCytotoxicity extends PatchModule {
+    private static final Logger logger = Logger.getLogger(PatchModuleCytotoxicity.class.getName());
+
     /** Target cell cytotoxic CAR T-cell is bound to. */
     PatchCellTissue target;
 
@@ -48,6 +56,23 @@ public class PatchModuleCytotoxicity extends PatchModule {
         Parameters parameters = cell.getParameters();
         this.timeDelay = parameters.getInt("BOUND_TIME");
         this.ticker = 0;
+
+        try {
+            if (logger.getHandlers().length == 0) {
+                FileHandler fileHandler = new FileHandler("apoptosis_log.txt", true);
+                fileHandler.setFormatter(new SimpleFormatter());
+                ConsoleHandler consoleHandler = new ConsoleHandler();
+                consoleHandler.setFormatter(new SimpleFormatter());
+                logger.addHandler(fileHandler);
+                logger.addHandler(consoleHandler);
+                logger.setLevel(Level.INFO);
+                fileHandler.setLevel(Level.INFO);
+                consoleHandler.setLevel(Level.INFO);
+                logger.setUseParentHandlers(false);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -66,6 +91,13 @@ public class PatchModuleCytotoxicity extends PatchModule {
             if (granzyme >= 1) {
                 PatchCellTissue tissueCell = (PatchCellTissue) target;
                 tissueCell.setState(State.APOPTOTIC);
+                logger.info(
+                        "T cell "
+                                + cell.getID()
+                                + " lysis of tissueCell "
+                                + tissueCell.getID()
+                                + " at time "
+                                + sim.getSchedule().getTime());
                 granzyme--;
                 inflammation.setInternal("granzyme", granzyme);
             }

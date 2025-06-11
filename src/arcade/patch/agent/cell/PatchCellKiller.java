@@ -77,7 +77,7 @@ public class PatchCellKiller extends PatchCellCARTCD8 {
 
         // Change state from undefined.
         if (super.state == PatchEnums.State.UNDEFINED || super.state == PatchEnums.State.PAUSED) {
-            if (divisions == 0) {
+            if (divisions == divisionPotential) {
                 if (simstate.random.nextDouble() > super.senescentFraction) {
                     super.setState(PatchEnums.State.APOPTOTIC);
                 } else {
@@ -122,7 +122,7 @@ public class PatchCellKiller extends PatchCellCARTCD8 {
                     // Check activation status. If cell has been activated before,
                     // it will proliferate. If not, it will migrate.
                     if (activated) {
-                        super.setState(PatchEnums.State.PROLIFERATIVE);
+                        super.setState(PatchEnums.State.PROLIFERATIVE_ACTIVE);
                     } else {
                         if (simstate.random.nextDouble() > super.proliferativeFraction) {
                             super.setState(PatchEnums.State.MIGRATORY);

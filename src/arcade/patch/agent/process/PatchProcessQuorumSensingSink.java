@@ -11,28 +11,32 @@ import arcade.patch.agent.cell.PatchCellCART;
 
 public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
 
-    /** Rate of degradation of auxin [/sec/step/divider] */
+    /** Rate of degradation of auxin [/sec/step/divider]. */
     private static final double K_AUX_DEGRADE = 20.0 / (1E3 * 3600);
 
-    /** Rate of CAR expression[/sec/step/divider] */
-    private static final double K_CAR_EXPRESS = 1000 * 0.8 / (1E3 * 3600);
+    /** Rate of degradation of CAR [/min]. */
+    private static final double K_CAR_DEGRADE = 3E-4;
 
-    /** Rate of degradation of CAR [/sec/step/divider] */
-    private static final double K_CAR_DEGRADE = 0.2 / (1E3 * 3600);
-
-    /** Rate of active biomarker expression[/sec/step/divider] */
+    /** Rate of active biomarker expression[/sec/step/divider]. */
     private static final double K_ACTIVE_EXPRESS = 0.8 / (1E3 * 3600);
 
-    /** Rate of active biomarker expression[/sec/step/divider] */
+    /** Rate of active biomarker expression[/sec/step/divider]. */
     private static final double K_ACTIVE_EXPRESS_ACCELERATED = 1.0 / (1E3 * 3600);
 
-    /** Rate of degradation of active biomarker [/sec/step/divider] */
+    /** Rate of degradation of active biomarker [/sec/step/divider]. */
     private static final double K_ACTIVE_DEGRADE = 0.2 / (1E3 * 3600);
 
-    /** Threshold of activation biomarker for cell activation */
+    /** Max observed cars on T cell surface. */
+    private static final int MAX_CARS = 50000;
+
+    /** Threshold of activation biomarker for cell activation. */
     protected final double ACTIVATION_THRESHOLD;
 
+    /** Number of bound cars. */
     protected double boundCAR;
+
+    /** Threshold of internalized auxin for CAR generation. */
+    protected double CARThreshold;
 
     /**
      * Creates an {@code PatchCellQuorumSensing} module for the given {@link PatchCell}.
@@ -45,22 +49,13 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
     PatchProcessQuorumSensingSink(PatchCell cell) {
         super(cell);
 
-        // initialize module
-        this.boundCAR =
-                ((PatchCellCART) cell).getBoundCARAntigensCount()
-                        * 1E15
-                        * 1E6
-                        / (cell.getVolume() * 6.022E23);
         // set parameters
         Parameters parameters = cell.getParameters();
         this.ACTIVATION_THRESHOLD = parameters.getDouble("quorum/ACTIVATION_THRESHOLD");
+        this.CARThreshold = parameters.getDouble("quorum/CAR_THRESHOLD");
 
         // Initial amounts of each species, all in fmol/cell.
-        concs[CAR] =
-                parameters.getInt("CARS")
-                        * 1E15
-                        * 1E6
-                        / (cell.getVolume() * 6.022E23); // convert from molecules to microM
+        concs[CAR] = parameters.getInt("CARS");
         concs[AUXIN_SINK] = 0;
         concs[ACTIVATION] = 0;
     }
@@ -70,25 +65,26 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
             (Solver.Equations & Serializable)
                     (t, y) -> {
                         double[] dydt = new double[NUM_COMPONENTS];
-
                         dydt[ACTIVATION] =
                                 (((PatchCellCART) cell).getActivationStatus() ? 1 : 0)
                                                 * K_ACTIVE_EXPRESS_ACCELERATED
                                                 * boundCAR
                                         + K_ACTIVE_EXPRESS * boundCAR
                                         - K_ACTIVE_DEGRADE * y[ACTIVATION];
-
-                        dydt[CAR] = K_CAR_EXPRESS * (y[AUXIN_SINK]) - K_CAR_DEGRADE * (y[CAR]);
-
                         dydt[AUXIN_SINK] =
                                 AUX_FLOW_RATE_KILLER * Math.max(extAuxin - y[AUXIN_SINK], 0)
                                         - K_AUX_DEGRADE * y[AUXIN_SINK];
-
                         return dydt;
                     };
 
     @Override
     void stepProcess(MersenneTwisterFast random, Simulation sim) {
+        this.boundCAR =
+                ((PatchCellCART) cell).getBoundCARAntigensCount()
+                        * 1E15
+                        * 1E6
+                        / (cell.getVolume() * 6.022E23);
+
         // Solve system of equations.
         concs = Solver.rungeKutta(equations, 0, concs, 60, STEP_SIZE);
 
@@ -101,15 +97,15 @@ public class PatchProcessQuorumSensingSink extends PatchProcessQuorumSensing {
         }
 
         // update bound CAR receptors
-        this.boundCAR =
-                ((PatchCellCART) cell).getBoundCARAntigensCount()
-                        * 1E15
-                        * 1E6
-                        / (cell.getVolume() * 6.022E23);
-        // TODO: I added a fudge factor of 1E4 in here to get the correct number of CARS
-        // TODO: this will probably need to be a hill function
-        int numCars = (int) (1E6 * concs[CAR] * cell.getVolume() * 6.022E23 / (1E6 * 1E15));
+        double n = 4.4;
+        int TAU = 60;
+        int currentCars = ((PatchCellCART) cell).getCars();
+        double internalizedAuxin = concs[AUXIN_SINK];
+        int new_cars =
+                (int) (MAX_CARS / (1 + Math.pow(CARThreshold, n) / Math.pow(internalizedAuxin, n)));
 
+        int numCars = Math.max((int) (currentCars - (K_CAR_DEGRADE * currentCars * TAU)), new_cars);
+        concs[CAR] = numCars;
         ((PatchCellCART) cell).setCars(numCars);
     }
 
