@@ -278,6 +278,10 @@ public class PatchActionTreat implements Action {
             }
         }
 
+        if (populationCodes.isEmpty()) {
+            return;
+        }
+
         int pop1 = populationCodes.get(0);
         int pop2 = populationCodes.get(1);
 
