@@ -272,13 +272,13 @@ public class PatchActionTreat implements Action {
         Set<String> immuneCells =
                 Arrays.stream(Immune.values()).map(Enum::name).collect(Collectors.toSet());
         for (MiniBox population : populations) {
-            String className = population.get("CLASS");
+            String className = population.get("CLASS").toUpperCase();
             if (immuneCells.contains(className)) {
                 populationCodes.add(population.getInt("CODE"));
             }
         }
 
-        if (populationCodes.isEmpty()) {
+        if (populationCodes.size() < 2) {
             return;
         }
 
