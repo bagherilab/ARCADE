@@ -197,6 +197,28 @@ public final class PatchEnums {
         }
     }
 
+    /** Cell types for immune cell classification. */
+    public enum Immune {
+        /** Code for cd4 T cell. */
+        CART_CD4,
+        /** Code for cd8 T cell. */
+        CART_CD8,
+        /** Code for macrophage cell. */
+        MACROPHAGE,
+        /** Code for killer cd8 cell. */
+        KILLER;
+
+        /**
+         * Randomly selects a {@code Immune} cell type
+         *
+         * @param rng the random number generator
+         * @return a random {@code Immune} cell type
+         */
+        public static Immune random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
+        }
+    }
+
     /** Operation category codes for patch simulations. */
     public enum Category implements OperationCategory {
         /** Code for undefined category. */

@@ -1,8 +1,11 @@
 package arcade.patch.agent.action;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.util.Bag;
@@ -32,6 +35,7 @@ import arcade.patch.env.location.PatchLocation;
 import arcade.patch.env.location.PatchLocationContainer;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.sim.PatchSimulation;
+import arcade.patch.util.PatchEnums.Immune;
 import arcade.patch.util.PatchEnums.Ordering;
 
 /**
@@ -263,33 +267,28 @@ public class PatchActionTreat implements Action {
         PatchGrid grid = (PatchGrid) sim.getGrid();
         Utilities.shuffleList(coordinates, sim.random);
 
-        int cd4Code = 0;
-        int cd8Code = 0;
+        ArrayList<Integer> populationCodes = new ArrayList<>();
 
+        Set<String> immuneCells =
+                Arrays.stream(Immune.values()).map(Enum::name).collect(Collectors.toSet());
         for (MiniBox population : populations) {
             String className = population.get("CLASS");
-            if (className.equals("cart_cd4")) {
-                cd4Code = population.getInt("CODE");
-            }
-            if (className.equals("cart_cd8")) {
-                cd8Code = population.getInt("CODE");
-            }
-            if (className.equals("killer")) {
-                cd8Code = population.getInt("CODE");
-            }
-            if (className.equals("synnotch")) {
-                cd8Code = population.getInt("CODE");
+            if (immuneCells.contains(className)) {
+                populationCodes.add(population.getInt("CODE"));
             }
         }
+
+        int pop1 = populationCodes.get(0);
+        int pop2 = populationCodes.get(1);
 
         for (int i = 0; i < dose; i++) {
 
             int id = sim.getID();
 
-            int pop = cd4Code;
+            int pop = pop1;
 
             if (sim.random.nextDouble() > treatFrac) {
-                pop = cd8Code;
+                pop = pop2;
             }
 
             PatchLocation loc = ((PatchLocation) coordinates.remove(0));
