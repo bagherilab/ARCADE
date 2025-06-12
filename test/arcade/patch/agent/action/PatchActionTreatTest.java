@@ -141,10 +141,14 @@ public class PatchActionTreatTest {
         action = new PatchActionTreat(series, parameters);
 
         ArrayList<MiniBox> populations = new ArrayList<>();
-        MiniBox populationMock = mock(MiniBox.class);
-        when(populationMock.getInt("CODE")).thenReturn(4);
-        when(populationMock.get("CLASS")).thenReturn("cart_cd4");
-        populations.add(populationMock);
+        MiniBox populationMock1 = new MiniBox();
+        populationMock1.put("CLASS", "cart_cd4");
+        populationMock1.put("CODE", 4);
+        MiniBox populationMock2 = new MiniBox();
+        populationMock2.put("CLASS", "cart_cd8");
+        populationMock2.put("CODE", 8);
+        populations.add(populationMock1);
+        populations.add(populationMock2);
         Field pops = PatchActionTreat.class.getDeclaredField("populations");
         pops.setAccessible(true);
         pops.set(action, populations);
@@ -163,10 +167,14 @@ public class PatchActionTreatTest {
         action = new PatchActionTreat(series, parameters);
 
         ArrayList<MiniBox> populations = new ArrayList<>();
-        MiniBox populationMock = mock(MiniBox.class);
-        when(populationMock.getInt("CODE")).thenReturn(4);
-        when(populationMock.get("CLASS")).thenReturn("cart_cd4");
-        populations.add(populationMock);
+        MiniBox populationMock1 = new MiniBox();
+        populationMock1.put("CLASS", "cart_cd4");
+        populationMock1.put("CODE", 4);
+        MiniBox populationMock2 = new MiniBox();
+        populationMock2.put("CLASS", "cart_cd8");
+        populationMock2.put("CODE", 8);
+        populations.add(populationMock1);
+        populations.add(populationMock2);
         Field pops = PatchActionTreat.class.getDeclaredField("populations");
         pops.setAccessible(true);
         pops.set(action, populations);
@@ -182,14 +190,10 @@ public class PatchActionTreatTest {
         when(parameters.getInt("MAX_DENSITY")).thenReturn(54);
         action = new PatchActionTreat(series, parameters);
         ArrayList<MiniBox> populations = new ArrayList<>();
-        MiniBox populationMock1 = new MiniBox();
-        populationMock1.put("CLASS", "cart_cd4");
-        populationMock1.put("CODE", 4);
-        MiniBox populationMock2 = new MiniBox();
-        populationMock2.put("CLASS", "cart_cd8");
-        populationMock2.put("CODE", 8);
-        populations.add(populationMock1);
-        populations.add(populationMock2);
+        MiniBox populationMock = mock(MiniBox.class);
+        when(populationMock.getInt("CODE")).thenReturn(4);
+        when(populationMock.get("CLASS")).thenReturn("cart_cd4");
+        populations.add(populationMock);
         Field pops = PatchActionTreat.class.getDeclaredField("populations");
         pops.setAccessible(true);
         pops.set(action, populations);
