@@ -275,6 +275,12 @@ public class PatchActionTreat implements Action {
             String className = population.get("CLASS");
             if (immuneCells.contains(className)) {
                 populationCodes.add(population.getInt("CODE"));
+            } else {
+                throw new IllegalArgumentException(
+                        "Population "
+                                + population.get("CLASS")
+                                + " is not an immune cell type. "
+                                + "Only immune cells can be used for treat.");
             }
         }
 
