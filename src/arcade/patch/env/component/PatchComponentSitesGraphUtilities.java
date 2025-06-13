@@ -1002,6 +1002,9 @@ abstract class PatchComponentSitesGraphUtilities {
             }
             node = node.prev;
         }
+        if (node != start) {
+            return null;
+        }
         Collections.reverse(path);
         return path;
     }
