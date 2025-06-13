@@ -165,9 +165,10 @@
     <component class="remodel" id="SCALE_SIGMA" value="0.5" description="circumferential stress contribution to radius scaling" />
 
     <!-- growth component parameters -->\
+    <component class="growth" id="MIGRATION_RATE" value="10.0" units="um/hr" description="migration rate of tip cell" />
+    <component class="growth" id="VEGF_THRESHOLD" value="100" units="pg/ml"  description="concentration of VEGF required to sprout" />
+    <component class="growth" id="WALK_TYPE" value="DETERMINISTIC" description="type of chemotaxic propensity to VEGF"/>
+    <component class="growth" id="MAX_LENGTH" value="200" units="um" description="maximum length of sprout" />
+    <component class="growth" id="CALCULATION_STRATEGY" value="DIVERT" units="um" description="maximum length of sprout" />
 
-    <component class="growth" id="MIGRATION_RATE" value="10.0" type="growth" units="um/hr" description="migration rate of tip cell" />
-    <component class="growth" id="VEGF_THRESHOLD" value="100" type="growth" units="pg/ml"  description="concentration of VEGF required to sprout" />
-    <component class="growth" id="WALK_TYPE" value="DETERMINISTIC" type="growth" description="type of chemotaxic propensity to VEGF"/>
-    <component class="growth" id="MAX_LENGTH" value="200" type="growth" units="um" description="maximum length of sprout" />
 </parameters>

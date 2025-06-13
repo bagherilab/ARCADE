@@ -57,6 +57,7 @@ public class PatchComponentGrowthTest {
         parameters.put("VEGF_THRESHOLD", 0.5);
         parameters.put("WALK_TYPE", "BIASED");
         parameters.put("MAX_LENGTH", 100);
+        parameters.put("CALCULATION_STRATEGY", "DIVERT");
 
         Schedule schedule = mock(Schedule.class);
 
@@ -83,6 +84,7 @@ public class PatchComponentGrowthTest {
         parameters.put("VEGF_THRESHOLD", 0.5);
         parameters.put("WALK_TYPE", "BIASED");
         parameters.put("MAX_LENGTH", 100);
+        parameters.put("CALCULATION_STRATEGY", "DIVERT");
 
         Schedule schedule = mock(Schedule.class);
 
@@ -109,6 +111,7 @@ public class PatchComponentGrowthTest {
         parameters.put("VEGF_THRESHOLD", 0.5);
         parameters.put("WALK_TYPE", "BIASED");
         parameters.put("MAX_LENGTH", 100);
+        parameters.put("CALCULATION_STRATEGY", "DIVERT");
 
         PatchComponentSitesPattern pattern = mock(PatchComponentSitesPattern.class);
         doReturn(pattern).when(simMock).getComponent("INCOMPATIBLE");
@@ -127,6 +130,7 @@ public class PatchComponentGrowthTest {
         parameters.put("VEGF_THRESHOLD", 0.5);
         parameters.put("WALK_TYPE", "BIASED");
         parameters.put("MAX_LENGTH", 100);
+        parameters.put("CALCULATION_STRATEGY", "DIVERT");
 
         PatchComponentSitesGraph graph = mock(PatchComponentSitesGraph.class);
         doReturn(graph).when(simMock).getComponent("COMPATIBLE");
