@@ -18,6 +18,7 @@ import arcade.core.util.Graph;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Solver;
 import arcade.core.util.Solver.Function;
+import arcade.core.util.exceptions.IncompatibleFeatureException;
 import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
 import arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
 import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeDirection;
@@ -159,16 +160,17 @@ public class PatchComponentGrowth implements Component {
 
     @Override
     public void schedule(Schedule schedule) {
-        interval = migrationRate < edgeSize ? 60 : 30;
+        interval = migrationRate < edgeSize ? 60 : (int) (edgeSize / migrationRate * 60);
         schedule.scheduleRepeating(this, Ordering.LAST_COMPONENT.ordinal() - 3, interval);
     }
 
     @Override
-    public void register(Simulation sim, String layer) {
-        Component component = sim.getComponent(layer);
+    public void register(Simulation sim, String componentID) {
+        Component component = sim.getComponent(componentID);
 
         if (!(component instanceof PatchComponentSitesGraph)) {
-            return;
+            throw new IncompatibleFeatureException(
+                    "Growth Component", component.getClass().getName(), "PatchComponentSitesGraph");
         }
 
         sites = (PatchComponentSitesGraph) component;

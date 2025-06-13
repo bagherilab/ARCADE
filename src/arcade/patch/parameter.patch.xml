@@ -155,6 +155,7 @@
     <component class="degrade" id="DEGRADATION_RATE" value="0.04" units="um/hr" description="rate of wall thickness degradation" />
     <component class="degrade" id="SHEAR_THRESHOLD" value="0.01" units="mmHg" description="shear threshold for vessel collapse" />
 
+    <!-- remodel component parameters -->
     <component class="remodel" id="REMODELING_INTERVAL" value="60" units="min" description="interval between remodeling steps" />
     <component class="remodel" id="SCALE_SHEAR" value="0.01" description="shear stress scaling" />
     <component class="remodel" id="SCALE_CIRCUM" value="0.01" description="circumferential stress scaling" />
@@ -162,4 +163,11 @@
     <component class="remodel" id="SCALE_METABOLIC" value="0.01" description="metabolic demand scaling" />
     <component class="remodel" id="SCALE_TAU" value="0.01" description="shear stress contribution to area mass scaling" />
     <component class="remodel" id="SCALE_SIGMA" value="0.5" description="circumferential stress contribution to radius scaling" />
+
+    <!-- growth component parameters -->\
+
+    <component class="growth" id="MIGRATION_RATE" value="10.0" type="growth" units="um/hr" description="migration rate of tip cell" />
+    <component class="growth" id="VEGF_THRESHOLD" value="100" type="growth" units="pg/ml"  description="concentration of VEGF required to sprout" />
+    <component class="growth" id="WALK_TYPE" value="DETERMINISTIC" type="growth" description="type of chemotaxic propensity to VEGF"/>
+    <component class="growth" id="MAX_LENGTH" value="200" type="growth" units="um" description="maximum length of sprout" />
 </parameters>
