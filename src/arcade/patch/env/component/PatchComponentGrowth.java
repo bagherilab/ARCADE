@@ -60,7 +60,7 @@ import static arcade.patch.util.PatchEnums.Ordering;
  */
 public class PatchComponentGrowth implements Component {
     /** Logger for {@code PatchComponentGrowth}. */
-    private static Logger LOGGER = Logger.getLogger(PatchComponentGrowth.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(PatchComponentGrowth.class.getName());
 
     /** Default edge level to add to the graph from this component. */
     private static final EdgeLevel DEFAULT_EDGE_LEVEL = EdgeLevel.LEVEL_1;
@@ -137,13 +137,13 @@ public class PatchComponentGrowth implements Component {
     /** Map of offsets to be used in the migration. */
     private EnumMap<EdgeDirection, int[]> offsets;
 
-    /* Tick for the current step. */
+    /** Tick for the current step. */
     private int tick;
 
-    /* Flag for whether to add edges if angiogenic nodes become perfused. */
+    /** Flag for whether to add edges if angiogenic nodes become perfused. */
     private boolean addFlag;
 
-    /* List of nodes to be removed from the angiogenic node map this time step. */
+    /** List of nodes to be removed from the angiogenic node map this time step. */
     private ArrayList<SiteNode> nodesToRemove;
 
     /**
@@ -253,14 +253,14 @@ public class PatchComponentGrowth implements Component {
     @Override
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
-        int tick = (int) simstate.schedule.getTime();
+        tick = (int) simstate.schedule.getTime();
         Lattice vegfLattice = sim.getLattice("VEGF");
         MersenneTwisterFast random = simstate.random;
         addFlag = false;
 
         LinkedHashSet<SiteNode> validNodes = getValidNodes();
         for (SiteNode node : validNodes) {
-            if (checkNodeSkipStatus(node, tick)) {
+            if (checkNodeSkipStatus(node)) {
                 continue;
             }
 
@@ -370,11 +370,7 @@ public class PatchComponentGrowth implements Component {
                         continue;
                     }
                     addAngioEdges(
-                            angiogenicNodeMap.get(sproutNode),
-                            init,
-                            fin,
-                            tick,
-                            calculationStrategy);
+                            angiogenicNodeMap.get(sproutNode), init, fin, calculationStrategy);
                 }
             }
         }
@@ -425,7 +421,7 @@ public class PatchComponentGrowth implements Component {
                 continue;
             }
 
-            newEdge = createNewEdge(keyNode.sproutDir, tipNode, tick);
+            newEdge = createNewEdge(keyNode.sproutDir, tipNode);
 
             if (edgeList.size() > maxEdges || newEdge == null || graph.getDegree(keyNode) > 3) {
                 nodesToRemove.add(keyNode);
@@ -469,8 +465,14 @@ public class PatchComponentGrowth implements Component {
         return false;
     }
 
-    /** Criteria for skipping a node during the migration checks. */
-    private boolean checkNodeSkipStatus(SiteNode node, int tick) {
+    /**
+     * Criteria for skipping a node during the migration checks.
+     *
+     * @param node the node to check
+     * @param tick the current tick
+     * @return {@code true} if the node should be skipped, {@code false} otherwise
+     */
+    private boolean checkNodeSkipStatus(SiteNode node) {
         if (angiogenicNodeMap.keySet().contains(node)) {
             return true;
         }
@@ -783,10 +785,7 @@ public class PatchComponentGrowth implements Component {
      * @param calc {@link Calculation} object.
      */
     private void addAngioEdges(
-            ArrayList<SiteEdge> list, SiteNode start, SiteNode end, int tick, Calculation calc) {
-
-        ArrayList<SiteEdge> added = new ArrayList<>();
-
+            ArrayList<SiteEdge> list, SiteNode start, SiteNode end, Calculation calc) {
         // check for cycle
         path(graph, end, start);
         if (end.prev != null) {
@@ -840,6 +839,7 @@ public class PatchComponentGrowth implements Component {
                 updateRootsAndRadii(added, start, end);
                 break;
             case DIVERT:
+            default:
                 SiteNode intersection =
                         (SiteNode)
                                 graph.findDownstreamIntersection(
@@ -1044,7 +1044,6 @@ public class PatchComponentGrowth implements Component {
                     == -1) {
                 return;
             }
-            ;
 
             if (updateRadius(
                             (SiteEdge) edges.get(angioIndex),
@@ -1053,10 +1052,11 @@ public class PatchComponentGrowth implements Component {
                             false,
                             ignoredEdges)
                     == -1) {
+                return;
                 // LOGGER.info("Failed to update radius when increasing size, something seems
                 // up");
             }
-            ;
+
         } else {
             // maybe also
             // TODO: check for perfusion first
@@ -1316,7 +1316,7 @@ public class PatchComponentGrowth implements Component {
      * @param tick {@code int} object.
      * @return {@link SiteEdge} object.
      */
-    private SiteEdge createNewEdge(EdgeDirection direction, SiteNode node, int tick) {
+    private SiteEdge createNewEdge(EdgeDirection direction, SiteNode node) {
         SiteNode proposed = sites.graphFactory.offsetNode(node, direction, DEFAULT_EDGE_LEVEL);
         proposed.lastUpdate = tick;
         if (sites.graphFactory.checkNode(proposed) && graph.getDegree(node) < 3) {
