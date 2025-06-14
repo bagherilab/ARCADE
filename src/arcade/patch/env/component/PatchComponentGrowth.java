@@ -206,6 +206,12 @@ public class PatchComponentGrowth implements Component {
         maxEdges = (int) Math.floor(maxLength / edgeSize);
     }
 
+    /**
+     * Returns a set of valid nodes. A node is valid if it not associated with an ignored edge, is
+     * not a root, and has fewer than 3 degrees.
+     *
+     * @return a set of valid nodes
+     */
     private LinkedHashSet<SiteNode> getValidNodes() {
         LinkedHashSet<SiteNode> set = new LinkedHashSet<>();
         for (Object obj : graph.getAllEdges()) {
@@ -232,7 +238,15 @@ public class PatchComponentGrowth implements Component {
         return set;
     }
 
-    /** Strategy pattern for the direction of migration. */
+    /**
+     * Helper function to handle which version of walk to use for the direction of migration.
+     *
+     * @param random the random number generator
+     * @param node the node to start from
+     * @param valList the map of directions to their corresponding values
+     * @param skipList the list of directions to skip
+     * @return the direction to sprout
+     */
     private EdgeDirection performWalk(
             MersenneTwisterFast random,
             SiteNode node,
