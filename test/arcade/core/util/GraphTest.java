@@ -861,4 +861,66 @@ public class GraphTest {
 
         assertEquals(expected, graph.toString());
     }
+
+    @Test
+    public void lookup_returnsNode() {
+        Graph graph = new Graph();
+        Node node0 = new Node(-1, 0, 0);
+        Node node1 = new Node(0, 0, 0);
+        Node node2 = new Node(3, 0, 0);
+
+        Edge edge0 = new Edge(node0, node1);
+        Edge edge1 = new Edge(node1, node2);
+
+        graph.addEdge(edge0);
+        graph.addEdge(edge1);
+
+        Node node0Copy = new Node(-1, 0, 0);
+        Node node1Copy = new Node(0, 0, 0);
+        Node node2Copy = new Node(3, 0, 0);
+
+        assertAll(
+                () -> assertFalse(node0Copy == graph.lookup(-1, 0, 0)),
+                () -> assertFalse(node1Copy == graph.lookup(0, 0, 0)),
+                () -> assertFalse(node2Copy == graph.lookup(3, 0, 0)),
+                () -> assertTrue(graph.lookup(node0Copy) == graph.lookup(-1, 0, 0)),
+                () -> assertTrue(graph.lookup(node1Copy) == graph.lookup(0, 0, 0)),
+                () -> assertTrue(graph.lookup(node2Copy) == graph.lookup(3, 0, 0)));
+    }
+
+    @Test
+    public void lookup_returnsNull() {
+        Graph graph = new Graph();
+        Node node0 = new Node(-1, 0, 0);
+        Node node1 = new Node(0, 0, 0);
+        Node node2 = new Node(3, 0, 0);
+
+        Edge edge0 = new Edge(node0, node1);
+        Edge edge1 = new Edge(node1, node2);
+
+        graph.addEdge(edge0);
+        graph.addEdge(edge1);
+
+        assertAll(
+                () -> assertNull(graph.lookup(-2, 0, 0)), () -> assertNull(graph.lookup(4, 0, 0)));
+    }
+
+    @Test
+    public void lookup_returnsNullAfterEdgeIsRemoved() {
+        Graph graph = new Graph();
+        Node node0 = new Node(-1, 0, 0);
+        Node node1 = new Node(0, 0, 0);
+        Node node2 = new Node(3, 0, 0);
+
+        Edge edge0 = new Edge(node0, node1);
+        Edge edge1 = new Edge(node1, node2);
+
+        graph.addEdge(edge0);
+        graph.addEdge(edge1);
+        graph.removeEdge(edge1);
+
+        assertAll(
+                () -> assertNotNull(graph.lookup(0, 0, 0)),
+                () -> assertNull(graph.lookup(3, 0, 0)));
+    }
 }
