@@ -411,8 +411,6 @@ public class PatchComponentGrowth implements Component {
     private void propogateEdges() {
         addTemporaryEdges();
 
-        ArrayList<SiteNode> nodesToRemove = new ArrayList<>();
-
         for (Map.Entry<SiteNode, ArrayList<SiteEdge>> entry : angiogenicNodeMap.entrySet()) {
             // Grab node in each list and add edge, check for perfusion
             SiteNode keyNode = entry.getKey();
@@ -483,7 +481,6 @@ public class PatchComponentGrowth implements Component {
      * Criteria for skipping a node during the migration checks.
      *
      * @param node the node to check
-     * @param tick the current tick
      * @return {@code true} if the node should be skipped, {@code false} otherwise
      */
     private boolean checkNodeSkipStatus(SiteNode node) {
@@ -795,7 +792,6 @@ public class PatchComponentGrowth implements Component {
      * @param list {@link ArrayList} of {@link SiteEdge} objects.
      * @param start {@link SiteNode} object.
      * @param end {@link SiteNode} object.
-     * @param tick {@code int} object.
      * @param calc {@link Calculation} object.
      */
     private void addAngioEdges(
@@ -1327,7 +1323,6 @@ public class PatchComponentGrowth implements Component {
      *
      * @param direction {@link EdgeDirection} object.
      * @param node {@link SiteNode} object.
-     * @param tick {@code int} object.
      * @return {@link SiteEdge} object.
      */
     private SiteEdge createNewEdge(EdgeDirection direction, SiteNode node) {
