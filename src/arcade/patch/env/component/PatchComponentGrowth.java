@@ -507,9 +507,9 @@ public class PatchComponentGrowth implements Component {
     }
 
     /**
-     * Reverses all edges in the angiogenicNodeMap for a given node.
+     * Private helper function for reversing all edges in the angiogenicNodeMap for a given node.
      *
-     * @param node {@link SiteNode} object.
+     * @param node {@link SiteNode} key to reverse edges for
      */
     private void reverseAllEdges(SiteNode node) {
         for (SiteEdge edge : angiogenicNodeMap.get(node)) {
@@ -518,12 +518,12 @@ public class PatchComponentGrowth implements Component {
     }
 
     /**
-     * Private helper function for finding the key node in the angiogenicNodeMap for a given target
-     * node and skip node.
+     * Private helper function for lazily searching the key node in the angiogenicNodeMap for a
+     * given target node and skip node.
      *
-     * @param targetNode {@link SiteNode} object.
-     * @param skipNode {@link SiteNode} object.
-     * @return {@link SiteNode} object.
+     * @param targetNode {@link SiteNode} the node to look for in the map list values
+     * @param skipNode {@link SiteNode} to ignore in the map
+     * @return {@link SiteNode} key for the targetNode object
      */
     private SiteNode findKeyNodeInMap(SiteNode targetNode, SiteNode skipNode) {
         for (SiteNode keyNode : angiogenicNodeMap.keySet()) {
@@ -543,9 +543,9 @@ public class PatchComponentGrowth implements Component {
     /**
      * Private helper function for checking if an edge list contains a given target node.
      *
-     * @param edgeList {@link ArrayList} of {@link SiteEdge} objects.
-     * @param targetNode {@link SiteNode} object.
-     * @return {@code true} if the edge list contains the target node.
+     * @param edgeList {@link ArrayList} of {@link SiteEdge}s
+     * @param targetNode {@link SiteNode} to search for
+     * @return {@code true} if the edge list contains the target node
      */
     private boolean edgeListcontains(ArrayList<SiteEdge> edgeList, SiteNode targetNode) {
         for (SiteEdge edge : edgeList) {
@@ -569,7 +569,7 @@ public class PatchComponentGrowth implements Component {
         }
     }
 
-    /** Removes the proposed edges from the graph. */
+    /** Removes the proposed edges from the temporary version of the graph. */
     private void removeTemporaryEdges() {
         if (tempEdges.isEmpty()) {
             return;
@@ -581,7 +581,7 @@ public class PatchComponentGrowth implements Component {
     /**
      * Removes all edges in an edge list from the graph.
      *
-     * @param edgeList {@link ArrayList} of {@link SiteEdge} objects.
+     * @param edgeList {@link SiteEdge}s to remove
      */
     private void removeEdgeList(ArrayList<SiteEdge> edgeList) {
         for (SiteEdge edge : edgeList) {
@@ -1053,8 +1053,8 @@ public class PatchComponentGrowth implements Component {
      * @param intersection downstream intersection {@link SiteNode}
      * @param flow flow adjustment through the edge
      * @param adjustment code for flow change
-     * @param ignored {@link ArrayList} of {@link SiteEdge} objects.
-     * @return {@code int} object.
+     * @param ignored list of {@link SiteEdge} to not update
+     * @return -1 for unsuccessful calculation, 0 for successful calculation
      */
     private int updateRadius(
             SiteEdge edge,
@@ -1071,10 +1071,10 @@ public class PatchComponentGrowth implements Component {
     /**
      * Private helper function for updating the radii of an edge list.
      *
-     * @param edges {@link ArrayList} of {@link SiteEdge} objects.
-     * @param flow {@code double} object.
+     * @param edges list of edges to update
+     * @param flow new flow
      * @param adjustment code for flow change
-     * @return {@code int} object.
+     * @return -1 for unsuccessful calculation, 0 for successful calculation
      */
     private int updateRadiiOfEdgeList(
             ArrayList<SiteEdge> edges, double flow, Adjustment adjustment) {
@@ -1084,11 +1084,11 @@ public class PatchComponentGrowth implements Component {
     /**
      * Private helper function for updating the radii of an edge list.
      *
-     * @param edges {@link ArrayList} of {@link SiteEdge} objects.
-     * @param flow {@code double} object.
+     * @param edges list of edges to update
+     * @param flow new flow
      * @param adjustment code for flow change
-     * @param ignored {@link ArrayList} of {@link SiteEdge} objects.
-     * @return {@code int} object.
+     * @param ignored list of {@link SiteEdge} to not update
+     * @return -1 for unsuccessful calculation, 0 for successful calculation
      */
     private int updateRadiiOfEdgeList(
             ArrayList<SiteEdge> edges,
@@ -1112,8 +1112,8 @@ public class PatchComponentGrowth implements Component {
     /**
      * Private helper function for calculating the radius of an edge.
      *
-     * @param edge {@link SiteEdge} object.
-     * @param flow {@code double} object.
+     * @param edge edge to update
+     * @param flow new flow
      * @param adjustment code for flow change
      * @return 0 for successful update, -1 for failure
      */
@@ -1139,9 +1139,9 @@ public class PatchComponentGrowth implements Component {
      * Private helper function for calculating the radius of an edge.
      *
      * @param edge {@link SiteEdge} object.
-     * @param flow {@code double} object.
+     * @param flow new flow
      * @param adjustment code for flow change
-     * @return {@code int} object.
+     * @return -1 for unsuccessful calculation, 0 for successful calculation
      */
     private int calculateVeinRootRadius(SiteEdge edge, double flow, Adjustment adjustment) {
         double updatedFlow = (adjustment == Adjustment.DECREASE) ? -1 * flow : flow;
@@ -1174,9 +1174,9 @@ public class PatchComponentGrowth implements Component {
      * Private helper function for calculating the radius of an edge.
      *
      * @param edge {@link SiteEdge} object.
-     * @param flow {@code double} object.
+     * @param flow new flow
      * @param adjustment code for flow change
-     * @return {@code int} object.
+     * @return -1 for unsuccessful calculation, 0 for successful calculation
      */
     private int calculateArteryRootRadius(SiteEdge edge, double flow, Adjustment adjustment) {
         double updatedFlow = (adjustment == Adjustment.DECREASE) ? -1 * flow : flow;
@@ -1209,11 +1209,11 @@ public class PatchComponentGrowth implements Component {
     /**
      * Private helper function for updating the radius of an edge.
      *
-     * @param edge {@link SiteEdge} object.
-     * @param intersection {@link SiteNode} object.
-     * @param flow {@code double} object.
+     * @param edge edge to update
+     * @param intersection downstream {@link SiteNode} intersection
+     * @param flow new flow
      * @param adjustment code for flow change
-     * @param ignored {@link ArrayList} of {@link SiteEdge} objects.
+     * @param ignored list of {@link SiteEdge} to not update
      */
     private void updateRadiusToRoot(
             SiteEdge edge,
