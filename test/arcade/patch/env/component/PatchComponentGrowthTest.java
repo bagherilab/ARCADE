@@ -9,10 +9,12 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.core.util.exceptions.IncompatibleFeatureException;
+import arcade.core.util.exceptions.MissingSpecificationException;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeDirection;
 import arcade.patch.env.grid.PatchGrid;
+import arcade.patch.env.lattice.PatchLattice;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.sim.PatchSimulation;
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,9 +37,10 @@ public class PatchComponentGrowthTest {
 
     static MersenneTwisterFast randomMock;
 
+    static PatchLattice latticeMock;
+
     @BeforeAll
     public static void setup() {
-
         seriesMock = mock(PatchSeries.class, CALLS_REAL_METHODS);
         simMock = mock(PatchSimulation.class);
         doReturn(seriesMock).when(simMock).getSeries();
@@ -45,6 +48,7 @@ public class PatchComponentGrowthTest {
         metabolismMock = mock(PatchProcessMetabolism.class);
         signalingMock = mock(PatchProcessSignaling.class);
         gridMock = mock(PatchGrid.class);
+        latticeMock = mock(PatchLattice.class);
         doReturn(gridMock).when(simMock).getGrid();
         randomMock = mock(MersenneTwisterFast.class);
         simMock.random = randomMock;
@@ -124,6 +128,35 @@ public class PatchComponentGrowthTest {
     }
 
     @Test
+    public void register_calledWithoutVEGFLattice_throwsException() {
+        MiniBox parameters = new MiniBox();
+        parameters.put("MIGRATION_RATE", 60);
+        parameters.put("VEGF_THRESHOLD", 0.5);
+        parameters.put("WALK_TYPE", "BIASED");
+        parameters.put("MAX_LENGTH", 100);
+        parameters.put("CALCULATION_STRATEGY", "DIVERT");
+
+        PatchComponentSitesGraph graph = mock(PatchComponentSitesGraph.class);
+        when(simMock.getLattice("VEGF")).thenReturn(null);
+
+        try {
+            Field field = PatchComponentSitesGraph.class.getDeclaredField("graphFactory");
+            field.setAccessible(true);
+            field.set(graph, mock(PatchComponentSitesGraphFactory.class));
+        } catch (Exception ignored) {
+        }
+
+        doReturn(new EnumMap<EdgeDirection, int[]>(EdgeDirection.class))
+                .when(graph.graphFactory)
+                .getOffsets();
+
+        PatchComponentGrowth component = new PatchComponentGrowth(seriesMock, parameters);
+        assertThrows(
+                MissingSpecificationException.class,
+                () -> component.register(simMock, "COMPATIBLE"));
+    }
+
+    @Test
     public void register_calledWithSitesGraphObject_doesNotThrowException() {
         MiniBox parameters = new MiniBox();
         parameters.put("MIGRATION_RATE", 60);
@@ -134,6 +167,7 @@ public class PatchComponentGrowthTest {
 
         PatchComponentSitesGraph graph = mock(PatchComponentSitesGraph.class);
         doReturn(graph).when(simMock).getComponent("COMPATIBLE");
+        when(simMock.getLattice("VEGF")).thenReturn(latticeMock);
 
         try {
             Field field = PatchComponentSitesGraph.class.getDeclaredField("graphFactory");

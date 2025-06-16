@@ -19,6 +19,7 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Solver;
 import arcade.core.util.Solver.Function;
 import arcade.core.util.exceptions.IncompatibleFeatureException;
+import arcade.core.util.exceptions.MissingSpecificationException;
 import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
 import arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
 import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeDirection;
@@ -95,6 +96,9 @@ public class PatchComponentGrowth implements Component {
     /** Angiogenesis threshold for vegf concentration near SiteNode to initiate migration. */
     private double vegfThreshold;
 
+    /** Lattice containing vegf concentration. */
+    private Lattice vegfLattice;
+
     /** Direction of migration. */
     private MigrationDirection walkType;
 
@@ -139,9 +143,6 @@ public class PatchComponentGrowth implements Component {
 
     /** Tick for the current step. */
     private int tick;
-
-    /** Flag for whether to add edges if angiogenic nodes become perfused. */
-    private boolean addFlag;
 
     /** List of nodes to be removed from the angiogenic node map this time step. */
     private ArrayList<SiteNode> nodesToRemove;
@@ -189,9 +190,15 @@ public class PatchComponentGrowth implements Component {
     public void register(Simulation sim, String componentID) {
         Component component = sim.getComponent(componentID);
 
+        // validate
         if (!(component instanceof PatchComponentSitesGraph)) {
             throw new IncompatibleFeatureException(
                     "Growth Component", component.getClass().getName(), "PatchComponentSitesGraph");
+        }
+
+        vegfLattice = sim.getLattice("VEGF");
+        if (vegfLattice == null) {
+            throw new MissingSpecificationException("VEGF layer must be included.");
         }
 
         sites = (PatchComponentSitesGraph) component;
@@ -266,11 +273,8 @@ public class PatchComponentGrowth implements Component {
 
     @Override
     public void step(SimState simstate) {
-        Simulation sim = (Simulation) simstate;
         tick = (int) simstate.schedule.getTime();
-        Lattice vegfLattice = sim.getLattice("VEGF");
         MersenneTwisterFast random = simstate.random;
-        addFlag = false;
 
         LinkedHashSet<SiteNode> validNodes = getValidNodes();
         for (SiteNode node : validNodes) {
@@ -309,12 +313,8 @@ public class PatchComponentGrowth implements Component {
             }
         }
 
-        propogateEdges();
-
+        boolean addFlag = propogateEdges();
         if (addFlag) {
-            added.clear();
-            // LOGGER.info("*****Adding edges to graph.****** Time: " + tick);
-            // LOGGER.info("Current graph size: " + graph.getAllEdges().size());
             for (SiteNode sproutNode : angiogenicNodeMap.keySet()) {
                 if (nodesToRemove.contains(sproutNode)) {
                     continue;
@@ -358,6 +358,7 @@ public class PatchComponentGrowth implements Component {
                         nodesToRemove.add(sproutNode);
                         nodesToRemove.add(targetNode);
                     } else {
+                        // Connecting sprout to existing node
                         if (sproutNode.pressure == 0) {
                             if (graph.getEdgesOut(sproutNode) != null) {
                                 sproutNode =
@@ -394,7 +395,7 @@ public class PatchComponentGrowth implements Component {
         }
         nodesToRemove.clear();
 
-        if (!added.isEmpty()) {
+        if (addFlag) {
             updateGraph(graph);
         }
     }
@@ -407,8 +408,11 @@ public class PatchComponentGrowth implements Component {
      * anastomotic, the add flag is set to true. If the node is not anastomotic, before reaching the
      * max length, or cannot be added to the graph for another reason, the node added to the removal
      * queue.
+     *
+     * @return {@code true} if an angiogenic edge becomes perfused, {@code false} otherwise
      */
-    private void propogateEdges() {
+    private boolean propogateEdges() {
+        boolean addFlag = false;
         addTemporaryEdges();
 
         for (Map.Entry<SiteNode, ArrayList<SiteEdge>> entry : angiogenicNodeMap.entrySet()) {
@@ -447,6 +451,7 @@ public class PatchComponentGrowth implements Component {
         }
 
         removeTemporaryEdges();
+        return addFlag;
     }
 
     /**
@@ -789,10 +794,10 @@ public class PatchComponentGrowth implements Component {
     /**
      * Private helper function for adding an edge list to the graph.
      *
-     * @param list {@link ArrayList} of {@link SiteEdge} objects.
-     * @param start {@link SiteNode} object.
-     * @param end {@link SiteNode} object.
-     * @param calc {@link Calculation} object.
+     * @param list list of angiogenic edges to add to the graph
+     * @param start the starting site node object
+     * @param end the ending site node object
+     * @param calc code for the type of calculation to perform
      */
     private void addAngioEdges(
             ArrayList<SiteEdge> list, SiteNode start, SiteNode end, Calculation calc) {
@@ -802,24 +807,7 @@ public class PatchComponentGrowth implements Component {
             return;
         }
 
-        Graph tempG = new Graph();
-        for (SiteEdge e : list) {
-            tempG.addEdge(e);
-        }
-        path(tempG, start, end);
-        SiteNode n = end;
-        while (n != start) {
-            added.add(new SiteEdge(n.prev, n, DEFAULT_EDGE_TYPE, DEFAULT_EDGE_LEVEL));
-            n = n.prev;
-            if (n != start) {
-                if (n == null) {
-                    return;
-                }
-                n.addTime = (int) tick;
-            }
-        }
-
-        double otherRadius = 0;
+        double otherRadius;
         Bag outEdges = graph.getEdgesOut(start);
         if (outEdges != null) {
             otherRadius = ((SiteEdge) outEdges.get(0)).radius;
@@ -827,7 +815,15 @@ public class PatchComponentGrowth implements Component {
             return;
         }
 
-        for (SiteEdge edge : added) {
+        Graph tempGraph = new Graph();
+        for (SiteEdge e : list) {
+            tempGraph.addEdge(e);
+        }
+
+        // update edges in the minimal path between start and end
+        ArrayList<SiteEdge> angioPath = getPath(tempGraph, start, end);
+        for (SiteEdge edge : angioPath) {
+            edge.getTo().addTime = tick;
             edge.radius =
                     (otherRadius > CAPILLARY_RADIUS)
                             ? CAPILLARY_RADIUS
@@ -838,36 +834,33 @@ public class PatchComponentGrowth implements Component {
             edge.isPerfused = true;
         }
 
-        if (start.pressure * end.pressure <= 0) {
-            return;
-        }
-
-        addEdgeList(added);
+        addEdgeList(angioPath);
 
         switch (calc) {
             case COMPENSATE:
-                updateRootsAndRadii(added, start, end);
+                updateRootsAndRadii(angioPath, start, end);
                 break;
             case DIVERT:
             default:
                 SiteNode intersection =
                         (SiteNode)
                                 graph.findDownstreamIntersection(
-                                        (SiteEdge) outEdges.get(0), (SiteEdge) added.get(0));
+                                        (SiteEdge) outEdges.get(0), (SiteEdge) angioPath.get(0));
                 if (intersection != null) {
-                    recalculateRadii(added, start, end, intersection);
+                    recalculateRadii(angioPath, start, end, intersection);
                 } else {
-                    removeEdgeList(added);
+                    removeEdgeList(angioPath);
                 }
                 break;
         }
     }
 
     /**
-     * Private helper function for calculating the even split radius of an edge.
+     * Private helper function for calculating the new radius of two edges after splitting flow
+     * evenly.
      *
-     * @param edge {@link SiteEdge} object.
-     * @return {@code double} object.
+     * @param edge the original edge with specified radius
+     * @return new radius for the edges
      */
     private double calculateEvenSplitRadius(SiteEdge edge) {
         double radius = edge.radius;
@@ -880,13 +873,6 @@ public class PatchComponentGrowth implements Component {
                         1E-6,
                         5 * MAXIMUM_CAPILLARY_RADIUS,
                         1E-6);
-        // LOGGER.info("splitting radius, for checking if it happens directly before
-        // bisection failing");
-        // double newRadius = Solver.bisection((double r) -> Math.pow(flow - 2 *
-        // calculateLocalFlow(r, length, deltaP), 2), 0, MAXIMUM_CAPILLARY_RADIUS);
-        // double newRadius = Solver.boundedGradientDescent((double r) -> Math.pow(flow
-        // - 2 * calculateLocalFlow(r, length, deltaP), 2), radius, 1E-17,
-        // MINIMUM_CAPILLARY_RADIUS, MAXIMUM_CAPILLARY_RADIUS);
         return newRadius;
     }
 
@@ -1015,16 +1001,10 @@ public class PatchComponentGrowth implements Component {
         if (edges.size() < 2) {
             return;
         }
-        // if (((SiteEdge) edges.get(0)).isIgnored || ((SiteEdge)
-        // edges.get(1)).isIgnored) {
-        // return;
-        // }
 
         Integer angioIndex = ignoredEdges.contains(edges.get(0)) ? 0 : 1;
         Integer nonAngioIndex = angioIndex ^ 1;
         double deltaP = start.pressure - end.pressure;
-        // double deltaP = ((SiteNode) graph.lookup(start)).pressure - ((SiteNode)
-        // graph.lookup(end)).pressure;
         Double divertedFlow = calculateLocalFlow(CAPILLARY_RADIUS, ignoredEdges, deltaP);
         Double originalFlow = ((SiteEdge) edges.get(nonAngioIndex)).flow;
         if (divertedFlow > originalFlow) {
@@ -1039,10 +1019,6 @@ public class PatchComponentGrowth implements Component {
                         false,
                         ignoredEdges);
                 return;
-                // updateRadiusToRoot((SiteEdge) edges.get(angioIndex), intersection,
-                // divertedFlow, false, ignoredEdges);
-                // updateRadiusToRoot((SiteEdge) edges.get(nonAngioIndex), intersection,
-                // divertedFlow, true, ignoredEdges);
             }
 
             if (updateRadius(
@@ -1063,32 +1039,23 @@ public class PatchComponentGrowth implements Component {
                             ignoredEdges)
                     == -1) {
                 return;
-                // LOGGER.info("Failed to update radius when increasing size, something seems
-                // up");
             }
 
         } else {
-            // maybe also
-            // TODO: check for perfusion first
-            // TODO: check to add flow to radius with new flow after changes to other
-            // potential edge, need to do this math out?
-            // this should only work for single vein simulations
-            SiteNode boundary = sites.graphFactory.veins.get(0).node;
-            path(graph, start, boundary);
-            if (boundary.prev != null
-                    && ((SiteEdge) edges.get(angioIndex)).radius > MINIMUM_CAPILLARY_RADIUS) {
-                // LOGGER.info("Calculating additional flow to vein");
-                updateRadiusToRoot(
-                        (SiteEdge) edges.get(angioIndex),
-                        sites.graphFactory.veins.get(0).node,
-                        divertedFlow,
-                        false,
-                        ignoredEdges);
-            } else {
-                return;
+            for (Root vein : sites.graphFactory.veins) {
+                SiteNode boundary = vein.node;
+                path(graph, start, boundary);
+                if (boundary.prev != null
+                        && ((SiteEdge) edges.get(angioIndex)).radius > MINIMUM_CAPILLARY_RADIUS) {
+                    updateRadiusToRoot(
+                            (SiteEdge) edges.get(angioIndex),
+                            sites.graphFactory.veins.get(0).node,
+                            divertedFlow,
+                            false,
+                            ignoredEdges);
+                }
+                break;
             }
-            // updateRadiusToRoot((SiteEdge) edges.get(nonAngioIndex), intersection,
-            // divertedFlow, true, ignoredEdges);
         }
     }
 
