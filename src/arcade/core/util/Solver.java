@@ -428,7 +428,7 @@ public class Solver {
      * @param a the lower bound on the interval
      * @param b the upper bound on the interval
      * @param maxIters the maximum number of iterations
-     * @param tolerance the error tolerance
+     * @param tolerance the error
      * @return the root of the function
      */
     public static double bisection(
@@ -494,11 +494,11 @@ public class Solver {
      * @param func the function
      * @param a the lower bound on the interval
      * @param b the upper bound on the interval
-     * @param tolerance the error tolerance
+     * @param delta the error tolerance
      * @return the root of the function
      */
-    public static double bisection(Function func, double a, double b, double tolerance) {
-        return bisection(func, a, b, MAX_ITERS, tolerance);
+    public static double bisection(Function func, double a, double b, double delta) {
+        return bisection(func, a, b, MAX_ITERS, delta);
     }
 
     /**
@@ -514,6 +514,6 @@ public class Solver {
      * @return the root of the function
      */
     public static double bisection(Function func, double a, double b, int maxIters) {
-        return bisection(func, a, b, maxIters, TOLERANCE);
+        return bisection(func, a, b, maxIters, DELTA);
     }
 }

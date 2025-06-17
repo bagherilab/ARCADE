@@ -797,7 +797,8 @@ public class GraphTest {
                 () -> assertTrue(graph.contains(edge3)),
                 () -> assertTrue(graph.contains(edge4)),
                 () -> assertTrue(graph.contains(edge5)),
-                () -> assertTrue(graph.contains(edge6)));
+                () -> assertTrue(graph.contains(edge6)),
+                () -> assertEquals(graph.lookup(node3B), graph.lookup(new Node(-2, -2, 0))));
     }
 
     @Test

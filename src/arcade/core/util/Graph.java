@@ -57,6 +57,24 @@ public final class Graph {
         allEdges.addAll(graph.allEdges);
         nodeToOutBag.putAll(graph.nodeToOutBag);
         nodeToInBag.putAll(graph.nodeToInBag);
+        updateNodes();
+    }
+
+    /** Updates nodes from graph. */
+    private void updateNodes() {
+        nodes.clear();
+        for (Object obj : allEdges) {
+            Edge edge = (Edge) obj;
+            Node from = edge.getFrom();
+            Node to = edge.getTo();
+
+            if (!nodes.containsKey(from.toString())) {
+                nodes.put(from.toString(), from);
+            }
+            if (!nodes.containsKey(to.toString())) {
+                nodes.put(to.toString(), to);
+            }
+        }
     }
 
     /** Clear edges and nodes from graph. */
@@ -64,6 +82,7 @@ public final class Graph {
         allEdges.clear();
         nodeToOutBag.clear();
         nodeToInBag.clear();
+        nodes.clear();
     }
 
     /**
