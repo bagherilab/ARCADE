@@ -8,6 +8,6 @@ public class MissingSpecificationException extends RuntimeException {
      * @param missing the expected specification
      */
     public MissingSpecificationException(String missing) {
-        super("The input file must contain the following specification: ");
+        super("The input file must contain the following specification: " + missing);
     }
 }
