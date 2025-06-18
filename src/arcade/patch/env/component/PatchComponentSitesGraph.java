@@ -13,6 +13,7 @@ import arcade.core.util.Graph.Node;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Solver;
 import arcade.core.util.Solver.Function;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeDirection;
 import arcade.patch.env.location.CoordinateXYZ;
 import arcade.patch.sim.PatchSeries;
 import static arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeLevel;
@@ -398,6 +399,20 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         /** Distance for Dijkstra's algorithm. */
         int distance;
 
+        /** Tick for the last update during growth. */
+        int lastUpdate;
+
+        /** Tick for when the node was added to the graph. */
+        int addTime;
+
+        /** Direction of the angiogenic sprout. */
+        EdgeDirection sproutDir;
+
+        /**
+         * {@code true} if the angiogenic sprout is anastomotic/perfused, {@code false} otherwise.
+         */
+        boolean anastomosis;
+
         /** Parent node. */
         SiteNode prev;
 
@@ -466,6 +481,9 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         /** {@code true} if edge is ignored, {@code false} otherwise. */
         boolean isIgnored;
 
+        /** {@code true} if edge is anastomotic, {@code false} otherwise. */
+        boolean isAnastomotic;
+
         /** Edge type. */
         final EdgeType type;
 
@@ -513,8 +531,8 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
          * @param type the edge type
          * @param level the graph resolution level
          */
-        SiteEdge(Node from, Node to, EdgeType type, EdgeLevel level) {
-            super(from, to);
+        SiteEdge(SiteNode from, SiteNode to, EdgeType type, EdgeLevel level) {
+            super(from, to, type == EdgeType.ANGIOGENIC);
             this.type = type;
             this.level = level;
             isVisited = false;
