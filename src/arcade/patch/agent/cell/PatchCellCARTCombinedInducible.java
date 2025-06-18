@@ -11,18 +11,9 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 import arcade.patch.env.grid.PatchGrid;
 
-public class PatchCellCARTCombinedInducible extends PatchCellCARTCombined {
+public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombinatorial {
     private static final Logger LOGGER =
             Logger.getLogger(PatchCellCARTCombinedInducible.class.getName());
-    protected final double synNotchThreshold;
-    protected final double bindingConstant;
-    protected final double unbindingConstant;
-    protected final double carDegradationConstant;
-    public final int synnotchs;
-    public int boundSynNotch;
-    protected final int maxCars;
-    PoissonFactory poissonFactory;
-    private PatchCellTissue boundCell;
 
     /**
      * Creates a tissue {@code PatchCellSynNotch} agent. *
@@ -38,93 +29,26 @@ public class PatchCellCARTCombinedInducible extends PatchCellCARTCombined {
     public PatchCellCARTCombinedInducible(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
-        bindingConstant = parameters.getDouble("K_SYNNOTCH_ON");
-        unbindingConstant = parameters.getDouble("K_SYNNOTCH_OFF");
-        carDegradationConstant = parameters.getDouble("K_CAR_DEGRADE");
-        synnotchs = parameters.getInt("SYNNOTCHS");
-        synNotchThreshold = parameters.getDouble("SYNNOTCH_THRESHOLD") * synnotchs;
-        boundSynNotch = 0;
-        maxCars = cars;
         cars = 0;
-        poissonFactory = Poisson::new;
-    }
-
-    public double callPoisson(double lambda, MersenneTwisterFast random) {
-        return poissonFactory.createPoisson(lambda, random).nextInt();
     }
 
     @Override
     public void step(SimState simstate) {
-        if (boundCell == null) {
-            checkForBinding(simstate);
+        Simulation sim = (Simulation) simstate;
+        if (super.boundCell == null) {
+            super.checkForBinding(simstate);
         } else {
-            calculateCARS(simstate.random);
+            calculateCARS(simstate.random, sim);
         }
         super.step(simstate);
     }
 
-    private void calculateCARS(MersenneTwisterFast random) {
+    protected void calculateCARS(MersenneTwisterFast random, Simulation sim) {
         int TAU = 60;
-        int unboundSynNotch = synnotchs - boundSynNotch;
-        double expectedBindingEvents =
-                bindingConstant
-                        / (volume * 6.0221415e23 * 1e-15)
-                        * unboundSynNotch
-                        * boundCell.getSynNotchAntigens()
-                        * contactFraction
-                        * TAU;
-        int bindingEvents = poissonFactory.createPoisson(expectedBindingEvents, random).nextInt();
-        double expectedUnbindingEvents = unbindingConstant * boundSynNotch * TAU;
-        int unbindingEvents =
-                poissonFactory.createPoisson(expectedUnbindingEvents, random).nextInt();
-
-        boundSynNotch += bindingEvents;
-        boundSynNotch -= unbindingEvents;
-        boundCell.updateSynNotchAntigens(unbindingEvents, bindingEvents);
+        super.calculateCARS(random, sim);
         double n = 4.4;
         int new_cars =
                 (int) (maxCars / (1 + Math.pow(synNotchThreshold, n) / Math.pow(boundSynNotch, n)));
-
         cars = Math.max((int) (cars - (carDegradationConstant * cars * TAU)), new_cars);
-    }
-
-    /** A {@code PoissonFactory} object instantiates Poisson distributions. */
-    interface PoissonFactory {
-        /**
-         * Creates instance of Poisson.
-         *
-         * @param lambda the Poisson distribution lambda
-         * @param random the random number generator
-         * @return a Poisson distribution instance
-         */
-        Poisson createPoisson(double lambda, MersenneTwisterFast random);
-    }
-
-    private void checkForBinding(SimState simstate) {
-        Simulation sim = (Simulation) simstate;
-        PatchGrid grid = (PatchGrid) sim.getGrid();
-
-        Bag allAgents = new Bag();
-        getTissueAgents(allAgents, grid.getObjectsAtLocation(location));
-        for (Location neighborLocation : location.getNeighbors()) {
-            Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));
-            getTissueAgents(allAgents, bag);
-        }
-
-        if (allAgents.size() > 0) {
-            PatchCellTissue randomCell =
-                    (PatchCellTissue) allAgents.get(simstate.random.nextInt(allAgents.size()));
-            if (randomCell.getSynNotchAntigens() > 0) {
-                boundCell = randomCell;
-            }
-        }
-    }
-
-    public void resetBoundCell() {
-        if (boundCell != null) {
-            boundCell.updateSynNotchAntigens(boundSynNotch, 0);
-            boundCell = null;
-        }
-        boundSynNotch = 0;
     }
 }

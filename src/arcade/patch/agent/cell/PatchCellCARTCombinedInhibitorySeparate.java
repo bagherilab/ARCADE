@@ -1,31 +1,35 @@
 package arcade.patch.agent.cell;
 
-import java.util.logging.Logger;
-import sim.engine.SimState;
-import sim.util.Bag;
-import sim.util.distribution.Poisson;
-import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 import arcade.patch.env.grid.PatchGrid;
+import arcade.patch.util.PatchEnums;
+import ec.util.MersenneTwisterFast;
+import sim.engine.SimState;
+import sim.util.Bag;
+import sim.util.distribution.Poisson;
 
-public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombinatorial {
+import java.util.logging.Logger;
+
+public class PatchCellCARTCombinedInhibitorySeparate extends PatchCellCARTCombinedCombinatorial {
+
     private static final Logger LOGGER =
-            Logger.getLogger(PatchCellCARTCombinedInhibitory.class.getName());
+            Logger.getLogger(PatchCellCARTCombinedInhibitorySeparate.class.getName());
+
     /**
      * Creates a tissue {@code PatchCellSynNotch} agent. *
      *
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
      */
-    public PatchCellCARTCombinedInhibitory(
+    public PatchCellCARTCombinedInhibitorySeparate(
             PatchCellContainer container, Location location, Parameters parameters) {
         this(container, location, parameters, null);
     }
 
-    public PatchCellCARTCombinedInhibitory(
+    public PatchCellCARTCombinedInhibitorySeparate(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
     }
@@ -36,17 +40,17 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
         if (super.boundCell == null) {
             super.checkForBinding(simstate);
         } else {
-            calculateCARS(simstate.random, sim);
+            calculateActivation(simstate.random, sim);
         }
         super.step(simstate);
     }
 
-    protected void calculateCARS(MersenneTwisterFast random, Simulation sim) {
+    private void calculateActivation(MersenneTwisterFast random, Simulation sim) {
         int TAU = 60;
         super.calculateCARS(random, sim);
-        double n = 8;
-        int removeCARs =
-                (int) (maxCars / (1 + Math.pow(synNotchThreshold, n) / Math.pow(boundSynNotch, n)));
-        cars = Math.min((int) (cars + (basalCARGenerationRate * TAU)), maxCars - removeCARs);
+        cars = Math.max((int) (cars + (basalCARGenerationRate * TAU) - (carDegradationConstant * cars * TAU)), 0);
+        if (boundSynNotch >= synNotchThreshold) {
+            this.activated = false;
+        }
     }
 }
