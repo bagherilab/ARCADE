@@ -19,6 +19,7 @@ public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombina
      * Creates a tissue {@code PatchCellCARTCombinedInducible} agent. *
      *
      * @param location the {@link Location} of the cell
+     * @param container the cell container
      * @param parameters the dictionary of parameters
      */
     public PatchCellCARTCombinedInducible(
@@ -56,8 +57,8 @@ public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombina
         int TAU = 60;
         super.calculateCARS(random, sim);
         double n = 4.4;
-        int new_cars =
+        int newCars =
                 (int) (maxCars / (1 + Math.pow(synNotchThreshold, n) / Math.pow(boundSynNotch, n)));
-        cars = Math.max((int) (cars - (carDegradationConstant * cars * TAU)), new_cars);
+        cars = Math.max((int) (cars - (carDegradationConstant * cars * TAU)), newCars);
     }
 }

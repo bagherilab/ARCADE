@@ -11,6 +11,7 @@ import arcade.core.util.Parameters;
 /** Extension of {@link PatchCellCARTCombinedCombinatorial} for iCAR circuit. */
 public class PatchCellCARTCombinedInhibitorySeparate extends PatchCellCARTCombinedCombinatorial {
 
+    /** Logger for this class. */
     private static final Logger LOGGER =
             Logger.getLogger(PatchCellCARTCombinedInhibitorySeparate.class.getName());
 
@@ -18,6 +19,7 @@ public class PatchCellCARTCombinedInhibitorySeparate extends PatchCellCARTCombin
      * Creates a tissue {@code PatchCellCombinedInhibitorySeparate} agent. *
      *
      * @param location the {@link Location} of the cell
+     * @param container the cell container
      * @param parameters the dictionary of parameters
      */
     public PatchCellCARTCombinedInhibitorySeparate(

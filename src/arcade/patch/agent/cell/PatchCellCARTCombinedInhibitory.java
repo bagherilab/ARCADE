@@ -19,6 +19,7 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
      * Creates a tissue {@code PatchCellCARTCombinedInhibitory} agent. *
      *
      * @param location the {@link Location} of the cell
+     * @param container the cell container
      * @param parameters the dictionary of parameters
      */
     public PatchCellCARTCombinedInhibitory(

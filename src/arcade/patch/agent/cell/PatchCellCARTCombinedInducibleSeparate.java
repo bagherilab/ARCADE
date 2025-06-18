@@ -20,6 +20,7 @@ public class PatchCellCARTCombinedInducibleSeparate extends PatchCellCARTCombine
      * Creates a tissue {@code PatchCellCombinedInducibleSeparate} agent. *
      *
      * @param location the {@link Location} of the cell
+     * @param container the cell container
      * @param parameters the dictionary of parameters
      */
     public PatchCellCARTCombinedInducibleSeparate(
