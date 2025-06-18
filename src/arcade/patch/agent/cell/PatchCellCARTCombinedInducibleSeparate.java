@@ -1,22 +1,23 @@
 package arcade.patch.agent.cell;
 
+import java.util.logging.Logger;
+import sim.engine.SimState;
+import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 import arcade.patch.util.PatchEnums;
-import ec.util.MersenneTwisterFast;
-import sim.engine.SimState;
 
-import java.util.logging.Logger;
-
+/** Extension of {@link PatchCellCARTCombinedCombinatorial} for induced combinatorial circuit. */
 public class PatchCellCARTCombinedInducibleSeparate extends PatchCellCARTCombinedCombinatorial {
 
+    /** Logger for this class. */
     private static final Logger LOGGER =
             Logger.getLogger(PatchCellCARTCombinedInducibleSeparate.class.getName());
 
     /**
-     * Creates a tissue {@code PatchCellSynNotch} agent. *
+     * Creates a tissue {@code PatchCellCombinedInducibleSeparate} agent. *
      *
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
@@ -26,6 +27,14 @@ public class PatchCellCARTCombinedInducibleSeparate extends PatchCellCARTCombine
         this(container, location, parameters, null);
     }
 
+    /**
+     * Creates a T cell {@code PatchCellCombinedInducibleSeparate} agent. *
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
     public PatchCellCARTCombinedInducibleSeparate(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
@@ -149,11 +158,16 @@ public class PatchCellCARTCombinedInducibleSeparate extends PatchCellCARTCombine
     protected void calculateActivation(MersenneTwisterFast random, Simulation sim) {
         int TAU = 60;
         super.calculateCARS(random, sim);
-        cars = Math.max((int) (cars + (basalCARGenerationRate * TAU) - (carDegradationConstant * cars * TAU)), 0);
+        cars =
+                Math.max(
+                        (int)
+                                (cars
+                                        + (basalCARGenerationRate * TAU)
+                                        - (carDegradationConstant * cars * TAU)),
+                        0);
         if (boundSynNotch >= synNotchThreshold) {
             this.lastActiveTicker = 0;
             this.activated = true;
         }
     }
-
 }

@@ -1,41 +1,86 @@
 package arcade.patch.agent.cell;
 
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.logging.Logger;
+import sim.engine.SimState;
+import sim.util.Bag;
+import sim.util.distribution.Poisson;
+import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 import arcade.patch.env.grid.PatchGrid;
-import ec.util.MersenneTwisterFast;
-import sim.engine.SimState;
-import sim.util.Bag;
-import sim.util.distribution.Poisson;
 
-import java.util.Deque;
-import java.util.logging.Logger;
-import java.util.LinkedList;
+/**
+ * Abstract class of {@link PatchCellCART} for combined CD4/CD8 combinatorial CART-cells with
+ * selected module versions.
+ */
+public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCombined {
 
-public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCombined{
-
+    /** Logger for this class. */
     private static final Logger LOGGER =
             Logger.getLogger(PatchCellCARTCombinedCombinatorial.class.getName());
+
+    /** Number of bound synnotchs required to trigger activation/inactivation. */
     protected final double synNotchThreshold;
+
+    /** synnotch receptor-antigen binding rate. */
     protected final double bindingConstant;
+
+    /** synnotch receptor-antigen unbinding rate. */
     protected final double unbindingConstant;
+
+    /** car receptor degradation rate. */
     protected final double carDegradationConstant;
+
+    /** Number of synnotch receptors on this cell. */
     public int synnotchs;
+
+    /** Number of bound synnotch receptors on this cell. */
     public int boundSynNotch;
+
+    /** maximum CAR receptors possible. */
     protected final int maxCars;
+
+    /** poisson distribution. */
     PatchCellCARTCombinedInducible.PoissonFactory poissonFactory;
+
+    /** Target cell that is bound. */
     protected PatchCellTissue boundCell;
+
+    /** basal CAR receptor expression rate. */
     protected final double basalCARGenerationRate;
+
+    /** Half-life of synnotch activation TF. */
     protected final double synNotchActivationDelay;
+
+    /** List of recent synnotch binding events. */
     protected Deque<BindingEvent> bindingHistory = new LinkedList<>();
 
-    public PatchCellCARTCombinedCombinatorial(PatchCellContainer container, Location location, Parameters parameters) {
+    /**
+     * Creates a T cell {@code PatchCellCARTCombinedCombinatorial} agent. *
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     */
+    public PatchCellCARTCombinedCombinatorial(
+            PatchCellContainer container, Location location, Parameters parameters) {
         this(container, location, parameters, null);
     }
 
-    public PatchCellCARTCombinedCombinatorial(PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
+    /**
+     * Creates a T cell {@code PatchCellCARTCombinedCombinatorial} agent. *
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
+    public PatchCellCARTCombinedCombinatorial(
+            PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
         bindingConstant = parameters.getDouble("K_SYNNOTCH_ON");
         unbindingConstant = parameters.getDouble("K_SYNNOTCH_OFF");
@@ -97,7 +142,7 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
 
         // model synnotch activation TF degradation
         int ineffectiveBoundSynNotchs = 0;
-        //find all binding events that are older than the synNotchActivationDelay
+        // find all binding events that are older than the synNotchActivationDelay
         for (BindingEvent e : bindingHistory) {
             if (currentTime - e.timeStep >= synNotchActivationDelay) {
                 ineffectiveBoundSynNotchs += e.count;
@@ -105,11 +150,11 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
         }
 
         boundSynNotch -= ineffectiveBoundSynNotchs;
-        synnotchs = Math.max(0, synnotchs-ineffectiveBoundSynNotchs);
+        synnotchs = Math.max(0, synnotchs - ineffectiveBoundSynNotchs);
 
-        //remove all binding events that are older than the synNotchActivationDelay
-        while (!bindingHistory.isEmpty() &&
-                bindingHistory.peekFirst().timeStep <= currentTime - synNotchActivationDelay) {
+        // remove all binding events that are older than the synNotchActivationDelay
+        while (!bindingHistory.isEmpty()
+                && bindingHistory.peekFirst().timeStep <= currentTime - synNotchActivationDelay) {
             bindingHistory.pollFirst();
         }
     }

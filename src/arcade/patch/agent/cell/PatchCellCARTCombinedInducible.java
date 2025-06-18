@@ -2,21 +2,21 @@ package arcade.patch.agent.cell;
 
 import java.util.logging.Logger;
 import sim.engine.SimState;
-import sim.util.Bag;
-import sim.util.distribution.Poisson;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
-import arcade.patch.env.grid.PatchGrid;
 
+/** Extension of {@link PatchCellCARTCombinedCombinatorial} for synnotch circuit. */
 public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombinatorial {
+
+    /** Logger for this class. */
     private static final Logger LOGGER =
             Logger.getLogger(PatchCellCARTCombinedInducible.class.getName());
 
     /**
-     * Creates a tissue {@code PatchCellSynNotch} agent. *
+     * Creates a tissue {@code PatchCellCARTCombinedInducible} agent. *
      *
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
@@ -26,6 +26,14 @@ public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombina
         this(container, location, parameters, null);
     }
 
+    /**
+     * Creates a T cell {@code PatchCellCARTCombinedInducible} agent. *
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
     public PatchCellCARTCombinedInducible(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
