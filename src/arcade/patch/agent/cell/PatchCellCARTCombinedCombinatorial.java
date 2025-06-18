@@ -1,6 +1,7 @@
 package arcade.patch.agent.cell;
 
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.logging.Logger;
 import sim.engine.SimState;
@@ -154,20 +155,18 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
         // model synnotch activation TF degradation
         int ineffectiveBoundSynNotchs = 0;
         // find all binding events that are older than the synNotchActivationDelay
-        for (BindingEvent e : bindingHistory) {
+        Iterator<BindingEvent> it = bindingHistory.iterator();
+        while (it.hasNext()) {
+            BindingEvent e = it.next();
             if (currentTime - e.timeStep >= synNotchActivationDelay) {
                 ineffectiveBoundSynNotchs += e.count;
+                // remove binding event from history if older than delay
+                it.remove();
             }
         }
 
         boundSynNotch -= ineffectiveBoundSynNotchs;
         synnotchs = Math.max(0, synnotchs - ineffectiveBoundSynNotchs);
-
-        // remove all binding events that are older than the synNotchActivationDelay
-        while (!bindingHistory.isEmpty()
-                && bindingHistory.peekFirst().timeStep <= currentTime - synNotchActivationDelay) {
-            bindingHistory.pollFirst();
-        }
     }
 
     /** A {@code PoissonFactory} object instantiates Poisson distributions. */
