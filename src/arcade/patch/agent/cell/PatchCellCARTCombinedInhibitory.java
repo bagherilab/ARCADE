@@ -50,6 +50,7 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
         super.step(simstate);
     }
 
+    @Override
     protected void calculateCARS(MersenneTwisterFast random, Simulation sim) {
         int TAU = 60;
         super.calculateCARS(random, sim);

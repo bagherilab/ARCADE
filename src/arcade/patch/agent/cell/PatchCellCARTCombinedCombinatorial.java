@@ -94,6 +94,11 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
         poissonFactory = Poisson::new;
     }
 
+    /**
+     * Binds to target cell in neighborhood. *
+     *
+     * @param simstate the simulation state
+     */
     protected void checkForBinding(SimState simstate) {
         Simulation sim = (Simulation) simstate;
         PatchGrid grid = (PatchGrid) sim.getGrid();
@@ -114,6 +119,12 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
         }
     }
 
+    /**
+     * Calculates the number of binding and unbinding events for the synnotch receptor . *
+     *
+     * @param random the random object
+     * @param sim the simulation instance
+     */
     protected void calculateCARS(MersenneTwisterFast random, Simulation sim) {
         int TAU = 60;
         double currentTime = sim.getSchedule().getTime();
@@ -171,10 +182,18 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
         Poisson createPoisson(double lambda, MersenneTwisterFast random);
     }
 
+    /**
+     * returns the poisson distribution.
+     *
+     * @param lambda the Poisson distribution lambda
+     * @param random the random number generator
+     * @return a Poisson distribution instance
+     */
     public double callPoisson(double lambda, MersenneTwisterFast random) {
         return poissonFactory.createPoisson(lambda, random).nextInt();
     }
 
+    /** resets bound target cell and unbinds from it. */
     public void resetBoundCell() {
         if (boundCell != null) {
             boundCell.updateSynNotchAntigens(boundSynNotch, 0);
@@ -183,8 +202,13 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
         boundSynNotch = 0;
     }
 
+    /** private class for tracking synnotch binding events. */
     private static class BindingEvent {
+
+        /** timestamp for binding events. */
         double timeStep;
+
+        /** number of binding events at this time step. */
         int count;
 
         BindingEvent(double timeStep, int count) {

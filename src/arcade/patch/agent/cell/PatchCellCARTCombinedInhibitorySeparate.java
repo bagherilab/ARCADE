@@ -49,6 +49,12 @@ public class PatchCellCARTCombinedInhibitorySeparate extends PatchCellCARTCombin
         super.step(simstate);
     }
 
+    /**
+     * Calculates T cell activation given bound synnotchs. *
+     *
+     * @param random the random object
+     * @param sim the simulation instance
+     */
     private void calculateActivation(MersenneTwisterFast random, Simulation sim) {
         int TAU = 60;
         super.calculateCARS(random, sim);

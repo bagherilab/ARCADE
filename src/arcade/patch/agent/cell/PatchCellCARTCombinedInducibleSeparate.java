@@ -155,6 +155,12 @@ public class PatchCellCARTCombinedInducibleSeparate extends PatchCellCARTCombine
         }
     }
 
+    /**
+     * Calculates T cell activation given bound synnotchs. *
+     *
+     * @param random the random object
+     * @param sim the simulation instance
+     */
     protected void calculateActivation(MersenneTwisterFast random, Simulation sim) {
         int TAU = 60;
         super.calculateCARS(random, sim);
