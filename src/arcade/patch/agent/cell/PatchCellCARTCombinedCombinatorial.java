@@ -211,7 +211,12 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
         /** number of binding events at this time step. */
         int count;
 
-        /** Instantiates the binding event. */
+        /**
+         * Instantiates the binding event.
+         *
+         * @param timeStep simulation timestamp of binding event
+         * @param count number of binding events
+         */
         BindingEvent(double timeStep, int count) {
             this.timeStep = timeStep;
             this.count = count;
