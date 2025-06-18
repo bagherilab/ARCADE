@@ -90,6 +90,7 @@ public class PatchComponentGrowth implements Component {
         BIASED;
     }
 
+    /** How to adjust the flow rate during radius calculations. */
     private enum Adjustment {
         /** Code for increasing flow. */
         INCREASE,
