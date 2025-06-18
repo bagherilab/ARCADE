@@ -176,15 +176,6 @@ public class PatchComponentGrowth implements Component {
         calculationStrategy = Calculation.valueOf(parameters.get("CALCULATION_STRATEGY"));
     }
 
-    /**
-     * Component does not have a relevant field; returns {@code null}.
-     *
-     * @return {@code null}
-     */
-    public double[][][] getField() {
-        return null;
-    }
-
     @Override
     public void schedule(Schedule schedule) {
         interval = migrationRate < edgeSize ? 60 : (int) (edgeSize / migrationRate * 60);
@@ -233,8 +224,6 @@ public class PatchComponentGrowth implements Component {
             }
             SiteNode from = edge.getFrom();
             SiteNode to = edge.getTo();
-            from.id = -1;
-            to.id = -1;
 
             if ((graph.getDegree(from) < 3)
                     && !from.isRoot
@@ -495,9 +484,6 @@ public class PatchComponentGrowth implements Component {
      */
     private boolean checkNodeSkipStatus(SiteNode node) {
         if (angiogenicNodeMap.keySet().contains(node)) {
-            return true;
-        }
-        if (node.isRoot) {
             return true;
         }
         if ((tick - node.addTime) < (72 * 60)) {
