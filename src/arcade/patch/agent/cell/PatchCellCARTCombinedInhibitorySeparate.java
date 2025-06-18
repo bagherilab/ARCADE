@@ -8,37 +8,36 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 
-/** Extension of {@link PatchCellCARTCombinedCombinatorial} for synnotch circuit. */
-public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombinatorial {
+/** Extension of {@link PatchCellCARTCombinedCombinatorial} for iCAR circuit. */
+public class PatchCellCARTCombinedInhibitorySeparate extends PatchCellCARTCombinedCombinatorial {
 
     /** Logger for this class. */
     private static final Logger LOGGER =
-            Logger.getLogger(PatchCellCARTCombinedInducible.class.getName());
+            Logger.getLogger(PatchCellCARTCombinedInhibitorySeparate.class.getName());
 
     /**
-     * Creates a tissue {@code PatchCellCARTCombinedInducible} agent. *
+     * Creates a tissue {@code PatchCellCombinedInhibitorySeparate} agent. *
      *
      * @param location the {@link Location} of the cell
      * @param container the cell container
      * @param parameters the dictionary of parameters
      */
-    public PatchCellCARTCombinedInducible(
+    public PatchCellCARTCombinedInhibitorySeparate(
             PatchCellContainer container, Location location, Parameters parameters) {
         this(container, location, parameters, null);
     }
 
     /**
-     * Creates a T cell {@code PatchCellCARTCombinedInducible} agent. *
+     * Creates a T cell {@code PatchCellCombinedInhibitorySeparate} agent. *
      *
      * @param container the cell container
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
      * @param links the map of population links
      */
-    public PatchCellCARTCombinedInducible(
+    public PatchCellCARTCombinedInhibitorySeparate(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
-        cars = 0;
     }
 
     @Override
@@ -47,18 +46,29 @@ public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombina
         if (super.boundCell == null) {
             super.checkForBinding(simstate);
         } else {
-            calculateCARS(simstate.random, sim);
+            calculateActivation(simstate.random, sim);
         }
         super.step(simstate);
     }
 
-    @Override
-    protected void calculateCARS(MersenneTwisterFast random, Simulation sim) {
+    /**
+     * Calculates T cell activation given bound synnotchs. *
+     *
+     * @param random the random object
+     * @param sim the simulation instance
+     */
+    private void calculateActivation(MersenneTwisterFast random, Simulation sim) {
         int TAU = 60;
         super.calculateCARS(random, sim);
-        double n = 4.4;
-        int newCars =
-                (int) (maxCars / (1 + Math.pow(synNotchThreshold, n) / Math.pow(boundSynNotch, n)));
-        cars = Math.max((int) (cars - (carDegradationConstant * cars * TAU)), newCars);
+        cars =
+                Math.max(
+                        (int)
+                                (cars
+                                        + (basalCARGenerationRate * TAU)
+                                        - (carDegradationConstant * cars * TAU)),
+                        0);
+        if (boundSynNotch >= synNotchThreshold) {
+            this.activated = false;
+        }
     }
 }
