@@ -164,6 +164,9 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         if (((PottsCellFlyStem) cell).getStemType() == StemType.WT) {
             return false;
         } else if (((PottsCellFlyStem) cell).getStemType() == StemType.MUDMUT) {
+            if (differentiationRuleset.equals("both-stem")) {
+                return true;
+            }
             if (differentiationRuleset.equals("volume")) {
                 double vol1 = loc1.getVolume();
                 double vol2 = loc2.getVolume();

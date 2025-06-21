@@ -423,6 +423,17 @@ public class PottsModuleProliferationFlyStemTest {
     }
 
     @Test
+    public void daughterStem_bothStemRule_returnsTrue() {
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("both-stem");
+
+        module = new PottsModuleProliferationFlyStem(stemCell);
+        boolean result = module.daughterStem(stemLoc, daughterLoc);
+
+        assertTrue(result);
+    }
+
+    @Test
     public void daughterStem_volumeRule_differenceWithinRange_returnsTrue() {
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
