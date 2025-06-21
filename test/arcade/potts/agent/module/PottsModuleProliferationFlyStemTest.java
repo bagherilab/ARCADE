@@ -191,6 +191,66 @@ public class PottsModuleProliferationFlyStemTest {
         assertEquals(loc1, result);
     }
 
+    @Test
+    public void centroidsWithinRangeAlongApicalAxis_withinRange_returnsTrue() {
+        double[] centroid1 = new double[] {0, 1.0, 0};
+        double[] centroid2 = new double[] {0, 1.3, 0};
+        Vector apicalAxis = new Vector(0, 1, 0); // projecting along y-axis
+        double range = 0.5;
+
+        module = new PottsModuleProliferationFlyStem(stemCell);
+        boolean result =
+                PottsModuleProliferationFlyStem.centroidsWithinRangeAlongApicalAxis(
+                        centroid1, centroid2, apicalAxis, range);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void centroidsWithinRangeAlongApicalAxis_equalToRange_returnsTrue() {
+        double[] centroid1 = new double[] {0, 1.0, 0};
+        double[] centroid2 = new double[] {0, 1.5, 0};
+        Vector apicalAxis = new Vector(0, 1, 0);
+        double range = 0.5;
+
+        module = new PottsModuleProliferationFlyStem(stemCell);
+        boolean result =
+                PottsModuleProliferationFlyStem.centroidsWithinRangeAlongApicalAxis(
+                        centroid1, centroid2, apicalAxis, range);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void centroidsWithinRangeAlongApicalAxis_outsideRange_returnsFalse() {
+        double[] centroid1 = new double[] {0, 1.0, 0};
+        double[] centroid2 = new double[] {0, 1.6, 0};
+        Vector apicalAxis = new Vector(0, 1, 0);
+        double range = 0.5;
+
+        module = new PottsModuleProliferationFlyStem(stemCell);
+        boolean result =
+                PottsModuleProliferationFlyStem.centroidsWithinRangeAlongApicalAxis(
+                        centroid1, centroid2, apicalAxis, range);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void centroidsWithinRangeAlongApicalAxis_nonYAxis_returnsCorrectly() {
+        double[] centroid1 = new double[] {1.0, 0.0, 0.0};
+        double[] centroid2 = new double[] {1.6, 0.0, 0.0};
+        Vector apicalAxis = new Vector(1, 0, 0); // projecting along x-axis
+        double range = 0.6;
+
+        module = new PottsModuleProliferationFlyStem(stemCell);
+        boolean result =
+                PottsModuleProliferationFlyStem.centroidsWithinRangeAlongApicalAxis(
+                        centroid1, centroid2, apicalAxis, range);
+
+        assertTrue(result);
+    }
+
     // Split location tests
 
     @Test
@@ -400,6 +460,7 @@ public class PottsModuleProliferationFlyStemTest {
                 .thenReturn(0.5);
         when(stemLoc.getCentroid()).thenReturn(new double[] {0, 1.0, 0});
         when(daughterLoc.getCentroid()).thenReturn(new double[] {0, 1.3, 0}); // difference = 0.3
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
 
         module = new PottsModuleProliferationFlyStem(stemCell);
         boolean result = module.daughterStem(stemLoc, daughterLoc);
@@ -415,6 +476,7 @@ public class PottsModuleProliferationFlyStemTest {
                 .thenReturn(0.5);
         when(stemLoc.getCentroid()).thenReturn(new double[] {0, 1.0, 0});
         when(daughterLoc.getCentroid()).thenReturn(new double[] {0, 1.7, 0}); // difference = 0.7
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
 
         module = new PottsModuleProliferationFlyStem(stemCell);
         boolean result = module.daughterStem(stemLoc, daughterLoc);

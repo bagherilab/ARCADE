@@ -29,6 +29,8 @@ import static arcade.potts.agent.cell.PottsCellFlyStem.StemType;
  */
 public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSimple {
 
+    public static final double EPSILON = 1e-8;
+
     /** Distribution that determines rotational offset of cell's division plane. */
     final NormalDistribution splitDirectionDistribution;
 
@@ -173,7 +175,12 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
             } else if (differentiationRuleset.equals("location")) {
                 double[] centroid1 = loc1.getCentroid();
                 double[] centroid2 = loc2.getCentroid();
-                if (Math.abs(centroid1[1] - centroid2[1]) < range) {
+                if (centroidsWithinRangeAlongApicalAxis(
+                        centroid1,
+                        centroid2,
+                        ((PottsCellFlyStem) cell).getApicalAxis(),
+                        range)) { // TODO: change this to just return
+                    // centroidsWIthinRangeAlongApicalAxis
                     return true;
                 } else {
                     return false;
@@ -182,6 +189,30 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         }
         throw new IllegalArgumentException(
                 "Invalid differentiation ruleset: " + differentiationRuleset);
+    }
+
+    /**
+     * Determines if the distance between two centroids, projected along the apical axis, is less
+     * than or equal to the given range.
+     *
+     * @param centroid1 First centroid position.
+     * @param centroid2 Second centroid position.
+     * @param apicalAxis Unit {@link Vector} defining the apical-basal direction.
+     * @param range Maximum allowed distance along the apical axis.
+     * @return true if the centroids are within the given range along the apical axis.
+     */
+    static boolean centroidsWithinRangeAlongApicalAxis(
+            double[] centroid1, double[] centroid2, Vector apicalAxis, double range) {
+
+        Vector c1 = new Vector(centroid1[0], centroid1[1], centroid1.length > 2 ? centroid1[2] : 0);
+        Vector c2 = new Vector(centroid2[0], centroid2[1], centroid2.length > 2 ? centroid2[2] : 0);
+
+        double proj1 = Vector.dotProduct(c1, apicalAxis);
+        double proj2 = Vector.dotProduct(c2, apicalAxis);
+
+        double distanceAlongAxis = Math.abs(proj1 - proj2);
+
+        return distanceAlongAxis - range <= EPSILON;
     }
 
     protected double calculateGMCDaughterCellCriticalVolume() {
