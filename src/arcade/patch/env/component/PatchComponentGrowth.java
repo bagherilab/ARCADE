@@ -99,6 +99,14 @@ public class PatchComponentGrowth implements Component {
         DECREASE;
     }
 
+    private enum Outcome {
+        /** Code for successful calculation. */
+        SUCCESS,
+
+        /** Code for unsuccessful calculation. */
+        FAILURE;
+    }
+
     /** Rate of migration. */
     private double migrationRate;
 
@@ -820,9 +828,8 @@ public class PatchComponentGrowth implements Component {
                         (SiteNode)
                                 graph.findDownstreamIntersection(
                                         (SiteEdge) outEdges.get(0), (SiteEdge) angioPath.get(0));
-                if (intersection != null) {
-                    recalculateRadii(angioPath, start, end, intersection);
-                } else {
+                Outcome result = recalculateRadii(angioPath, start, end, intersection);
+                if (result == Outcome.FAILURE) {
                     removeEdgeList(angioPath);
                 }
                 break;
@@ -901,11 +908,12 @@ public class PatchComponentGrowth implements Component {
 
             SiteEdge rootEdge = path.remove(0);
 
-            if (calculateArteryRootRadius(rootEdge, arteryFlow, Adjustment.INCREASE) == -1) {
+            if (calculateArteryRootRadius(rootEdge, arteryFlow, Adjustment.INCREASE)
+                    == Outcome.FAILURE) {
                 failed = true;
                 break;
             }
-            if (updateRadiiOfEdgeList(path, arteryFlow, Adjustment.INCREASE) == -1) {
+            if (updateRadiiOfEdgeList(path, arteryFlow, Adjustment.INCREASE) == Outcome.FAILURE) {
                 failed = true;
                 break;
             }
@@ -934,11 +942,12 @@ public class PatchComponentGrowth implements Component {
             SiteEdge rootEdge = path.remove(path.size() - 1);
             oldRadii.add(rootEdge.radius);
             updatedEdges.add(rootEdge);
-            if (calculateArteryRootRadius(rootEdge, veinFlow, Adjustment.INCREASE) == -1) {
+            if (calculateArteryRootRadius(rootEdge, veinFlow, Adjustment.INCREASE)
+                    == Outcome.FAILURE) {
                 failed = true;
                 break;
             }
-            if (updateRadiiOfEdgeList(path, veinFlow, Adjustment.DECREASE) == -1) {
+            if (updateRadiiOfEdgeList(path, veinFlow, Adjustment.DECREASE) == Outcome.FAILURE) {
                 failed = true;
                 break;
             }
@@ -963,17 +972,17 @@ public class PatchComponentGrowth implements Component {
      * @param end ending {@link SiteNode}
      * @param intersection the intersecting node object from the edges out of start
      */
-    private void recalculateRadii(
+    private Outcome recalculateRadii(
             ArrayList<SiteEdge> ignoredEdges, SiteNode start, SiteNode end, SiteNode intersection) {
 
         updateGraph(graph);
         Bag edges = graph.getEdgesOut(start);
 
         if (edges == null) {
-            return;
+            return Outcome.FAILURE;
         }
         if (edges.size() < 2) {
-            return;
+            return Outcome.FAILURE;
         }
 
         Integer angioIndex = ignoredEdges.contains(edges.get(0)) ? 0 : 1;
@@ -982,17 +991,16 @@ public class PatchComponentGrowth implements Component {
         Double divertedFlow = calculateLocalFlow(CAPILLARY_RADIUS, ignoredEdges, deltaP);
         Double originalFlow = ((SiteEdge) edges.get(nonAngioIndex)).flow;
         if (divertedFlow > originalFlow) {
-            return;
+            return Outcome.FAILURE;
         }
         if (intersection != null) {
             if (intersection.isRoot) {
-                updateRadiusToRoot(
+                return updateRadiusToRoot(
                         (SiteEdge) edges.get(angioIndex),
                         sites.graphFactory.veins.get(0).node,
                         divertedFlow,
                         Adjustment.INCREASE,
                         ignoredEdges);
-                return;
             }
 
             if (updateRadius(
@@ -1001,8 +1009,8 @@ public class PatchComponentGrowth implements Component {
                             divertedFlow,
                             Adjustment.DECREASE,
                             ignoredEdges)
-                    == -1) {
-                return;
+                    == Outcome.FAILURE) {
+                return Outcome.FAILURE;
             }
 
             if (updateRadius(
@@ -1011,8 +1019,8 @@ public class PatchComponentGrowth implements Component {
                             divertedFlow,
                             Adjustment.INCREASE,
                             ignoredEdges)
-                    == -1) {
-                return;
+                    == Outcome.FAILURE) {
+                return Outcome.FAILURE;
             }
 
         } else {
@@ -1021,16 +1029,16 @@ public class PatchComponentGrowth implements Component {
                 path(graph, start, boundary);
                 if (boundary.prev != null
                         && ((SiteEdge) edges.get(angioIndex)).radius > MINIMUM_CAPILLARY_RADIUS) {
-                    updateRadiusToRoot(
+                    return updateRadiusToRoot(
                             (SiteEdge) edges.get(angioIndex),
                             sites.graphFactory.veins.get(0).node,
                             divertedFlow,
                             Adjustment.INCREASE,
                             ignoredEdges);
                 }
-                break;
             }
         }
+        return Outcome.FAILURE;
     }
 
     /**
@@ -1041,9 +1049,9 @@ public class PatchComponentGrowth implements Component {
      * @param flow flow adjustment through the edge
      * @param adjustment code for flow change
      * @param ignored list of {@link SiteEdge} to not update
-     * @return -1 for unsuccessful calculation, 0 for successful calculation
+     * @return Outcome.FAILURE for unsuccessful calculation, 0 for successful calculation
      */
-    private int updateRadius(
+    private Outcome updateRadius(
             SiteEdge edge,
             SiteNode intersection,
             double flow,
@@ -1056,14 +1064,14 @@ public class PatchComponentGrowth implements Component {
     }
 
     /**
-     * Private helper function for updating the radii of an edge list.
+     * Private helper function for updating the radii of an edge list without ignoring edges.
      *
      * @param edges list of edges to update
      * @param flow new flow
      * @param adjustment code for flow change
-     * @return -1 for unsuccessful calculation, 0 for successful calculation
+     * @return Outcome.FAILURE for unsuccessful calculation, 0 for successful calculation
      */
-    private int updateRadiiOfEdgeList(
+    private Outcome updateRadiiOfEdgeList(
             ArrayList<SiteEdge> edges, double flow, Adjustment adjustment) {
         return updateRadiiOfEdgeList(edges, flow, adjustment, new ArrayList<>());
     }
@@ -1075,9 +1083,9 @@ public class PatchComponentGrowth implements Component {
      * @param flow new flow
      * @param adjustment code for flow change
      * @param ignored list of {@link SiteEdge} to not update
-     * @return -1 for unsuccessful calculation, 0 for successful calculation
+     * @return Outcome.FAILURE for unsuccessful calculation, 0 for successful calculation
      */
-    private int updateRadiiOfEdgeList(
+    private Outcome updateRadiiOfEdgeList(
             ArrayList<SiteEdge> edges,
             double flow,
             Adjustment adjustment,
@@ -1088,23 +1096,23 @@ public class PatchComponentGrowth implements Component {
             if (ignored.contains(e)) {
                 continue;
             }
-            if (calculateRadius(e, flow, adjustment) == -1) {
+            if (calculateRadius(e, flow, adjustment) == Outcome.FAILURE) {
                 resetRadii(edges, oldRadii);
-                return -1;
+                return Outcome.FAILURE;
             }
         }
-        return 0;
+        return Outcome.SUCCESS;
     }
 
     /**
-     * Private helper function for calculating the radius of an edge.
+     * Private helper function for calculating the radius of an edge based on a change in flow.
      *
      * @param edge edge to update
      * @param flow new flow
      * @param adjustment code for flow change
-     * @return 0 for successful update, -1 for failure
+     * @return Outcome.SUCCESS for successful update, Outcome.FAILURE for failure
      */
-    private int calculateRadius(SiteEdge edge, double flow, Adjustment adjustment) {
+    private Outcome calculateRadius(SiteEdge edge, double flow, Adjustment adjustment) {
         double updatedFlow = (adjustment == Adjustment.DECREASE) ? -1 * flow : flow;
         double originalRadius = edge.radius;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
@@ -1116,21 +1124,21 @@ public class PatchComponentGrowth implements Component {
         newRadius = Solver.bisection(f, 1E-6, 5 * MAXIMUM_CAPILLARY_RADIUS, 1E-6);
 
         if (newRadius == 1E-6) {
-            return -1;
+            return Outcome.FAILURE;
         }
         edge.radius = newRadius;
-        return 0;
+        return Outcome.SUCCESS;
     }
 
     /**
-     * Private helper function for calculating the radius of an edge.
+     * Private helper function for calculating the radius of an edge associated with a vein root.
      *
      * @param edge {@link SiteEdge} object.
      * @param flow new flow
      * @param adjustment code for flow change
-     * @return -1 for unsuccessful calculation, 0 for successful calculation
+     * @return Outcome.SUCCESS for successful update, Outcome.FAILURE for failure
      */
-    private int calculateVeinRootRadius(SiteEdge edge, double flow, Adjustment adjustment) {
+    private Outcome calculateVeinRootRadius(SiteEdge edge, double flow, Adjustment adjustment) {
         double updatedFlow = (adjustment == Adjustment.DECREASE) ? -1 * flow : flow;
         double originalRadius = edge.radius;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
@@ -1149,23 +1157,23 @@ public class PatchComponentGrowth implements Component {
         double newRadius = Solver.bisection(f, .5 * originalRadius, 1.5 * originalRadius);
 
         if (newRadius == .5 * originalRadius || newRadius == Double.NaN) {
-            return -1;
+            return Outcome.FAILURE;
         }
 
         edge.radius = newRadius;
         edge.getTo().pressure = calculatePressure(newRadius, edge.type.category);
-        return 0;
+        return Outcome.SUCCESS;
     }
 
     /**
-     * Private helper function for calculating the radius of an edge.
+     * Private helper function for calculating the radius of an edge when updating the source root.
      *
      * @param edge {@link SiteEdge} object.
      * @param flow new flow
      * @param adjustment code for flow change
-     * @return -1 for unsuccessful calculation, 0 for successful calculation
+     * @return Outcome.SUCCESS for successful update, Outcome.FAILURE for failure
      */
-    private int calculateArteryRootRadius(SiteEdge edge, double flow, Adjustment adjustment) {
+    private Outcome calculateArteryRootRadius(SiteEdge edge, double flow, Adjustment adjustment) {
         double updatedFlow = (adjustment == Adjustment.DECREASE) ? -1 * flow : flow;
         double originalRadius = edge.radius;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
@@ -1185,24 +1193,25 @@ public class PatchComponentGrowth implements Component {
         if (newRadius == .5 * originalRadius
                 || newRadius == Double.NaN
                 || newRadius == 1.5 * originalRadius) {
-            return -1;
+            return Outcome.FAILURE;
         }
 
         edge.radius = newRadius;
         edge.getFrom().pressure = calculatePressure(newRadius, edge.type.category);
-        return 0;
+        return Outcome.SUCCESS;
     }
 
     /**
-     * Private helper function for updating the radius of an edge.
+     * Private helper function for updating the radius of an edge to the sink root node.
      *
      * @param edge edge to update
      * @param intersection downstream {@link SiteNode} intersection
      * @param flow new flow
      * @param adjustment code for flow change
      * @param ignored list of {@link SiteEdge} to not update
+     * @return Outcome.SUCCESS for successful update, Outcome.FAILURE for failure
      */
-    private void updateRadiusToRoot(
+    private Outcome updateRadiusToRoot(
             SiteEdge edge,
             SiteNode intersection,
             double flow,
@@ -1222,19 +1231,20 @@ public class PatchComponentGrowth implements Component {
                     continue;
                 }
                 if (e.getTo().isRoot) {
-                    if (calculateVeinRootRadius(e, flow, adjustment) == -1) {
+                    if (calculateVeinRootRadius(e, flow, adjustment) == Outcome.FAILURE) {
                         resetRadii(path, oldRadii);
-                        return;
+                        return Outcome.FAILURE;
                     }
                 } else {
-                    if (calculateRadius(e, flow, adjustment) == -1) {
+                    if (calculateRadius(e, flow, adjustment) == Outcome.FAILURE) {
                         resetRadii(path, oldRadii);
-                        return;
+                        return Outcome.FAILURE;
                     }
                 }
             }
             break;
         }
+        return Outcome.SUCCESS;
     }
 
     /**
