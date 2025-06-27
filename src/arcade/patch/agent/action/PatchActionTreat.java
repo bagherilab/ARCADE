@@ -117,14 +117,10 @@ public class PatchActionTreat implements Action {
      * @param simstate the MASON simulation state
      */
     public void step(SimState simstate) {
-
         PatchSimulation sim = (PatchSimulation) simstate;
         String type = "null";
         PatchGrid grid = (PatchGrid) sim.getGrid();
         PatchComponentSites comp = (PatchComponentSites) sim.getComponent("SITES");
-
-        ArrayList<LocationContainer> locs = sim.getLocations();
-        ArrayList<Location> siteLocs = new ArrayList<Location>();
 
         // Determine type of sites component implemented.
         if (comp instanceof PatchComponentSitesSource) {
@@ -135,7 +131,49 @@ public class PatchActionTreat implements Action {
             type = "graph";
         }
 
-        // Find sites without specified level of damage based on component type.
+        Set<String> immuneCells =
+                Arrays.stream(Immune.values()).map(Enum::name).collect(Collectors.toSet());
+
+        for (MiniBox population : populations) {
+            String className = population.get("CLASS").toUpperCase();
+
+            if (!immuneCells.contains(className)) {
+                throw new IllegalArgumentException(
+                        "Population "
+                                + population.get("CLASS")
+                                + " is not an immune cell and cannot be treated.");
+            }
+
+            int pop = population.getInt("CODE");
+
+            ArrayList<LocationContainer> locs = sim.getLocations();
+            ArrayList<Location> siteLocs = new ArrayList<Location>();
+
+            // Find sites without specified level of damage based on component type.
+            findLocations(comp, type, locs, siteLocs, sim);
+            Utilities.shuffleList(siteLocs, sim.random);
+            // sort locations in descending order from highest to lowest density
+            siteLocs.sort(Comparator.comparingInt(l -> -computeDensity(grid, l)));
+            insert(siteLocs, simstate, pop);
+        }
+    }
+
+    /**
+     * Helper method to find possible locations to insert t cells.
+     *
+     * @param comp the component
+     * @param type the type of component (source, pattern, or graph)
+     * @param locs the locations to check
+     * @param siteLocs the locations that meet the criteria
+     * @param sim the simulation instance
+     * @throws IllegalArgumentException if the component type is invalid
+     */
+    private void findLocations(
+            PatchComponentSites comp,
+            String type,
+            ArrayList<LocationContainer> locs,
+            ArrayList<Location> siteLocs,
+            PatchSimulation sim) {
         if (type.equals("graph")) {
             findGraphSites(comp, locs, siteLocs);
         } else if (type.equals("source") || type.equals("pattern")) {
@@ -156,11 +194,6 @@ public class PatchActionTreat implements Action {
                             + type
                             + ". Must be of type source, pattern, or graph.");
         }
-
-        Utilities.shuffleList(siteLocs, sim.random);
-        // sort locations in descending order from highest to lowest density
-        siteLocs.sort(Comparator.comparingInt(l -> -computeDensity(grid, l)));
-        insert(siteLocs, simstate);
     }
 
     /**
@@ -258,52 +291,34 @@ public class PatchActionTreat implements Action {
      * @param coordinates the locations to insert the cells
      * @param simstate the simulation state
      */
-    private void insert(ArrayList<Location> coordinates, SimState simstate) {
+    private void insert(ArrayList<Location> coordinates, SimState simstate, int pop) {
         PatchSimulation sim = (PatchSimulation) simstate;
         PatchGrid grid = (PatchGrid) sim.getGrid();
         Utilities.shuffleList(coordinates, sim.random);
 
-        Set<String> immuneCells =
-                Arrays.stream(Immune.values()).map(Enum::name).collect(Collectors.toSet());
+        for (int i = 0; i < dose; i++) {
+            int id = sim.getID();
 
-        for (MiniBox population : populations) {
-            String className = population.get("CLASS").toUpperCase();
+            PatchLocation loc = ((PatchLocation) coordinates.remove(0));
 
-            if (!immuneCells.contains(className)) {
-                throw new IllegalArgumentException(
-                        "Population "
-                                + population.get("CLASS")
-                                + " is not an immune cell and cannot be treated.");
+            while (!coordinates.isEmpty() && !checkLocationSpace(loc, grid)) {
+                loc = ((PatchLocation) coordinates.remove(0));
             }
 
-            int pop = population.getInt("CODE");
-
-            for (int i = 0; i < dose; i++) {
-                int id = sim.getID();
-
-                PatchLocation loc = ((PatchLocation) coordinates.remove(0));
-
-                while (!coordinates.isEmpty() && !checkLocationSpace(loc, grid)) {
-                    loc = ((PatchLocation) coordinates.remove(0));
-                }
-
-                if (coordinates.isEmpty()) {
-                    break;
-                }
-
-                loc = (PatchLocation) coordinates.remove(0);
-                Coordinate coordinate = loc.getCoordinate();
-                PatchLocationContainer locationContainer =
-                        new PatchLocationContainer(id, coordinate);
-                PatchCellContainer cellContainer = sim.cellFactory.createCellForPopulation(id, pop);
-
-                Location location = locationContainer.convert(sim.locationFactory, cellContainer);
-                PatchCell cell =
-                        (PatchCell) cellContainer.convert(sim.cellFactory, location, sim.random);
-
-                grid.addObject(cell, location);
-                cell.schedule(sim.getSchedule());
+            if (coordinates.isEmpty()) {
+                break;
             }
+
+            Coordinate coordinate = loc.getCoordinate();
+            PatchLocationContainer locationContainer = new PatchLocationContainer(id, coordinate);
+            PatchCellContainer cellContainer = sim.cellFactory.createCellForPopulation(id, pop);
+
+            Location location = locationContainer.convert(sim.locationFactory, cellContainer);
+            PatchCell cell =
+                    (PatchCell) cellContainer.convert(sim.cellFactory, location, sim.random);
+
+            grid.addObject(cell, location);
+            cell.schedule(sim.getSchedule());
         }
     }
 
