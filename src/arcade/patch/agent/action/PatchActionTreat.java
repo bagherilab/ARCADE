@@ -86,17 +86,10 @@ public class PatchActionTreat implements Action {
         this.minDamageRadius = parameters.getDouble("MIN_RADIUS_SEED");
         this.maxConfluency = parameters.getInt("MAX_DENSITY");
         this.parameters = parameters;
-
         this.coord =
                 ((PatchSeries) series).patch.get("GEOMETRY").equalsIgnoreCase("HEX")
                         ? "Hex"
                         : "Rect";
-        if (coord.equals("Hex")) {
-            latPositions = 9;
-        }
-        if (coord.equals("Rect")) {
-            latPositions = 16;
-        }
 
         populations = new ArrayList<>();
     }
@@ -121,6 +114,10 @@ public class PatchActionTreat implements Action {
         String type = "null";
         PatchGrid grid = (PatchGrid) sim.getGrid();
         PatchComponentSites comp = (PatchComponentSites) sim.getComponent("SITES");
+
+        // Get a sample location to determine the number of subpositions
+        PatchLocation sampleLoc = (PatchLocation) sim.getAllLocations().iterator().next();
+        latPositions = (int) (-3.5 * sampleLoc.getSubcoordinates().size() + 30);
 
         // Determine type of sites component implemented.
         if (comp instanceof PatchComponentSitesSource) {
