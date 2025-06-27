@@ -1,8 +1,10 @@
 package arcade.patch.env.component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.logging.Logger;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.Graph;
@@ -19,6 +21,9 @@ import static arcade.patch.env.component.PatchComponentSitesGraphFactory.Root;
 
 /** Container for utility functions used by {@link PatchComponentSitesGraph}. */
 abstract class PatchComponentSitesGraphUtilities {
+    private static final Logger LOGGER =
+            Logger.getLogger(PatchComponentSitesGraphUtilities.class.getName());
+
     /** Calculation types. */
     enum CalculationType {
         /** Code for upstream radius calculation for all edge types. */
@@ -155,8 +160,19 @@ abstract class PatchComponentSitesGraphUtilities {
      * @return the flow rate coefficient
      */
     private static double getCoefficient(SiteEdge edge) {
-        double mu = PLASMA_VISCOSITY * calculateViscosity(edge.radius) / 60;
-        return (Math.PI * Math.pow(edge.radius, 4)) / (8 * mu * edge.length);
+        return getCoefficient(edge.radius, edge.length);
+    }
+
+    /**
+     * Gets flow rate coefficient in units of um<sup>3</sup>/(mmHg min).
+     *
+     * @param radius the edge radius
+     * @param length the edge length
+     * @return the flow rate coefficient
+     */
+    private static double getCoefficient(double radius, double length) {
+        double mu = PLASMA_VISCOSITY * calculateViscosity(radius) / 60;
+        return (Math.PI * Math.pow(radius, 4)) / (8 * mu * length);
     }
 
     /**
@@ -527,6 +543,36 @@ abstract class PatchComponentSitesGraphUtilities {
     }
 
     /**
+     * Calculate the the flow rate for a given set of edges without any branches.
+     *
+     * @param radius the radius of the edges
+     * @param edges the list of edges
+     * @param deltaP the pressure change
+     * @return the flow rate (in um<sup>3</sup>/min)
+     */
+    static double calculateLocalFlow(double radius, ArrayList<SiteEdge> edges, double deltaP) {
+        double length = 0;
+
+        for (SiteEdge edge : edges) {
+            length += edge.length;
+        }
+
+        return getCoefficient(radius, length) * (deltaP);
+    }
+
+    /**
+     * Calculate the the flow rate for a given edge without any branches.
+     *
+     * @param radius the radius of the edge
+     * @param length the length of the edge
+     * @param deltaP the pressure change
+     * @return the flow rate (in um<sup>3</sup>/min)
+     */
+    static double calculateLocalFlow(double radius, double length, double deltaP) {
+        return getCoefficient(radius, length) * deltaP;
+    }
+
+    /**
      * Calculates flow rate (in um<sup>3</sup>/min) and area (in um<sup>2</sup>) for all edges.
      *
      * @param graph the graph object
@@ -559,9 +605,19 @@ abstract class PatchComponentSitesGraphUtilities {
     static void calculateThicknesses(Graph graph) {
         for (Object obj : graph.getAllEdges()) {
             SiteEdge edge = (SiteEdge) obj;
-            double d = 2 * edge.radius;
-            edge.wall = d * (0.267 - 0.084 * Math.log10(d));
+            edge.wall = calculateThickness(edge);
         }
+    }
+
+    /**
+     * Calculates the thickness of an edge.
+     *
+     * @param edge the edge object
+     * @return the thickness of the edge
+     */
+    static double calculateThickness(SiteEdge edge) {
+        double d = 2 * edge.radius;
+        return d * (0.267 - 0.084 * Math.log10(d));
     }
 
     /**
@@ -892,7 +948,7 @@ abstract class PatchComponentSitesGraphUtilities {
             settled.add(evalNode);
 
             // If end node found, exit from loop.
-            if (evalNode == end) {
+            if (evalNode.equals(end)) {
                 break;
             }
 
@@ -921,6 +977,49 @@ abstract class PatchComponentSitesGraphUtilities {
                 }
             }
         }
+    }
+
+    /**
+     * Get the path between two nodes in the graph.
+     *
+     * @param graph the graph object
+     * @param start the start node
+     * @param end the end node
+     * @return the list of edges in the path
+     */
+    static ArrayList<SiteEdge> getPath(Graph graph, SiteNode start, SiteNode end) {
+        path(graph, start, end);
+        ArrayList<SiteEdge> path = new ArrayList<>();
+        SiteNode node = (SiteNode) graph.lookup(end);
+        while (node != null && !node.equals(start)) {
+            Bag b = graph.getEdgesIn(node);
+            if (b.numObjs == 1) {
+                path.add((SiteEdge) b.objs[0]);
+            } else if (b.numObjs == 2) {
+                SiteEdge edgeA = ((SiteEdge) b.objs[0]);
+                SiteEdge edgeB = ((SiteEdge) b.objs[1]);
+                if (edgeA.getFrom().equals(node.prev)) {
+                    path.add(edgeA);
+                } else {
+                    path.add(edgeB);
+                }
+            }
+
+            if (node.prev == null) {
+                LOGGER.info("START: " + start + " END: " + end);
+                LOGGER.info("PREV IS NULL" + node);
+            }
+
+            node = node.prev;
+        }
+
+        if (node == null) {
+            LOGGER.info("Path in getPath is: " + path);
+            return null;
+        }
+
+        Collections.reverse(path);
+        return path;
     }
 
     /**
