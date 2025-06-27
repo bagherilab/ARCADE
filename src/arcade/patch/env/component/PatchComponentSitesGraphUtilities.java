@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.logging.Logger;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.Graph;
@@ -20,6 +21,9 @@ import static arcade.patch.env.component.PatchComponentSitesGraphFactory.Root;
 
 /** Container for utility functions used by {@link PatchComponentSitesGraph}. */
 abstract class PatchComponentSitesGraphUtilities {
+    private static final Logger LOGGER =
+            Logger.getLogger(PatchComponentSitesGraphUtilities.class.getName());
+
     /** Calculation types. */
     enum CalculationType {
         /** Code for upstream radius calculation for all edge types. */
@@ -944,7 +948,7 @@ abstract class PatchComponentSitesGraphUtilities {
             settled.add(evalNode);
 
             // If end node found, exit from loop.
-            if (evalNode == end) {
+            if (evalNode.equals(end)) {
                 break;
             }
 
@@ -986,25 +990,34 @@ abstract class PatchComponentSitesGraphUtilities {
     static ArrayList<SiteEdge> getPath(Graph graph, SiteNode start, SiteNode end) {
         path(graph, start, end);
         ArrayList<SiteEdge> path = new ArrayList<>();
-        SiteNode node = end;
-        while (node != null && node != start) {
+        SiteNode node = (SiteNode) graph.lookup(end);
+        while (node != null && !node.equals(start)) {
             Bag b = graph.getEdgesIn(node);
             if (b.numObjs == 1) {
                 path.add((SiteEdge) b.objs[0]);
             } else if (b.numObjs == 2) {
                 SiteEdge edgeA = ((SiteEdge) b.objs[0]);
                 SiteEdge edgeB = ((SiteEdge) b.objs[1]);
-                if (edgeA.getFrom() == node.prev) {
+                if (edgeA.getFrom().equals(node.prev)) {
                     path.add(edgeA);
                 } else {
                     path.add(edgeB);
                 }
             }
+
+            if (node.prev == null) {
+                LOGGER.info("START: " + start + " END: " + end);
+                LOGGER.info("PREV IS NULL" + node);
+            }
+
             node = node.prev;
         }
-        if (node != start) {
+
+        if (node == null) {
+            LOGGER.info("Path in getPath is: " + path);
             return null;
         }
+
         Collections.reverse(path);
         return path;
     }

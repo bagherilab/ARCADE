@@ -430,7 +430,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         }
 
         @Override
-        public Node duplicate() {
+        public SiteNode duplicate() {
             return new SiteNode(x, y, z);
         }
 

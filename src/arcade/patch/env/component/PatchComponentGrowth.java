@@ -64,7 +64,7 @@ public class PatchComponentGrowth implements Component {
     private static final Logger LOGGER = Logger.getLogger(PatchComponentGrowth.class.getName());
 
     /** Default edge level to add to the graph from this component. */
-    private static final EdgeLevel DEFAULT_EDGE_LEVEL = EdgeLevel.LEVEL_1;
+    private static final EdgeLevel DEFAULT_EDGE_LEVEL = EdgeLevel.LEVEL_2;
 
     /** Default edge type to add to the graph from this component. */
     private static final EdgeType DEFAULT_EDGE_TYPE = EdgeType.ANGIOGENIC;
@@ -144,7 +144,7 @@ public class PatchComponentGrowth implements Component {
     private HashMap<SiteNode, ArrayList<SiteEdge>> angiogenicNodeMap = new HashMap<>();
 
     /** List of temporary edges to be added to the graph this step. */
-    private ArrayList<SiteEdge> tempEdges;
+    private ArrayList<SiteEdge> tempEdges = new ArrayList<>();
 
     /** Number of offsets to be used in the migration. */
     private int numOffsets;
@@ -159,7 +159,7 @@ public class PatchComponentGrowth implements Component {
     private int tick;
 
     /** List of nodes to be removed from the angiogenic node map this time step. */
-    private ArrayList<SiteNode> nodesToRemove;
+    private ArrayList<SiteNode> nodesToRemove = new ArrayList<>();
 
     /**
      * Creates a growth component for a {@link PatchComponentSitesGraph}.
@@ -234,6 +234,13 @@ public class PatchComponentGrowth implements Component {
             SiteNode from = edge.getFrom();
             SiteNode to = edge.getTo();
 
+            if (from.pressure == Double.NaN) {
+                LOGGER.info("Uh Oh. Pressure is NaN. @ " + from);
+            }
+            if (to.pressure == Double.NaN) {
+                LOGGER.info("Uh Oh. Pressure is NaN. @ " + to);
+            }
+
             if ((graph.getDegree(from) < 3)
                     && !from.isRoot
                     && !(graph.getInDegree(from) == 0 && graph.getOutDegree(from) == 1)) {
@@ -277,6 +284,7 @@ public class PatchComponentGrowth implements Component {
     @Override
     public void step(SimState simstate) {
         tick = (int) simstate.schedule.getTime();
+
         MersenneTwisterFast random = simstate.random;
 
         LinkedHashSet<SiteNode> validNodes = getValidNodes();
@@ -361,6 +369,11 @@ public class PatchComponentGrowth implements Component {
                         nodesToRemove.add(sproutNode);
                         nodesToRemove.add(targetNode);
                     } else {
+                        if (finalNode.sproutDir != null
+                                || finalNode.anastomosis
+                                || finalNode.isRoot) {
+                            continue;
+                        }
                         // Connecting sprout to existing node
                         if (sproutNode.pressure == 0) {
                             if (graph.getEdgesOut(sproutNode) != null) {
@@ -418,36 +431,35 @@ public class PatchComponentGrowth implements Component {
         boolean addFlag = false;
         addTemporaryEdges();
 
-        for (Map.Entry<SiteNode, ArrayList<SiteEdge>> entry : angiogenicNodeMap.entrySet()) {
-            // Grab node in each list and add edge, check for perfusion
-            SiteNode keyNode = entry.getKey();
-
-            if (checkForIgnoredEdges(keyNode)) {
-                nodesToRemove.add(keyNode);
+        for (SiteNode sprout : angiogenicNodeMap.keySet()) {
+            if (checkForIgnoredEdges(sprout)) {
+                nodesToRemove.add(sprout);
                 continue;
             }
 
-            ArrayList<SiteEdge> edgeList = entry.getValue();
+            ArrayList<SiteEdge> edgeList = angiogenicNodeMap.get(sprout);
             SiteNode tipNode;
             SiteEdge newEdge;
+
             if (edgeList.size() > 0) {
                 tipNode = edgeList.get(edgeList.size() - 1).getTo();
             } else {
-                tipNode = keyNode;
+                tipNode = sprout;
             }
 
             if (tick - tipNode.lastUpdate < migrationRate) {
                 continue;
             }
 
-            newEdge = createNewEdge(keyNode.sproutDir, tipNode);
+            newEdge = createNewEdge(sprout.sproutDir, tipNode);
 
-            if (edgeList.size() > maxEdges || newEdge == null || graph.getDegree(keyNode) > 3) {
-                nodesToRemove.add(keyNode);
+            if (edgeList.size() == maxEdges || newEdge == null || graph.getDegree(sprout) > 3) {
+                nodesToRemove.add(sprout);
+                continue;
             } else {
                 edgeList.add(newEdge);
                 if (newEdge.isAnastomotic) {
-                    keyNode.anastomosis = true;
+                    sprout.anastomosis = true;
                     addFlag = true;
                 }
             }
@@ -522,10 +534,10 @@ public class PatchComponentGrowth implements Component {
      */
     private SiteNode findKeyNodeInMap(SiteNode targetNode, SiteNode skipNode) {
         for (SiteNode keyNode : angiogenicNodeMap.keySet()) {
-            if (keyNode == skipNode) {
+            if (keyNode.equals(skipNode)) {
                 continue;
             }
-            if (keyNode == targetNode) {
+            if (keyNode.equals(targetNode)) {
                 return keyNode;
             }
             if (edgeListcontains(angiogenicNodeMap.get(keyNode), targetNode)) {
@@ -544,7 +556,7 @@ public class PatchComponentGrowth implements Component {
      */
     private boolean edgeListcontains(ArrayList<SiteEdge> edgeList, SiteNode targetNode) {
         for (SiteEdge edge : edgeList) {
-            if (edge.getTo() == targetNode) {
+            if (edge.getTo().equals(targetNode)) {
                 return true;
             }
         }
@@ -556,7 +568,6 @@ public class PatchComponentGrowth implements Component {
      * angiogenic node map.
      */
     private void addTemporaryEdges() {
-        tempEdges = new ArrayList<>();
         for (Map.Entry<SiteNode, ArrayList<SiteEdge>> entry : angiogenicNodeMap.entrySet()) {
             ArrayList<SiteEdge> edgeList = entry.getValue();
             tempEdges.addAll(edgeList);
@@ -783,6 +794,13 @@ public class PatchComponentGrowth implements Component {
      */
     private void addAngioEdges(
             ArrayList<SiteEdge> list, SiteNode start, SiteNode end, Calculation calc) {
+
+        LOGGER.info("ADDING ANGIOGENIC EDGES.");
+        LOGGER.info("TRYING TO ADD: " + start.id + " -> " + end.id);
+        LOGGER.info("LIST: " + list);
+        if (list.size() > 1) {
+            LOGGER.info("LIST SIZE: " + list.size());
+        }
         // check for cycle
         path(graph, end, start);
         if (end.prev != null) {
@@ -804,12 +822,24 @@ public class PatchComponentGrowth implements Component {
 
         // update edges in the minimal path between start and end
         ArrayList<SiteEdge> angioPath = getPath(tempGraph, start, end);
+
+        if (angioPath == null) {
+            LOGGER.info("START: " + start);
+            LOGGER.info("END: " + end);
+            LOGGER.info("The list is: " + list);
+            LOGGER.info("angioPath is null.");
+            return;
+        }
+
         for (SiteEdge edge : angioPath) {
             edge.getTo().addTime = tick;
             edge.radius =
                     (otherRadius > CAPILLARY_RADIUS)
                             ? CAPILLARY_RADIUS
                             : calculateEvenSplitRadius((SiteEdge) outEdges.get(0));
+            if (Double.isNaN(edge.radius)) {
+                return;
+            }
             edge.wall = calculateThickness(edge);
             edge.span = sites.getSpan(edge.getFrom(), edge.getTo());
             edge.length = sites.graphFactory.getLength(edge, DEFAULT_EDGE_LEVEL);
@@ -832,6 +862,7 @@ public class PatchComponentGrowth implements Component {
                 if (result == Outcome.FAILURE) {
                     removeEdgeList(angioPath);
                 }
+                LOGGER.info("Added " + angioPath.size() + " edges.");
                 break;
         }
     }
@@ -848,12 +879,17 @@ public class PatchComponentGrowth implements Component {
         double length = edge.length;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
         double flow = calculateLocalFlow(radius, length, deltaP);
-        double newRadius =
-                Solver.bisection(
-                        (double r) -> flow - 2 * calculateLocalFlow(r, length, deltaP),
-                        1E-6,
-                        5 * MAXIMUM_CAPILLARY_RADIUS,
-                        1E-6);
+        double newRadius;
+        try {
+            newRadius =
+                    Solver.bisection(
+                            (double r) -> flow - 2 * calculateLocalFlow(r, length, deltaP),
+                            1E-6,
+                            5 * MAXIMUM_CAPILLARY_RADIUS,
+                            1E-6);
+        } catch (Exception e) {
+            return Double.NaN;
+        }
         return newRadius;
     }
 
@@ -995,12 +1031,13 @@ public class PatchComponentGrowth implements Component {
         }
         if (intersection != null) {
             if (intersection.isRoot) {
-                return updateRadiusToRoot(
-                        (SiteEdge) edges.get(angioIndex),
-                        sites.graphFactory.veins.get(0).node,
-                        divertedFlow,
-                        Adjustment.INCREASE,
-                        ignoredEdges);
+                // return updateRadiusToRoot(
+                //         (SiteEdge) edges.get(angioIndex),
+                //         sites.graphFactory.veins.get(0).node,
+                //         divertedFlow,
+                //         Adjustment.INCREASE,
+                //         ignoredEdges);
+                return Outcome.FAILURE;
             }
 
             if (updateRadius(
@@ -1029,12 +1066,13 @@ public class PatchComponentGrowth implements Component {
                 path(graph, start, boundary);
                 if (boundary.prev != null
                         && ((SiteEdge) edges.get(angioIndex)).radius > MINIMUM_CAPILLARY_RADIUS) {
-                    return updateRadiusToRoot(
-                            (SiteEdge) edges.get(angioIndex),
-                            sites.graphFactory.veins.get(0).node,
-                            divertedFlow,
-                            Adjustment.INCREASE,
-                            ignoredEdges);
+                    return Outcome.FAILURE;
+                    // return updateRadiusToRoot(
+                    //         (SiteEdge) edges.get(angioIndex),
+                    //         sites.graphFactory.veins.get(0).node,
+                    //         divertedFlow,
+                    //         Adjustment.INCREASE,
+                    //         ignoredEdges);
                 }
             }
         }
@@ -1058,6 +1096,12 @@ public class PatchComponentGrowth implements Component {
             Adjustment adjustment,
             ArrayList<SiteEdge> ignored) {
         ArrayList<SiteEdge> edgesToUpdate = getPath(graph, edge.getTo(), intersection);
+
+        if (edgesToUpdate == null) {
+            LOGGER.info("No path found from " + edge.getTo() + " to " + intersection);
+            return Outcome.FAILURE;
+        }
+
         edgesToUpdate.add(0, edge);
 
         return updateRadiiOfEdgeList(edgesToUpdate, flow, adjustment, ignored);
@@ -1113,6 +1157,7 @@ public class PatchComponentGrowth implements Component {
      * @return Outcome.SUCCESS for successful update, Outcome.FAILURE for failure
      */
     private Outcome calculateRadius(SiteEdge edge, double flow, Adjustment adjustment) {
+        assert flow >= 0;
         double updatedFlow = (adjustment == Adjustment.DECREASE) ? -1 * flow : flow;
         double originalRadius = edge.radius;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
@@ -1121,7 +1166,12 @@ public class PatchComponentGrowth implements Component {
                 (double r) ->
                         originalFlow + updatedFlow - calculateLocalFlow(r, edge.length, deltaP);
         double newRadius;
-        newRadius = Solver.bisection(f, 1E-6, 5 * MAXIMUM_CAPILLARY_RADIUS, 1E-6);
+
+        try {
+            newRadius = Solver.bisection(f, 1E-6, 5 * MAXIMUM_CAPILLARY_RADIUS, 1E-6);
+        } catch (Exception e) {
+            return Outcome.FAILURE;
+        }
 
         if (newRadius == 1E-6) {
             return Outcome.FAILURE;
@@ -1139,6 +1189,8 @@ public class PatchComponentGrowth implements Component {
      * @return Outcome.SUCCESS for successful update, Outcome.FAILURE for failure
      */
     private Outcome calculateVeinRootRadius(SiteEdge edge, double flow, Adjustment adjustment) {
+        assert flow >= 0;
+
         double updatedFlow = (adjustment == Adjustment.DECREASE) ? -1 * flow : flow;
         double originalRadius = edge.radius;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
@@ -1154,7 +1206,12 @@ public class PatchComponentGrowth implements Component {
                                         edge.getFrom().pressure
                                                 - calculatePressure(r, edge.type.category));
 
-        double newRadius = Solver.bisection(f, .5 * originalRadius, 1.5 * originalRadius);
+        double newRadius;
+        try {
+            newRadius = Solver.bisection(f, .5 * originalRadius, 1.5 * originalRadius);
+        } catch (Exception e) {
+            return Outcome.FAILURE;
+        }
 
         if (newRadius == .5 * originalRadius || newRadius == Double.NaN) {
             return Outcome.FAILURE;
@@ -1174,6 +1231,8 @@ public class PatchComponentGrowth implements Component {
      * @return Outcome.SUCCESS for successful update, Outcome.FAILURE for failure
      */
     private Outcome calculateArteryRootRadius(SiteEdge edge, double flow, Adjustment adjustment) {
+        assert flow >= 0;
+        
         double updatedFlow = (adjustment == Adjustment.DECREASE) ? -1 * flow : flow;
         double originalRadius = edge.radius;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
@@ -1189,7 +1248,13 @@ public class PatchComponentGrowth implements Component {
                                         calculatePressure(r, edge.type.category)
                                                 - edge.getTo().pressure);
 
-        double newRadius = Solver.bisection(f, .5 * originalRadius, 1.5 * originalRadius);
+        double newRadius;
+        try {
+            newRadius = Solver.bisection(f, .5 * originalRadius, 1.5 * originalRadius);
+        } catch (Exception e) {
+            return Outcome.FAILURE;
+        }
+
         if (newRadius == .5 * originalRadius
                 || newRadius == Double.NaN
                 || newRadius == 1.5 * originalRadius) {
@@ -1217,6 +1282,9 @@ public class PatchComponentGrowth implements Component {
             double flow,
             Adjustment adjustment,
             ArrayList<SiteEdge> ignored) {
+
+        assert flow >= 0;
+
         ArrayList<Root> veins = sites.graphFactory.veins;
         ArrayList<Double> oldRadii = new ArrayList<>();
         for (Root vein : veins) {
@@ -1289,6 +1357,9 @@ public class PatchComponentGrowth implements Component {
                     return null;
                 }
                 SiteNode existing = (SiteNode) graph.lookup(proposed);
+
+                assert existing != null;
+
                 edge = new SiteEdge(node, existing, DEFAULT_EDGE_TYPE, DEFAULT_EDGE_LEVEL);
                 edge.isAnastomotic = true;
                 return edge;
