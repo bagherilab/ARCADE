@@ -122,7 +122,6 @@
     <!-- treat action parameters -->
     <action class="treat" id="TIME_DELAY" value="0" units="hour" description="time delay before calling the action" />
     <action class="treat" id="DOSE" value="0" description="number of CAR-T cells to add into the treatment" />
-    <action class="treat" id="RATIO" value="1" description="ratio of cd4 to cd8 cells in the dose" />
     <action class="treat" id="MAX_DAMAGE_SEED" value="1E7" description="maximum damage value at which T-cells can seed next to in source or pattern source" />
     <action class="treat" id="MIN_RADIUS_SEED" value="2.0" description="minimum radius value at which T-cells can seed next to in graph source" />
 
