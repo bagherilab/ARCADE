@@ -71,7 +71,7 @@ public class PatchActionTreat implements Action {
     MiniBox parameters;
 
     /** Maximum confluency of cells in any location. */
-    final int maxConfluency;
+    int maxConfluency;
 
     /**
      * Creates an {@code Action} to add agents after a delay.
@@ -84,7 +84,6 @@ public class PatchActionTreat implements Action {
         this.dose = parameters.getInt("DOSE");
         this.maxDamage = parameters.getDouble("MAX_DAMAGE_SEED");
         this.minDamageRadius = parameters.getDouble("MIN_RADIUS_SEED");
-        this.maxConfluency = parameters.getInt("MAX_DENSITY");
         this.parameters = parameters;
         this.coord =
                 ((PatchSeries) series).patch.get("GEOMETRY").equalsIgnoreCase("HEX")
@@ -133,6 +132,7 @@ public class PatchActionTreat implements Action {
 
         for (MiniBox population : populations) {
             String className = population.get("CLASS").toUpperCase();
+            maxConfluency = population.getInt("MAX_DENSITY");
 
             if (!immuneCells.contains(className)) {
                 throw new IllegalArgumentException(
