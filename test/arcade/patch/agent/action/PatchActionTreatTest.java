@@ -215,12 +215,13 @@ public class PatchActionTreatTest {
     @Test
     public void checkLocationSpace_withEmptySpaces_addsObject() {
         when(parameters.getDouble("T_CELL_VOL_AVG")).thenReturn(175.0);
-        when(parameters.getInt("MAX_DENSITY")).thenReturn(54);
 
         ArrayList<MiniBox> populations = new ArrayList<>();
         MiniBox populationMock = mock(MiniBox.class);
         when(populationMock.getInt("CODE")).thenReturn(4);
         when(populationMock.get("CLASS")).thenReturn("cart_cd4");
+        when(populationMock.getInt("MAX_DENSITY")).thenReturn(54);
+        when(populationMock.getDouble("T_CELL_VOL_AVG")).thenReturn(175.0);
         populations.add(populationMock);
         when(locationMock.getArea()).thenReturn(3.0 / 2.0 / Math.sqrt(3.0) * 30 * 30);
         when(locationMock.getVolume()).thenReturn(3.0 / 2.0 / Math.sqrt(3.0) * 30 * 30 * 8.7);
@@ -238,12 +239,12 @@ public class PatchActionTreatTest {
     @Test
     public void checkLocation_maxConfluency_doesNotAddObject() {
         when(parameters.getDouble("T_CELL_VOL_AVG")).thenReturn(175.0);
-        when(parameters.getInt("MAX_DENSITY")).thenReturn(1);
 
         ArrayList<MiniBox> populations = new ArrayList<>();
         MiniBox populationMock = mock(MiniBox.class);
         when(populationMock.getInt("CODE")).thenReturn(4);
         when(populationMock.get("CLASS")).thenReturn("cart_cd4");
+        when(populationMock.getInt("MAX_DENSITY")).thenReturn(1);
         populations.add(populationMock);
         when(locationMock.getArea()).thenReturn(3.0 / 2.0 / Math.sqrt(3.0) * 30 * 30);
         when(locationMock.getVolume()).thenReturn(3.0 / 2.0 / Math.sqrt(3.0) * 30 * 30 * 8.7);
