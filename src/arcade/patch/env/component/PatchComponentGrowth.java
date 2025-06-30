@@ -39,7 +39,6 @@ import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calcu
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.getPath;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.path;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.reversePressures;
-import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.updateGraph;
 import static arcade.patch.util.PatchEnums.Ordering;
 
 /**
@@ -284,7 +283,6 @@ public class PatchComponentGrowth implements Component {
     @Override
     public void step(SimState simstate) {
         tick = (int) simstate.schedule.getTime();
-
         MersenneTwisterFast random = simstate.random;
 
         LinkedHashSet<SiteNode> validNodes = getValidNodes();
@@ -341,6 +339,10 @@ public class PatchComponentGrowth implements Component {
                     SiteNode init;
                     SiteNode fin;
 
+                    LOGGER.info(" SPROUT NODE: " + sproutNode);
+                    LOGGER.info("LEADING INDEX: " + leadingIndex);
+                    LOGGER.info("FINAL NODE: " + finalNode);
+
                     calculatePressures(graph);
                     boolean reversed = reversePressures(graph);
                     if (reversed) {
@@ -350,6 +352,7 @@ public class PatchComponentGrowth implements Component {
                     calculateStresses(graph);
 
                     if (!graph.contains(finalNode)) {
+                        LOGGER.info("TRYING TO CONNECT ANGIOGENIC NODES.");
                         // Connecting two angiogenic nodes
                         SiteNode targetNode = findKeyNodeInMap(finalNode, sproutNode);
                         if (targetNode == null) {
@@ -410,10 +413,6 @@ public class PatchComponentGrowth implements Component {
             angiogenicNodeMap.remove(n);
         }
         nodesToRemove.clear();
-
-        if (addFlag) {
-            updateGraph(graph);
-        }
     }
 
     /**
@@ -795,7 +794,7 @@ public class PatchComponentGrowth implements Component {
     private void addAngioEdges(
             ArrayList<SiteEdge> list, SiteNode start, SiteNode end, Calculation calc) {
 
-        LOGGER.info("ADDING ANGIOGENIC EDGES.");
+        LOGGER.info("ADDING ANGIOGENIC EDGES. TICK: " + tick);
         LOGGER.info("TRYING TO ADD: " + start.id + " -> " + end.id);
         LOGGER.info("LIST: " + list);
         if (list.size() > 1) {
@@ -861,8 +860,10 @@ public class PatchComponentGrowth implements Component {
                 Outcome result = recalculateRadii(angioPath, start, end, intersection);
                 if (result == Outcome.FAILURE) {
                     removeEdgeList(angioPath);
+                    LOGGER.info("Failed to add " + list + ".");
+                } else {
+                    LOGGER.info("Added " + angioPath.size() + " edges.");
                 }
-                LOGGER.info("Added " + angioPath.size() + " edges.");
                 break;
         }
     }
@@ -901,7 +902,6 @@ public class PatchComponentGrowth implements Component {
      * @param end the ending {@link SiteNode}
      */
     private void updateRootsAndRadii(ArrayList<SiteEdge> addedEdges, SiteNode start, SiteNode end) {
-        updateGraph(graph);
         ArrayList<Double> oldRadii = new ArrayList<>();
         ArrayList<SiteEdge> updatedEdges = new ArrayList<>();
         Boolean failed = false;
@@ -1011,7 +1011,6 @@ public class PatchComponentGrowth implements Component {
     private Outcome recalculateRadii(
             ArrayList<SiteEdge> ignoredEdges, SiteNode start, SiteNode end, SiteNode intersection) {
 
-        updateGraph(graph);
         Bag edges = graph.getEdgesOut(start);
 
         if (edges == null) {
@@ -1076,7 +1075,7 @@ public class PatchComponentGrowth implements Component {
                 }
             }
         }
-        return Outcome.FAILURE;
+        return Outcome.SUCCESS;
     }
 
     /**
@@ -1157,11 +1156,12 @@ public class PatchComponentGrowth implements Component {
      * @return Outcome.SUCCESS for successful update, Outcome.FAILURE for failure
      */
     private Outcome calculateRadius(SiteEdge edge, double flow, Adjustment adjustment) {
-        assert flow >= 0;
+        assert flow > 0;
         double updatedFlow = (adjustment == Adjustment.DECREASE) ? -1 * flow : flow;
         double originalRadius = edge.radius;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
         double originalFlow = calculateLocalFlow(originalRadius, edge.length, deltaP);
+        // double originalFlow = edge.flow;
         Function f =
                 (double r) ->
                         originalFlow + updatedFlow - calculateLocalFlow(r, edge.length, deltaP);
@@ -1232,7 +1232,7 @@ public class PatchComponentGrowth implements Component {
      */
     private Outcome calculateArteryRootRadius(SiteEdge edge, double flow, Adjustment adjustment) {
         assert flow >= 0;
-        
+
         double updatedFlow = (adjustment == Adjustment.DECREASE) ? -1 * flow : flow;
         double originalRadius = edge.radius;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
