@@ -2,12 +2,17 @@ package arcade.patch.agent.action;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sim.engine.Schedule;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
+import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellContainer;
@@ -18,10 +23,14 @@ import arcade.patch.env.location.CoordinateUVWZ;
 import arcade.patch.env.location.CoordinateXYZ;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.env.location.PatchLocationContainer;
+import arcade.patch.env.location.PatchLocationHex;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.sim.PatchSimulation;
 import arcade.patch.util.PatchEnums;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 public class PatchActionTreatTest {
@@ -34,19 +43,23 @@ public class PatchActionTreatTest {
 
     private PatchCell cellMock;
 
+    private PatchLocation locationMock;
+
     MiniBox parameters;
 
     PatchSeries series;
 
     @BeforeEach
-    public final void setUp() throws NoSuchFieldException, IllegalAccessException {
+    public final void setUp()
+            throws NoSuchFieldException,
+                    SecurityException,
+                    IllegalArgumentException,
+                    IllegalAccessException {
+        // set up mocks
         parameters = mock(MiniBox.class);
-        when(parameters.getInt("TIME_DELAY")).thenReturn(10);
-        when(parameters.getInt("DOSE")).thenReturn(10);
-        when(parameters.getDouble("RATIO")).thenReturn(0.5);
-        when(parameters.getDouble("MAX_DAMAGE_SEED")).thenReturn(0.1);
-        when(parameters.getDouble("MIN_RADIUS_SEED")).thenReturn(0.01);
-        when(parameters.getDouble("T_CELL_VOL_AVG")).thenReturn(175.0);
+        when(parameters.getInt(anyString())).thenReturn(1);
+        when(parameters.getDouble(anyString())).thenReturn(1.0);
+
         series = mock(PatchSeries.class);
         MiniBox patchMock = mock(MiniBox.class);
         series.patch = patchMock;
@@ -72,6 +85,7 @@ public class PatchActionTreatTest {
         PatchLocationContainer container = mock(PatchLocationContainer.class);
         PatchLocationContainer container2 = mock(PatchLocationContainer.class);
         PatchLocation loc = mock(PatchLocation.class);
+        locationMock = loc;
         PatchLocation loc2 = mock(PatchLocation.class);
         CoordinateXYZ coord = new CoordinateXYZ(0, 0, 0);
         CoordinateUVWZ c = new CoordinateUVWZ(0, 0, 0, 0);
@@ -91,14 +105,15 @@ public class PatchActionTreatTest {
         when(gridMock.getObjectsAtLocation(loc)).thenReturn(mockBag1);
         when(gridMock.getObjectsAtLocation(loc2)).thenReturn(mockBag2);
         when(sim.getLocations()).thenReturn(locations);
+        Set<Location> newLocations = new java.util.HashSet<>();
+        newLocations.add(new PatchLocationHex(c2));
+        when(sim.getAllLocations()).thenReturn(newLocations);
         sim.random = mock(MersenneTwisterFast.class);
-
         PatchCellFactory factoryMock = mock(PatchCellFactory.class);
         PatchCellContainer patchCellContainerMock = mock(PatchCellContainer.class);
         when(factoryMock.createCellForPopulation(any(Integer.class), any(Integer.class)))
                 .thenReturn(patchCellContainerMock);
         when(patchCellContainerMock.convert(any(), any(), any())).thenReturn(cellMock);
-
         Field factory = PatchSimulation.class.getDeclaredField("cellFactory");
         factory.setAccessible(true);
         factory.set(sim, factoryMock);
@@ -115,31 +130,49 @@ public class PatchActionTreatTest {
         return bag;
     }
 
-    @Test
-    public void schedule_called_schedulesOnAction()
-            throws NoSuchFieldException, IllegalAccessException {
-        action = new PatchActionTreat(series, parameters);
+    private static class TestPatchActionTreat extends PatchActionTreat {
 
+        private final ArrayList<MiniBox> testPopulations;
+
+        public TestPatchActionTreat(
+                Series series, MiniBox parameters, ArrayList<MiniBox> populations) {
+            super(series, parameters);
+            this.testPopulations = populations;
+
+            HashMap<String, MiniBox> populationsMap = new HashMap<>();
+            for (MiniBox pop : populations) {
+                String className = pop.get("CLASS").toString();
+                populationsMap.put(className, pop);
+            }
+            series.populations = populationsMap;
+            for (MiniBox pop : populations) {
+                Simulation mockSim = mock(Simulation.class);
+                when(mockSim.getSeries()).thenReturn(series);
+                String className = pop.get("CLASS").toString();
+                register(mockSim, className);
+            }
+        }
+    }
+
+    @Test
+    public void schedule_called_schedulesOnAction() {
         ArrayList<MiniBox> populations = new ArrayList<>();
         MiniBox populationMock = mock(MiniBox.class);
         when(populationMock.getInt("CODE")).thenReturn(4);
         when(populationMock.get("CLASS")).thenReturn("cart_cd4");
         populations.add(populationMock);
-        Field pops = PatchActionTreat.class.getDeclaredField("populations");
-        pops.setAccessible(true);
-        pops.set(action, populations);
+
+        action = new TestPatchActionTreat(series, parameters, populations);
 
         Schedule schedule = mock(Schedule.class);
         action.schedule(schedule);
+
         verify(schedule)
                 .scheduleOnce(anyDouble(), eq(PatchEnums.Ordering.ACTIONS.ordinal()), eq(action));
     }
 
     @Test
-    public void step_called_addsObjectsToSim() throws NoSuchFieldException, IllegalAccessException {
-        when(parameters.getInt("MAX_DENSITY")).thenReturn(54);
-        action = new PatchActionTreat(series, parameters);
-
+    public void step_called_addsObjectsToSim() {
         ArrayList<MiniBox> populations = new ArrayList<>();
         MiniBox populationMock1 = new MiniBox();
         populationMock1.put("CLASS", "cart_cd4");
@@ -149,9 +182,8 @@ public class PatchActionTreatTest {
         populationMock2.put("CODE", 8);
         populations.add(populationMock1);
         populations.add(populationMock2);
-        Field pops = PatchActionTreat.class.getDeclaredField("populations");
-        pops.setAccessible(true);
-        pops.set(action, populations);
+
+        action = new TestPatchActionTreat(series, parameters, populations);
 
         action.step(sim);
 
@@ -160,11 +192,8 @@ public class PatchActionTreatTest {
     }
 
     @Test
-    public void step_zeroDose_doesNotAddObjects()
-            throws NoSuchFieldException, IllegalAccessException {
-        when(parameters.getInt("MAX_DENSITY")).thenReturn(54);
+    public void step_zeroDose_doesNotAddObjects() {
         when(parameters.getInt("DOSE")).thenReturn(0);
-        action = new PatchActionTreat(series, parameters);
 
         ArrayList<MiniBox> populations = new ArrayList<>();
         MiniBox populationMock1 = new MiniBox();
@@ -175,59 +204,58 @@ public class PatchActionTreatTest {
         populationMock2.put("CODE", 8);
         populations.add(populationMock1);
         populations.add(populationMock2);
-        Field pops = PatchActionTreat.class.getDeclaredField("populations");
-        pops.setAccessible(true);
-        pops.set(action, populations);
+
+        action = new TestPatchActionTreat(series, parameters, populations);
 
         action.step(sim);
+
         verify(gridMock, times(0)).addObject(any(), any());
         verify(cellMock, times(0)).schedule(any());
     }
 
     @Test
-    public void checkLocationSpace_withEmptySpaces_returnsAvailable()
-            throws NoSuchFieldException, IllegalAccessException {
+    public void checkLocationSpace_withEmptySpaces_addsObject() {
+        when(parameters.getDouble("T_CELL_VOL_AVG")).thenReturn(175.0);
         when(parameters.getInt("MAX_DENSITY")).thenReturn(54);
-        action = new PatchActionTreat(series, parameters);
+
         ArrayList<MiniBox> populations = new ArrayList<>();
         MiniBox populationMock = mock(MiniBox.class);
         when(populationMock.getInt("CODE")).thenReturn(4);
         when(populationMock.get("CLASS")).thenReturn("cart_cd4");
         populations.add(populationMock);
-        Field pops = PatchActionTreat.class.getDeclaredField("populations");
-        pops.setAccessible(true);
-        pops.set(action, populations);
-
-        PatchLocation locationMock = mock(PatchLocation.class);
         when(locationMock.getArea()).thenReturn(3.0 / 2.0 / Math.sqrt(3.0) * 30 * 30);
         when(locationMock.getVolume()).thenReturn(3.0 / 2.0 / Math.sqrt(3.0) * 30 * 30 * 8.7);
         Bag testBag = createPatchCellsWithVolumeAndCriticalHeight(2, 10, 12.5);
         when(gridMock.getObjectsAtLocation(locationMock)).thenReturn(testBag);
-        boolean result = action.checkLocationSpace(locationMock, gridMock);
-        assertTrue(result);
+
+        action = new TestPatchActionTreat(series, parameters, populations);
+
+        action.step(sim);
+
+        verify(gridMock, times(1)).addObject(any(), any());
+        verify(cellMock, times(1)).schedule(any());
     }
 
     @Test
-    public void checkLocation_maxConfluency_returnsUnavailable()
-            throws NoSuchFieldException, IllegalAccessException {
+    public void checkLocation_maxConfluency_doesNotAddObject() {
+        when(parameters.getDouble("T_CELL_VOL_AVG")).thenReturn(175.0);
         when(parameters.getInt("MAX_DENSITY")).thenReturn(1);
-        action = new PatchActionTreat(series, parameters);
 
         ArrayList<MiniBox> populations = new ArrayList<>();
         MiniBox populationMock = mock(MiniBox.class);
         when(populationMock.getInt("CODE")).thenReturn(4);
         when(populationMock.get("CLASS")).thenReturn("cart_cd4");
         populations.add(populationMock);
-        Field pops = PatchActionTreat.class.getDeclaredField("populations");
-        pops.setAccessible(true);
-        pops.set(action, populations);
-
-        PatchLocation locationMock = mock(PatchLocation.class);
         when(locationMock.getArea()).thenReturn(3.0 / 2.0 / Math.sqrt(3.0) * 30 * 30);
         when(locationMock.getVolume()).thenReturn(3.0 / 2.0 / Math.sqrt(3.0) * 30 * 30 * 8.7);
         Bag testBag = createPatchCellsWithVolumeAndCriticalHeight(2, 10, 12.5);
         when(gridMock.getObjectsAtLocation(locationMock)).thenReturn(testBag);
-        boolean result = action.checkLocationSpace(locationMock, gridMock);
-        assertFalse(result);
+
+        action = new TestPatchActionTreat(series, parameters, populations);
+
+        action.step(sim);
+
+        verify(gridMock, times(0)).addObject(any(), any());
+        verify(cellMock, times(0)).schedule(any());
     }
 }
