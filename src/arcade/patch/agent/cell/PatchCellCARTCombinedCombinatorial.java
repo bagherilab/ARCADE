@@ -1,8 +1,5 @@
 package arcade.patch.agent.cell;
 
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.logging.Logger;
 import sim.engine.SimState;
 import sim.util.Bag;
@@ -54,12 +51,6 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
     /** basal CAR receptor expression rate. */
     protected final double basalCARGenerationRate;
 
-    /** Half-life of synnotch activation TF. */
-    protected final double synNotchActivationDelay;
-
-    /** List of recent synnotch binding events. */
-    protected Deque<BindingEvent> bindingHistory = new LinkedList<>();
-
     /**
      * Creates a T cell {@code PatchCellCARTCombinedCombinatorial} agent. *
      *
@@ -89,7 +80,6 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
         synnotchs = parameters.getInt("SYNNOTCHS");
         synNotchThreshold = parameters.getDouble("SYNNOTCH_THRESHOLD") * synnotchs;
         basalCARGenerationRate = parameters.getDouble("K_CAR_GENERATION");
-        synNotchActivationDelay = parameters.getDouble("SYNNOTCH_ACTIVATION_DELAY");
         boundSynNotch = 0;
         maxCars = cars;
         poissonFactory = Poisson::new;
@@ -128,7 +118,6 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
      */
     protected void calculateCARS(MersenneTwisterFast random, Simulation sim) {
         int TAU = 60;
-        double currentTime = sim.getSchedule().getTime();
         int unboundSynNotch = synnotchs - boundSynNotch;
 
         double expectedBindingEvents =
@@ -140,10 +129,6 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
                         * TAU;
 
         int bindingEvents = poissonFactory.createPoisson(expectedBindingEvents, random).nextInt();
-
-        if (bindingEvents > 0) {
-            bindingHistory.addLast(new BindingEvent(currentTime, bindingEvents));
-        }
         double expectedUnbindingEvents = unbindingConstant * boundSynNotch * TAU;
         int unbindingEvents =
                 poissonFactory.createPoisson(expectedUnbindingEvents, random).nextInt();
@@ -151,22 +136,7 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
         boundSynNotch += bindingEvents;
         boundSynNotch -= unbindingEvents;
         boundCell.updateSynNotchAntigens(unbindingEvents, bindingEvents);
-
-        // model synnotch activation TF degradation
-        int ineffectiveBoundSynNotchs = 0;
-        // find all binding events that are older than the synNotchActivationDelay
-        Iterator<BindingEvent> it = bindingHistory.iterator();
-        while (it.hasNext()) {
-            BindingEvent e = it.next();
-            if (currentTime - e.timeStep >= synNotchActivationDelay) {
-                ineffectiveBoundSynNotchs += e.count;
-                // remove binding event from history if older than delay
-                it.remove();
-            }
-        }
-
-        boundSynNotch -= ineffectiveBoundSynNotchs;
-        synnotchs = Math.max(0, synnotchs - ineffectiveBoundSynNotchs);
+        synnotchs = Math.max(0, synnotchs - bindingEvents);
     }
 
     /** A {@code PoissonFactory} object instantiates Poisson distributions. */
@@ -199,26 +169,5 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
             boundCell = null;
         }
         boundSynNotch = 0;
-    }
-
-    /** private class for tracking synnotch binding events. */
-    private static class BindingEvent {
-
-        /** timestamp for binding events. */
-        double timeStep;
-
-        /** number of binding events at this time step. */
-        int count;
-
-        /**
-         * Instantiates the binding event.
-         *
-         * @param timeStep simulation timestamp of binding event
-         * @param count number of binding events
-         */
-        BindingEvent(double timeStep, int count) {
-            this.timeStep = timeStep;
-            this.count = count;
-        }
     }
 }

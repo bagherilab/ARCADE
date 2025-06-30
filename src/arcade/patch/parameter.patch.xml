@@ -53,7 +53,6 @@
     <population id="K_CAR_GENERATION" value="0.1" unit="s^-1" description="degradation of CAR kinetic constant" />
     <population id="SYNNOTCHS" value="1000" description="average number of SynNotch receptors on a SynNotch T-cell" />
     <population id="SYNNOTCH_ANTIGENS" value="1000" description="average number of synNotch antigens on a tissue cancer cell" />
-    <population id="SYNNOTCH_ACTIVATION_DELAY" value="540" unit="min" description="half-life of synnotch-induced CAR expression TF" />
 
     <!-- proliferation module parameters -->
     <population.module module="proliferation" id="SYNTHESIS_DURATION" value="637" units="min" description="time required for DNA synthesis" />
