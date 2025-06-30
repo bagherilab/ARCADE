@@ -134,8 +134,7 @@ public class PatchActionTreatTest {
 
         private final ArrayList<MiniBox> testPopulations;
 
-        public TestPatchActionTreat(
-                Series series, MiniBox parameters, ArrayList<MiniBox> populations) {
+        TestPatchActionTreat(Series series, MiniBox parameters, ArrayList<MiniBox> populations) {
             super(series, parameters);
             this.testPopulations = populations;
 

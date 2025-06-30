@@ -209,7 +209,7 @@ public final class PatchEnums {
         KILLER;
 
         /**
-         * Randomly selects a {@code Immune} cell type
+         * Randomly selects a {@code Immune} cell type.
          *
          * @param rng the random number generator
          * @return a random {@code Immune} cell type

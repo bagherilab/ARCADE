@@ -287,6 +287,7 @@ public class PatchActionTreat implements Action {
      *
      * @param coordinates the locations to insert the cells
      * @param simstate the simulation state
+     * @param pop the population code for the cells
      */
     private void insert(ArrayList<Location> coordinates, SimState simstate, int pop) {
         PatchSimulation sim = (PatchSimulation) simstate;
