@@ -2,6 +2,7 @@ package arcade.potts.agent.module;
 
 import java.util.ArrayList;
 import sim.util.Double3D;
+import sim.util.distribution.Poisson;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
@@ -20,6 +21,7 @@ import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Phase;
 import arcade.potts.util.PottsEnums.State;
 import static arcade.potts.agent.cell.PottsCellFlyStem.StemType;
 
@@ -27,7 +29,54 @@ import static arcade.potts.agent.cell.PottsCellFlyStem.StemType;
  * Extension of {@link PottsModuleProliferationSimple} with a custom addCell method for fly stem
  * cell behavior.
  */
-public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSimple {
+public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
+
+    /** Threshold for critical volume size checkpoint. */
+    static final double SIZE_CHECKPOINT = 0.95;
+
+    /**
+     * Target ratio of critical volume for division size checkpoint (cell must reach CRITICAL_VOLUME
+     * * SIZE_TARGET * SIZE_CHECKPOINT to divide).
+     */
+    double sizeTarget;
+
+    /** Event rate for G1 phase (steps/tick). */
+    double rateG1;
+
+    /** Event rate for S phase (steps/tick). */
+    double rateS;
+
+    /** Event rate for G2 phase (steps/tick). */
+    double rateG2;
+
+    /** Event rate for M phase (steps/tick). */
+    double rateM;
+
+    /** Steps for G1 phase (steps). */
+    final int stepsG1;
+
+    /** Steps for S phase (steps). */
+    final int stepsS;
+
+    /** Steps for G2 phase (steps). */
+    final int stepsG2;
+
+    /** Steps for M phase (steps). */
+    final int stepsM;
+
+    /**
+     * Overall growth rate for cell (voxels/tick) when growth rate is not dynamic. Max growth rate
+     * when growth rate is dynamic
+     */
+    final double cellGrowthRateMax;
+
+    double cellGrowthRate;
+
+    /** Basal rate of apoptosis (ticks^-1). */
+    final double basalApoptosisRate;
+
+    /** Fraction of nuclear volume when condensed. */
+    double nucleusCondFraction;
 
     public static final double EPSILON = 1e-8;
 
@@ -40,6 +89,10 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
     final String apicalAxisRuleset;
 
     final Distribution apicalAxisRotationDistribution;
+
+    final boolean dynamicGrowthRate;
+
+    final double growthRateMultiplier;
 
     /**
      * Range of values considered equal when determining daughter cell identity. ex. if ruleset is
@@ -54,7 +107,26 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
      */
     public PottsModuleProliferationFlyStem(PottsCellFlyStem cell) {
         super(cell);
+
+        if (cell.hasRegions()) {
+            throw new UnsupportedOperationException(
+                    "Regions are not yet implemented for fly cells");
+        }
+
         Parameters parameters = cell.getParameters();
+
+        sizeTarget = parameters.getDouble("proliferation/SIZE_TARGET");
+        rateG1 = parameters.getDouble("proliferation/RATE_G1");
+        rateS = parameters.getDouble("proliferation/RATE_S");
+        rateG2 = parameters.getDouble("proliferation/RATE_G2");
+        rateM = parameters.getDouble("proliferation/RATE_M");
+        stepsG1 = parameters.getInt("proliferation/STEPS_G1");
+        stepsS = parameters.getInt("proliferation/STEPS_S");
+        stepsG2 = parameters.getInt("proliferation/STEPS_G2");
+        stepsM = parameters.getInt("proliferation/STEPS_M");
+        cellGrowthRateMax = parameters.getDouble("proliferation/CELL_GROWTH_RATE");
+        basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
+        nucleusCondFraction = parameters.getDouble("proliferation/NUCLEUS_CONDENSATION_FRACTION");
 
         splitDirectionDistribution =
                 (NormalDistribution)
@@ -66,6 +138,116 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
                 (Distribution)
                         parameters.getDistribution(
                                 "proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION");
+
+        dynamicGrowthRate = (parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE") != 0);
+        growthRateMultiplier = parameters.getDouble("proliferation/GROWTH_RATE_MULTIPLIER");
+        updateGrowthRate();
+    }
+
+    void updateGrowthRate() {
+        if (dynamicGrowthRate == false) {
+            cellGrowthRate = cellGrowthRateMax;
+            System.out.println("cellGrowthRate = " + cellGrowthRate);
+        } else {
+            cellGrowthRate =
+                    cellGrowthRateMax
+                            * growthRateMultiplier
+                            * (cell.getLocation().getVolume() / cell.getCriticalVolume());
+            System.out.println("cellGrowthRate = " + cellGrowthRate);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Cell increases in size toward a target of twice its critical size at a rate of {@code
+     * CELL_GROWTH_RATE}. Cell will transition to S phase after completing {@code STEPS_G1} steps at
+     * an average rate of {@code RATE_G1}. At each tick, cell may randomly apoptosis at a basal rate
+     * of {@code BASAL_APOPTOSIS_RATE}.
+     */
+    @Override
+    void stepG1(MersenneTwisterFast random) {
+        // Update growth rate.
+        updateGrowthRate();
+        // Increase size of cell.
+        cell.updateTarget(cellGrowthRate, sizeTarget);
+
+        // Check for phase transition.
+        Poisson poisson = poissonFactory.createPoisson(rateG1, random);
+        currentSteps += poisson.nextInt();
+        if (currentSteps >= stepsG1) {
+            setPhase(Phase.PROLIFERATIVE_S);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Cell increases in size toward a target of twice its critical size at a rate of {@code
+     * CELL_GROWTH_RATE}. Cell will transition to G2 phase after completing {@code STEPS_S} steps at
+     * an average rate of {@code RATE_S}.
+     */
+    @Override
+    void stepS(MersenneTwisterFast random) {
+        // Update growth rate.
+        updateGrowthRate();
+        // Increase size of cell.
+        cell.updateTarget(cellGrowthRate, sizeTarget);
+
+        // Check for phase transition.
+        Poisson poisson = poissonFactory.createPoisson(rateS, random);
+        currentSteps += poisson.nextInt();
+        if (currentSteps >= stepsS) {
+            setPhase(Phase.PROLIFERATIVE_G2);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Cell increases in size toward a target of twice its critical size at a rate of {@code
+     * CELL_GROWTH_RATE}. Cell will transition to M phase after completing {@code STEPS_G2} steps at
+     * an average rate of {@code RATE_G2}. At each tick, cell may randomly apoptosis at a basal rate
+     * of {@code BASAL_APOPTOSIS_RATE}.
+     */
+    @Override
+    void stepG2(MersenneTwisterFast random) {
+        updateGrowthRate();
+        // Increase size of cell.
+        cell.updateTarget(cellGrowthRate, sizeTarget);
+        boolean sizeCheck =
+                cell.getVolume() >= SIZE_CHECKPOINT * sizeTarget * cell.getCriticalVolume();
+
+        // Check for phase transition.
+        Poisson poisson = poissonFactory.createPoisson(rateG2, random);
+        currentSteps += poisson.nextInt();
+        if (currentSteps >= stepsG2 && sizeCheck) {
+            setPhase(Phase.PROLIFERATIVE_M);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Cell increases in size toward a target of twice its critical size at a rate of {@code
+     * CELL_GROWTH_RATE}. Cell will complete cell division after completing {@code STEPS_M} steps at
+     * an average rate of {@code RATE_M}. Cell must be greater than {@code SIZE_CHECKPOINT} times
+     * the critical size.
+     */
+    @Override
+    void stepM(MersenneTwisterFast random, Simulation sim) {
+        // Update growth rate.
+        updateGrowthRate();
+        // Increase size of cell.
+        cell.updateTarget(cellGrowthRate, sizeTarget);
+
+        // Check for phase transition.
+        Poisson poisson = poissonFactory.createPoisson(rateM, random);
+        currentSteps += poisson.nextInt();
+        if (currentSteps >= stepsM) {
+            addCell(random, sim);
+            setPhase(Phase.PROLIFERATIVE_G1);
+        }
     }
 
     @Override
