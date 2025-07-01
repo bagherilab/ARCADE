@@ -10,7 +10,7 @@ import arcade.patch.env.grid.PatchGrid;
 import static arcade.patch.util.PatchEnums.State;
 
 /**
- * Implementation of {@link Process} for cell metabolism.
+ * Abstract implementation of {@link Process} for cell metabolism.
  *
  * <p>The {@code PatchProcessMetabolism} process:
  *

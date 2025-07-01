@@ -2,6 +2,7 @@ package arcade.patch.env.lattice;
 
 import arcade.core.env.operation.Operation;
 import arcade.core.util.MiniBox;
+import arcade.patch.env.operation.PatchOperationDecayer;
 import arcade.patch.env.operation.PatchOperationDiffuserTri;
 import arcade.patch.env.operation.PatchOperationGenerator;
 import arcade.patch.util.PatchEnums.Category;
@@ -30,6 +31,8 @@ public class PatchLatticeTri extends PatchLattice {
                 return new PatchOperationDiffuserTri(this, ds, dz);
             case GENERATOR:
                 return new PatchOperationGenerator(this);
+            case DECAYER:
+                return new PatchOperationDecayer(this);
             default:
                 return null;
         }
