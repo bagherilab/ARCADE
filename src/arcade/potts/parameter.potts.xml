@@ -68,8 +68,10 @@
     <population.module module="proliferation" id="DIFFERENTIATION_RULESET_EQUALITY_RANGE" value="0" description="range of voxels within which two locations are considered equal following fly stem division" />
     <population.module module="proliferation" id="APICAL_AXIS_RULESET" value="uniform" description="rule that determines how the daughter cell determines which direction is apical" />
     <population.module module="proliferation" id="APICAL_AXIS_ROTATION_DISTRIBUTION" value="UNIFORM(MIN=0,MAX=0)" units="degrees" description="distribution that determines the degrees of rotation a daughter cell's apical axis is in comparison to it's parent cell's apical axis. This parameter is only used with the uniform or the normal APICAL_AXIS_RULESET" />
-    <population.module module="proliferation" id="DYNAMIC_GROWTH_RATE" value="0" description="Boolean flag indicating whether the cell's growth rate should change dynamically according to its proximity to its critical volume and to the growth rate multiplier" />
-    <population.module module="proliferation" id="GROWTH_RATE_MULTIPLIER" value="1" description="When growth rate is dynamic, the growth rate is set to CELL_GROWTH_RATE * (GROWTH_RATE_MULTIPLIER * (CellVolume/CriticalVolume) at each time point" />
+    <population.module module="proliferation" id="DYNAMIC_GROWTH_RATE_VOLUME" value="0" description="Boolean flag indicating whether the cell's growth rate should change dynamically according to its proximity to its critical volume and to the growth rate multiplier" />
+    <population.module module="proliferation" id="GROWTH_RATE_MULTIPLIER" value="1" description="When DYNAMIC_GROWTH_RATE_VOLUME is true, the growth rate is set to CELL_GROWTH_RATE * (GROWTH_RATE_MULTIPLIER * (CellVolume/CriticalVolume) at each time point" />
+    <population.module module="proliferation" id="VOLUME_BASED_CRITICAL_VOLUME" value="0" description="Boolean flag indicating whether a cell's critical volume is a function of its initial volume times the sizeTarget times multiplier" />
+    <population.module module="proliferation" id="VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER" value="1" description="Multiplier used when calculating volume based critical volume" />
 
 
     <!-- apoptosis module parameters -->

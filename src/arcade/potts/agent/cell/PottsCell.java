@@ -79,7 +79,7 @@ public abstract class PottsCell implements Cell {
     private final EnumMap<Region, Double> targetRegionSurfaces;
 
     /** Critical volume for cell [voxels]. */
-    final double criticalVolume;
+    double criticalVolume;
 
     /** Critical volumes for cell by region [voxels]. */
     final EnumMap<Region, Double> criticalRegionVolumes;
@@ -293,6 +293,10 @@ public abstract class PottsCell implements Cell {
     @Override
     public double getCriticalVolume() {
         return criticalVolume;
+    }
+
+    public void setCriticalVolume(double newCriticaVolume) {
+        criticalVolume = newCriticaVolume;
     }
 
     /**

@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import sim.util.Double3D;
 import sim.util.distribution.Poisson;
 import ec.util.MersenneTwisterFast;
+import arcade.core.agent.cell.CellFactory;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.core.util.Plane;
 import arcade.core.util.Vector;
@@ -90,9 +92,13 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
 
     final Distribution apicalAxisRotationDistribution;
 
-    final boolean dynamicGrowthRate;
+    final boolean dynamicGrowthRateVolume;
 
-    final double growthRateMultiplier;
+    final double dynamicGrowthRateMultiplier;
+
+    final boolean volumeBasedCriticalVolume;
+
+    final double volumeBasedCriticalVolumeMultiplier;
 
     /**
      * Range of values considered equal when determining daughter cell identity. ex. if ruleset is
@@ -139,21 +145,25 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
                         parameters.getDistribution(
                                 "proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION");
 
-        dynamicGrowthRate = (parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE") != 0);
-        growthRateMultiplier = parameters.getDouble("proliferation/GROWTH_RATE_MULTIPLIER");
-        updateGrowthRate();
+        dynamicGrowthRateVolume =
+                (parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME") != 0);
+        dynamicGrowthRateMultiplier = parameters.getDouble("proliferation/GROWTH_RATE_MULTIPLIER");
+        updateVolumeBasedGrowthRate();
+
+        volumeBasedCriticalVolume =
+                (parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME") != 0);
+        volumeBasedCriticalVolumeMultiplier =
+                parameters.getDouble("proliferation/VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER");
     }
 
-    void updateGrowthRate() {
-        if (dynamicGrowthRate == false) {
+    void updateVolumeBasedGrowthRate() {
+        if (dynamicGrowthRateVolume == false) {
             cellGrowthRate = cellGrowthRateMax;
-            System.out.println("cellGrowthRate = " + cellGrowthRate);
         } else {
             cellGrowthRate =
                     cellGrowthRateMax
-                            * growthRateMultiplier
+                            * dynamicGrowthRateMultiplier
                             * (cell.getLocation().getVolume() / cell.getCriticalVolume());
-            System.out.println("cellGrowthRate = " + cellGrowthRate);
         }
     }
 
@@ -168,7 +178,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
     @Override
     void stepG1(MersenneTwisterFast random) {
         // Update growth rate.
-        updateGrowthRate();
+        updateVolumeBasedGrowthRate();
         // Increase size of cell.
         cell.updateTarget(cellGrowthRate, sizeTarget);
 
@@ -190,7 +200,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
     @Override
     void stepS(MersenneTwisterFast random) {
         // Update growth rate.
-        updateGrowthRate();
+        updateVolumeBasedGrowthRate();
         // Increase size of cell.
         cell.updateTarget(cellGrowthRate, sizeTarget);
 
@@ -212,7 +222,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
      */
     @Override
     void stepG2(MersenneTwisterFast random) {
-        updateGrowthRate();
+        updateVolumeBasedGrowthRate();
         // Increase size of cell.
         cell.updateTarget(cellGrowthRate, sizeTarget);
         boolean sizeCheck =
@@ -237,7 +247,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
     @Override
     void stepM(MersenneTwisterFast random, Simulation sim) {
         // Update growth rate.
-        updateGrowthRate();
+        updateVolumeBasedGrowthRate();
         // Increase size of cell.
         cell.updateTarget(cellGrowthRate, sizeTarget);
 
@@ -283,7 +293,20 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
             PottsLocation daughterLoc, Simulation sim, Potts potts, MersenneTwisterFast random) {
         cell.reset(potts.ids, potts.regions);
         int newID = sim.getID();
-        double criticalVol = cell.getCriticalVolume();
+        // TODO
+        double criticalVol;
+        if (volumeBasedCriticalVolume) {
+            criticalVol =
+                    daughterLoc.getVolume() * sizeTarget * volumeBasedCriticalVolumeMultiplier;
+            cell.setCriticalVolume(
+                    cell.getLocation().getVolume()
+                            * sizeTarget
+                            * volumeBasedCriticalVolumeMultiplier);
+            System.out.println("Daughter critical volume = " + criticalVol);
+            System.out.println("Parent critical volume = " + cell.getCriticalVolume());
+        } else {
+            criticalVol = cell.getCriticalVolume();
+        }
         PottsCellContainer container =
                 ((PottsCellFlyStem) cell)
                         .make(newID, State.PROLIFERATIVE, random, cell.getPop(), criticalVol);
@@ -305,7 +328,8 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
         cell.reset(potts.ids, potts.regions);
         int newID = sim.getID();
         int newPop = ((PottsCellFlyStem) cell).getLinks().next(random);
-        double criticalVolume = calculateGMCDaughterCellCriticalVolume();
+        double criticalVolume =
+                calculateGMCDaughterCellCriticalVolume((PottsLocation) gmcLoc, sim, newPop);
         PottsCellContainer container =
                 ((PottsCellFlyStem) cell)
                         .make(newID, State.PROLIFERATIVE, random, newPop, criticalVolume);
@@ -397,9 +421,29 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
         return distanceAlongAxis - range <= EPSILON;
     }
 
-    protected double calculateGMCDaughterCellCriticalVolume() {
-        return ((PottsCellFlyStem) cell).getCriticalVolume()
-                * ((PottsCellFlyStem) cell).getStemType().daughterCellCriticalVolumeProportion;
+    protected double calculateGMCDaughterCellCriticalVolume(
+            PottsLocation gmcLoc, Simulation sim, int newpop) {
+        double max_crit_vol =
+                ((PottsCellFlyStem) cell).getCriticalVolume()
+                        * ((PottsCellFlyStem) cell)
+                                .getStemType()
+                                .daughterCellCriticalVolumeProportion;
+        if (volumeBasedCriticalVolume) {
+            CellFactory factory = sim.getCellFactory();
+            MiniBox newPopParameters =
+                    factory.getParameters(
+                            newpop); // TODO: Make factory.getParameters return parameters object
+            // not minibox
+            double sizeTarget = newPopParameters.getDouble("proliferation/SIZE_TARGET");
+            System.out.println(
+                    "gmc critical volume: "
+                            + (gmcLoc.getVolume()
+                                    * sizeTarget
+                                    * volumeBasedCriticalVolumeMultiplier));
+            return gmcLoc.getVolume() * sizeTarget * volumeBasedCriticalVolumeMultiplier;
+        } else {
+            return max_crit_vol;
+        }
     }
 
     /**

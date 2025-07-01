@@ -10,6 +10,7 @@ import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.grid.Grid;
 import arcade.core.util.GrabBag;
+import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.core.util.Plane;
 import arcade.core.util.Vector;
@@ -582,15 +583,38 @@ public class PottsModuleProliferationFlyStemTest {
     // Critical volume calculation tests
 
     @Test
-    public void calculateGMCDaughterCellCriticalVolume_called_returnsExpectedValue() {
+    public void calculateGMCDaughterCellCriticalVolume_volumeBasedOff_returnsMaxCritVol() {
         when(stemCell.getCriticalVolume()).thenReturn(100.0);
-        when(stemCell.getStemType())
-                .thenReturn(PottsCellFlyStem.StemType.WT); // WT has 0.2 proportion
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        // WT has proportion = 0.2
 
         module = new PottsModuleProliferationFlyStem(stemCell);
-        double result = module.calculateGMCDaughterCellCriticalVolume();
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITVOL")).thenReturn(0);
 
+        double result = module.calculateGMCDaughterCellCriticalVolume(daughterLoc, sim, 3);
         assertEquals(20.0, result, EPSILON); // 100 * 0.2
+    }
+
+    @Test
+    public void calculateGMCDaughterCellCriticalVolume_volumeBasedOn_returnsScaledValue() {
+        PottsLocation gmcLoc = mock(PottsLocation.class);
+        when(gmcLoc.getVolume()).thenReturn(50.0);
+        when(stemCell.getCriticalVolume()).thenReturn(100.0);
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+
+        MiniBox miniBox = mock(MiniBox.class);
+        when(miniBox.getDouble("proliferation/SIZE_TARGET")).thenReturn(2.0);
+
+        when(sim.getCellFactory()).thenReturn(factory);
+        when(factory.getParameters(3)).thenReturn(miniBox);
+
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(1);
+        when(parameters.getDouble("proliferation/VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER")).thenReturn(1.5);
+
+        module = new PottsModuleProliferationFlyStem(stemCell);
+
+        double result = module.calculateGMCDaughterCellCriticalVolume(gmcLoc, sim, 3);
+        assertEquals(150.0, result, EPSILON); // 50 * 2.0 * 1.5
     }
 
     // addCell integration tests
