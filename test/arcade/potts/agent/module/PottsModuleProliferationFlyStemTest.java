@@ -609,7 +609,8 @@ public class PottsModuleProliferationFlyStemTest {
         when(factory.getParameters(3)).thenReturn(miniBox);
 
         when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(1);
-        when(parameters.getDouble("proliferation/VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER")).thenReturn(1.5);
+        when(parameters.getDouble("proliferation/VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER"))
+                .thenReturn(1.5);
 
         module = new PottsModuleProliferationFlyStem(stemCell);
 
