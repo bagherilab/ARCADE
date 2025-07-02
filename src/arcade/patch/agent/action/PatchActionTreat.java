@@ -39,7 +39,7 @@ import arcade.patch.util.PatchEnums.Immune;
 import arcade.patch.util.PatchEnums.Ordering;
 
 /**
- * Implementation of {@link Action} for inserting T cell agents.
+ * Implementation of {@link Action} for inserting T-cell agents.
  *
  * <p>The action is stepped once after {@code TIME_DELAY}. The {@code TreatAction} will add CAR
  * T-cell agents of specified dose next to source points or vasculature.
@@ -53,9 +53,9 @@ public class PatchActionTreat implements Action {
     private final int dose;
 
     /** Maximum damage value at which T-cells can spawn next to in source or pattern source. */
-    private double maxDamage;
+    private final double maxDamage;
 
-    /** Minimum radius value at which T- cells can spawn next to in graph source. */
+    /** Minimum radius value at which T-cells can spawn next to in graph source. */
     private final double minDamageRadius;
 
     /** Number of agent positions per lattice site. */
@@ -132,7 +132,6 @@ public class PatchActionTreat implements Action {
 
         for (MiniBox population : populations) {
             String className = population.get("CLASS").toUpperCase();
-            maxConfluency = population.getInt("MAX_DENSITY");
 
             if (!immuneCells.contains(className)) {
                 throw new IllegalArgumentException(
@@ -140,6 +139,8 @@ public class PatchActionTreat implements Action {
                                 + population.get("CLASS")
                                 + " is not an immune cell and cannot be treated.");
             }
+
+            maxConfluency = population.getInt("MAX_DENSITY");
 
             int pop = population.getInt("CODE");
 
@@ -156,7 +157,7 @@ public class PatchActionTreat implements Action {
     }
 
     /**
-     * Helper method to find possible locations to insert t cells.
+     * Helper method to find possible locations to insert T-cells.
      *
      * @param comp the component
      * @param type the type of component (source, pattern, or graph)
@@ -208,6 +209,11 @@ public class PatchActionTreat implements Action {
         Bag allEdges = new Bag(graph.getAllEdges());
         PatchComponentSitesGraph graphSites = (PatchComponentSitesGraph) comp;
 
+        Set<Coordinate> coordinateSet =
+                locs.stream()
+                        .map(container -> ((PatchLocationContainer) container).coordinate)
+                        .collect(Collectors.toSet());
+
         for (Object edgeObj : allEdges) {
             SiteEdge edge = (SiteEdge) edgeObj;
             Bag allEdgeLocs = new Bag();
@@ -223,7 +229,7 @@ public class PatchActionTreat implements Action {
 
             for (Object locObj : allEdgeLocs) {
                 Location loc = (Location) locObj;
-                if (locs.contains(loc)) {
+                if (coordinateSet.contains(((PatchLocation) loc).getCoordinate())) {
                     if (edge.getRadius() >= minDamageRadius) {
                         for (int p = 0; p < latPositions; p++) {
                             siteLocs.add(loc);
