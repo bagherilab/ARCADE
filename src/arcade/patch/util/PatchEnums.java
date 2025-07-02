@@ -197,6 +197,31 @@ public final class PatchEnums {
         }
     }
 
+    /** Combinatorial circuit types. */
+    public enum LogicalCARs {
+        /** Code for inducible synNotch. */
+        INDUCIBLE_SYNNOTCH,
+
+        /** Code for inducible inflammation. */
+        INDUCIBLE_INFLAMMATION,
+
+        /** Code for inhibitory receptor. */
+        INHIBITORY_RECEPTOR,
+
+        /** Code for inhibitory inflammation. */
+        INHIBITORY_INFLAMMATION;
+
+        /**
+         * Randomly selects a {@code LogicalCARs}.
+         *
+         * @param rng the random number generator
+         * @return a random {@code LogicalCARs}
+         */
+        public static LogicalCARs random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
+        }
+    }
+
     /** Operation category codes for patch simulations. */
     public enum Category implements OperationCategory {
         /** Code for undefined category. */
