@@ -296,14 +296,11 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
         // TODO
         double criticalVol;
         if (volumeBasedCriticalVolume) {
-            criticalVol =
-                    daughterLoc.getVolume() * sizeTarget * volumeBasedCriticalVolumeMultiplier;
+            criticalVol = daughterLoc.getVolume() * volumeBasedCriticalVolumeMultiplier;
             cell.setCriticalVolume(
-                    cell.getLocation().getVolume()
-                            * sizeTarget
-                            * volumeBasedCriticalVolumeMultiplier);
-            System.out.println("Daughter critical volume = " + criticalVol);
-            System.out.println("Parent critical volume = " + cell.getCriticalVolume());
+                    cell.getLocation().getVolume() * volumeBasedCriticalVolumeMultiplier);
+            System.out.println("Stem Daughter critical volume = " + criticalVol);
+            System.out.println("Stem Parent critical volume = " + cell.getCriticalVolume());
         } else {
             criticalVol = cell.getCriticalVolume();
         }
@@ -433,14 +430,13 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
             MiniBox newPopParameters =
                     factory.getParameters(
                             newpop); // TODO: Make factory.getParameters return parameters object
-            // not minibox
-            double sizeTarget = newPopParameters.getDouble("proliferation/SIZE_TARGET");
             System.out.println(
-                    "gmc critical volume: "
-                            + (gmcLoc.getVolume()
-                                    * sizeTarget
-                                    * volumeBasedCriticalVolumeMultiplier));
-            return gmcLoc.getVolume() * sizeTarget * volumeBasedCriticalVolumeMultiplier;
+                    "gmc Daughter critical volume: "
+                            + (gmcLoc.getVolume() * volumeBasedCriticalVolumeMultiplier));
+            System.out.println(
+                    "GMC parameter critical volume: "
+                            + (newPopParameters.getDouble("CRITICAL_VOLUME")));
+            return gmcLoc.getVolume() * volumeBasedCriticalVolumeMultiplier;
         } else {
             return max_crit_vol;
         }

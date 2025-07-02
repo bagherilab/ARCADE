@@ -615,7 +615,7 @@ public class PottsModuleProliferationFlyStemTest {
         module = new PottsModuleProliferationFlyStem(stemCell);
 
         double result = module.calculateGMCDaughterCellCriticalVolume(gmcLoc, sim, 3);
-        assertEquals(150.0, result, EPSILON); // 50 * 2.0 * 1.5
+        assertEquals(75.0, result, EPSILON); // 50 * 1.5
     }
 
     // addCell integration tests
