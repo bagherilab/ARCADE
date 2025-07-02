@@ -293,7 +293,6 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
             PottsLocation daughterLoc, Simulation sim, Potts potts, MersenneTwisterFast random) {
         cell.reset(potts.ids, potts.regions);
         int newID = sim.getID();
-        // TODO
         double criticalVol;
         if (volumeBasedCriticalVolume) {
             criticalVol = daughterLoc.getVolume() * volumeBasedCriticalVolumeMultiplier;
@@ -378,16 +377,8 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
             } else if (differentiationRuleset.equals("location")) {
                 double[] centroid1 = loc1.getCentroid();
                 double[] centroid2 = loc2.getCentroid();
-                if (centroidsWithinRangeAlongApicalAxis(
-                        centroid1,
-                        centroid2,
-                        ((PottsCellFlyStem) cell).getApicalAxis(),
-                        range)) { // TODO: change this to just return
-                    // centroidsWIthinRangeAlongApicalAxis
-                    return true;
-                } else {
-                    return false;
-                }
+                return (centroidsWithinRangeAlongApicalAxis(
+                        centroid1, centroid2, ((PottsCellFlyStem) cell).getApicalAxis(), range));
             }
         }
         throw new IllegalArgumentException(
@@ -427,9 +418,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
                                 .daughterCellCriticalVolumeProportion;
         if (volumeBasedCriticalVolume) {
             CellFactory factory = sim.getCellFactory();
-            MiniBox newPopParameters =
-                    factory.getParameters(
-                            newpop); // TODO: Make factory.getParameters return parameters object
+            MiniBox newPopParameters = factory.getParameters(newpop);
             System.out.println(
                     "gmc Daughter critical volume: "
                             + (gmcLoc.getVolume() * volumeBasedCriticalVolumeMultiplier));
