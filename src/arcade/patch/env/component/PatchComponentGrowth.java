@@ -784,6 +784,8 @@ public class PatchComponentGrowth implements Component {
             edge.span = sites.getSpan(edge.getFrom(), edge.getTo());
             edge.transport.putIfAbsent("GLUCOSE", 0.);
             edge.transport.putIfAbsent("OXYGEN", 0.);
+            edge.fraction.putIfAbsent("GLUCOSE", 1.);
+            edge.fraction.putIfAbsent("OXYGEN", 1.);
             edge.length = sites.graphFactory.getLength(edge, DEFAULT_EDGE_LEVEL);
             edge.isPerfused = true;
         }
