@@ -27,6 +27,8 @@ import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeLevel;
 import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeType;
 import arcade.patch.env.component.PatchComponentSitesGraphFactory.Root;
 import arcade.patch.env.location.CoordinateXYZ;
+import arcade.patch.util.PatchEnums.Ordering;
+
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.CAPILLARY_RADIUS;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MAXIMUM_CAPILLARY_RADIUS;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MINIMUM_CAPILLARY_RADIUS;
@@ -780,6 +782,8 @@ public class PatchComponentGrowth implements Component {
             }
             edge.wall = calculateThickness(edge);
             edge.span = sites.getSpan(edge.getFrom(), edge.getTo());
+            edge.transport.putIfAbsent("GLUCOSE", 0.);
+            edge.transport.putIfAbsent("OXYGEN", 0.);
             edge.length = sites.graphFactory.getLength(edge, DEFAULT_EDGE_LEVEL);
             edge.isPerfused = true;
         }
