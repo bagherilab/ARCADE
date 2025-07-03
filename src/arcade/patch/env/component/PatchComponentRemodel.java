@@ -12,13 +12,12 @@ import arcade.core.util.MiniBox;
 import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
 import arcade.patch.env.location.CoordinateXYZ;
 import arcade.patch.util.PatchEnums.Ordering;
-
 import static arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MAXIMUM_WALL_RADIUS_FRACTION;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MINIMUM_CAPILLARY_RADIUS;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MINIMUM_WALL_THICKNESS;
-import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.updateGraph;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculateCurrentState;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.updateGraph;
 import static arcade.patch.util.PatchEnums.Ordering;
 
 /**
