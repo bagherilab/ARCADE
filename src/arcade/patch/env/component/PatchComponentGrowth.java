@@ -30,15 +30,12 @@ import arcade.patch.env.location.CoordinateXYZ;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.CAPILLARY_RADIUS;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MAXIMUM_CAPILLARY_RADIUS;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MINIMUM_CAPILLARY_RADIUS;
-import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculateFlows;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculateCurrentState;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculateLocalFlow;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculatePressure;
-import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculatePressures;
-import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculateStresses;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculateThickness;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.getPath;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.path;
-import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.reversePressures;
 import static arcade.patch.util.PatchEnums.Ordering;
 
 /**
@@ -145,9 +142,6 @@ public class PatchComponentGrowth implements Component {
     /** List of temporary edges to be added to the graph this step. */
     private ArrayList<SiteEdge> tempEdges = new ArrayList<>();
 
-    /** Number of offsets to be used in the migration. */
-    private int numOffsets;
-
     /** List of directions to be used in the migration. */
     private ArrayList<EdgeDirection> offsetDirections;
 
@@ -158,7 +152,7 @@ public class PatchComponentGrowth implements Component {
     private int tick;
 
     /** List of nodes to be removed from the angiogenic node map this time step. */
-    private ArrayList<SiteNode> nodesToRemove = new ArrayList<>();
+    private ArrayList<SiteNode> keyNodesToRemove = new ArrayList<>();
 
     /**
      * Creates a growth component for a {@link PatchComponentSitesGraph}.
@@ -207,11 +201,10 @@ public class PatchComponentGrowth implements Component {
 
         sites = (PatchComponentSitesGraph) component;
         graph = sites.graph;
-        offsets = sites.graphFactory.getOffsets();
 
+        offsets = sites.graphFactory.getOffsets();
         offsetDirections = new ArrayList<>(offsets.keySet());
         offsetDirections.remove(EdgeDirection.UNDEFINED);
-        numOffsets = offsetDirections.size();
 
         edgeSize = sim.getSeries().ds;
         maxEdges = (int) Math.floor(maxLength / edgeSize);
@@ -219,7 +212,7 @@ public class PatchComponentGrowth implements Component {
 
     /**
      * Returns a set of valid nodes. A node is valid if it not associated with an ignored edge, is
-     * not a root, and has fewer than 3 degrees.
+     * not a root, and has fewer than 3 degrees (effectively 2 degrees exactly).
      *
      * @return a set of valid nodes
      */
@@ -233,21 +226,10 @@ public class PatchComponentGrowth implements Component {
             SiteNode from = edge.getFrom();
             SiteNode to = edge.getTo();
 
-            if (from.pressure == Double.NaN) {
-                LOGGER.info("Uh Oh. Pressure is NaN. @ " + from);
-            }
-            if (to.pressure == Double.NaN) {
-                LOGGER.info("Uh Oh. Pressure is NaN. @ " + to);
-            }
-
-            if ((graph.getDegree(from) < 3)
-                    && !from.isRoot
-                    && !(graph.getInDegree(from) == 0 && graph.getOutDegree(from) == 1)) {
+            if ((graph.getDegree(from) == 2) && !from.isRoot) {
                 set.add(from);
             }
-            if ((graph.getDegree(to) < 3)
-                    && !to.isRoot
-                    && !(graph.getInDegree(to) == 1 && graph.getOutDegree(to) == 0)) {
+            if ((graph.getDegree(to) == 2) && !to.isRoot) {
                 set.add(to);
             }
         }
@@ -259,24 +241,20 @@ public class PatchComponentGrowth implements Component {
      *
      * @param random the random number generator
      * @param node the node to start from
-     * @param valList the map of directions to their corresponding values
-     * @param skipList the list of directions to skip
+     * @param spanMap the map of directions to their corresponding values
      * @return the direction to sprout
      */
     private EdgeDirection performWalk(
-            MersenneTwisterFast random,
-            SiteNode node,
-            EnumMap<EdgeDirection, Double> valList,
-            ArrayList<EdgeDirection> skipList) {
+            MersenneTwisterFast random, SiteNode node, EnumMap<EdgeDirection, Double> spanMap) {
         switch (walkType) {
             case RANDOM:
-                return performRandomWalk(random, node, skipList);
+                return performRandomWalk(random, node, spanMap);
             case BIASED:
-                return performBiasedWalk(random, node, valList, skipList);
+                return performBiasedWalk(random, node, spanMap);
             case DETERMINISTIC:
-                return performDeterministicWalk(random, node, valList, skipList);
+                return performDeterministicWalk(random, node, spanMap);
             default:
-                return performDeterministicWalk(random, node, valList, skipList);
+                return performDeterministicWalk(random, node, spanMap);
         }
     }
 
@@ -292,67 +270,52 @@ public class PatchComponentGrowth implements Component {
             }
 
             EnumMap<EdgeDirection, ArrayList<Double>> vegfMap =
-                    buildDirectionalVEGFMap(vegfLattice, node);
+                    buildDirectionalSpanMap(vegfLattice, node);
 
             if (averageDirectionalMap(vegfMap) > vegfThreshold) {
                 angiogenicNodeMap.put(node, new ArrayList<>());
-                ArrayList<EdgeDirection> ignoredDirectionList = new ArrayList<EdgeDirection>();
 
                 Bag in = graph.getEdgesIn(node);
                 Bag out = graph.getEdgesOut(node);
+                SiteEdge inEdge = (SiteEdge) in.get(0);
+                vegfMap.remove(sites.graphFactory.getOppositeDirection(inEdge, inEdge.level));
 
-                if (in != null) {
-                    for (Object edge : in) {
-                        SiteEdge inEdge = (SiteEdge) edge;
-                        ignoredDirectionList.add(
-                                sites.graphFactory.getOppositeDirection(inEdge, inEdge.level));
-                    }
-                }
-                if (out != null) {
-                    for (Object edge : out) {
-                        SiteEdge outEdge = (SiteEdge) edge;
-                        ignoredDirectionList.add(
-                                sites.graphFactory.getDirection(outEdge, outEdge.level));
-                    }
-                }
+                SiteEdge outEdge = (SiteEdge) out.get(0);
+                vegfMap.remove(sites.graphFactory.getDirection(outEdge, outEdge.level));
 
                 EnumMap<EdgeDirection, Double> vegfAverages = getDirectionalAverages(vegfMap);
 
-                node.sproutDir = performWalk(random, node, vegfAverages, ignoredDirectionList);
+                node.sproutDir = performWalk(random, node, vegfAverages);
             }
         }
 
         boolean addFlag = propogateEdges();
         if (addFlag) {
             for (SiteNode sproutNode : angiogenicNodeMap.keySet()) {
-                if (nodesToRemove.contains(sproutNode)) {
+                if (keyNodesToRemove.contains(sproutNode)) {
                     continue;
                 }
                 if (sproutNode.anastomosis) {
                     int leadingIndex = angiogenicNodeMap.get(sproutNode).size() - 1;
-                    if (leadingIndex < 0) {
-                        nodesToRemove.add(sproutNode);
-                        continue;
-                    }
+                    assert leadingIndex >= 0;
                     SiteNode finalNode =
                             angiogenicNodeMap.get(sproutNode).get(leadingIndex).getTo();
                     SiteNode init;
                     SiteNode fin;
 
-                    LOGGER.info(" SPROUT NODE: " + sproutNode);
-                    LOGGER.info("LEADING INDEX: " + leadingIndex);
-                    LOGGER.info("FINAL NODE: " + finalNode);
+                    calculateCurrentState(graph);
 
-                    calculatePressures(graph);
-                    boolean reversed = reversePressures(graph);
-                    if (reversed) {
-                        calculatePressures(graph);
-                    }
-                    calculateFlows(graph);
-                    calculateStresses(graph);
+                    // LOGGER.info("CHECKING NEGATIVE FLOW: pt.1");
+
+                    // if (sproutNode.equals(new SiteNode(8, 80, 0))) {
+                    //     calculateCurrentState(graph);
+                    // }
+
+                    // LOGGER.info("CHECKING NEGATIVE FLOW: pt.2");
 
                     if (!graph.contains(finalNode)) {
-                        LOGGER.info("TRYING TO CONNECT ANGIOGENIC NODES.");
+                        assert finalNode.pressure > 0;
+                        assert sproutNode.pressure > 0;
                         // Connecting two angiogenic nodes
                         SiteNode targetNode = findKeyNodeInMap(finalNode, sproutNode);
                         if (targetNode == null) {
@@ -369,8 +332,8 @@ public class PatchComponentGrowth implements Component {
                             fin = targetNode;
                         }
                         angiogenicNodeMap.get(sproutNode).addAll(angiogenicNodeMap.get(targetNode));
-                        nodesToRemove.add(sproutNode);
-                        nodesToRemove.add(targetNode);
+                        keyNodesToRemove.add(sproutNode);
+                        keyNodesToRemove.add(targetNode);
                     } else {
                         if (finalNode.sproutDir != null
                                 || finalNode.anastomosis
@@ -398,21 +361,24 @@ public class PatchComponentGrowth implements Component {
                             init = sproutNode;
                             fin = finalNode;
                         }
-                        nodesToRemove.add(sproutNode);
+                        keyNodesToRemove.add(sproutNode);
+                        keyNodesToRemove.add(finalNode);
                     }
-                    if (init.pressure == 0 || fin.pressure == 0) {
-                        continue;
-                    }
+                    assert init.pressure != 0;
+                    assert fin.pressure != 0;
+                    assert init != fin;
                     addAngioEdges(
                             angiogenicNodeMap.get(sproutNode), init, fin, calculationStrategy);
                 }
             }
         }
 
-        for (SiteNode n : nodesToRemove) {
-            angiogenicNodeMap.remove(n);
+        for (SiteNode n : keyNodesToRemove) {
+            if (angiogenicNodeMap.containsKey(n)) {
+                angiogenicNodeMap.remove(n);
+            }
         }
-        nodesToRemove.clear();
+        keyNodesToRemove.clear();
     }
 
     /**
@@ -432,7 +398,7 @@ public class PatchComponentGrowth implements Component {
 
         for (SiteNode sprout : angiogenicNodeMap.keySet()) {
             if (checkForIgnoredEdges(sprout)) {
-                nodesToRemove.add(sprout);
+                keyNodesToRemove.add(sprout);
                 continue;
             }
 
@@ -440,7 +406,7 @@ public class PatchComponentGrowth implements Component {
             SiteNode tipNode;
             SiteEdge newEdge;
 
-            if (edgeList.size() > 0) {
+            if (!edgeList.isEmpty()) {
                 tipNode = edgeList.get(edgeList.size() - 1).getTo();
             } else {
                 tipNode = sprout;
@@ -452,9 +418,8 @@ public class PatchComponentGrowth implements Component {
 
             newEdge = createNewEdge(sprout.sproutDir, tipNode);
 
-            if (edgeList.size() == maxEdges || newEdge == null || graph.getDegree(sprout) > 3) {
-                nodesToRemove.add(sprout);
-                continue;
+            if (edgeList.size() == maxEdges || newEdge == null || graph.getDegree(sprout) == 3) {
+                keyNodesToRemove.add(sprout);
             } else {
                 edgeList.add(newEdge);
                 if (newEdge.isAnastomotic) {
@@ -595,74 +560,6 @@ public class PatchComponentGrowth implements Component {
     }
 
     /**
-     * Private helper function for choosing a sprout direction randomly on the from the node.
-     *
-     * @param random simulation random number generator
-     * @param node the angiogenic node object
-     * @param skipList list of directions to be skipped
-     * @return a random edge direction
-     */
-    private EdgeDirection performRandomWalk(
-            MersenneTwisterFast random, SiteNode node, ArrayList<EdgeDirection> skipList) {
-        EdgeDirection randDir;
-        do {
-            randDir = offsetDirections.get(random.nextInt(numOffsets));
-        } while (!skipList.contains(randDir));
-        return randDir;
-    }
-
-    /**
-     * Private helper function for choosing a sprout direction biased on the VEGF concentration
-     * around the node.
-     *
-     * @param random simulation random number generator
-     * @param node the angiogenic node object
-     * @param valList map of direction to their respective VEGF concentration value
-     * @param skipList list of directions to be skipped
-     * @return a biased random edge direction
-     */
-    private EdgeDirection performBiasedWalk(
-            MersenneTwisterFast random,
-            SiteNode node,
-            EnumMap<EdgeDirection, Double> valList,
-            ArrayList<EdgeDirection> skipList) {
-        for (EdgeDirection dir : skipList) {
-            valList.put(dir, 0.0);
-        }
-        EnumMap<EdgeDirection, Double> seqMap = normalizeDirectionalMap(valList);
-        double val = random.nextDouble();
-        for (EdgeDirection dir : offsetDirections) {
-            if (val < seqMap.get(dir)) {
-                return dir;
-            }
-        }
-        // otherwise return last direction
-        return offsetDirections.get(offsetDirections.size() - 1);
-    }
-
-    /**
-     * Private helper function for choosing a sprout direction deterministically on the VEGF
-     * concentration around the node.
-     *
-     * @param random simulation random number generator
-     * @param node the angiogenic node object
-     * @param valList map of direction to their respective VEGF concentration value
-     * @param skipList list of directions to be skipped
-     * @return the edge direction with highest concentration
-     */
-    private EdgeDirection performDeterministicWalk(
-            MersenneTwisterFast random,
-            SiteNode node,
-            EnumMap<EdgeDirection, Double> valList,
-            ArrayList<EdgeDirection> skipList) {
-        for (EdgeDirection dir : skipList) {
-            valList.put(dir, 0.0);
-        }
-        EdgeDirection maxDir = getMaxKey(valList);
-        return maxDir;
-    }
-
-    /**
      * Private helper function for building a map of VEGF concentration values for a given node.
      *
      * @param lattice the VEGF lattice object
@@ -670,7 +567,7 @@ public class PatchComponentGrowth implements Component {
      * @return map of {@link EdgeDirection} to {@link ArrayList} of double values from the span of
      *     the edge in that direction
      */
-    private EnumMap<EdgeDirection, ArrayList<Double>> buildDirectionalVEGFMap(
+    private EnumMap<EdgeDirection, ArrayList<Double>> buildDirectionalSpanMap(
             Lattice lattice, SiteNode node) {
         double[][][] field = lattice.getField();
         EnumMap<EdgeDirection, ArrayList<Double>> vegfMap = new EnumMap<>(EdgeDirection.class);
@@ -693,6 +590,55 @@ public class PatchComponentGrowth implements Component {
     }
 
     /**
+     * Private helper function for choosing a sprout direction randomly on the from the node.
+     *
+     * @param random simulation random number generator
+     * @param node the angiogenic node object
+     * @return a random edge direction
+     */
+    static EdgeDirection performRandomWalk(
+            MersenneTwisterFast random, SiteNode node, EnumMap<EdgeDirection, Double> spanMap) {
+        ArrayList<EdgeDirection> possibleDirections = new ArrayList<>(spanMap.keySet());
+        return possibleDirections.get(random.nextInt(possibleDirections.size()));
+    }
+
+    /**
+     * Private helper function for choosing a sprout direction biased on the VEGF concentration
+     * around the node.
+     *
+     * @param random simulation random number generator
+     * @param node the angiogenic node object
+     * @param spanMap map of direction to their respective VEGF concentration value
+     * @return a biased random edge direction
+     */
+    static EdgeDirection performBiasedWalk(
+            MersenneTwisterFast random, SiteNode node, EnumMap<EdgeDirection, Double> spanMap) {
+        EnumMap<EdgeDirection, Double> seqMap = normalizeDirectionalMap(spanMap);
+        double val = random.nextDouble();
+        for (EdgeDirection dir : seqMap.keySet()) {
+            if (val <= seqMap.get(dir)) {
+                return dir;
+            }
+        }
+        assert false;
+        return EdgeDirection.UNDEFINED;
+    }
+
+    /**
+     * Private helper function for choosing a sprout direction deterministically on the VEGF
+     * concentration around the node.
+     *
+     * @param random simulation random number generator
+     * @param node the angiogenic node object
+     * @param spanMap map of direction to their respective VEGF concentration value
+     * @return the edge direction with highest concentration
+     */
+    static EdgeDirection performDeterministicWalk(
+            MersenneTwisterFast random, SiteNode node, EnumMap<EdgeDirection, Double> spanMap) {
+        return getMaxKey(spanMap);
+    }
+
+    /**
      * Private helper function for getting the average VEGF concentration values for a given map.
      *
      * @param map map of {@link EdgeDirection} to {@link ArrayList} of double values from the span
@@ -700,10 +646,10 @@ public class PatchComponentGrowth implements Component {
      * @return map of {@link EdgeDirection} to the average VEGF concentration value across the span
      *     in that direction
      */
-    private EnumMap<EdgeDirection, Double> getDirectionalAverages(
+    static EnumMap<EdgeDirection, Double> getDirectionalAverages(
             EnumMap<EdgeDirection, ArrayList<Double>> map) {
         EnumMap<EdgeDirection, Double> averageMap = new EnumMap<>(EdgeDirection.class);
-        for (EdgeDirection dir : offsetDirections) {
+        for (EdgeDirection dir : map.keySet()) {
             double sum = 0;
             for (double value : map.get(dir)) {
                 sum += value;
@@ -720,15 +666,16 @@ public class PatchComponentGrowth implements Component {
      *     span in that direction
      * @return direction with the highest concentration
      */
-    private EdgeDirection getMaxKey(EnumMap<EdgeDirection, Double> map) {
+    static EdgeDirection getMaxKey(EnumMap<EdgeDirection, Double> map) {
         EdgeDirection maxDir = EdgeDirection.UNDEFINED;
         double maxVal = 0;
-        for (EdgeDirection dir : offsetDirections) {
+        for (EdgeDirection dir : map.keySet()) {
             if (map.get(dir) > maxVal) {
                 maxDir = dir;
                 maxVal = map.get(dir);
             }
         }
+        assert maxDir != EdgeDirection.UNDEFINED;
         return maxDir;
     }
 
@@ -739,12 +686,12 @@ public class PatchComponentGrowth implements Component {
      * @return {@link EnumMap} of {@link EdgeDirection} to normalized values (range between 0 and
      *     1).
      */
-    private EnumMap<EdgeDirection, Double> normalizeDirectionalMap(
+    static EnumMap<EdgeDirection, Double> normalizeDirectionalMap(
             EnumMap<EdgeDirection, Double> map) {
         EnumMap<EdgeDirection, Double> normalizedMap = new EnumMap<>(EdgeDirection.class);
         double norm = sumMap(map);
         double prev = 0;
-        for (EdgeDirection dir : offsetDirections) {
+        for (EdgeDirection dir : map.keySet()) {
             prev = prev + map.get(dir) / norm;
             normalizedMap.put(dir, prev);
         }
@@ -757,9 +704,9 @@ public class PatchComponentGrowth implements Component {
      * @param map {@link EnumMap} of {@link EdgeDirection} to double values.
      * @return sum of the values in the map
      */
-    private double sumMap(EnumMap<EdgeDirection, Double> map) {
+    static double sumMap(EnumMap<EdgeDirection, Double> map) {
         double sum = 0;
-        for (EdgeDirection dir : offsetDirections) {
+        for (EdgeDirection dir : map.keySet()) {
             sum += map.get(dir);
         }
         return sum;
@@ -771,10 +718,10 @@ public class PatchComponentGrowth implements Component {
      * @param map {@link EnumMap} of {@link EdgeDirection} to {@link ArrayList} of double values.
      * @return {@code double} object.
      */
-    private double averageDirectionalMap(EnumMap<EdgeDirection, ArrayList<Double>> map) {
+    static double averageDirectionalMap(EnumMap<EdgeDirection, ArrayList<Double>> map) {
         double sum = 0;
         int count = 0;
-        for (EdgeDirection dir : offsetDirections) {
+        for (EdgeDirection dir : map.keySet()) {
             for (double value : map.get(dir)) {
                 sum += value;
                 count++;
@@ -794,12 +741,12 @@ public class PatchComponentGrowth implements Component {
     private void addAngioEdges(
             ArrayList<SiteEdge> list, SiteNode start, SiteNode end, Calculation calc) {
 
-        LOGGER.info("ADDING ANGIOGENIC EDGES. TICK: " + tick);
-        LOGGER.info("TRYING TO ADD: " + start.id + " -> " + end.id);
-        LOGGER.info("LIST: " + list);
-        if (list.size() > 1) {
-            LOGGER.info("LIST SIZE: " + list.size());
-        }
+        // LOGGER.info("ADDING ANGIOGENIC EDGES. TICK: " + tick);
+        // LOGGER.info("TRYING TO ADD: " + start.id + " -> " + end.id);
+        // LOGGER.info("LIST: " + list);
+        // if (list.size() > 1) {
+        //     LOGGER.info("LIST SIZE: " + list.size());
+        // }
         // check for cycle
         path(graph, end, start);
         if (end.prev != null) {
@@ -821,14 +768,6 @@ public class PatchComponentGrowth implements Component {
 
         // update edges in the minimal path between start and end
         ArrayList<SiteEdge> angioPath = getPath(tempGraph, start, end);
-
-        if (angioPath == null) {
-            LOGGER.info("START: " + start);
-            LOGGER.info("END: " + end);
-            LOGGER.info("The list is: " + list);
-            LOGGER.info("angioPath is null.");
-            return;
-        }
 
         for (SiteEdge edge : angioPath) {
             edge.getTo().addTime = tick;
@@ -862,7 +801,7 @@ public class PatchComponentGrowth implements Component {
                     removeEdgeList(angioPath);
                     LOGGER.info("Failed to add " + list + ".");
                 } else {
-                    LOGGER.info("Added " + angioPath.size() + " edges.");
+                    LOGGER.info("Added " + angioPath.size() + " edges at tick: " + tick);
                 }
                 break;
         }
@@ -875,12 +814,14 @@ public class PatchComponentGrowth implements Component {
      * @param edge the original edge with specified radius
      * @return new radius for the edges
      */
-    private double calculateEvenSplitRadius(SiteEdge edge) {
+    private static double calculateEvenSplitRadius(SiteEdge edge) {
         double radius = edge.radius;
         double length = edge.length;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
         double flow = calculateLocalFlow(radius, length, deltaP);
         double newRadius;
+
+        LOGGER.info("calculating even split, maybe leading to failure");
         try {
             newRadius =
                     Solver.bisection(
@@ -989,11 +930,6 @@ public class PatchComponentGrowth implements Component {
             }
         }
 
-        if (arteries.size() == 0 || veins.size() == 0) {
-            LOGGER.info("No arteries or veins found, not updating roots.");
-            failed = true;
-        }
-
         if (failed) {
             resetRadii(updatedEdges, oldRadii);
             return;
@@ -1010,15 +946,10 @@ public class PatchComponentGrowth implements Component {
      */
     private Outcome recalculateRadii(
             ArrayList<SiteEdge> ignoredEdges, SiteNode start, SiteNode end, SiteNode intersection) {
-
         Bag edges = graph.getEdgesOut(start);
 
-        if (edges == null) {
-            return Outcome.FAILURE;
-        }
-        if (edges.size() < 2) {
-            return Outcome.FAILURE;
-        }
+        assert edges != null;
+        assert edges.size() >= 2;
 
         Integer angioIndex = ignoredEdges.contains(edges.get(0)) ? 0 : 1;
         Integer nonAngioIndex = angioIndex ^ 1;
@@ -1026,6 +957,12 @@ public class PatchComponentGrowth implements Component {
         Double divertedFlow = calculateLocalFlow(CAPILLARY_RADIUS, ignoredEdges, deltaP);
         Double originalFlow = ((SiteEdge) edges.get(nonAngioIndex)).flow;
         if (divertedFlow > originalFlow) {
+            LOGGER.info("Diverted flow is greater than original flow, cannot update radius.");
+            LOGGER.info("Diverted flow: " + divertedFlow);
+            LOGGER.info("Original flow: " + originalFlow);
+            if (originalFlow < 0) {
+                LOGGER.info("Original flow is negative, cannot update radius.");
+            }
             return Outcome.FAILURE;
         }
         if (intersection != null) {
@@ -1036,6 +973,7 @@ public class PatchComponentGrowth implements Component {
                 //         divertedFlow,
                 //         Adjustment.INCREASE,
                 //         ignoredEdges);
+                LOGGER.info("Intersection is a root, cannot update radius.");
                 return Outcome.FAILURE;
             }
 
@@ -1046,6 +984,7 @@ public class PatchComponentGrowth implements Component {
                             Adjustment.DECREASE,
                             ignoredEdges)
                     == Outcome.FAILURE) {
+                LOGGER.info("Failed to update radius for non-angiogenic edge.");
                 return Outcome.FAILURE;
             }
 
@@ -1056,6 +995,7 @@ public class PatchComponentGrowth implements Component {
                             Adjustment.INCREASE,
                             ignoredEdges)
                     == Outcome.FAILURE) {
+                LOGGER.info("Failed to update radius for angiogenic edge.");
                 return Outcome.FAILURE;
             }
 
@@ -1065,6 +1005,7 @@ public class PatchComponentGrowth implements Component {
                 path(graph, start, boundary);
                 if (boundary.prev != null
                         && ((SiteEdge) edges.get(angioIndex)).radius > MINIMUM_CAPILLARY_RADIUS) {
+                    LOGGER.info("Boundary is not null and radius is greater than minimum.");
                     return Outcome.FAILURE;
                     // return updateRadiusToRoot(
                     //         (SiteEdge) edges.get(angioIndex),
@@ -1074,6 +1015,8 @@ public class PatchComponentGrowth implements Component {
                     //         ignoredEdges);
                 }
             }
+            LOGGER.info("No intersection found, cannot update radius.");
+            return Outcome.FAILURE;
         }
         return Outcome.SUCCESS;
     }
@@ -1141,6 +1084,7 @@ public class PatchComponentGrowth implements Component {
             }
             if (calculateRadius(e, flow, adjustment) == Outcome.FAILURE) {
                 resetRadii(edges, oldRadii);
+                LOGGER.info("Failed to update radius for edges, resetting to old radii.");
                 return Outcome.FAILURE;
             }
         }
@@ -1160,7 +1104,12 @@ public class PatchComponentGrowth implements Component {
         double updatedFlow = (adjustment == Adjustment.DECREASE) ? -1 * flow : flow;
         double originalRadius = edge.radius;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
+
+        assert edge.getFrom().pressure > 0;
+        assert edge.getTo().pressure > 0;
+
         double originalFlow = calculateLocalFlow(originalRadius, edge.length, deltaP);
+
         // double originalFlow = edge.flow;
         Function f =
                 (double r) ->
@@ -1170,10 +1119,12 @@ public class PatchComponentGrowth implements Component {
         try {
             newRadius = Solver.bisection(f, 1E-6, 5 * MAXIMUM_CAPILLARY_RADIUS, 1E-6);
         } catch (Exception e) {
+            LOGGER.info("Bisection failed: " + e.getMessage());
             return Outcome.FAILURE;
         }
 
         if (newRadius == 1E-6) {
+            LOGGER.info("New radius is too small: " + newRadius);
             return Outcome.FAILURE;
         }
         edge.radius = newRadius;

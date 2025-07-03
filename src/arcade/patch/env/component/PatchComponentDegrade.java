@@ -119,6 +119,7 @@ public class PatchComponentDegrade implements Component {
 
                     if (edge.wall <= MINIMUM_WALL_THICKNESS
                             && (edge.shear < shearThreshold || Double.isNaN(edge.shear))) {
+                        LOGGER.info("Removing Edge.");
                         graph.removeEdge(edge);
                         edge.getFrom().pressure = Double.NaN;
                         edge.getTo().pressure = Double.NaN;

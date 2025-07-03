@@ -1,6 +1,8 @@
 package arcade.patch.env.component;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -181,5 +183,67 @@ public class PatchComponentGrowthTest {
                 .getOffsets();
         PatchComponentGrowth component = new PatchComponentGrowth(seriesMock, parameters);
         assertDoesNotThrow(() -> component.register(simMock, "COMPATIBLE"));
+    }
+
+    @Test
+    public void getDirectionalAverages_givenMap_returnsCorrectMap() {
+        EnumMap<EdgeDirection, ArrayList<Double>> map = new EnumMap<>(EdgeDirection.class);
+        map.put(EdgeDirection.UP, new ArrayList<>(Arrays.asList(1.0, 2.0, 3.0)));
+        map.put(EdgeDirection.DOWN, new ArrayList<>(Arrays.asList(4.0, 5.0, 6.0)));
+        map.put(EdgeDirection.LEFT, new ArrayList<>(Arrays.asList(7.0, 8.0, 9.0)));
+        map.put(EdgeDirection.RIGHT, new ArrayList<>(Arrays.asList(10.0, 11.0, 12.0)));
+        EnumMap<EdgeDirection, Double> averageMap =
+                PatchComponentGrowth.getDirectionalAverages(map);
+        assertEquals(averageMap.get(EdgeDirection.UP), 2.0);
+        assertEquals(averageMap.get(EdgeDirection.DOWN), 5.0);
+        assertEquals(averageMap.get(EdgeDirection.LEFT), 8.0);
+        assertEquals(averageMap.get(EdgeDirection.RIGHT), 11.0);
+    }
+
+    @Test
+    public void getMaxKey_givenMap_returnsCorrectDirection() {
+        EnumMap<EdgeDirection, Double> map = new EnumMap<>(EdgeDirection.class);
+        map.put(EdgeDirection.UP, 1.0);
+        map.put(EdgeDirection.DOWN, 2.0);
+        map.put(EdgeDirection.LEFT, 3.0);
+        map.put(EdgeDirection.RIGHT, 4.0);
+        assertEquals(EdgeDirection.RIGHT, PatchComponentGrowth.getMaxKey(map));
+    }
+
+    @Test
+    public void normalizeDirectionalMap_givenMap_returnsNormalizedMap() {
+        EnumMap<EdgeDirection, Double> map = new EnumMap<>(EdgeDirection.class);
+        map.put(EdgeDirection.UP, 0.5);
+        map.put(EdgeDirection.DOWN, 0.5);
+        map.put(EdgeDirection.LEFT, 0.5);
+        map.put(EdgeDirection.RIGHT, 0.5);
+        EnumMap<EdgeDirection, Double> normalizedMap =
+                PatchComponentGrowth.normalizeDirectionalMap(map);
+        assertEquals(normalizedMap.get(EdgeDirection.UP), 0.25);
+        assertEquals(normalizedMap.get(EdgeDirection.RIGHT), 0.5);
+        assertEquals(normalizedMap.get(EdgeDirection.DOWN), 0.75);
+        assertEquals(normalizedMap.get(EdgeDirection.LEFT), 1.0);
+        assertEquals(normalizedMap.keySet().size(), 4);
+        assertNull(normalizedMap.get(EdgeDirection.UNDEFINED));
+    }
+
+    @Test
+    public void sumMap_givenMap_returnsCorrectSum() {
+        EnumMap<EdgeDirection, Double> map = new EnumMap<>(EdgeDirection.class);
+        map.put(EdgeDirection.UP, 1.0);
+        map.put(EdgeDirection.DOWN, 2.0);
+        map.put(EdgeDirection.LEFT, 3.0);
+        map.put(EdgeDirection.RIGHT, 4.0);
+        assertEquals(10.0, PatchComponentGrowth.sumMap(map));
+    }
+
+    @Test
+    public void averageDirectionalMap_givenMap_returnsCorrectAverage() {
+        EnumMap<EdgeDirection, ArrayList<Double>> map = new EnumMap<>(EdgeDirection.class);
+        map.put(EdgeDirection.UP, new ArrayList<>(Arrays.asList(1.0, 2.0, 3.0)));
+        map.put(EdgeDirection.DOWN, new ArrayList<>(Arrays.asList(4.0, 5.0, 6.0)));
+        map.put(EdgeDirection.LEFT, new ArrayList<>(Arrays.asList(7.0, 8.0, 9.0)));
+        map.put(EdgeDirection.RIGHT, new ArrayList<>(Arrays.asList(10.0, 11.0, 12.0)));
+        assertEquals(6.5, PatchComponentGrowth.averageDirectionalMap(map));
     }
 }

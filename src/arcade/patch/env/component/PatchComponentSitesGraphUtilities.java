@@ -489,6 +489,10 @@ abstract class PatchComponentSitesGraphUtilities {
             if (div != 0) {
                 x0[id] /= div;
             }
+
+            if (node.pressure > 0) {
+                x0[id] = node.pressure;
+            }
         }
 
         double[][] sA = Matrix.scale(mA, 1E-7);
@@ -990,7 +994,10 @@ abstract class PatchComponentSitesGraphUtilities {
     static ArrayList<SiteEdge> getPath(Graph graph, SiteNode start, SiteNode end) {
         path(graph, start, end);
         ArrayList<SiteEdge> path = new ArrayList<>();
-        SiteNode node = (SiteNode) graph.lookup(end);
+        SiteNode node = end;
+        if (node.prev == null) {
+            node = (SiteNode) graph.lookup(end);
+        }
         while (node != null && !node.equals(start)) {
             Bag b = graph.getEdgesIn(node);
             if (b.numObjs == 1) {
@@ -1233,13 +1240,7 @@ abstract class PatchComponentSitesGraphUtilities {
             gCurr = gNew;
         } while (list.size() != 0);
 
-        calculatePressures(graph);
-        boolean reversed = reversePressures(graph);
-        if (reversed) {
-            calculatePressures(graph);
-        }
-        calculateFlows(graph);
-        calculateStresses(graph);
+        calculateCurrentState(graph);
 
         // Set oxygen nodes.
         for (Object obj : graph.getAllEdges()) {
@@ -1253,6 +1254,36 @@ abstract class PatchComponentSitesGraphUtilities {
                 from.oxygen = Double.NaN;
             }
         }
+    }
+
+    /**
+     * Updates hemodynamic properties based on the current state of the graph.
+     *
+     * @param graph the graph object
+     */
+    static void calculateCurrentState(Graph graph) {
+        do {
+            calculatePressures(graph);
+            boolean reversed = reversePressures(graph);
+            if (reversed) {
+                calculatePressures(graph);
+            }
+            calculateFlows(graph);
+            calculateStresses(graph);
+        } while (checkForNegativeFlow(graph));
+    }
+
+    static boolean checkForNegativeFlow(Graph graph) {
+        boolean negative = false;
+        for (Object obj : graph.getAllEdges()) {
+            SiteEdge edge = (SiteEdge) obj;
+            if (edge.flow < 0) {
+                negative = true;
+                LOGGER.info("Negative flow detected, recalculating.");
+                break;
+            }
+        }
+        return negative;
     }
 
     /**
@@ -1275,6 +1306,7 @@ abstract class PatchComponentSitesGraphUtilities {
                 for (Object obj : out) {
                     SiteEdge edge = (SiteEdge) obj;
                     if (edge.flow < MINIMUM_FLOW_RATE || Double.isNaN(edge.flow)) {
+                        LOGGER.info("Removing Edge.");
                         graph.removeEdge(edge);
                         edge.getFrom().pressure = Double.NaN;
                         edge.getTo().pressure = Double.NaN;
@@ -1290,6 +1322,7 @@ abstract class PatchComponentSitesGraphUtilities {
                 for (Object obj : in) {
                     SiteEdge edge = (SiteEdge) obj;
                     if (edge.flow < MINIMUM_FLOW_RATE || Double.isNaN(edge.flow)) {
+                        LOGGER.info("Removing Edge.");
                         graph.removeEdge(edge);
                         edge.getFrom().pressure = Double.NaN;
                         edge.getTo().pressure = Double.NaN;
@@ -1307,11 +1340,13 @@ abstract class PatchComponentSitesGraphUtilities {
                     double totalFlow = edge1.flow + edge2.flow;
 
                     if (edge1.flow / totalFlow < MINIMUM_FLOW_PERCENT) {
+                        LOGGER.info("Removing Edge.");
                         graph.removeEdge(edge1);
                         edge1.getFrom().pressure = Double.NaN;
                         edge1.getTo().pressure = Double.NaN;
                         updateGraph(graph);
                     } else if (edge2.flow / totalFlow < MINIMUM_FLOW_PERCENT) {
+                        LOGGER.info("Removing Edge.");
                         graph.removeEdge(edge2);
                         edge2.getFrom().pressure = Double.NaN;
                         edge2.getTo().pressure = Double.NaN;
@@ -1322,6 +1357,7 @@ abstract class PatchComponentSitesGraphUtilities {
         }
 
         if (removeMin) {
+            LOGGER.info("Removing Edge.");
             graph.removeEdge(minEdge);
             minEdge.getFrom().pressure = Double.NaN;
             minEdge.getTo().pressure = Double.NaN;

@@ -9,11 +9,16 @@ import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Graph;
 import arcade.core.util.MiniBox;
+import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
 import arcade.patch.env.location.CoordinateXYZ;
+import arcade.patch.util.PatchEnums.Ordering;
+
 import static arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MAXIMUM_WALL_RADIUS_FRACTION;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MINIMUM_CAPILLARY_RADIUS;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MINIMUM_WALL_THICKNESS;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.updateGraph;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculateCurrentState;
 import static arcade.patch.util.PatchEnums.Ordering;
 
 /**
@@ -168,6 +173,7 @@ public class PatchComponentRemodel implements Component {
             if (edge.radius < MINIMUM_CAPILLARY_RADIUS
                     || edge.wall < MINIMUM_WALL_THICKNESS
                     || Double.isNaN(edge.radius)) {
+                LOGGER.info("Removing Edge.");
                 graph.removeEdge(edge);
                 edge.getFrom().pressure = Double.NaN;
                 edge.getTo().pressure = Double.NaN;
@@ -178,15 +184,9 @@ public class PatchComponentRemodel implements Component {
         // If any edges are removed, update the graph edges that are ignored.
         // Otherwise, recalculate pressure, flow, and stresses.
         if (removed) {
-            PatchComponentSitesGraphUtilities.updateGraph(graph);
+            updateGraph(graph);
         } else {
-            PatchComponentSitesGraphUtilities.calculatePressures(graph);
-            boolean reversed = PatchComponentSitesGraphUtilities.reversePressures(graph);
-            if (reversed) {
-                PatchComponentSitesGraphUtilities.calculatePressures(graph);
-            }
-            PatchComponentSitesGraphUtilities.calculateFlows(graph);
-            PatchComponentSitesGraphUtilities.calculateStresses(graph);
+            calculateCurrentState(graph);
         }
     }
 
