@@ -3,6 +3,7 @@ package arcade.patch.env.component;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.logging.Logger;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
@@ -45,6 +46,9 @@ import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.*;
  * {@code A} / {@code a} for an artery or {@code V} / {@code v} for a vein.
  */
 public abstract class PatchComponentSitesGraph extends PatchComponentSites {
+    /** Logger for {@code PatchComponentSitesGraph}. */
+    private static final Logger LOGGER = Logger.getLogger(PatchComponentSitesGraph.class.getName());
+
     /** Tolerance for difference in internal and external concentrations. */
     private static final double DELTA_TOLERANCE = 1E-8;
 
@@ -362,6 +366,9 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                                                     - (current[k][i][j] + delta[k][i][j])),
                                             0);
                         } else {
+                            if ((extConcNew - (current[k][i][j] + delta[k][i][j])) == Double.NaN) {
+                                LOGGER.info("NaN detected.");
+                            }
                             delta[k][i][j] +=
                                     Math.max((extConcNew - (current[k][i][j] + delta[k][i][j])), 0);
                         }
@@ -622,6 +629,22 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
          */
         public double getFlow() {
             return flow;
+        }
+
+        public String getFraction() {
+            StringBuilder sb = new StringBuilder();
+            for (String key : fraction.keySet()) {
+                sb.append(key + ":" + fraction.get(key) + ",");
+            }
+            return sb.toString();
+        }
+
+        public String getTransport() {
+            StringBuilder sb = new StringBuilder();
+            for (String key : transport.keySet()) {
+                sb.append(key + ":" + transport.get(key) + ",");
+            }
+            return sb.toString();
         }
     }
 

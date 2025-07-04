@@ -27,8 +27,6 @@ import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeLevel;
 import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeType;
 import arcade.patch.env.component.PatchComponentSitesGraphFactory.Root;
 import arcade.patch.env.location.CoordinateXYZ;
-import arcade.patch.util.PatchEnums.Ordering;
-
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.CAPILLARY_RADIUS;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MAXIMUM_CAPILLARY_RADIUS;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MINIMUM_CAPILLARY_RADIUS;
@@ -280,10 +278,10 @@ public class PatchComponentGrowth implements Component {
                 Bag in = graph.getEdgesIn(node);
                 Bag out = graph.getEdgesOut(node);
                 SiteEdge inEdge = (SiteEdge) in.get(0);
-                vegfMap.remove(sites.graphFactory.getOppositeDirection(inEdge, inEdge.level));
+                vegfMap.remove(sites.graphFactory.getOppositeDirection(inEdge, DEFAULT_EDGE_LEVEL));
 
                 SiteEdge outEdge = (SiteEdge) out.get(0);
-                vegfMap.remove(sites.graphFactory.getDirection(outEdge, outEdge.level));
+                vegfMap.remove(sites.graphFactory.getDirection(outEdge, DEFAULT_EDGE_LEVEL));
 
                 EnumMap<EdgeDirection, Double> vegfAverages = getDirectionalAverages(vegfMap);
 
@@ -785,7 +783,6 @@ public class PatchComponentGrowth implements Component {
             edge.transport.putIfAbsent("GLUCOSE", 0.);
             edge.transport.putIfAbsent("OXYGEN", 0.);
             edge.fraction.putIfAbsent("GLUCOSE", 1.);
-            edge.fraction.putIfAbsent("OXYGEN", 1.);
             edge.length = sites.graphFactory.getLength(edge, DEFAULT_EDGE_LEVEL);
             edge.isPerfused = true;
         }
@@ -827,7 +824,6 @@ public class PatchComponentGrowth implements Component {
         double flow = calculateLocalFlow(radius, length, deltaP);
         double newRadius;
 
-        LOGGER.info("calculating even split, maybe leading to failure");
         try {
             newRadius =
                     Solver.bisection(
@@ -880,9 +876,7 @@ public class PatchComponentGrowth implements Component {
         Double arteryFlow = newFlow / arteries.size();
 
         for (ArrayList<SiteEdge> path : pathsArteries) {
-            if (!path.get(0).getFrom().isRoot) {
-                throw new ArithmeticException("Root is not the start of the path");
-            }
+            assert !path.get(0).getFrom().isRoot;
 
             updatedEdges.addAll(path);
             for (SiteEdge e : path) {
@@ -966,6 +960,8 @@ public class PatchComponentGrowth implements Component {
             LOGGER.info("Diverted flow is greater than original flow, cannot update radius.");
             LOGGER.info("Diverted flow: " + divertedFlow);
             LOGGER.info("Original flow: " + originalFlow);
+            LOGGER.info("Edge 1: " + ((SiteEdge) edges.get(0)).flow);
+            LOGGER.info("Edge 2: " + ((SiteEdge) edges.get(1)).flow);
             if (originalFlow < 0) {
                 LOGGER.info("Original flow is negative, cannot update radius.");
             }

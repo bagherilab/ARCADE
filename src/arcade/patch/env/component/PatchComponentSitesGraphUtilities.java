@@ -1306,7 +1306,7 @@ abstract class PatchComponentSitesGraphUtilities {
                 for (Object obj : out) {
                     SiteEdge edge = (SiteEdge) obj;
                     if (edge.flow < MINIMUM_FLOW_RATE || Double.isNaN(edge.flow)) {
-                        LOGGER.info("Removing Edge.");
+                        LOGGER.info("Removing Edge. 1309");
                         graph.removeEdge(edge);
                         edge.getFrom().pressure = Double.NaN;
                         edge.getTo().pressure = Double.NaN;
@@ -1322,7 +1322,7 @@ abstract class PatchComponentSitesGraphUtilities {
                 for (Object obj : in) {
                     SiteEdge edge = (SiteEdge) obj;
                     if (edge.flow < MINIMUM_FLOW_RATE || Double.isNaN(edge.flow)) {
-                        LOGGER.info("Removing Edge.");
+                        LOGGER.info("Removing Edge. 1325");
                         graph.removeEdge(edge);
                         edge.getFrom().pressure = Double.NaN;
                         edge.getTo().pressure = Double.NaN;
@@ -1340,13 +1340,13 @@ abstract class PatchComponentSitesGraphUtilities {
                     double totalFlow = edge1.flow + edge2.flow;
 
                     if (edge1.flow / totalFlow < MINIMUM_FLOW_PERCENT) {
-                        LOGGER.info("Removing Edge.");
+                        LOGGER.info("Removing Edge. 1343");
                         graph.removeEdge(edge1);
                         edge1.getFrom().pressure = Double.NaN;
                         edge1.getTo().pressure = Double.NaN;
                         updateGraph(graph);
                     } else if (edge2.flow / totalFlow < MINIMUM_FLOW_PERCENT) {
-                        LOGGER.info("Removing Edge.");
+                        LOGGER.info("Removing Edge. 1349");
                         graph.removeEdge(edge2);
                         edge2.getFrom().pressure = Double.NaN;
                         edge2.getTo().pressure = Double.NaN;
@@ -1357,7 +1357,7 @@ abstract class PatchComponentSitesGraphUtilities {
         }
 
         if (removeMin) {
-            LOGGER.info("Removing Edge.");
+            LOGGER.info("Removing Edge. 1360");
             graph.removeEdge(minEdge);
             minEdge.getFrom().pressure = Double.NaN;
             minEdge.getTo().pressure = Double.NaN;
