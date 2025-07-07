@@ -454,6 +454,9 @@ public abstract class PatchCell implements Cell {
                 // Calculate score by introducing error to the location check
                 // and adding affinity to move toward center.
                 double normConc = sim.getLattice("GLUCOSE").getAverageValue(location) / maxGlucose;
+                if (Double.isNaN(normConc)) {
+                    normConc = 0;
+                }
                 double gluc = (accuracy * normConc + (1 - accuracy) * random.nextDouble());
                 double dist = ((currR - loc.getPlanarDistance()) + 1) / 2.0;
                 double score = affinity * dist + (1 - affinity) * gluc;
