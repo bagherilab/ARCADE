@@ -904,9 +904,8 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                 node.oxygen = Solver.bisection(func, 0, MAX_OXYGEN_PARTIAL_PRESSURE);
             }
 
-            if (node.oxygen == 0 || Double.isNaN(node.oxygen)) {
-                LOGGER.info("we might have a problem here");
-            }
+            assert node.oxygen >= 0;
+            assert !Double.isNaN(node.oxygen);
 
             // Recurse through output edges.
             for (Object obj : out) {
