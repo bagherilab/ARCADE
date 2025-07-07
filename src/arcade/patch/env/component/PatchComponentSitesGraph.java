@@ -13,9 +13,6 @@ import arcade.core.util.Graph.Node;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Solver;
 import arcade.core.util.Solver.Function;
-import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeLevel;
-import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeTag;
-import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeType;
 import arcade.patch.env.location.CoordinateXYZ;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.util.PatchEnums.ComponentType;
@@ -243,29 +240,11 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      * @param random the random number generator
      */
     void complexStep(MersenneTwisterFast random) {
-        Bag allEdges = new Bag(graph.getAllEdges());
 
-        // Check if graph has become unconnected.
-        boolean isConnected = false;
-        for (Object obj : allEdges) {
-            SiteEdge edge = (SiteEdge) obj;
-            if (edge.getFrom().isRoot && !edge.isIgnored) {
-                isConnected = true;
-                break;
-            }
-        }
-        if (!isConnected) {
-            for (SiteLayer layer : layers) {
-                for (int k = 0; k < latticeHeight; k++) {
-                    for (int i = 0; i < latticeLength; i++) {
-                        for (int j = 0; j < latticeWidth; j++) {
-                            layer.delta[k][i][j] = 0;
-                        }
-                    }
-                }
-            }
+        if (checkDisconnected()) {
             return;
         }
+        ;
 
         // Iterate through each molecule.
         for (SiteLayer layer : layers) {
@@ -285,10 +264,11 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                 }
             }
 
-            allEdges.shuffle(random);
+            Bag currentEdges = new Bag(graph.getAllEdges());
+            currentEdges.shuffle(random);
 
             // Iterate through each edge in graph.
-            for (Object obj : allEdges) {
+            for (Object obj : currentEdges) {
                 SiteEdge edge = (SiteEdge) obj;
                 if (edge.isIgnored) {
                     continue;
@@ -381,6 +361,34 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         }
     }
 
+    private boolean checkDisconnected() {
+        Bag allEdges = new Bag(graph.getAllEdges());
+
+        // Check if graph has become unconnected.
+        boolean isConnected = false;
+        for (Object obj : allEdges) {
+            SiteEdge edge = (SiteEdge) obj;
+            if (edge.getFrom().isRoot && !edge.isIgnored) {
+                isConnected = true;
+                break;
+            }
+        }
+        if (!isConnected) {
+            for (SiteLayer layer : layers) {
+                for (int k = 0; k < latticeHeight; k++) {
+                    for (int i = 0; i < latticeLength; i++) {
+                        for (int j = 0; j < latticeWidth; j++) {
+                            layer.delta[k][i][j] = 0;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * Extension of {@link arcade.core.util.Graph.Node} for site nodes.
      *
@@ -402,6 +410,12 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         /** Distance for Dijkstra's algorithm. */
         int distance;
 
+        /** Tick for the last update during growth. */
+        int lastUpdate;
+
+        /** Tick for when the node was added to the graph. */
+        int addTime;
+
         /** Parent node. */
         SiteNode prev;
 
@@ -419,7 +433,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         }
 
         @Override
-        public Node duplicate() {
+        public SiteNode duplicate() {
             return new SiteNode(x, y, z);
         }
 
@@ -517,7 +531,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
          * @param type the edge type
          * @param level the graph resolution level
          */
-        SiteEdge(Node from, Node to, EdgeType type, EdgeLevel level) {
+        SiteEdge(SiteNode from, SiteNode to, EdgeType type, EdgeLevel level) {
             super(from, to);
             this.type = type;
             this.level = level;
@@ -608,6 +622,22 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
          */
         public double getFlow() {
             return flow;
+        }
+
+        public String getFraction() {
+            StringBuilder sb = new StringBuilder();
+            for (String key : fraction.keySet()) {
+                sb.append(key + ":" + fraction.get(key) + ",");
+            }
+            return sb.toString();
+        }
+
+        public String getTransport() {
+            StringBuilder sb = new StringBuilder();
+            for (String key : transport.keySet()) {
+                sb.append(key + ":" + transport.get(key) + ",");
+            }
+            return sb.toString();
         }
     }
 
@@ -763,6 +793,10 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                 }
             }
 
+            // If the flow out is zero exit and return no children.
+            if (flowOut == 0) {
+                return children;
+            }
             // Assign new fractions.
             for (Object obj : out) {
                 SiteEdge edge = (SiteEdge) obj;
