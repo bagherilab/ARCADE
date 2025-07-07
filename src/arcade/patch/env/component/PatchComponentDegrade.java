@@ -14,10 +14,8 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.Graph;
 import arcade.core.util.MiniBox;
 import arcade.patch.agent.cell.PatchCellCancer;
-import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.CoordinateXYZ;
-import arcade.patch.util.PatchEnums.Ordering;
 import static arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MINIMUM_WALL_THICKNESS;
 import static arcade.patch.util.PatchEnums.Ordering;
@@ -134,7 +132,6 @@ public class PatchComponentDegrade implements Component {
         // If any edges are removed, update the graph edges that are ignored.
         // Otherwise, recalculate calculate stresses.
         if (removed) {
-            LOGGER.info("REMOVING EDGES.");
             PatchComponentSitesGraphUtilities.updateGraph(graph);
         } else {
             PatchComponentSitesGraphUtilities.calculateStresses(graph);

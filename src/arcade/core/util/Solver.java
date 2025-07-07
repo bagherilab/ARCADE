@@ -370,7 +370,6 @@ public class Solver {
             double[] r = subtract(vec, multiply(mat, xCurr));
             error = normalize(r);
         }
-        LOGGER.info("Finished SOR iteration, error: " + error + ", i: " + i);
         return xCurr;
     }
 

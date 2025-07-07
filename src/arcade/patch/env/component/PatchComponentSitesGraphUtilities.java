@@ -1205,40 +1205,7 @@ abstract class PatchComponentSitesGraphUtilities {
      * @param graph the graph object
      */
     static void updateGraph(Graph graph) {
-        ArrayList<SiteEdge> list;
-        Graph gCurr = graph;
-
-        do {
-            Graph gNew = new Graph();
-            list = new ArrayList<>();
-
-            for (Object obj : new Bag(gCurr.getAllEdges())) {
-                SiteEdge edge = (SiteEdge) obj;
-                SiteNode to = edge.getTo();
-                SiteNode from = edge.getFrom();
-                if (edge.isIgnored) {
-                    continue;
-                }
-
-                // Check for leaves.
-                if (gCurr.getOutDegree(to) == 0 && !to.isRoot) {
-                    list.add(edge);
-                } else if (gCurr.getInDegree(from) == 0 && !from.isRoot) {
-                    list.add(edge);
-                } else {
-                    gNew.addEdge(edge);
-                }
-            }
-
-            // Update leaves to be ignored.
-            for (SiteEdge edge : list) {
-                edge.isIgnored = true;
-                edge.getFrom().pressure = Double.NaN;
-                edge.getTo().pressure = Double.NaN;
-            }
-
-            gCurr = gNew;
-        } while (list.size() != 0);
+        trimGraph(graph);
 
         calculateCurrentState(graph);
 
@@ -1273,6 +1240,45 @@ abstract class PatchComponentSitesGraphUtilities {
         } while (checkForNegativeFlow(graph));
     }
 
+    static void trimGraph(Graph graph) {
+        ArrayList<SiteEdge> list;
+        Graph gCurr = graph;
+
+        do {
+            Graph gNew = new Graph();
+            list = new ArrayList<>();
+
+            for (Object obj : new Bag(gCurr.getAllEdges())) {
+                SiteEdge edge = (SiteEdge) obj;
+                SiteNode to = edge.getTo();
+                SiteNode from = edge.getFrom();
+                if (edge.isIgnored) {
+                    continue;
+                }
+
+                // Check for leaves.
+                if (gCurr.getOutDegree(to) == 0 && !to.isRoot) {
+                    list.add(edge);
+                } else if (gCurr.getInDegree(from) == 0 && !from.isRoot) {
+                    list.add(edge);
+                } else {
+                    gNew.addEdge(edge);
+                }
+            }
+
+            // Update leaves to be ignored.
+            for (SiteEdge edge : list) {
+                edge.isIgnored = true;
+                edge.getFrom().pressure = Double.NaN;
+                edge.getTo().pressure = Double.NaN;
+            }
+
+            gCurr = gNew;
+        } while (list.size() != 0);
+    }
+
+    // This *MIGHT* be a problem, I think we could revisit adding this check.
+    // I'm not sure why it would get to the point where there would be a negative flow in the graph?
     static boolean checkForNegativeFlow(Graph graph) {
         boolean negative = false;
         for (Object obj : graph.getAllEdges()) {
@@ -1306,7 +1312,8 @@ abstract class PatchComponentSitesGraphUtilities {
                 for (Object obj : out) {
                     SiteEdge edge = (SiteEdge) obj;
                     if (edge.flow < MINIMUM_FLOW_RATE || Double.isNaN(edge.flow)) {
-                        LOGGER.info("Removing Edge. 1309");
+                        LOGGER.info("Removing Edge. 1309, edge: " + edge);
+                        LOGGER.info("Flow: " + edge.flow);
                         graph.removeEdge(edge);
                         edge.getFrom().pressure = Double.NaN;
                         edge.getTo().pressure = Double.NaN;
@@ -1322,7 +1329,8 @@ abstract class PatchComponentSitesGraphUtilities {
                 for (Object obj : in) {
                     SiteEdge edge = (SiteEdge) obj;
                     if (edge.flow < MINIMUM_FLOW_RATE || Double.isNaN(edge.flow)) {
-                        LOGGER.info("Removing Edge. 1325");
+                        LOGGER.info("Removing Edge. 1325, edge: " + edge);
+                        LOGGER.info("Flow: " + edge.flow);
                         graph.removeEdge(edge);
                         edge.getFrom().pressure = Double.NaN;
                         edge.getTo().pressure = Double.NaN;
@@ -1340,13 +1348,13 @@ abstract class PatchComponentSitesGraphUtilities {
                     double totalFlow = edge1.flow + edge2.flow;
 
                     if (edge1.flow / totalFlow < MINIMUM_FLOW_PERCENT) {
-                        LOGGER.info("Removing Edge. 1343");
+                        LOGGER.info("Removing Edge. 1343, edge: " + edge1);
                         graph.removeEdge(edge1);
                         edge1.getFrom().pressure = Double.NaN;
                         edge1.getTo().pressure = Double.NaN;
                         updateGraph(graph);
                     } else if (edge2.flow / totalFlow < MINIMUM_FLOW_PERCENT) {
-                        LOGGER.info("Removing Edge. 1349");
+                        LOGGER.info("Removing Edge. 1349, edge: " + edge2);
                         graph.removeEdge(edge2);
                         edge2.getFrom().pressure = Double.NaN;
                         edge2.getTo().pressure = Double.NaN;
@@ -1357,7 +1365,7 @@ abstract class PatchComponentSitesGraphUtilities {
         }
 
         if (removeMin) {
-            LOGGER.info("Removing Edge. 1360");
+            LOGGER.info("Removing Edge. 1360, edge: " + minEdge);
             graph.removeEdge(minEdge);
             minEdge.getFrom().pressure = Double.NaN;
             minEdge.getTo().pressure = Double.NaN;

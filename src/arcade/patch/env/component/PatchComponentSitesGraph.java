@@ -244,29 +244,11 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      * @param random the random number generator
      */
     void complexStep(MersenneTwisterFast random) {
-        Bag allEdges = new Bag(graph.getAllEdges());
 
-        // Check if graph has become unconnected.
-        boolean isConnected = false;
-        for (Object obj : allEdges) {
-            SiteEdge edge = (SiteEdge) obj;
-            if (edge.getFrom().isRoot && !edge.isIgnored) {
-                isConnected = true;
-                break;
-            }
-        }
-        if (!isConnected) {
-            for (SiteLayer layer : layers) {
-                for (int k = 0; k < latticeHeight; k++) {
-                    for (int i = 0; i < latticeLength; i++) {
-                        for (int j = 0; j < latticeWidth; j++) {
-                            layer.delta[k][i][j] = 0;
-                        }
-                    }
-                }
-            }
+        if (checkDisconnected()) {
             return;
         }
+        ;
 
         // Iterate through each molecule.
         for (SiteLayer layer : layers) {
@@ -286,10 +268,11 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                 }
             }
 
-            allEdges.shuffle(random);
+            Bag currentEdges = new Bag(graph.getAllEdges());
+            currentEdges.shuffle(random);
 
             // Iterate through each edge in graph.
-            for (Object obj : allEdges) {
+            for (Object obj : currentEdges) {
                 SiteEdge edge = (SiteEdge) obj;
                 if (edge.isIgnored) {
                     continue;
@@ -334,6 +317,10 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                     intConc = edge.fraction.get(layer.name) * concentration; // fmol/um^3
                     intConcNew = intConc; // fmol/um^3
                     extConcNew = extConc; // fmol/um^3
+
+                    if (Double.isNaN(intConc) || Double.isNaN(extConc)) {
+                        LOGGER.info("NaN");
+                    }
                 }
 
                 if (Math.abs(intConc - extConc) > DELTA_TOLERANCE) {
@@ -351,6 +338,9 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                             dmdt = pa * (intConcNew - extConcNew);
                             extConcNew += dmdt / latticePatchVolume;
                         }
+                        if (Double.isNaN(intConcNew) || Double.isNaN(extConcNew)) {
+                            LOGGER.info("NaN");
+                        }
                     }
 
                     // Update external concentrations.
@@ -366,9 +356,6 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                                                     - (current[k][i][j] + delta[k][i][j])),
                                             0);
                         } else {
-                            if ((extConcNew - (current[k][i][j] + delta[k][i][j])) == Double.NaN) {
-                                LOGGER.info("NaN detected.");
-                            }
                             delta[k][i][j] +=
                                     Math.max((extConcNew - (current[k][i][j] + delta[k][i][j])), 0);
                         }
@@ -378,11 +365,42 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                     if (layer.name.equalsIgnoreCase("OXYGEN")) {
                         edge.transport.put(layer.name, (intConc - intConcNew) * edge.flow);
                     } else {
+                        if (Double.isNaN((intConc - intConcNew) / concentration)) {
+                            LOGGER.info("NaN");
+                        }
                         edge.transport.put(layer.name, (intConc - intConcNew) / concentration);
                     }
                 }
             }
         }
+    }
+
+    private boolean checkDisconnected() {
+        Bag allEdges = new Bag(graph.getAllEdges());
+
+        // Check if graph has become unconnected.
+        boolean isConnected = false;
+        for (Object obj : allEdges) {
+            SiteEdge edge = (SiteEdge) obj;
+            if (edge.getFrom().isRoot && !edge.isIgnored) {
+                isConnected = true;
+                break;
+            }
+        }
+        if (!isConnected) {
+            for (SiteLayer layer : layers) {
+                for (int k = 0; k < latticeHeight; k++) {
+                    for (int i = 0; i < latticeLength; i++) {
+                        for (int j = 0; j < latticeWidth; j++) {
+                            layer.delta[k][i][j] = 0;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -800,6 +818,10 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                 }
             }
 
+            // If the flow out is zero exit and return no children.
+            if (flowOut == 0) {
+                return children;
+            }
             // Assign new fractions.
             for (Object obj : out) {
                 SiteEdge edge = (SiteEdge) obj;
@@ -880,6 +902,10 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                 node.oxygen = MAX_OXYGEN_PARTIAL_PRESSURE;
             } else {
                 node.oxygen = Solver.bisection(func, 0, MAX_OXYGEN_PARTIAL_PRESSURE);
+            }
+
+            if (node.oxygen == 0 || Double.isNaN(node.oxygen)) {
+                LOGGER.info("we might have a problem here");
             }
 
             // Recurse through output edges.
