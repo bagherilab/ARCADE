@@ -155,8 +155,19 @@ abstract class PatchComponentSitesGraphUtilities {
      * @return the flow rate coefficient
      */
     private static double getCoefficient(SiteEdge edge) {
-        double mu = PLASMA_VISCOSITY * calculateViscosity(edge.radius) / 60;
-        return (Math.PI * Math.pow(edge.radius, 4)) / (8 * mu * edge.length);
+        return getCoefficient(edge.radius, edge.length);
+    }
+
+    /**
+     * Gets flow rate coefficient in units of um<sup>3</sup>/(mmHg min).
+     *
+     * @param radius the edge radius
+     * @param length the edge length
+     * @return the flow rate coefficient
+     */
+    private static double getCoefficient(double radius, double length) {
+        double mu = PLASMA_VISCOSITY * calculateViscosity(radius) / 60;
+        return (Math.PI * Math.pow(radius, 4)) / (8 * mu * length);
     }
 
     /**
@@ -473,6 +484,10 @@ abstract class PatchComponentSitesGraphUtilities {
             if (div != 0) {
                 x0[id] /= div;
             }
+
+            if (node.pressure > 0) {
+                x0[id] = node.pressure;
+            }
         }
 
         double[][] sA = Matrix.scale(mA, 1E-7);
@@ -559,9 +574,19 @@ abstract class PatchComponentSitesGraphUtilities {
     static void calculateThicknesses(Graph graph) {
         for (Object obj : graph.getAllEdges()) {
             SiteEdge edge = (SiteEdge) obj;
-            double d = 2 * edge.radius;
-            edge.wall = d * (0.267 - 0.084 * Math.log10(d));
+            edge.wall = calculateThickness(edge);
         }
+    }
+
+    /**
+     * Calculates the thickness of an edge.
+     *
+     * @param edge the edge object
+     * @return the thickness of the edge
+     */
+    static double calculateThickness(SiteEdge edge) {
+        double d = 2 * edge.radius;
+        return d * (0.267 - 0.084 * Math.log10(d));
     }
 
     /**
@@ -892,7 +917,7 @@ abstract class PatchComponentSitesGraphUtilities {
             settled.add(evalNode);
 
             // If end node found, exit from loop.
-            if (evalNode == end) {
+            if (evalNode.equals(end)) {
                 break;
             }
 
@@ -1099,6 +1124,42 @@ abstract class PatchComponentSitesGraphUtilities {
      * @param graph the graph object
      */
     static void updateGraph(Graph graph) {
+        trimGraph(graph);
+
+        calculateCurrentState(graph);
+
+        // Set oxygen nodes.
+        for (Object obj : graph.getAllEdges()) {
+            SiteEdge edge = (SiteEdge) obj;
+            SiteNode to = edge.getTo();
+            SiteNode from = edge.getFrom();
+            if (Double.isNaN(to.pressure)) {
+                to.oxygen = Double.NaN;
+            }
+            if (Double.isNaN(from.pressure)) {
+                from.oxygen = Double.NaN;
+            }
+        }
+    }
+
+    /**
+     * Updates hemodynamic properties based on the current state of the graph.
+     *
+     * @param graph the graph object
+     */
+    static void calculateCurrentState(Graph graph) {
+        do {
+            calculatePressures(graph);
+            boolean reversed = reversePressures(graph);
+            if (reversed) {
+                calculatePressures(graph);
+            }
+            calculateFlows(graph);
+            calculateStresses(graph);
+        } while (checkForNegativeFlow(graph));
+    }
+
+    static void trimGraph(Graph graph) {
         ArrayList<SiteEdge> list;
         Graph gCurr = graph;
 
@@ -1133,27 +1194,20 @@ abstract class PatchComponentSitesGraphUtilities {
 
             gCurr = gNew;
         } while (list.size() != 0);
+    }
 
-        calculatePressures(graph);
-        boolean reversed = reversePressures(graph);
-        if (reversed) {
-            calculatePressures(graph);
-        }
-        calculateFlows(graph);
-        calculateStresses(graph);
-
-        // Set oxygen nodes.
+    // This *MIGHT* be a problem, I think we could revisit adding this check.
+    // I'm not sure why it would get to the point where there would be a negative flow in the graph?
+    static boolean checkForNegativeFlow(Graph graph) {
+        boolean negative = false;
         for (Object obj : graph.getAllEdges()) {
             SiteEdge edge = (SiteEdge) obj;
-            SiteNode to = edge.getTo();
-            SiteNode from = edge.getFrom();
-            if (Double.isNaN(to.pressure)) {
-                to.oxygen = Double.NaN;
-            }
-            if (Double.isNaN(from.pressure)) {
-                from.oxygen = Double.NaN;
+            if (edge.flow < 0) {
+                negative = true;
+                break;
             }
         }
+        return negative;
     }
 
     /**
