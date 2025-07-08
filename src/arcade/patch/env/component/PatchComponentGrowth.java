@@ -391,10 +391,9 @@ public class PatchComponentGrowth implements Component {
                             angiogenicNodeMap.get(sproutNode), init, fin, calculationStrategy);
 
                     sproutNode.anastomosis = false;
-
-                    calculateCurrentState(graph);
                 }
             }
+            calculateCurrentState(graph);
         }
 
         for (SiteNode n : keyNodesToRemove) {

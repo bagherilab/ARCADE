@@ -94,7 +94,7 @@
     <population.process process="inflammation" id="GRANZ_SYNTHESIS_DELAY" value="15" unit="min" description="Time required for CAR T-cells to maintain bound contact with target antigen before activation signal induces granzyme production"/>
 
     <!-- metabolism process parameters -->
-    <population.process process="sensing" id="VEGF_SECRETION_RATE" value="0.5" unit="pg/ml/min" description="secretion rate of VEGF" />
+    <population.process process="sensing" id="VEGF_SECRETION_RATE" value="5" unit="pg/ml/min" description="secretion rate of VEGF" />
 
     <!-- LAYERS ============================================================ -->
 

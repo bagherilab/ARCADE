@@ -80,7 +80,7 @@ public class PatchComponentGrowthTest {
 
         component.schedule(schedule);
 
-        verify(schedule).scheduleRepeating(component, 6, 60);
+        verify(schedule).scheduleRepeating(component, 10, 60);
     }
 
     @Test
@@ -107,7 +107,7 @@ public class PatchComponentGrowthTest {
 
         component.schedule(schedule);
 
-        verify(schedule).scheduleRepeating(component, 6, 30);
+        verify(schedule).scheduleRepeating(component, 10, 30);
     }
 
     @Test
