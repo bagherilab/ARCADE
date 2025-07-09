@@ -19,6 +19,9 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
     /** Type of combinatorial circuit. */
     private final LogicalCARs type;
 
+    /** time step for tau stepping. */
+    private final int TAU = 60;
+
     /**
      * Creates a tissue {@code PatchCellCARTCombinedInhibitory} agent. *
      *
@@ -77,40 +80,39 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
 
     @Override
     protected void calculateCARS(MersenneTwisterFast random, Simulation sim) {
-        int TAU = 60;
         super.calculateCARS(random, sim);
 
         if (type.equals(LogicalCARs.INHIBITORY_RECEPTOR)) {
-            receptorCars(TAU);
+            receptorCars();
         } else if (type.equals(LogicalCARs.INHIBITORY_INFLAMMATION)) {
-            inflammationCars(TAU);
+            inflammationCars();
         }
     }
 
     /**
-     * Calculates the number of cars produced. *
+     * Calculates the number of cars produced for receptor circuit. *
      *
      * @param tau the time step
      */
-    protected void receptorCars(int tau) {
+    protected void receptorCars() {
         double n = 8;
         int removeCARs =
                 (int) (maxCars / (1 + Math.pow(synNotchThreshold, n) / Math.pow(boundSynNotch, n)));
-        cars = Math.min((int) (cars + (basalCARGenerationRate * tau)), maxCars - removeCARs);
+        cars = Math.min((int) (cars + (basalCARGenerationRate * TAU)), maxCars - removeCARs);
     }
 
     /**
-     * Calculates T-cell activation caused by inflammation. *
+     * Calculates T-cell activation caused by inflammation circuit. *
      *
      * @param tau the time step
      */
-    protected void inflammationCars(int tau) {
+    protected void inflammationCars() {
         cars =
                 Math.max(
                         (int)
                                 (cars
-                                        + (basalCARGenerationRate * tau)
-                                        - (carDegradationConstant * cars * tau)),
+                                        + (basalCARGenerationRate * TAU)
+                                        - (carDegradationConstant * cars * TAU)),
                         0);
         if (boundSynNotch >= synNotchThreshold) {
             this.activated = false;

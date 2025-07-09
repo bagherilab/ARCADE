@@ -20,6 +20,9 @@ public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombina
     /** Type of combinatorial circuit. */
     private final LogicalCARs type;
 
+    /** time step for tau stepping. */
+    private final int TAU = 60;
+
     /**
      * Creates a tissue {@code PatchCellCARTCombinedInducible} agent. *
      *
@@ -84,29 +87,30 @@ public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombina
 
     @Override
     protected void calculateCARS(MersenneTwisterFast random, Simulation sim) {
-        int TAU = 60;
         super.calculateCARS(random, sim);
         if (type.equals(LogicalCARs.INDUCIBLE_SYNNOTCH)) {
-            synNotchCARCalculation(TAU);
+            synNotchCARCalculation();
         } else if (type.equals(LogicalCARs.INDUCIBLE_INFLAMMATION)) {
-            inflammationActivation(TAU);
+            inflammationActivation();
         }
     }
 
-    protected void synNotchCARCalculation(int tau) {
+    /** Calculates the number of cars produced for synnotch circuit. * */
+    protected void synNotchCARCalculation() {
         double n = 4.4;
         int newCars =
                 (int) (maxCars / (1 + Math.pow(synNotchThreshold, n) / Math.pow(boundSynNotch, n)));
-        cars = Math.max((int) (cars - (carDegradationConstant * cars * tau)), newCars);
+        cars = Math.max((int) (cars - (carDegradationConstant * cars * TAU)), newCars);
     }
 
-    protected void inflammationActivation(int tau) {
+    /** Calculates the number of cars produced for inflammation circuit. * */
+    protected void inflammationActivation() {
         cars =
                 Math.max(
                         (int)
                                 (cars
-                                        + (basalCARGenerationRate * tau)
-                                        - (carDegradationConstant * cars * tau)),
+                                        + (basalCARGenerationRate * TAU)
+                                        - (carDegradationConstant * cars * TAU)),
                         0);
         if (boundSynNotch >= synNotchThreshold) {
             this.lastActiveTicker = 0;
