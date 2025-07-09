@@ -254,6 +254,7 @@ public final class PatchOutputSerializer {
             return json;
         }
     }
+
     /**
      * Serializer for {@link SiteNode} objects.
      *
