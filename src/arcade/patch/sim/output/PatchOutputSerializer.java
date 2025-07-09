@@ -220,12 +220,15 @@ public final class PatchOutputSerializer {
      *         "from": (from),
      *         "to": (to),
      *         "type": (type),
+     *         "sign": (sign),
      *         "radius": (radius),
      *         "length": (length),
      *         "wall": (wall),
      *         "shear": (shear),
      *         "stress": (stress),
      *         "flow": (flow),
+     *         "fraction": (fraction),
+     *         "transport": (transport),
      *     }
      * </pre>
      */
@@ -238,17 +241,19 @@ public final class PatchOutputSerializer {
             json.add("from", context.serialize(src.getFrom()));
             json.add("to", context.serialize(src.getTo()));
             json.addProperty("type", src.getType());
+            json.addProperty("sign", src.getSign());
             json.addProperty("radius", src.getRadius());
             json.addProperty("length", src.getLength());
             json.addProperty("wall", src.getWall());
             json.addProperty("shear", src.getShear());
             json.addProperty("stress", src.getCircum());
             json.addProperty("flow", src.getFlow());
+            json.addProperty("fraction", src.getFraction());
+            json.addProperty("transport", src.getTransport());
 
             return json;
         }
     }
-
     /**
      * Serializer for {@link SiteNode} objects.
      *
