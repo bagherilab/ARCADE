@@ -86,7 +86,11 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
             inflammationCars(TAU);
         }
     }
-
+    /**
+     * Calculates the number of cars produced. *
+     *
+     * @param tau the time step
+     */
     protected void receptorCars(int tau) {
         double n = 8;
         int removeCARs =
@@ -94,6 +98,11 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
         cars = Math.min((int) (cars + (basalCARGenerationRate * tau)), maxCars - removeCARs);
     }
 
+    /**
+     * Calculates T-cell activation caused by inflammation. *
+     *
+     * @param tau the time step
+     */
     protected void inflammationCars(int tau) {
         cars =
                 Math.max(
