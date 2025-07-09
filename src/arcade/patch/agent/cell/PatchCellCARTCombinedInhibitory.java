@@ -89,9 +89,7 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
         }
     }
 
-    /**
-     * Calculates the number of cars produced for receptor circuit. *
-     */
+    /** Calculates the number of cars produced for receptor circuit. * */
     protected void receptorCars() {
         double n = 8;
         int removeCARs =
@@ -99,9 +97,7 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
         cars = Math.min((int) (cars + (basalCARGenerationRate * TAU)), maxCars - removeCARs);
     }
 
-    /**
-     * Calculates T-cell activation caused by inflammation circuit. *
-     */
+    /** Calculates T-cell activation caused by inflammation circuit. * */
     protected void inflammationCars() {
         cars =
                 Math.max(
