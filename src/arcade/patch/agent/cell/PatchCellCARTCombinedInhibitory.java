@@ -86,6 +86,7 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
             inflammationCars(TAU);
         }
     }
+
     /**
      * Calculates the number of cars produced. *
      *

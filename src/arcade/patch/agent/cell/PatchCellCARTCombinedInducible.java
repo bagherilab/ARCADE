@@ -115,7 +115,7 @@ public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombina
     }
 
     /**
-     * Steps through T-cell rules using inflamation circuit. *
+     * Steps through T-cell rules using inflammation circuit. *
      *
      * @param simstate the current simulation state
      */
