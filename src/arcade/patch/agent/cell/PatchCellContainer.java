@@ -9,6 +9,7 @@ import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
+import arcade.patch.util.PatchEnums.LogicalCARs;
 
 /**
  * Implementation of {@link CellContainer} for {@link PatchCell} agents.
@@ -122,9 +123,17 @@ public final class PatchCellContainer implements CellContainer {
             case "combined":
                 return new PatchCellCARTCombined(this, location, parameters, links);
             case "inducible_cart":
-                return new PatchCellCARTCombinedInducible(this, location, parameters, links);
+                return new PatchCellCARTCombinedInducible(
+                        this, location, parameters, links, LogicalCARs.INDUCIBLE_SYNNOTCH);
             case "inhibitory_cart":
-                return new PatchCellCARTCombinedInhibitory(this, location, parameters, links);
+                return new PatchCellCARTCombinedInhibitory(
+                        this, location, parameters, links, LogicalCARs.INHIBITORY_RECEPTOR);
+            case "inducible_cart_separate":
+                return new PatchCellCARTCombinedInducible(
+                        this, location, parameters, links, LogicalCARs.INDUCIBLE_INFLAMMATION);
+            case "inhibitory_cart_separate":
+                return new PatchCellCARTCombinedInhibitory(
+                        this, location, parameters, links, LogicalCARs.INHIBITORY_INFLAMMATION);
             case "random":
                 return new PatchCellRandom(this, location, parameters, links);
         }

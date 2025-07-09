@@ -2,32 +2,32 @@ package arcade.patch.agent.cell;
 
 import java.util.logging.Logger;
 import sim.engine.SimState;
-import sim.util.Bag;
-import sim.util.distribution.Poisson;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
-import arcade.patch.env.grid.PatchGrid;
+import arcade.patch.util.PatchEnums;
+import arcade.patch.util.PatchEnums.LogicalCARs;
 
-public class PatchCellCARTCombinedInducible extends PatchCellCARTCombined {
+/** Extension of {@link PatchCellCARTCombinedCombinatorial} for synnotch circuit. */
+public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombinatorial {
+
+    /** Logger for this class. */
     private static final Logger LOGGER =
             Logger.getLogger(PatchCellCARTCombinedInducible.class.getName());
-    protected final double synNotchThreshold;
-    protected final double bindingConstant;
-    protected final double unbindingConstant;
-    protected final double carDegradationConstant;
-    public final int synnotchs;
-    public int boundSynNotch;
-    protected final int maxCars;
-    PoissonFactory poissonFactory;
-    private PatchCellTissue boundCell;
+
+    /** Type of combinatorial circuit. */
+    private final LogicalCARs type;
+
+    /** time step for tau stepping. */
+    private static final int TAU = 60;
 
     /**
-     * Creates a tissue {@code PatchCellSynNotch} agent. *
+     * Creates a tissue {@code PatchCellCARTCombinedInducible} agent. *
      *
      * @param location the {@link Location} of the cell
+     * @param container the cell container
      * @param parameters the dictionary of parameters
      */
     public PatchCellCARTCombinedInducible(
@@ -35,96 +35,199 @@ public class PatchCellCARTCombinedInducible extends PatchCellCARTCombined {
         this(container, location, parameters, null);
     }
 
+    /**
+     * Creates a T cell {@code PatchCellCARTCombinedInducible} agent. *
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
     public PatchCellCARTCombinedInducible(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
-        super(container, location, parameters, links);
-        bindingConstant = parameters.getDouble("K_SYNNOTCH_ON");
-        unbindingConstant = parameters.getDouble("K_SYNNOTCH_OFF");
-        carDegradationConstant = parameters.getDouble("K_CAR_DEGRADE");
-        synnotchs = parameters.getInt("SYNNOTCHS");
-        synNotchThreshold = parameters.getDouble("SYNNOTCH_THRESHOLD") * synnotchs;
-        boundSynNotch = 0;
-        maxCars = cars;
-        cars = 0;
-        poissonFactory = Poisson::new;
+        this(container, location, parameters, links, null);
     }
 
-    public double callPoisson(double lambda, MersenneTwisterFast random) {
-        return poissonFactory.createPoisson(lambda, random).nextInt();
+    /**
+     * Creates a T cell {@code PatchCellCARTCombinedInducible} agent. *
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     * @param type the type of combinatorial circuit
+     */
+    public PatchCellCARTCombinedInducible(
+            PatchCellContainer container,
+            Location location,
+            Parameters parameters,
+            GrabBag links,
+            LogicalCARs type) {
+        super(container, location, parameters, links);
+        cars = 0;
+        this.type = type;
     }
 
     @Override
     public void step(SimState simstate) {
-        if (boundCell == null) {
-            checkForBinding(simstate);
-        } else {
-            calculateCARS(simstate.random);
-        }
-        super.step(simstate);
-    }
-
-    private void calculateCARS(MersenneTwisterFast random) {
-        int TAU = 60;
-        int unboundSynNotch = synnotchs - boundSynNotch;
-        double expectedBindingEvents =
-                bindingConstant
-                        / (volume * 6.0221415e23 * 1e-15)
-                        * unboundSynNotch
-                        * boundCell.getSynNotchAntigens()
-                        * contactFraction
-                        * TAU;
-        int bindingEvents = poissonFactory.createPoisson(expectedBindingEvents, random).nextInt();
-        double expectedUnbindingEvents = unbindingConstant * boundSynNotch * TAU;
-        int unbindingEvents =
-                poissonFactory.createPoisson(expectedUnbindingEvents, random).nextInt();
-
-        boundSynNotch += bindingEvents;
-        boundSynNotch -= unbindingEvents;
-        boundCell.updateSynNotchAntigens(unbindingEvents, bindingEvents);
-        double n = 4.4;
-        int new_cars =
-                (int) (maxCars / (1 + Math.pow(synNotchThreshold, n) / Math.pow(boundSynNotch, n)));
-
-        cars = Math.max((int) (cars - (carDegradationConstant * cars * TAU)), new_cars);
-    }
-
-    /** A {@code PoissonFactory} object instantiates Poisson distributions. */
-    interface PoissonFactory {
-        /**
-         * Creates instance of Poisson.
-         *
-         * @param lambda the Poisson distribution lambda
-         * @param random the random number generator
-         * @return a Poisson distribution instance
-         */
-        Poisson createPoisson(double lambda, MersenneTwisterFast random);
-    }
-
-    private void checkForBinding(SimState simstate) {
         Simulation sim = (Simulation) simstate;
-        PatchGrid grid = (PatchGrid) sim.getGrid();
 
-        Bag allAgents = new Bag();
-        getTissueAgents(allAgents, grid.getObjectsAtLocation(location));
-        for (Location neighborLocation : location.getNeighbors()) {
-            Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));
-            getTissueAgents(allAgents, bag);
+        if (super.boundCell == null) {
+            super.checkForBinding(simstate);
+        } else {
+            calculateCARS(simstate.random, sim);
         }
 
-        if (allAgents.size() > 0) {
-            PatchCellTissue randomCell =
-                    (PatchCellTissue) allAgents.get(simstate.random.nextInt(allAgents.size()));
-            if (randomCell.getSynNotchAntigens() > 0) {
-                boundCell = randomCell;
+        if (type.equals(LogicalCARs.INDUCIBLE_SYNNOTCH)) {
+            super.step(simstate);
+        } else if (type.equals(LogicalCARs.INDUCIBLE_INFLAMMATION)) {
+            inflammationStep(simstate);
+        }
+    }
+
+    @Override
+    protected void calculateCARS(MersenneTwisterFast random, Simulation sim) {
+        super.calculateCARS(random, sim);
+        if (type.equals(LogicalCARs.INDUCIBLE_SYNNOTCH)) {
+            synNotchCARCalculation();
+        } else if (type.equals(LogicalCARs.INDUCIBLE_INFLAMMATION)) {
+            inflammationActivation();
+        }
+    }
+
+    /** Calculates the number of cars produced for synnotch circuit. * */
+    protected void synNotchCARCalculation() {
+        double n = 4.4;
+        int newCars =
+                (int) (maxCars / (1 + Math.pow(synNotchThreshold, n) / Math.pow(boundSynNotch, n)));
+        cars = Math.max((int) (cars - (carDegradationConstant * cars * TAU)), newCars);
+    }
+
+    /** Calculates the number of cars produced for inflammation circuit. * */
+    protected void inflammationActivation() {
+        cars =
+                Math.max(
+                        (int)
+                                (cars
+                                        + (basalCARGenerationRate * TAU)
+                                        - (carDegradationConstant * cars * TAU)),
+                        0);
+        if (boundSynNotch >= synNotchThreshold) {
+            this.lastActiveTicker = 0;
+            this.activated = true;
+        }
+    }
+
+    /**
+     * Steps through T-cell rules using inflammation circuit. *
+     *
+     * @param simstate the current simulation state
+     */
+    protected void inflammationStep(SimState simstate) {
+        Simulation sim = (Simulation) simstate;
+
+        super.age++;
+
+        if (state != PatchEnums.State.APOPTOTIC && age > apoptosisAge) {
+            setState(PatchEnums.State.APOPTOTIC);
+            super.unbind();
+            this.activated = false;
+        }
+
+        super.lastActiveTicker++;
+
+        if (super.lastActiveTicker != 0 && super.lastActiveTicker % MINUTES_IN_DAY == 0) {
+            if (super.boundCARAntigensCount != 0) {
+                super.boundCARAntigensCount--;
             }
         }
-    }
-
-    public void resetBoundCell() {
-        if (boundCell != null) {
-            boundCell.updateSynNotchAntigens(boundSynNotch, 0);
-            boundCell = null;
+        if (super.lastActiveTicker / MINUTES_IN_DAY >= 7) {
+            super.activated = false;
         }
-        boundSynNotch = 0;
+
+        super.processes.get(PatchEnums.Domain.METABOLISM).step(simstate.random, sim);
+
+        // Check energy status. If cell has less energy than threshold, it will
+        // apoptose. If overall energy is negative, then cell enters quiescence.
+        if (state != PatchEnums.State.APOPTOTIC) {
+            if (super.energy < super.energyThreshold) {
+
+                super.setState(PatchEnums.State.APOPTOTIC);
+                super.unbind();
+                this.activated = false;
+            } else if (state != PatchEnums.State.ANERGIC
+                    && state != PatchEnums.State.SENESCENT
+                    && state != PatchEnums.State.EXHAUSTED
+                    && state != PatchEnums.State.STARVED
+                    && energy < 0) {
+
+                super.setState(PatchEnums.State.STARVED);
+                super.unbind();
+            } else if (state == PatchEnums.State.STARVED && energy >= 0) {
+                super.setState(PatchEnums.State.UNDEFINED);
+            }
+        }
+
+        super.processes.get(PatchEnums.Domain.INFLAMMATION).step(simstate.random, sim);
+
+        if (super.state == PatchEnums.State.UNDEFINED || super.state == PatchEnums.State.PAUSED) {
+            if (divisions == divisionPotential) {
+                if (simstate.random.nextDouble() > super.senescentFraction) {
+                    super.setState(PatchEnums.State.APOPTOTIC);
+                } else {
+                    super.setState(PatchEnums.State.SENESCENT);
+                }
+                super.unbind();
+                this.activated = false;
+            } else {
+                PatchCellTissue target = super.bindTarget(sim, location, simstate.random);
+                super.boundTarget = target;
+
+                // If cell is bound to both antigen and self it will become anergic.
+                if (super.getBindingFlag() == PatchEnums.AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR) {
+                    if (simstate.random.nextDouble() > super.anergicFraction) {
+                        super.setState(PatchEnums.State.APOPTOTIC);
+                    } else {
+                        super.setState(PatchEnums.State.ANERGIC);
+                    }
+                    super.unbind();
+                    this.activated = false;
+                } else if (super.getBindingFlag() == PatchEnums.AntigenFlag.BOUND_ANTIGEN) {
+                    // If cell is only bound to target antigen, the cell
+                    // can potentially become properly activated.
+
+                    // Check overstimulation. If cell has bound to
+                    // target antigens too many times, becomes exhausted.
+                    if (boundCARAntigensCount > maxAntigenBinding) {
+                        if (simstate.random.nextDouble() > super.exhaustedFraction) {
+                            super.setState(PatchEnums.State.APOPTOTIC);
+                        } else {
+                            super.setState(PatchEnums.State.EXHAUSTED);
+                        }
+                        super.unbind();
+                        this.activated = false;
+                    } else {
+                        // if CD8 cell is properly activated, it can be cytotoxic
+                        super.setState(PatchEnums.State.CYTOTOXIC);
+                    }
+                } else {
+                    // If self binding, unbind
+                    if (super.getBindingFlag() == PatchEnums.AntigenFlag.BOUND_CELL_RECEPTOR) {
+                        super.unbind();
+                    }
+                    // Check activation status. If cell has been activated before,
+                    // it will proliferate. If not, it will migrate.
+                    if (activated) {
+                        super.setState(PatchEnums.State.PROLIFERATIVE);
+                    } else {
+                        if (simstate.random.nextDouble() > super.proliferativeFraction) {
+                            super.setState(PatchEnums.State.MIGRATORY);
+                        } else {
+                            super.setState(PatchEnums.State.PROLIFERATIVE);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
