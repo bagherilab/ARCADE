@@ -63,7 +63,7 @@ public class PatchCellCARTCD4 extends PatchCellCART {
 
         if (state != State.APOPTOTIC && age > apoptosisAge) {
             setState(State.APOPTOTIC);
-            super.unbind();
+            super.setBindingFlag(AntigenFlag.UNBOUND);
             this.activated = false;
         }
 
