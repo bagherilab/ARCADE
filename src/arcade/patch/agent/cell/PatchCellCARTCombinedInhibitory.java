@@ -91,8 +91,6 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
 
     /**
      * Calculates the number of cars produced for receptor circuit. *
-     *
-     * @param tau the time step
      */
     protected void receptorCars() {
         double n = 8;
@@ -103,8 +101,6 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
 
     /**
      * Calculates T-cell activation caused by inflammation circuit. *
-     *
-     * @param tau the time step
      */
     protected void inflammationCars() {
         cars =
