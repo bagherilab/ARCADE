@@ -21,7 +21,7 @@ public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombina
     private final LogicalCARs type;
 
     /** time step for tau stepping. */
-    private final int TAU = 60;
+    private static final int TAU = 60;
 
     /**
      * Creates a tissue {@code PatchCellCARTCombinedInducible} agent. *

@@ -51,6 +51,9 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
     /** basal CAR receptor expression rate. */
     protected final double basalCARGenerationRate;
 
+    /** time step for tau stepping. */
+    private static final int TAU = 60;
+
     /**
      * Creates a T cell {@code PatchCellCARTCombinedCombinatorial} agent. *
      *
@@ -117,7 +120,6 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
      * @param sim the simulation instance
      */
     protected void calculateCARS(MersenneTwisterFast random, Simulation sim) {
-        int TAU = 60;
         int unboundSynNotch = synnotchs - boundSynNotch;
 
         double expectedBindingEvents =

@@ -20,7 +20,7 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
     private final LogicalCARs type;
 
     /** time step for tau stepping. */
-    private final int TAU = 60;
+    private static final int TAU = 60;
 
     /**
      * Creates a tissue {@code PatchCellCARTCombinedInhibitory} agent. *
