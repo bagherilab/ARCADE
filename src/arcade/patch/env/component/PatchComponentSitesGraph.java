@@ -605,6 +605,22 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         public double getFlow() {
             return flow;
         }
+
+        public String getFraction() {
+            StringBuilder sb = new StringBuilder();
+            for (String key : fraction.keySet()) {
+                sb.append(key + ":" + fraction.get(key) + ",");
+            }
+            return sb.toString();
+        }
+
+        public String getTransport() {
+            StringBuilder sb = new StringBuilder();
+            for (String key : transport.keySet()) {
+                sb.append(key + ":" + transport.get(key) + ",");
+            }
+            return sb.toString();
+        }
     }
 
     /**
