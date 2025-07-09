@@ -16,7 +16,7 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
     private static final Logger LOGGER =
             Logger.getLogger(PatchCellCARTCombinedInhibitory.class.getName());
 
-     /** Type of combinatorial circuit. */
+    /** Type of combinatorial circuit. */
     private final LogicalCARs type;
 
     /**
@@ -54,7 +54,11 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
      * @param type the type of combinatorial circuit
      */
     public PatchCellCARTCombinedInhibitory(
-            PatchCellContainer container, Location location, Parameters parameters, GrabBag links, LogicalCARs type) {
+            PatchCellContainer container,
+            Location location,
+            Parameters parameters,
+            GrabBag links,
+            LogicalCARs type) {
         super(container, location, parameters, links);
         cars = 0;
         this.type = type;
@@ -82,7 +86,7 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
             inflammationCars(TAU);
         }
     }
-    
+
     protected void receptorCars(int tau) {
         double n = 8;
         int removeCARs =

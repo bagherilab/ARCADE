@@ -10,7 +10,6 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 import arcade.patch.env.grid.PatchGrid;
-import arcade.patch.util.PatchEnums.LogicalCARs;
 
 /**
  * Abstract class of {@link PatchCellCART} for combined CD4/CD8 combinatorial CART-cells with

@@ -16,7 +16,7 @@ public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombina
     /** Logger for this class. */
     private static final Logger LOGGER =
             Logger.getLogger(PatchCellCARTCombinedInducible.class.getName());
-    
+
     /** Type of combinatorial circuit. */
     private final LogicalCARs type;
 
@@ -55,7 +55,11 @@ public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombina
      * @param type the type of combinatorial circuit
      */
     public PatchCellCARTCombinedInducible(
-            PatchCellContainer container, Location location, Parameters parameters, GrabBag links, LogicalCARs type) {
+            PatchCellContainer container,
+            Location location,
+            Parameters parameters,
+            GrabBag links,
+            LogicalCARs type) {
         super(container, location, parameters, links);
         cars = 0;
         this.type = type;
@@ -89,21 +93,21 @@ public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombina
         }
     }
 
-    protected void synNotchCARCalculation(int tau){
+    protected void synNotchCARCalculation(int tau) {
         double n = 4.4;
         int newCars =
-            (int) (maxCars / (1 + Math.pow(synNotchThreshold, n) / Math.pow(boundSynNotch, n)));
+                (int) (maxCars / (1 + Math.pow(synNotchThreshold, n) / Math.pow(boundSynNotch, n)));
         cars = Math.max((int) (cars - (carDegradationConstant * cars * tau)), newCars);
     }
 
     protected void inflammationActivation(int tau) {
         cars =
-            Math.max(
-                (int)
-                        (cars
-                                + (basalCARGenerationRate * tau)
-                                - (carDegradationConstant * cars * tau)),
-                0);
+                Math.max(
+                        (int)
+                                (cars
+                                        + (basalCARGenerationRate * tau)
+                                        - (carDegradationConstant * cars * tau)),
+                        0);
         if (boundSynNotch >= synNotchThreshold) {
             this.lastActiveTicker = 0;
             this.activated = true;
