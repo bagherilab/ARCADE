@@ -319,7 +319,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                     extConcNew = extConc; // fmol/um^3
 
                     if (Double.isNaN(intConc) || Double.isNaN(extConc)) {
-                        LOGGER.info("NaN");
+                        LOGGER.info(layer.name + ": NaN (1)");
                     }
                 }
 
@@ -339,7 +339,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                             extConcNew += dmdt / latticePatchVolume;
                         }
                         if (Double.isNaN(intConcNew) || Double.isNaN(extConcNew)) {
-                            LOGGER.info("NaN");
+                            LOGGER.info(layer.name + ": NaN (2)");
                         }
                     }
 
@@ -366,7 +366,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                         edge.transport.put(layer.name, (intConc - intConcNew) * edge.flow);
                     } else {
                         if (Double.isNaN((intConc - intConcNew) / concentration)) {
-                            LOGGER.info("NaN");
+                            LOGGER.info(layer.name + ": NaN (3)");
                         }
                         edge.transport.put(layer.name, (intConc - intConcNew) / concentration);
                     }
@@ -557,7 +557,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
          * @param level the graph resolution level
          */
         SiteEdge(SiteNode from, SiteNode to, EdgeType type, EdgeLevel level) {
-            super(from, to, type == EdgeType.ANGIOGENIC);
+            super(from, to, type != EdgeType.ANGIOGENIC);
             this.type = type;
             this.level = level;
             isVisited = false;

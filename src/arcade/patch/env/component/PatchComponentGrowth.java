@@ -317,7 +317,7 @@ public class PatchComponentGrowth implements Component {
                     SiteNode fin;
 
                     if (!graph.contains(finalNode)) {
-
+                        LOGGER.info("CONNECTING TWO ANGIOGENIC NODES");
                         // Connecting two angiogenic nodes
                         SiteNode targetNode = findKeyNodeInMap(finalNode, sproutNode);
 
@@ -362,6 +362,7 @@ public class PatchComponentGrowth implements Component {
                         }
 
                         // Connecting sprout to existing node
+                        LOGGER.info("CONNECTING SPROUT TO EXISTING NODE");
                         sproutNode = validateNodeObject(sproutNode);
                         finalNode = validateNodeObject(finalNode);
 
@@ -1048,6 +1049,7 @@ public class PatchComponentGrowth implements Component {
                 //         divertedFlow,
                 //         Adjustment.INCREASE,
                 //         ignoredEdges);
+                LOGGER.info("FAILED TO ADD EDGES: intersection isRoot");
                 return Outcome.FAILURE;
             }
 
@@ -1058,6 +1060,7 @@ public class PatchComponentGrowth implements Component {
                             Adjustment.DECREASE,
                             ignoredEdges)
                     == Outcome.FAILURE) {
+                LOGGER.info("FAILED TO ADD EDGES: updateRadius Decrease failed");
                 return Outcome.FAILURE;
             }
 
@@ -1068,6 +1071,7 @@ public class PatchComponentGrowth implements Component {
                             Adjustment.INCREASE,
                             ignoredEdges)
                     == Outcome.FAILURE) {
+                LOGGER.info("FAILED TO ADD EDGES: updateRadius Increase failed");
                 return Outcome.FAILURE;
             }
 
@@ -1077,6 +1081,7 @@ public class PatchComponentGrowth implements Component {
                 path(graph, start, boundary);
                 if (boundary.prev != null
                         && ((SiteEdge) edges.get(angioIndex)).radius > MINIMUM_CAPILLARY_RADIUS) {
+                    LOGGER.info("FAILED TO ADD EDGES: vein bad?");
                     return Outcome.FAILURE;
                     // return updateRadiusToRoot(
                     //         (SiteEdge) edges.get(angioIndex),
@@ -1086,6 +1091,7 @@ public class PatchComponentGrowth implements Component {
                     //         ignoredEdges);
                 }
             }
+            LOGGER.info("FAILED TO ADD EDGES: Intersection Null");
             return Outcome.FAILURE;
         }
         return Outcome.SUCCESS;
@@ -1388,14 +1394,14 @@ public class PatchComponentGrowth implements Component {
                 }
 
                 edge = new SiteEdge(node, existing, DEFAULT_EDGE_TYPE, DEFAULT_EDGE_LEVEL);
-                edge.setTo(proposed);
-                edge.setFrom(node);
+                // edge.setTo(existing);
+                // edge.setFrom(node);
                 edge.isAnastomotic = true;
                 return edge;
             }
             edge = new SiteEdge(node, proposed, DEFAULT_EDGE_TYPE, DEFAULT_EDGE_LEVEL);
-            edge.setTo(proposed);
-            edge.setFrom(node);
+            // edge.setTo(proposed);
+            // edge.setFrom(node);
 
             if (graph.contains(edge)) {
                 return null;
