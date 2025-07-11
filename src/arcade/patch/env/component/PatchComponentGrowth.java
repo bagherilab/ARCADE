@@ -1388,10 +1388,14 @@ public class PatchComponentGrowth implements Component {
                 }
 
                 edge = new SiteEdge(node, existing, DEFAULT_EDGE_TYPE, DEFAULT_EDGE_LEVEL);
+                edge.setTo(proposed);
+                edge.setFrom(node);
                 edge.isAnastomotic = true;
                 return edge;
             }
             edge = new SiteEdge(node, proposed, DEFAULT_EDGE_TYPE, DEFAULT_EDGE_LEVEL);
+            edge.setTo(proposed);
+            edge.setFrom(node);
 
             if (graph.contains(edge)) {
                 return null;
