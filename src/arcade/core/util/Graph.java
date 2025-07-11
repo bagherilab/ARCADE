@@ -29,16 +29,16 @@ public final class Graph {
     }
 
     /** Collection of all {@code Edge} objects in a graph. */
-    public final Bag allEdges;
+    private final Bag allEdges;
 
     /** Map of {@code Node} objects, for lookup. */
-    public final Map<String, Node> nodes;
+    private final Map<String, Node> nodes;
 
     /** Map of {@code Node} OUT to bag of {@code Edge} objects. */
-    public final Map<Node, Bag> nodeToOutBag;
+    private final Map<Node, Bag> nodeToOutBag;
 
     /** Map of {@code Node} IN to bag of {@code Edge} objects. */
-    public final Map<Node, Bag> nodeToInBag;
+    private final Map<Node, Bag> nodeToInBag;
 
     /** Creates an empty {@code Graph}. */
     public Graph() {

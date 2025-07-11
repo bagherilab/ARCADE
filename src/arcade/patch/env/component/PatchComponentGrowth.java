@@ -317,7 +317,6 @@ public class PatchComponentGrowth implements Component {
                     SiteNode fin;
 
                     if (!graph.contains(finalNode)) {
-                        LOGGER.info("CONNECTING TWO ANGIOGENIC NODES");
                         // Connecting two angiogenic nodes
                         SiteNode targetNode = findKeyNodeInMap(finalNode, sproutNode);
 
@@ -329,6 +328,7 @@ public class PatchComponentGrowth implements Component {
                         keyNodesToRemove.add(targetNode);
 
                         // Connecting sprout to existing node
+                        LOGGER.info("CONNECTING TWO ANGIOGENIC NODES");
                         sproutNode = validateNodeObject(sproutNode);
                         targetNode = validateNodeObject(targetNode);
 
