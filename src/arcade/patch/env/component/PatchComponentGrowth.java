@@ -1019,6 +1019,7 @@ public class PatchComponentGrowth implements Component {
 
         edges = graph.getEdgesOut(start);
         if (edges.size() != 2) {
+            LOGGER.info("FAILED TO ADD EDGES: start outEdges != 2");
             return Outcome.FAILURE;
         }
 
@@ -1027,6 +1028,7 @@ public class PatchComponentGrowth implements Component {
         double deltaP = start.pressure - end.pressure;
 
         if (start.pressure * end.pressure == 0 || Double.isNaN(deltaP)) {
+            LOGGER.info("FAILED TO ADD EDGES: 0 or NaN pressure");
             return Outcome.FAILURE;
         }
 
@@ -1038,6 +1040,7 @@ public class PatchComponentGrowth implements Component {
 
         Double originalFlow = ((SiteEdge) edges.get(nonAngioIndex)).flow;
         if (divertedFlow > originalFlow) {
+            LOGGER.info("FAILED TO ADD EDGES: divertedFlow > originalflow");
             return Outcome.FAILURE;
         }
 

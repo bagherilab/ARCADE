@@ -953,7 +953,7 @@ abstract class PatchComponentSitesGraphUtilities {
 
             // If end node found, exit from loop.
             if (evalNode.equals(end)) {
-                end.prev = evalNode.prev;
+                // end.prev = evalNode.prev;
                 break;
             }
 
