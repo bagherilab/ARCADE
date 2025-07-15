@@ -277,8 +277,6 @@ public class PatchComponentGrowth implements Component {
                     buildDirectionalSpanMap(vegfLattice, node);
 
             if (averageDirectionalMap(vegfMap) > vegfThreshold) {
-                angiogenicNodeMap.put(node, new ArrayList<>());
-
                 Bag in = graph.getEdgesIn(node);
                 Bag out = graph.getEdgesOut(node);
                 SiteEdge inEdge = (SiteEdge) in.get(0);
@@ -286,6 +284,12 @@ public class PatchComponentGrowth implements Component {
 
                 SiteEdge outEdge = (SiteEdge) out.get(0);
                 vegfMap.remove(sites.graphFactory.getDirection(outEdge, DEFAULT_EDGE_LEVEL));
+
+                if (vegfMap.isEmpty()) {
+                    continue;
+                }
+
+                angiogenicNodeMap.put(node, new ArrayList<>());
 
                 EnumMap<EdgeDirection, Double> vegfAverages = getDirectionalAverages(vegfMap);
 
@@ -350,6 +354,14 @@ public class PatchComponentGrowth implements Component {
                             fin = targetNode;
                         }
                         angiogenicNodeMap.get(sproutNode).addAll(angiogenicNodeMap.get(targetNode));
+
+                        for (SiteEdge e : angiogenicNodeMap.get(sproutNode)) {
+                            if (e.getTo().equals(finalNode)) {
+                                e.setTo(finalNode);
+                            } else if (e.getFrom().equals(finalNode)) {
+                                e.setFrom(finalNode);
+                            }
+                        }
 
                     } else {
                         keyNodesToRemove.add(sproutNode);
@@ -1119,6 +1131,7 @@ public class PatchComponentGrowth implements Component {
         ArrayList<SiteEdge> edgesToUpdate = getPath(graph, edge.getTo(), intersection);
 
         if (edgesToUpdate == null) {
+            LOGGER.info("NO EDGES TO UPDATE");
             return Outcome.FAILURE;
         }
 
@@ -1397,14 +1410,10 @@ public class PatchComponentGrowth implements Component {
                 }
 
                 edge = new SiteEdge(node, existing, DEFAULT_EDGE_TYPE, DEFAULT_EDGE_LEVEL);
-                // edge.setTo(existing);
-                // edge.setFrom(node);
                 edge.isAnastomotic = true;
                 return edge;
             }
             edge = new SiteEdge(node, proposed, DEFAULT_EDGE_TYPE, DEFAULT_EDGE_LEVEL);
-            // edge.setTo(proposed);
-            // edge.setFrom(node);
 
             if (graph.contains(edge)) {
                 return null;
