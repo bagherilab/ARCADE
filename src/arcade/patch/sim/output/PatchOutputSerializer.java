@@ -248,8 +248,6 @@ public final class PatchOutputSerializer {
             json.addProperty("shear", src.getShear());
             json.addProperty("stress", src.getCircum());
             json.addProperty("flow", src.getFlow());
-            json.addProperty("fraction", src.getFraction());
-            json.addProperty("transport", src.getTransport());
 
             return json;
         }
