@@ -56,16 +56,16 @@ public abstract class PatchCellCART extends PatchCell {
     protected boolean activated;
 
     /** number of current PDL-1 receptors on CART cell. */
-    protected int selfReceptors;
+    public int selfReceptors;
 
     /** initial number of PDL-1 receptors on CART cell. */
     protected int selfReceptorsStart;
 
     /** number of bound CAR antigens. */
-    protected int boundCARAntigensCount;
+    public int boundCARAntigensCount;
 
     /** number of bound PDL-1 antigens. */
-    protected int boundSelfAntigensCount;
+    public int boundSelfAntigensCount;
 
     /** number of neighbors that T cell is able to search through. */
     protected final double searchAbility;
@@ -160,8 +160,8 @@ public abstract class PatchCellCART extends PatchCell {
         // initialized non-loaded parameters
         boundCARAntigensCount = 0;
         boundSelfAntigensCount = 0;
-        lastActiveTicker = 0;
-        activated = true;
+        // lastActiveTicker = 0;
+        activated = false;
         boundTarget = null;
 
         // Set loaded parameters.
@@ -257,6 +257,15 @@ public abstract class PatchCellCART extends PatchCell {
      */
     public boolean getActivationStatus() {
         return this.activated;
+    }
+
+    /**
+     * Sets the cell activation status.
+     *
+     * @param activated the activation status to set
+     */
+    public void setActivationStatus(boolean activated) {
+        this.activated = activated;
     }
 
     /**

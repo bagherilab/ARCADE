@@ -141,6 +141,7 @@ public class PatchActionTreat implements Action {
             }
 
             maxConfluency = population.getInt("MAX_DENSITY");
+            maxConfluency = (maxConfluency >= 0 ? maxConfluency : Integer.MAX_VALUE);
 
             int pop = population.getInt("CODE");
 
@@ -360,9 +361,7 @@ public class PatchActionTreat implements Action {
             for (Object cellObj : bag) {
                 PatchCell cell = (PatchCell) cellObj;
                 if (cell instanceof PatchCellCART) {
-                    totalVol =
-                            PatchCell.calculateTotalVolume(bag)
-                                    + parameters.getDouble("T_CELL_VOL_AVG");
+                    totalVol = PatchCell.calculateTotalVolume(bag) + cell.getVolume();
                     currentHeight = totalVol / locArea;
                 }
                 if (cell instanceof PatchCellTissue) {
