@@ -1,7 +1,11 @@
 package arcade.patch.agent.action;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.util.Bag;
@@ -31,13 +35,14 @@ import arcade.patch.env.location.PatchLocation;
 import arcade.patch.env.location.PatchLocationContainer;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.sim.PatchSimulation;
+import arcade.patch.util.PatchEnums.Immune;
 import arcade.patch.util.PatchEnums.Ordering;
 
 /**
- * Implementation of {@link Action} for inserting T cell agents.
+ * Implementation of {@link Action} for inserting T-cell agents.
  *
  * <p>The action is stepped once after {@code TIME_DELAY}. The {@code TreatAction} will add CAR
- * T-cell agents of specified dose and ratio next to source points or vasculature.
+ * T-cell agents of specified dose next to source points or vasculature.
  */
 public class PatchActionTreat implements Action {
 
@@ -47,13 +52,10 @@ public class PatchActionTreat implements Action {
     /** Total number of CAR T-cells to treat with. */
     private final int dose;
 
-    /** List of fraction of each population to treat with. CD4 to CD8 ratio. */
-    private final double treatFrac;
-
     /** Maximum damage value at which T-cells can spawn next to in source or pattern source. */
-    private double maxDamage;
+    private final double maxDamage;
 
-    /** Minimum radius value at which T- cells can spawn next to in graph source. */
+    /** Minimum radius value at which T-cells can spawn next to in graph source. */
     private final double minDamageRadius;
 
     /** Number of agent positions per lattice site. */
@@ -69,7 +71,7 @@ public class PatchActionTreat implements Action {
     MiniBox parameters;
 
     /** Maximum confluency of cells in any location. */
-    final int maxConfluency;
+    int maxConfluency;
 
     /**
      * Creates an {@code Action} to add agents after a delay.
@@ -80,21 +82,17 @@ public class PatchActionTreat implements Action {
     public PatchActionTreat(Series series, MiniBox parameters) {
         this.delay = parameters.getInt("TIME_DELAY");
         this.dose = parameters.getInt("DOSE");
-        this.treatFrac = parameters.getDouble("RATIO");
         this.maxDamage = parameters.getDouble("MAX_DAMAGE_SEED");
         this.minDamageRadius = parameters.getDouble("MIN_RADIUS_SEED");
-        this.maxConfluency = 54;
         this.parameters = parameters;
-
         this.coord =
                 ((PatchSeries) series).patch.get("GEOMETRY").equalsIgnoreCase("HEX")
                         ? "Hex"
                         : "Rect";
         if (coord.equals("Hex")) {
-            latPositions = 9;
-        }
-        if (coord.equals("Rect")) {
-            latPositions = 16;
+            this.latPositions = 9;
+        } else {
+            this.latPositions = 16;
         }
 
         populations = new ArrayList<>();
@@ -116,19 +114,10 @@ public class PatchActionTreat implements Action {
      * @param simstate the MASON simulation state
      */
     public void step(SimState simstate) {
-
         PatchSimulation sim = (PatchSimulation) simstate;
         String type = "null";
         PatchGrid grid = (PatchGrid) sim.getGrid();
         PatchComponentSites comp = (PatchComponentSites) sim.getComponent("SITES");
-
-        ArrayList<LocationContainer> locs = sim.getLocations();
-
-        ArrayList<Location> siteLocs0 = new ArrayList<Location>();
-        ArrayList<Location> siteLocs1 = new ArrayList<Location>();
-        ArrayList<Location> siteLocs2 = new ArrayList<Location>();
-        ArrayList<Location> siteLocs3 = new ArrayList<Location>();
-        ArrayList<Location> siteLocs = new ArrayList<Location>();
 
         // Determine type of sites component implemented.
         if (comp instanceof PatchComponentSitesSource) {
@@ -139,128 +128,165 @@ public class PatchActionTreat implements Action {
             type = "graph";
         }
 
-        // Find sites without specified level of damage based on component type.
-        switch (type) {
-            case "source":
-            case "pattern":
-                double[][][] damage;
-                boolean[][][] sitesLat;
+        Set<String> immuneCells =
+                Arrays.stream(Immune.values()).map(Enum::name).collect(Collectors.toSet());
 
-                if (type.equals("source")) {
-                    damage = ((PatchComponentSitesSource) comp).getDamage();
-                    sitesLat = ((PatchComponentSitesSource) comp).getSources();
-                } else {
-                    damage = ((PatchComponentSitesPattern) comp).getDamage();
-                    sitesLat = ((PatchComponentSitesPattern) comp).getPatterns();
-                }
+        for (MiniBox population : populations) {
+            String className = population.get("CLASS").toUpperCase();
 
-                // Iterate through list of locations and remove locations not next to a site.
-                for (LocationContainer l : locs) {
-                    PatchLocationContainer contain = (PatchLocationContainer) l;
-                    PatchLocation loc =
-                            (PatchLocation)
-                                    contain.convert(
-                                            sim.locationFactory,
-                                            sim.cellFactory.createCellForPopulation(
-                                                    0, populations.get(0).getInt("CODE")));
-                    CoordinateXYZ coordinate = (CoordinateXYZ) loc.getSubcoordinate();
-                    int z = coordinate.z;
-                    if (sitesLat[z][coordinate.x][coordinate.y]
-                            && damage[z][coordinate.x][coordinate.y] <= this.maxDamage) {
-                        addLocationsIntoList(grid, loc, siteLocs0, siteLocs1, siteLocs2, siteLocs3);
-                    }
-                }
-                break;
-
-            case "graph":
-                Graph graph = ((PatchComponentSitesGraph) comp).getGraph();
-                Bag allEdges = new Bag(graph.getAllEdges());
-                PatchComponentSitesGraph graphSites = (PatchComponentSitesGraph) comp;
-
-                for (Object edgeObj : allEdges) {
-                    SiteEdge edge = (SiteEdge) edgeObj;
-                    Bag allEdgeLocs = new Bag();
-                    if (Objects.equals(coord, "Hex")) {
-                        allEdgeLocs.add(
-                                ((PatchComponentSitesGraphTri) graphSites)
-                                        .getSpan(edge.getFrom(), edge.getTo()));
-                    } else {
-                        allEdgeLocs.add(
-                                ((PatchComponentSitesGraphRect) graphSites)
-                                        .getSpan(edge.getFrom(), edge.getTo()));
-                    }
-
-                    for (Object locObj : allEdgeLocs) {
-                        Location loc = (Location) locObj;
-                        if (locs.contains(loc)) {
-                            if (edge.getRadius() >= minDamageRadius) {
-                                addLocationsIntoList(
-                                        grid, loc, siteLocs0, siteLocs1, siteLocs2, siteLocs3);
-                            }
-                        }
-                    }
-                }
-                break;
-
-            default:
+            if (!immuneCells.contains(className)) {
                 throw new IllegalArgumentException(
-                        "Invalid component type: "
-                                + type
-                                + ". Must be of type source, pattern, or graph.");
-        }
+                        "Population "
+                                + population.get("CLASS")
+                                + " is not an immune cell and cannot be treated.");
+            }
 
-        Utilities.shuffleList(siteLocs3, sim.random);
-        Utilities.shuffleList(siteLocs2, sim.random);
-        Utilities.shuffleList(siteLocs1, sim.random);
-        Utilities.shuffleList(siteLocs0, sim.random);
-        siteLocs.addAll(siteLocs3);
-        siteLocs.addAll(siteLocs2);
-        siteLocs.addAll(siteLocs1);
-        siteLocs.addAll(siteLocs0);
-        insert(siteLocs, simstate);
+            maxConfluency = population.getInt("MAX_DENSITY");
+
+            int pop = population.getInt("CODE");
+
+            ArrayList<LocationContainer> locs = sim.getLocations();
+            ArrayList<Location> siteLocs = new ArrayList<Location>();
+
+            // Find sites without specified level of damage based on component type.
+            findLocations(comp, type, locs, siteLocs, sim);
+            Utilities.shuffleList(siteLocs, sim.random);
+            // sort locations in descending order from highest to lowest density
+            siteLocs.sort(Comparator.comparingInt(l -> -computeDensity(grid, l)));
+            insert(siteLocs, simstate, pop);
+        }
     }
 
     /**
-     * Helper method to sort locations into lists.
+     * Helper method to find possible locations to insert T-cells.
      *
-     * @param grid the simulation grid
-     * @param loc the current location being looked at
-     * @param siteLocs0 the list of locations with 0 agents
-     * @param siteLocs1 the list of locations with 1 agent
-     * @param siteLocs2 the list of locations with 2 agents
-     * @param siteLocs3 the list of locations with 3 agents
+     * @param comp the component
+     * @param type the type of component (source, pattern, or graph)
+     * @param locs the locations to check
+     * @param siteLocs the locations that meet the criteria
+     * @param sim the simulation instance
+     * @throws IllegalArgumentException if the component type is invalid
      */
-    private void addLocationsIntoList(
-            PatchGrid grid,
-            Location loc,
-            ArrayList<Location> siteLocs0,
-            ArrayList<Location> siteLocs1,
-            ArrayList<Location> siteLocs2,
-            ArrayList<Location> siteLocs3) {
-        Bag bag = new Bag(grid.getObjectsAtLocation(loc));
-        int numAgents = bag.numObjs;
+    private void findLocations(
+            PatchComponentSites comp,
+            String type,
+            ArrayList<LocationContainer> locs,
+            ArrayList<Location> siteLocs,
+            PatchSimulation sim) {
+        if (type.equals("graph")) {
+            findGraphSites(comp, locs, siteLocs);
+        } else if (type.equals("source") || type.equals("pattern")) {
+            double[][][] damage;
+            boolean[][][] sitesLat;
 
-        if (numAgents == 0) {
-            for (int p = 0; p < latPositions; p++) {
-                siteLocs0.add(loc);
+            if (type.equals("source")) {
+                damage = ((PatchComponentSitesSource) comp).getDamage();
+                sitesLat = ((PatchComponentSitesSource) comp).getSources();
+            } else {
+                damage = ((PatchComponentSitesPattern) comp).getDamage();
+                sitesLat = ((PatchComponentSitesPattern) comp).getPatterns();
             }
-        } else if (numAgents == 1) {
-            for (int p = 0; p < latPositions; p++) {
-                siteLocs1.add(loc);
-            }
-        } else if (numAgents == 2) {
-            for (int p = 0; p < latPositions; p++) {
-                siteLocs2.add(loc);
-            }
+            pruneSite(locs, sim, damage, sitesLat, siteLocs);
         } else {
-            for (int p = 0; p < latPositions; p++) {
-                siteLocs3.add(loc);
+            throw new IllegalArgumentException(
+                    "Invalid component type: "
+                            + type
+                            + ". Must be of type source, pattern, or graph.");
+        }
+    }
+
+    /**
+     * Helper method to check if radius is wide enough for T-cells to pass through.
+     *
+     * @param comp the component
+     * @param locs the locations to check
+     * @param siteLocs the locations that meet the criteria
+     */
+    private void findGraphSites(
+            PatchComponentSites comp,
+            ArrayList<LocationContainer> locs,
+            ArrayList<Location> siteLocs) {
+        Graph graph = ((PatchComponentSitesGraph) comp).getGraph();
+        Bag allEdges = new Bag(graph.getAllEdges());
+        PatchComponentSitesGraph graphSites = (PatchComponentSitesGraph) comp;
+
+        Set<Coordinate> coordinateSet =
+                locs.stream()
+                        .map(container -> ((PatchLocationContainer) container).coordinate)
+                        .collect(Collectors.toSet());
+
+        for (Object edgeObj : allEdges) {
+            SiteEdge edge = (SiteEdge) edgeObj;
+            Bag allEdgeLocs = new Bag();
+            if (Objects.equals(coord, "Hex")) {
+                allEdgeLocs.add(
+                        ((PatchComponentSitesGraphTri) graphSites)
+                                .getSpan(edge.getFrom(), edge.getTo()));
+            } else {
+                allEdgeLocs.add(
+                        ((PatchComponentSitesGraphRect) graphSites)
+                                .getSpan(edge.getFrom(), edge.getTo()));
+            }
+
+            for (Object locObj : allEdgeLocs) {
+                Location loc = (Location) locObj;
+                if (coordinateSet.contains(((PatchLocation) loc).getCoordinate())) {
+                    if (edge.getRadius() >= minDamageRadius) {
+                        for (int p = 0; p < latPositions; p++) {
+                            siteLocs.add(loc);
+                        }
+                    }
+                }
             }
         }
-        // Remove break statement if more than one per hex can appear
-        // with break statement, each location can only be added to list once
-        // without it, places with more vasc sites get added more times to list
-        // break;
+    }
+
+    /**
+     * Helper method to remove locations that are not next to a site or have too much damage for
+     * T-cells to pass through.
+     *
+     * @param locs the locations to check
+     * @param sim the simuation instance
+     * @param damage the damage array for sites
+     * @param sitesLat the lattice array for sites
+     * @param siteLocs the locations that meet the criteria
+     */
+    public void pruneSite(
+            ArrayList<LocationContainer> locs,
+            PatchSimulation sim,
+            double[][][] damage,
+            boolean[][][] sitesLat,
+            ArrayList<Location> siteLocs) {
+        for (LocationContainer l : locs) {
+            PatchLocationContainer contain = (PatchLocationContainer) l;
+            PatchLocation loc =
+                    (PatchLocation)
+                            contain.convert(
+                                    sim.locationFactory,
+                                    sim.cellFactory.createCellForPopulation(
+                                            0, populations.get(0).getInt("CODE")));
+            CoordinateXYZ coordinate = (CoordinateXYZ) loc.getSubcoordinate();
+            int z = coordinate.z;
+            if (sitesLat[z][coordinate.x][coordinate.y]
+                    && damage[z][coordinate.x][coordinate.y] <= this.maxDamage) {
+                for (int p = 0; p < latPositions; p++) {
+                    siteLocs.add(loc);
+                }
+            }
+        }
+    }
+
+    /**
+     * Helper method to sort locations.
+     *
+     * @param grid the simulation grid
+     * @param loc the current location being looked
+     * @return the density of agents at the location
+     */
+    private int computeDensity(PatchGrid grid, Location loc) {
+        Bag bag = new Bag(grid.getObjectsAtLocation(loc));
+        int numAgents = bag.numObjs;
+        return numAgents;
     }
 
     /**
@@ -268,51 +294,34 @@ public class PatchActionTreat implements Action {
      *
      * @param coordinates the locations to insert the cells
      * @param simstate the simulation state
+     * @param pop the population code for the cells
      */
-    private void insert(ArrayList<Location> coordinates, SimState simstate) {
+    private void insert(ArrayList<Location> coordinates, SimState simstate, int pop) {
         PatchSimulation sim = (PatchSimulation) simstate;
         PatchGrid grid = (PatchGrid) sim.getGrid();
         Utilities.shuffleList(coordinates, sim.random);
 
-        int cd4Code = 0;
-        int cd8Code = 0;
-
-        for (MiniBox population : populations) {
-            String className = population.get("CLASS");
-            if (className.equals("cart_cd4")) {
-                cd4Code = population.getInt("CODE");
-            }
-            if (className.equals("cart_cd8")) {
-                cd8Code = population.getInt("CODE");
-            }
-        }
-
         for (int i = 0; i < dose; i++) {
-
             int id = sim.getID();
 
-            int pop = cd4Code;
-
-            if (sim.random.nextDouble() > treatFrac) {
-                pop = cd8Code;
-            }
-
             PatchLocation loc = ((PatchLocation) coordinates.remove(0));
-            Coordinate coordinate = loc.getCoordinate();
 
             while (!coordinates.isEmpty() && !checkLocationSpace(loc, grid)) {
-                loc = (PatchLocation) coordinates.remove(0);
+                loc = ((PatchLocation) coordinates.remove(0));
             }
 
             if (coordinates.isEmpty()) {
                 break;
             }
 
+            Coordinate coordinate = loc.getCoordinate();
             PatchLocationContainer locationContainer = new PatchLocationContainer(id, coordinate);
             PatchCellContainer cellContainer = sim.cellFactory.createCellForPopulation(id, pop);
+
             Location location = locationContainer.convert(sim.locationFactory, cellContainer);
             PatchCell cell =
                     (PatchCell) cellContainer.convert(sim.cellFactory, location, sim.random);
+
             grid.addObject(cell, location);
             cell.schedule(sim.getSchedule());
         }
@@ -354,7 +363,7 @@ public class PatchActionTreat implements Action {
                 if (cell instanceof PatchCellCART) {
                     totalVol =
                             PatchCell.calculateTotalVolume(bag)
-                                    + parameters.getDouble("T_CELL_VOL_AVG");
+                                    + cell.getVolume();
                     currentHeight = totalVol / locArea;
                 }
                 if (cell instanceof PatchCellTissue) {

@@ -12,6 +12,9 @@ import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.process.PatchProcess;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
+import arcade.patch.util.PatchEnums.Domain;
+import arcade.patch.util.PatchEnums.State;
+
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -59,7 +62,7 @@ public class PatchModuleProliferation extends PatchModule {
         duration = 0;
         // Load parameters.
         Parameters parameters = cell.getParameters();
-        synthesisDuration = parameters.getInt("proliferation/SYNTHESIS_DURATION");
+        synthesisDuration = parameters.getInt("SYNTHESIS_DURATION");
     }
 
     @Override
@@ -106,6 +109,16 @@ public class PatchModuleProliferation extends PatchModule {
                                             newLocation,
                                             random,
                                             newParameters);
+                    if (cell instanceof PatchCellCART) {
+                        ((PatchCellCART) newCell)
+                                .setActivationStatus(((PatchCellCART) cell).getActivationStatus());
+                        ((PatchCellCART) newCell).boundSelfAntigensCount =
+                                ((PatchCellCART) cell).boundSelfAntigensCount;
+                        ((PatchCellCART) newCell).selfReceptors =
+                                ((PatchCellCART) cell).selfReceptors;
+                        ((PatchCellCART) newCell).boundCARAntigensCount =
+                                ((PatchCellCART) cell).boundCARAntigensCount;
+                    }
                     sim.getGrid().addObject(newCell, newLocation);
                     newCell.schedule(sim.getSchedule());
 
