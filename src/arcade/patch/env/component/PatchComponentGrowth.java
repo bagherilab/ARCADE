@@ -36,11 +36,10 @@ import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calcu
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculateThickness;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.getPath;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.path;
-import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.updateGraph;
 import static arcade.patch.util.PatchEnums.Ordering;
 
 /**
- * Implementation of {@link Component} for degrading graph edges.
+ * Implementation of {@link Component} for adding graph edges .
  *
  * <p>This component can only be used with {@link PatchComponentsSitesGraph}. The component is
  * stepped according to a reasonable interval based on the specified {@code MIGRATION_RATE}.
@@ -551,7 +550,7 @@ public class PatchComponentGrowth implements Component {
      * @param skipNode {@link SiteNode} to ignore in the map
      * @return {@link SiteNode} key for the targetNode object
      */
-    private SiteNode findKeyNodeInMap(SiteNode targetNode, SiteNode skipNode) {
+    SiteNode findKeyNodeInMap(SiteNode targetNode, SiteNode skipNode) {
         for (SiteNode keyNode : angiogenicNodeMap.keySet()) {
             if (keyNode.equals(skipNode)) {
                 continue;
@@ -1025,9 +1024,6 @@ public class PatchComponentGrowth implements Component {
 
         assert edges != null;
         assert edges.size() >= 2;
-
-        updateGraph(
-                graph); // I think this is unnecessary but was in the previous version TODO: check
 
         edges = graph.getEdgesOut(start);
         if (edges.size() != 2) {

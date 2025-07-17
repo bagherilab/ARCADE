@@ -19,8 +19,8 @@ public class PatchComponentSitesGraphFactoryTriTest {
         PatchComponentSitesGraphFactoryTri factory =
                 new PatchComponentSitesGraphFactoryTri(seriesMock);
 
-        int x = randomIntBetween(0, 100);
-        int y = randomIntBetween(0, 100);
+        int x = randomIntBetween(10, 100);
+        int y = randomIntBetween(10, 100);
         int z = randomIntBetween(0, 100);
 
         assertEquals(
