@@ -251,7 +251,7 @@ public class PatchCellTest {
         Schedule scheduleMock = mock(Schedule.class);
         doReturn(0.0).when(parametersMock).getDouble(any(String.class));
         doReturn(0).when(parametersMock).getInt(any(String.class));
-        doReturn(1).when(parametersMock).getInt("proliferation/SYNTHESIS_DURATION");
+        doReturn(1).when(parametersMock).getInt("SYNTHESIS_DURATION");
         doReturn(cellID + 1).when(simMock).getID();
         doReturn(scheduleMock).when(simMock).getSchedule();
         doReturn(null).when(scheduleMock).scheduleRepeating(anyInt(), anyInt(), any());
