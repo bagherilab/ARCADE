@@ -89,7 +89,7 @@ public class PatchActionTreat implements Action {
                 ((PatchSeries) series).patch.get("GEOMETRY").equalsIgnoreCase("HEX")
                         ? "Hex"
                         : "Rect";
-        if (coord.equals("Hex")) {
+        if (this.coord.equals("Hex")) {
             this.latPositions = 9;
         } else {
             this.latPositions = 16;
@@ -142,6 +142,7 @@ public class PatchActionTreat implements Action {
             }
 
             maxConfluency = population.getInt("MAX_DENSITY");
+            maxConfluency = (maxConfluency >= 0 ? maxConfluency : Integer.MAX_VALUE);
 
             int pop = population.getInt("CODE");
 
@@ -361,9 +362,7 @@ public class PatchActionTreat implements Action {
             for (Object cellObj : bag) {
                 PatchCell cell = (PatchCell) cellObj;
                 if (cell instanceof PatchCellCART) {
-                    totalVol =
-                            PatchCell.calculateTotalVolume(bag)
-                                    + cell.getVolume();
+                    totalVol = PatchCell.calculateTotalVolume(bag) + cell.getVolume();
                     currentHeight = totalVol / locArea;
                 }
                 if (cell instanceof PatchCellTissue) {

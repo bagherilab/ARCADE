@@ -125,7 +125,7 @@ public final class PatchCellContainer implements CellContainer {
             case "inducible_synnotch":
                 return new PatchCellCARTCombinedInducible(
                         this, location, parameters, links, LogicalCARs.INDUCIBLE_SYNNOTCH);
-            case "inhibitory_inhibitory_receptor":
+            case "inhibitory_receptor":
                 return new PatchCellCARTCombinedInhibitory(
                         this, location, parameters, links, LogicalCARs.INHIBITORY_RECEPTOR);
             case "inducible_inflammation":

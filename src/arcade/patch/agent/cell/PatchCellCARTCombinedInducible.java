@@ -229,5 +229,9 @@ public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombina
                 }
             }
         }
+        // Step the module for the cell state.
+        if (super.module != null) {
+            super.module.step(simstate.random, sim);
+        }
     }
 }

@@ -55,7 +55,7 @@
     <population id="SYNNOTCHS" value="1000" description="average number of SynNotch receptors on a SynNotch T-cell" />
     <population id="SYNNOTCH_ANTIGENS" value="1000" description="average number of synNotch antigens on a tissue cancer cell" />
 
-    
+
 
     <!-- migration module parameters -->
     <population.module module="migration" id="MIGRATION_RATE" value="0.24" unit="um/min" description="cell migration rate" />

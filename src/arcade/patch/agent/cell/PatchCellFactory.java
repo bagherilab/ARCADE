@@ -15,7 +15,6 @@ import arcade.core.util.Parameters;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.State;
-
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.State;

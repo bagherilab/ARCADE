@@ -429,5 +429,4 @@ public abstract class PatchCellCART extends PatchCell {
     public void setActivationStatus(boolean activated) {
         this.activated = activated;
     }
-
 }
