@@ -520,14 +520,14 @@ public class PatchComponentGrowth implements Component {
         if ((tick - node.addTime) < (72 * 60)) {
             return true;
         }
-        if (nodeDelays.containsKey(node)) {
-            nodeDelays.put(node, nodeDelays.get(node) + 1);
-            if (nodeDelays.get(node) > 30) {
-                nodeDelays.remove(node);
-                return false;
-            }
-            return true;
-        }
+        // if (nodeDelays.containsKey(node)) {
+        //     nodeDelays.put(node, nodeDelays.get(node) + 1);
+        //     if (nodeDelays.get(node) > 30) {
+        //         nodeDelays.remove(node);
+        //         return false;
+        //     }
+        //     return true;
+        // }
         return false;
     }
 
