@@ -230,6 +230,9 @@ public final class PatchEnums {
         /** Code for cd8 T cell. */
         CART_CD8,
 
+        /** Code for combined cd4/cd8 T cell. */
+        COMBINED,
+
         /** Code for macrophage cell. */
         MACROPHAGE,
 

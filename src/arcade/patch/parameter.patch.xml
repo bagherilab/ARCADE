@@ -51,7 +51,7 @@
     <population id="K_SYNNOTCH_OFF" value="9E-5" unit="s^-1" description="unbinding kinetic constant" />
     <population id="HILL_SYNNOTCH" value="4.4" description="hill coefficient for synnotch to CAR relationship" />
     <population id="K_CAR_DEGRADE" value="3E-4" unit="s^-1" description="degradation of CAR kinetic constant" />
-    <population id="K_CAR_GENERATION" value="0.1" unit="s^-1" description="degradation of CAR kinetic constant" />
+    <population id="K_CAR_GENERATION" value="0.1" unit="s^-1" description="generation of CAR kinetic constant" />
     <population id="SYNNOTCHS" value="1000" description="average number of SynNotch receptors on a SynNotch T-cell" />
     <population id="SYNNOTCH_ANTIGENS" value="1000" description="average number of synNotch antigens on a tissue cancer cell" />
 

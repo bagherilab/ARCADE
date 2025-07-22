@@ -69,6 +69,7 @@ public class PatchCellTissue extends PatchCell {
         super(container, location, parameters, links);
         carAntigens = parameters.getInt("CAR_ANTIGENS");
         selfTargets = parameters.getInt("SELF_TARGETS");
+        synNotchAntigens = parameters.getInt("SYNNOTCH_ANTIGENS");
     }
 
     @Override
