@@ -27,6 +27,7 @@ import arcade.patch.agent.module.PatchModuleSenescence;
 import arcade.patch.agent.module.PatchModuleStimulation;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
+import arcade.patch.agent.process.PatchProcessSensing;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
@@ -384,6 +385,8 @@ public abstract class PatchCell implements Cell {
                 return PatchProcessSignaling.make(this, version);
             case INFLAMMATION:
                 return PatchProcessInflammation.make(this, version);
+            case SENSING:
+                return PatchProcessSensing.make(this, version);
             case UNDEFINED:
             default:
                 return null;

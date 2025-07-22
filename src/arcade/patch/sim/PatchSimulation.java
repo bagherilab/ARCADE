@@ -1,8 +1,11 @@
 package arcade.patch.sim;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
+import com.google.gson.reflect.TypeToken;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import arcade.core.agent.action.Action;
@@ -27,6 +30,10 @@ import arcade.patch.env.location.PatchLocationFactory;
 
 /** Abstract implementation for patch {@link Simulation} instances. */
 public abstract class PatchSimulation extends SimState implements Simulation {
+    /** Hidden utility object type for gson implementation. */
+    public static final Type PATCH_LAYER_TYPE =
+            new TypeToken<HashMap<Location, HashMap<String, Double>>>() {}.getType();
+
     /** {@link arcade.core.sim.Series} object containing this simulation. */
     final PatchSeries series;
 
@@ -56,6 +63,9 @@ public abstract class PatchSimulation extends SimState implements Simulation {
 
     /** Lattice factory instance for the simulation. */
     public final PatchLatticeFactory latticeFactory;
+
+    /** List of all possible locations. */
+    private Set<Location> possibleLocations;
 
     /**
      * Simulation instance for a {@link Series} for given random seed.
@@ -117,6 +127,32 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         return locationContainers;
     }
 
+    /**
+     * Generate a hashmap of the layers keyed by location and by the layer ID.
+     *
+     * @return layers a hashmap of the layers hashed by location and by layer ID.
+     */
+    public final HashMap<Location, HashMap<String, Double>> getLayers() {
+        // Cache all locations if we are saving nutrients.
+        if (possibleLocations == null) {
+            possibleLocations = getAllLocations();
+        }
+
+        HashMap<Location, HashMap<String, Double>> layers = new HashMap<>();
+        for (Location loc : possibleLocations) {
+            for (String key : getLatticeKeys()) {
+                if (layers.containsKey(loc)) {
+                    layers.get(loc).put(key, getLattice(key).getAverageValue(loc));
+                    continue;
+                }
+                layers.put(loc, new HashMap<>());
+                layers.get(loc).put(key, getLattice(key).getAverageValue(loc));
+            }
+        }
+
+        return layers;
+    }
+
     @Override
     public final CellFactory getCellFactory() {
         return cellFactory;
@@ -137,6 +173,15 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         return lattices.get(key);
     }
 
+    /**
+     * Gets the set of keys for the lattice hash set.
+     *
+     * @return the set of lattice keys
+     */
+    public Set<String> getLatticeKeys() {
+        return lattices.keySet();
+    }
+
     @Override
     public final Action getAction(String key) {
         return actions.get(key);
@@ -145,6 +190,28 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     @Override
     public final Component getComponent(String key) {
         return components.get(key);
+    }
+
+    /**
+     * Gets the set of keys for the component hash set.
+     *
+     * @return the set of component keys
+     */
+    public Set<String> getComponentKeys() {
+        return components.keySet();
+    }
+
+    /**
+     * Gets the set of all possible locations.
+     *
+     * @return the set of locations
+     */
+    public Set<Location> getAllLocations() {
+        Set<Location> locations = new HashSet<>();
+        for (LocationContainer container : locationFactory.locations.values()) {
+            locations.add(container.convert(locationFactory, null));
+        }
+        return locations;
     }
 
     /**
@@ -354,8 +421,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
             series.saver.schedule(schedule, series.getInterval());
         } else {
             int tick = (int) schedule.getTime() + 1;
-            series.saver.saveCells(tick);
-            series.saver.saveLocations(tick);
+            series.saver.save(tick);
         }
     }
 }

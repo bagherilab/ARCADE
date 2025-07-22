@@ -38,19 +38,37 @@ public abstract class PottsDrawer extends Drawer {
 
     /** Planes for visualization. */
     enum Plane {
+        /** Code for Z plane. */
         Z,
+
+        /** Code for X plane. */
         X,
+
+        /** Code for Y plane. */
         Y
     }
 
     /** View options. */
     enum View {
+        /** Code for encoding visualization by cytoplasm. */
         CYTOPLASM,
+
+        /** Code for encoding visualization by nucleus. */
         NUCLEUS,
+
+        /** Code for encoding visualization by region overlay. */
         OVERLAY,
+
+        /** Code for encoding visualization by state. */
         STATE,
+
+        /** Code for encoding visualization by population. */
         POPULATION,
+
+        /** Code for encoding visualization by volume. */
         VOLUME,
+
+        /** Code for encoding visualization by height. */
         HEIGHT
     }
 
