@@ -422,6 +422,11 @@ public class PatchComponentGrowth implements Component {
             node = (SiteNode) graph.lookup(node);
             if (graph.getEdgesOut(node) != null && node.pressure == 0.0) {
                 node = ((SiteEdge) graph.getEdgesOut(node).get(0)).getFrom();
+                return node;
+            }
+            if (graph.getEdgesIn(node) != null && node.pressure == 0.0) {
+                node = ((SiteEdge) graph.getEdgesIn(node).get(0)).getTo();
+                return node;
             }
         }
         return node;
@@ -1397,11 +1402,11 @@ public class PatchComponentGrowth implements Component {
                         || graph.getEdgesIn(proposed) == null) {
                     return null;
                 }
-                SiteNode existing = (SiteNode) graph.lookup(proposed);
+                SiteNode existing = validateNodeObject(proposed);
 
                 assert existing != null;
 
-                if (existing.pressure == 0 || Double.isNaN(existing.pressure)) {
+                if (Double.isNaN(existing.pressure)) {
                     return null;
                 }
 
