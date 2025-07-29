@@ -77,6 +77,18 @@ public final class Graph {
         }
     }
 
+    public void combine(Graph graph1, Graph graph2) {
+        clear();
+        for (Object obj : graph2.getAllEdges()) {
+            Edge edge = (Edge) obj;
+            addEdge(edge);
+        }
+        for (Object obj : graph1.getAllEdges()) {
+            Edge edge = (Edge) obj;
+            addEdge(edge);
+        }
+    }
+
     /** Clear edges and nodes from graph. */
     public void clear() {
         allEdges.clear();
