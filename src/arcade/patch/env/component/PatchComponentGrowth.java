@@ -474,7 +474,7 @@ public class PatchComponentGrowth implements Component {
 
             newEdge = createNewEdge(sprout.sproutDir, tipNode);
 
-            if (edgeList.size() == maxEdges || newEdge == null || graph.getDegree(sprout) == 3) {
+            if (edgeList.size() == maxEdges || newEdge == null) {
                 keyNodesToRemove.add(sprout);
             } else {
                 edgeList.add(newEdge);
