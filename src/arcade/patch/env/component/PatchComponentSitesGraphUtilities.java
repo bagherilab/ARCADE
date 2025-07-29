@@ -364,10 +364,11 @@ abstract class PatchComponentSitesGraphUtilities {
     /**
      * Merges the nodes from one graph with another graph.
      *
-     * @param graph1 the first graph object
-     * @param graph2 the second graph object
+     * @param graph the original graph object
+     * @param graph1 the first subgraph object
+     * @param graph2 the second subgraph object
      */
-    static void mergeGraphs(Graph graph1, Graph graph2) {
+    static void mergeGraphs(Graph graph, Graph graph1, Graph graph2) {
         // Merge nodes for subgraph.
         graph2.mergeNodes();
 
@@ -390,6 +391,7 @@ abstract class PatchComponentSitesGraphUtilities {
                 }
             }
         }
+        graph.combine(graph1, graph2);
     }
 
     /**

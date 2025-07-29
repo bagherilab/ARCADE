@@ -842,6 +842,9 @@ public class PatchComponentGrowth implements Component {
             edge.isPerfused = true;
         }
 
+        if (angioPath.size() > 2) {
+            LOGGER.info("angioPath is more than 2");
+        }
         addEdgeList(angioPath);
 
         switch (calc) {
@@ -1402,11 +1405,16 @@ public class PatchComponentGrowth implements Component {
                         || graph.getEdgesIn(proposed) == null) {
                     return null;
                 }
-                SiteNode existing = validateNodeObject(proposed);
+                // SiteNode existing = validateNodeObject(proposed);
+                SiteNode existing = (SiteNode) graph.lookup(proposed);
 
                 assert existing != null;
 
+                if (existing.pressure == 0) {
+                    LOGGER.info("WARNING: PRESSURE 0");
+                }
                 if (Double.isNaN(existing.pressure)) {
+                    LOGGER.info("WARNING: PRESSURE NAN");
                     return null;
                 }
 

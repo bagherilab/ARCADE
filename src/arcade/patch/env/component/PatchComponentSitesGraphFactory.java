@@ -783,7 +783,7 @@ public abstract class PatchComponentSitesGraphFactory {
                 Graph g2 = new Graph();
                 graph.getSubgraph(g1, e -> ((SiteEdge) e).level == EdgeLevel.LEVEL_1);
                 graph.getSubgraph(g2, e -> ((SiteEdge) e).level == EdgeLevel.LEVEL_2);
-                mergeGraphs(g1, g2);
+                mergeGraphs(graph, g1, g2);
                 break;
             default:
                 break;

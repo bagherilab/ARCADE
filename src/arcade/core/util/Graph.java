@@ -77,6 +77,18 @@ public final class Graph {
         }
     }
 
+    public void combine(Graph graph1, Graph graph2) {
+        clear();
+        for (Object obj : graph2.getAllEdges()) {
+            Edge edge = (Edge) obj;
+            addEdge(edge);
+        }
+        for (Object obj : graph1.getAllEdges()) {
+            Edge edge = (Edge) obj;
+            addEdge(edge);
+        }
+    }
+
     /** Clear edges and nodes from graph. */
     public void clear() {
         allEdges.clear();
@@ -251,6 +263,7 @@ public final class Graph {
         for (Object obj : allEdges) {
             Edge edge = (Edge) obj;
             if (f.filter(edge)) {
+                g.addNodes(edge);
                 g.allEdges.add(edge);
                 g.setOutMap(edge.getFrom(), edge);
                 g.setInMap(edge.getTo(), edge);
@@ -321,9 +334,17 @@ public final class Graph {
      * @param edge the edge to add
      */
     public void addEdge(Edge edge) {
+        addNodes(edge);
         allEdges.add(edge);
         setOutMap(edge.getFrom(), edge);
         setInMap(edge.getTo(), edge);
+        setLinks(edge);
+    }
+
+    public void addEdge(Edge edge, boolean duplicate) {
+        allEdges.add(edge);
+        setOutMap(edge.getFrom(), edge, duplicate);
+        setInMap(edge.getTo(), edge, duplicate);
         setLinks(edge);
         addNodes(edge);
     }
@@ -339,17 +360,18 @@ public final class Graph {
         if (!nodes.containsKey(from.toString())) {
             nodes.put(from.toString(), from);
         } else {
-            from = nodes.get(from.toString());
+            edge.setFrom(nodes.get(from.toString()));
         }
         if (!nodes.containsKey(to.toString())) {
             nodes.put(to.toString(), to);
         } else {
-            to = nodes.get(to.toString());
+            edge.setTo(nodes.get(to.toString()));
         }
     }
 
     /**
-     * Adds the edge to the bag for the mapping of OUT node to edge.
+     * Adds the edge to the bag for the mapping of OUT node to edge. Default behavior is to
+     * duplicate nodes.
      *
      * @param node the node hash
      * @param edge the edge
@@ -362,9 +384,26 @@ public final class Graph {
         }
         objs.add(edge);
     }
+    /**
+     * Adds the edge to the bag for the mapping of OUT node to edge. Used in cases
+     * new node object is not needed.
+     *
+     * @param node the node hash
+     * @param edge the edge
+     */
+    private void setOutMap(Node node, Edge edge, boolean duplicate) {
+        Bag objs = nodeToOutBag.get(node);
+        if (objs == null) {
+            objs = new Bag(10);
+            Node bagNode = duplicate ? node.duplicate() : node;
+            nodeToOutBag.put(bagNode, objs);
+        }
+        objs.add(edge);
+    }
 
     /**
-     * Adds the edge to the bag for the mapping of IN node to edge.
+     * Adds the edge to the bag for the mapping of IN node to edge. Default behavior is to
+     * duplicate nodes.
      *
      * @param node the node hash
      * @param edge the edge
@@ -374,6 +413,23 @@ public final class Graph {
         if (objs == null) {
             objs = new Bag(10);
             nodeToInBag.put(node.duplicate(), objs);
+        }
+        objs.add(edge);
+    }
+
+    /**
+     * Adds the edge to the bag for the mapping of OUT node to edge. Used in cases
+     * new node object is not needed.
+     *
+     * @param node the node hash
+     * @param edge the edge
+     */
+    private void setInMap(Node node, Edge edge, boolean duplicate) {
+        Bag objs = nodeToInBag.get(node);
+        if (objs == null) {
+            objs = new Bag(10);
+            Node bagNode = duplicate ? node.duplicate() : node;
+            nodeToInBag.put(bagNode, objs);
         }
         objs.add(edge);
     }
