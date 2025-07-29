@@ -384,9 +384,10 @@ public final class Graph {
         }
         objs.add(edge);
     }
+
     /**
-     * Adds the edge to the bag for the mapping of OUT node to edge. Used in cases
-     * new node object is not needed.
+     * Adds the edge to the bag for the mapping of OUT node to edge. Used in cases new node object
+     * is not needed.
      *
      * @param node the node hash
      * @param edge the edge
@@ -402,8 +403,8 @@ public final class Graph {
     }
 
     /**
-     * Adds the edge to the bag for the mapping of IN node to edge. Default behavior is to
-     * duplicate nodes.
+     * Adds the edge to the bag for the mapping of IN node to edge. Default behavior is to duplicate
+     * nodes.
      *
      * @param node the node hash
      * @param edge the edge
@@ -418,8 +419,8 @@ public final class Graph {
     }
 
     /**
-     * Adds the edge to the bag for the mapping of OUT node to edge. Used in cases
-     * new node object is not needed.
+     * Adds the edge to the bag for the mapping of OUT node to edge. Used in cases new node object
+     * is not needed.
      *
      * @param node the node hash
      * @param edge the edge
