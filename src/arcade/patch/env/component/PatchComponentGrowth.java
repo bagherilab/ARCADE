@@ -297,6 +297,11 @@ public class PatchComponentGrowth implements Component {
         }
 
         boolean addFlag = propogateEdges();
+        for (SiteNode node : angiogenicNodeMap.keySet()) {
+            if (angiogenicNodeMap.get(node).size() > 1) {
+                LOGGER.info("MORE THAN ONE EDGE IN ANGIOGENIC NODE MAP");
+            }
+        }
         if (addFlag) {
             for (SiteNode sproutNode : angiogenicNodeMap.keySet()) {
                 if (keyNodesToRemove.contains(sproutNode)) {
@@ -525,14 +530,6 @@ public class PatchComponentGrowth implements Component {
         if ((tick - node.addTime) < (72 * 60)) {
             return true;
         }
-        // if (nodeDelays.containsKey(node)) {
-        //     nodeDelays.put(node, nodeDelays.get(node) + 1);
-        //     if (nodeDelays.get(node) > 30) {
-        //         nodeDelays.remove(node);
-        //         return false;
-        //     }
-        //     return true;
-        // }
         return false;
     }
 
@@ -713,7 +710,11 @@ public class PatchComponentGrowth implements Component {
             for (double value : map.get(dir)) {
                 sum += value;
             }
-            averageMap.put(dir, sum / map.get(dir).size());
+            if (map.get(dir).size() == 0) {
+                averageMap.put(dir, 0.0);
+            } else {
+                averageMap.put(dir, sum / map.get(dir).size());
+            }
         }
         return averageMap;
     }
