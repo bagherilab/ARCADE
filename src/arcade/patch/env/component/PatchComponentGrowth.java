@@ -310,7 +310,6 @@ public class PatchComponentGrowth implements Component {
                     nodeDelays.putIfAbsent(sproutNode, 0);
 
                     if (graph.getDegree(sproutNode) > 2) {
-                        LOGGER.info("Sprout node has more than two degrees.");
                         keyNodesToRemove.add(sproutNode);
                         continue;
                     }
@@ -338,13 +337,11 @@ public class PatchComponentGrowth implements Component {
                         keyNodesToRemove.add(sproutNode);
                         keyNodesToRemove.add(targetNode);
 
-                        LOGGER.info("CONNECTING TWO ANGIOGENIC NODES, tick: " + tick);
-
                         if (sproutNode.pressure == 0
                                 || targetNode.pressure == 0
                                 || Double.isNaN(sproutNode.pressure)
                                 || Double.isNaN(targetNode.pressure)) {
-                            LOGGER.info("Cannot connect nodes (332).");
+                            LOGGER.info("Cannot connect nodes (332). Tick " + tick);
                             continue;
                         }
 
@@ -377,7 +374,6 @@ public class PatchComponentGrowth implements Component {
                         }
 
                         // Connecting sprout to existing node
-                        LOGGER.info("CONNECTING SPROUT TO EXISTING NODE");
                         sproutNode = validateNodeObject(sproutNode);
                         finalNode = validateNodeObject(finalNode);
 
@@ -385,7 +381,7 @@ public class PatchComponentGrowth implements Component {
                                 || finalNode.pressure == 0
                                 || Double.isNaN(sproutNode.pressure)
                                 || Double.isNaN(finalNode.pressure)) {
-                            LOGGER.info("Cannot connect nodes (366).");
+                            LOGGER.info("Cannot connect nodes (366). Tick " + tick);
                             continue;
                         }
 
@@ -866,33 +862,6 @@ public class PatchComponentGrowth implements Component {
                 Outcome result = recalculateRadii(angioPath, start, end, intersection);
                 if (result == Outcome.FAILURE) {
                     removeEdgeList(angioPath);
-                } else {
-                    LOGGER.info(
-                            "=======================================================================");
-
-                    LOGGER.info("Added " + angioPath + " path at tick: " + tick);
-                    LOGGER.info("Sprout Node: " + start);
-                    LOGGER.info("Sprout Edge: " + start.sproutDir);
-                    for (Object obj : graph.getEdgesOut(start)) {
-                        SiteEdge edge = (SiteEdge) obj;
-                        LOGGER.info("Out Edge: " + edge);
-                    }
-                    for (Object obj : graph.getEdgesIn(start)) {
-                        SiteEdge edge = (SiteEdge) obj;
-                        LOGGER.info("In Edge: " + edge);
-                    }
-                    LOGGER.info("End Node: " + end);
-                    for (Object obj : graph.getEdgesOut(end)) {
-                        SiteEdge edge = (SiteEdge) obj;
-                        LOGGER.info("Out Edge: " + edge);
-                    }
-                    for (Object obj : graph.getEdgesIn(end)) {
-                        SiteEdge edge = (SiteEdge) obj;
-                        LOGGER.info("In Edge: " + edge);
-                    }
-
-                    LOGGER.info(
-                            "=======================================================================");
                 }
                 break;
         }
@@ -1051,7 +1020,6 @@ public class PatchComponentGrowth implements Component {
 
         edges = graph.getEdgesOut(start);
         if (edges.size() != 2) {
-            LOGGER.info("FAILED TO ADD EDGES: start outEdges != 2");
             return Outcome.FAILURE;
         }
 
@@ -1072,20 +1040,17 @@ public class PatchComponentGrowth implements Component {
 
         Double originalFlow = ((SiteEdge) edges.get(nonAngioIndex)).flow;
         if (divertedFlow > originalFlow) {
-            LOGGER.info("FAILED TO ADD EDGES: divertedFlow > originalflow");
             return Outcome.FAILURE;
         }
 
         if (intersection != null) {
             if (intersection.isRoot) {
-                // return updateRadiusToRoot(
-                //         (SiteEdge) edges.get(angioIndex),
-                //         sites.graphFactory.veins.get(0).node,
-                //         divertedFlow,
-                //         Adjustment.INCREASE,
-                //         ignoredEdges);
-                LOGGER.info("FAILED TO ADD EDGES: intersection isRoot");
-                return Outcome.FAILURE;
+                return updateRadiusToRoot(
+                        (SiteEdge) edges.get(angioIndex),
+                        sites.graphFactory.veins.get(0).node,
+                        divertedFlow,
+                        Adjustment.INCREASE,
+                        ignoredEdges);
             }
 
             if (updateRadius(
@@ -1095,7 +1060,6 @@ public class PatchComponentGrowth implements Component {
                             Adjustment.DECREASE,
                             ignoredEdges)
                     == Outcome.FAILURE) {
-                LOGGER.info("FAILED TO ADD EDGES: updateRadius Decrease failed");
                 return Outcome.FAILURE;
             }
 
@@ -1106,7 +1070,6 @@ public class PatchComponentGrowth implements Component {
                             Adjustment.INCREASE,
                             ignoredEdges)
                     == Outcome.FAILURE) {
-                LOGGER.info("FAILED TO ADD EDGES: updateRadius Increase failed");
                 return Outcome.FAILURE;
             }
 
@@ -1116,14 +1079,12 @@ public class PatchComponentGrowth implements Component {
                 path(graph, start, boundary);
                 if (boundary.prev != null
                         && ((SiteEdge) edges.get(angioIndex)).radius > MINIMUM_CAPILLARY_RADIUS) {
-                    LOGGER.info("FAILED TO ADD EDGES: vein bad?");
-                    return Outcome.FAILURE;
-                    // return updateRadiusToRoot(
-                    //         (SiteEdge) edges.get(angioIndex),
-                    //         sites.graphFactory.veins.get(0).node,
-                    //         divertedFlow,
-                    //         Adjustment.INCREASE,
-                    //         ignoredEdges);
+                    return updateRadiusToRoot(
+                            (SiteEdge) edges.get(angioIndex),
+                            sites.graphFactory.veins.get(0).node,
+                            divertedFlow,
+                            Adjustment.INCREASE,
+                            ignoredEdges);
                 }
             }
             LOGGER.info("FAILED TO ADD EDGES: Intersection Null");
@@ -1151,7 +1112,6 @@ public class PatchComponentGrowth implements Component {
         ArrayList<SiteEdge> edgesToUpdate = getPath(graph, edge.getTo(), intersection);
 
         if (edgesToUpdate == null) {
-            LOGGER.info("NO EDGES TO UPDATE");
             return Outcome.FAILURE;
         }
 
@@ -1195,7 +1155,6 @@ public class PatchComponentGrowth implements Component {
             }
             if (calculateRadius(e, flow, adjustment) == Outcome.FAILURE) {
                 resetRadii(edges, oldRadii);
-                LOGGER.info("Failed to update radius for edges, resetting to old radii.");
                 return Outcome.FAILURE;
             }
         }
@@ -1233,12 +1192,10 @@ public class PatchComponentGrowth implements Component {
         try {
             newRadius = Solver.bisection(f, 1E-6, 5 * MAXIMUM_CAPILLARY_RADIUS, 1E-6);
         } catch (Exception e) {
-            LOGGER.info("Bisection failed: " + e.getMessage());
             return Outcome.FAILURE;
         }
 
         if (newRadius == 1E-6) {
-            LOGGER.info("New radius is too small: " + newRadius);
             return Outcome.FAILURE;
         }
         edge.radius = newRadius;
@@ -1427,7 +1384,6 @@ public class PatchComponentGrowth implements Component {
                 assert existing != null;
 
                 if (Double.isNaN(existing.pressure)) {
-                    LOGGER.info("WARNING: PRESSURE NAN ---- Node: " + existing.toString());
                     return null;
                 }
 
