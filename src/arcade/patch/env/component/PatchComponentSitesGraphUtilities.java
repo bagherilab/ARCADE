@@ -1003,6 +1003,9 @@ abstract class PatchComponentSitesGraphUtilities {
         }
         while (node != null && !node.equals(start)) {
             Bag b = graph.getEdgesIn(node);
+            if (b == null) {
+                LOGGER.info("NODETOINBAG IS NULL IN GETPATH FOR NODE " + node.toString());
+            }
             if (b.numObjs == 1) {
                 path.add((SiteEdge) b.objs[0]);
             } else if (b.numObjs == 2) {

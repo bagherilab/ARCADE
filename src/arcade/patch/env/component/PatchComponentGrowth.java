@@ -157,6 +157,9 @@ public class PatchComponentGrowth implements Component {
     /** Map of nodes to a delay to prevent nodes from constantly trying to add the same edge. */
     private HashMap<SiteNode, Integer> nodeDelays = new HashMap<>();
 
+    /** List of noddes to track which nodes have been added in each timestep. */
+    private ArrayList<SiteNode> addedNodes = new ArrayList<>();
+
     /**
      * Creates a growth component for a {@link PatchComponentSitesGraph}.
      *
@@ -297,11 +300,6 @@ public class PatchComponentGrowth implements Component {
         }
 
         boolean addFlag = propogateEdges();
-        for (SiteNode node : angiogenicNodeMap.keySet()) {
-            if (angiogenicNodeMap.get(node).size() > 1) {
-                LOGGER.info("MORE THAN ONE EDGE IN ANGIOGENIC NODE MAP");
-            }
-        }
         if (addFlag) {
             for (SiteNode sproutNode : angiogenicNodeMap.keySet()) {
                 if (keyNodesToRemove.contains(sproutNode)) {
@@ -331,14 +329,16 @@ public class PatchComponentGrowth implements Component {
                         if (targetNode == null) {
                             sproutNode.anastomosis = false;
                             continue;
+                        } else if (addedNodes.contains(targetNode)) {
+                            sproutNode.anastomosis = false;
+                            keyNodesToRemove.add(sproutNode);
+                            keyNodesToRemove.add(targetNode);
+                            continue;
                         }
                         keyNodesToRemove.add(sproutNode);
                         keyNodesToRemove.add(targetNode);
 
-                        // Connecting sprout to existing node
-                        LOGGER.info("CONNECTING TWO ANGIOGENIC NODES");
-                        sproutNode = validateNodeObject(sproutNode);
-                        targetNode = validateNodeObject(targetNode);
+                        LOGGER.info("CONNECTING TWO ANGIOGENIC NODES, tick: " + tick);
 
                         if (sproutNode.pressure == 0
                                 || targetNode.pressure == 0
@@ -358,7 +358,6 @@ public class PatchComponentGrowth implements Component {
                             fin = targetNode;
                         }
                         angiogenicNodeMap.get(sproutNode).addAll(angiogenicNodeMap.get(targetNode));
-
                         for (SiteEdge e : angiogenicNodeMap.get(sproutNode)) {
                             if (e.getTo().equals(finalNode)) {
                                 e.setTo(finalNode);
@@ -419,6 +418,7 @@ public class PatchComponentGrowth implements Component {
             }
         }
         keyNodesToRemove.clear();
+        addedNodes.clear();
     }
 
     private SiteNode validateNodeObject(SiteNode node) {
@@ -821,6 +821,12 @@ public class PatchComponentGrowth implements Component {
 
         // update edges in the minimal path between start and end
         ArrayList<SiteEdge> angioPath = getPath(tempGraph, start, end);
+        if (angioPath == null || angioPath.isEmpty()) {
+            LOGGER.info("ANGIOPATH IS NULL");
+            LOGGER.info("START: " + start.toString());
+            LOGGER.info("END: " + end.toString());
+            LOGGER.info("EDGELIST: " + list);
+        }
 
         for (SiteEdge edge : angioPath) {
             if (graph.contains(edge)) {
@@ -843,10 +849,9 @@ public class PatchComponentGrowth implements Component {
             edge.isPerfused = true;
         }
 
-        if (angioPath.size() > 2) {
-            LOGGER.info("angioPath is more than 2");
-        }
         addEdgeList(angioPath);
+        addedNodes.add(start);
+        addNodesInEdgeList(angioPath);
 
         switch (calc) {
             case COMPENSATE:
@@ -890,6 +895,16 @@ public class PatchComponentGrowth implements Component {
                             "=======================================================================");
                 }
                 break;
+        }
+    }
+
+    private void addNodesInEdgeList(ArrayList<SiteEdge> edgeList) {
+        if (edgeList == null || edgeList.isEmpty()) {
+            return;
+        }
+        for (SiteEdge edge : edgeList) {
+            SiteNode to = edge.getTo();
+            addedNodes.add(to);
         }
     }
 
@@ -1411,11 +1426,8 @@ public class PatchComponentGrowth implements Component {
 
                 assert existing != null;
 
-                if (existing.pressure == 0) {
-                    LOGGER.info("WARNING: PRESSURE 0");
-                }
                 if (Double.isNaN(existing.pressure)) {
-                    LOGGER.info("WARNING: PRESSURE NAN");
+                    LOGGER.info("WARNING: PRESSURE NAN ---- Node: " + existing.toString());
                     return null;
                 }
 
