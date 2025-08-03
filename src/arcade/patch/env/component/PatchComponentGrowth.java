@@ -337,6 +337,10 @@ public class PatchComponentGrowth implements Component {
                         keyNodesToRemove.add(sproutNode);
                         keyNodesToRemove.add(targetNode);
 
+                        // Connecting sprout to existing node
+                        sproutNode = validateNodeObject(sproutNode);
+                        targetNode = validateNodeObject(targetNode);
+
                         if (sproutNode.pressure == 0
                                 || targetNode.pressure == 0
                                 || Double.isNaN(sproutNode.pressure)
