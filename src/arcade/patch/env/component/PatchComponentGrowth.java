@@ -39,15 +39,15 @@ import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.path;
 import static arcade.patch.util.PatchEnums.Ordering;
 
 /**
- * Implementation of {@link Component} for adding graph edges .
+ * Implementation of {@link Component} for adding graph edges and resolving mass balances.
  *
  * <p>This component can only be used with {@link PatchComponentsSitesGraph}. The component is
  * stepped according to a reasonable interval based on the specified {@code MIGRATION_RATE}.
  * Generally, if the average VEGF concentration in the immediate neighborhood of a node is greater
  * than the threshold {@code VEGF_THRESHOLD} the node will be flagged for sprouting. The sprout
  * direction is determined by the {@code WALK_TYPE} and the maximum length of migration is
- * determined by the {@code MAX_LENGTH}. The walk types can be specified as {@code RANDOM}, {@code
- * DETERMINISTIC}, or {@code BIASED}.
+ * determined by the {@code MAX_LENGTH}. The walk types can bvalidateecified as {@code RANDOM},
+ * {@code DETERMINISTIC}, or {@code BIASED}.
  *
  * <p>New edges are added based on the specified {@link CAPILLARY_RADIUS}. The calculation of the
  * resulting hemodynamics is based on two strategies. The first is {@code COMPENSATE} which
@@ -64,6 +64,12 @@ public class PatchComponentGrowth implements Component {
 
     /** Default edge type to add to the graph from this component. */
     private static final EdgeType DEFAULT_EDGE_TYPE = EdgeType.ANGIOGENIC;
+
+    /**
+     * Value used to determine how many steps a node should be delayed before being considered for
+     * growth after attempting growth.
+     */
+    private static final int DELAY = 10;
 
     /** Calculation strategies. */
     public enum Calculation {
@@ -345,7 +351,6 @@ public class PatchComponentGrowth implements Component {
                                 || targetNode.pressure == 0
                                 || Double.isNaN(sproutNode.pressure)
                                 || Double.isNaN(targetNode.pressure)) {
-                            LOGGER.info("Cannot connect nodes (332). Tick " + tick);
                             continue;
                         }
 
@@ -385,7 +390,6 @@ public class PatchComponentGrowth implements Component {
                                 || finalNode.pressure == 0
                                 || Double.isNaN(sproutNode.pressure)
                                 || Double.isNaN(finalNode.pressure)) {
-                            LOGGER.info("Cannot connect nodes (366). Tick " + tick);
                             continue;
                         }
 
@@ -518,7 +522,8 @@ public class PatchComponentGrowth implements Component {
     }
 
     /**
-     * Criteria for skipping a node during the migration checks.
+     * Criteria for skipping a node during the migration checks. If a node is in the node delay map,
+     * it will increment the value and return true.
      *
      * @param node the node to check
      * @return {@code true} if the node should be skipped, {@code false} otherwise
@@ -527,7 +532,17 @@ public class PatchComponentGrowth implements Component {
         if (angiogenicNodeMap.keySet().contains(node)) {
             return true;
         }
+        // if the node has been added in the last 72 hours, it is not considered for growth.
         if ((tick - node.addTime) < (72 * 60)) {
+            return true;
+        }
+        // If a node has been previously marked as angiogenic, it is delayed for DELAY steps.
+        if (nodeDelays.containsKey(node)) {
+            nodeDelays.put(node, nodeDelays.get(node) + 1);
+            if (nodeDelays.get(node) > DELAY) {
+                nodeDelays.remove(node);
+                return false;
+            }
             return true;
         }
         return false;
@@ -821,12 +836,6 @@ public class PatchComponentGrowth implements Component {
 
         // update edges in the minimal path between start and end
         ArrayList<SiteEdge> angioPath = getPath(tempGraph, start, end);
-        if (angioPath == null || angioPath.isEmpty()) {
-            LOGGER.info("ANGIOPATH IS NULL");
-            LOGGER.info("START: " + start.toString());
-            LOGGER.info("END: " + end.toString());
-            LOGGER.info("EDGELIST: " + list);
-        }
 
         for (SiteEdge edge : angioPath) {
             if (graph.contains(edge)) {
@@ -1032,7 +1041,6 @@ public class PatchComponentGrowth implements Component {
         double deltaP = start.pressure - end.pressure;
 
         if (start.pressure * end.pressure == 0 || Double.isNaN(deltaP)) {
-            LOGGER.info("FAILED TO ADD EDGES: 0 or NaN pressure");
             return Outcome.FAILURE;
         }
 
@@ -1091,7 +1099,6 @@ public class PatchComponentGrowth implements Component {
                             ignoredEdges);
                 }
             }
-            LOGGER.info("FAILED TO ADD EDGES: Intersection Null");
             return Outcome.FAILURE;
         }
         return Outcome.SUCCESS;
