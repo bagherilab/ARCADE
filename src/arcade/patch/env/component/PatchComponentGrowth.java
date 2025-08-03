@@ -163,9 +163,6 @@ public class PatchComponentGrowth implements Component {
     /** Map of nodes to a delay to prevent nodes from constantly trying to add the same edge. */
     private HashMap<SiteNode, Integer> nodeDelays = new HashMap<>();
 
-    /** List of noddes to track which nodes have been added in each timestep. */
-    private ArrayList<SiteNode> addedNodes = new ArrayList<>();
-
     /**
      * Creates a growth component for a {@link PatchComponentSitesGraph}.
      *
@@ -333,11 +330,12 @@ public class PatchComponentGrowth implements Component {
 
                         if (targetNode == null) {
                             sproutNode.anastomosis = false;
+                            keyNodesToRemove.add(sproutNode);
                             continue;
-                        } else if (addedNodes.contains(targetNode)) {
+                        }
+                        if (keyNodesToRemove.contains(targetNode)) {
                             sproutNode.anastomosis = false;
                             keyNodesToRemove.add(sproutNode);
-                            keyNodesToRemove.add(targetNode);
                             continue;
                         }
                         keyNodesToRemove.add(sproutNode);
@@ -422,7 +420,6 @@ public class PatchComponentGrowth implements Component {
             }
         }
         keyNodesToRemove.clear();
-        addedNodes.clear();
     }
 
     private SiteNode validateNodeObject(SiteNode node) {
@@ -859,8 +856,6 @@ public class PatchComponentGrowth implements Component {
         }
 
         addEdgeList(angioPath);
-        addedNodes.add(start);
-        addNodesInEdgeList(angioPath);
 
         switch (calc) {
             case COMPENSATE:
@@ -880,15 +875,15 @@ public class PatchComponentGrowth implements Component {
         }
     }
 
-    private void addNodesInEdgeList(ArrayList<SiteEdge> edgeList) {
-        if (edgeList == null || edgeList.isEmpty()) {
-            return;
-        }
-        for (SiteEdge edge : edgeList) {
-            SiteNode to = edge.getTo();
-            addedNodes.add(to);
-        }
-    }
+    // private void addNodesInEdgeList(ArrayList<SiteEdge> edgeList) {
+    //     if (edgeList == null || edgeList.isEmpty()) {
+    //         return;
+    //     }
+    //     for (SiteEdge edge : edgeList) {
+    //         SiteNode to = edge.getTo();
+    //         addedNodes.add(to);
+    //     }
+    // }
 
     /**
      * Private helper function for calculating the new radius of two edges after splitting flow
