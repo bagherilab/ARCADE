@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.logging.Logger;
+import sim.engine.Schedule;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
@@ -17,6 +18,7 @@ import arcade.core.util.Solver.Function;
 import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeDirection;
 import arcade.patch.env.location.CoordinateXYZ;
 import arcade.patch.sim.PatchSeries;
+import arcade.patch.util.PatchEnums.Ordering;
 import static arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeLevel;
 import static arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeTag;
 import static arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeType;
@@ -73,8 +75,8 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
     /** Volume of individual lattice patch [um<sup>3</sup>]. */
     private final double latticePatchVolume;
 
-    //** Time delay for initializing the graph */
-    private final double timeDelay;
+    /** Time delay before stepping the graph */
+    private final int timeDelay;
 
     /** Location factory instance for the simulation. */
     final PatchComponentSitesGraphFactory graphFactory;
@@ -104,7 +106,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         graphLayout = parameters.get("GRAPH_LAYOUT");
         oxySoluPlasma = parameters.getDouble("OXYGEN_SOLUBILITY_PLASMA");
         oxySoluTissue = parameters.getDouble("OXYGEN_SOLUBILITY_TISSUE");
-        timeDelay = parameters.getDouble("TIME_DELAY");
+        timeDelay = parameters.getInt("TIME_DELAY");
 
         // Set patch parameters.
         MiniBox patch = ((PatchSeries) series).patch;
@@ -122,6 +124,14 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      */
     public Graph getGraph() {
         return graph;
+    }
+
+    /**
+     * Gets {@link timeDelay} value
+     * @return timeDelay
+     */
+    public int getTimeDelay() {
+        return timeDelay;
     }
 
     /**
@@ -194,6 +204,12 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         }
 
         return initGraph;
+    }
+
+    @Override
+    public void schedule(Schedule schedule) {
+        schedule.scheduleOnce(timeDelay, Ordering.FIRST.ordinal() - 1, this);
+        schedule.scheduleRepeating(timeDelay, Ordering.COMPONENTS.ordinal(), this, 1);
     }
 
     /**
