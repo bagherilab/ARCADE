@@ -142,7 +142,9 @@
 
     <!-- graph site component parameters -->
     <component class="graph_sites_simple" id="GRAPH_LAYOUT" value="*" description="layout of graph sites" />
+    <component class="graph_sites_simple" id="TIME_DELAY" value="0" description="time of graph initialization" />
     <component class="graph_sites_complex" id="GRAPH_LAYOUT" value="*" description="layout of graph sites" />
+    <component class="graph_sites_complex" id="TIME_DELAY" value="0" description="time of graph initialization" />
     <component class="graph_sites_complex" id="OXYGEN_SOLUBILITY_PLASMA" value="0.00000138" units="fmol O2/(um^3 mmHg)" description="solubility of oxygen in plasma"/>
     <component class="graph_sites_complex" id="OXYGEN_SOLUBILITY_TISSUE" value="0.00000131" units="fmol O2/(um^3 mmHg)" description="solubility of oxygen in tissue" />
 

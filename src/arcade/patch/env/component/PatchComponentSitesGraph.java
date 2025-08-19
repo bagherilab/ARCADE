@@ -73,6 +73,9 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
     /** Volume of individual lattice patch [um<sup>3</sup>]. */
     private final double latticePatchVolume;
 
+    //** Time delay for initializing the graph */
+    private final double timeDelay;
+
     /** Location factory instance for the simulation. */
     final PatchComponentSitesGraphFactory graphFactory;
 
@@ -101,6 +104,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         graphLayout = parameters.get("GRAPH_LAYOUT");
         oxySoluPlasma = parameters.getDouble("OXYGEN_SOLUBILITY_PLASMA");
         oxySoluTissue = parameters.getDouble("OXYGEN_SOLUBILITY_TISSUE");
+        timeDelay = parameters.getDouble("TIME_DELAY");
 
         // Set patch parameters.
         MiniBox patch = ((PatchSeries) series).patch;
