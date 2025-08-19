@@ -43,7 +43,7 @@ public final class PatchOutputSaver extends OutputSaver {
                 PatchComponentSitesGraph graph = (PatchComponentSitesGraph) component;
                 if (tick < graph.getTimeDelay()) {
                     continue;
-            }
+                }
             }
             if (component instanceof PatchComponentSitesGraph && saveGraph) {
                 String json =

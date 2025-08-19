@@ -128,6 +128,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
 
     /**
      * Gets {@link timeDelay} value
+     *
      * @return timeDelay
      */
     public int getTimeDelay() {
