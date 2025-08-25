@@ -1018,16 +1018,16 @@ abstract class PatchComponentSitesGraphUtilities {
                 }
             }
 
-            if (node.prev == null) {
-                LOGGER.info("START: " + start + " END: " + end);
-                LOGGER.info("PREV IS NULL" + node);
-            }
+            // if (node.prev == null) {
+            //     LOGGER.info("START: " + start + " END: " + end);
+            //     LOGGER.info("PREV IS NULL" + node);
+            // }
 
             node = node.prev;
         }
 
         if (node == null) {
-            LOGGER.info("Path in getPath is: " + path);
+            // LOGGER.info("Path in getPath is: " + path);
             return null;
         }
 

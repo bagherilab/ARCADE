@@ -942,7 +942,7 @@ public class PatchComponentGrowth implements Component {
         ArrayList<ArrayList<SiteEdge>> pathsArteries = new ArrayList<>();
         for (Root artery : arteries) {
             ArrayList<SiteEdge> path = getPath(graph, artery.node, start);
-            if (path.isEmpty()) {
+            if (path == null) {
                 continue;
             }
             pathsArteries.add(path);
@@ -979,7 +979,7 @@ public class PatchComponentGrowth implements Component {
         ArrayList<ArrayList<SiteEdge>> pathsVeins = new ArrayList<>();
         for (Root vein : veins) {
             ArrayList<SiteEdge> path = getPath(graph, end, vein.node);
-            if (path.isEmpty()) {
+            if (path == null) {
                 continue;
             }
             pathsVeins.add(path);
@@ -1317,7 +1317,7 @@ public class PatchComponentGrowth implements Component {
         ArrayList<Double> oldRadii = new ArrayList<>();
         for (Root vein : veins) {
             ArrayList<SiteEdge> path = getPath(graph, edge.getTo(), vein.node);
-            if (path.isEmpty()) {
+            if (path == null) {
                 continue;
             }
             path.add(0, edge);
