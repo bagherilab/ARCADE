@@ -275,7 +275,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
      */
     public void doOutput(boolean isScheduled) {
         if (isScheduled) {
-            series.saver.schedule(schedule, series.getInterval());
+            series.saver.schedule(schedule);
         } else {
             int tick = (int) schedule.getTime() + 1;
             series.saver.save(tick);

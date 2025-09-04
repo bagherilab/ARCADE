@@ -213,9 +213,8 @@ public class OutputSaverTest {
         Schedule schedule = mock(Schedule.class);
         OutputSaver saver = mock(OutputSaver.class, CALLS_REAL_METHODS);
         doReturn(null).when(schedule).scheduleRepeating(anyDouble(), anyInt(), any(), anyDouble());
-        double interval = randomDoubleBetween(1, 10);
-        saver.schedule(schedule, interval);
-        verify(schedule).scheduleRepeating(Schedule.EPOCH, -1, saver, interval);
+        saver.schedule(schedule);
+        verify(schedule).scheduleRepeating(Schedule.EPOCH, -1, saver);
     }
 
     @Test
