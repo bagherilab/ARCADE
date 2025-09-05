@@ -132,7 +132,6 @@ public abstract class OutputSaver implements Steppable {
      * Schedules the saver to take snapshots at the given interval.
      *
      * @param schedule the simulation schedule
-     * @param interval the interval (in ticks) between snapshots
      */
     public void schedule(Schedule schedule) {
         schedule.scheduleRepeating(Schedule.EPOCH, -1, this, 1);
