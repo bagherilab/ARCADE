@@ -14,10 +14,6 @@ import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyDouble;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.Simulation.DEFAULT_CELL_TYPE;
@@ -238,8 +234,8 @@ public class OutputSaverTest {
         saver.prefix = randomString();
 
         saver.step(simstate);
-        verify(saver, times(0)).saveCells(tick);
-        verify(saver, times(0)).saveLocations(tick);
+        verify(saver, never()).saveCells(tick);
+        verify(saver, never()).saveLocations(tick);
     }
 
     @Test
