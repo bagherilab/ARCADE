@@ -418,7 +418,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
      */
     public void doOutput(boolean isScheduled) {
 <span class="fc bfc" id="L420" title="All 2 branches covered.">        if (isScheduled) {</span>
-<span class="fc" id="L421">            series.saver.schedule(schedule, series.getInterval());</span>
+<span class="fc" id="L421">            series.saver.schedule(schedule);</span>
         } else {
 <span class="fc" id="L423">            int tick = (int) schedule.getTime() + 1;</span>
 <span class="fc" id="L424">            series.saver.save(tick);</span>

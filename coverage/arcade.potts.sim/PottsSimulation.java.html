@@ -275,7 +275,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
      */
     public void doOutput(boolean isScheduled) {
 <span class="fc bfc" id="L277" title="All 2 branches covered.">        if (isScheduled) {</span>
-<span class="fc" id="L278">            series.saver.schedule(schedule, series.getInterval());</span>
+<span class="fc" id="L278">            series.saver.schedule(schedule);</span>
         } else {
 <span class="fc" id="L280">            int tick = (int) schedule.getTime() + 1;</span>
 <span class="fc" id="L281">            series.saver.save(tick);</span>
