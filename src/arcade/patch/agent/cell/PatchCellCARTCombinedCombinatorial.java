@@ -84,7 +84,7 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
         synNotchThreshold = parameters.getDouble("SYNNOTCH_THRESHOLD") * synnotchs;
         basalCARGenerationRate = parameters.getDouble("K_CAR_GENERATION");
         boundSynNotch = 0;
-        maxCars = cars;
+        maxCars = 50000;
         poissonFactory = Poisson::new;
     }
 

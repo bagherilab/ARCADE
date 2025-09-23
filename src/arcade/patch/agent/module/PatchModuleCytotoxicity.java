@@ -1,5 +1,7 @@
 package arcade.patch.agent.module;
 
+import java.util.HashMap;
+import java.util.Map;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
@@ -7,6 +9,9 @@ import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.cell.PatchCellTissue;
 import arcade.patch.agent.process.PatchProcessInflammation;
+import arcade.patch.sim.PatchSimulation;
+import arcade.patch.util.PatchEnums.Domain;
+import arcade.patch.util.PatchEnums.State;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -68,6 +73,16 @@ public class PatchModuleCytotoxicity extends PatchModule {
                 tissueCell.setState(State.APOPTOTIC);
                 granzyme--;
                 inflammation.setInternal("granzyme", granzyme);
+
+                // Log cytotoxicity event
+                PatchSimulation patchSim = (PatchSimulation) sim;
+                Map<String, Object> eventData = new HashMap<>();
+                eventData.put("t-cell-id", cell.getID());
+                eventData.put("tissue-cell-id", target.getID());
+                eventData.put("tissue-cell-type", target.getPop());
+                eventData.put("type", "lysis");
+                eventData.put("timestamp", (int) ((PatchSimulation) sim).getSchedule().getTime());
+                patchSim.logEvent(eventData);
             }
         }
 

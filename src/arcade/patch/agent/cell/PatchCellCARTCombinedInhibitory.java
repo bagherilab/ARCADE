@@ -63,7 +63,6 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
             GrabBag links,
             LogicalCARs type) {
         super(container, location, parameters, links);
-        cars = 0;
         this.type = type;
     }
 
@@ -93,8 +92,8 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
     protected void receptorCars() {
         double n = 8;
         int removeCARs =
-                (int) (maxCars / (1 + Math.pow(synNotchThreshold, n) / Math.pow(boundSynNotch, n)));
-        cars = Math.min((int) (cars + (basalCARGenerationRate * TAU)), maxCars - removeCARs);
+                (int) (maxCars / (1 + Math.pow(boundSynNotch, n) / Math.pow(synNotchThreshold, n)));
+        cars = Math.min(cars + (int) (basalCARGenerationRate * TAU), removeCARs);
     }
 
     /** Calculates T-cell activation caused by inflammation circuit. * */

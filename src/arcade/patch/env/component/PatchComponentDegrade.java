@@ -102,6 +102,9 @@ public class PatchComponentDegrade implements Component {
 
             // Get agents at locations.
             locations.remove(null);
+            if (!locations.isEmpty()) {
+                continue;
+            }
             Bag agents = grid.getObjectsAtLocations(new ArrayList<>(locations));
 
             // If any agents are cancerous, then degrade the wall.

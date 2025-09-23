@@ -64,7 +64,6 @@ public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombina
             GrabBag links,
             LogicalCARs type) {
         super(container, location, parameters, links);
-        cars = 0;
         this.type = type;
     }
 
@@ -97,7 +96,7 @@ public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombina
 
     /** Calculates the number of cars produced for synnotch circuit. * */
     protected void synNotchCARCalculation() {
-        double n = 4.4;
+        double n = 8;
         int newCars =
                 (int) (maxCars / (1 + Math.pow(synNotchThreshold, n) / Math.pow(boundSynNotch, n)));
         cars = Math.max((int) (cars - (carDegradationConstant * cars * TAU)), newCars);

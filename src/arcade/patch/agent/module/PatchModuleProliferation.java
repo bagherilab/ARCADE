@@ -9,11 +9,10 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellCART;
+import arcade.patch.agent.cell.PatchCellCARTCombinedCombinatorial;
 import arcade.patch.agent.process.PatchProcess;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
-import arcade.patch.util.PatchEnums.Domain;
-import arcade.patch.util.PatchEnums.State;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -117,6 +116,12 @@ public class PatchModuleProliferation extends PatchModule {
                                 ((PatchCellCART) cell).selfReceptors;
                         ((PatchCellCART) newCell).boundCARAntigensCount =
                                 ((PatchCellCART) cell).boundCARAntigensCount;
+                        if (cell instanceof PatchCellCARTCombinedCombinatorial) {
+                            ((PatchCellCARTCombinedCombinatorial) newCell).boundSynNotch =
+                                    ((PatchCellCARTCombinedCombinatorial) cell).boundSynNotch;
+                            ((PatchCellCARTCombinedCombinatorial) newCell)
+                                    .setCars(((PatchCellCARTCombinedCombinatorial) cell).getCars());
+                        }
                     }
                     sim.getGrid().addObject(newCell, newLocation);
                     newCell.schedule(sim.getSchedule());

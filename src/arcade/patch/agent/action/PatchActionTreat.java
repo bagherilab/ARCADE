@@ -3,7 +3,6 @@ package arcade.patch.agent.action;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import sim.engine.Schedule;
@@ -24,8 +23,6 @@ import arcade.patch.agent.cell.PatchCellTissue;
 import arcade.patch.env.component.PatchComponentSites;
 import arcade.patch.env.component.PatchComponentSitesGraph;
 import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
-import arcade.patch.env.component.PatchComponentSitesGraphRect;
-import arcade.patch.env.component.PatchComponentSitesGraphTri;
 import arcade.patch.env.component.PatchComponentSitesPattern;
 import arcade.patch.env.component.PatchComponentSitesSource;
 import arcade.patch.env.grid.PatchGrid;
@@ -175,7 +172,7 @@ public class PatchActionTreat implements Action {
             ArrayList<Location> siteLocs,
             PatchSimulation sim) {
         if (type.equals("graph")) {
-            findGraphSites(comp, locs, siteLocs);
+            findGraphSites(comp, locs, siteLocs, sim);
         } else if (type.equals("source") || type.equals("pattern")) {
             double[][][] damage;
             boolean[][][] sitesLat;
@@ -202,14 +199,16 @@ public class PatchActionTreat implements Action {
      * @param comp the component
      * @param locs the locations to check
      * @param siteLocs the locations that meet the criteria
+     * @param sim the simulation instance
      */
     private void findGraphSites(
             PatchComponentSites comp,
             ArrayList<LocationContainer> locs,
-            ArrayList<Location> siteLocs) {
-        Graph graph = ((PatchComponentSitesGraph) comp).getGraph();
-        Bag allEdges = new Bag(graph.getAllEdges());
+            ArrayList<Location> siteLocs,
+            PatchSimulation sim) {
         PatchComponentSitesGraph graphSites = (PatchComponentSitesGraph) comp;
+        Graph graph = graphSites.getGraph();
+        Bag allEdges = new Bag(graph.getAllEdges());
 
         Set<Coordinate> coordinateSet =
                 locs.stream()
@@ -218,19 +217,34 @@ public class PatchActionTreat implements Action {
 
         for (Object edgeObj : allEdges) {
             SiteEdge edge = (SiteEdge) edgeObj;
-            Bag allEdgeLocs = new Bag();
-            if (Objects.equals(coord, "Hex")) {
-                allEdgeLocs.add(
-                        ((PatchComponentSitesGraphTri) graphSites)
-                                .getSpan(edge.getFrom(), edge.getTo()));
-            } else {
-                allEdgeLocs.add(
-                        ((PatchComponentSitesGraphRect) graphSites)
-                                .getSpan(edge.getFrom(), edge.getTo()));
+            ArrayList<CoordinateXYZ> spans = new ArrayList<>();
+            ArrayList<Location> spanLocs = new ArrayList<>();
+
+            // if (Objects.equals(coord, "Hex")) {
+            //     spans = (
+            //             ((PatchComponentSitesGraphTri) graphSites)
+            //                     .getSpan(edge.getFrom(), edge.getTo()));
+            //     for (CoordinateXYZ span : spans) {
+            //         spanLocs.add(((PatchComponentSitesGraphTri) graphSites).getLocation(span));
+            //     }
+            // } else {
+            //     spans = (
+            //             ((PatchComponentSitesGraphRect) graphSites)
+            //                     .getSpan(edge.getFrom(), edge.getTo()));
+            //     for (CoordinateXYZ span : spans) {
+            //         spanLocs.add(((PatchComponentSitesGraphRect) graphSites).getLocation(span));
+            //     }
+            // }
+
+            spans = graphSites.getSpan(edge.getFrom(), edge.getTo());
+            for (CoordinateXYZ span : spans) {
+                Location newLoc = graphSites.getLocation(span);
+                if (newLoc != null) {
+                    spanLocs.add(newLoc);
+                }
             }
 
-            for (Object locObj : allEdgeLocs) {
-                Location loc = (Location) locObj;
+            for (Location loc : spanLocs) {
                 if (coordinateSet.contains(((PatchLocation) loc).getCoordinate())) {
                     if (edge.getRadius() >= minDamageRadius) {
                         for (int p = 0; p < latPositions; p++) {
@@ -305,6 +319,10 @@ public class PatchActionTreat implements Action {
         for (int i = 0; i < dose; i++) {
             int id = sim.getID();
 
+            if (coordinates.isEmpty()) {
+                break;
+            }
+
             PatchLocation loc = ((PatchLocation) coordinates.remove(0));
 
             while (!coordinates.isEmpty() && !checkLocationSpace(loc, grid)) {
@@ -320,6 +338,7 @@ public class PatchActionTreat implements Action {
             PatchCellContainer cellContainer = sim.cellFactory.createCellForPopulation(id, pop);
 
             Location location = locationContainer.convert(sim.locationFactory, cellContainer);
+
             PatchCell cell =
                     (PatchCell) cellContainer.convert(sim.cellFactory, location, sim.random);
 

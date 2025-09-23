@@ -99,6 +99,9 @@ public abstract class PatchCellCART extends PatchCell {
     /** number of CARs on T cell surface. */
     protected int cars;
 
+    /** number of starting CARs on T cell surface. */
+    protected int startCars;
+
     /** simulation time since T cell was last activated. */
     protected int lastActiveTicker;
 
@@ -182,7 +185,8 @@ public abstract class PatchCellCART extends PatchCell {
         selfBeta = parameters.getDouble("SELF_BETA");
         contactFraction = parameters.getDouble("CONTACT_FRAC");
         maxAntigenBinding = parameters.getInt("MAX_ANTIGEN_BINDING");
-        cars = parameters.getInt("CARS");
+        startCars = parameters.getInt("CARS");
+        cars = startCars;
     }
 
     /**
@@ -222,7 +226,8 @@ public abstract class PatchCellCART extends PatchCell {
                     double selfTargets = tissueCell.getSelfAntigens();
 
                     double probabilityCAR =
-                            computeProbability(cARAntigens, kDCAR, cars, 5000, carAlpha, carBeta);
+                            computeProbability(
+                                    cARAntigens, kDCAR, cars, startCars, carAlpha, carBeta);
                     double probabilitySelf =
                             computeProbability(
                                     selfTargets,
@@ -428,5 +433,19 @@ public abstract class PatchCellCART extends PatchCell {
      */
     public void setActivationStatus(boolean activated) {
         this.activated = activated;
+    }
+
+    /**
+     * Sets the car amount.
+     *
+     * @param cars the car amount to set
+     */
+    public void setCars(int cars) {
+        this.cars = cars;
+    }
+
+    /** Gets the car amount. */
+    public int getCars() {
+        return cars;
     }
 }

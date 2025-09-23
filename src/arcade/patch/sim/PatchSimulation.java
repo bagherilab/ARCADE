@@ -4,6 +4,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import com.google.gson.reflect.TypeToken;
 import sim.engine.Schedule;
@@ -55,6 +57,9 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     /** Cell ID tracker. */
     int id;
 
+    /** List to store events throughout the simulation. */
+    private final List<Map<String, Object>> events;
+
     /** Location factory instance for the simulation. */
     public final PatchLocationFactory locationFactory;
 
@@ -77,6 +82,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         super(seed);
         this.series = (PatchSeries) series;
         this.seed = (int) seed - Series.SEED_OFFSET;
+        this.events = new ArrayList<>();
 
         this.locationFactory = makeLocationFactory();
         this.cellFactory = makeCellFactory();
@@ -101,6 +107,25 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     @Override
     public final int getID() {
         return ++id;
+    }
+
+    /**
+     * Log an event to the simulation's event list.
+     *
+     * @param eventType the type of event
+     * @param eventData the event data
+     */
+    public void logEvent(Map<String, Object> event) {
+        events.add(event);
+    }
+
+    /**
+     * Get the list of events logged during the simulation.
+     *
+     * @return the list of events
+     */
+    public List<Map<String, Object>> getEvents() {
+        return new ArrayList<>(events);
     }
 
     @Override
