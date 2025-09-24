@@ -91,7 +91,6 @@ public class PatchModuleProliferation extends PatchModule {
                 }
             } else if (cell.getVolume() >= targetVolume) {
                 if (ticker > synthesisDuration) {
-
                     cell.addCycle(duration);
                     // Reset current cell.
                     cell.setState(State.UNDEFINED);

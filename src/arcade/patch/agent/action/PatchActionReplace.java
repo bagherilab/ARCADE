@@ -138,7 +138,8 @@ public class PatchActionReplace implements Action {
                                 oldCell.getVolume(),
                                 oldCell.getHeight(),
                                 oldCell.getCriticalVolume(),
-                                oldCell.getCriticalHeight());
+                                oldCell.getCriticalHeight(),
+                                oldCell.getCycles());
                 PatchCell newCell =
                         (PatchCell) cellContainer.convert(sim.cellFactory, location, sim.random);
                 grid.addObject(newCell, location);

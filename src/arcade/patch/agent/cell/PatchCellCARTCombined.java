@@ -52,7 +52,8 @@ public class PatchCellCARTCombined extends PatchCellCART {
                 volume,
                 height,
                 criticalVolume,
-                criticalHeight);
+                criticalHeight,
+                cycles);
     }
 
     @Override
