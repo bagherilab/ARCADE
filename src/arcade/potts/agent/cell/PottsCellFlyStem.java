@@ -15,7 +15,7 @@ public class PottsCellFlyStem extends PottsCell {
     /** Enum outlining parameters for each cell type. */
     public enum StemType {
         /** Wild type stem cell. */
-        WT(50, 80, 0, 0.2),
+        WT(50, 75, 0, 0.25),
 
         /** mud Mutant stem cell. */
         MUDMUT(50, 50, -90, 0.5);
@@ -40,7 +40,7 @@ public class PottsCellFlyStem extends PottsCell {
          *
          * @param splitOffsetPercentX percentage x offset from cell edge where division will occur
          * @param splitOffsetPercentY percentage y offset from cell edge where division will occur
-         * @param splitDirectionRotation the plan of division's rotation off the apical vector
+         * @param splitDirectionRotation the plane of division's rotation off the apical vector
          * @param daughterCellCriticalVolumeProportion proportion of the stem cell's critical volume
          *     that will be the daughter cell's critical volume
          */

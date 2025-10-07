@@ -259,14 +259,15 @@ public class PottsModuleProliferationFlyStemTest {
     public void getCellSplitVoxel_WT_callsLocationOffsetWithCorrectParams() {
         ArrayList<Integer> expectedOffset = new ArrayList<>();
         expectedOffset.add(50); // WT.splitOffsetPercentX
-        expectedOffset.add(80); // WT.splitOffsetPercentY
+        expectedOffset.add(75); // WT.splitOffsetPercentY
 
         when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
         when(stemCell.getLocation()).thenReturn(stemLoc);
         when(stemLoc.getOffsetInApicalFrame2D(eq(expectedOffset), any(Vector.class)))
                 .thenReturn(new Voxel(0, 0, 0));
 
-        PottsModuleProliferationFlyStem.getCellSplitVoxel(PottsCellFlyStem.StemType.WT, stemCell);
+        PottsModuleProliferationFlyStem.getCellSplitVoxel(
+                PottsCellFlyStem.StemType.WT, stemCell, stemCell.getApicalAxis());
         verify(stemLoc).getOffsetInApicalFrame2D(eq(expectedOffset), any(Vector.class));
     }
 
@@ -282,7 +283,7 @@ public class PottsModuleProliferationFlyStemTest {
                 .thenReturn(new Voxel(0, 0, 0));
 
         PottsModuleProliferationFlyStem.getCellSplitVoxel(
-                PottsCellFlyStem.StemType.MUDMUT, stemCell);
+                PottsCellFlyStem.StemType.MUDMUT, stemCell, stemCell.getApicalAxis());
         verify(stemLoc).getOffsetInApicalFrame2D(eq(expectedOffset), any(Vector.class));
     }
 
@@ -300,7 +301,6 @@ public class PottsModuleProliferationFlyStemTest {
         ArrayList<Integer> expectedOffset = new ArrayList<>();
         expectedOffset.add(50); // WT x offset percent
         expectedOffset.add(80); // WT y offset percent
-        when(stemLoc.getOffsetInApicalFrame2D(any(), eq(apicalAxis))).thenReturn(splitVoxel);
 
         module = new PottsModuleProliferationFlyStem(stemCell);
 
@@ -310,6 +310,8 @@ public class PottsModuleProliferationFlyStemTest {
         Vector expectedNormal =
                 Vector.rotateVectorAroundAxis(
                         afterBaseRotation, new Vector(0, 0, 1), offsetRotation);
+
+        when(stemLoc.getOffsetInApicalFrame2D(any(), eq(expectedNormal))).thenReturn(splitVoxel);
 
         Plane result = module.getWTDivisionPlaneWithRotationalVariance(stemCell, offsetRotation);
 
@@ -329,13 +331,13 @@ public class PottsModuleProliferationFlyStemTest {
         Vector apicalAxis = new Vector(0, 1, 0);
         when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
 
-        Vector expectedNormal = new Vector(1, 0, 0);
+        Vector expectedNormal = new Vector(1.0, 0.0, 0.0);
 
         Voxel splitVoxel = new Voxel(7, 8, 9);
         ArrayList<Integer> expectedOffset = new ArrayList<>();
         expectedOffset.add(50); // MUDMUT x offset percent
         expectedOffset.add(50); // MUDMUT y offset percent
-        when(stemLoc.getOffsetInApicalFrame2D(any(), eq(apicalAxis))).thenReturn(splitVoxel);
+        when(stemLoc.getOffsetInApicalFrame2D(any(), any())).thenReturn(splitVoxel);
 
         module = new PottsModuleProliferationFlyStem(stemCell);
         Plane result = module.getMUDDivisionPlane(stemCell);
@@ -586,13 +588,14 @@ public class PottsModuleProliferationFlyStemTest {
     public void calculateGMCDaughterCellCriticalVolume_volumeBasedOff_returnsMaxCritVol() {
         when(stemCell.getCriticalVolume()).thenReturn(100.0);
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
         // WT has proportion = 0.2
 
         module = new PottsModuleProliferationFlyStem(stemCell);
         when(parameters.getInt("proliferation/VOLUME_BASED_CRITVOL")).thenReturn(0);
 
         double result = module.calculateGMCDaughterCellCriticalVolume(daughterLoc, sim, 3);
-        assertEquals(20.0, result, EPSILON); // 100 * 0.2
+        assertEquals((100 * .25 * 1.2), result, EPSILON); // 100 * 0.25 * 1.2
     }
 
     @Test
@@ -622,107 +625,90 @@ public class PottsModuleProliferationFlyStemTest {
 
     @Test
     public void addCell_WTVolumeSwap_swapsVoxelsAndCreatesNewCell() {
-        // Set WT type
+        // Arrange: WT stem cell, using volume-based differentiation
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
-        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
         when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
         when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
-        when(dist.nextDouble()).thenReturn(10.0); // offset
+        when(parameters.getDouble("proliferation/SIZE_TARGET"))
+                .thenReturn(1.0); // default for volume
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME"))
+                .thenReturn(0); // use classic mode
 
-        // Make the volumes so that the parent becomes the GMC (swap needed)
+        // Set up the condition that parent volume < daughter volume → stem/daughter swap required
         when(stemLoc.getVolume()).thenReturn(5.0);
         when(daughterLoc.getVolume()).thenReturn(10.0);
 
-        // Setup simulation and components
-        sim = mock(PottsSimulation.class);
-        potts = mock(Potts.class);
-        factory = mock(PottsCellFactory.class);
-        grid = mock(Grid.class);
-        when(sim.getPotts()).thenReturn(potts);
-        when(sim.getGrid()).thenReturn(grid);
-        when(sim.getCellFactory()).thenReturn(factory);
-        when(sim.getSchedule()).thenReturn(mock(sim.engine.Schedule.class));
-        when(sim.getID()).thenReturn(42);
-        potts.ids = new int[1][1][1];
-        potts.regions = new int[1][1][1];
-
-        // Prepare new cell creation
-        PottsCellContainer container = mock(PottsCellContainer.class);
-        PottsCellFlyStem newCell = mock(PottsCellFlyStem.class);
-        when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random), eq(2), eq(20.0)))
-                .thenReturn(container); // 100 * 0.2 = 20.0
-        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
-
-        // Set critical volume and links
-        when(stemCell.getCriticalVolume()).thenReturn(100.0);
-        GrabBag links = mock(GrabBag.class);
-        when(stemCell.getLinks()).thenReturn(links);
-        when(links.next(random)).thenReturn(2);
-
-        // Use a spy for module so we can stub getWTDivisionPlaneWithRotationalVariance
-        module = spy(new PottsModuleProliferationFlyStem(stemCell));
+        // Stub division plane
         Plane dummyPlane = mock(Plane.class);
+        when(dummyPlane.getUnitNormalVector()).thenReturn(new Vector(1, 0, 0));
+        when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
+
+        // Stub cell creation
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCellFlyStem newStemCell = mock(PottsCellFlyStem.class);
+        when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random), eq(2), eq(25.0)))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newStemCell);
+
+        // Spy on the module so we can override plane selection
+        PottsModuleProliferationFlyStem module = spy(new PottsModuleProliferationFlyStem(stemCell));
         doReturn(dummyPlane)
                 .when(module)
                 .getWTDivisionPlaneWithRotationalVariance(eq(stemCell), anyDouble());
 
-        // Stub the split call
-        when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
-
+        // Act: call addCell
         try (MockedStatic<PottsLocation> mocked = mockStatic(PottsLocation.class)) {
             module.addCell(random, sim);
+
+            // Assert: verify voxels were swapped and new cell scheduled
             mocked.verify(() -> PottsLocation.swapVoxels(stemLoc, daughterLoc));
         }
 
-        verify(newCell).schedule(any());
+        // Assert: new stem cell was scheduled
+        verify(newStemCell).schedule(any());
     }
 
     @Test
     public void addCell_WTVolumeNoSwap_doesNotSwapVoxelsAndCreatesNewCell() {
+        // Arrange: WT stem cell, using volume-based differentiation
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
-        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
         when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
         when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
-        when(dist.nextDouble()).thenReturn(10.0);
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.0);
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(0);
 
+        // Set up the condition that parent volume > daughter volume → no swap
         when(stemLoc.getVolume()).thenReturn(10.0);
-        when(daughterLoc.getVolume()).thenReturn(5.0); // no swap needed
+        when(daughterLoc.getVolume()).thenReturn(5.0);
 
-        sim = mock(PottsSimulation.class);
-        potts = mock(Potts.class);
-        factory = mock(PottsCellFactory.class);
-        grid = mock(Grid.class);
-        when(sim.getPotts()).thenReturn(potts);
-        when(sim.getGrid()).thenReturn(grid);
-        when(sim.getCellFactory()).thenReturn(factory);
-        when(sim.getSchedule()).thenReturn(mock(sim.engine.Schedule.class));
-        when(sim.getID()).thenReturn(42);
-        potts.ids = new int[1][1][1];
-        potts.regions = new int[1][1][1];
-
-        PottsCellContainer container = mock(PottsCellContainer.class);
-        PottsCellFlyStem newCell = mock(PottsCellFlyStem.class);
-        when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random), eq(2), eq(20.0)))
-                .thenReturn(container);
-        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
-        when(stemCell.getCriticalVolume()).thenReturn(100.0);
-        GrabBag links = mock(GrabBag.class);
-        when(stemCell.getLinks()).thenReturn(links);
-        when(links.next(random)).thenReturn(2);
-
-        module = spy(new PottsModuleProliferationFlyStem(stemCell));
+        // Stub division plane
         Plane dummyPlane = mock(Plane.class);
+        when(dummyPlane.getUnitNormalVector()).thenReturn(new Vector(1, 0, 0));
+        when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
+
+        // Stub cell creation
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCellFlyStem newStemCell = mock(PottsCellFlyStem.class);
+        when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random), eq(2), eq(25.0)))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newStemCell);
+
+        // Spy and override division plane logic
+        PottsModuleProliferationFlyStem module = spy(new PottsModuleProliferationFlyStem(stemCell));
         doReturn(dummyPlane)
                 .when(module)
                 .getWTDivisionPlaneWithRotationalVariance(eq(stemCell), anyDouble());
-        when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
 
+        // Act
         try (MockedStatic<PottsLocation> mocked = mockStatic(PottsLocation.class)) {
             module.addCell(random, sim);
+
+            // Assert: swapVoxels should NOT be called
             mocked.verify(() -> PottsLocation.swapVoxels(any(), any()), never());
         }
 
-        verify(newCell).schedule(any());
+        // Assert: new stem cell was created and scheduled
+        verify(newStemCell).schedule(any());
     }
 
     @Test

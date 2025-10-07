@@ -2,12 +2,9 @@ package arcade.potts.agent.module;
 
 import java.util.ArrayList;
 import sim.util.Double3D;
-import sim.util.distribution.Poisson;
 import ec.util.MersenneTwisterFast;
-import arcade.core.agent.cell.CellFactory;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.core.util.Plane;
 import arcade.core.util.Vector;
@@ -41,30 +38,6 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
      * * SIZE_TARGET * SIZE_CHECKPOINT to divide).
      */
     double sizeTarget;
-
-    /** Event rate for G1 phase (steps/tick). */
-    double rateG1;
-
-    /** Event rate for S phase (steps/tick). */
-    double rateS;
-
-    /** Event rate for G2 phase (steps/tick). */
-    double rateG2;
-
-    /** Event rate for M phase (steps/tick). */
-    double rateM;
-
-    /** Steps for G1 phase (steps). */
-    final int stepsG1;
-
-    /** Steps for S phase (steps). */
-    final int stepsS;
-
-    /** Steps for G2 phase (steps). */
-    final int stepsG2;
-
-    /** Steps for M phase (steps). */
-    final int stepsM;
 
     /**
      * Overall growth rate for cell (voxels/tick) when growth rate is not dynamic. Max growth rate
@@ -122,14 +95,6 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
         Parameters parameters = cell.getParameters();
 
         sizeTarget = parameters.getDouble("proliferation/SIZE_TARGET");
-        rateG1 = parameters.getDouble("proliferation/RATE_G1");
-        rateS = parameters.getDouble("proliferation/RATE_S");
-        rateG2 = parameters.getDouble("proliferation/RATE_G2");
-        rateM = parameters.getDouble("proliferation/RATE_M");
-        stepsG1 = parameters.getInt("proliferation/STEPS_G1");
-        stepsS = parameters.getInt("proliferation/STEPS_S");
-        stepsG2 = parameters.getInt("proliferation/STEPS_G2");
-        stepsM = parameters.getInt("proliferation/STEPS_M");
         cellGrowthRateMax = parameters.getDouble("proliferation/CELL_GROWTH_RATE");
         basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
         nucleusCondFraction = parameters.getDouble("proliferation/NUCLEUS_CONDENSATION_FRACTION");
@@ -167,96 +132,49 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>Cell increases in size toward a target of twice its critical size at a rate of {@code
-     * CELL_GROWTH_RATE}. Cell will transition to S phase after completing {@code STEPS_G1} steps at
-     * an average rate of {@code RATE_G1}. At each tick, cell may randomly apoptosis at a basal rate
-     * of {@code BASAL_APOPTOSIS_RATE}.
-     */
+
     @Override
     void stepG1(MersenneTwisterFast random) {
-        // Update growth rate.
-        updateVolumeBasedGrowthRate();
-        // Increase size of cell.
-        cell.updateTarget(cellGrowthRate, sizeTarget);
-
-        // Check for phase transition.
-        Poisson poisson = poissonFactory.createPoisson(rateG1, random);
-        currentSteps += poisson.nextInt();
-        if (currentSteps >= stepsG1) {
-            setPhase(Phase.PROLIFERATIVE_S);
-        }
+        throw new UnsupportedOperationException("Fly stem cell proliferation module does not progress through stages of the cell cycle.");
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>Cell increases in size toward a target of twice its critical size at a rate of {@code
-     * CELL_GROWTH_RATE}. Cell will transition to G2 phase after completing {@code STEPS_S} steps at
-     * an average rate of {@code RATE_S}.
-     */
+
     @Override
     void stepS(MersenneTwisterFast random) {
-        // Update growth rate.
-        updateVolumeBasedGrowthRate();
-        // Increase size of cell.
-        cell.updateTarget(cellGrowthRate, sizeTarget);
-
-        // Check for phase transition.
-        Poisson poisson = poissonFactory.createPoisson(rateS, random);
-        currentSteps += poisson.nextInt();
-        if (currentSteps >= stepsS) {
-            setPhase(Phase.PROLIFERATIVE_G2);
-        }
+        throw new UnsupportedOperationException("Fly stem cell proliferation module does not progress through stages of the cell cycle.");
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>Cell increases in size toward a target of twice its critical size at a rate of {@code
-     * CELL_GROWTH_RATE}. Cell will transition to M phase after completing {@code STEPS_G2} steps at
-     * an average rate of {@code RATE_G2}. At each tick, cell may randomly apoptosis at a basal rate
-     * of {@code BASAL_APOPTOSIS_RATE}.
-     */
     @Override
     void stepG2(MersenneTwisterFast random) {
-        updateVolumeBasedGrowthRate();
-        // Increase size of cell.
-        cell.updateTarget(cellGrowthRate, sizeTarget);
-        boolean sizeCheck =
-                cell.getVolume() >= SIZE_CHECKPOINT * sizeTarget * cell.getCriticalVolume();
-
-        // Check for phase transition.
-        Poisson poisson = poissonFactory.createPoisson(rateG2, random);
-        currentSteps += poisson.nextInt();
-        if (currentSteps >= stepsG2 && sizeCheck) {
-            setPhase(Phase.PROLIFERATIVE_M);
-        }
+        throw new UnsupportedOperationException("Fly stem cell proliferation module does not progress through stages of the cell cycle.");
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>Cell increases in size toward a target of twice its critical size at a rate of {@code
-     * CELL_GROWTH_RATE}. Cell will complete cell division after completing {@code STEPS_M} steps at
-     * an average rate of {@code RATE_M}. Cell must be greater than {@code SIZE_CHECKPOINT} times
-     * the critical size.
-     */
+
     @Override
     void stepM(MersenneTwisterFast random, Simulation sim) {
+        throw new UnsupportedOperationException("Fly stem cell proliferation module does not progress through stages of the cell cycle.");
+    }
+
+    void stepVolOnly(MersenneTwisterFast random, Simulation sim) {
         // Update growth rate.
         updateVolumeBasedGrowthRate();
         // Increase size of cell.
         cell.updateTarget(cellGrowthRate, sizeTarget);
-
-        // Check for phase transition.
-        Poisson poisson = poissonFactory.createPoisson(rateM, random);
-        currentSteps += poisson.nextInt();
-        if (currentSteps >= stepsM) {
+        boolean sizeCheck = cell.getVolume() >= sizeTarget * cell.getCriticalVolume();
+        if (sizeCheck) {
             addCell(random, sim);
-            setPhase(Phase.PROLIFERATIVE_G1);
+            setPhase(Phase.UNDEFINED);
+        }
+    }
+
+    @Override
+    public void step(MersenneTwisterFast random, Simulation sim) {
+        switch (phase) {
+            case UNDEFINED:
+                stepVolOnly(random, sim);
+                break;
+            default:
+                break;
         }
     }
 
@@ -274,7 +192,13 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
         if (isDaughterStem) {
             makeDaughterStemCell(daughterLoc, sim, potts, random);
         } else {
-            makeDaughterGMC(parentLoc, daughterLoc, sim, potts, random);
+            makeDaughterGMC(
+                    parentLoc,
+                    daughterLoc,
+                    sim,
+                    potts,
+                    random,
+                    divisionPlane.getUnitNormalVector());
         }
     }
 
@@ -298,8 +222,8 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
             criticalVol = daughterLoc.getVolume() * volumeBasedCriticalVolumeMultiplier;
             cell.setCriticalVolume(
                     cell.getLocation().getVolume() * volumeBasedCriticalVolumeMultiplier);
-            System.out.println("Stem Daughter critical volume = " + criticalVol);
-            System.out.println("Stem Parent critical volume = " + cell.getCriticalVolume());
+            // System.out.println("Stem Daughter critical volume = " + criticalVol);
+            // System.out.println("Stem Parent critical volume = " + cell.getCriticalVolume());
         } else {
             criticalVol = cell.getCriticalVolume();
         }
@@ -314,31 +238,33 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
             PottsLocation daughterLoc,
             Simulation sim,
             Potts potts,
-            MersenneTwisterFast random) {
-        Location gmcLoc = determineGMCLocation(parentLoc, daughterLoc);
+            MersenneTwisterFast random,
+            Vector divisionPlaneNormal) {
+        Location gmcLoc = determineGMCLocation(parentLoc, daughterLoc, divisionPlaneNormal);
 
         if (parentLoc == gmcLoc) {
             PottsLocation.swapVoxels(parentLoc, daughterLoc);
         }
-
+        // System.out.println("---------- NEW DIVISION ----------");
+        // System.out.println("Stem cell curr volume = " + parentLoc.getVolume());
         cell.reset(potts.ids, potts.regions);
         int newID = sim.getID();
         int newPop = ((PottsCellFlyStem) cell).getLinks().next(random);
         double criticalVolume =
-                calculateGMCDaughterCellCriticalVolume((PottsLocation) gmcLoc, sim, newPop);
+                calculateGMCDaughterCellCriticalVolume((PottsLocation) daughterLoc, sim, newPop);
         PottsCellContainer container =
                 ((PottsCellFlyStem) cell)
                         .make(newID, State.PROLIFERATIVE, random, newPop, criticalVolume);
         scheduleNewCell(container, daughterLoc, sim, potts, random);
     }
 
-    private Location determineGMCLocation(PottsLocation parentLoc, PottsLocation daughterLoc) {
+    private Location determineGMCLocation(
+            PottsLocation parentLoc, PottsLocation daughterLoc, Vector divisionPlaneNormal) {
         switch (differentiationRuleset) {
             case "volume":
                 return getSmallerLocation(parentLoc, daughterLoc);
             case "location":
-                return getBasalLocation(
-                        parentLoc, daughterLoc, ((PottsCellFlyStem) cell).getApicalAxis());
+                return getBasalLocation(parentLoc, daughterLoc, divisionPlaneNormal);
             default:
                 throw new IllegalArgumentException(
                         "Invalid differentiation ruleset: " + differentiationRuleset);
@@ -413,18 +339,19 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
             PottsLocation gmcLoc, Simulation sim, int newpop) {
         double max_crit_vol =
                 ((PottsCellFlyStem) cell).getCriticalVolume()
+                        * sizeTarget
                         * ((PottsCellFlyStem) cell)
                                 .getStemType()
                                 .daughterCellCriticalVolumeProportion;
         if (volumeBasedCriticalVolume) {
-            CellFactory factory = sim.getCellFactory();
-            MiniBox newPopParameters = factory.getParameters(newpop);
+            System.out.println("gmc Daughter current volume: " + (gmcLoc.getVolume()));
             System.out.println(
                     "gmc Daughter critical volume: "
                             + (gmcLoc.getVolume() * volumeBasedCriticalVolumeMultiplier));
+            System.out.println("Otherwise critical volume would have been: " + (max_crit_vol));
             System.out.println(
-                    "GMC parameter critical volume: "
-                            + (newPopParameters.getDouble("CRITICAL_VOLUME")));
+                    "Parent stem cell critical volume = "
+                            + ((PottsCellFlyStem) cell).getCriticalVolume());
             return gmcLoc.getVolume() * volumeBasedCriticalVolumeMultiplier;
         } else {
             return max_crit_vol;
@@ -442,11 +369,12 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
      */
     public Plane getWTDivisionPlaneWithRotationalVariance(
             PottsCellFlyStem cell, double rotationOffset) {
+        // System.out.println("Rotation Offset: " + rotationOffset);
         Vector apical_axis = cell.getApicalAxis();
         Vector rotatedNormalVector =
                 Vector.rotateVectorAroundAxis(
                         apical_axis, Direction.XY_PLANE.vector, rotationOffset);
-        Voxel splitVoxel = getCellSplitVoxel(StemType.WT, cell);
+        Voxel splitVoxel = getCellSplitVoxel(StemType.WT, cell, rotatedNormalVector);
         return new Plane(
                 new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), rotatedNormalVector);
     }
@@ -464,7 +392,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
                         cell.getApicalAxis(),
                         Direction.XY_PLANE.vector,
                         StemType.MUDMUT.splitDirectionRotation);
-        Voxel splitVoxel = getCellSplitVoxel(StemType.MUDMUT, cell);
+        Voxel splitVoxel = getCellSplitVoxel(StemType.MUDMUT, cell, defaultNormal);
         return new Plane(new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), defaultNormal);
     }
 
@@ -515,12 +443,13 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
      * @param cell the {@link PottsCellFlyStem} to get the division location for
      * @return the voxel location where the cell will split
      */
-    public static Voxel getCellSplitVoxel(StemType stemType, PottsCellFlyStem cell) {
+    public static Voxel getCellSplitVoxel(
+            StemType stemType, PottsCellFlyStem cell, Vector rotatedNormalVector) {
         ArrayList<Integer> splitOffsetPercent = new ArrayList<>();
         splitOffsetPercent.add(stemType.splitOffsetPercentX);
         splitOffsetPercent.add(stemType.splitOffsetPercentY);
         return ((PottsLocation2D) cell.getLocation())
-                .getOffsetInApicalFrame2D(splitOffsetPercent, cell.getApicalAxis());
+                .getOffsetInApicalFrame2D(splitOffsetPercent, rotatedNormalVector);
     }
 
     /**

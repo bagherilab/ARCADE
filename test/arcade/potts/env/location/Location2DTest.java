@@ -5,6 +5,8 @@ import java.util.HashMap;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import arcade.core.util.Vector;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Region;
 import static org.junit.jupiter.api.Assertions.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;
@@ -464,7 +466,7 @@ public class Location2DTest {
     }
 
     @Test
-    public void getOffsetInApicalFrame2D_returnsExpectedVoxel_atCenter() {
+    public void getVolumeInformedOffsetInApicalFrame2D_returnsExpectedVoxel_atCenter() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         // 3x3 grid centered at (0,0)
         for (int x = -1; x <= 1; x++) {
@@ -484,7 +486,7 @@ public class Location2DTest {
     }
 
     @Test
-    public void getOffsetInApicalFrame2D_returnsExpectedVoxel_upperRight() {
+    public void getVolumeInformedOffsetInApicalFrame2D_returnsExpectedVoxel_upperRight() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         for (int x = 0; x <= 4; x++) {
             for (int y = 0; y <= 4; y++) {
@@ -503,7 +505,7 @@ public class Location2DTest {
     }
 
     @Test
-    public void getOffsetInApicalFrame2D_emptyVoxels_returnsNull() {
+    public void getVolumeInformedOffsetInApicalFrame2D_emptyVoxels_returnsNull() {
         PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
 
         Vector apicalAxis = new Vector(1, 0, 0);
@@ -516,7 +518,7 @@ public class Location2DTest {
     }
 
     @Test
-    public void getOffsetInApicalFrame2D_invalidOffset_throwsException() {
+    public void getVolumeInformedOffsetInApicalFrame2D_invalidOffset_throwsException() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         voxels.add(new Voxel(0, 0, 0));
         PottsLocation2D loc = new PottsLocation2D(voxels);
@@ -534,7 +536,7 @@ public class Location2DTest {
     }
 
     @Test
-    public void getOffsetInApicalFrame2D_nonOrthogonalAxis_returnsExpected() {
+    public void getVolumeInformedOffsetInApicalFrame2D_nonOrthogonalAxis_returnsExpected() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         voxels.add(new Voxel(0, 0, 0));
         voxels.add(new Voxel(1, 1, 0));

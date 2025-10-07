@@ -11,6 +11,7 @@ import arcade.potts.agent.cell.PottsCellFlyNeuron;
 import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
+import arcade.potts.util.PottsEnums.Phase;
 import arcade.potts.util.PottsEnums.State;
 
 /**
@@ -19,6 +20,27 @@ import arcade.potts.util.PottsEnums.State;
  * of the daughter cells are Neurons.
  */
 public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationSimple {
+
+    void stepVolOnly(MersenneTwisterFast random, Simulation sim) {
+        // Increase size of cell.
+        cell.updateTarget(cellGrowthRate, sizeTarget);
+        boolean sizeCheck = cell.getVolume() >= sizeTarget * cell.getCriticalVolume();
+        if (sizeCheck) {
+            addCell(random, sim);
+            setPhase(Phase.UNDEFINED);
+        }
+    }
+
+    @Override
+    public void step(MersenneTwisterFast random, Simulation sim) {
+        switch (phase) {
+            case UNDEFINED:
+                stepVolOnly(random, sim);
+                break;
+            default:
+                break;
+        }
+    }
 
     /**
      * Creates a fly GMC proliferation module.
@@ -65,7 +87,7 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationSi
                         newPop,
                         oldCell.getAge(),
                         oldCell.getDivisions(),
-                        State.QUIESCENT,
+                        State.UNDEFINED,
                         null,
                         0,
                         null,
