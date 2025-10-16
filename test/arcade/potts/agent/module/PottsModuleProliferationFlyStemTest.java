@@ -129,6 +129,7 @@ public class PottsModuleProliferationFlyStemTest {
         assertNotNull(module.splitDirectionDistribution);
         assertEquals("volume", module.differentiationRuleset);
         assertEquals(0.42, module.range, EPSILON);
+        assertEquals(arcade.potts.util.PottsEnums.Phase.UNDEFINED, module.phase);
     }
 
     @Test
@@ -141,6 +142,7 @@ public class PottsModuleProliferationFlyStemTest {
         assertNotNull(module.splitDirectionDistribution);
         assertEquals("location", module.differentiationRuleset);
         assertEquals(0.99, module.range, EPSILON);
+        assertEquals(arcade.potts.util.PottsEnums.Phase.UNDEFINED, module.phase);
     }
 
     // Static method tests
@@ -168,7 +170,7 @@ public class PottsModuleProliferationFlyStemTest {
     }
 
     @Test
-    public void getBasalLocation_centroidsDifferent_returnsLowerCentroid() {
+    public void getBasalLocation_centroidsDifferent_returnsBasalCentroid() {
         PottsLocation loc1 = mock(PottsLocation.class);
         PottsLocation loc2 = mock(PottsLocation.class);
         when(loc1.getCentroid()).thenReturn(new double[] {0, 2, 0});
@@ -251,6 +253,51 @@ public class PottsModuleProliferationFlyStemTest {
                         centroid1, centroid2, apicalAxis, range);
 
         assertTrue(result);
+    }
+
+    // Step tests
+    @Test
+    public void step_volumeBelowCheckpoint_updatesTargetdoesNotDividePhaseStaysUndefined() {
+        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(1);
+        when(parameters.getDouble("proliferation/GROWTH_RATE_MULTIPLIER")).thenReturn(0.5);
+        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.0);
+        when(stemCell.getCriticalVolume()).thenReturn(100.0);
+        when(stemLoc.getVolume()).thenReturn(50.0); // 50 < 1.0 * 100 → below checkpoint
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        when(parameters.getDouble("proliferation/NUCLEUS_CONDENSATION_FRACTION")).thenReturn(0.5);
+        when(parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE")).thenReturn(0.0);
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
+
+        module = Mockito.spy(new PottsModuleProliferationFlyStem(stemCell));
+
+        module.step(random, sim);
+
+        // growth rate = 4.0 * 0.5 * (50/100) = 1.0
+        verify(stemCell).updateTarget(eq(1.0), anyDouble());
+        verify(module, never()).addCell(any(), any());
+        assertEquals(arcade.potts.util.PottsEnums.Phase.UNDEFINED, module.phase);
+    }
+
+    @Test
+    public void step_volumeAtOrAboveCheckpoint_callsAddCellPhaseStaysUndefined() {
+        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(0);
+        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(3.0);
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
+        when(stemCell.getCriticalVolume()).thenReturn(100.0);
+        when(stemLoc.getVolume()).thenReturn(120.0); // 120 >= 0.6*100 → triggers division
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        when(parameters.getDouble("proliferation/NUCLEUS_CONDENSATION_FRACTION")).thenReturn(0.5);
+        when(parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE")).thenReturn(0.0);
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
+
+        module = Mockito.spy(new PottsModuleProliferationFlyStem(stemCell));
+        doNothing().when(module).addCell(any(), any());
+
+        module.step(random, sim);
+
+        verify(module).addCell(eq(random), eq(sim));
+        assertEquals(arcade.potts.util.PottsEnums.Phase.UNDEFINED, module.phase);
     }
 
     // Split location tests
@@ -605,11 +652,10 @@ public class PottsModuleProliferationFlyStemTest {
         when(stemCell.getCriticalVolume()).thenReturn(100.0);
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
 
-        MiniBox miniBox = mock(MiniBox.class);
-        when(miniBox.getDouble("proliferation/SIZE_TARGET")).thenReturn(2.0);
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(2.0);
 
         when(sim.getCellFactory()).thenReturn(factory);
-        when(factory.getParameters(3)).thenReturn(miniBox);
+        when(factory.getParameters(3)).thenReturn(parameters);
 
         when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(1);
         when(parameters.getDouble("proliferation/VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER"))

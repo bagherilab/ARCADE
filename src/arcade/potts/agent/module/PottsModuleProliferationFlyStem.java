@@ -14,6 +14,7 @@ import arcade.core.util.distributions.UniformDistribution;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.agent.cell.PottsCellFlyStem;
+import arcade.potts.agent.cell.PottsCellFlyStem.StemType;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
@@ -87,6 +88,8 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
     public PottsModuleProliferationFlyStem(PottsCellFlyStem cell) {
         super(cell);
 
+        setPhase(Phase.UNDEFINED);
+
         if (cell.hasRegions()) {
             throw new UnsupportedOperationException(
                     "Regions are not yet implemented for fly cells");
@@ -132,27 +135,28 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
         }
     }
 
-
     @Override
     void stepG1(MersenneTwisterFast random) {
-        throw new UnsupportedOperationException("Fly stem cell proliferation module does not progress through stages of the cell cycle.");
+        throw new UnsupportedOperationException(
+                "Fly stem cell proliferation module does not progress through stages of the cell cycle.");
     }
-
 
     @Override
     void stepS(MersenneTwisterFast random) {
-        throw new UnsupportedOperationException("Fly stem cell proliferation module does not progress through stages of the cell cycle.");
+        throw new UnsupportedOperationException(
+                "Fly stem cell proliferation module does not progress through stages of the cell cycle.");
     }
 
     @Override
     void stepG2(MersenneTwisterFast random) {
-        throw new UnsupportedOperationException("Fly stem cell proliferation module does not progress through stages of the cell cycle.");
+        throw new UnsupportedOperationException(
+                "Fly stem cell proliferation module does not progress through stages of the cell cycle.");
     }
-
 
     @Override
     void stepM(MersenneTwisterFast random, Simulation sim) {
-        throw new UnsupportedOperationException("Fly stem cell proliferation module does not progress through stages of the cell cycle.");
+        throw new UnsupportedOperationException(
+                "Fly stem cell proliferation module does not progress through stages of the cell cycle.");
     }
 
     void stepVolOnly(MersenneTwisterFast random, Simulation sim) {
