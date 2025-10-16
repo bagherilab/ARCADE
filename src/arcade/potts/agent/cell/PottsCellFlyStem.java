@@ -6,7 +6,9 @@ import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 import arcade.core.util.Vector;
+import arcade.potts.agent.module.PottsModule;
 import arcade.potts.agent.module.PottsModuleProliferationFlyStem;
+import arcade.potts.util.PottsEnums.Phase;
 import arcade.potts.util.PottsEnums.State;
 
 /** Extension of {@link PottsCell} for fly stem cells. */
@@ -73,6 +75,11 @@ public class PottsCellFlyStem extends PottsCell {
     public PottsCellFlyStem(
             PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
+
+        if (module != null) {
+            ((PottsModule) module).setPhase(Phase.UNDEFINED);
+        }
+
         String stemTypeString = parameters.getString("CLASS");
         switch (stemTypeString) {
             case "fly-stem-wt":
@@ -126,7 +133,7 @@ public class PottsCellFlyStem extends PottsCell {
                 age,
                 divisions,
                 newState,
-                null,
+                Phase.UNDEFINED,
                 0,
                 null,
                 daughterCellCriticalVolume,

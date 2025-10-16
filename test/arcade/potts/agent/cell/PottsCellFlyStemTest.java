@@ -8,6 +8,7 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.core.util.Vector;
 import arcade.potts.env.location.PottsLocation;
+import arcade.potts.util.PottsEnums.Phase;
 import arcade.potts.util.PottsEnums.State;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -108,7 +109,7 @@ public class PottsCellFlyStemTest {
                 () -> assertEquals(cellAge, container.age),
                 () -> assertEquals(cellDivisions + 1, container.divisions),
                 () -> assertEquals(State.PROLIFERATIVE, container.state),
-                () -> assertNull(container.phase),
+                () -> assertEquals(container.phase, Phase.UNDEFINED),
                 () -> assertEquals(0, container.voxels),
                 () -> assertNull(container.regionVoxels),
                 () -> assertEquals(cellCriticalVolume, container.criticalVolume, EPSILON),
@@ -132,7 +133,7 @@ public class PottsCellFlyStemTest {
                 () -> assertEquals(cellAge, container.age),
                 () -> assertEquals(cellDivisions + 1, container.divisions),
                 () -> assertEquals(State.PROLIFERATIVE, container.state),
-                () -> assertNull(container.phase),
+                () -> assertEquals(container.phase, Phase.UNDEFINED),
                 () -> assertEquals(0, container.voxels),
                 () -> assertNull(container.regionVoxels),
                 () -> assertEquals(cellCriticalVolume, container.criticalVolume),

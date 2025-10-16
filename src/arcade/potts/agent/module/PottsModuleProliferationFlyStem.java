@@ -14,7 +14,6 @@ import arcade.core.util.distributions.UniformDistribution;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.agent.cell.PottsCellFlyStem;
-import arcade.potts.agent.cell.PottsCellFlyStem.StemType;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
@@ -25,11 +24,8 @@ import arcade.potts.util.PottsEnums.Phase;
 import arcade.potts.util.PottsEnums.State;
 import static arcade.potts.agent.cell.PottsCellFlyStem.StemType;
 
-/**
- * Extension of {@link PottsModuleProliferationSimple} with a custom addCell method for fly stem
- * cell behavior.
- */
-public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
+/** Extension of {@link PottsModule} */
+public class PottsModuleProliferationFlyStem extends PottsModule {
 
     /** Threshold for critical volume size checkpoint. */
     static final double SIZE_CHECKPOINT = 0.95;
@@ -88,8 +84,6 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
     public PottsModuleProliferationFlyStem(PottsCellFlyStem cell) {
         super(cell);
 
-        setPhase(Phase.UNDEFINED);
-
         if (cell.hasRegions()) {
             throw new UnsupportedOperationException(
                     "Regions are not yet implemented for fly cells");
@@ -122,6 +116,8 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
                 (parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME") != 0);
         volumeBasedCriticalVolumeMultiplier =
                 parameters.getDouble("proliferation/VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER");
+
+        setPhase(Phase.UNDEFINED);
     }
 
     void updateVolumeBasedGrowthRate() {
@@ -133,30 +129,6 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
                             * dynamicGrowthRateMultiplier
                             * (cell.getLocation().getVolume() / cell.getCriticalVolume());
         }
-    }
-
-    @Override
-    void stepG1(MersenneTwisterFast random) {
-        throw new UnsupportedOperationException(
-                "Fly stem cell proliferation module does not progress through stages of the cell cycle.");
-    }
-
-    @Override
-    void stepS(MersenneTwisterFast random) {
-        throw new UnsupportedOperationException(
-                "Fly stem cell proliferation module does not progress through stages of the cell cycle.");
-    }
-
-    @Override
-    void stepG2(MersenneTwisterFast random) {
-        throw new UnsupportedOperationException(
-                "Fly stem cell proliferation module does not progress through stages of the cell cycle.");
-    }
-
-    @Override
-    void stepM(MersenneTwisterFast random, Simulation sim) {
-        throw new UnsupportedOperationException(
-                "Fly stem cell proliferation module does not progress through stages of the cell cycle.");
     }
 
     void stepVolOnly(MersenneTwisterFast random, Simulation sim) {
@@ -178,11 +150,11 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
                 stepVolOnly(random, sim);
                 break;
             default:
-                break;
+                throw new UnsupportedOperationException(
+                        "Fly Stem Proliferation Module must be in undefined state");
         }
     }
 
-    @Override
     void addCell(MersenneTwisterFast random, Simulation sim) {
         Potts potts = ((PottsSimulation) sim).getPotts();
         PottsCellFlyStem flyStemCell = (PottsCellFlyStem) cell;

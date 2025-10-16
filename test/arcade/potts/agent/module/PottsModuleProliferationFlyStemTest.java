@@ -24,12 +24,14 @@ import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
+import arcade.potts.util.PottsEnums.Phase;
 import arcade.potts.util.PottsEnums.State;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
 import static arcade.potts.util.PottsEnums.State;
 
@@ -255,51 +257,6 @@ public class PottsModuleProliferationFlyStemTest {
         assertTrue(result);
     }
 
-    // Step tests
-    @Test
-    public void step_volumeBelowCheckpoint_updatesTargetdoesNotDividePhaseStaysUndefined() {
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(1);
-        when(parameters.getDouble("proliferation/GROWTH_RATE_MULTIPLIER")).thenReturn(0.5);
-        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
-        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.0);
-        when(stemCell.getCriticalVolume()).thenReturn(100.0);
-        when(stemLoc.getVolume()).thenReturn(50.0); // 50 < 1.0 * 100 → below checkpoint
-        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
-        when(parameters.getDouble("proliferation/NUCLEUS_CONDENSATION_FRACTION")).thenReturn(0.5);
-        when(parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE")).thenReturn(0.0);
-        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
-
-        module = Mockito.spy(new PottsModuleProliferationFlyStem(stemCell));
-
-        module.step(random, sim);
-
-        // growth rate = 4.0 * 0.5 * (50/100) = 1.0
-        verify(stemCell).updateTarget(eq(1.0), anyDouble());
-        verify(module, never()).addCell(any(), any());
-        assertEquals(arcade.potts.util.PottsEnums.Phase.UNDEFINED, module.phase);
-    }
-
-    @Test
-    public void step_volumeAtOrAboveCheckpoint_callsAddCellPhaseStaysUndefined() {
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(0);
-        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(3.0);
-        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
-        when(stemCell.getCriticalVolume()).thenReturn(100.0);
-        when(stemLoc.getVolume()).thenReturn(120.0); // 120 >= 0.6*100 → triggers division
-        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
-        when(parameters.getDouble("proliferation/NUCLEUS_CONDENSATION_FRACTION")).thenReturn(0.5);
-        when(parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE")).thenReturn(0.0);
-        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
-
-        module = Mockito.spy(new PottsModuleProliferationFlyStem(stemCell));
-        doNothing().when(module).addCell(any(), any());
-
-        module.step(random, sim);
-
-        verify(module).addCell(eq(random), eq(sim));
-        assertEquals(arcade.potts.util.PottsEnums.Phase.UNDEFINED, module.phase);
-    }
-
     // Split location tests
 
     @Test
@@ -459,6 +416,71 @@ public class PottsModuleProliferationFlyStemTest {
         assertEquals(expectedPlane, result);
         verify(module).getMUDDivisionPlane(stemCell);
         verify(module, never()).getWTDivisionPlaneWithRotationalVariance(any(), anyDouble());
+    }
+
+    // Step tests
+    @Test
+    public void step_volumeBelowCheckpoint_updatesTargetdoesNotDividePhaseStaysUndefined() {
+        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(0);
+        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
+        when(stemCell.getCriticalVolume()).thenReturn(100.0);
+        when(stemLoc.getVolume()).thenReturn(50.0); // 50 < 1.2 * 100 → below checkpoint
+
+        module = new PottsModuleProliferationFlyStem(stemCell);
+
+        module.step(random, sim);
+
+        verify(stemCell).updateTarget(eq(4.0), anyDouble());
+        // Checking functions within addCell are never called
+        // (checking addCell directly would require making module a mock)
+        verify(sim, never()).getPotts();
+        verify(grid, never()).addObject(any(), any());
+        verify(potts, never()).register(any());
+        assertEquals(Phase.UNDEFINED, module.phase);
+    }
+
+    @Test
+    public void step_volumeAtCheckpoint_callsAddCellPhaseStaysUndefined() {
+        // Trigger division
+        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(0);
+        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
+        when(stemCell.getCriticalVolume()).thenReturn(100.0);
+        when(stemCell.getVolume()).thenReturn(120.0); // ≥ 1.2 * 100
+
+        // Needed by calculateGMCDaughterCellCriticalVolume(...)
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+
+        // Plane/voxel path (chooseDivisionPlane -> WT -> getWTDivisionPlaneWithRotationalVariance)
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(stemLoc.getOffsetInApicalFrame2D(any(), any(Vector.class)))
+                .thenReturn(new Voxel(1, 2, 3));
+
+        // Differentiation rule
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
+                .thenReturn(0.5);
+
+        // Cell creation path used by scheduleNewCell(...)
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCellFlyStem newCell = mock(PottsCellFlyStem.class);
+        when(stemCell.make(anyInt(), eq(State.PROLIFERATIVE), eq(random), anyInt(), anyDouble()))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+
+        // split(...) inside addCell
+        when(stemLoc.split(eq(random), any(Plane.class))).thenReturn(daughterLoc);
+
+        module = new PottsModuleProliferationFlyStem(stemCell);
+        module.step(random, sim);
+
+        verify(stemCell).updateTarget(eq(4.0), anyDouble());
+        verify(stemLoc).split(eq(random), any(Plane.class)); // addCell ran
+        verify(grid).addObject(any(), isNull()); // scheduled new cell
+        verify(potts).register(any()); // registered new cell
+        assertEquals(Phase.UNDEFINED, module.phase); // remains UNDEFINED
     }
 
     // Differentiation rule tests
@@ -652,10 +674,11 @@ public class PottsModuleProliferationFlyStemTest {
         when(stemCell.getCriticalVolume()).thenReturn(100.0);
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
 
-        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(2.0);
+        MiniBox popParametersMiniBox = mock(MiniBox.class);
+        when(popParametersMiniBox.getDouble("proliferation/SIZE_TARGET")).thenReturn(2.0);
 
         when(sim.getCellFactory()).thenReturn(factory);
-        when(factory.getParameters(3)).thenReturn(parameters);
+        when(factory.getParameters(3)).thenReturn(popParametersMiniBox);
 
         when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(1);
         when(parameters.getDouble("proliferation/VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER"))
