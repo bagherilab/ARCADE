@@ -631,9 +631,8 @@ public class PottsSimulationTest {
         doReturn(interval).when(series).getInterval();
 
         sim.doOutput(true);
-        verify(saver).schedule(schedule, interval);
-        verify(saver, never()).saveCells(anyInt());
-        verify(saver, never()).saveLocations(anyInt());
+        verify(saver).schedule(schedule);
+        verify(saver, never()).save(anyInt());
     }
 
     @Test
@@ -650,8 +649,7 @@ public class PottsSimulationTest {
         doReturn(time).when(sim.schedule).getTime();
 
         sim.doOutput(false);
-        verify(saver, never()).schedule(eq(schedule), anyDouble());
-        verify(saver).saveCells((int) time + 1);
-        verify(saver).saveLocations((int) time + 1);
+        verify(saver, never()).schedule(eq(schedule));
+        verify(saver).save((int) time + 1);
     }
 }
