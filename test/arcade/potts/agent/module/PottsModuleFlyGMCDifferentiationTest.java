@@ -167,16 +167,16 @@ public class PottsModuleFlyGMCDifferentiationTest {
         when(gmcCell.getCriticalVolume()).thenReturn(100.0);
         when(gmcCell.getVolume()).thenReturn(120.0); // 120 >= 1.2*100
 
-        // Minimal stubs for the addCell path
-        PottsCellContainer container = mock(PottsCellContainer.class);
+        // Stubs for the addCell path
+        container = mock(PottsCellContainer.class);
         when(gmcCell.make(eq(123), eq(State.QUIESCENT), any())).thenReturn(container);
-        PottsCell newCell = mock(PottsCell.class);
+        newCell = mock(PottsCell.class);
         when(container.convert(eq(cellFactory), any(), any())).thenReturn(newCell);
 
         PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
         module.step(random, sim);
         verify(gmcCell).updateTarget(4.0, 1.2);
-        // Something from addCell pipeline must have occurred
+        // Something from addCell pipeline must happen
         verify(grid).addObject(eq(newCell), isNull());
         verify(potts).register(eq(newCell));
     }
