@@ -1,5 +1,6 @@
 package arcade.potts.agent.module;
 
+import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
@@ -13,7 +14,6 @@ import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.Phase;
 import arcade.potts.util.PottsEnums.State;
-import ec.util.MersenneTwisterFast;
 
 /**
  * Implementation of {@link PottsModule} for fly GMC agents. These cells divide into two {@link
