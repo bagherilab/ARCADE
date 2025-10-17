@@ -24,6 +24,7 @@ import arcade.potts.util.PottsEnums.Region;
 import arcade.potts.util.PottsEnums.State;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
@@ -141,6 +142,43 @@ public class PottsModuleFlyGMCDifferentiationTest {
     @AfterEach
     final void tearDown() {
         mockedConstruction.close();
+    }
+
+    @Test
+    public void step_belowCheckpoint_updatesTargetOnly() {
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
+        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
+        when(gmcCell.getCriticalVolume()).thenReturn(100.0);
+        when(gmcCell.getVolume()).thenReturn(50.0); // 50 < 1.2*100
+
+        PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
+        module.step(random, sim);
+
+        verify(gmcCell).updateTarget(4.0, 1.2);
+        // Nothing from addCell pipeline
+        verify(grid, never()).addObject(any(), any());
+        verify(potts, never()).register(any());
+    }
+
+    @Test
+    public void step_atOrAboveCheckpoint_triggersAddCell() {
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
+        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
+        when(gmcCell.getCriticalVolume()).thenReturn(100.0);
+        when(gmcCell.getVolume()).thenReturn(120.0); // 120 >= 1.2*100
+
+        // Minimal stubs for the addCell path
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        when(gmcCell.make(eq(123), eq(State.QUIESCENT), any())).thenReturn(container);
+        PottsCell newCell = mock(PottsCell.class);
+        when(container.convert(eq(cellFactory), any(), any())).thenReturn(newCell);
+
+        PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
+        module.step(random, sim);
+        verify(gmcCell).updateTarget(4.0, 1.2);
+        // Something from addCell pipeline must have occurred
+        verify(grid).addObject(eq(newCell), isNull());
+        verify(potts).register(eq(newCell));
     }
 
     @Test
