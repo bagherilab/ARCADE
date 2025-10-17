@@ -157,7 +157,7 @@ public class PottsModuleFlyGMCDifferentiationTest {
         module.step(random, sim);
 
         verify(gmcCell).updateTarget(4.0, 1.2);
-        // Nothing from addCell pipeline
+        // Nothing from addCell
         verify(grid, never()).addObject(any(), any());
         verify(potts, never()).register(any());
     }
