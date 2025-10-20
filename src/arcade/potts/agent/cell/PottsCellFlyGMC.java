@@ -7,14 +7,15 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 import arcade.core.util.exceptions.InvalidParameterValueException;
 import arcade.potts.agent.module.PottsModuleFlyGMCDifferentiation;
+import arcade.potts.agent.module.PottsModuleProliferationVolumeBasedDivision;
 import arcade.potts.util.PottsEnums.State;
 
 /**
  * Implementation of {@link PottsCell} for fly GMC agents. These cells divide into two {@link
  * PottsCellFlyNeuron} cells. The links must be set in the setup file so that 100% of the daughter
  * cells are Neurons. The differentiation of the parent cell is handled by the {@link
- * PottsModuleFlyGMCDifferentiation} module. The basal apoptosis rate of this cell should be set to
- * 0 in the setup file.
+ * PottsModuleProliferationVolumeBasedDivision} module. The basal apoptosis rate of this cell should
+ * be set to 0 in the setup file.
  */
 public class PottsCellFlyGMC extends PottsCell {
 
