@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import arcade.core.util.Vector;
 import static org.junit.jupiter.api.Assertions.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;
@@ -1208,5 +1209,93 @@ public class Location3DTest {
         ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), 0);
 
         assertEquals(selected.size(), 0);
+    }
+
+    @Test
+    public void getVolumeInformedOffsetInApicalFrame2D_returnsExpectedVoxel_atCenter() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        // 3x3 grid centered at (0,0)
+        for (int x = -1; x <= 1; x++) {
+            for (int y = -1; y <= 1; y++) {
+                voxels.add(new Voxel(x, y, 0));
+            }
+        }
+        PottsLocation2D loc = new PottsLocation2D(voxels);
+
+        Vector apicalAxis = new Vector(0, 1, 0); // Y-axis
+        ArrayList<Integer> offsets = new ArrayList<>();
+        offsets.add(50); // middle of X axis
+        offsets.add(50); // middle of Y axis
+
+        Voxel result = loc.getOffsetInApicalFrame2D(offsets, apicalAxis);
+        assertEquals(new Voxel(0, 0, 0), result);
+    }
+
+    @Test
+    public void getVolumeInformedOffsetInApicalFrame2D_returnsExpectedVoxel_upperRight() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        for (int x = 0; x <= 4; x++) {
+            for (int y = 0; y <= 4; y++) {
+                voxels.add(new Voxel(x, y, 0));
+            }
+        }
+        PottsLocation2D loc = new PottsLocation2D(voxels);
+
+        Vector apicalAxis = new Vector(0, 1, 0); // Y-axis
+        ArrayList<Integer> offsets = new ArrayList<>();
+        offsets.add(100); // far right of X axis
+        offsets.add(100); // top of Y axis
+
+        Voxel result = loc.getOffsetInApicalFrame2D(offsets, apicalAxis);
+        assertEquals(new Voxel(4, 4, 0), result);
+    }
+
+    @Test
+    public void getVolumeInformedOffsetInApicalFrame2D_emptyVoxels_returnsNull() {
+        PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
+
+        Vector apicalAxis = new Vector(1, 0, 0);
+        ArrayList<Integer> offsets = new ArrayList<>();
+        offsets.add(50);
+        offsets.add(50);
+
+        Voxel result = loc.getOffsetInApicalFrame2D(offsets, apicalAxis);
+        assertNull(result);
+    }
+
+    @Test
+    public void getVolumeInformedOffsetInApicalFrame2D_invalidOffset_throwsException() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 0, 0));
+        PottsLocation2D loc = new PottsLocation2D(voxels);
+
+        Vector apicalAxis = new Vector(1, 0, 0);
+
+        ArrayList<Integer> badOffset = new ArrayList<>();
+        badOffset.add(50); // only one element
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    loc.getOffsetInApicalFrame2D(badOffset, apicalAxis);
+                });
+    }
+
+    @Test
+    public void getVolumeInformedOffsetInApicalFrame2D_nonOrthogonalAxis_returnsExpected() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 0, 0));
+        voxels.add(new Voxel(1, 1, 0));
+        voxels.add(new Voxel(2, 2, 0));
+        voxels.add(new Voxel(3, 3, 0));
+        PottsLocation2D loc = new PottsLocation2D(voxels);
+
+        Vector apicalAxis = new Vector(1, 1, 0); // diagonal
+        ArrayList<Integer> offsets = new ArrayList<>();
+        offsets.add(0); // lowest orthogonal axis
+        offsets.add(100); // farthest along apical
+
+        Voxel result = loc.getOffsetInApicalFrame2D(offsets, apicalAxis);
+        assertEquals(new Voxel(3, 3, 0), result);
     }
 }
