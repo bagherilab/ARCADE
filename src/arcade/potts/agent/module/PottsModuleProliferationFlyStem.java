@@ -1,8 +1,15 @@
 package arcade.potts.agent.module;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+
+import sim.util.Bag;
 import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
+import arcade.core.agent.cell.CellFactory;
+import arcade.core.env.grid.Grid;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
@@ -14,6 +21,7 @@ import arcade.core.util.distributions.UniformDistribution;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.agent.cell.PottsCellFlyStem;
+import arcade.potts.agent.cell.PottsCellFlyStem.StemType;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
@@ -36,11 +44,32 @@ public class PottsModuleProliferationFlyStem extends PottsModule {
      */
     double sizeTarget;
 
-    /**
-     * Overall growth rate for cell (voxels/tick) when growth rate is not dynamic. Max growth rate
-     * when growth rate is dynamic
-     */
-    final double cellGrowthRateMax;
+    /** Event rate for G1 phase (steps/tick). */
+    double rateG1;
+
+    /** Event rate for S phase (steps/tick). */
+    double rateS;
+
+    /** Event rate for G2 phase (steps/tick). */
+    double rateG2;
+
+    /** Event rate for M phase (steps/tick). */
+    double rateM;
+
+    /** Steps for G1 phase (steps). */
+    final int stepsG1;
+
+    /** Steps for S phase (steps). */
+    final int stepsS;
+
+    /** Steps for G2 phase (steps). */
+    final int stepsG2;
+
+    /** Steps for M phase (steps). */
+    final int stepsM;
+
+
+    final double cellGrowthRateBase;
 
     double cellGrowthRate;
 
@@ -70,6 +99,8 @@ public class PottsModuleProliferationFlyStem extends PottsModule {
 
     final double volumeBasedCriticalVolumeMultiplier;
 
+    final double growthRateVolumeSensitivity;
+
     /**
      * Range of values considered equal when determining daughter cell identity. ex. if ruleset is
      * location, range determines the distance between centroid y values that is considered equal.
@@ -92,7 +123,15 @@ public class PottsModuleProliferationFlyStem extends PottsModule {
         Parameters parameters = cell.getParameters();
 
         sizeTarget = parameters.getDouble("proliferation/SIZE_TARGET");
-        cellGrowthRateMax = parameters.getDouble("proliferation/CELL_GROWTH_RATE");
+        rateG1 = parameters.getDouble("proliferation/RATE_G1");
+        rateS = parameters.getDouble("proliferation/RATE_S");
+        rateG2 = parameters.getDouble("proliferation/RATE_G2");
+        rateM = parameters.getDouble("proliferation/RATE_M");
+        stepsG1 = parameters.getInt("proliferation/STEPS_G1");
+        stepsS = parameters.getInt("proliferation/STEPS_S");
+        stepsG2 = parameters.getInt("proliferation/STEPS_G2");
+        stepsM = parameters.getInt("proliferation/STEPS_M");
+        cellGrowthRateBase = parameters.getDouble("proliferation/CELL_GROWTH_RATE_BASE");
         basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
         nucleusCondFraction = parameters.getDouble("proliferation/NUCLEUS_CONDENSATION_FRACTION");
 
@@ -118,16 +157,29 @@ public class PottsModuleProliferationFlyStem extends PottsModule {
                 parameters.getDouble("proliferation/VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER");
 
         setPhase(Phase.UNDEFINED);
+        growthRateVolumeSensitivity =
+                parameters.getDouble("proliferation/GROWTH_RATE_VOLUME_SENSITIVITY");
+        System.out.println(
+            "GROWTH_RATE_VOLUME_SENSITIVITY" + growthRateVolumeSensitivity
+        );
     }
 
+    /**
+     * Updates the current cell growth rate based on whether volume-dependent growth is enabled.
+     *
+     * <p>If {@code dynamicGrowthRateVolume} is {@code false}, the growth rate is set to the base
+     * rate ({@code cellGrowthRateBase}). Otherwise, the growth rate is updated with the power law. This allows larger cells (relative to their critical
+     * size) to grow faster or slower depending on the sensitivity parameter.
+     */
     void updateVolumeBasedGrowthRate() {
+
         if (dynamicGrowthRateVolume == false) {
-            cellGrowthRate = cellGrowthRateMax;
+            cellGrowthRate = cellGrowthRateBase;
         } else {
-            cellGrowthRate =
-                    cellGrowthRateMax
-                            * dynamicGrowthRateMultiplier
-                            * (cell.getLocation().getVolume() / cell.getCriticalVolume());
+            double volume = cell.getLocation().getVolume();
+            double Ka = cell.getCriticalVolume();
+
+            cellGrowthRate = cellGrowthRateBase * Math.pow((volume/Ka), growthRateVolumeSensitivity);
         }
     }
 
