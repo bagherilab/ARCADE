@@ -13,6 +13,11 @@ import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.State;
 
+/**
+ * Implementation of {@link PottsModuleProliferationVolumeBasedDivision} for fly GMC agents. These
+ * cells divide into two {@link PottsCellFlyNeuron} cells. The links must be set in the setup file
+ * so that 100% of the daughter cells are Neurons.
+ */
 public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVolumeBasedDivision {
 
     /**

@@ -7,7 +7,6 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 import arcade.core.util.exceptions.InvalidParameterValueException;
 import arcade.potts.agent.module.PottsModuleFlyGMCDifferentiation;
-import arcade.potts.agent.module.PottsModuleProliferationVolumeBasedDivision;
 import arcade.potts.util.PottsEnums.State;
 
 /**

@@ -4,7 +4,6 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.agent.cell.PottsCellFlyNeuron;
 import arcade.potts.util.PottsEnums.Phase;
 
 /**
@@ -45,5 +44,11 @@ public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsM
         }
     }
 
+    /**
+     * Adds a cell to the simulation
+     *
+     * @param random the random number generator
+     * @param sim the simulation instance
+     */
     abstract void addCell(MersenneTwisterFast random, Simulation sim);
 }
