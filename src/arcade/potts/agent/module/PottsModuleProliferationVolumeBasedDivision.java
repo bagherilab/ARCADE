@@ -45,7 +45,7 @@ public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsM
     }
 
     /**
-     * Adds a cell to the simulation
+     * Adds a cell to the simulation.
      *
      * @param random the random number generator
      * @param sim the simulation instance
