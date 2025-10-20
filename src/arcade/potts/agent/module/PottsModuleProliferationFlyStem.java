@@ -1,8 +1,13 @@
 package arcade.potts.agent.module;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+
+import sim.util.Bag;
 import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
+import arcade.core.env.grid.Grid;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
@@ -458,5 +463,45 @@ public class PottsModuleProliferationFlyStem extends PottsModule {
         double proj2 = Vector.dotProduct(c2, apicalAxis);
 
         return (proj1 < proj2) ? loc2 : loc1; // higher projection = more basal
+    }
+
+    private Collection<PottsCell> getNeighborCells(Grid grid) {
+        final int[][] OFFSETS_6 = {
+            { 1, 0, 0}, {-1, 0, 0},
+            { 0, 1, 0}, { 0,-1, 0},
+            { 0, 0, 1}, { 0, 0,-1}
+        };
+
+        PottsLocation location = (PottsLocation) cell.getLocation();
+
+        HashSet<Voxel> myVox = new HashSet<Voxel>(location.getVoxels());
+        HashSet<Voxel> enlargedVoxels = new HashSet<Voxel>(myVox.size() * 8);
+
+        for (Voxel v : myVox) {
+            enlargedVoxels.add(v);
+            for (int[] d : OFFSETS_6) {
+                enlargedVoxels.add(new Voxel(v.x + d[0], v.y + d[1], v.z + d[2]));
+            }
+        }
+
+        Bag all = grid.getAllObjects();
+        Collection<PottsCell> out = new HashSet<>();
+
+        // for (Object other : all) {
+        //     // need to add line to make sure the current cell isn't the same cell as the one we're looking for neighbors for
+        //     otherVoxels = (PottsCell) other
+        // }
+
+        return out;
+    }
+
+    double getNBNeighborBasedGrowthRate(Grid grid) {
+        // cell.getLocation();
+        Collection<PottsCell> neighbors = getNeighborCells(grid);
+
+        // for (PottsCell)
+
+
+        return Double.MAX_VALUE;
     }
 }
