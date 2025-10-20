@@ -68,10 +68,9 @@ public final class PottsLocation2D extends PottsLocation implements Location2D {
         return Location2D.getSelected(voxels, focus, n);
     }
 
-    /*
-     * Gets the voxel through which a plane of division will pass from percentage
-     * offsets along the locations's X and Y axes with the provided apicalAxis set as
-     * the Y axis.
+    /**
+     * Gets the voxel through which a plane of division will pass from percentage offsets along the
+     * locations's X and Y axes with the provided apicalAxis set as the Y axis.
      *
      * @param offsets the percent offsets along the location's X and Y axes
      * @param apicalAxis the axis considered to be pointing up along the Y axis
@@ -110,7 +109,9 @@ public final class PottsLocation2D extends PottsLocation implements Location2D {
         int targetApicalKey = apicalKeys.get(yIndex);
 
         ArrayList<Voxel> band = apicalBands.get(targetApicalKey);
-        if (band == null || band.isEmpty()) return null;
+        if (band == null || band.isEmpty()) {
+            return null;
+        }
         // Project to orthogonal axis within the band and sort
         band.sort(
                 Comparator.comparingDouble(v -> Vector.dotProduct(new Vector(v.x, v.y, 0), xAxis)));
