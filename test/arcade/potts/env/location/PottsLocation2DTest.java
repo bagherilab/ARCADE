@@ -281,7 +281,7 @@ public class PottsLocation2DTest {
     }
 
     @Test
-    public void getVolumeInformedOffsetInApicalFrame2D_returnsExpectedVoxel_atCenter() {
+    public void getOffsetInApicalFrame2D_returnsExpectedVoxel_atCenter() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         // 3x3 grid centered at (0,0)
         for (int x = -1; x <= 1; x++) {
@@ -301,7 +301,7 @@ public class PottsLocation2DTest {
     }
 
     @Test
-    public void getVolumeInformedOffsetInApicalFrame2D_returnsExpectedVoxel_upperRight() {
+    public void getOffsetInApicalFrame2D_returnsExpectedVoxel_upperRight() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         for (int x = 0; x <= 4; x++) {
             for (int y = 0; y <= 4; y++) {
@@ -320,7 +320,7 @@ public class PottsLocation2DTest {
     }
 
     @Test
-    public void getVolumeInformedOffsetInApicalFrame2D_emptyVoxels_returnsNull() {
+    public void getOffsetInApicalFrame2D_emptyVoxels_returnsNull() {
         PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
 
         Vector apicalAxis = new Vector(1, 0, 0);
@@ -333,7 +333,7 @@ public class PottsLocation2DTest {
     }
 
     @Test
-    public void getVolumeInformedOffsetInApicalFrame2D_invalidOffset_throwsException() {
+    public void getOffsetInApicalFrame2D_invalidOffset_throwsException() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         voxels.add(new Voxel(0, 0, 0));
         PottsLocation2D loc = new PottsLocation2D(voxels);
@@ -351,7 +351,7 @@ public class PottsLocation2DTest {
     }
 
     @Test
-    public void getVolumeInformedOffsetInApicalFrame2D_nonOrthogonalAxis_returnsExpected() {
+    public void getOffsetInApicalFrame2D_nonOrthogonalAxis_returnsExpected() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         voxels.add(new Voxel(0, 0, 0));
         voxels.add(new Voxel(1, 1, 0));
