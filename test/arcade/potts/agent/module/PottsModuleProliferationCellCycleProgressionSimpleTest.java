@@ -22,7 +22,7 @@ import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
 
-public class PottsModuleProliferationSimpleTest {
+public class PottsModuleProliferationCellCycleProgressionSimpleTest {
     private static final double EPSILON = 1E-10;
 
     private static final double R = 1.0;

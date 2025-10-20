@@ -18,7 +18,7 @@ import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
 
-public class PottsModuleProliferationTest {
+public class PottsModuleProliferationCellCycleProgressionTest {
     static MersenneTwisterFast randomMock = new MersenneTwisterFast();
 
     static PottsSimulation simMock = mock(PottsSimulation.class);
