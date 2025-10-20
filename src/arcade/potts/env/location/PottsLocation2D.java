@@ -1,11 +1,18 @@
 package arcade.potts.env.location;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+
+import arcade.core.env.grid.Grid;
 import arcade.core.util.Vector;
+import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.util.PottsEnums.Direction;
+import sim.util.Bag;
+
 import static arcade.potts.util.PottsEnums.Direction;
 
 /** Concrete implementation of {@link PottsLocation} for 2D. */
@@ -67,6 +74,60 @@ public final class PottsLocation2D extends PottsLocation implements Location2D {
     @Override
     ArrayList<Voxel> getSelected(Voxel focus, double n) {
         return Location2D.getSelected(voxels, focus, n);
+    }
+
+    @Override
+    HashSet<PottsCell> getCellNeighbors(Grid g) {
+
+        HashSet<Voxel> myVox = new HashSet<Voxel>(this.getVoxels());
+        HashSet<Voxel> enlargedVoxels = new HashSet<Voxel>(myVox.size() * 4);
+
+        // Need to check 4 directions for 2D
+        final int[][] OFFSETS_4 = {
+            { 1, 0}, {-1, 0},
+            { 0, 1}, { 0,-1}
+        };
+
+        // Create a set of 'enlarged' voxels that are 1 voxel bigger than the original cell.
+        for (Voxel v : myVox) {
+            enlargedVoxels.add(v);
+            for (int[] d : OFFSETS_4) {
+                enlargedVoxels.add(new Voxel(v.x + d[0], v.y + d[1], v.z));
+            }
+        }
+
+        Bag all = g.getAllObjects();
+        HashSet<PottsCell> neighborCells = new HashSet<>();
+
+        iteratePossibleNeighbors:
+        for (Object other : all) {
+            // need to add line to make sure the current cell isn't the same cell as the one we're looking for neighbors for
+
+            PottsCell otherCell = (PottsCell) other;
+            PottsLocation2D otherLocation = (PottsLocation2D) otherCell.getLocation();
+
+            // If the cell we're checking is actually this cell, we skip it (otherwise the cell will be considered a neighbor of itself)
+            if (this.equals(otherLocation)) continue;
+
+            ArrayList<Voxel> otherVoxels = otherLocation.getVoxels();
+            
+            // Iterate through all the voxels and check if the neighbors are in set of enlarged voxels
+            for (Voxel v : otherVoxels) {
+                for (int[] d : OFFSETS_4) {
+
+                    // TODO: need to check w sophia if this is correct
+                    Voxel enlargedVoxel = new Voxel(v.x + d[0], v.y + d[1], v.z);
+                    if (enlargedVoxels.contains(enlargedVoxel)) {
+                        neighborCells.add(otherCell);
+
+                        // We can quit early because we don't need to check other voxels in this neighboring cell
+                        continue iteratePossibleNeighbors;
+                    }
+                }
+            }
+        }
+
+        return neighborCells;
     }
 
     public Voxel getOffsetInApicalFrame2D(ArrayList<Integer> offsets, Vector apicalAxis) {

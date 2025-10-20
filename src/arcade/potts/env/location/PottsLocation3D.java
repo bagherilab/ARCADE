@@ -1,7 +1,12 @@
 package arcade.potts.env.location;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.HashMap;
+
+import arcade.core.env.grid.Grid;
+import arcade.potts.agent.cell.PottsCell;
+
 import static arcade.potts.util.PottsEnums.Direction;
 
 /** Concrete implementation of {@link PottsLocation} for 3D. */
@@ -63,5 +68,10 @@ public final class PottsLocation3D extends PottsLocation implements Location3D {
     @Override
     ArrayList<Voxel> getSelected(Voxel focus, double n) {
         return Location3D.getSelected(voxels, focus, n);
+    }
+    
+    @Override
+    HashSet<PottsCell> getCellNeighbors(Grid g) {
+        throw new ExceptionInInitializerError("Not Yet Implemented");
     }
 }

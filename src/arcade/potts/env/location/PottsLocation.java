@@ -3,13 +3,19 @@ package arcade.potts.env.location;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
+import arcade.core.env.grid.Grid;
 import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.util.Plane;
 import arcade.core.util.Utilities;
+import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Region;
+
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Region;
 
@@ -604,6 +610,14 @@ public abstract class PottsLocation implements Location {
      * @return the list of selected voxels
      */
     abstract ArrayList<Voxel> getSelected(Voxel focus, double n);
+
+    /*
+     * Returns all the cells neighboring a specic cell.
+     *
+     * @param grid the grid
+     * @return the collection of PottsCells
+     */
+    abstract HashSet<PottsCell> getCellNeighbors(Grid g);
 
     /**
      * Gets the direction of the slice orthagonal to the direction with the smallest diameter.
