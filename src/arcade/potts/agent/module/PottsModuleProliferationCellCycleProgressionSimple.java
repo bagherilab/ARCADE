@@ -12,8 +12,9 @@ import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
 
-/** Extension of {@link PottsModuleProliferation} with Poisson transitions. */
-public class PottsModuleProliferationSimple extends PottsModuleProliferation {
+/** Extension of {@link PottsModuleProliferationCellCycleProgression} with Poisson transitions. */
+public class PottsModuleProliferationCellCycleProgressionSimple
+        extends PottsModuleProliferationCellCycleProgression {
     /** Threshold for critical volume size checkpoint. */
     static final double SIZE_CHECKPOINT = 0.95;
 
@@ -64,7 +65,7 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
      *
      * @param cell the {@link PottsCell} the module is associated with
      */
-    public PottsModuleProliferationSimple(PottsCell cell) {
+    public PottsModuleProliferationCellCycleProgressionSimple(PottsCell cell) {
         super(cell);
 
         Parameters parameters = cell.getParameters();

@@ -17,13 +17,13 @@ import static arcade.potts.util.PottsEnums.State;
  * <p>During proliferation, cells cycle through G1, S, G2, and M phases. Once the cell complete M
  * phase, it divides to create a new daughter cell.
  */
-public abstract class PottsModuleProliferation extends PottsModule {
+public abstract class PottsModuleProliferationCellCycleProgression extends PottsModule {
     /**
      * Creates a proliferation {@code Module} for the given {@link PottsCell}.
      *
      * @param cell the {@link PottsCell} the module is associated with
      */
-    public PottsModuleProliferation(PottsCell cell) {
+    public PottsModuleProliferationCellCycleProgression(PottsCell cell) {
         super(cell);
         setPhase(Phase.PROLIFERATIVE_G1);
     }
