@@ -281,7 +281,7 @@ public class PottsLocation2DTest {
     }
 
     @Test
-    public void getOffsetInApicalFrame2D_returnsExpectedVoxel_atCenter() {
+    public void getOffsetInApicalFrame2D_offsetAtCenter_returnsExpectedVoxel() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         // 3x3 grid centered at (0,0)
         for (int x = -1; x <= 1; x++) {
@@ -301,7 +301,7 @@ public class PottsLocation2DTest {
     }
 
     @Test
-    public void getOffsetInApicalFrame2D_returnsExpectedVoxel_upperRight() {
+    public void getOffsetInApicalFrame2D_offsetUpperRight_returnsExpectedVoxel() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         for (int x = 0; x <= 4; x++) {
             for (int y = 0; y <= 4; y++) {
