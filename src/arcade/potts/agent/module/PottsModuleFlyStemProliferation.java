@@ -3,12 +3,15 @@ package arcade.potts.agent.module;
 import java.util.ArrayList;
 import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
+import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.core.util.Plane;
 import arcade.core.util.Vector;
 import arcade.core.util.distributions.Distribution;
 import arcade.core.util.distributions.NormalDistribution;
+import arcade.core.util.distributions.UniformDistribution;
+import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.agent.cell.PottsCellFlyStem;
 import arcade.potts.agent.cell.PottsCellFlyStem.StemType;
@@ -17,10 +20,9 @@ import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
-import arcade.potts.util.PottsEnums.Direction;
-import arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Phase;
+import static arcade.potts.util.PottsEnums.State;
 
 public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVolumeBasedDivision {
 
@@ -297,5 +299,137 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 ((PottsCellFlyStem) cell)
                         .make(newID, State.PROLIFERATIVE, random, cell.getPop(), criticalVol);
         scheduleNewCell(container, daughterLoc, sim, potts, random);
+    }
+
+    private void makeDaughterGMC(
+            PottsLocation parentLoc,
+            PottsLocation daughterLoc,
+            Simulation sim,
+            Potts potts,
+            MersenneTwisterFast random,
+            Vector divisionPlaneNormal) {
+        Location gmcLoc = determineGMCLocation(parentLoc, daughterLoc, divisionPlaneNormal);
+
+        if (parentLoc == gmcLoc) {
+            PottsLocation.swapVoxels(parentLoc, daughterLoc);
+        }
+        cell.reset(potts.ids, potts.regions);
+        int newID = sim.getID();
+        int newPop = ((PottsCellFlyStem) cell).getLinks().next(random);
+        double criticalVolume =
+                calculateGMCDaughterCellCriticalVolume((PottsLocation) daughterLoc, sim, newPop);
+        PottsCellContainer container =
+                ((PottsCellFlyStem) cell)
+                        .make(newID, State.PROLIFERATIVE, random, newPop, criticalVolume);
+        scheduleNewCell(container, daughterLoc, sim, potts, random);
+    }
+
+    private void scheduleNewCell(
+            PottsCellContainer container,
+            PottsLocation daughterLoc,
+            Simulation sim,
+            Potts potts,
+            MersenneTwisterFast random) {
+        PottsCell newCell =
+                (PottsCell) container.convert(sim.getCellFactory(), daughterLoc, random);
+        if (newCell.getClass() == PottsCellFlyStem.class) {
+            ((PottsCellFlyStem) newCell).setApicalAxis(getDaughterCellApicalAxis(random));
+        }
+        sim.getGrid().addObject(newCell, null);
+        potts.register(newCell);
+        newCell.reset(potts.ids, potts.regions);
+        newCell.schedule(sim.getSchedule());
+    }
+
+    public Vector getDaughterCellApicalAxis(MersenneTwisterFast random) {
+        switch (apicalAxisRuleset) {
+            case "uniform":
+                if (!(apicalAxisRotationDistribution instanceof UniformDistribution)) {
+                    throw new IllegalArgumentException(
+                            "apicalAxisRotationDistribution must be a UniformDistribution under the uniform apical axis ruleset.");
+                }
+                Vector newRandomApicalAxis =
+                        Vector.rotateVectorAroundAxis(
+                                ((PottsCellFlyStem) cell).getApicalAxis(),
+                                Direction.XY_PLANE.vector,
+                                apicalAxisRotationDistribution.nextDouble());
+                return newRandomApicalAxis;
+            case "global":
+                return ((PottsCellFlyStem) cell).getApicalAxis();
+            case "rotation":
+                if (!(apicalAxisRotationDistribution instanceof NormalDistribution)) {
+                    throw new IllegalArgumentException(
+                            "apicalAxisRotationDistribution must be a NormalDistribution under the rotation apical axis ruleset.");
+                }
+                Vector newRotatedApicalAxis =
+                        Vector.rotateVectorAroundAxis(
+                                ((PottsCellFlyStem) cell).getApicalAxis(),
+                                Direction.XY_PLANE.vector,
+                                apicalAxisRotationDistribution.nextDouble());
+                return newRotatedApicalAxis;
+            default:
+                throw new IllegalArgumentException(
+                        "Invalid apical axis ruleset: " + apicalAxisRuleset);
+        }
+    }
+
+    private Location determineGMCLocation(
+            PottsLocation parentLoc, PottsLocation daughterLoc, Vector divisionPlaneNormal) {
+        switch (differentiationRuleset) {
+            case "volume":
+                return getSmallerLocation(parentLoc, daughterLoc);
+            case "location":
+                return getBasalLocation(parentLoc, daughterLoc, divisionPlaneNormal);
+            default:
+                throw new IllegalArgumentException(
+                        "Invalid differentiation ruleset: " + differentiationRuleset);
+        }
+    }
+
+    protected double calculateGMCDaughterCellCriticalVolume(
+            PottsLocation gmcLoc, Simulation sim, int newpop) {
+        double max_crit_vol =
+                ((PottsCellFlyStem) cell).getCriticalVolume()
+                        * sizeTarget
+                        * ((PottsCellFlyStem) cell)
+                                .getStemType()
+                                .daughterCellCriticalVolumeProportion;
+        if (volumeBasedCriticalVolume) {
+            return gmcLoc.getVolume() * volumeBasedCriticalVolumeMultiplier;
+        } else {
+            return max_crit_vol;
+        }
+    }
+
+    /**
+     * Gets the smaller location with fewer voxels and returns it.
+     *
+     * @param loc1 the {@link PottsLocation} to compare to location2.
+     * @param loc2 {@link PottsLocation} to compare to location1.
+     * @return the smaller location.
+     */
+    public static PottsLocation getSmallerLocation(PottsLocation loc1, PottsLocation loc2) {
+        return (loc1.getVolume() < loc2.getVolume()) ? loc1 : loc2;
+    }
+
+    /**
+     * Gets the location that is lower along the apical axis.
+     *
+     * @param loc1 {@link PottsLocation} to compare.
+     * @param loc2 {@link PottsLocation} to compare.
+     * @param apicalAxis Unit {@link Vector} defining the apical-basal direction.
+     * @return the basal location (lower along the apical axis).
+     */
+    public static PottsLocation getBasalLocation(
+            PottsLocation loc1, PottsLocation loc2, Vector apicalAxis) {
+        double[] centroid1 = loc1.getCentroid();
+        double[] centroid2 = loc2.getCentroid();
+        Vector c1 = new Vector(centroid1[0], centroid1[1], centroid1.length > 2 ? centroid1[2] : 0);
+        Vector c2 = new Vector(centroid2[0], centroid2[1], centroid2.length > 2 ? centroid2[2] : 0);
+
+        double proj1 = Vector.dotProduct(c1, apicalAxis);
+        double proj2 = Vector.dotProduct(c2, apicalAxis);
+
+        return (proj1 < proj2) ? loc2 : loc1; // higher projection = more basal
     }
 }
