@@ -4,8 +4,14 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.potts.agent.cell.PottsCell;
 
+/** Abstract extention of {@link PottsModule} for proliferation modules. */
 public abstract class PottsModuleProliferation extends PottsModule {
 
+    /**
+     * Creates a proliferation module.
+     *
+     * @param cell the cell to which this module is attached
+     */
     public PottsModuleProliferation(PottsCell cell) {
         super(cell);
     }
