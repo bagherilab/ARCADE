@@ -38,6 +38,7 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
      * @param random the random number generator
      * @param sim the simulation instance
      */
+    @Override
     void addCell(MersenneTwisterFast random, Simulation sim) {
         Potts potts = ((PottsSimulation) sim).getPotts();
 

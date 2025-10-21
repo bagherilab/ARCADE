@@ -11,7 +11,7 @@ import arcade.potts.util.PottsEnums.Phase;
  * PottsCellFlyNeuron} cells. The links must be set in the setup file so that 100% of the daughter
  * cells are Neurons.
  */
-public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsModule {
+public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsModuleProliferation {
 
     /** Overall growth rate for cell (voxels/tick). */
     final double cellGrowthRate;
@@ -43,12 +43,4 @@ public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsM
             addCell(random, sim);
         }
     }
-
-    /**
-     * Adds a cell to the simulation.
-     *
-     * @param random the random number generator
-     * @param sim the simulation instance
-     */
-    abstract void addCell(MersenneTwisterFast random, Simulation sim);
 }

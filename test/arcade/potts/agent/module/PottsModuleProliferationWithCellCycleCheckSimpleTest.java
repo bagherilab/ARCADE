@@ -17,12 +17,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.agent.module.PottsModule.PoissonFactory;
-import static arcade.potts.agent.module.PottsModuleProliferationCellCycleProgressionSimple.*;
+import static arcade.potts.agent.module.PottsModuleProliferationWithCellCycleCheckSimple.*;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
 
-public class PottsModuleProliferationCellCycleProgressionSimpleTest {
+public class PottsModuleProliferationWithCellCycleCheckSimpleTest {
     private static final double EPSILON = 1E-10;
 
     private static final double R = 1.0;
@@ -74,8 +74,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
     public void constructor_setsParameters() {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                new PottsModuleProliferationCellCycleProgressionSimple(cell);
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                new PottsModuleProliferationWithCellCycleCheckSimple(cell);
 
         assertEquals(parameters.getDouble("proliferation/SIZE_TARGET"), module.sizeTarget);
         assertEquals(parameters.getDouble("proliferation/RATE_G1"), module.rateG1, EPSILON);
@@ -108,8 +108,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
     public void stepG1_withStateChange_callsMethods() {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
         module.phase = Phase.PROLIFERATIVE_G1;
         module.currentSteps = Integer.MAX_VALUE;
 
@@ -129,8 +129,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
     public void stepG1_withoutStateChange_callsMethods() {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
         module.phase = Phase.PROLIFERATIVE_G1;
         module.currentSteps = Integer.MAX_VALUE;
 
@@ -152,8 +152,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
         int steps = randomIntBetween(1, parameters.getInt("proliferation/STEPS_G1"));
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
         module.phase = Phase.PROLIFERATIVE_G1;
         module.currentSteps = module.stepsG1 - steps;
 
@@ -173,8 +173,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
     public void stepG1_withoutTransition_maintainsPhase() {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
         module.phase = Phase.PROLIFERATIVE_G1;
         module.currentSteps = module.stepsG1;
 
@@ -194,8 +194,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
     public void stepG1_anyTransition_updatesCell() {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
 
         PoissonFactory poissonFactory = mock(PoissonFactory.class);
         doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
@@ -219,8 +219,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
         doReturn((double) criticalVolume).when(cell).getCriticalVolume(Region.NUCLEUS);
         doReturn((double) criticalVolume + 1).when(cell).getVolume(Region.NUCLEUS);
 
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
 
         PoissonFactory poissonFactory = mock(PoissonFactory.class);
         doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
@@ -245,8 +245,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
         doReturn((double) criticalVolume).when(cell).getCriticalVolume(Region.NUCLEUS);
         doReturn((double) criticalVolume - 1).when(cell).getVolume(Region.NUCLEUS);
 
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
 
         PoissonFactory poissonFactory = mock(PoissonFactory.class);
         doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
@@ -265,8 +265,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
         int steps = randomIntBetween(1, parameters.getInt("proliferation/STEPS_S"));
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
         module.phase = Phase.PROLIFERATIVE_S;
         module.currentSteps = module.stepsS - steps;
 
@@ -286,8 +286,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
     public void stepS_withoutTransition_maintainsPhase() {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
         module.phase = Phase.PROLIFERATIVE_S;
         module.currentSteps = module.stepsS;
 
@@ -307,8 +307,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
     public void stepS_anyTransition_updatesCell() {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
 
         PoissonFactory poissonFactory = mock(PoissonFactory.class);
         doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
@@ -327,8 +327,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         doReturn(true).when(cell).hasRegions();
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
 
         PoissonFactory poissonFactory = mock(PoissonFactory.class);
         doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
@@ -347,8 +347,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
     public void stepG2_withStateChange_callsMethods() {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
         module.phase = Phase.PROLIFERATIVE_G2;
         module.currentSteps = Integer.MAX_VALUE;
 
@@ -368,8 +368,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
     public void stepG2_withoutStateChange_callsMethods() {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
         module.phase = Phase.PROLIFERATIVE_G2;
         module.currentSteps = Integer.MAX_VALUE;
 
@@ -396,8 +396,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
         doReturn((volume * SIZE_CHECKPOINT * sizeTarget) + 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
 
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
         module.phase = Phase.PROLIFERATIVE_G2;
         module.currentSteps = module.stepsG2 - steps;
 
@@ -422,8 +422,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
         doReturn((volume * SIZE_CHECKPOINT * sizeTarget) + 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
 
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
         module.phase = Phase.PROLIFERATIVE_G2;
         module.currentSteps = module.stepsG2;
 
@@ -449,8 +449,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
         doReturn((volume * SIZE_CHECKPOINT * sizeTarget) - 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
 
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
         module.phase = Phase.PROLIFERATIVE_G2;
         module.currentSteps = module.stepsG2 - steps;
 
@@ -484,8 +484,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
                 .getVolume(Region.NUCLEUS);
         doReturn(regionVolume).when(cell).getCriticalVolume(Region.NUCLEUS);
 
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
         module.phase = Phase.PROLIFERATIVE_G2;
         module.currentSteps = module.stepsG2 - steps;
 
@@ -510,8 +510,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
         doReturn((volume * SIZE_CHECKPOINT * sizeTarget) - 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
 
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
         module.phase = Phase.PROLIFERATIVE_G2;
         module.currentSteps = module.stepsG2;
 
@@ -531,8 +531,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
     public void stepG2_anyTransition_updatesCell() {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
 
         PoissonFactory poissonFactory = mock(PoissonFactory.class);
         doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
@@ -551,8 +551,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         doReturn(true).when(cell).hasRegions();
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
 
         PoissonFactory poissonFactory = mock(PoissonFactory.class);
         doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
@@ -572,8 +572,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
         int steps = randomIntBetween(1, parameters.getInt("proliferation/STEPS_M"));
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
         module.phase = Phase.PROLIFERATIVE_M;
         module.currentSteps = module.stepsM - steps;
         doNothing().when(module).addCell(random, simMock);
@@ -595,8 +595,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
     public void stepM_withoutTransition_maintainsPhase() {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
         module.phase = Phase.PROLIFERATIVE_M;
         module.currentSteps = module.stepsM;
         doNothing().when(module).addCell(random, simMock);
@@ -618,8 +618,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
     public void stepM_anyTransition_updatesCell() {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
         doNothing().when(module).addCell(random, simMock);
 
         PoissonFactory poissonFactory = mock(PoissonFactory.class);
@@ -654,8 +654,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
         pottsMock.ids = ids;
         pottsMock.regions = regions;
 
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
         doNothing().when(module).addCell(random, simMock);
 
         PoissonFactory poissonFactory = mock(PoissonFactory.class);
@@ -697,8 +697,8 @@ public class PottsModuleProliferationCellCycleProgressionSimpleTest {
         pottsMock.ids = ids;
         pottsMock.regions = regions;
 
-        PottsModuleProliferationCellCycleProgressionSimple module =
-                spy(new PottsModuleProliferationCellCycleProgressionSimple(cell));
+        PottsModuleProliferationWithCellCycleCheckSimple module =
+                spy(new PottsModuleProliferationWithCellCycleCheckSimple(cell));
         doNothing().when(module).addCell(random, simMock);
 
         PoissonFactory poissonFactory = mock(PoissonFactory.class);

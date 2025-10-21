@@ -9,7 +9,7 @@ import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModuleApoptosisSimple;
 import arcade.potts.agent.module.PottsModuleAutosis;
 import arcade.potts.agent.module.PottsModuleNecrosis;
-import arcade.potts.agent.module.PottsModuleProliferationCellCycleProgressionSimple;
+import arcade.potts.agent.module.PottsModuleProliferationWithCellCycleCheckSimple;
 import arcade.potts.agent.module.PottsModuleQuiescence;
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
@@ -73,7 +73,7 @@ public final class PottsCellStem extends PottsCell {
                 module = new PottsModuleQuiescence(this);
                 break;
             case PROLIFERATIVE:
-                module = new PottsModuleProliferationCellCycleProgressionSimple(this);
+                module = new PottsModuleProliferationWithCellCycleCheckSimple(this);
                 break;
             case APOPTOTIC:
                 module = new PottsModuleApoptosisSimple(this);
