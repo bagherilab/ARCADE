@@ -1,5 +1,6 @@
 package arcade.potts.agent.module;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
@@ -20,6 +21,9 @@ import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Phase;
+import arcade.potts.util.PottsEnums.State;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
@@ -28,18 +32,6 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
     /** Threshold for critical volume size checkpoint. */
     static final double SIZE_CHECKPOINT = 0.95;
-
-    /**
-     * Target ratio of critical volume for division size checkpoint (cell must reach CRITICAL_VOLUME
-     * * SIZE_TARGET * SIZE_CHECKPOINT to divide).
-     */
-    double sizeTarget;
-
-    /** Base growth rate for stem cells. */
-    final double cellGrowthRateBase;
-
-    /** Current growth rate for stem cells. */
-    double cellGrowthRate;
 
     /** Basal rate of apoptosis (ticks^-1). */
     final double basalApoptosisRate;
@@ -54,13 +46,11 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
     final Distribution apicalAxisRotationDistribution;
 
-    final boolean dynamicGrowthRateVolume;
-
     final boolean volumeBasedCriticalVolume;
 
-    final double volumeBasedCriticalVolumeMultiplier;
+    final boolean dynamicGrowthRateNBContact;
 
-    final double growthRateVolumeSensitivity;
+    final double volumeBasedCriticalVolumeMultiplier;
 
     /**
      * Range of values considered equal when determining daughter cell identity. ex. if ruleset is
@@ -83,8 +73,6 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         Parameters parameters = cell.getParameters();
 
-        sizeTarget = parameters.getDouble("proliferation/SIZE_TARGET");
-        cellGrowthRateBase = parameters.getDouble("proliferation/CELL_GROWTH_RATE");
         basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
         splitDirectionDistribution =
                 (NormalDistribution)
@@ -97,17 +85,19 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                         parameters.getDistribution(
                                 "proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION");
 
-        dynamicGrowthRateVolume =
-                (parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME") != 0);
-        updateGrowthRate();
-
         volumeBasedCriticalVolume =
                 (parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME") != 0);
 
+        dynamicGrowthRateNBContact =
+                (parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT") != 0);
+
+        if (dynamicGrowthRateVolume && dynamicGrowthRateNBContact) {
+            throw new InvalidParameterException(
+                    "Dynamic growth rate can be either volume-based or NB-contact-based, not both.");
+        }
+
         volumeBasedCriticalVolumeMultiplier =
                 (parameters.getDouble("proliferation/VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER"));
-        growthRateVolumeSensitivity =
-                parameters.getDouble("proliferation/GROWTH_RATE_VOLUME_SENSITIVITY");
 
         setPhase(Phase.UNDEFINED);
     }
@@ -138,29 +128,13 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         }
     }
 
-    /**
-     * Updates the cell growth rate based on the current parameter settings.
-     *
-     * <p>If {@code dynamicGrowthRateVolume} is {@code false}, the growth rate is fixed at the base
-     * value specified in {@code cellGrowthRateBase}. If {@code dynamicGrowthRateVolume} is {@code
-     * true}, the growth rate is scaled according to a power-law relationship between the current
-     * cell volume and its critical volume. As the cell volume increases relative to the critical
-     * volume, the growth rate accelerates proportionally:
-     *
-     * <pre>
-     *   growthRate = baseGrowthRate * (volume / criticalVolume) ^ sensitivity
-     * </pre>
-     *
-     * This allows larger cells to grow faster, capturing volume-dependent growth dynamics.
-     */
-    void updateGrowthRate() {
-        if (dynamicGrowthRateVolume == false) {
+    public void updateGrowthRate() {
+        if (dynamicGrowthRateVolume == true) {
+            updateVolumeBasedGrowthRate();
+        } else if (dynamicGrowthRateNBContact == true) {
+            ;
+        } else {
             cellGrowthRate = cellGrowthRateBase;
-        } else if (dynamicGrowthRateVolume == true) {
-            double volume = cell.getLocation().getVolume();
-            double Ka = cell.getCriticalVolume();
-            cellGrowthRate =
-                    cellGrowthRateBase * Math.pow((volume / Ka), growthRateVolumeSensitivity);
         }
     }
 

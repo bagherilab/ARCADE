@@ -4,6 +4,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.agent.cell.PottsCellFlyNeuron;
 import arcade.potts.util.PottsEnums.Phase;
 
 /**
@@ -13,14 +14,21 @@ import arcade.potts.util.PottsEnums.Phase;
  */
 public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsModuleProliferation {
 
-    /** Overall growth rate for cell (voxels/tick). */
-    final double cellGrowthRate;
+    /** Base growth rate for cells (voxels/tick). */
+    final double cellGrowthRateBase;
+
+    /** Current growth rate for stem cells (voxels/tick). */
+    double cellGrowthRate;
 
     /**
      * Target ratio of critical volume for division size checkpoint (cell must reach CRITICAL_VOLUME
      * * SIZE_TARGET * SIZE_CHECKPOINT to divide).
      */
     final double sizeTarget;
+
+    final boolean dynamicGrowthRateVolume;
+
+    final double growthRateVolumeSensitivity;
 
     /**
      * Creates a proliferation module in which division is solely dependent on cell volume.
@@ -31,16 +39,42 @@ public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsM
         super(cell);
         Parameters parameters = cell.getParameters();
         sizeTarget = parameters.getDouble("proliferation/SIZE_TARGET");
-        cellGrowthRate = parameters.getDouble("proliferation/CELL_GROWTH_RATE");
+        cellGrowthRateBase = parameters.getDouble("proliferation/CELL_GROWTH_RATE");
+        dynamicGrowthRateVolume =
+                (parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME") != 0);
+        growthRateVolumeSensitivity =
+                parameters.getDouble("proliferation/GROWTH_RATE_VOLUME_SENSITIVITY");
         setPhase(Phase.UNDEFINED);
     }
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-        cell.updateTarget(cellGrowthRate, sizeTarget);
+        cell.updateTarget(cellGrowthRateBase, sizeTarget);
         boolean sizeCheck = cell.getVolume() >= sizeTarget * cell.getCriticalVolume();
         if (sizeCheck) {
             addCell(random, sim);
         }
+        updateGrowthRate();
+    }
+
+    public abstract void updateGrowthRate();
+
+    /**
+     * Updates the cell growth rate based on the volume of the cell.
+     *
+     * <p>The growth rate is scaled according to a power-law relationship between the current cell
+     * volume and its critical volume. As the cell volume increases relative to the critical volume,
+     * the growth rate accelerates proportionally:
+     *
+     * <pre>
+     *   growthRate = baseGrowthRate * (volume / criticalVolume) ^ sensitivity
+     * </pre>
+     *
+     * This allows larger cells to grow faster, capturing volume-dependent growth dynamics.
+     */
+    public void updateVolumeBasedGrowthRate() {
+        double volume = cell.getLocation().getVolume();
+        double Ka = cell.getCriticalVolume();
+        cellGrowthRate = cellGrowthRateBase * Math.pow((volume / Ka), growthRateVolumeSensitivity);
     }
 }

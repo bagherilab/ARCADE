@@ -91,4 +91,12 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
         differentiatedGMC.reset(potts.ids, potts.regions);
         differentiatedGMC.schedule(sim.getSchedule());
     }
+
+    public void updateGrowthRate() {
+        if (dynamicGrowthRateVolume == false) {
+            cellGrowthRate = cellGrowthRateBase;
+        } else if (dynamicGrowthRateVolume == true) {
+            updateVolumeBasedGrowthRate();
+        }
+    }
 }
