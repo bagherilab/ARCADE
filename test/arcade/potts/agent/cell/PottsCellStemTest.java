@@ -10,7 +10,7 @@ import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModuleApoptosis;
 import arcade.potts.agent.module.PottsModuleAutosis;
 import arcade.potts.agent.module.PottsModuleNecrosis;
-import arcade.potts.agent.module.PottsModuleProliferation;
+import arcade.potts.agent.module.PottsModuleProliferationWithCellCycleCheck;
 import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.env.location.PottsLocation;
 import static org.junit.jupiter.api.Assertions.*;
@@ -94,7 +94,7 @@ public class PottsCellStemTest {
         assertTrue(cell.module instanceof PottsModuleQuiescence);
 
         cell.setState(State.PROLIFERATIVE);
-        assertTrue(cell.module instanceof PottsModuleProliferation);
+        assertTrue(cell.module instanceof PottsModuleProliferationWithCellCycleCheck);
 
         cell.setState(State.APOPTOTIC);
         assertTrue(cell.module instanceof PottsModuleApoptosis);
