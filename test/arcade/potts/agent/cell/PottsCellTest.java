@@ -653,6 +653,28 @@ public class PottsCellTest {
     }
 
     @Test
+    public void setCriticalVolume_calledWithRegions_correctlySetsCriticalVolume() {
+        PottsCell cell = new PottsCellMock(containerWithRegions, locationMock, parametersMock);
+        assertEquals(cellCriticalVolume, cell.getCriticalVolume());
+        double newCriticalVolume = randomDoubleBetween(10, 20);
+        cell.setCriticalVolume(newCriticalVolume);
+        assertEquals(newCriticalVolume, cell.getCriticalVolume());
+        cell.setCriticalVolume(cellCriticalVolume);
+        assertEquals(cellCriticalVolume, cell.getCriticalVolume());
+    }
+
+    @Test
+    public void setCriticalVolume_calledWithoutRegions_correctlySetsCriticalVolume() {
+        PottsCell cell = new PottsCellMock(containerWithoutRegions, locationMock, parametersMock);
+        assertEquals(cellCriticalVolume, cell.getCriticalVolume());
+        double newCriticalVolume = randomDoubleBetween(10, 20);
+        cell.setCriticalVolume(newCriticalVolume);
+        assertEquals(newCriticalVolume, cell.getCriticalVolume());
+        cell.setCriticalVolume(cellCriticalVolume);
+        assertEquals(cellCriticalVolume, cell.getCriticalVolume());
+    }
+
+    @Test
     public void getCriticalHeight_beforeInitialize_returnsValue() {
         assertEquals(cellCriticalHeight, cellWithoutRegions.getCriticalHeight(), EPSILON);
     }
