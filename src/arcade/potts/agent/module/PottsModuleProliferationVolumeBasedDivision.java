@@ -26,8 +26,12 @@ public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsM
      */
     final double sizeTarget;
 
+    /** Boolean flag indicating whether the growth rate should follow volume-sensitive ruleset. */
     final boolean dynamicGrowthRateVolume;
 
+    /**
+     * Sensitivity of growth rate to cell volume, only relevant if dynamicGrowthRateVolume is true.
+     */
     final double growthRateVolumeSensitivity;
 
     /**
@@ -54,10 +58,15 @@ public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsM
         if (sizeCheck) {
             addCell(random, sim);
         }
-        updateGrowthRate();
+        updateGrowthRate(sim);
     }
 
-    public abstract void updateGrowthRate();
+    /**
+     * Updates the effective growth rate according to boolean flags specified in parameters.
+     *
+     * @param sim the simulation
+     */
+    public abstract void updateGrowthRate(Simulation sim);
 
     /**
      * Updates the cell growth rate based on the volume of the cell.

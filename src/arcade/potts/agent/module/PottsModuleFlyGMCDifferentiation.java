@@ -92,7 +92,7 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
         differentiatedGMC.schedule(sim.getSchedule());
     }
 
-    public void updateGrowthRate() {
+    public void updateGrowthRate(Simulation sim) {
         if (dynamicGrowthRateVolume == false) {
             cellGrowthRate = cellGrowthRateBase;
         } else if (dynamicGrowthRateVolume == true) {

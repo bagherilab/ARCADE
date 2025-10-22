@@ -26,7 +26,7 @@ public class PottsModuleProliferationVolumeBasedDivisionTest {
         }
 
         @Override
-        public void updateGrowthRate() {
+        public void updateGrowthRate(Simulation sim) {
             growthRateUpdated = true;
         }
     }

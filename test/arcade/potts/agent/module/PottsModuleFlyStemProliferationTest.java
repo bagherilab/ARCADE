@@ -1,6 +1,7 @@
 package arcade.potts.agent.module;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import arcade.core.util.Plane;
 import arcade.core.util.Vector;
 import arcade.core.util.distributions.NormalDistribution;
 import arcade.core.util.distributions.UniformDistribution;
+import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.agent.cell.PottsCellFlyStem;
@@ -663,7 +665,7 @@ public class PottsModuleFlyStemProliferationTest {
         module = new PottsModuleFlyStemProliferation(stemCell);
         when(parameters.getInt("proliferation/VOLUME_BASED_CRITVOL")).thenReturn(0);
 
-        double result = module.calculateGMCDaughterCellCriticalVolume(daughterLoc, sim, 3);
+        double result = module.calculateGMCDaughterCellCriticalVolume(daughterLoc);
         assertEquals((100 * .25 * 1.2), result, EPSILON); // 100 * 0.25 * 1.2
     }
 
@@ -686,7 +688,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         module = new PottsModuleFlyStemProliferation(stemCell);
 
-        double result = module.calculateGMCDaughterCellCriticalVolume(gmcLoc, sim, 3);
+        double result = module.calculateGMCDaughterCellCriticalVolume(gmcLoc);
         assertEquals(75.0, result, EPSILON); // 50 * 1.5
     }
 
@@ -852,5 +854,148 @@ public class PottsModuleFlyStemProliferationTest {
         }
 
         verify(newCell).schedule(any());
+    }
+
+    @Test
+    public void getNumNBNeighbors_withTwoUniqueStemNeighbors_returnsCorrectCount() {
+        module = spy(new PottsModuleFlyStemProliferation(stemCell));
+
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 0, 0));
+        voxels.add(new Voxel(1, 0, 0));
+        when(stemLoc.getVoxels()).thenReturn(voxels);
+
+        // Unique IDs returned by potts
+        HashSet<Integer> idsVoxel1 = new HashSet<>();
+        idsVoxel1.add(10);
+        idsVoxel1.add(11);
+        HashSet<Integer> idsVoxel2 = new HashSet<>();
+        idsVoxel2.add(11); // repeat → should still count neighbor 11 only once
+        idsVoxel2.add(12);
+
+        when(potts.getUniqueIDs(0, 0, 0)).thenReturn(idsVoxel1);
+        when(potts.getUniqueIDs(1, 0, 0)).thenReturn(idsVoxel2);
+
+        // Neighbors
+        PottsCell neighbor10 = mock(PottsCell.class);
+        PottsCell neighbor11 = mock(PottsCell.class);
+        PottsCell neighbor12 = mock(PottsCell.class);
+
+        when(neighbor10.getID()).thenReturn(10);
+        when(neighbor11.getID()).thenReturn(11);
+        when(neighbor12.getID()).thenReturn(12);
+        when(stemCell.getID()).thenReturn(42);
+
+        when(neighbor10.getPop()).thenReturn(3); // match cell.getPop
+        when(neighbor11.getPop()).thenReturn(3); // match cell.getPop
+        when(neighbor12.getPop()).thenReturn(99); // no match
+
+        when(grid.getObjectAt(10)).thenReturn(neighbor10);
+        when(grid.getObjectAt(11)).thenReturn(neighbor11);
+        when(grid.getObjectAt(12)).thenReturn(neighbor12);
+
+        int numNeighbors = module.getNumNBNeighbors(sim);
+
+        assertEquals(2, numNeighbors, "Should count 2 unique matching neighbors (10 and 11)");
+    }
+
+    @Test
+    public void getNumNBNeighbors_noMatchingNeighbors_returnsZero() {
+        module = spy(new PottsModuleFlyStemProliferation(stemCell));
+
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 0, 0));
+        when(stemLoc.getVoxels()).thenReturn(voxels);
+
+        HashSet<Integer> ids = new HashSet<>();
+        ids.add(50);
+        when(potts.getUniqueIDs(0, 0, 0)).thenReturn(ids);
+
+        PottsCell nonStemNeighbor = mock(PottsCell.class);
+        when(nonStemNeighbor.getPop()).thenReturn(99); // doesn't match stem pop
+        when(nonStemNeighbor.getID()).thenReturn(50);
+        when(grid.getObjectAt(50)).thenReturn(nonStemNeighbor);
+
+        when(stemCell.getID()).thenReturn(42);
+
+        int numNeighbors = module.getNumNBNeighbors(sim);
+
+        assertEquals(0, numNeighbors, "No neighbors should be counted when pops do not match.");
+    }
+
+    @Test
+    public void getNumNBNeighbors_called_doesNotCountSelf() {
+        module = spy(new PottsModuleFlyStemProliferation(stemCell));
+
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 0, 0));
+        when(stemLoc.getVoxels()).thenReturn(voxels);
+
+        HashSet<Integer> ids = new HashSet<>();
+        ids.add(42); // same as sim.getID() mock (self)
+        when(potts.getUniqueIDs(0, 0, 0)).thenReturn(ids);
+
+        PottsCell selfCell = stemCell; // or mock another PottsCell with same pop
+        when(grid.getObjectAt(42)).thenReturn(selfCell);
+
+        int numNeighbors = module.getNumNBNeighbors(sim);
+        assertEquals(0, numNeighbors, "Self should not be counted as a neighbor");
+    }
+
+    @Test
+    public void updateNBContactGrowthRate_noNeighbors_returnsBaseGrowthRate() {
+        // Mock parameters
+        when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(5.0);
+        when(parameters.getDouble("proliferation/NB_CONTACT_HILL_N")).thenReturn(2.0);
+        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(10.0);
+
+        module = spy(new PottsModuleFlyStemProliferation(stemCell));
+
+        // Mock neighbor count
+        doReturn(0).when(module).getNumNBNeighbors(sim);
+
+        module.updateNBContactGrowthRate(sim);
+        assertEquals(
+                10.0,
+                module.cellGrowthRate,
+                1e-6,
+                "With 0 neighbors, hill repression should be 1.0");
+    }
+
+    @Test
+    public void updateNBContactGrowthRate_halfMaxNeighbors_returnsHalfBaseGrowthRate() {
+        // Mock parameters
+        when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(5.0);
+        when(parameters.getDouble("proliferation/NB_CONTACT_HILL_N")).thenReturn(2.0);
+        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(10.0);
+
+        module = spy(new PottsModuleFlyStemProliferation(stemCell));
+
+        // Mock neighbor count
+        doReturn(5).when(module).getNumNBNeighbors(sim);
+
+        module.updateNBContactGrowthRate(sim);
+        // Hill repression = K^n / (K^n + N^n) = 25 / (25 + 25) = 0.5
+        assertEquals(
+                5.0,
+                module.cellGrowthRate,
+                1e-6,
+                "With 0 neighbors, hill repression should be 1.0");
+    }
+
+    @Test
+    public void updateNBContactGrowthRate_highNeighbors_returnsLowGrowthRate() {
+        when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(5.0);
+        when(parameters.getDouble("proliferation/NB_CONTACT_HILL_N")).thenReturn(2.0);
+        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(10.0);
+
+        module = spy(new PottsModuleFlyStemProliferation(stemCell));
+
+        doReturn(20).when(module).getNumNBNeighbors(sim);
+
+        module.updateNBContactGrowthRate(sim);
+
+        // Hill repression = 25 / (25 + 400) = 25 / 425 ≈ 0.0588
+        assertEquals(10.0 * (25.0 / 425.0), module.cellGrowthRate, 1e-6);
     }
 }
