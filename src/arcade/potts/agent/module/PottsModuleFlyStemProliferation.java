@@ -124,7 +124,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 (parameters.getDouble("proliferation/VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER"));
 
         nbContactHalfMax = parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX");
-        nbContactHillN   = parameters.getDouble("proliferation/NB_CONTACT_HILL_N");
+        nbContactHillN = parameters.getDouble("proliferation/NB_CONTACT_HILL_N");
 
         setPhase(Phase.UNDEFINED);
     }
@@ -227,7 +227,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         int NpRaw = getNumNBNeighbors(sim);
         double Np = Math.max(0.0, (double) NpRaw);
 
-        double Kn  = Math.pow(nbContactHalfMax, nbContactHillN);
+        double Kn = Math.pow(nbContactHalfMax, nbContactHillN);
         double Npn = Math.pow(Np, nbContactHillN);
 
         double hillRepression = Kn / (Kn + Npn);
