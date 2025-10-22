@@ -22,6 +22,9 @@ import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Phase;
+import arcade.potts.util.PottsEnums.State;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
@@ -71,6 +74,18 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     final double range;
 
     /**
+     * Half-max NB neighbor count for repression (K). Only relevant if dynamicGrowthRateNBContact is
+     * true.
+     */
+    final double nbContactHalfMax;
+
+    /**
+     * Hill coefficient for NB-contact repression (n). Only relevant if dynamicGrowthRateNBContact
+     * is true.
+     */
+    final double nbContactHillN;
+
+    /**
      * Creates a proliferation {@code Module} for the given {@link PottsCellFlyStem}.
      *
      * @param cell the {@link PottsCellFlyStem} the module is associated with
@@ -110,6 +125,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         volumeBasedCriticalVolumeMultiplier =
                 (parameters.getDouble("proliferation/VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER"));
+
+        nbContactHalfMax = parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX");
+        nbContactHillN   = parameters.getDouble("proliferation/NB_CONTACT_HILL_N");
 
         setPhase(Phase.UNDEFINED);
     }
@@ -212,12 +230,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         int NpRaw = getNumNBNeighbors(sim);
         double Np = Math.max(0.0, (double) NpRaw);
 
-        // Parameters from the model
-        double K = cell.getParameters().getDouble("proliferation/NB_CONTACT_HALF_MAX");
-        double n = cell.getParameters().getDouble("proliferation/NB_CONTACT_HILL_N");
-
-        double Kn = Math.pow(K, n);
-        double Npn = Math.pow(Np, n);
+        double Kn  = Math.pow(nbContactHalfMax, nbContactHillN);
+        double Npn = Math.pow(Np, nbContactHillN);
 
         double hillRepression = Kn / (Kn + Npn);
 
