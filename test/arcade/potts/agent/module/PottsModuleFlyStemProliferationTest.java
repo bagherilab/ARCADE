@@ -27,7 +27,6 @@ import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.Phase;
-import arcade.potts.util.PottsEnums.State;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
@@ -591,7 +590,7 @@ public class PottsModuleFlyStemProliferationTest {
 
     @Test
     public void getDaughterCellApicalAxis_rotation_returnsRotatedAxis() {
-        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("rotation");
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("normal");
 
         NormalDistribution rotDist = mock(NormalDistribution.class);
         when(rotDist.nextDouble()).thenReturn(30.0); // rotation angle

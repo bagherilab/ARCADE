@@ -75,11 +75,11 @@
     <population.module module="proliferation" id="DIFFERENTIATION_RULESET_EQUALITY_RANGE" value="0.5" description="tolerance for deciding GMC/NB identity (volume difference or apical axis distance)" />
     <!-- ── NB Apical axis rules ──────────────────────────────────── -->
     <population.module module="proliferation" id="APICAL_AXIS_RULESET" value="global" description="'global', 'rotation' (Normal), or 'uniform' (Uniform)" />
-    <population.module module="proliferation" id="APICAL_AXIS_ROTATION_DISTRIBUTION" distribution="normal" mean="0.0" stdev="10.0" units="degrees" description="rotation angle for apical axis when APICAL_AXIS_RULESET='rotation'" />
-    <population.module module="proliferation" id="DIV_ROTATION_DISTRIBUTION" distribution="normal" mean="0.0" stdev="5.0" units="degrees" description="rotational offset of division plane (WT rules)" />
+    <population.module module="proliferation" id="APICAL_AXIS_ROTATION_DISTRIBUTION" value="NORMAL(MU=0,SIGMA=0)" description="rotation angle for apical axis when APICAL_AXIS_RULESET='rotation'" />
+    <population.module module="proliferation" id="DIV_ROTATION_DISTRIBUTION" value="NORMAL(MU=0,SIGMA=0)" description="rotational offset of division plane (WT rules)" />
     <!-- ── NB and GMC critical volume options ────────────────────────── -->
     <population.module module="proliferation" id="VOLUME_BASED_CRITICAL_VOLUME" value="0" description="1 → critical volume scales with daughter volume; 0 → use max (type-based) value" />
-    <population.module module="proliferation" id="VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER" value="1.5" description="if enabled, GMC critical volume = daughter_volume × multiplier" />
+    <population.module module="proliferation" id="VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER" value="2" description="if enabled, GMC critical volume = daughter_volume × multiplier" />
 
     <!-- apoptosis module parameters -->
     <population.module module="apoptosis" id="RATE_EARLY" value="4" units="steps/hour" conversion="DT" description="rate of events in early apoptosis phase" />

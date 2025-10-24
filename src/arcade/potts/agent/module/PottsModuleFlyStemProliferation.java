@@ -22,6 +22,9 @@ import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Phase;
+import arcade.potts.util.PottsEnums.State;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
@@ -61,7 +64,6 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /** Boolean flag indicating whether growth rate should be regulated by NB-NB contact. */
     final boolean dynamicGrowthRateNBContact;
 
-    /** Boolean flag indicating whether growth rate should be regulated by the cell's volume. */
     final double volumeBasedCriticalVolumeMultiplier;
 
     /**
@@ -81,6 +83,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * is true.
      */
     final double nbContactHillN;
+
+    final double initialSize;
 
     /**
      * Creates a proliferation {@code Module} for the given {@link PottsCellFlyStem}.
@@ -125,6 +129,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         nbContactHalfMax = parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX");
         nbContactHillN = parameters.getDouble("proliferation/NB_CONTACT_HILL_N");
+
+        initialSize = cell.getVolume();
 
         setPhase(Phase.UNDEFINED);
     }
@@ -185,6 +191,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             HashSet<Integer> uniqueIDs = potts.getUniqueIDs(v.x, v.y, v.z);
             for (Integer id : uniqueIDs) {
                 PottsCell neighbor = (PottsCell) sim.getGrid().getObjectAt(id);
+                if (neighbor == null) {
+                    continue;
+                }
                 if (cell.getPop() == neighbor.getPop()) {
                     if (neighbor.getID() != cell.getID()) {
                         stemNeighbors.add((PottsCell) sim.getGrid().getObjectAt(id));
@@ -383,9 +392,11 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         int newID = sim.getID();
         double criticalVol;
         if (volumeBasedCriticalVolume) {
-            criticalVol = daughterLoc.getVolume() * volumeBasedCriticalVolumeMultiplier;
-            cell.setCriticalVolume(
-                    cell.getLocation().getVolume() * volumeBasedCriticalVolumeMultiplier);
+            criticalVol =
+                    Math.max(
+                            daughterLoc.getVolume() * volumeBasedCriticalVolumeMultiplier,
+                            initialSize / 2);
+            cell.setCriticalVolume(criticalVol);
         } else {
             criticalVol = cell.getCriticalVolume();
         }
@@ -475,7 +486,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 return newRandomApicalAxis;
             case "global":
                 return ((PottsCellFlyStem) cell).getApicalAxis();
-            case "rotation":
+            case "normal":
                 if (!(apicalAxisRotationDistribution instanceof NormalDistribution)) {
                     throw new IllegalArgumentException(
                             "apicalAxisRotationDistribution must be a NormalDistribution under the rotation apical axis ruleset.");
@@ -521,16 +532,21 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * @return the critical volume of the GMC daughter cell
      */
     protected double calculateGMCDaughterCellCriticalVolume(PottsLocation gmcLoc) {
-        double max_crit_vol =
-                ((PottsCellFlyStem) cell).getCriticalVolume()
-                        * sizeTarget
-                        * ((PottsCellFlyStem) cell)
-                                .getStemType()
-                                .daughterCellCriticalVolumeProportion;
+        double criticalVol;
         if (volumeBasedCriticalVolume) {
-            return gmcLoc.getVolume() * volumeBasedCriticalVolumeMultiplier;
+            criticalVol =
+                    Math.max(
+                            gmcLoc.getVolume() * volumeBasedCriticalVolumeMultiplier,
+                            initialSize / 2);
+            return criticalVol;
         } else {
-            return max_crit_vol;
+            criticalVol =
+                    ((PottsCellFlyStem) cell).getCriticalVolume()
+                            * sizeTarget
+                            * ((PottsCellFlyStem) cell)
+                                    .getStemType()
+                                    .daughterCellCriticalVolumeProportion;
+            return criticalVol;
         }
     }
 

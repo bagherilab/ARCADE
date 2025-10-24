@@ -49,16 +49,17 @@ public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsM
         growthRateVolumeSensitivity =
                 parameters.getDouble("proliferation/GROWTH_RATE_VOLUME_SENSITIVITY");
         setPhase(Phase.UNDEFINED);
+        cellGrowthRate = cellGrowthRateBase;
     }
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-        cell.updateTarget(cellGrowthRateBase, sizeTarget);
+        updateGrowthRate(sim);
+        cell.updateTarget(cellGrowthRate, sizeTarget);
         boolean sizeCheck = cell.getVolume() >= sizeTarget * cell.getCriticalVolume();
         if (sizeCheck) {
             addCell(random, sim);
         }
-        updateGrowthRate(sim);
     }
 
     /**
