@@ -69,7 +69,7 @@ public final class PottsLocation3D extends PottsLocation implements Location3D {
     ArrayList<Voxel> getSelected(Voxel focus, double n) {
         return Location3D.getSelected(voxels, focus, n);
     }
-    
+    //Need to implement to 3D
     @Override
     HashSet<PottsCell> getCellNeighbors(Grid g) {
         throw new ExceptionInInitializerError("Not Yet Implemented");

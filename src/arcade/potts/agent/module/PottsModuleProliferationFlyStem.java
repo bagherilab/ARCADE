@@ -45,7 +45,7 @@ public class PottsModuleProliferationFlyStem extends PottsModule {
      * Overall growth rate for cell (voxels/tick) when growth rate is not dynamic. Max growth rate
      * when growth rate is dynamic
      */
-    final double cellGrowthRateMax;
+    final double cellGrowthRateBase;
 
     double cellGrowthRate;
 
@@ -97,7 +97,7 @@ public class PottsModuleProliferationFlyStem extends PottsModule {
         Parameters parameters = cell.getParameters();
 
         sizeTarget = parameters.getDouble("proliferation/SIZE_TARGET");
-        cellGrowthRateMax = parameters.getDouble("proliferation/CELL_GROWTH_RATE");
+        cellGrowthRateBase = parameters.getDouble("proliferation/CELL_GROWTH_RATE_BASE");
         basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
         nucleusCondFraction = parameters.getDouble("proliferation/NUCLEUS_CONDENSATION_FRACTION");
 
@@ -127,10 +127,10 @@ public class PottsModuleProliferationFlyStem extends PottsModule {
 
     void updateVolumeBasedGrowthRate() {
         if (dynamicGrowthRateVolume == false) {
-            cellGrowthRate = cellGrowthRateMax;
+            cellGrowthRate = cellGrowthRateBase;
         } else {
             cellGrowthRate =
-                    cellGrowthRateMax
+                        cellGrowthRateBase
                             * dynamicGrowthRateMultiplier
                             * (cell.getLocation().getVolume() / cell.getCriticalVolume());
         }
@@ -464,37 +464,7 @@ public class PottsModuleProliferationFlyStem extends PottsModule {
 
         return (proj1 < proj2) ? loc2 : loc1; // higher projection = more basal
     }
-
-    private Collection<PottsCell> getNeighborCells(Grid grid) {
-        final int[][] OFFSETS_6 = {
-            { 1, 0, 0}, {-1, 0, 0},
-            { 0, 1, 0}, { 0,-1, 0},
-            { 0, 0, 1}, { 0, 0,-1}
-        };
-
-        PottsLocation location = (PottsLocation) cell.getLocation();
-
-        HashSet<Voxel> myVox = new HashSet<Voxel>(location.getVoxels());
-        HashSet<Voxel> enlargedVoxels = new HashSet<Voxel>(myVox.size() * 8);
-
-        for (Voxel v : myVox) {
-            enlargedVoxels.add(v);
-            for (int[] d : OFFSETS_6) {
-                enlargedVoxels.add(new Voxel(v.x + d[0], v.y + d[1], v.z + d[2]));
-            }
-        }
-
-        Bag all = grid.getAllObjects();
-        Collection<PottsCell> out = new HashSet<>();
-
-        // for (Object other : all) {
-        //     // need to add line to make sure the current cell isn't the same cell as the one we're looking for neighbors for
-        //     otherVoxels = (PottsCell) other
-        // }
-
-        return out;
-    }
-
+//GR needs to be finished once we actually know where the neighbors are
     double getNBNeighborBasedGrowthRate(Grid grid) {
         // cell.getLocation();
         Collection<PottsCell> neighbors = getNeighborCells(grid);

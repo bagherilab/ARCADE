@@ -76,7 +76,7 @@ public final class PottsLocation2D extends PottsLocation implements Location2D {
         return Location2D.getSelected(voxels, focus, n);
     }
 
-    @Override
+    @Override //Finds the cell neighbors
     HashSet<PottsCell> getCellNeighbors(Grid g) {
 
         HashSet<Voxel> myVox = new HashSet<Voxel>(this.getVoxels());
@@ -96,12 +96,11 @@ public final class PottsLocation2D extends PottsLocation implements Location2D {
             }
         }
 
-        Bag all = g.getAllObjects();
+        Bag all = g.getAllObjects(); // Get all the cells on the grid
         HashSet<PottsCell> neighborCells = new HashSet<>();
 
-        iteratePossibleNeighbors:
+        iteratePossibleNeighbors: // Label for for-loop
         for (Object other : all) {
-            // need to add line to make sure the current cell isn't the same cell as the one we're looking for neighbors for
 
             PottsCell otherCell = (PottsCell) other;
             PottsLocation2D otherLocation = (PottsLocation2D) otherCell.getLocation();
@@ -110,19 +109,15 @@ public final class PottsLocation2D extends PottsLocation implements Location2D {
             if (this.equals(otherLocation)) continue;
 
             ArrayList<Voxel> otherVoxels = otherLocation.getVoxels();
-            
+
             // Iterate through all the voxels and check if the neighbors are in set of enlarged voxels
             for (Voxel v : otherVoxels) {
-                for (int[] d : OFFSETS_4) {
 
-                    // TODO: need to check w sophia if this is correct
-                    Voxel enlargedVoxel = new Voxel(v.x + d[0], v.y + d[1], v.z);
-                    if (enlargedVoxels.contains(enlargedVoxel)) {
-                        neighborCells.add(otherCell);
+                if (enlargedVoxels.contains(v)) {
+                    neighborCells.add(otherCell);
 
-                        // We can quit early because we don't need to check other voxels in this neighboring cell
-                        continue iteratePossibleNeighbors;
-                    }
+                    // We can quit early because we don't need to check other voxels in this neighboring cell
+                    continue iteratePossibleNeighbors;
                 }
             }
         }
