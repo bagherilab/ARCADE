@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
+import arcade.core.util.Vector;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;
@@ -297,5 +298,17 @@ public class PottsLocation3DTest {
 
         assertEquals(locVoxels, loc.voxels);
         assertEquals(splitVoxels, split.voxels);
+    }
+
+    @Test
+    public void getOffsetInApicalFrame_called_raisesUnsupportedOperationException() {
+        {
+            PottsLocation3D loc = new PottsLocation3D(voxelListAB);
+            Vector apicalAxis = new Vector(0, 1, 0);
+            ArrayList<Integer> offsets = new ArrayList<>();
+            assertThrows(
+                    UnsupportedOperationException.class,
+                    () -> loc.getOffsetInApicalFrame(offsets, apicalAxis));
+        }
     }
 }

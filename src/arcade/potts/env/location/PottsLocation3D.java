@@ -2,6 +2,8 @@ package arcade.potts.env.location;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import arcade.core.util.Vector;
+import arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Direction;
 
 /** Concrete implementation of {@link PottsLocation} for 3D. */
@@ -63,5 +65,11 @@ public final class PottsLocation3D extends PottsLocation implements Location3D {
     @Override
     ArrayList<Voxel> getSelected(Voxel focus, double n) {
         return Location3D.getSelected(voxels, focus, n);
+    }
+
+    @Override
+    Voxel getOffsetInApicalFrame(ArrayList<Integer> offsets, Vector apicalAxis) {
+        throw new UnsupportedOperationException(
+                "getOffsetInApicalFrame is not implemented for PottsLocation3D");
     }
 }
