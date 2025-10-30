@@ -70,7 +70,9 @@ public final class PottsLocation2D extends PottsLocation implements Location2D {
 
     /**
      * Gets the voxel at specified percentage offsets along the location's X and Y axes with the
-     * provided apicalAxis considered to be pointing up the Y axis.
+     * provided apicalAxis considered to be pointing up the Y axis. Returns null if this
+     * PottsLocation2D contains no voxels or if the offsets ArrayList provided is not 2 integers
+     * long.
      *
      * @param offsets the percent offsets along the location's X and Y axes
      * @param apicalAxis the axis considered to be pointing up along the Y axis
