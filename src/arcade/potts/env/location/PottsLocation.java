@@ -610,7 +610,7 @@ public abstract class PottsLocation implements Location {
 
     /**
      * Gets the voxel at specified percentage offsets along the location's axes with the provided
-     * ApicalAxis considered to be pointing up the Y axis
+     * ApicalAxis considered to be pointing up the Y axis.
      *
      * @param offsets the percent offsets along the location's axes
      * @param apicalAxis the axis considered to be pointing up along the Y axis
