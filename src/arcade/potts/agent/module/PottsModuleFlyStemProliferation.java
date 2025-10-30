@@ -22,9 +22,6 @@ import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
-import arcade.potts.util.PottsEnums.Direction;
-import arcade.potts.util.PottsEnums.Phase;
-import arcade.potts.util.PottsEnums.State;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
@@ -319,7 +316,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         splitOffsetPercent.add(stemType.splitOffsetPercentX);
         splitOffsetPercent.add(stemType.splitOffsetPercentY);
         return ((PottsLocation2D) cell.getLocation())
-                .getOffsetInApicalFrame2D(splitOffsetPercent, rotatedNormalVector);
+                .getOffsetInApicalFrame(splitOffsetPercent, rotatedNormalVector);
     }
 
     /**
