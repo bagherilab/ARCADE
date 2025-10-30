@@ -76,7 +76,8 @@ public final class PottsLocation2D extends PottsLocation implements Location2D {
      * @param apicalAxis the axis considered to be pointing up along the Y axis
      * @return the voxel through which the plane of division will pass
      */
-    public Voxel getOffsetInApicalFrame2D(ArrayList<Integer> offsets, Vector apicalAxis) {
+    @Override
+    public Voxel getOffsetInApicalFrame(ArrayList<Integer> offsets, Vector apicalAxis) {
         if (voxels.isEmpty()) {
             return null;
         }

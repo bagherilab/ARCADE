@@ -10,6 +10,9 @@ import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.util.Plane;
 import arcade.core.util.Utilities;
+import arcade.core.util.Vector;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Region;
 
@@ -604,6 +607,16 @@ public abstract class PottsLocation implements Location {
      * @return the list of selected voxels
      */
     abstract ArrayList<Voxel> getSelected(Voxel focus, double n);
+
+    /**
+     * Gets the voxel at specified percentage offsets along the location's axes with the provided
+     * ApicalAxis considered to be pointing up the Y axis
+     *
+     * @param offsets the percent offsets along the location's axes
+     * @param apicalAxis the axis considered to be pointing up along the Y axis
+     * @return the voxel at the specified offset in the frame of the apical axis
+     */
+    abstract Voxel getOffsetInApicalFrame(ArrayList<Integer> offsets, Vector apicalAxis);
 
     /**
      * Gets the direction of the slice orthagonal to the direction with the smallest diameter.

@@ -296,7 +296,7 @@ public class PottsLocation2DTest {
         offsets.add(50); // middle of X axis
         offsets.add(50); // middle of Y axis
 
-        Voxel result = loc.getOffsetInApicalFrame2D(offsets, apicalAxis);
+        Voxel result = loc.getOffsetInApicalFrame(offsets, apicalAxis);
         assertEquals(new Voxel(0, 0, 0), result);
     }
 
@@ -315,7 +315,7 @@ public class PottsLocation2DTest {
         offsets.add(100); // far right of X axis
         offsets.add(100); // top of Y axis
 
-        Voxel result = loc.getOffsetInApicalFrame2D(offsets, apicalAxis);
+        Voxel result = loc.getOffsetInApicalFrame(offsets, apicalAxis);
         assertEquals(new Voxel(4, 4, 0), result);
     }
 
@@ -328,7 +328,7 @@ public class PottsLocation2DTest {
         offsets.add(50);
         offsets.add(50);
 
-        Voxel result = loc.getOffsetInApicalFrame2D(offsets, apicalAxis);
+        Voxel result = loc.getOffsetInApicalFrame(offsets, apicalAxis);
         assertNull(result);
     }
 
@@ -346,7 +346,7 @@ public class PottsLocation2DTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> {
-                    loc.getOffsetInApicalFrame2D(badOffset, apicalAxis);
+                    loc.getOffsetInApicalFrame(badOffset, apicalAxis);
                 });
     }
 
@@ -364,7 +364,7 @@ public class PottsLocation2DTest {
         offsets.add(0); // lowest orthogonal axis
         offsets.add(100); // farthest along apical
 
-        Voxel result = loc.getOffsetInApicalFrame2D(offsets, apicalAxis);
+        Voxel result = loc.getOffsetInApicalFrame(offsets, apicalAxis);
         assertEquals(new Voxel(3, 3, 0), result);
     }
 }
