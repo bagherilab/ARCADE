@@ -3,6 +3,7 @@ package arcade.potts.agent.module;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import sim.util.Bag;
 import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
@@ -22,6 +23,9 @@ import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Phase;
+import arcade.potts.util.PottsEnums.State;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
@@ -59,7 +63,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     final boolean volumeBasedCriticalVolume;
 
     /** Boolean flag indicating whether growth rate should be regulated by NB-NB contact. */
-    final boolean dynamicGrowthRateNBContact;
+    final boolean dynamicGrowthRateNBSelfRepression;
 
     final double volumeBasedCriticalVolumeMultiplier;
 
@@ -82,6 +86,12 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     final double nbContactHillN;
 
     final double initialSize;
+
+    /**
+     * Boolean determining whether growth and division rates are universal across all NBs. If true
+     * model behaviors is PDE-like, if false it is ABM-like.
+     */
+    final Boolean pdeLike;
 
     /**
      * Creates a proliferation {@code Module} for the given {@link PottsCellFlyStem}.
@@ -113,10 +123,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         volumeBasedCriticalVolume =
                 (parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME") != 0);
 
-        dynamicGrowthRateNBContact =
-                (parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT") != 0);
+        dynamicGrowthRateNBSelfRepression =
+                (parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_SELF_REPRESSION") != 0);
 
-        if (dynamicGrowthRateVolume && dynamicGrowthRateNBContact) {
+        if (dynamicGrowthRateVolume && dynamicGrowthRateNBSelfRepression) {
             throw new InvalidParameterException(
                     "Dynamic growth rate can be either volume-based or NB-contact-based, not both.");
         }
@@ -128,6 +138,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         nbContactHillN = parameters.getDouble("proliferation/NB_CONTACT_HILL_N");
 
         initialSize = cell.getVolume();
+
+        pdeLike = (parameters.getInt("proliferation/PDELIKE") != 0);
 
         setPhase(Phase.UNDEFINED);
     }
@@ -165,24 +177,42 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      */
     public void updateGrowthRate(Simulation sim) {
         if (dynamicGrowthRateVolume == true) {
-            updateVolumeBasedGrowthRate();
-        } else if (dynamicGrowthRateNBContact == true) {
-            updateNBContactGrowthRate(sim);
+            updateVolumeBasedGrowthRate(sim);
+        } else if (dynamicGrowthRateNBSelfRepression == true) {
+            updateGrowthRateBasedOnOtherNBs(sim);
         } else {
             cellGrowthRate = cellGrowthRateBase;
         }
     }
 
+    public void updateVolumeBasedGrowthRate(Simulation sim) {
+        if (pdeLike == false) {
+            updateCellVolumeBasedGrowthRate(
+                    cell.getLocation().getVolume(), cell.getCriticalVolume());
+        } else {
+            HashSet<PottsCellFlyStem> nbsInSimulation = getNBsInSimulation(sim);
+            double volSum = 0.0;
+            double critVolSum = 0.0;
+            for (PottsCellFlyStem nb : nbsInSimulation) {
+                volSum += nb.getLocation().getVolume();
+                critVolSum += nb.getCriticalVolume();
+            }
+            double avgVolume = volSum / nbsInSimulation.size();
+            double avgCritVol = critVolSum / nbsInSimulation.size();
+            updateCellVolumeBasedGrowthRate(avgVolume, avgCritVol);
+        }
+    }
+
     /**
-     * Gets the number of neighbors of this cell that are unique neuroblasts.
+     * Gets the neighbors of this cell that are unique neuroblasts.
      *
      * @param sim the simulation
      * @return the number of unique neuroblast neighbors
      */
-    protected Integer getNumNBNeighbors(Simulation sim) {
+    protected HashSet<PottsCellFlyStem> getNBNeighbors(Simulation sim) {
         Potts potts = ((PottsSimulation) sim).getPotts();
         ArrayList<Voxel> voxels = ((PottsLocation) cell.getLocation()).getVoxels();
-        HashSet<PottsCell> stemNeighbors = new HashSet<PottsCell>();
+        HashSet<PottsCellFlyStem> stemNeighbors = new HashSet<PottsCellFlyStem>();
 
         for (Voxel v : voxels) {
             HashSet<Integer> uniqueIDs = potts.getUniqueIDs(v.x, v.y, v.z);
@@ -193,50 +223,32 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 }
                 if (cell.getPop() == neighbor.getPop()) {
                     if (neighbor.getID() != cell.getID()) {
-                        stemNeighbors.add((PottsCell) sim.getGrid().getObjectAt(id));
+                        stemNeighbors.add((PottsCellFlyStem) sim.getGrid().getObjectAt(id));
                     }
                 }
             }
         }
-        return stemNeighbors.size();
+        return stemNeighbors;
     }
 
-    /**
-     * Updates the cell's growth rate based on the number of neighboring neuroblasts.
-     *
-     * <p>This method applies a Hill-type repression function to scale the cell's base growth rate
-     * according to local neuroblast density. Specifically, it counts the number of neighboring
-     * neuroblasts (using {@link #getNumNBNeighbors(Simulation)}) and applies:
-     *
-     * <pre>
-     *   hillRepression = K^n / (K^n + Np^n)
-     *   cellGrowthRate = cellGrowthRateBase * hillRepression
-     * </pre>
-     *
-     * where:
-     *
-     * <ul>
-     *   <li><code>Np</code> is the number of neighboring neuroblasts
-     *   <li><code>K</code> is the half-max parameter for repression
-     *       (proliferation/NB_CONTACT_HALF_MAX)
-     *   <li><code>n</code> is the Hill coefficient controlling steepness
-     *       (proliferation/NB_CONTACT_HILL_N)
-     *   <li><code>cellGrowthRateBase</code> is the base growth rate in the absence of neighbors
-     * </ul>
-     *
-     * <p>This formulation ensures that when Np = 0, the cell grows at the base rate, and as the
-     * number of neighbors increases, growth is repressed toward zero.
-     *
-     * @param sim the simulation
-     */
-    protected void updateNBContactGrowthRate(Simulation sim) {
-        int NpRaw = getNumNBNeighbors(sim);
-        double Np = Math.max(0.0, (double) NpRaw);
+    protected void updateGrowthRateBasedOnOtherNBs(Simulation sim) {
+        int npRaw;
+        if (pdeLike) {
+            npRaw = getNBsInSimulation(sim).size();
+        } else {
+            npRaw = getNBNeighbors(sim).size();
+        }
+        double np = Math.max(0.0, (double) npRaw);
 
         double Kn = Math.pow(nbContactHalfMax, nbContactHillN);
-        double Npn = Math.pow(Np, nbContactHillN);
+        double Npn = Math.pow(np, nbContactHillN);
 
-        double hillRepression = Kn / (Kn + Npn);
+        double hillRepression;
+        if (Kn == 0.0) {
+            hillRepression = (np == 0.0) ? 1.0 : 0.0;
+        } else {
+            hillRepression = Kn / (Kn + Npn);
+        }
 
         cellGrowthRate = cellGrowthRateBase * hillRepression;
     }
@@ -577,5 +589,19 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         double proj2 = Vector.dotProduct(c2, apicalAxis);
 
         return (proj1 < proj2) ? loc2 : loc1; // higher projection = more basal
+    }
+
+    public HashSet<PottsCellFlyStem> getNBsInSimulation(Simulation sim) {
+        HashSet<PottsCellFlyStem> nbsInSimulation = new HashSet<>();
+        Bag simObjects = sim.getGrid().getAllObjects();
+        for (int i = 0; i < simObjects.numObjs; i++) {
+            Object o = simObjects.objs[i];
+            if (!(o instanceof PottsCell)) continue; // skip non-cell objects
+            PottsCell cellInSim = (PottsCell) o;
+            if (cell.getPop() == cellInSim.getPop() && o instanceof PottsCellFlyStem) {
+                nbsInSimulation.add((PottsCellFlyStem) o);
+            }
+        }
+        return nbsInSimulation;
     }
 }

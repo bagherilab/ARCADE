@@ -96,7 +96,8 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
         if (dynamicGrowthRateVolume == false) {
             cellGrowthRate = cellGrowthRateBase;
         } else if (dynamicGrowthRateVolume == true) {
-            updateVolumeBasedGrowthRate();
+            updateCellVolumeBasedGrowthRate(
+                    cell.getLocation().getVolume(), cell.getCriticalVolume());
         }
     }
 }

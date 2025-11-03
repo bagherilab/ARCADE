@@ -69,22 +69,8 @@ public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsM
      */
     public abstract void updateGrowthRate(Simulation sim);
 
-    /**
-     * Updates the cell growth rate based on the volume of the cell.
-     *
-     * <p>The growth rate is scaled according to a power-law relationship between the current cell
-     * volume and its critical volume. As the cell volume increases relative to the critical volume,
-     * the growth rate accelerates proportionally:
-     *
-     * <pre>
-     *   growthRate = baseGrowthRate * (volume / criticalVolume) ^ sensitivity
-     * </pre>
-     *
-     * This allows larger cells to grow faster, capturing volume-dependent growth dynamics.
-     */
-    public void updateVolumeBasedGrowthRate() {
-        double volume = cell.getLocation().getVolume();
-        double Ka = cell.getCriticalVolume();
+    public void updateCellVolumeBasedGrowthRate(double volume, double cellCriticalVolume) {
+        double Ka = cellCriticalVolume;
         cellGrowthRate = cellGrowthRateBase * Math.pow((volume / Ka), growthRateVolumeSensitivity);
     }
 }

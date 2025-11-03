@@ -93,7 +93,7 @@ public class PottsModuleProliferationVolumeBasedDivisionTest {
                         .PottsModuleProliferationVolumeBasedDivisionMock
                 module = new PottsModuleProliferationVolumeBasedDivisionMock(cell);
 
-        module.updateVolumeBasedGrowthRate();
+        module.updateCellVolumeBasedGrowthRate(loc.getVolume(), cell.getCriticalVolume());
         assertEquals(4.0, module.cellGrowthRate, 1e-9);
     }
 
@@ -118,7 +118,7 @@ public class PottsModuleProliferationVolumeBasedDivisionTest {
                         .PottsModuleProliferationVolumeBasedDivisionMock
                 module = new PottsModuleProliferationVolumeBasedDivisionMock(cell);
 
-        module.updateVolumeBasedGrowthRate();
+        module.updateCellVolumeBasedGrowthRate(loc.getVolume(), cell.getCriticalVolume());
         assertEquals(16.0, module.cellGrowthRate, 1e-9);
     }
 
@@ -143,7 +143,7 @@ public class PottsModuleProliferationVolumeBasedDivisionTest {
                         .PottsModuleProliferationVolumeBasedDivisionMock
                 module = new PottsModuleProliferationVolumeBasedDivisionMock(cell);
 
-        module.updateVolumeBasedGrowthRate();
+        module.updateCellVolumeBasedGrowthRate(loc.getVolume(), cell.getCriticalVolume());
         assertEquals(1.0, module.cellGrowthRate, 1e-9);
     }
 
@@ -168,7 +168,7 @@ public class PottsModuleProliferationVolumeBasedDivisionTest {
                         .PottsModuleProliferationVolumeBasedDivisionMock
                 module = new PottsModuleProliferationVolumeBasedDivisionMock(cell);
 
-        module.updateVolumeBasedGrowthRate();
+        module.updateCellVolumeBasedGrowthRate(loc.getVolume(), cell.getCriticalVolume());
         assertEquals(3.5, module.cellGrowthRate, 1e-9);
     }
 }
