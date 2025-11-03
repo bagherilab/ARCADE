@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import arcade.core.env.grid.Grid;
 import arcade.potts.agent.cell.PottsCell;
+import sim.util.Bag;
 
 import static arcade.potts.util.PottsEnums.Direction;
 
@@ -69,9 +70,51 @@ public final class PottsLocation3D extends PottsLocation implements Location3D {
     ArrayList<Voxel> getSelected(Voxel focus, double n) {
         return Location3D.getSelected(voxels, focus, n);
     }
-    //Need to implement to 3D
-    @Override
+
+    @Override // Finds the cell neighbors in 3D
     HashSet<PottsCell> getCellNeighbors(Grid g) {
-        throw new ExceptionInInitializerError("Not Yet Implemented");
+
+        HashSet<Voxel> myVox = new HashSet<>(this.getVoxels());
+        HashSet<Voxel> enlargedVoxels = new HashSet<>(myVox.size() * 8);
+
+        // Check 6 directions (face-adjacent) for 3D
+        final int[][] OFFSETS_6 = {
+            { 1, 0, 0}, {-1, 0, 0},
+            { 0, 1, 0}, { 0,-1, 0},
+            { 0, 0, 1}, { 0, 0,-1}
+        };
+
+        // Create a set of 'enlarged' voxels one voxel bigger in all six directions
+        for (Voxel v : myVox) {
+            enlargedVoxels.add(v);
+            for (int[] d : OFFSETS_6) {
+                enlargedVoxels.add(new Voxel(v.x + d[0], v.y + d[1], v.z + d[2]));
+            }
+        }
+
+        Bag all = g.getAllObjects(); // Get all the cells on the grid
+        HashSet<PottsCell> neighborCells = new HashSet<>();
+
+        iteratePossibleNeighbors:
+        for (Object other : all) {
+
+            PottsCell otherCell = (PottsCell) other;
+            PottsLocation3D otherLocation = (PottsLocation3D) otherCell.getLocation();
+
+            // Skip self
+            if (this.equals(otherLocation)) continue;
+
+            ArrayList<Voxel> otherVoxels = otherLocation.getVoxels();
+
+            // Check for voxel adjacency
+            for (Voxel v : otherVoxels) {
+                if (enlargedVoxels.contains(v)) {
+                    neighborCells.add(otherCell);
+                    continue iteratePossibleNeighbors; // No need to check the rest of this cell’s voxels
+                }
+            }
+        }
+
+        return neighborCells;
     }
 }

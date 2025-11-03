@@ -467,7 +467,7 @@ public class PottsModuleProliferationFlyStem extends PottsModule {
 //GR needs to be finished once we actually know where the neighbors are
     double getNBNeighborBasedGrowthRate(Grid grid) {
         // cell.getLocation();
-        Collection<PottsCell> neighbors = getNeighborCells(grid);
+        // Collection<PottsCell> neighbors = getNeighborCells(grid);
 
         // for (PottsCell)
 
