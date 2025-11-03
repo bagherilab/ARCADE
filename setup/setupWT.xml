@@ -1,0 +1,70 @@
+<set prefix="2024-10-25-04">
+    <series name="dd" start="1" end="1"
+            ds=".16" margin="0" height="1" length="502" width="502"
+            dt=".083" ticks="576" interval="4">
+        <potts>
+            <potts.term id="adhesion" />
+            <potts.term id="volume" />
+            <potts.term id="surface" />
+            <potts.parameter term="adhesion" id="ADHESION" value="10" target="fly-stem-wt:fly-neuron"/>
+            <potts.parameter term="adhesion" id="ADHESION" value="10" target="fly-stem-wt:fly-gmc"/>
+            <potts.parameter term="adhesion" id="ADHESION" value="10" target="fly-stem-wt:fly-stem-wt"/>
+            <potts.parameter term="adhesion" id="ADHESION" value="10" target="fly-gmc:fly-stem-wt"/>
+            <potts.parameter term="adhesion" id="ADHESION" value="10" target="fly-gmc:fly-neuron"/>
+            <potts.parameter term="adhesion" id="ADHESION" value="10" target="fly-gmc:fly-gmc"/>
+            <potts.parameter term="adhesion" id="ADHESION" value="10" target="fly-neuron:fly-stem-wt"/>
+            <potts.parameter term="adhesion" id="ADHESION" value="10" target="fly-neuron:fly-gmc"/>
+            <potts.parameter term="adhesion" id="ADHESION" value="10" target="fly-neuron:fly-neuron"/>
+            <potts.parameter term="volume" id="VOLUME" value="3" target="fly-stem-wt"/>
+            <potts.parameter term="volume" id="VOLUME" value="5" target="fly-gmc"/>
+            <potts.parameter term="volume" id="VOLUME" value="2" target="fly-neuron"/>
+            <potts.parameter term="surface" id="LAMBDA" value="2" target='fly-stem-wt'/>
+            <potts.parameter term="surface" id="LAMBDA" value="2" target='fly-gmc'/>
+            <potts.parameter term="surface" id="LAMBDA" value="1" target='fly-neuron'/>
+        </potts>
+        <agents>
+            <populations>
+                <population id="fly-stem-wt" class="fly-stem-wt" init="1" >
+                    <population.link id="fly-gmc" weight="1"/>
+                    <population.parameter id="CRITICAL_VOLUME_MEAN" value="52" units="um^3" conversion="DS^-3" />
+                    <population.parameter id="CRITICAL_VOLUME_STDEV" value="0" units="um^3" conversion="DS^-3" />
+                    <population.parameter id="proliferation/CELL_GROWTH_RATE" value="35"/>
+                    <population.parameter id="proliferation/BASAL_APOPTOSIS_RATE" value="0"/>
+                    <population.parameter id="proliferation/RATE_G1" value="12"/>
+                    <population.parameter id="proliferation/RATE_S" value="20"/>
+                    <population.parameter id="proliferation/RATE_G2" value="40"/>
+                    <population.parameter id="proliferation/RATE_M" value="120"/>
+                    <population.parameter id="proliferation/STEPS_G1" value="9"/>
+                    <population.parameter id="proliferation/STEPS_S" value="9"/>
+                    <population.parameter id="proliferation/STEPS_G2" value="9"/>
+                    <population.parameter id="proliferation/STEPS_M" value="9"/>
+                    <population.parameter id="proliferation/DIV_ROTATION_DISTRIBUTION" value="NORMAL(MU=0,SIGMA=30)" />
+                    <population.parameter id="proliferation/DIFFERENTIATION_RULESET" value="volume" />
+                    <!-- <population.parameter id="proliferation/DIFFERENTIATION_RULESET" value="location" /> -->
+                    <!-- <population.parameter id="proliferation/GROWTH_RATE_VOLUME_SENSITIVITY" value="3" /> -->
+                    <population.parameer id="proliferation/HAS_DETERMINISTIC_DIFFERENTIATION" value="TRUE" />
+                </population>
+                <population id="fly-gmc" class="fly-gmc" init="0">
+                    <population.link id="fly-neuron" weight="1"/>
+                    <population.parameter id="CRITICAL_VOLUME_MEAN" value="11" units="um^3" conversion="DS^-3" />
+                    <population.parameter id="CRITICAL_VOLUME_STDEV" value="0" units="um^3" conversion="DS^-3" />
+                    <population.parameter id="proliferation/BASAL_APOPTOSIS_RATE" value="0"/>
+                    <population.parameter id="proliferation/CELL_GROWTH_RATE" value="1.22"/>
+                    <population.parameter id="proliferation/STEPS_G1" value="9"/>
+                    <population.parameter id="proliferation/STEPS_S" value="9"/>
+                    <population.parameter id="proliferation/STEPS_G2" value="9"/>
+                    <population.parameter id="proliferation/STEPS_M" value="9"/>
+                    <population.parameter id="proliferation/RATE_G1" value="2"/>
+                    <population.parameter id="proliferation/RATE_S" value=".33"/>
+                    <population.parameter id="proliferation/RATE_G2" value="6.67"/>
+                    <population.parameter id="proliferation/RATE_M" value="20"/>
+
+                </population>
+                <population id="fly-neuron" class= "fly-neuron" init="0">
+                <population.parameter id="proliferation/CELL_GROWTH_RATE" value="0"/>
+                <population.parameter id="proliferation/BASAL_APOPTOSIS_RATE" value="0"/>
+                </population>
+            </populations>
+        </agents>
+    </series>
+</set>
