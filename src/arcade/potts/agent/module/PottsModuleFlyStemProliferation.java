@@ -1,6 +1,5 @@
 package arcade.potts.agent.module;
 
-import java.nio.channels.NotYetConnectedException;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashSet;
