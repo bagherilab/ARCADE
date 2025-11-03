@@ -80,6 +80,7 @@
     <!-- ── NB and GMC critical volume options ────────────────────────── -->
     <population.module module="proliferation" id="VOLUME_BASED_CRITICAL_VOLUME" value="0" description="1 → critical volume scales with daughter volume; 0 → use max (type-based) value" />
     <population.module module="proliferation" id="VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER" value="2" description="if enabled, GMC critical volume = daughter_volume × multiplier" />
+    <population.module module="proliferation" id="HAS_DETERMINISTIC_DIFFERENTIATION" value="TRUE" description="if TRUE, differentiation is determined deterministically" />
 
     <!-- apoptosis module parameters -->
     <population.module module="apoptosis" id="RATE_EARLY" value="4" units="steps/hour" conversion="DT" description="rate of events in early apoptosis phase" />
