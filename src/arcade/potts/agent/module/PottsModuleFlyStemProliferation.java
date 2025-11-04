@@ -22,6 +22,9 @@ import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Phase;
+import arcade.potts.util.PottsEnums.State;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
@@ -88,6 +91,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
     final double initialSize;
 
+    public static final double EPSILON = 1e-8;
+
     /**
      * Creates a proliferation {@code Module} for the given {@link PottsCellFlyStem}.
      *
@@ -145,8 +150,6 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         setPhase(Phase.UNDEFINED);
     }
-
-    public static final double EPSILON = 1e-8;
 
     @Override
     public void addCell(MersenneTwisterFast random, Simulation sim) {
@@ -315,6 +318,15 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                         Direction.XY_PLANE.vector,
                         StemType.MUDMUT.splitDirectionRotation);
         Voxel splitVoxel = getCellSplitVoxel(StemType.MUDMUT, cell, defaultNormal);
+        System.out.println(
+                "in getMUDDivisionPlane, default Normal = ("
+                        + defaultNormal.getX()
+                        + ", "
+                        + +defaultNormal.getY()
+                        + ", "
+                        + +defaultNormal.getZ()
+                        + ", "
+                        + ")");
         return new Plane(new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), defaultNormal);
     }
 
@@ -376,8 +388,16 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         Vector normalVector = divisionPlane.getUnitNormalVector();
 
+        Vector apicalAxis = ((PottsCellFlyStem) cell).getApicalAxis();
+        Vector expectedMUDNormalVector =
+                Vector.rotateVectorAroundAxis(
+                        apicalAxis,
+                        Direction.XY_PLANE.vector,
+                        StemType.MUDMUT.splitDirectionRotation);
         // If TRUE, the daughter should be stem. Otherwise, should be GMC
-        return normalVector.equals(new Vector(1.0, 0, 0));
+        return Math.abs(normalVector.getX() - expectedMUDNormalVector.getX()) <= EPSILON
+                && Math.abs(normalVector.getY() - expectedMUDNormalVector.getY()) <= EPSILON
+                && Math.abs(normalVector.getZ() - expectedMUDNormalVector.getZ()) <= EPSILON;
     }
 
     /**
