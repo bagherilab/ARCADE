@@ -25,7 +25,6 @@ import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.Direction;
 import arcade.potts.util.PottsEnums.Phase;
 import arcade.potts.util.PottsEnums.State;
-
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
@@ -85,7 +84,6 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      */
     final double nbContactHillN;
 
-
     /*
      * Boolean flag for whether the daughter cell's differentiation is determined deterministically.
      */
@@ -137,10 +135,12 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         nbContactHalfMax = parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX");
         nbContactHillN = parameters.getDouble("proliferation/NB_CONTACT_HILL_N");
 
-        String hasDeterministicDifferentiationString = parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION");
-        if (!hasDeterministicDifferentiationString.equals("TRUE") &&
-            !hasDeterministicDifferentiationString.equals("FALSE")) {
-            throw new InvalidParameterException("hasDeterministicDifferentiation must be either TRUE or FALSE");
+        String hasDeterministicDifferentiationString =
+                parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION");
+        if (!hasDeterministicDifferentiationString.equals("TRUE")
+                && !hasDeterministicDifferentiationString.equals("FALSE")) {
+            throw new InvalidParameterException(
+                    "hasDeterministicDifferentiation must be either TRUE or FALSE");
         }
         hasDeterministicDifferentiation = hasDeterministicDifferentiationString.equals("TRUE");
 
@@ -160,7 +160,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         PottsLocation2D parentLoc = (PottsLocation2D) cell.getLocation();
         PottsLocation daughterLoc = (PottsLocation) parentLoc.split(random, divisionPlane);
 
-        boolean isDaughterStem = daughterStemWrapper(parentLoc, daughterLoc, divisionPlane);
+        boolean isDaughterStem = daughterStem(parentLoc, daughterLoc, divisionPlane);
 
         if (isDaughterStem) {
             makeDaughterStemCell(daughterLoc, sim, potts, random);
@@ -385,16 +385,18 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
     /**
      * Determines whether a daughter cell should remain a stem cell or differentiate into a GMC.
-     * <p>
-     * This method serves as a wrapper that delegates to either a deterministic or rule-based
+     *
+     * <p>This method serves as a wrapper that delegates to either a deterministic or rule-based
      * differentiation mechanism depending on the value of {@code hasDeterministicDifferentiation}.
      *
      * @param parentsLoc the location of the parent cell before division
      * @param daughterLoc the location of the daughter cell after division
      * @param divisionPlane the plane of division for the daughter cell
-     * @return {@code true} if the daughter should remain a stem cell; {@code false} if it should be a GMC
+     * @return {@code true} if the daughter should remain a stem cell; {@code false} if it should be
+     *     a GMC
      */
-    public boolean daughterStemWrapper(PottsLocation2D parentsLoc, PottsLocation daughterLoc, Plane divisionPlane) {
+    public boolean daughterStem(
+            PottsLocation2D parentsLoc, PottsLocation daughterLoc, Plane divisionPlane) {
         return hasDeterministicDifferentiation
                 ? daughterStemDeterministic(divisionPlane)
                 : daughterStemRuleBasedDifferentiation(parentsLoc, daughterLoc);
