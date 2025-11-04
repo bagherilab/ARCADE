@@ -15,12 +15,12 @@ jobs:
         fetch-depth: 0
 
     - name: Lint code base
-      uses: dbelyaev/action-checkstyle@v3
+      uses: dbelyaev/action-checkstyle@v0.9.5
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         reporter: github-check
         checkstyle_config: .github/config/checks.xml
-        fail_level: error
+        fail_on_error: true
 
   update-lint-badges:
     if: ${{ always() && github.ref == 'refs/heads/main' }}
