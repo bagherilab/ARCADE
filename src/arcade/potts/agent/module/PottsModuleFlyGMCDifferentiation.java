@@ -20,6 +20,8 @@ import arcade.potts.util.PottsEnums.State;
  */
 public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVolumeBasedDivision {
 
+    Boolean pdeLike;
+
     /**
      * Creates a fly GMC proliferation module.
      *
@@ -27,6 +29,7 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
      */
     public PottsModuleFlyGMCDifferentiation(PottsCellFlyGMC cell) {
         super(cell);
+        pdeLike = (cell.getParameters().getInt("proliferation/PDELIKE") != 0);
     }
 
     /**
@@ -93,11 +96,40 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
     }
 
     public void updateGrowthRate(Simulation sim) {
-        if (dynamicGrowthRateVolume == false) {
+        if (!dynamicGrowthRateVolume) {
             cellGrowthRate = cellGrowthRateBase;
-        } else if (dynamicGrowthRateVolume == true) {
-            updateCellVolumeBasedGrowthRate(
-                    cell.getLocation().getVolume(), cell.getCriticalVolume());
+        } else {
+            if (!pdeLike) {
+                updateCellVolumeBasedGrowthRate(
+                        cell.getLocation().getVolume(), cell.getCriticalVolume());
+            } else {
+                // PDE-like: use population-wide averages for GMCs (same pop as this cell)
+                sim.util.Bag objs = sim.getGrid().getAllObjects();
+
+                double volSum = 0.0;
+                double critSum = 0.0;
+                int count = 0;
+
+                for (int i = 0; i < objs.numObjs; i++) {
+                    Object o = objs.objs[i];
+                    if (!(o instanceof arcade.potts.agent.cell.PottsCell)) continue;
+
+                    arcade.potts.agent.cell.PottsCell c = (arcade.potts.agent.cell.PottsCell) o;
+                    if (c.getPop() != cell.getPop()) continue; // keep to same population
+
+                    if (o instanceof arcade.potts.agent.cell.PottsCellFlyGMC) {
+                        arcade.potts.agent.cell.PottsCellFlyGMC gmc =
+                                (arcade.potts.agent.cell.PottsCellFlyGMC) o;
+                        volSum += gmc.getLocation().getVolume();
+                        critSum += gmc.getCriticalVolume();
+                        count++;
+                    }
+                }
+                double avgVolume = volSum / count;
+                double avgCritVol = critSum / count;
+                updateCellVolumeBasedGrowthRate(avgVolume, avgCritVol);
+                System.out.println("GMC " + cell.getID() + "growth rate = " + cellGrowthRate);
+            }
         }
     }
 }
