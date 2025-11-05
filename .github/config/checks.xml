@@ -33,11 +33,13 @@
         <property name="id" value="LineLength"/>
         <property name="fileExtensions" value="java" />
         <property name="max" value="100"/>
+        <property name="severity" value="warning"/>
     </module>
     <module name="LineLength">
         <property name="id" value="LineLengthTest"/>
         <property name="fileExtensions" value=".java" />
         <property name="max" value="120"/>
+        <property name="severity" value="error"/>
     </module>
 
     <!-- Checks for whitespace -->
