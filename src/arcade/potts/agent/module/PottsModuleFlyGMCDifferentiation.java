@@ -14,11 +14,13 @@ import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.State;
 
 /**
- * Implementation of {@link PottsModuleProliferationSimple} for fly GMC agents. These cells divide
- * into two {@link PottsCellFlyNeuron} cells. The links must be set in the setup file so that 100%
- * of the daughter cells are Neurons.
+ * Implementation of {@link PottsModuleProliferationVolumeBasedDivision} for fly GMC agents. These
+ * cells divide into two {@link PottsCellFlyNeuron} cells. The links must be set in the setup file
+ * so that 100% of the daughter cells are Neurons.
  */
-public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationSimple {
+public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVolumeBasedDivision {
+
+    Boolean pdeLike;
 
     /**
      * Creates a fly GMC proliferation module.
@@ -27,8 +29,18 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationSi
      */
     public PottsModuleFlyGMCDifferentiation(PottsCellFlyGMC cell) {
         super(cell);
+        pdeLike = (cell.getParameters().getInt("proliferation/PDELIKE") != 0);
     }
 
+    /**
+     * Adds a cell to the simulation.
+     *
+     * <p>The cell location is split. The new neuron cell is created, initialized, and added to the
+     * schedule. This cell's location is also assigned to a new Neuron cell.
+     *
+     * @param random the random number generator
+     * @param sim the simulation instance
+     */
     @Override
     void addCell(MersenneTwisterFast random, Simulation sim) {
         Potts potts = ((PottsSimulation) sim).getPotts();
@@ -81,5 +93,43 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationSi
         potts.register(differentiatedGMC);
         differentiatedGMC.reset(potts.ids, potts.regions);
         differentiatedGMC.schedule(sim.getSchedule());
+    }
+
+    public void updateGrowthRate(Simulation sim) {
+        if (!dynamicGrowthRateVolume) {
+            cellGrowthRate = cellGrowthRateBase;
+        } else {
+            if (!pdeLike) {
+                updateCellVolumeBasedGrowthRate(
+                        cell.getLocation().getVolume(), cell.getCriticalVolume());
+            } else {
+                // PDE-like: use population-wide averages for GMCs (same pop as this cell)
+                sim.util.Bag objs = sim.getGrid().getAllObjects();
+
+                double volSum = 0.0;
+                double critSum = 0.0;
+                int count = 0;
+
+                for (int i = 0; i < objs.numObjs; i++) {
+                    Object o = objs.objs[i];
+                    if (!(o instanceof arcade.potts.agent.cell.PottsCell)) continue;
+
+                    arcade.potts.agent.cell.PottsCell c = (arcade.potts.agent.cell.PottsCell) o;
+                    if (c.getPop() != cell.getPop()) continue; // keep to same population
+
+                    if (o instanceof arcade.potts.agent.cell.PottsCellFlyGMC) {
+                        arcade.potts.agent.cell.PottsCellFlyGMC gmc =
+                                (arcade.potts.agent.cell.PottsCellFlyGMC) o;
+                        volSum += gmc.getLocation().getVolume();
+                        critSum += gmc.getCriticalVolume();
+                        count++;
+                    }
+                }
+                double avgVolume = volSum / count;
+                double avgCritVol = critSum / count;
+                updateCellVolumeBasedGrowthRate(avgVolume, avgCritVol);
+                System.out.println("GMC " + cell.getID() + "growth rate = " + cellGrowthRate);
+            }
+        }
     }
 }

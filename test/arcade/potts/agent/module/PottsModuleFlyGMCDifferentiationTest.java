@@ -24,9 +24,10 @@ import arcade.potts.util.PottsEnums.Region;
 import arcade.potts.util.PottsEnums.State;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static arcade.potts.util.PottsEnums.Region;
-import static arcade.potts.util.PottsEnums.State;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class PottsModuleFlyGMCDifferentiationTest {
     private int[][][] dummyIDs;
@@ -104,20 +105,7 @@ public class PottsModuleFlyGMCDifferentiationTest {
         when(gmcCell.getCriticalRegionVolumes()).thenReturn(critRegionVolumes);
         when(gmcCell.getCriticalRegionHeights()).thenReturn(critRegionHeights);
 
-        // Stub parameters
         parameters = mock(Parameters.class);
-        when(parameters.getDouble("proliferation/RATE_G1")).thenReturn(1.0);
-        when(parameters.getDouble("proliferation/RATE_S")).thenReturn(1.0);
-        when(parameters.getDouble("proliferation/RATE_G2")).thenReturn(1.0);
-        when(parameters.getDouble("proliferation/RATE_M")).thenReturn(1.0);
-        when(parameters.getInt("proliferation/STEPS_G1")).thenReturn(1);
-        when(parameters.getInt("proliferation/STEPS_S")).thenReturn(1);
-        when(parameters.getInt("proliferation/STEPS_G2")).thenReturn(1);
-        when(parameters.getInt("proliferation/STEPS_M")).thenReturn(1);
-        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(1.0);
-        when(parameters.getDouble("proliferation/NUCLEUS_GROWTH_RATE")).thenReturn(1.0);
-        when(parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE")).thenReturn(0.1);
-        when(parameters.getDouble("proliferation/NUCLEUS_CONDENSATION_FRACTION")).thenReturn(0.5);
         when(gmcCell.getParameters()).thenReturn(parameters);
 
         random = mock(MersenneTwisterFast.class);
@@ -145,7 +133,8 @@ public class PottsModuleFlyGMCDifferentiationTest {
 
     @Test
     public void addCell_called_callsExpectedMethods() {
-        // When the module calls make() on the cell, return Quiescent PottsCellContainer mock
+        // When the module calls make() on the cell, return Quiescent PottsCellContainer
+        // mock
         container = mock(PottsCellContainer.class);
         when(gmcCell.make(eq(123), eq(State.QUIESCENT), any(MersenneTwisterFast.class)))
                 .thenReturn(container);
@@ -153,7 +142,8 @@ public class PottsModuleFlyGMCDifferentiationTest {
         when(container.convert(eq(cellFactory), eq(newLocation), any(MersenneTwisterFast.class)))
                 .thenReturn(newCell);
 
-        PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
+        PottsModuleProliferationVolumeBasedDivision module =
+                new PottsModuleFlyGMCDifferentiation(gmcCell);
         module.addCell(random, sim);
         verify(location).split(random);
         verify(gmcCell).reset(dummyIDs, dummyRegions);
@@ -174,5 +164,112 @@ public class PottsModuleFlyGMCDifferentiationTest {
         verify(potts).register(diffCell);
         verify(diffCell).reset(dummyIDs, dummyRegions);
         verify(diffCell).schedule(schedule);
+    }
+
+    @Test
+    public void updateGrowthRate_dynamicOff_setsBaseRate() {
+        // dynamicGrowthRateVolume = 0; base rate used
+        when(gmcCell.getParameters()).thenReturn(parameters);
+        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(0);
+        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(7.5);
+
+        PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
+
+        module.updateGrowthRate(sim);
+        org.junit.jupiter.api.Assertions.assertEquals(7.5, module.cellGrowthRate, 1e-9);
+    }
+
+    @Test
+    public void updateGrowthRate_dynamicOn_pdeLikeFalse_usesSelfVolumeAndCrit() {
+        when(gmcCell.getParameters()).thenReturn(parameters);
+        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(1);
+        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
+        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
+
+        // Self values
+        when(gmcCell.getCriticalVolume()).thenReturn(150.0);
+        when(gmcCell.getLocation().getVolume()).thenReturn(30.0);
+
+        PottsModuleFlyGMCDifferentiation module =
+                org.mockito.Mockito.spy(new PottsModuleFlyGMCDifferentiation(gmcCell));
+
+        org.mockito.Mockito.doNothing()
+                .when(module)
+                .updateCellVolumeBasedGrowthRate(
+                        org.mockito.ArgumentMatchers.anyDouble(),
+                        org.mockito.ArgumentMatchers.anyDouble());
+
+        module.updateGrowthRate(sim);
+
+        org.mockito.Mockito.verify(module)
+                .updateCellVolumeBasedGrowthRate(
+                        org.mockito.ArgumentMatchers.eq(30.0),
+                        org.mockito.ArgumentMatchers.eq(150.0));
+    }
+
+    @Test
+    public void updateGrowthRate_dynamicOnPdeLikeTrue_usesAverageVolumeAndCritAcrossGMCs() {
+        // Flags
+        when(gmcCell.getParameters()).thenReturn(parameters);
+        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(1);
+        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
+        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(1);
+
+        // Same population for all GMCs we want included
+        when(gmcCell.getPop()).thenReturn(3);
+
+        // Self (included in average)
+        when(gmcCell.getLocation().getVolume()).thenReturn(30.0);
+        when(gmcCell.getCriticalVolume()).thenReturn(150.0);
+
+        // Two more GMCs in same population
+        PottsCellFlyGMC gmcB = mock(PottsCellFlyGMC.class);
+        PottsCellFlyGMC gmcC = mock(PottsCellFlyGMC.class);
+        when(gmcB.getPop()).thenReturn(3);
+        when(gmcC.getPop()).thenReturn(3);
+
+        PottsLocation locB = mock(PottsLocation.class);
+        PottsLocation locC = mock(PottsLocation.class);
+        when(gmcB.getLocation()).thenReturn(locB);
+        when(gmcC.getLocation()).thenReturn(locC);
+        when(locB.getVolume()).thenReturn(10.0);
+        when(locC.getVolume()).thenReturn(20.0);
+        when(gmcB.getCriticalVolume()).thenReturn(100.0);
+        when(gmcC.getCriticalVolume()).thenReturn(200.0);
+
+        // Noise: different type and/or different pop → must be ignored
+        PottsCell randomOtherPop = mock(PottsCell.class);
+        when(randomOtherPop.getPop()).thenReturn(99);
+        PottsCellFlyNeuron neuronSamePop = mock(PottsCellFlyNeuron.class);
+        when(neuronSamePop.getPop()).thenReturn(3);
+
+        // Bag with self + two GMCs + noise
+        sim.util.Bag bag = new sim.util.Bag();
+        bag.add(gmcCell); // self GMC (pop 3)
+        bag.add(gmcB); // GMC (pop 3)
+        bag.add(gmcC); // GMC (pop 3)
+        bag.add(randomOtherPop); // different pop → ignored
+        bag.add(neuronSamePop); // not a GMC → ignored
+        when(sim.getGrid().getAllObjects()).thenReturn(bag);
+
+        PottsModuleFlyGMCDifferentiation module =
+                org.mockito.Mockito.spy(new PottsModuleFlyGMCDifferentiation(gmcCell));
+
+        // Observe the averaged args
+        org.mockito.Mockito.doNothing()
+                .when(module)
+                .updateCellVolumeBasedGrowthRate(
+                        org.mockito.ArgumentMatchers.anyDouble(),
+                        org.mockito.ArgumentMatchers.anyDouble());
+
+        module.updateGrowthRate(sim);
+
+        double expectedAvgVol = (30.0 + 10.0 + 20.0) / 3.0; // 20.0
+        double expectedAvgCrit = (150.0 + 100.0 + 200.0) / 3.0; // 150.0
+
+        org.mockito.Mockito.verify(module)
+                .updateCellVolumeBasedGrowthRate(
+                        org.mockito.ArgumentMatchers.eq(expectedAvgVol),
+                        org.mockito.ArgumentMatchers.eq(expectedAvgCrit));
     }
 }

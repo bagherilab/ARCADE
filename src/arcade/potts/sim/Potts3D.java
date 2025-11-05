@@ -465,7 +465,7 @@ public final class Potts3D extends Potts {
     }
 
     @Override
-    HashSet<Integer> getUniqueIDs(int x, int y, int z) {
+    public HashSet<Integer> getUniqueIDs(int x, int y, int z) {
         int id = ids[z][x][y];
         HashSet<Integer> unique = new HashSet<>();
 
