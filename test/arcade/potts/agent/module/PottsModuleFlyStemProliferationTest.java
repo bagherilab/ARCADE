@@ -793,16 +793,16 @@ public class PottsModuleFlyStemProliferationTest {
         when(nb12OtherPop.getID()).thenReturn(12);
 
         // Stem pop matches 3
-        when(stemCell.getPop()).thenReturn(3);
-        when(nb10.getPop()).thenReturn(3);
-        when(nb11.getPop()).thenReturn(3);
-        when(nb12OtherPop.getPop()).thenReturn(99); // filtered
+        when(stemCell.getPop()).thenReturn(stemCellPop);
+        when(nb10.getPop()).thenReturn(stemCellPop);
+        when(nb11.getPop()).thenReturn(stemCellPop);
+        when(nb12OtherPop.getPop()).thenReturn(99); // no match
+
+        when(grid.getObjectAt(10)).thenReturn(nb10);
+        when(grid.getObjectAt(11)).thenReturn(nb11);
+        when(grid.getObjectAt(12)).thenReturn(nb12OtherPop);
 
         when(stemCell.getID()).thenReturn(42);
-
-        when(nb10.getPop()).thenReturn(stemCellPop); // match cell.getPop
-        when(nb11.getPop()).thenReturn(stemCellPop); // match cell.getPop
-        when(nb12OtherPop.getPop()).thenReturn(99); // no match
 
         HashSet<PottsCellFlyStem> neighbors = module.getNBNeighbors(sim);
 
