@@ -203,4 +203,31 @@ public class PatchCellCARTTest {
         activation.set(patchCellCART, true);
         assertTrue(patchCellCART.getActivationStatus());
     }
+
+    @Test
+    public void getBoundTarget_called_returnsTarget()
+            throws NoSuchFieldException, IllegalAccessException {
+        Field target = PatchCellCART.class.getDeclaredField("boundTarget");
+        target.setAccessible(true);
+        target.set(patchCellCART, tissueCell);
+
+        PatchCell targetCell = patchCellCART.getBoundTarget();
+
+        assertEquals(targetCell, tissueCell);
+    }
+
+    @Test
+    public void unbind_called_setsStateAndTarget()
+            throws NoSuchFieldException, IllegalAccessException {
+        patchCellCART.setBindingFlag(PatchEnums.AntigenFlag.BOUND_ANTIGEN);
+        Field target = PatchCellCART.class.getDeclaredField("boundTarget");
+        target.setAccessible(true);
+        target.set(patchCellCART, tissueCell);
+
+        patchCellCART.unbind();
+
+        PatchCell targetCell = patchCellCART.getBoundTarget();
+        assertNull(targetCell);
+        assertEquals(PatchEnums.AntigenFlag.UNBOUND, patchCellCART.getBindingFlag());
+    }
 }

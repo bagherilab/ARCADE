@@ -99,7 +99,7 @@ public class PatchARCADETest {
 
     @Test
     public void getSaver_called_returnsBuilder() {
-        PatchARCADE arcade = new PatchARCADE();
+        PatchARCADE arcade = spy(new PatchARCADE());
         assertTrue(arcade.getSaver(mock(Series.class)) instanceof PatchOutputSaver);
     }
 }

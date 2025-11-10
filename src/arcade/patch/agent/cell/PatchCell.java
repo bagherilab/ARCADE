@@ -18,13 +18,16 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModuleApoptosis;
+import arcade.patch.agent.module.PatchModuleCytotoxicity;
 import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleNecrosis;
 import arcade.patch.agent.module.PatchModuleProliferation;
 import arcade.patch.agent.module.PatchModuleQuiescence;
 import arcade.patch.agent.module.PatchModuleSenescence;
+import arcade.patch.agent.module.PatchModuleStimulation;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
+import arcade.patch.agent.process.PatchProcessSensing;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
@@ -356,9 +359,11 @@ public abstract class PatchCell implements Cell {
                 module = new PatchModuleSenescence(this);
                 break;
             case CYTOTOXIC:
-                throw new UnsupportedOperationException();
+                module = new PatchModuleCytotoxicity(this);
+                break;
             case STIMULATORY:
-                throw new UnsupportedOperationException();
+                module = new PatchModuleStimulation(this);
+                break;
             default:
                 module = null;
                 break;
@@ -380,6 +385,8 @@ public abstract class PatchCell implements Cell {
                 return PatchProcessSignaling.make(this, version);
             case INFLAMMATION:
                 return PatchProcessInflammation.make(this, version);
+            case SENSING:
+                return PatchProcessSensing.make(this, version);
             case UNDEFINED:
             default:
                 return null;

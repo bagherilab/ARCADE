@@ -9,6 +9,8 @@ import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.Plane;
 import arcade.core.util.Vector;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Region;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
@@ -1391,6 +1393,23 @@ public class PottsLocationTest {
     }
 
     @Test
+    void swapVoxels_validLists_swapsVoxelsCallsUpdateMethodsOnBothLocations() {
+        PottsLocationMock locA = spy(new PottsLocationMock(voxelListA));
+        PottsLocationMock locB = spy(new PottsLocationMock(voxelListB));
+
+        PottsLocation.swapVoxels(locA, locB);
+
+        assertEquals(voxelListB, locA.voxels);
+        assertEquals(voxelListA, locB.voxels);
+
+        assertEquals(locA.volume, voxelListB.size());
+        verify(locA).setAttributes();
+
+        assertEquals(locB.volume, voxelListA.size());
+        verify(locB).setAttributes();
+    }
+
+    @Test
     public void split_noOffsetsNoDirection_splitsVoxelsCorrectly() {
         ArrayList<Voxel> voxels = new ArrayList<>();
 
@@ -1628,5 +1647,15 @@ public class PottsLocationTest {
 
         assertEquals(locVoxels, loc.voxels);
         assertEquals(splitVoxels, split.voxels);
+    }
+
+    @Test
+    public void split_withPlaneNoSelectionProbability_callsSplitWithDefaultSelectionProbability() {
+        Plane mockPlane = mock(Plane.class);
+        when(mockPlane.getReferencePoint()).thenReturn(new Double3D(0, 0, 0));
+        PottsLocationMock loc = new PottsLocationMock(voxelListAB);
+        PottsLocationMock spyLocation = spy(loc);
+        spyLocation.split(randomDoubleZero, mockPlane);
+        verify(spyLocation).split(randomDoubleZero, mockPlane, .5);
     }
 }

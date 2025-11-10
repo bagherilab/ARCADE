@@ -28,13 +28,13 @@ import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
  */
 public abstract class OutputSaver implements Steppable {
     /** Logger for {@code OutputSaver}. */
-    private static final Logger LOGGER = Logger.getLogger(OutputSaver.class.getName());
+    protected static final Logger LOGGER = Logger.getLogger(OutputSaver.class.getName());
 
     /** Number of elements to format in output string. */
-    private static final int FORMAT_ELEMENTS = 6;
+    protected static final int FORMAT_ELEMENTS = 6;
 
     /** JSON representation. */
-    final Gson gson;
+    protected final Gson gson;
 
     /** {@link arcade.core.sim.Series} instance. */
     final Series series;
@@ -43,7 +43,10 @@ public abstract class OutputSaver implements Steppable {
     public String prefix;
 
     /** {@link arcade.core.sim.Simulation} instance. */
-    Simulation sim;
+    protected Simulation sim;
+
+    /** Snapshot interval in ticks. */
+    private final int interval;
 
     /**
      * Creates an {@code OutputSaver} for the series.
@@ -53,6 +56,7 @@ public abstract class OutputSaver implements Steppable {
     public OutputSaver(Series series) {
         this.series = series;
         this.gson = makeGSON();
+        this.interval = series.getInterval();
     }
 
     /**
@@ -109,6 +113,17 @@ public abstract class OutputSaver implements Steppable {
     @Override
     public void step(SimState simstate) {
         int tick = (int) simstate.schedule.getTime();
+        if (tick % interval == 0) {
+            save(tick);
+        }
+    }
+
+    /**
+     * Saves the relevant data.
+     *
+     * @param tick the simulation tick
+     */
+    public void save(int tick) {
         saveCells(tick);
         saveLocations(tick);
     }
@@ -117,10 +132,9 @@ public abstract class OutputSaver implements Steppable {
      * Schedules the saver to take snapshots at the given interval.
      *
      * @param schedule the simulation schedule
-     * @param interval the interval (in ticks) between snapshots
      */
-    public void schedule(Schedule schedule, double interval) {
-        schedule.scheduleRepeating(Schedule.EPOCH, -1, this, interval);
+    public void schedule(Schedule schedule) {
+        schedule.scheduleRepeating(Schedule.EPOCH, -1, this, 1);
     }
 
     /**
