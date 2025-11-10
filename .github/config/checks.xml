@@ -28,7 +28,19 @@
     <module name="Translation" />
 
     <!-- Checks for size violations -->
-    <module name="FileLength" />
+    <!-- Error-level FileLength (for src files) -->
+    <module name="FileLength">
+        <property name="id" value="FileLengthError"/>
+        <property name="max" value="2000"/>
+        <property name="severity" value="error"/>
+    </module>
+
+    <!-- Warning-level FileLength (for test files) -->
+    <module name="FileLength">
+        <property name="id" value="FileLengthWarn"/>
+        <property name="max" value="2000"/>
+        <property name="severity" value="warning"/>
+    </module>
     <module name="LineLength">
         <property name="id" value="LineLength"/>
         <property name="fileExtensions" value="java" />
