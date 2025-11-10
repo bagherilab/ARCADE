@@ -176,11 +176,11 @@ public final class PottsVisualization extends Visualization {
         int h = horizontal / 2;
         int v = vertical / 2;
 
-        int hh = (int) Math.round((length + .0) / (length + height) * h);
-        int vv = (int) Math.round((width + .0) / (width + height) * v);
+        int hh = (int) Math.round((length + .0) / (length + height) * h); // no x
+        int vv = (int) Math.round((width + .0) / (width + height) * v); // no y
 
-        int hx = (int) Math.round((height + .0) / (length + height) * h);
-        int vx = (int) Math.round((height + .0) / (width + height) * v);
+        int hx = (int) Math.round((height + .0) / (length + height) * h); // no x
+        int vx = (int) Math.round((height + .0) / (width + height) * v); // no y
 
         ArrayList<Drawer> drawers = new ArrayList<Drawer>();
 
@@ -192,6 +192,18 @@ public final class PottsVisualization extends Visualization {
         return drawers.toArray(new Drawer[0]);
     }
 
+    /**
+     * Creates drawers for panel 0
+     *
+     * <p>These drawers display cytoplasm and nucleus components for each of the three main
+     * projection planes (X, Y, and Z).
+     *
+     * @param drawers the list to which drawers are added
+     * @param hh horizontal subdivision factor for the Z projection
+     * @param vv vertical subdivision factor for the Z projection
+     * @param hx horizontal subdivision factor for the X projection
+     * @param vx vertical subdivision factor for the Y projection
+     */
     private void add3DPanel0Drawers(ArrayList<Drawer> drawers, int hh, int vv, int hx, int vx) {
 
         drawers.add(
@@ -255,6 +267,18 @@ public final class PottsVisualization extends Visualization {
                         getBox(0, vv * 2, hh * 2, vx * 2)));
     }
 
+    /**
+     * Adds drawers for the Z-axis projections on panel 1.
+     *
+     * <p>These drawers render STATE, POPULATION, VOLUME, HEIGHT, and OVERLAY views along the Z
+     * axis, plus grid overlays for each region.
+     *
+     * @param drawers the list to which drawers are added
+     * @param h half the total horizontal panel width
+     * @param v half the total vertical panel height
+     * @param hh scaled horizontal subdivision for Z projections
+     * @param vv scaled vertical subdivision for Z projections
+     */
     private void add3DZDrawers(ArrayList<Drawer> drawers, int h, int v, int hh, int vv) {
 
         drawers.add(
@@ -354,6 +378,19 @@ public final class PottsVisualization extends Visualization {
                         panels[1], "grid:Z", length, width, height, getBox(h, v, hh, vv)));
     }
 
+    /**
+     * Adds drawers for the X-axis projections on panel 1.
+     *
+     * <p>These drawers render STATE, POPULATION, VOLUME, HEIGHT, and OVERLAY views along the X
+     * axis, plus grid overlays for each region.
+     *
+     * @param drawers the list to which drawers are added
+     * @param h half the total horizontal panel width
+     * @param v half the total vertical panel height
+     * @param hh scaled horizontal subdivision for Z projections
+     * @param vv scaled vertical subdivision for Z projections
+     * @param hx scaled horizontal subdivision for X projections
+     */
     private void add3DXDrawers(ArrayList<Drawer> drawers, int h, int v, int hh, int vv, int hx) {
 
         drawers.add(
@@ -453,6 +490,19 @@ public final class PottsVisualization extends Visualization {
                         panels[1], "grid:X", length, width, height, getBox(h + hh, v, hx, vv)));
     }
 
+    /**
+     * Adds drawers for the Y-axis projections on panel 1.
+     *
+     * <p>These drawers render STATE, POPULATION, VOLUME, HEIGHT, and OVERLAY views along the Y
+     * axis, plus grid overlays for each region.
+     *
+     * @param drawers the list to which drawers are added
+     * @param h half the total horizontal panel width
+     * @param v half the total vertical panel height
+     * @param hh scaled horizontal subdivision for Z projections
+     * @param vv scaled vertical subdivision for Z projections
+     * @param vx scaled vertical subdivision for Y projections
+     */
     private void add3DYDrawers(ArrayList<Drawer> drawers, int h, int v, int hh, int vv, int vx) {
 
         drawers.add(
