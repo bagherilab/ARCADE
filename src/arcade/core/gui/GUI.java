@@ -37,7 +37,7 @@ import arcade.core.ARCADE;
  * <p>When the model is called with arguments, then the {@code main} method in {@link
  * arcade.core.ARCADE} is called directly and {@code GUI} is not shown.
  */
-public class GUI implements ActionListener {
+public final class GUI implements ActionListener {
     /** GUI frame. */
     private static JFrame frame;
 
