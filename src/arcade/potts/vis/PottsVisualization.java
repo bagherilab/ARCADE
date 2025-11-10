@@ -176,11 +176,11 @@ public final class PottsVisualization extends Visualization {
         int h = horizontal / 2;
         int v = vertical / 2;
 
-        int hh = (int) Math.round((length + .0) / (length + height) * h); // no x
-        int vv = (int) Math.round((width + .0) / (width + height) * v); // no y
+        int hh = (int) Math.round((length + .0) / (length + height) * h);
+        int vv = (int) Math.round((width + .0) / (width + height) * v);
 
-        int hx = (int) Math.round((height + .0) / (length + height) * h); // no x
-        int vx = (int) Math.round((height + .0) / (width + height) * v); // no y
+        int hx = (int) Math.round((height + .0) / (length + height) * h);
+        int vx = (int) Math.round((height + .0) / (width + height) * v);
 
         ArrayList<Drawer> drawers = new ArrayList<Drawer>();
 
