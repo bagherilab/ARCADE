@@ -37,7 +37,7 @@ import arcade.core.ARCADE;
  * <p>When the model is called with arguments, then the {@code main} method in {@link
  * arcade.core.ARCADE} is called directly and {@code GUI} is not shown.
  */
-public final class GUI implements ActionListener {
+public class GUI implements ActionListener {
     /** GUI frame. */
     private static JFrame frame;
 
@@ -371,7 +371,7 @@ public final class GUI implements ActionListener {
     }
 
     /** Custom file filter for XML files. */
-    private static class XMLFileFilter extends FileFilter {
+    private static final class XMLFileFilter extends FileFilter {
         /**
          * Determines if the file is an XML file.
          *
