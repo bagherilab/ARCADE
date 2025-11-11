@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":10};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -275,27 +275,73 @@ extends <a href="../../core/vis/Visualization.html" title="class in arcade.core.
 <th class="colLast" scope="col">Description</th>
 </tr>
 <tr id="i0" class="altColor">
+<td class="colFirst"><code>private void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#add3DPanel0Drawers(java.util.ArrayList,int,int,int,int)">add3DPanel0Drawers</a></span>&#8203;(java.util.ArrayList&lt;<a href="../../core/vis/Drawer.html" title="class in arcade.core.vis">Drawer</a>&gt;&nbsp;drawers,
+                  int&nbsp;hh,
+                  int&nbsp;vv,
+                  int&nbsp;hx,
+                  int&nbsp;vx)</code></th>
+<td class="colLast">
+<div class="block">Creates drawers for panel 0</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
+<td class="colFirst"><code>private void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#add3DXDrawers(java.util.ArrayList,int,int,int,int,int)">add3DXDrawers</a></span>&#8203;(java.util.ArrayList&lt;<a href="../../core/vis/Drawer.html" title="class in arcade.core.vis">Drawer</a>&gt;&nbsp;drawers,
+             int&nbsp;h,
+             int&nbsp;v,
+             int&nbsp;hh,
+             int&nbsp;vv,
+             int&nbsp;hx)</code></th>
+<td class="colLast">
+<div class="block">Adds drawers for the X-axis projections on panel 1.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code>private void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#add3DYDrawers(java.util.ArrayList,int,int,int,int,int)">add3DYDrawers</a></span>&#8203;(java.util.ArrayList&lt;<a href="../../core/vis/Drawer.html" title="class in arcade.core.vis">Drawer</a>&gt;&nbsp;drawers,
+             int&nbsp;h,
+             int&nbsp;v,
+             int&nbsp;hh,
+             int&nbsp;vv,
+             int&nbsp;vx)</code></th>
+<td class="colLast">
+<div class="block">Adds drawers for the Y-axis projections on panel 1.</div>
+</td>
+</tr>
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code>private void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#add3DZDrawers(java.util.ArrayList,int,int,int,int)">add3DZDrawers</a></span>&#8203;(java.util.ArrayList&lt;<a href="../../core/vis/Drawer.html" title="class in arcade.core.vis">Drawer</a>&gt;&nbsp;drawers,
+             int&nbsp;h,
+             int&nbsp;v,
+             int&nbsp;hh,
+             int&nbsp;vv)</code></th>
+<td class="colLast">
+<div class="block">Adds drawers for the Z-axis projections on panel 1.</div>
+</td>
+</tr>
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>(package private) <a href="../../core/vis/Drawer.html" title="class in arcade.core.vis">Drawer</a>[]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#create2DDrawers()">create2DDrawers</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Creates drawers for visualizing 2D simulations.</div>
 </td>
 </tr>
-<tr id="i1" class="rowColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>(package private) <a href="../../core/vis/Drawer.html" title="class in arcade.core.vis">Drawer</a>[]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#create3DDrawers()">create3DDrawers</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Creates drawers for visualizing 3D simulations.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code><a href="../../core/vis/Drawer.html" title="class in arcade.core.vis">Drawer</a>[]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createDrawers()">createDrawers</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Creates drawers for the visualization.</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code><a href="../../core/vis/Panel.html" title="class in arcade.core.vis">Panel</a>[]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createPanels()">createPanels</a></span>()</code></th>
 <td class="colLast">
@@ -504,6 +550,110 @@ extends <a href="../../core/vis/Visualization.html" title="class in arcade.core.
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>a list of <a href="../../core/vis/Drawer.html" title="class in arcade.core.vis"><code>Drawer</code></a> instances</dd>
+</dl>
+</li>
+</ul>
+<a id="add3DPanel0Drawers(java.util.ArrayList,int,int,int,int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>add3DPanel0Drawers</h4>
+<pre class="methodSignature">private&nbsp;void&nbsp;add3DPanel0Drawers&#8203;(java.util.ArrayList&lt;<a href="../../core/vis/Drawer.html" title="class in arcade.core.vis">Drawer</a>&gt;&nbsp;drawers,
+                                int&nbsp;hh,
+                                int&nbsp;vv,
+                                int&nbsp;hx,
+                                int&nbsp;vx)</pre>
+<div class="block">Creates drawers for panel 0
+
+ <p>These drawers display cytoplasm and nucleus components for each of the three main
+ projection planes (X, Y, and Z).</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>drawers</code> - the list to which drawers are added</dd>
+<dd><code>hh</code> - horizontal subdivision factor for the Z projection</dd>
+<dd><code>vv</code> - vertical subdivision factor for the Z projection</dd>
+<dd><code>hx</code> - horizontal subdivision factor for the X projection</dd>
+<dd><code>vx</code> - vertical subdivision factor for the Y projection</dd>
+</dl>
+</li>
+</ul>
+<a id="add3DZDrawers(java.util.ArrayList,int,int,int,int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>add3DZDrawers</h4>
+<pre class="methodSignature">private&nbsp;void&nbsp;add3DZDrawers&#8203;(java.util.ArrayList&lt;<a href="../../core/vis/Drawer.html" title="class in arcade.core.vis">Drawer</a>&gt;&nbsp;drawers,
+                           int&nbsp;h,
+                           int&nbsp;v,
+                           int&nbsp;hh,
+                           int&nbsp;vv)</pre>
+<div class="block">Adds drawers for the Z-axis projections on panel 1.
+
+ <p>These drawers render STATE, POPULATION, VOLUME, HEIGHT, and OVERLAY views along the Z
+ axis, plus grid overlays for each region.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>drawers</code> - the list to which drawers are added</dd>
+<dd><code>h</code> - half the total horizontal panel width</dd>
+<dd><code>v</code> - half the total vertical panel height</dd>
+<dd><code>hh</code> - scaled horizontal subdivision for Z projections</dd>
+<dd><code>vv</code> - scaled vertical subdivision for Z projections</dd>
+</dl>
+</li>
+</ul>
+<a id="add3DXDrawers(java.util.ArrayList,int,int,int,int,int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>add3DXDrawers</h4>
+<pre class="methodSignature">private&nbsp;void&nbsp;add3DXDrawers&#8203;(java.util.ArrayList&lt;<a href="../../core/vis/Drawer.html" title="class in arcade.core.vis">Drawer</a>&gt;&nbsp;drawers,
+                           int&nbsp;h,
+                           int&nbsp;v,
+                           int&nbsp;hh,
+                           int&nbsp;vv,
+                           int&nbsp;hx)</pre>
+<div class="block">Adds drawers for the X-axis projections on panel 1.
+
+ <p>These drawers render STATE, POPULATION, VOLUME, HEIGHT, and OVERLAY views along the X
+ axis, plus grid overlays for each region.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>drawers</code> - the list to which drawers are added</dd>
+<dd><code>h</code> - half the total horizontal panel width</dd>
+<dd><code>v</code> - half the total vertical panel height</dd>
+<dd><code>hh</code> - scaled horizontal subdivision for Z projections</dd>
+<dd><code>vv</code> - scaled vertical subdivision for Z projections</dd>
+<dd><code>hx</code> - scaled horizontal subdivision for X projections</dd>
+</dl>
+</li>
+</ul>
+<a id="add3DYDrawers(java.util.ArrayList,int,int,int,int,int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>add3DYDrawers</h4>
+<pre class="methodSignature">private&nbsp;void&nbsp;add3DYDrawers&#8203;(java.util.ArrayList&lt;<a href="../../core/vis/Drawer.html" title="class in arcade.core.vis">Drawer</a>&gt;&nbsp;drawers,
+                           int&nbsp;h,
+                           int&nbsp;v,
+                           int&nbsp;hh,
+                           int&nbsp;vv,
+                           int&nbsp;vx)</pre>
+<div class="block">Adds drawers for the Y-axis projections on panel 1.
+
+ <p>These drawers render STATE, POPULATION, VOLUME, HEIGHT, and OVERLAY views along the Y
+ axis, plus grid overlays for each region.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>drawers</code> - the list to which drawers are added</dd>
+<dd><code>h</code> - half the total horizontal panel width</dd>
+<dd><code>v</code> - half the total vertical panel height</dd>
+<dd><code>hh</code> - scaled horizontal subdivision for Z projections</dd>
+<dd><code>vv</code> - scaled vertical subdivision for Z projections</dd>
+<dd><code>vx</code> - scaled vertical subdivision for Y projections</dd>
 </dl>
 </li>
 </ul>

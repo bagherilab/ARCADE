@@ -186,27 +186,34 @@ implements sim.engine.Steppable</pre>
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>private int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#interval">interval</a></span></code></th>
+<td class="colLast">
+<div class="block">Snapshot interval in ticks.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>protected static java.util.logging.Logger</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#LOGGER">LOGGER</a></span></code></th>
 <td class="colLast">
 <div class="block">Logger for <code>OutputSaver</code>.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#prefix">prefix</a></span></code></th>
 <td class="colLast">
 <div class="block">Prefix for saved files.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>(package private) <a href="../Series.html" title="class in arcade.core.sim">Series</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#series">series</a></span></code></th>
 <td class="colLast">
 <div class="block"><a href="../Series.html" title="class in arcade.core.sim"><code>Series</code></a> instance.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected <a href="../Simulation.html" title="interface in arcade.core.sim">Simulation</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#sim">sim</a></span></code></th>
 <td class="colLast">
@@ -306,8 +313,7 @@ implements sim.engine.Steppable</pre>
 </tr>
 <tr id="i7" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#schedule(sim.engine.Schedule,double)">schedule</a></span>&#8203;(sim.engine.Schedule&nbsp;schedule,
-        double&nbsp;interval)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#schedule(sim.engine.Schedule)">schedule</a></span>&#8203;(sim.engine.Schedule&nbsp;schedule)</code></th>
 <td class="colLast">
 <div class="block">Schedules the saver to take snapshots at the given interval.</div>
 </td>
@@ -408,11 +414,21 @@ implements sim.engine.Steppable</pre>
 <a id="sim">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>sim</h4>
 <pre>protected&nbsp;<a href="../Simulation.html" title="interface in arcade.core.sim">Simulation</a> sim</pre>
 <div class="block"><a href="../Simulation.html" title="interface in arcade.core.sim"><code>Simulation</code></a> instance.</div>
+</li>
+</ul>
+<a id="interval">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>interval</h4>
+<pre>private final&nbsp;int interval</pre>
+<div class="block">Snapshot interval in ticks.</div>
 </li>
 </ul>
 </li>
@@ -545,19 +561,17 @@ implements sim.engine.Steppable</pre>
 </dl>
 </li>
 </ul>
-<a id="schedule(sim.engine.Schedule,double)">
+<a id="schedule(sim.engine.Schedule)">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>schedule</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;schedule&#8203;(sim.engine.Schedule&nbsp;schedule,
-                     double&nbsp;interval)</pre>
+<pre class="methodSignature">public&nbsp;void&nbsp;schedule&#8203;(sim.engine.Schedule&nbsp;schedule)</pre>
 <div class="block">Schedules the saver to take snapshots at the given interval.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>schedule</code> - the simulation schedule</dd>
-<dd><code>interval</code> - the interval (in ticks) between snapshots</dd>
 </dl>
 </li>
 </ul>
