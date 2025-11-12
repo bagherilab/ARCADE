@@ -1,5 +1,7 @@
 package arcade.patch.sim.output;
 
+import java.util.List;
+import java.util.Map;
 import com.google.gson.Gson;
 import arcade.core.env.component.Component;
 import arcade.core.sim.Series;
@@ -16,6 +18,9 @@ public final class PatchOutputSaver extends OutputSaver {
 
     /** {@code true} to save lattices, {@code false} otherwise. */
     public boolean saveLattice;
+
+    /** {@code true} to save events, {@code false} otherwise. */
+    public boolean saveEvents;
 
     /**
      * Creates an {@code PatchOutputSaver} for the series.
@@ -61,6 +66,22 @@ public final class PatchOutputSaver extends OutputSaver {
         write(patch, format(json, FORMAT_ELEMENTS));
     }
 
+    /**
+     * Save the collection of events to a JSON.
+     *
+     * @param tick the simulation tick
+     */
+    public void saveEventsToFile(int tick) {
+        if (saveEvents) {
+            List<Map<String, Object>> events = ((PatchSimulation) sim).getEvents();
+            if (!events.isEmpty()) {
+                String json = gson.toJson(events);
+                String path = prefix + String.format("_%06d.EVENTS.json", tick);
+                write(path, format(json, FORMAT_ELEMENTS));
+            }
+        }
+    }
+
     @Override
     public void save(int tick) {
         super.save(tick);
@@ -69,6 +90,9 @@ public final class PatchOutputSaver extends OutputSaver {
         }
         if (saveLattice) {
             saveLayers(tick);
+        }
+        if (saveEvents) {
+            saveEventsToFile(tick);
         }
     }
 }
