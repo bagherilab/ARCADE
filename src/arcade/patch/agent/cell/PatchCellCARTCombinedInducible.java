@@ -96,7 +96,7 @@ public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombina
 
     /** Calculates the number of cars produced for synnotch circuit. * */
     protected void synNotchCARCalculation() {
-        double n = 8;
+        double n = 4.4;
         int newCars =
                 (int) (maxCars / (1 + Math.pow(synNotchThreshold, n) / Math.pow(boundSynNotch, n)));
         cars = Math.max((int) (cars - (carDegradationConstant * cars * TAU)), newCars);

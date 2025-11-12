@@ -9,6 +9,7 @@ import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.cell.PatchCellTissue;
 import arcade.patch.agent.process.PatchProcessInflammation;
+import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
 import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.State;
@@ -82,6 +83,8 @@ public class PatchModuleCytotoxicity extends PatchModule {
                 eventData.put("tissue-cell-type", target.getPop());
                 eventData.put("type", "lysis");
                 eventData.put("timestamp", (int) ((PatchSimulation) sim).getSchedule().getTime());
+                eventData.put(
+                        "tissue-location", ((PatchLocation) target.getLocation()).getCoordinate());
                 patchSim.logEvent(eventData);
             }
         }

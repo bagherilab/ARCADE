@@ -46,7 +46,7 @@
     <population id="BOUND_TIME" value="360" description="6 hours" />
 
      <!-- SynNotch specific parameters -->
-    <population id="SYNNOTCH_THRESHOLD" value="0.1" description="number threshold of total synnotch" />
+    <population id="SYNNOTCH_THRESHOLD" value="0.01" description="number threshold of total synnotch" />
     <population id="K_SYNNOTCH_ON" value="5.1E3" unit="Ms^-1" description="binding kinetic constant" />
     <population id="K_SYNNOTCH_OFF" value="9E-5" unit="s^-1" description="unbinding kinetic constant" />
     <population id="HILL_SYNNOTCH" value="4.4" description="hill coefficient for synnotch to CAR relationship" />
@@ -59,6 +59,7 @@
 
     <!-- migration module parameters -->
     <population.module module="migration" id="MIGRATION_RATE" value="0.24" unit="um/min" description="cell migration rate" />
+    <population.module module="migration" id="MATRIGEL" value="0" description="boolean indicating if cell is on a matrigel" />
 
     <!-- apoptosis module parameters -->
     <population.module module="apoptosis" id="DEATH_DURATION" value="1080" unit="min" description="time required for cell death" />

@@ -60,6 +60,10 @@ public class PatchCellCARTCombined extends PatchCellCART {
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
 
+        if (sim.getSchedule().getTime() == 2880) {
+            int a = 0;
+        }
+
         super.age++;
 
         if (state != State.APOPTOTIC && age > apoptosisAge) {

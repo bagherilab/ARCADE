@@ -90,7 +90,7 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
 
     /** Calculates the number of cars produced for receptor circuit. * */
     protected void receptorCars() {
-        double n = 8;
+        double n = 4.4;
         int removeCARs =
                 (int) (maxCars / (1 + Math.pow(boundSynNotch, n) / Math.pow(synNotchThreshold, n)));
         cars = Math.min(cars + (int) (basalCARGenerationRate * TAU), removeCARs);

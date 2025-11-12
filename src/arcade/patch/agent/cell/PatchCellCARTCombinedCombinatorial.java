@@ -120,7 +120,17 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
      * @param sim the simulation instance
      */
     protected void calculateCARS(MersenneTwisterFast random, Simulation sim) {
+        // T cell cannot bind if no synnotch receptors are available
+        if (synnotchs == 0) {
+            if (boundSynNotch != 0) {
+                boundSynNotch = 0;
+            }
+            return;
+        }
+
+        // unbound synnotch should never be negative
         int unboundSynNotch = synnotchs - boundSynNotch;
+        unboundSynNotch = Math.max(0, unboundSynNotch);
 
         double expectedBindingEvents =
                 bindingConstant
@@ -130,14 +140,26 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
                         * contactFraction
                         * TAU;
 
+        // binding events should not exceed available unbound receptors
+        expectedBindingEvents = Math.min(expectedBindingEvents, unboundSynNotch);
+
         int bindingEvents = poissonFactory.createPoisson(expectedBindingEvents, random).nextInt();
         double expectedUnbindingEvents = unbindingConstant * boundSynNotch * TAU;
+
+        expectedUnbindingEvents = Math.min(expectedUnbindingEvents, boundSynNotch);
+
+        // unbinding events should not exceed available bound receptors
         int unbindingEvents =
                 poissonFactory.createPoisson(expectedUnbindingEvents, random).nextInt();
 
         boundSynNotch += bindingEvents;
         boundSynNotch -= unbindingEvents;
+
+        // bound synnotch should never be negative
+        boundSynNotch = Math.max(0, boundSynNotch);
         boundCell.updateSynNotchAntigens(unbindingEvents, bindingEvents);
+
+        // synnotch receptors become unavailable after binding
         synnotchs = Math.max(0, synnotchs - bindingEvents);
     }
 

@@ -380,8 +380,14 @@ public abstract class PatchCellCART extends PatchCell {
             int startReceptors,
             double alpha,
             double beta) {
+
+        double correctedStartReceptors = startReceptors;
+
+        if (startReceptors == 0) {
+            correctedStartReceptors = 1;
+        }
         return (targets * contactFraction / (affinity * beta + targets * contactFraction))
-                * (currentReceptors / startReceptors)
+                * (currentReceptors / correctedStartReceptors)
                 * alpha;
     }
 
