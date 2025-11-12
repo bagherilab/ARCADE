@@ -25,6 +25,9 @@ public class PatchModuleMigration extends PatchModule {
     /** Time required for cell migration [min]. */
     private final double movementDuration;
 
+    /** Boolean indicating if cell is on a matrigel. */
+    private final double matrigel;
+
     /**
      * Creates a migration {@link PatchModule} for the given cell.
      *
@@ -32,6 +35,7 @@ public class PatchModuleMigration extends PatchModule {
      *
      * <ul>
      *   <li>{@code MIGRATION_RATE} = cell migration rate
+     *   <li>{@code MATRIGEL} = boolean indicating if cell is on a matrigel
      * </ul>
      *
      * @param cell the {@link PatchCell} the module is associated with
@@ -42,6 +46,7 @@ public class PatchModuleMigration extends PatchModule {
         // Set loaded parameters.
         Parameters parameters = cell.getParameters();
         migrationRate = parameters.getDouble("migration/MIGRATION_RATE");
+        matrigel = parameters.getDouble("migration/MATRIGEL");
         movementDuration = Math.round(location.getCoordinateSize() / migrationRate);
     }
 
@@ -49,7 +54,7 @@ public class PatchModuleMigration extends PatchModule {
     public void step(MersenneTwisterFast random, Simulation sim) {
         if (ticker > movementDuration) {
             PatchLocation newLocation = cell.selectBestLocation(sim, random);
-            if (newLocation == null) {
+            if (matrigel > 0 || newLocation == null) {
                 if (cell instanceof PatchCellCART) {
                     cell.setState(State.PAUSED);
                 } else {

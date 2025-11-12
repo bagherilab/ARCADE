@@ -9,6 +9,8 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
+import arcade.patch.util.PatchEnums.AntigenFlag;
+import arcade.patch.util.PatchEnums.State;
 import static arcade.patch.util.PatchEnums.AntigenFlag;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -56,16 +58,16 @@ public abstract class PatchCellCART extends PatchCell {
     protected boolean activated;
 
     /** number of current PDL-1 receptors on CART cell. */
-    protected int selfReceptors;
+    public int selfReceptors;
 
     /** initial number of PDL-1 receptors on CART cell. */
     protected int selfReceptorsStart;
 
     /** number of bound CAR antigens. */
-    protected int boundCARAntigensCount;
+    public int boundCARAntigensCount;
 
     /** number of bound PDL-1 antigens. */
-    protected int boundSelfAntigensCount;
+    public int boundSelfAntigensCount;
 
     /** number of neighbors that T cell is able to search through. */
     protected final double searchAbility;
@@ -95,7 +97,10 @@ public abstract class PatchCellCART extends PatchCell {
     protected final int maxAntigenBinding;
 
     /** number of CARs on T cell surface. */
-    protected final int cars;
+    protected int cars;
+
+    /** number of starting CARs on T cell surface. */
+    protected int startCars;
 
     /** simulation time since T cell was last activated. */
     protected int lastActiveTicker;
@@ -160,8 +165,8 @@ public abstract class PatchCellCART extends PatchCell {
         // initialized non-loaded parameters
         boundCARAntigensCount = 0;
         boundSelfAntigensCount = 0;
-        lastActiveTicker = 0;
-        activated = true;
+        // lastActiveTicker = 0;
+        activated = false;
         boundTarget = null;
 
         // Set loaded parameters.
@@ -180,7 +185,8 @@ public abstract class PatchCellCART extends PatchCell {
         selfBeta = parameters.getDouble("SELF_BETA");
         contactFraction = parameters.getDouble("CONTACT_FRAC");
         maxAntigenBinding = parameters.getInt("MAX_ANTIGEN_BINDING");
-        cars = parameters.getInt("CARS");
+        startCars = parameters.getInt("CARS");
+        cars = startCars;
     }
 
     /**
@@ -202,7 +208,7 @@ public abstract class PatchCellCART extends PatchCell {
         double kDSelf = computeAffinity(selfReceptorAffinity, loc);
         PatchGrid grid = (PatchGrid) sim.getGrid();
 
-        Bag allAgents = grabAllTissueNeighbors(grid, loc);
+        Bag allAgents = getAllTissueNeighbors(grid, loc);
         allAgents.remove(this);
         allAgents.shuffle(random);
         int neighbors = allAgents.size();
@@ -220,7 +226,8 @@ public abstract class PatchCellCART extends PatchCell {
                     double selfTargets = tissueCell.getSelfAntigens();
 
                     double probabilityCAR =
-                            computeProbability(cARAntigens, kDCAR, cars, 5000, carAlpha, carBeta);
+                            computeProbability(
+                                    cARAntigens, kDCAR, cars, startCars, carAlpha, carBeta);
                     double probabilitySelf =
                             computeProbability(
                                     selfTargets,
@@ -257,21 +264,6 @@ public abstract class PatchCellCART extends PatchCell {
      */
     public boolean getActivationStatus() {
         return this.activated;
-    }
-
-    /**
-     * Adds only tissue cells to the provided bag.
-     *
-     * @param tissueAgents the bag to add tissue cells into
-     * @param possibleAgents the bag of possible agents to check for tissue cells
-     */
-    private void grabTissueAgents(Bag tissueAgents, Bag possibleAgents) {
-        for (Object agent : possibleAgents) {
-            Cell cell = (Cell) agent;
-            if (cell instanceof PatchCellTissue) {
-                tissueAgents.add(cell);
-            }
-        }
     }
 
     /**
@@ -338,18 +330,33 @@ public abstract class PatchCellCART extends PatchCell {
     }
 
     /**
+     * Adds only tissue cells to the provided bag. Helper method for bindTarget.
+     *
+     * @param tissueAgents the bag to add tissue cells into
+     * @param possibleAgents the bag of possible agents to check for tissue cells
+     */
+    public void getTissueAgents(Bag tissueAgents, Bag possibleAgents) {
+        for (Object agent : possibleAgents) {
+            Cell cell = (Cell) agent;
+            if (cell instanceof PatchCellTissue) {
+                tissueAgents.add(cell);
+            }
+        }
+    }
+
+    /**
      * Returns all tissue cells in neighborhood and current location.
      *
      * @param grid the grid used in the simulation
      * @param loc current location of the cell
      * @return bag of all tissue cells in neighborhood and current location
      */
-    private Bag grabAllTissueNeighbors(PatchGrid grid, PatchLocation loc) {
+    private Bag getAllTissueNeighbors(PatchGrid grid, PatchLocation loc) {
         Bag neighbors = new Bag();
-        grabTissueAgents(neighbors, grid.getObjectsAtLocation(loc));
+        getTissueAgents(neighbors, grid.getObjectsAtLocation(loc));
         for (Location neighborLocation : loc.getNeighbors()) {
             Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));
-            grabTissueAgents(neighbors, bag);
+            getTissueAgents(neighbors, bag);
         }
 
         return neighbors;
@@ -373,8 +380,14 @@ public abstract class PatchCellCART extends PatchCell {
             int startReceptors,
             double alpha,
             double beta) {
+
+        double correctedStartReceptors = startReceptors;
+
+        if (startReceptors == 0) {
+            correctedStartReceptors = 1;
+        }
         return (targets * contactFraction / (affinity * beta + targets * contactFraction))
-                * (currentReceptors / startReceptors)
+                * (currentReceptors / correctedStartReceptors)
                 * alpha;
     }
 
@@ -417,5 +430,28 @@ public abstract class PatchCellCART extends PatchCell {
     public void unbind() {
         super.setBindingFlag(AntigenFlag.UNBOUND);
         this.boundTarget = null;
+    }
+
+    /**
+     * Sets the cell activation status.
+     *
+     * @param activated the activation status to set
+     */
+    public void setActivationStatus(boolean activated) {
+        this.activated = activated;
+    }
+
+    /**
+     * Sets the car amount.
+     *
+     * @param cars the car amount to set
+     */
+    public void setCars(int cars) {
+        this.cars = cars;
+    }
+
+    /** Gets the car amount. */
+    public int getCars() {
+        return cars;
     }
 }
