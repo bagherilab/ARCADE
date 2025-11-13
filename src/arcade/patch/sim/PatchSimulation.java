@@ -223,8 +223,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     /**
      * Log an event to the simulation's event list.
      *
-     * @param eventType the type of event
-     * @param eventData the event data
+     * @param event logging information corresponding to the event
      */
     public void logEvent(Map<String, Object> event) {
         events.add(event);
