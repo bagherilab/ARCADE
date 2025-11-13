@@ -3,6 +3,7 @@ package arcade.patch.agent.module;
 import java.lang.reflect.Field;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import sim.engine.Schedule;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCellCART;
@@ -28,6 +29,8 @@ public class PatchModuleCytotoxicityTest {
 
     private PatchLocation mockLocation;
 
+    private Schedule mockSchedule;
+
     private MersenneTwisterFast randomMock;
 
     @BeforeEach
@@ -36,6 +39,7 @@ public class PatchModuleCytotoxicityTest {
         mockTarget = mock(PatchCellTissue.class);
         mockInflammation = mock(PatchProcessInflammation.class);
         mockLocation = mock(PatchLocation.class);
+        mockSchedule = mock(Schedule.class);
 
         sim = mock(PatchSimulation.class);
         randomMock = mock(MersenneTwisterFast.class);
@@ -53,7 +57,8 @@ public class PatchModuleCytotoxicityTest {
         when(mockTarget.getLocation()).thenReturn(mockLocation);
 
         when(mockLocation.getCoordinate()).thenReturn(mock(Coordinate.class));
-        when(sim.getSchedule().getTime()).thenReturn(0.0);
+        when(sim.getSchedule()).thenReturn(mockSchedule);
+        when(mockSchedule.getTime()).thenReturn(0.0);
 
         action = new PatchModuleCytotoxicity(mockCell);
     }
