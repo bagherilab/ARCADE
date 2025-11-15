@@ -3,6 +3,7 @@ package arcade.patch.env.component;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.logging.Logger;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
@@ -13,6 +14,7 @@ import arcade.core.util.Graph.Node;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Solver;
 import arcade.core.util.Solver.Function;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeDirection;
 import arcade.patch.env.location.CoordinateXYZ;
 import arcade.patch.sim.PatchSeries;
 import static arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeLevel;
@@ -44,6 +46,9 @@ import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.*;
  * {@code A} / {@code a} for an artery or {@code V} / {@code v} for a vein.
  */
 public abstract class PatchComponentSitesGraph extends PatchComponentSites {
+    /** Logger for {@code PatchComponentSitesGraph}. */
+    private static final Logger LOGGER = Logger.getLogger(PatchComponentSitesGraph.class.getName());
+
     /** Tolerance for difference in internal and external concentrations. */
     private static final double DELTA_TOLERANCE = 1E-8;
 
@@ -239,29 +244,11 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      * @param random the random number generator
      */
     void complexStep(MersenneTwisterFast random) {
-        Bag allEdges = new Bag(graph.getAllEdges());
 
-        // Check if graph has become unconnected.
-        boolean isConnected = false;
-        for (Object obj : allEdges) {
-            SiteEdge edge = (SiteEdge) obj;
-            if (edge.getFrom().isRoot && !edge.isIgnored) {
-                isConnected = true;
-                break;
-            }
-        }
-        if (!isConnected) {
-            for (SiteLayer layer : layers) {
-                for (int k = 0; k < latticeHeight; k++) {
-                    for (int i = 0; i < latticeLength; i++) {
-                        for (int j = 0; j < latticeWidth; j++) {
-                            layer.delta[k][i][j] = 0;
-                        }
-                    }
-                }
-            }
+        if (checkDisconnected()) {
             return;
         }
+        ;
 
         // Iterate through each molecule.
         for (SiteLayer layer : layers) {
@@ -281,10 +268,11 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                 }
             }
 
-            allEdges.shuffle(random);
+            Bag currentEdges = new Bag(graph.getAllEdges());
+            currentEdges.shuffle(random);
 
             // Iterate through each edge in graph.
-            for (Object obj : allEdges) {
+            for (Object obj : currentEdges) {
                 SiteEdge edge = (SiteEdge) obj;
                 if (edge.isIgnored) {
                     continue;
@@ -329,6 +317,10 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                     intConc = edge.fraction.get(layer.name) * concentration; // fmol/um^3
                     intConcNew = intConc; // fmol/um^3
                     extConcNew = extConc; // fmol/um^3
+
+                    if (Double.isNaN(intConc) || Double.isNaN(extConc)) {
+                        LOGGER.info(layer.name + ": NaN (1)");
+                    }
                 }
 
                 if (Math.abs(intConc - extConc) > DELTA_TOLERANCE) {
@@ -345,6 +337,9 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                             intConcNew = (intConcNew * flow + pa * extConcNew) / (flow + pa);
                             dmdt = pa * (intConcNew - extConcNew);
                             extConcNew += dmdt / latticePatchVolume;
+                        }
+                        if (Double.isNaN(intConcNew) || Double.isNaN(extConcNew)) {
+                            LOGGER.info(layer.name + ": NaN (2)");
                         }
                     }
 
@@ -370,11 +365,42 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                     if (layer.name.equalsIgnoreCase("OXYGEN")) {
                         edge.transport.put(layer.name, (intConc - intConcNew) * edge.flow);
                     } else {
+                        if (Double.isNaN((intConc - intConcNew) / concentration)) {
+                            LOGGER.info(layer.name + ": NaN (3)");
+                        }
                         edge.transport.put(layer.name, (intConc - intConcNew) / concentration);
                     }
                 }
             }
         }
+    }
+
+    private boolean checkDisconnected() {
+        Bag allEdges = new Bag(graph.getAllEdges());
+
+        // Check if graph has become unconnected.
+        boolean isConnected = false;
+        for (Object obj : allEdges) {
+            SiteEdge edge = (SiteEdge) obj;
+            if (edge.getFrom().isRoot && !edge.isIgnored) {
+                isConnected = true;
+                break;
+            }
+        }
+        if (!isConnected) {
+            for (SiteLayer layer : layers) {
+                for (int k = 0; k < latticeHeight; k++) {
+                    for (int i = 0; i < latticeLength; i++) {
+                        for (int j = 0; j < latticeWidth; j++) {
+                            layer.delta[k][i][j] = 0;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -398,6 +424,20 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         /** Distance for Dijkstra's algorithm. */
         int distance;
 
+        /** Tick for the last update during growth. */
+        int lastUpdate;
+
+        /** Tick for when the node was added to the graph. */
+        int addTime;
+
+        /** Direction of the angiogenic sprout. */
+        EdgeDirection sproutDir;
+
+        /**
+         * {@code true} if the angiogenic sprout is anastomotic/perfused, {@code false} otherwise.
+         */
+        boolean anastomosis;
+
         /** Parent node. */
         SiteNode prev;
 
@@ -415,7 +455,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         }
 
         @Override
-        public Node duplicate() {
+        public SiteNode duplicate() {
             return new SiteNode(x, y, z);
         }
 
@@ -466,6 +506,9 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         /** {@code true} if edge is ignored, {@code false} otherwise. */
         boolean isIgnored;
 
+        /** {@code true} if edge is anastomotic, {@code false} otherwise. */
+        boolean isAnastomotic;
+
         /** Edge type. */
         final EdgeType type;
 
@@ -513,8 +556,8 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
          * @param type the edge type
          * @param level the graph resolution level
          */
-        SiteEdge(Node from, Node to, EdgeType type, EdgeLevel level) {
-            super(from, to);
+        SiteEdge(SiteNode from, SiteNode to, EdgeType type, EdgeLevel level) {
+            super(from, to, type != EdgeType.ANGIOGENIC);
             this.type = type;
             this.level = level;
             isVisited = false;
@@ -604,6 +647,22 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
          */
         public double getFlow() {
             return flow;
+        }
+
+        public String getFraction() {
+            StringBuilder sb = new StringBuilder();
+            for (String key : fraction.keySet()) {
+                sb.append(key + ":" + fraction.get(key) + ",");
+            }
+            return sb.toString();
+        }
+
+        public String getTransport() {
+            StringBuilder sb = new StringBuilder();
+            for (String key : transport.keySet()) {
+                sb.append(key + ":" + transport.get(key) + ",");
+            }
+            return sb.toString();
         }
     }
 
@@ -759,6 +818,10 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                 }
             }
 
+            // If the flow out is zero exit and return no children.
+            if (flowOut == 0) {
+                return children;
+            }
             // Assign new fractions.
             for (Object obj : out) {
                 SiteEdge edge = (SiteEdge) obj;
@@ -840,6 +903,9 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
             } else {
                 node.oxygen = Solver.bisection(func, 0, MAX_OXYGEN_PARTIAL_PRESSURE);
             }
+
+            assert node.oxygen >= 0;
+            assert !Double.isNaN(node.oxygen);
 
             // Recurse through output edges.
             for (Object obj : out) {

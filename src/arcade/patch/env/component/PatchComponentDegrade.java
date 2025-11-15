@@ -2,6 +2,7 @@ package arcade.patch.env.component;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.logging.Logger;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.util.Bag;
@@ -31,6 +32,8 @@ import static arcade.patch.util.PatchEnums.Ordering;
  * properties are recalculated.
  */
 public class PatchComponentDegrade implements Component {
+    private static final Logger LOGGER = Logger.getLogger(PatchComponentDegrade.class.getName());
+
     /** Interval between degradation steps [min]. */
     private final int degradationInterval;
 
