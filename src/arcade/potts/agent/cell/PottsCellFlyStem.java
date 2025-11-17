@@ -1,14 +1,18 @@
 package arcade.potts.agent.cell;
 
 import ec.util.MersenneTwisterFast;
+import sim.engine.SimState;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
+import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 import arcade.core.util.Vector;
 import arcade.potts.agent.module.PottsModule;
 import arcade.potts.agent.module.PottsModuleFlyStemProliferation;
 import arcade.potts.util.PottsEnums.Phase;
+import arcade.potts.util.PottsEnums.State;
+
 import static arcade.potts.util.PottsEnums.State;
 
 public class PottsCellFlyStem extends PottsCell {
@@ -61,6 +65,12 @@ public class PottsCellFlyStem extends PottsCell {
 
     private Vector apicalAxis;
 
+    /** Counter to track the amount of prospero. **/
+    public double prosperoCounter;
+
+    /** How much the prospero changes for each step in the simulation. **/
+    private double prosperoStepSize;
+
     /**
      * Constructor for PottsCellFlyStem.
      *
@@ -89,6 +99,28 @@ public class PottsCellFlyStem extends PottsCell {
             default:
                 throw new IllegalArgumentException("Unknown StemType: " + stemTypeString);
         }
+
+        // Create prospero counter
+        prosperoCounter = parameters.getDouble("StemCell/InitialProsperoCounter");
+        if (prosperoCounter < 0) {
+            throw new IllegalArgumentException("Prospero inital value should not be negative");
+        }
+
+        prosperoStepSize = parameters.getDouble("StemCell/ProsperoStepSize")
+    }
+
+    @Override
+    public void step(SimState simstate) {
+        Simulation sim = (Simulation) simstate;
+
+        // Increase age of cell.
+        age++;
+
+        // Update prospero.
+        prosperoCounter += prosperoStepSize;
+
+        // Step the module for the cell state.
+        module.step(simstate.random, sim);
     }
 
     public void setApicalAxis(Vector apicalAxis) {
