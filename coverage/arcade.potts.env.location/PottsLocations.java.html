@@ -6,6 +6,8 @@ import java.util.EnumSet;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
+import arcade.core.util.Vector;
+import arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Region;
 
 /**
@@ -34,191 +36,191 @@ public abstract class PottsLocations extends PottsLocation {
      * @param voxels the list of voxels
      */
     public PottsLocations(ArrayList&lt;Voxel&gt; voxels) {
-<span class="fc" id="L37">        super(voxels);</span>
-<span class="fc" id="L38">        this.locations = new EnumMap&lt;&gt;(Region.class);</span>
+<span class="fc" id="L39">        super(voxels);</span>
+<span class="fc" id="L40">        this.locations = new EnumMap&lt;&gt;(Region.class);</span>
 
-<span class="fc" id="L40">        ArrayList&lt;Voxel&gt; voxelCopy = new ArrayList&lt;&gt;(voxels);</span>
-<span class="fc" id="L41">        locations.put(Region.DEFAULT, makeLocation(voxelCopy));</span>
-<span class="fc" id="L42">    }</span>
+<span class="fc" id="L42">        ArrayList&lt;Voxel&gt; voxelCopy = new ArrayList&lt;&gt;(voxels);</span>
+<span class="fc" id="L43">        locations.put(Region.DEFAULT, makeLocation(voxelCopy));</span>
+<span class="fc" id="L44">    }</span>
 
     @Override
     public ArrayList&lt;Voxel&gt; getVoxels(Region region) {
-<span class="fc bfc" id="L46" title="All 2 branches covered.">        return (locations.containsKey(region)</span>
-<span class="fc" id="L47">                ? new ArrayList&lt;&gt;(locations.get(region).voxels)</span>
-<span class="fc" id="L48">                : new ArrayList&lt;&gt;());</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        return (locations.containsKey(region)</span>
+<span class="fc" id="L49">                ? new ArrayList&lt;&gt;(locations.get(region).voxels)</span>
+<span class="fc" id="L50">                : new ArrayList&lt;&gt;());</span>
     }
 
     @Override
     public EnumSet&lt;Region&gt; getRegions() {
-<span class="fc" id="L53">        return EnumSet.copyOf(locations.keySet());</span>
+<span class="fc" id="L55">        return EnumSet.copyOf(locations.keySet());</span>
     }
 
     @Override
     public double getVolume(Region region) {
-<span class="fc bfc" id="L58" title="All 2 branches covered.">        return (locations.containsKey(region) ? locations.get(region).volume : 0);</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        return (locations.containsKey(region) ? locations.get(region).volume : 0);</span>
     }
 
     @Override
     public double getSurface(Region region) {
-<span class="fc bfc" id="L63" title="All 2 branches covered.">        return (locations.containsKey(region) ? locations.get(region).surface : 0);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        return (locations.containsKey(region) ? locations.get(region).surface : 0);</span>
     }
 
     @Override
     public double getHeight(Region region) {
-<span class="fc bfc" id="L68" title="All 2 branches covered.">        return (locations.containsKey(region) ? locations.get(region).height : 0);</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        return (locations.containsKey(region) ? locations.get(region).height : 0);</span>
     }
 
     @Override
     public void add(int x, int y, int z) {
-<span class="fc" id="L73">        super.add(x, y, z);</span>
-<span class="fc" id="L74">        locations.get(Region.DEFAULT).add(x, y, z);</span>
-<span class="fc" id="L75">    }</span>
+<span class="fc" id="L75">        super.add(x, y, z);</span>
+<span class="fc" id="L76">        locations.get(Region.DEFAULT).add(x, y, z);</span>
+<span class="fc" id="L77">    }</span>
 
     @Override
     public void add(Region region, int x, int y, int z) {
-<span class="fc" id="L79">        super.add(x, y, z);</span>
+<span class="fc" id="L81">        super.add(x, y, z);</span>
 
-<span class="fc" id="L81">        Voxel voxel = new Voxel(x, y, z);</span>
+<span class="fc" id="L83">        Voxel voxel = new Voxel(x, y, z);</span>
 
-<span class="fc bfc" id="L83" title="All 2 branches covered.">        for (PottsLocation loc : locations.values()) {</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">            if (loc.voxels.contains(voxel)) {</span>
-<span class="fc" id="L85">                return;</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        for (PottsLocation loc : locations.values()) {</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">            if (loc.voxels.contains(voxel)) {</span>
+<span class="fc" id="L87">                return;</span>
             }
-<span class="fc" id="L87">        }</span>
+<span class="fc" id="L89">        }</span>
 
-<span class="fc bfc" id="L89" title="All 2 branches covered.">        if (!locations.containsKey(region)) {</span>
-<span class="fc" id="L90">            locations.put(region, makeLocation(new ArrayList&lt;&gt;()));</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if (!locations.containsKey(region)) {</span>
+<span class="fc" id="L92">            locations.put(region, makeLocation(new ArrayList&lt;&gt;()));</span>
         }
 
-<span class="fc" id="L93">        locations.get(region).add(x, y, z);</span>
-<span class="fc" id="L94">    }</span>
+<span class="fc" id="L95">        locations.get(region).add(x, y, z);</span>
+<span class="fc" id="L96">    }</span>
 
     @Override
     public void remove(int x, int y, int z) {
-<span class="fc" id="L98">        super.remove(x, y, z);</span>
-<span class="fc" id="L99">        locations.forEach((region, location) -&gt; location.remove(x, y, z));</span>
-<span class="fc" id="L100">    }</span>
+<span class="fc" id="L100">        super.remove(x, y, z);</span>
+<span class="fc" id="L101">        locations.forEach((region, location) -&gt; location.remove(x, y, z));</span>
+<span class="fc" id="L102">    }</span>
 
     @Override
     public void remove(Region region, int x, int y, int z) {
-<span class="fc" id="L104">        Voxel voxel = new Voxel(x, y, z);</span>
+<span class="fc" id="L106">        Voxel voxel = new Voxel(x, y, z);</span>
 
-<span class="fc bfc" id="L106" title="All 4 branches covered.">        if (locations.containsKey(region) &amp;&amp; !locations.get(region).voxels.contains(voxel)) {</span>
-<span class="fc" id="L107">            return;</span>
+<span class="fc bfc" id="L108" title="All 4 branches covered.">        if (locations.containsKey(region) &amp;&amp; !locations.get(region).voxels.contains(voxel)) {</span>
+<span class="fc" id="L109">            return;</span>
         }
 
-<span class="fc" id="L110">        super.remove(x, y, z);</span>
+<span class="fc" id="L112">        super.remove(x, y, z);</span>
 
-<span class="fc bfc" id="L112" title="All 2 branches covered.">        if (locations.containsKey(region)) {</span>
-<span class="fc" id="L113">            locations.get(region).remove(x, y, z);</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        if (locations.containsKey(region)) {</span>
+<span class="fc" id="L115">            locations.get(region).remove(x, y, z);</span>
         }
-<span class="fc" id="L115">    }</span>
+<span class="fc" id="L117">    }</span>
 
     @Override
     public void assign(Region region, Voxel voxel) {
-<span class="fc" id="L119">        Region oldRegion = Region.UNDEFINED;</span>
+<span class="fc" id="L121">        Region oldRegion = Region.UNDEFINED;</span>
 
         // Check all regions for the voxel.
-<span class="fc bfc" id="L122" title="All 2 branches covered.">        for (Region key : locations.keySet()) {</span>
-<span class="fc bfc" id="L123" title="All 4 branches covered.">            if (key != region &amp;&amp; locations.get(key).voxels.contains(voxel)) {</span>
-<span class="fc" id="L124">                oldRegion = key;</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        for (Region key : locations.keySet()) {</span>
+<span class="fc bfc" id="L125" title="All 4 branches covered.">            if (key != region &amp;&amp; locations.get(key).voxels.contains(voxel)) {</span>
+<span class="fc" id="L126">                oldRegion = key;</span>
             }
-<span class="fc" id="L126">        }</span>
+<span class="fc" id="L128">        }</span>
 
         // Only assign if voxel exists and is assigned to a different region.
-<span class="fc bfc" id="L129" title="All 2 branches covered.">        if (oldRegion == Region.UNDEFINED) {</span>
-<span class="fc" id="L130">            return;</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        if (oldRegion == Region.UNDEFINED) {</span>
+<span class="fc" id="L132">            return;</span>
         }
 
         // Create new region location if it does not exist.
-<span class="fc bfc" id="L134" title="All 2 branches covered.">        if (!locations.containsKey(region)) {</span>
-<span class="fc" id="L135">            locations.put(region, makeLocation(new ArrayList&lt;&gt;()));</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        if (!locations.containsKey(region)) {</span>
+<span class="fc" id="L137">            locations.put(region, makeLocation(new ArrayList&lt;&gt;()));</span>
         }
 
-<span class="fc" id="L138">        locations.get(region).voxels.add(voxel);</span>
-<span class="fc" id="L139">        locations.get(region).volume++;</span>
-<span class="fc" id="L140">        locations.get(region).surface += locations.get(region).updateSurface(voxel);</span>
-<span class="fc" id="L141">        locations.get(region).height += locations.get(region).updateHeight(voxel);</span>
-<span class="fc" id="L142">        locations.get(region).updateCenter(voxel.x, voxel.y, voxel.z, 1);</span>
+<span class="fc" id="L140">        locations.get(region).voxels.add(voxel);</span>
+<span class="fc" id="L141">        locations.get(region).volume++;</span>
+<span class="fc" id="L142">        locations.get(region).surface += locations.get(region).updateSurface(voxel);</span>
+<span class="fc" id="L143">        locations.get(region).height += locations.get(region).updateHeight(voxel);</span>
+<span class="fc" id="L144">        locations.get(region).updateCenter(voxel.x, voxel.y, voxel.z, 1);</span>
 
-<span class="fc" id="L144">        locations.get(oldRegion).voxels.remove(voxel);</span>
-<span class="fc" id="L145">        locations.get(oldRegion).volume--;</span>
-<span class="fc" id="L146">        locations.get(oldRegion).surface -= locations.get(oldRegion).updateSurface(voxel);</span>
-<span class="fc" id="L147">        locations.get(oldRegion).height -= locations.get(oldRegion).updateHeight(voxel);</span>
-<span class="fc" id="L148">        locations.get(oldRegion).updateCenter(voxel.x, voxel.y, voxel.z, -1);</span>
-<span class="fc" id="L149">    }</span>
+<span class="fc" id="L146">        locations.get(oldRegion).voxels.remove(voxel);</span>
+<span class="fc" id="L147">        locations.get(oldRegion).volume--;</span>
+<span class="fc" id="L148">        locations.get(oldRegion).surface -= locations.get(oldRegion).updateSurface(voxel);</span>
+<span class="fc" id="L149">        locations.get(oldRegion).height -= locations.get(oldRegion).updateHeight(voxel);</span>
+<span class="fc" id="L150">        locations.get(oldRegion).updateCenter(voxel.x, voxel.y, voxel.z, -1);</span>
+<span class="fc" id="L151">    }</span>
 
     @Override
     public void distribute(Region region, int target, MersenneTwisterFast random) {
-<span class="fc bfc" id="L153" title="All 2 branches covered.">        if (region == Region.DEFAULT) {</span>
-<span class="fc" id="L154">            return;</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">        if (region == Region.DEFAULT) {</span>
+<span class="fc" id="L156">            return;</span>
         }
 
-<span class="fc" id="L157">        PottsLocation defaultLocation = locations.get(Region.DEFAULT);</span>
-<span class="fc" id="L158">        PottsLocation regionLocation = locations.get(region);</span>
-<span class="fc" id="L159">        ArrayList&lt;Voxel&gt; regionVoxels = new ArrayList&lt;&gt;(regionLocation.voxels);</span>
+<span class="fc" id="L159">        PottsLocation defaultLocation = locations.get(Region.DEFAULT);</span>
+<span class="fc" id="L160">        PottsLocation regionLocation = locations.get(region);</span>
+<span class="fc" id="L161">        ArrayList&lt;Voxel&gt; regionVoxels = new ArrayList&lt;&gt;(regionLocation.voxels);</span>
 
         // Select assignment center from the region voxels, if it exists,
         // otherwise from default voxels.
         Voxel center;
-<span class="fc bfc" id="L164" title="All 2 branches covered.">        if (regionVoxels.size() == 0) {</span>
-<span class="fc" id="L165">            center = defaultLocation.adjust(defaultLocation.getCenter());</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">        if (regionVoxels.size() == 0) {</span>
+<span class="fc" id="L167">            center = defaultLocation.adjust(defaultLocation.getCenter());</span>
         } else {
-<span class="fc" id="L167">            center = regionLocation.adjust(regionLocation.getCenter());</span>
-<span class="fc bfc" id="L168" title="All 2 branches covered.">            for (Voxel voxel : regionVoxels) {</span>
-<span class="fc" id="L169">                assign(Region.DEFAULT, voxel);</span>
-<span class="fc" id="L170">            }</span>
+<span class="fc" id="L169">            center = regionLocation.adjust(regionLocation.getCenter());</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">            for (Voxel voxel : regionVoxels) {</span>
+<span class="fc" id="L171">                assign(Region.DEFAULT, voxel);</span>
+<span class="fc" id="L172">            }</span>
         }
 
         // Select voxels and make sure they are connected. Remove any that
         // are not connected.
-<span class="fc" id="L175">        ArrayList&lt;Voxel&gt; selected = getSelected(center, target);</span>
-<span class="fc" id="L176">        checkVoxels(selected, this, random, true);</span>
+<span class="fc" id="L177">        ArrayList&lt;Voxel&gt; selected = getSelected(center, target);</span>
+<span class="fc" id="L178">        checkVoxels(selected, this, random, true);</span>
 
         // Add or remove voxels to hit the target number.
-<span class="fc" id="L179">        int currentSize = selected.size();</span>
-<span class="fc bfc" id="L180" title="All 2 branches covered.">        if (currentSize &lt; target) {</span>
-<span class="fc" id="L181">            PottsLocationFactory.increase(voxels, selected, target, random);</span>
-<span class="fc bfc" id="L182" title="All 2 branches covered.">        } else if (currentSize &gt; target) {</span>
-<span class="fc" id="L183">            PottsLocationFactory.decrease(selected, target, random);</span>
+<span class="fc" id="L181">        int currentSize = selected.size();</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">        if (currentSize &lt; target) {</span>
+<span class="fc" id="L183">            PottsLocationFactory.increase(voxels, selected, target, random);</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">        } else if (currentSize &gt; target) {</span>
+<span class="fc" id="L185">            PottsLocationFactory.decrease(selected, target, random);</span>
         }
 
         // Reassign selected voxels.
-<span class="fc" id="L187">        selected.forEach(voxel -&gt; assign(region, voxel));</span>
-<span class="fc" id="L188">    }</span>
+<span class="fc" id="L189">        selected.forEach(voxel -&gt; assign(region, voxel));</span>
+<span class="fc" id="L190">    }</span>
 
     @Override
     public void clear(int[][][] ids, int[][][] regions) {
-<span class="fc bfc" id="L192" title="All 2 branches covered.">        for (Voxel voxel : voxels) {</span>
-<span class="fc" id="L193">            ids[voxel.z][voxel.x][voxel.y] = 0;</span>
-<span class="fc" id="L194">            regions[voxel.z][voxel.x][voxel.y] = 0;</span>
-<span class="fc" id="L195">        }</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">        for (Voxel voxel : voxels) {</span>
+<span class="fc" id="L195">            ids[voxel.z][voxel.x][voxel.y] = 0;</span>
+<span class="fc" id="L196">            regions[voxel.z][voxel.x][voxel.y] = 0;</span>
+<span class="fc" id="L197">        }</span>
 
-<span class="fc" id="L197">        voxels.clear();</span>
-<span class="fc" id="L198">        locations.clear();</span>
-<span class="fc" id="L199">    }</span>
+<span class="fc" id="L199">        voxels.clear();</span>
+<span class="fc" id="L200">        locations.clear();</span>
+<span class="fc" id="L201">    }</span>
 
     @Override
     public void update(int id, int[][][] ids, int[][][] regions) {
-<span class="fc" id="L203">        super.update(id, ids, regions);</span>
+<span class="fc" id="L205">        super.update(id, ids, regions);</span>
 
-<span class="fc bfc" id="L205" title="All 2 branches covered.">        for (Region region : locations.keySet()) {</span>
-<span class="fc" id="L206">            locations.get(region).update(region.ordinal(), regions, null);</span>
-<span class="fc" id="L207">        }</span>
-<span class="fc" id="L208">    }</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">        for (Region region : locations.keySet()) {</span>
+<span class="fc" id="L208">            locations.get(region).update(region.ordinal(), regions, null);</span>
+<span class="fc" id="L209">        }</span>
+<span class="fc" id="L210">    }</span>
 
     @Override
     public LocationContainer convert(int id) {
-<span class="fc" id="L212">        EnumMap&lt;Region, ArrayList&lt;Voxel&gt;&gt; regions = new EnumMap&lt;&gt;(Region.class);</span>
-<span class="fc bfc" id="L213" title="All 2 branches covered.">        for (Region region : locations.keySet()) {</span>
-<span class="fc" id="L214">            regions.put(region, locations.get(region).voxels);</span>
-<span class="fc" id="L215">        }</span>
-<span class="fc" id="L216">        return new PottsLocationContainer(id, getCenter(), voxels, regions);</span>
+<span class="fc" id="L214">        EnumMap&lt;Region, ArrayList&lt;Voxel&gt;&gt; regions = new EnumMap&lt;&gt;(Region.class);</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">        for (Region region : locations.keySet()) {</span>
+<span class="fc" id="L216">            regions.put(region, locations.get(region).voxels);</span>
+<span class="fc" id="L217">        }</span>
+<span class="fc" id="L218">        return new PottsLocationContainer(id, getCenter(), voxels, regions);</span>
     }
 
     @Override
     public double[] getCentroid(Region region) {
-<span class="fc bfc" id="L221" title="All 2 branches covered.">        return (locations.containsKey(region) ? locations.get(region).getCentroid() : null);</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">        return (locations.containsKey(region) ? locations.get(region).getCentroid() : null);</span>
     }
 
     /**
@@ -242,49 +244,55 @@ public abstract class PottsLocations extends PottsLocation {
     @Override
     Location separateVoxels(
             ArrayList&lt;Voxel&gt; voxelsA, ArrayList&lt;Voxel&gt; voxelsB, MersenneTwisterFast random) {
-<span class="fc" id="L245">        PottsLocations splitLocation = makeLocations(voxelsB);</span>
-<span class="fc" id="L246">        EnumMap&lt;Region, Double&gt; fractions = new EnumMap&lt;&gt;(Region.class);</span>
-<span class="fc" id="L247">        int total = voxels.size();</span>
+<span class="fc" id="L247">        PottsLocations splitLocation = makeLocations(voxelsB);</span>
+<span class="fc" id="L248">        EnumMap&lt;Region, Double&gt; fractions = new EnumMap&lt;&gt;(Region.class);</span>
+<span class="fc" id="L249">        int total = voxels.size();</span>
 
         // Update voxels in current location.
-<span class="fc bfc" id="L250" title="All 2 branches covered.">        for (Region region : locations.keySet()) {</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">        for (Region region : locations.keySet()) {</span>
             // Track fraction of voxels for each region.
-<span class="fc" id="L252">            fractions.put(region, (double) locations.get(region).voxels.size() / total);</span>
+<span class="fc" id="L254">            fractions.put(region, (double) locations.get(region).voxels.size() / total);</span>
 
             // Assign to default region if in current split (A), otherwise remove
             // because it is in the new split (B).
-<span class="fc" id="L256">            ArrayList&lt;Voxel&gt; regionVoxels = new ArrayList&lt;&gt;(locations.get(region).voxels);</span>
-<span class="fc bfc" id="L257" title="All 2 branches covered.">            for (Voxel voxel : regionVoxels) {</span>
-<span class="fc bfc" id="L258" title="All 2 branches covered.">                if (voxelsA.contains(voxel)) {</span>
-<span class="fc" id="L259">                    assign(Region.DEFAULT, voxel);</span>
+<span class="fc" id="L258">            ArrayList&lt;Voxel&gt; regionVoxels = new ArrayList&lt;&gt;(locations.get(region).voxels);</span>
+<span class="fc bfc" id="L259" title="All 2 branches covered.">            for (Voxel voxel : regionVoxels) {</span>
+<span class="fc bfc" id="L260" title="All 2 branches covered.">                if (voxelsA.contains(voxel)) {</span>
+<span class="fc" id="L261">                    assign(Region.DEFAULT, voxel);</span>
                 } else {
-<span class="fc" id="L261">                    remove(voxel.x, voxel.y, voxel.z);</span>
+<span class="fc" id="L263">                    remove(voxel.x, voxel.y, voxel.z);</span>
                 }
-<span class="fc" id="L263">            }</span>
+<span class="fc" id="L265">            }</span>
 
             // Create empty regions in split location.
-<span class="fc bfc" id="L266" title="All 2 branches covered.">            if (!splitLocation.locations.containsKey(region)) {</span>
-<span class="fc" id="L267">                splitLocation.locations.put(region, makeLocation(new ArrayList&lt;&gt;()));</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">            if (!splitLocation.locations.containsKey(region)) {</span>
+<span class="fc" id="L269">                splitLocation.locations.put(region, makeLocation(new ArrayList&lt;&gt;()));</span>
             }
-<span class="fc" id="L269">        }</span>
+<span class="fc" id="L271">        }</span>
 
         // Assign voxel regions.
-<span class="fc bfc" id="L272" title="All 2 branches covered.">        for (Region region : locations.keySet()) {</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">        for (Region region : locations.keySet()) {</span>
             // No assignment for default regions.
-<span class="fc bfc" id="L274" title="All 2 branches covered.">            if (region == Region.DEFAULT) {</span>
-<span class="fc" id="L275">                continue;</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">            if (region == Region.DEFAULT) {</span>
+<span class="fc" id="L277">                continue;</span>
             }
 
             // Get target number of voxels to assign for current split.
-<span class="fc" id="L279">            int target = (int) (fractions.get(region) * this.volume);</span>
-<span class="fc" id="L280">            this.distribute(region, target, random);</span>
+<span class="fc" id="L281">            int target = (int) (fractions.get(region) * this.volume);</span>
+<span class="fc" id="L282">            this.distribute(region, target, random);</span>
 
             // Get target number of voxels to assign for new split.
-<span class="fc" id="L283">            int splitTarget = (int) (fractions.get(region) * splitLocation.volume);</span>
-<span class="fc" id="L284">            splitLocation.distribute(region, splitTarget, random);</span>
-<span class="fc" id="L285">        }</span>
+<span class="fc" id="L285">            int splitTarget = (int) (fractions.get(region) * splitLocation.volume);</span>
+<span class="fc" id="L286">            splitLocation.distribute(region, splitTarget, random);</span>
+<span class="fc" id="L287">        }</span>
 
-<span class="fc" id="L287">        return splitLocation;</span>
+<span class="fc" id="L289">        return splitLocation;</span>
+    }
+
+    @Override
+    Voxel getOffsetInApicalFrame(ArrayList&lt;Integer&gt; offsets, Vector apicalAxis) {
+<span class="fc" id="L294">        throw new UnsupportedOperationException(</span>
+                &quot;getOffsetInApicalFrame is not implemented for PottsLocations&quot;);
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

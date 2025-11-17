@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PottsLocation2D.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.env.location</a> &gt; <span class="el_source">PottsLocation2D.java</span></div><h1>PottsLocation2D.java</h1><pre class="source lang-java linenums">package arcade.potts.env.location;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import arcade.core.util.Vector;
 import static arcade.potts.util.PottsEnums.Direction;
 
 /** Concrete implementation of {@link PottsLocation} for 2D. */
@@ -12,57 +15,110 @@ public final class PottsLocation2D extends PottsLocation implements Location2D {
      * @param voxels the list of voxels
      */
     public PottsLocation2D(ArrayList&lt;Voxel&gt; voxels) {
-<span class="fc" id="L15">        super(voxels);</span>
-<span class="fc" id="L16">    }</span>
+<span class="fc" id="L18">        super(voxels);</span>
+<span class="fc" id="L19">    }</span>
 
     @Override
     PottsLocation makeLocation(ArrayList&lt;Voxel&gt; voxels) {
-<span class="fc" id="L20">        return new PottsLocation2D(voxels);</span>
+<span class="fc" id="L23">        return new PottsLocation2D(voxels);</span>
     }
 
     @Override
     ArrayList&lt;Voxel&gt; getNeighbors(Voxel focus) {
-<span class="fc" id="L25">        return Location2D.getNeighbors(focus);</span>
+<span class="fc" id="L28">        return Location2D.getNeighbors(focus);</span>
     }
 
     @Override
     public double convertSurface(double volume, double height) {
-<span class="fc" id="L30">        return Location2D.convertSurface(volume, height);</span>
+<span class="fc" id="L33">        return Location2D.convertSurface(volume, height);</span>
     }
 
     @Override
     int calculateSurface() {
-<span class="fc" id="L35">        return Location2D.calculateSurface(voxels);</span>
+<span class="fc" id="L38">        return Location2D.calculateSurface(voxels);</span>
     }
 
     @Override
     int calculateHeight() {
-<span class="fc" id="L40">        return Location2D.calculateHeight(voxels);</span>
+<span class="fc" id="L43">        return Location2D.calculateHeight(voxels);</span>
     }
 
     @Override
     int updateSurface(Voxel voxel) {
-<span class="fc" id="L45">        return Location2D.updateSurface(voxels, voxel);</span>
+<span class="fc" id="L48">        return Location2D.updateSurface(voxels, voxel);</span>
     }
 
     @Override
     int updateHeight(Voxel voxel) {
-<span class="fc" id="L50">        return Location2D.updateHeight(voxels, voxel);</span>
+<span class="fc" id="L53">        return Location2D.updateHeight(voxels, voxel);</span>
     }
 
     @Override
     HashMap&lt;Direction, Integer&gt; getDiameters() {
-<span class="fc" id="L55">        return Location2D.getDiameters(voxels, getCenter());</span>
+<span class="fc" id="L58">        return Location2D.getDiameters(voxels, getCenter());</span>
     }
 
     @Override
     Direction getSlice(Direction direction, HashMap&lt;Direction, Integer&gt; diameters) {
-<span class="fc" id="L60">        return Location2D.getSlice(direction, diameters);</span>
+<span class="fc" id="L63">        return Location2D.getSlice(direction, diameters);</span>
     }
 
     @Override
     ArrayList&lt;Voxel&gt; getSelected(Voxel focus, double n) {
-<span class="fc" id="L65">        return Location2D.getSelected(voxels, focus, n);</span>
+<span class="fc" id="L68">        return Location2D.getSelected(voxels, focus, n);</span>
+    }
+
+    /**
+     * Gets the voxel at specified percentage offsets along the location's X and Y axes with the
+     * provided apicalAxis considered to be pointing up the Y axis. Returns null if this
+     * PottsLocation2D contains no voxels.
+     *
+     * @param offsets the percent offsets along the location's X and Y axes
+     * @param apicalAxis the axis considered to be pointing up along the Y axis
+     * @return the voxel through which the plane of division will pass
+     */
+    @Override
+    public Voxel getOffsetInApicalFrame(ArrayList&lt;Integer&gt; offsets, Vector apicalAxis) {
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        if (voxels.isEmpty()) {</span>
+<span class="fc" id="L83">            return null;</span>
+        }
+<span class="pc bpc" id="L85" title="1 of 4 branches missed.">        if (offsets == null || offsets.size() != 2) {</span>
+<span class="fc" id="L86">            throw new IllegalArgumentException(&quot;Offsets must be 2 integers.&quot;);</span>
+        }
+
+        // Normalize axes
+<span class="fc" id="L90">        Vector yAxis = Vector.normalizeVector(apicalAxis);</span>
+<span class="fc" id="L91">        Vector xAxis = Vector.normalizeVector(new Vector(apicalAxis.getY(), -apicalAxis.getX(), 0));</span>
+
+        // Project voxels onto apical axis and group by rounded projection
+<span class="fc" id="L94">        HashMap&lt;Integer, ArrayList&lt;Voxel&gt;&gt; apicalBands = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L95">        ArrayList&lt;Integer&gt; apicalKeys = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        for (Voxel v : voxels) {</span>
+<span class="fc" id="L98">            Vector pos = new Vector(v.x, v.y, 0);</span>
+<span class="fc" id="L99">            double apicalProj = Vector.dotProduct(pos, yAxis);</span>
+<span class="fc" id="L100">            int roundedProj = (int) Math.round(apicalProj);</span>
+<span class="fc" id="L101">            apicalBands.computeIfAbsent(roundedProj, k -&gt; new ArrayList&lt;&gt;()).add(v);</span>
+<span class="fc" id="L102">            apicalKeys.add(roundedProj);</span>
+<span class="fc" id="L103">        }</span>
+
+        // Sort apical keys and choose percentile
+<span class="fc" id="L106">        Collections.sort(apicalKeys);</span>
+<span class="fc" id="L107">        int yIndex =</span>
+<span class="fc" id="L108">                Math.min(</span>
+<span class="fc" id="L109">                        apicalKeys.size() - 1,</span>
+<span class="fc" id="L110">                        (int) ((offsets.get(1) / 100.0) * apicalKeys.size()));</span>
+<span class="fc" id="L111">        int targetApicalKey = apicalKeys.get(yIndex);</span>
+
+<span class="fc" id="L113">        ArrayList&lt;Voxel&gt; band = apicalBands.get(targetApicalKey);</span>
+<span class="pc bpc" id="L114" title="2 of 4 branches missed.">        if (band == null || band.isEmpty()) {</span>
+<span class="nc" id="L115">            return null;</span>
+        }
+        // Project to orthogonal axis within the band and sort
+<span class="fc" id="L118">        band.sort(</span>
+<span class="fc" id="L119">                Comparator.comparingDouble(v -&gt; Vector.dotProduct(new Vector(v.x, v.y, 0), xAxis)));</span>
+<span class="fc" id="L120">        int xIndex = Math.min(band.size() - 1, (int) ((offsets.get(0) / 100.0) * band.size()));</span>
+<span class="fc" id="L121">        return band.get(xIndex);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

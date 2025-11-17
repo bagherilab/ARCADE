@@ -2,6 +2,9 @@
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import arcade.core.util.Vector;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Region;
 
@@ -13,62 +16,68 @@ public final class PottsLocations2D extends PottsLocations implements Location2D
      * @param voxels the list of voxels
      */
     public PottsLocations2D(ArrayList&lt;Voxel&gt; voxels) {
-<span class="fc" id="L16">        super(voxels);</span>
-<span class="fc" id="L17">    }</span>
+<span class="fc" id="L19">        super(voxels);</span>
+<span class="fc" id="L20">    }</span>
 
     @Override
     PottsLocation makeLocation(ArrayList&lt;Voxel&gt; voxels) {
-<span class="fc" id="L21">        return new PottsLocation2D(voxels);</span>
+<span class="fc" id="L24">        return new PottsLocation2D(voxels);</span>
     }
 
     @Override
     PottsLocations makeLocations(ArrayList&lt;Voxel&gt; voxels) {
-<span class="fc" id="L26">        return new PottsLocations2D(voxels);</span>
+<span class="fc" id="L29">        return new PottsLocations2D(voxels);</span>
     }
 
     @Override
     ArrayList&lt;Voxel&gt; getNeighbors(Voxel focus) {
-<span class="fc" id="L31">        return Location2D.getNeighbors(focus);</span>
+<span class="fc" id="L34">        return Location2D.getNeighbors(focus);</span>
     }
 
     @Override
     public double convertSurface(double volume, double height) {
-<span class="fc" id="L36">        return Location2D.convertSurface(volume, height);</span>
+<span class="fc" id="L39">        return Location2D.convertSurface(volume, height);</span>
     }
 
     @Override
     int calculateSurface() {
-<span class="fc" id="L41">        return Location2D.calculateSurface(voxels);</span>
+<span class="fc" id="L44">        return Location2D.calculateSurface(voxels);</span>
     }
 
     @Override
     int calculateHeight() {
-<span class="fc" id="L46">        return Location2D.calculateHeight(voxels);</span>
+<span class="fc" id="L49">        return Location2D.calculateHeight(voxels);</span>
     }
 
     @Override
     int updateSurface(Voxel voxel) {
-<span class="fc" id="L51">        return Location2D.updateSurface(voxels, voxel);</span>
+<span class="fc" id="L54">        return Location2D.updateSurface(voxels, voxel);</span>
     }
 
     @Override
     int updateHeight(Voxel voxel) {
-<span class="fc" id="L56">        return Location2D.updateHeight(voxels, voxel);</span>
+<span class="fc" id="L59">        return Location2D.updateHeight(voxels, voxel);</span>
     }
 
     @Override
     HashMap&lt;Direction, Integer&gt; getDiameters() {
-<span class="fc" id="L61">        return Location2D.getDiameters(voxels, getCenter());</span>
+<span class="fc" id="L64">        return Location2D.getDiameters(voxels, getCenter());</span>
     }
 
     @Override
     Direction getSlice(Direction direction, HashMap&lt;Direction, Integer&gt; diameters) {
-<span class="fc" id="L66">        return Location2D.getSlice(direction, diameters);</span>
+<span class="fc" id="L69">        return Location2D.getSlice(direction, diameters);</span>
     }
 
     @Override
     ArrayList&lt;Voxel&gt; getSelected(Voxel focus, double n) {
-<span class="fc" id="L71">        return Location2D.getSelected(locations.get(Region.DEFAULT).voxels, focus, n);</span>
+<span class="fc" id="L74">        return Location2D.getSelected(locations.get(Region.DEFAULT).voxels, focus, n);</span>
+    }
+
+    @Override
+    Voxel getOffsetInApicalFrame(ArrayList&lt;Integer&gt; offsets, Vector apicalAxis) {
+<span class="nc" id="L79">        throw new UnsupportedOperationException(</span>
+                &quot;getOffsetInApicalFrame is not implemented for PottsLocations2D&quot;);
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
