@@ -11,30 +11,30 @@ import arcade.patch.util.PatchEnums.AntigenFlag;
 import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.State;
 
-/** Extension of {@link PatchCellCART} for CD4 CART-cells with selected module versions. */
-public class PatchCellCARTCD4 extends PatchCellCART {
+/** Extension of {@link PatchCellCART} for CD8 CART-cells with selected module versions. */
+public class PatchCellCARTCombined extends PatchCellCART {
 
     /**
-     * Creates a T cell {@code PatchCellCARTCD4} agent.
+     * Creates a T cell {@code PatchCellCARTCD8} agent. *
      *
      * @param container the cell container
      * @param location the {@link Location} of the cell
-     * @param parameters the {@link Parameters} of the cell
+     * @param parameters the dictionary of parameters
      */
-    public PatchCellCARTCD4(
+    public PatchCellCARTCombined(
             PatchCellContainer container, Location location, Parameters parameters) {
         this(container, location, parameters, null);
     }
 
     /**
-     * Creates a T cell {@code PatchCellCARTCD4} agent. *
+     * Creates a T cell {@code PatchCellCARTCD8} agent. *
      *
      * @param container the cell container
      * @param location the {@link Location} of the cell
-     * @param parameters the {@link Parameters} of the cell
+     * @param parameters the dictionary of parameters
      * @param links the map of population links
      */
-    public PatchCellCARTCD4(
+    public PatchCellCARTCombined(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
     }
@@ -60,15 +60,20 @@ public class PatchCellCARTCD4 extends PatchCellCART {
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
 
+        if (sim.getSchedule().getTime() == 2880) {
+            int a = 0;
+        }
+
         super.age++;
 
         if (state != State.APOPTOTIC && age > apoptosisAge) {
             setState(State.APOPTOTIC);
-            super.setBindingFlag(AntigenFlag.UNBOUND);
+            super.unbind();
             this.activated = false;
         }
 
         super.lastActiveTicker++;
+
         if (super.lastActiveTicker != 0 && super.lastActiveTicker % MINUTES_IN_DAY == 0) {
             if (super.boundCARAntigensCount != 0) {
                 super.boundCARAntigensCount--;
@@ -80,6 +85,8 @@ public class PatchCellCARTCD4 extends PatchCellCART {
 
         super.processes.get(Domain.METABOLISM).step(simstate.random, sim);
 
+        // Check energy status. If cell has less energy than threshold, it will
+        // apoptose. If overall energy is negative, then cell enters quiescence.
         if (state != State.APOPTOTIC) {
             if (super.energy < super.energyThreshold) {
 
@@ -101,7 +108,6 @@ public class PatchCellCARTCD4 extends PatchCellCART {
 
         super.processes.get(Domain.INFLAMMATION).step(simstate.random, sim);
 
-        // Change state from undefined.
         if (super.state == State.UNDEFINED || super.state == State.PAUSED) {
             if (divisions == divisionPotential) {
                 if (simstate.random.nextDouble() > super.senescentFraction) {
@@ -115,6 +121,7 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                 PatchCellTissue target = super.bindTarget(sim, location, simstate.random);
                 super.boundTarget = target;
 
+                // If cell is bound to both antigen and self it will become anergic.
                 if (super.getBindingFlag() == AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR) {
                     if (simstate.random.nextDouble() > super.anergicFraction) {
                         super.setState(State.APOPTOTIC);
@@ -124,7 +131,11 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                     super.unbind();
                     this.activated = false;
                 } else if (super.getBindingFlag() == AntigenFlag.BOUND_ANTIGEN) {
+                    // If cell is only bound to target antigen, the cell
+                    // can potentially become properly activated.
 
+                    // Check overstimulation. If cell has bound to
+                    // target antigens too many times, becomes exhausted.
                     if (boundCARAntigensCount > maxAntigenBinding) {
                         if (simstate.random.nextDouble() > super.exhaustedFraction) {
                             super.setState(State.APOPTOTIC);
@@ -134,14 +145,18 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                         super.unbind();
                         this.activated = false;
                     } else {
-                        super.setState(State.STIMULATORY);
+                        // if CD8 cell is properly activated, it can be cytotoxic
                         this.lastActiveTicker = 0;
                         this.activated = true;
+                        super.setState(State.CYTOTOXIC);
                     }
                 } else {
+                    // If self binding, unbind
                     if (super.getBindingFlag() == AntigenFlag.BOUND_CELL_RECEPTOR) {
                         super.unbind();
                     }
+                    // Check activation status. If cell has been activated before,
+                    // it will proliferate. If not, it will migrate.
                     if (activated) {
                         super.setState(State.PROLIFERATIVE);
                     } else {
@@ -155,7 +170,6 @@ public class PatchCellCARTCD4 extends PatchCellCART {
             }
         }
 
-        // Step the module for the cell state.
         if (super.module != null) {
             super.module.step(simstate.random, sim);
         }
