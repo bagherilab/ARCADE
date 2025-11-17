@@ -106,7 +106,7 @@ public class PottsCellFlyStem extends PottsCell {
             throw new IllegalArgumentException("Prospero inital value should not be negative");
         }
 
-        prosperoStepSize = parameters.getDouble("StemCell/ProsperoStepSize")
+        prosperoStepSize = parameters.getDouble("StemCell/ProsperoStepSize");
     }
 
     @Override
