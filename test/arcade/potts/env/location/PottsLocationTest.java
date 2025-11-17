@@ -169,6 +169,11 @@ public class PottsLocationTest {
         ArrayList<Voxel> getSelected(Voxel center, double n) {
             return new ArrayList<>();
         }
+
+        @Override
+        Voxel getOffsetInApicalFrame(ArrayList<Integer> offsets, Vector apicalAxis) {
+            return new Voxel(0, 0, 0);
+        }
     }
 
     @Test
