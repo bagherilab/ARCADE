@@ -24,9 +24,10 @@ import arcade.potts.util.PottsEnums.Region;
 import arcade.potts.util.PottsEnums.State;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static arcade.potts.util.PottsEnums.Region;
-import static arcade.potts.util.PottsEnums.State;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class PottsModuleFlyGMCDifferentiationTest {
     private int[][][] dummyIDs;
@@ -104,20 +105,7 @@ public class PottsModuleFlyGMCDifferentiationTest {
         when(gmcCell.getCriticalRegionVolumes()).thenReturn(critRegionVolumes);
         when(gmcCell.getCriticalRegionHeights()).thenReturn(critRegionHeights);
 
-        // Stub parameters
         parameters = mock(Parameters.class);
-        when(parameters.getDouble("proliferation/RATE_G1")).thenReturn(1.0);
-        when(parameters.getDouble("proliferation/RATE_S")).thenReturn(1.0);
-        when(parameters.getDouble("proliferation/RATE_G2")).thenReturn(1.0);
-        when(parameters.getDouble("proliferation/RATE_M")).thenReturn(1.0);
-        when(parameters.getInt("proliferation/STEPS_G1")).thenReturn(1);
-        when(parameters.getInt("proliferation/STEPS_S")).thenReturn(1);
-        when(parameters.getInt("proliferation/STEPS_G2")).thenReturn(1);
-        when(parameters.getInt("proliferation/STEPS_M")).thenReturn(1);
-        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(1.0);
-        when(parameters.getDouble("proliferation/NUCLEUS_GROWTH_RATE")).thenReturn(1.0);
-        when(parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE")).thenReturn(0.1);
-        when(parameters.getDouble("proliferation/NUCLEUS_CONDENSATION_FRACTION")).thenReturn(0.5);
         when(gmcCell.getParameters()).thenReturn(parameters);
 
         random = mock(MersenneTwisterFast.class);
@@ -153,7 +141,8 @@ public class PottsModuleFlyGMCDifferentiationTest {
         when(container.convert(eq(cellFactory), eq(newLocation), any(MersenneTwisterFast.class)))
                 .thenReturn(newCell);
 
-        PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
+        PottsModuleProliferationVolumeBasedDivision module =
+                new PottsModuleFlyGMCDifferentiation(gmcCell);
         module.addCell(random, sim);
         verify(location).split(random);
         verify(gmcCell).reset(dummyIDs, dummyRegions);
