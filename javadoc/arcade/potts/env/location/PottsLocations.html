@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":6,"i13":10,"i14":10,"i15":10,"i16":10};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":6,"i14":10,"i15":10,"i16":10,"i17":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -300,41 +300,50 @@ extends <a href="PottsLocation.html" title="class in arcade.potts.env.location">
 </td>
 </tr>
 <tr id="i8" class="altColor">
+<td class="colFirst"><code>(package private) <a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getOffsetInApicalFrame(java.util.ArrayList,arcade.core.util.Vector)">getOffsetInApicalFrame</a></span>&#8203;(java.util.ArrayList&lt;java.lang.Integer&gt;&nbsp;offsets,
+                      <a href="../../../core/util/Vector.html" title="class in arcade.core.util">Vector</a>&nbsp;apicalAxis)</code></th>
+<td class="colLast">
+<div class="block">Gets the voxel at specified percentage offsets along the location's axes with the provided
+ ApicalAxis considered to be pointing up the Y axis.</div>
+</td>
+</tr>
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>java.util.EnumSet&lt;<a href="../../util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRegions()">getRegions</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets a set of regions.</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSurface(arcade.potts.util.PottsEnums.Region)">getSurface</a></span>&#8203;(<a href="../../util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code></th>
 <td class="colLast">
 <div class="block">Gets the surface area of the location for a given region.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getVolume(arcade.potts.util.PottsEnums.Region)">getVolume</a></span>&#8203;(<a href="../../util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code></th>
 <td class="colLast">
 <div class="block">Gets the volume of the location for a given region.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>java.util.ArrayList&lt;<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getVoxels(arcade.potts.util.PottsEnums.Region)">getVoxels</a></span>&#8203;(<a href="../../util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code></th>
 <td class="colLast">
 <div class="block">Gets all voxels for a region.</div>
 </td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>(package private) abstract <a href="PottsLocations.html" title="class in arcade.potts.env.location">PottsLocations</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#makeLocations(java.util.ArrayList)">makeLocations</a></span>&#8203;(java.util.ArrayList&lt;<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&gt;&nbsp;voxels)</code></th>
 <td class="colLast">
 <div class="block">Makes a new <code>PottsLocations</code> with the given voxels.</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#remove(int,int,int)">remove</a></span>&#8203;(int&nbsp;x,
       int&nbsp;y,
@@ -343,7 +352,7 @@ extends <a href="PottsLocation.html" title="class in arcade.potts.env.location">
 <div class="block">Removes the voxel at the given coordinates.</div>
 </td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#remove(arcade.potts.util.PottsEnums.Region,int,int,int)">remove</a></span>&#8203;(<a href="../../util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region,
       int&nbsp;x,
@@ -353,7 +362,7 @@ extends <a href="PottsLocation.html" title="class in arcade.potts.env.location">
 <div class="block">Removes the voxel at the given coordinates for given region.</div>
 </td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code>(package private) <a href="../../../core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#separateVoxels(java.util.ArrayList,java.util.ArrayList,ec.util.MersenneTwisterFast)">separateVoxels</a></span>&#8203;(java.util.ArrayList&lt;<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&gt;&nbsp;voxelsA,
               java.util.ArrayList&lt;<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&gt;&nbsp;voxelsB,
@@ -362,7 +371,7 @@ extends <a href="PottsLocation.html" title="class in arcade.potts.env.location">
 <div class="block">Separates voxels in the list between this location and a new location.</div>
 </td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i17" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#update(int,int%5B%5D%5B%5D%5B%5D,int%5B%5D%5B%5D%5B%5D)">update</a></span>&#8203;(int&nbsp;id,
       int[][][]&nbsp;ids,
@@ -769,7 +778,7 @@ extends <a href="PottsLocation.html" title="class in arcade.potts.env.location">
 <a id="separateVoxels(java.util.ArrayList,java.util.ArrayList,ec.util.MersenneTwisterFast)">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>separateVoxels</h4>
 <pre class="methodSignature"><a href="../../../core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>&nbsp;separateVoxels&#8203;(java.util.ArrayList&lt;<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&gt;&nbsp;voxelsA,
@@ -787,6 +796,28 @@ extends <a href="PottsLocation.html" title="class in arcade.potts.env.location">
 <dd><code>random</code> - the seeded random number generator</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>a <a href="../../../core/env/location/Location.html" title="interface in arcade.core.env.location"><code>Location</code></a> object with split voxels</dd>
+</dl>
+</li>
+</ul>
+<a id="getOffsetInApicalFrame(java.util.ArrayList,arcade.core.util.Vector)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>getOffsetInApicalFrame</h4>
+<pre class="methodSignature"><a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&nbsp;getOffsetInApicalFrame&#8203;(java.util.ArrayList&lt;java.lang.Integer&gt;&nbsp;offsets,
+                             <a href="../../../core/util/Vector.html" title="class in arcade.core.util">Vector</a>&nbsp;apicalAxis)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="PottsLocation.html#getOffsetInApicalFrame(java.util.ArrayList,arcade.core.util.Vector)">PottsLocation</a></code></span></div>
+<div class="block">Gets the voxel at specified percentage offsets along the location's axes with the provided
+ ApicalAxis considered to be pointing up the Y axis.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="PottsLocation.html#getOffsetInApicalFrame(java.util.ArrayList,arcade.core.util.Vector)">getOffsetInApicalFrame</a></code>&nbsp;in class&nbsp;<code><a href="PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>offsets</code> - the percent offsets along the location's axes</dd>
+<dd><code>apicalAxis</code> - the axis considered to be pointing up along the Y axis</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the voxel at the specified offset in the frame of the apical axis</dd>
 </dl>
 </li>
 </ul>
