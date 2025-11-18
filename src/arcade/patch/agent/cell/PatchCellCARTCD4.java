@@ -52,7 +52,8 @@ public class PatchCellCARTCD4 extends PatchCellCART {
                 volume,
                 height,
                 criticalVolume,
-                criticalHeight);
+                criticalHeight,
+                cycles);
     }
 
     @Override
