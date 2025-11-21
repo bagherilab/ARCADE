@@ -1,6 +1,7 @@
 package arcade.patch.env.component;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.regex.Matcher;
@@ -56,7 +57,10 @@ public abstract class PatchComponentSitesGraphFactory {
         VEIN(EdgeCategory.VEIN),
 
         /** Code for venule edge type. */
-        VENULE(EdgeCategory.VEIN);
+        VENULE(EdgeCategory.VEIN),
+
+        /** Code for angiogenic edge type. */
+        ANGIOGENIC(EdgeCategory.CAPILLARY);
 
         /** Edge category corresponding to the edge type. */
         final EdgeCategory category;
@@ -188,6 +192,12 @@ public abstract class PatchComponentSitesGraphFactory {
     /** Width of the array (y direction). */
     final int latticeWidth;
 
+    /** List of pointers to artery node and edge objects. */
+    ArrayList<Root> arteries;
+
+    /** List of pointers to vein node and edge objects. */
+    ArrayList<Root> veins;
+
     /**
      * Creates a factory for making {@link Graph} sites.
      *
@@ -244,6 +254,17 @@ public abstract class PatchComponentSitesGraphFactory {
      * @return the code for the edge direction
      */
     abstract EdgeDirection getDirection(int fromX, int fromY, int toX, int toY);
+
+    /**
+     * Gets the opposite direction of the given edge.
+     *
+     * @param edge the edge object
+     * @param level the graph resolution level
+     * @return the code for the opposite edge direction
+     */
+    public EdgeDirection getOppositeDirection(SiteEdge edge, EdgeLevel level) {
+        return getDirection(edge.getTo(), edge.getFrom(), level);
+    }
 
     /**
      * Adds a root motif to the graph.
@@ -326,6 +347,13 @@ public abstract class PatchComponentSitesGraphFactory {
      * @return the list of coordinate changes
      */
     abstract int[] getOffset(EdgeDirection offset);
+
+    /**
+     * Get a map of possible offset directions to their corresponding coordinate changes.
+     *
+     * @return the map of offset directions to their corresponding coordinate changes
+     */
+    abstract EnumMap<EdgeDirection, int[]> getOffsets();
 
     /**
      * Gets the length of the given edge.
@@ -604,8 +632,8 @@ public abstract class PatchComponentSitesGraphFactory {
             leaves.addAll(bag);
         }
 
-        ArrayList<Root> arteries = new ArrayList<>();
-        ArrayList<Root> veins = new ArrayList<>();
+        arteries = new ArrayList<>();
+        veins = new ArrayList<>();
         boolean hasArtery = false;
         boolean hasVein = false;
 
@@ -643,19 +671,19 @@ public abstract class PatchComponentSitesGraphFactory {
         addMotifs(graph, leaves2, EdgeLevel.LEVEL_1, EdgeMotif.SINGLE, random);
 
         // Calculate radii, pressure, and shears.
-        updateRootGraph(graph, arteries, veins, EdgeLevel.LEVEL_1, random);
+        updateRootGraph(graph, EdgeLevel.LEVEL_1, random);
 
         // Iterative remodeling.
         int iter = 0;
         double frac = 1.0;
         while (frac > REMODELING_FRACTION && iter < MAX_ITERATIONS) {
             frac = remodelRootGraph(graph, EdgeLevel.LEVEL_1, random);
-            updateRootGraph(graph, arteries, veins, EdgeLevel.LEVEL_1, random);
+            updateRootGraph(graph, EdgeLevel.LEVEL_1, random);
             iter++;
         }
 
         // Prune network for perfused segments and recalculate properties.
-        refineRootGraph(graph, arteries, veins);
+        refineRootGraph(graph);
 
         // Subdivide growth sites and add new motifs.
         Bag midpoints = subdivideRootGraph(graph, EdgeLevel.LEVEL_1);
@@ -664,10 +692,10 @@ public abstract class PatchComponentSitesGraphFactory {
         addMotifs(graph, midpoints2, EdgeLevel.LEVEL_2, EdgeMotif.SINGLE, random);
 
         // Calculate radii, pressure, and shears.
-        updateRootGraph(graph, arteries, veins, EdgeLevel.LEVEL_2, random);
+        updateRootGraph(graph, EdgeLevel.LEVEL_2, random);
 
         // Prune network for perfused segments and recalculate properties.
-        refineRootGraph(graph, arteries, veins);
+        refineRootGraph(graph);
 
         return graph;
     }
@@ -676,17 +704,10 @@ public abstract class PatchComponentSitesGraphFactory {
      * Updates hemodynamic properties for graph sites with root layouts.
      *
      * @param graph the graph instance
-     * @param arteries the list of artery edges
-     * @param veins the list of vein edges
      * @param level the graph resolution level
      * @param random the random number generator
      */
-    private void updateRootGraph(
-            Graph graph,
-            ArrayList<Root> arteries,
-            ArrayList<Root> veins,
-            EdgeLevel level,
-            MersenneTwisterFast random) {
+    private void updateRootGraph(Graph graph, EdgeLevel level, MersenneTwisterFast random) {
         ArrayList<SiteEdge> list;
         ArrayList<SiteEdge> caps = new ArrayList<>();
 
@@ -762,7 +783,7 @@ public abstract class PatchComponentSitesGraphFactory {
                 Graph g2 = new Graph();
                 graph.getSubgraph(g1, e -> ((SiteEdge) e).level == EdgeLevel.LEVEL_1);
                 graph.getSubgraph(g2, e -> ((SiteEdge) e).level == EdgeLevel.LEVEL_2);
-                mergeGraphs(g1, g2);
+                mergeGraphs(graph, g1, g2);
                 break;
             default:
                 break;
@@ -811,10 +832,8 @@ public abstract class PatchComponentSitesGraphFactory {
      * Refines the graph for graph sites with root layouts.
      *
      * @param graph the graph instance
-     * @param arteries the list of artery edges
-     * @param veins the list of vein edges
      */
-    private void refineRootGraph(Graph graph, ArrayList<Root> arteries, ArrayList<Root> veins) {
+    private void refineRootGraph(Graph graph) {
         // Reverse edges that are veins and venules.
         ArrayList<SiteEdge> reverse =
                 getEdgeByType(graph, new EdgeType[] {EdgeType.VEIN, EdgeType.VENULE});

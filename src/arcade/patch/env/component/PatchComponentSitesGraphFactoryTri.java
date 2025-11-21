@@ -152,6 +152,11 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
     }
 
     @Override
+    EnumMap<EdgeDirection, int[]> getOffsets() {
+        return OFFSETS;
+    }
+
+    @Override
     int calcOffset(int k) {
         return (latticeHeight - k / 2 - 1) % 3;
     }
@@ -433,7 +438,8 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
             return bag;
         }
 
-        // Add the two leaves of the tripod if line is 0, otherwise add in the root line.
+        // Add the two leaves of the tripod if line is 0, otherwise add in the root
+        // line.
         if (offsets == null) {
             for (EdgeDirection offset : ROOT_OFFSETS.get(dir)) {
                 SiteNode node2 = offsetNode(node1, offset, level);

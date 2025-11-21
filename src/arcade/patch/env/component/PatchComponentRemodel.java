@@ -1,5 +1,6 @@
 package arcade.patch.env.component;
 
+import java.util.logging.Logger;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.util.Bag;
@@ -13,6 +14,8 @@ import static arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MAXIMUM_WALL_RADIUS_FRACTION;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MINIMUM_CAPILLARY_RADIUS;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MINIMUM_WALL_THICKNESS;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculateCurrentState;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.updateGraph;
 import static arcade.patch.util.PatchEnums.Ordering;
 
 /**
@@ -28,6 +31,8 @@ import static arcade.patch.util.PatchEnums.Ordering;
  * All hemodynamic properties are recalculated at the end of the step.
  */
 public class PatchComponentRemodel implements Component {
+    private static final Logger LOGGER = Logger.getLogger(PatchComponentRemodel.class.getName());
+
     /** Interval between remodeling steps [min]. */
     private final int remodelingInterval;
 
@@ -175,15 +180,9 @@ public class PatchComponentRemodel implements Component {
         // If any edges are removed, update the graph edges that are ignored.
         // Otherwise, recalculate pressure, flow, and stresses.
         if (removed) {
-            PatchComponentSitesGraphUtilities.updateGraph(graph);
+            updateGraph(graph);
         } else {
-            PatchComponentSitesGraphUtilities.calculatePressures(graph);
-            boolean reversed = PatchComponentSitesGraphUtilities.reversePressures(graph);
-            if (reversed) {
-                PatchComponentSitesGraphUtilities.calculatePressures(graph);
-            }
-            PatchComponentSitesGraphUtilities.calculateFlows(graph);
-            PatchComponentSitesGraphUtilities.calculateStresses(graph);
+            calculateCurrentState(graph);
         }
     }
 

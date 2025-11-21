@@ -1,5 +1,6 @@
 package arcade.patch.agent.process;
 
+import java.util.logging.Logger;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
@@ -13,6 +14,8 @@ import arcade.patch.agent.cell.PatchCell;
  * added to the environment at the rate specified by the input parameter VEGF_SECRETION_RATE.
  */
 public class PatchProcessSensingSimple extends PatchProcessSensing {
+    private static final Logger LOGGER =
+            Logger.getLogger(PatchProcessSensingSimple.class.getName());
 
     /** Rate of secretion of VEGF [VEGF/min]. */
     private final double secretionRate;
@@ -32,7 +35,6 @@ public class PatchProcessSensingSimple extends PatchProcessSensing {
      */
     public PatchProcessSensingSimple(PatchCell cell) {
         super(cell);
-
         secretionRate = cell.getParameters().getDouble("sensing/VEGF_SECRETION_RATE");
     }
 
