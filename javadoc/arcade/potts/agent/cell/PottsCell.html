@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10,"i28":10,"i29":10,"i30":10,"i31":10,"i32":10,"i33":6,"i34":10,"i35":10,"i36":10,"i37":10,"i38":10,"i39":10};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10,"i28":10,"i29":10,"i30":10,"i31":10,"i32":10,"i33":10,"i34":6,"i35":10,"i36":10,"i37":10,"i38":10,"i39":10,"i40":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -594,19 +594,26 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 </tr>
 <tr id="i32" class="altColor">
 <td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setCriticalVolume(double)">setCriticalVolume</a></span>&#8203;(double&nbsp;newCriticalVolume)</code></th>
+<td class="colLast">
+<div class="block">Sets the critical volume of the cell.</div>
+</td>
+</tr>
+<tr id="i33" class="rowColor">
+<td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setState(arcade.core.agent.cell.CellState)">setState</a></span>&#8203;(<a href="../../../core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;newState)</code></th>
 <td class="colLast">
 <div class="block">Sets the cell state.</div>
 </td>
 </tr>
-<tr id="i33" class="rowColor">
+<tr id="i34" class="altColor">
 <td class="colFirst"><code>(package private) abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setStateModule(arcade.core.agent.cell.CellState)">setStateModule</a></span>&#8203;(<a href="../../../core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;newState)</code></th>
 <td class="colLast">
 <div class="block">Sets the state module for the cell.</div>
 </td>
 </tr>
-<tr id="i34" class="altColor">
+<tr id="i35" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setTargets(double,double)">setTargets</a></span>&#8203;(double&nbsp;volume,
           double&nbsp;surface)</code></th>
@@ -614,7 +621,7 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <div class="block">Sets the target volume and surface for the cell.</div>
 </td>
 </tr>
-<tr id="i35" class="rowColor">
+<tr id="i36" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setTargets(arcade.potts.util.PottsEnums.Region,double,double)">setTargets</a></span>&#8203;(<a href="../../util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region,
           double&nbsp;volume,
@@ -623,19 +630,19 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <div class="block">Sets the target volume and surface for a region.</div>
 </td>
 </tr>
-<tr id="i36" class="altColor">
+<tr id="i37" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#step(sim.engine.SimState)">step</a></span>&#8203;(sim.engine.SimState&nbsp;simstate)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i37" class="rowColor">
+<tr id="i38" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#stop()">stop</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Stop the cell from stepping.</div>
 </td>
 </tr>
-<tr id="i38" class="altColor">
+<tr id="i39" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateTarget(double,double)">updateTarget</a></span>&#8203;(double&nbsp;rate,
             double&nbsp;scale)</code></th>
@@ -643,7 +650,7 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <div class="block">Updates target volume and surface area.</div>
 </td>
 </tr>
-<tr id="i39" class="rowColor">
+<tr id="i40" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateTarget(arcade.potts.util.PottsEnums.Region,double,double)">updateTarget</a></span>&#8203;(<a href="../../util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region,
             double&nbsp;rate,
@@ -819,7 +826,7 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <ul class="blockList">
 <li class="blockList">
 <h4>criticalVolume</h4>
-<pre>final&nbsp;double criticalVolume</pre>
+<pre>double criticalVolume</pre>
 <div class="block">Critical volume for cell [voxels].</div>
 </li>
 </ul>
@@ -1279,6 +1286,20 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <dd><code><a href="../../../core/agent/cell/Cell.html#getCriticalVolume()">getCriticalVolume</a></code>&nbsp;in interface&nbsp;<code><a href="../../../core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the critical volume</dd>
+</dl>
+</li>
+</ul>
+<a id="setCriticalVolume(double)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setCriticalVolume</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;setCriticalVolume&#8203;(double&nbsp;newCriticalVolume)</pre>
+<div class="block">Sets the critical volume of the cell.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>newCriticalVolume</code> - the new critical volume</dd>
 </dl>
 </li>
 </ul>
