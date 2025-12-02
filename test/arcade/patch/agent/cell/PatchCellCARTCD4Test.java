@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sim.engine.Schedule;
 import sim.engine.Steppable;
+import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
@@ -51,7 +52,7 @@ public class PatchCellCARTCD4Test {
         double criticalVolume = randomDoubleBetween(100, 200);
         double criticalHeight = randomDoubleBetween(4, 10);
         State state = State.UNDEFINED;
-
+        Bag cycles = new Bag();
         container =
                 new PatchCellContainer(
                         id,
@@ -63,7 +64,8 @@ public class PatchCellCARTCD4Test {
                         volume,
                         height,
                         criticalVolume,
-                        criticalHeight);
+                        criticalHeight,
+                        cycles);
 
         doReturn(1.0).when(parametersMock).getDouble(any(String.class));
         doReturn(1).when(parametersMock).getInt(any(String.class));

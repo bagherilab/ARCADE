@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
+import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
@@ -158,9 +159,19 @@ public final class PatchCellFactory implements CellFactory {
         double volume = parameters.getDouble("CELL_VOLUME");
         double height = parameters.getDouble("CELL_HEIGHT");
         int age = parameters.getInt("CELL_AGE");
-
+        Bag cycles = new Bag();
         return new PatchCellContainer(
-                id, 0, pop, age, 0, State.UNDEFINED, volume, height, volume, height + compression);
+                id,
+                0,
+                pop,
+                age,
+                0,
+                State.UNDEFINED,
+                volume,
+                height,
+                volume,
+                height + compression,
+                cycles);
     }
 
     /**
