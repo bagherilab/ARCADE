@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sim.engine.Schedule;
 import sim.engine.Steppable;
+import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
@@ -15,7 +16,9 @@ import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
+import arcade.patch.util.PatchEnums.AntigenFlag;
 import arcade.patch.util.PatchEnums.Domain;
+import arcade.patch.util.PatchEnums.State;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -51,6 +54,7 @@ public class PatchCellCARTCD8Test {
         double criticalVolume = randomDoubleBetween(100, 200);
         double criticalHeight = randomDoubleBetween(4, 10);
         State state = State.UNDEFINED;
+        Bag cycles = new Bag();
 
         container =
                 new PatchCellContainer(
@@ -63,7 +67,8 @@ public class PatchCellCARTCD8Test {
                         volume,
                         height,
                         criticalVolume,
-                        criticalHeight);
+                        criticalHeight,
+                        cycles);
 
         doReturn(0.0).when(parameters).getDouble(any(String.class));
         doReturn(0).when(parameters).getInt(any(String.class));

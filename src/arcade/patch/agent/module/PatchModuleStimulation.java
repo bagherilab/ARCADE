@@ -9,11 +9,9 @@ import arcade.patch.agent.cell.PatchCellTissue;
 import arcade.patch.util.PatchEnums.State;
 
 /**
- * Implementation of {@link Module} for stimulatory T cell agents.
- *
- * <p>{@code PatchModuleStimulation} is stepped once after a CD4 CAR T-cell gets stimulated. The
- * {@code PatchModuleStimulation} activates the T cell, unbinds to any target cell that the T cell
- * is bound to, and sets the cell state back to undefined.
+ * Implementation of {@link Module} for stimulatory T cell agents. {@code PatchModuleStimulation}
+ * activates the T cell, unbinds to any target cell that the T cell is bound to, and sets the cell
+ * state back to undefined.
  */
 public class PatchModuleStimulation extends PatchModule {
     /** Target cell thgt CAR T-cell is bound to. */

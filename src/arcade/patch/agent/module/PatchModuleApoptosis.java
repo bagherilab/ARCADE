@@ -8,6 +8,7 @@ import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.env.grid.PatchGrid;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -47,17 +48,20 @@ public class PatchModuleApoptosis extends PatchModule {
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
         if (ticker > deathDuration) {
-            // Induce one neighboring quiescent cell to proliferate.
-            ArrayList<Location> neighborhood = location.getNeighbors();
-            neighborhood.add(location);
-            Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocations(neighborhood);
+            // CART cells do not induce neighboring tissue cells to proliferate.
+            if (!(cell instanceof PatchCellCART)) {
+                // Induce one neighboring quiescent cell to proliferate.
+                ArrayList<Location> neighborhood = location.getNeighbors();
+                neighborhood.add(location);
+                Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocations(neighborhood);
 
-            bag.shuffle(random);
-            for (Object obj : bag) {
-                Cell neighbor = (Cell) obj;
-                if (neighbor.getState() == State.QUIESCENT) {
-                    neighbor.setState(State.PROLIFERATIVE);
-                    break;
+                bag.shuffle(random);
+                for (Object obj : bag) {
+                    Cell neighbor = (Cell) obj;
+                    if (neighbor.getState() == State.QUIESCENT) {
+                        neighbor.setState(State.PROLIFERATIVE);
+                        break;
+                    }
                 }
             }
 

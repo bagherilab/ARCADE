@@ -40,7 +40,6 @@ public final class PatchLocationContainer implements LocationContainer {
         } else {
             location = new PatchLocationHex((CoordinateUVWZ) coordinate);
         }
-
         return location;
     }
 }

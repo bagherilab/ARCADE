@@ -130,7 +130,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      * @param to the node the edge extends to
      * @return the list of span coordinates
      */
-    abstract ArrayList<CoordinateXYZ> getSpan(SiteNode from, SiteNode to);
+    public abstract ArrayList<CoordinateXYZ> getSpan(SiteNode from, SiteNode to);
 
     /**
      * Checks if given coordinates are within the environment to add to list.
@@ -152,7 +152,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      * @param span the span coordinate
      * @return a location object
      */
-    abstract Location getLocation(CoordinateXYZ span);
+    public abstract Location getLocation(CoordinateXYZ span);
 
     /**
      * Initializes graph for representing sites.
