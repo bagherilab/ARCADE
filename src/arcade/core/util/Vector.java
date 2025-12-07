@@ -33,7 +33,7 @@ public class Vector {
      * @return the x component
      */
     public double getX() {
-        return vector.x;
+        return vector.getX();
     }
 
     /**
@@ -42,7 +42,7 @@ public class Vector {
      * @return the y component
      */
     public double getY() {
-        return vector.y;
+        return vector.getY();
     }
 
     /**
@@ -51,7 +51,7 @@ public class Vector {
      * @return the z component
      */
     public double getZ() {
-        return vector.z;
+        return vector.getZ();
     }
 
     /**
