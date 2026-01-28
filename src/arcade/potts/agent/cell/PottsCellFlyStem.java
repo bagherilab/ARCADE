@@ -15,7 +15,7 @@ public class PottsCellFlyStem extends PottsCell {
     /** Enum outlining parameters for each cell type. */
     public enum StemType {
         /** Wild type stem cell. */
-        WT(50, 75, 0, 0.25),
+        WT(50, 85, 0, 0.18),
 
         /** mud Mutant stem cell. */
         MUDMUT(50, 50, -90, 0.5);

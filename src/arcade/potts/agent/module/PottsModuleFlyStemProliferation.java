@@ -327,15 +327,15 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                         Direction.XY_PLANE.vector,
                         StemType.MUDMUT.splitDirectionRotation);
         Voxel splitVoxel = getCellSplitVoxel(StemType.MUDMUT, cell, defaultNormal);
-        System.out.println(
-                "in getMUDDivisionPlane, default Normal = ("
-                        + defaultNormal.getX()
-                        + ", "
-                        + +defaultNormal.getY()
-                        + ", "
-                        + +defaultNormal.getZ()
-                        + ", "
-                        + ")");
+        // System.out.println(
+        //         "in getMUDDivisionPlane, default Normal = ("
+        //                 + defaultNormal.getX()
+        //                 + ", "
+        //                 + +defaultNormal.getY()
+        //                 + ", "
+        //                 + +defaultNormal.getZ()
+        //                 + ", "
+        //                 + ")");
         return new Plane(new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), defaultNormal);
     }
 
@@ -469,7 +469,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             criticalVol =
                     Math.max(
                             daughterLoc.getVolume() * volumeBasedCriticalVolumeMultiplier,
-                            initialSize / 2);
+                            initialSize * .5);
             cell.setCriticalVolume(criticalVol);
         } else {
             criticalVol = cell.getCriticalVolume();
@@ -611,7 +611,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             criticalVol =
                     Math.max(
                             gmcLoc.getVolume() * volumeBasedCriticalVolumeMultiplier,
-                            initialSize / 2);
+                            initialSize * .2);
             return criticalVol;
         } else {
             criticalVol =

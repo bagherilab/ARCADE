@@ -272,7 +272,7 @@ public class PottsModuleFlyStemProliferationTest {
     public void getCellSplitVoxel_WT_callsLocationOffsetWithCorrectParams() {
         ArrayList<Integer> expectedOffset = new ArrayList<>();
         expectedOffset.add(50); // WT.splitOffsetPercentX
-        expectedOffset.add(75); // WT.splitOffsetPercentY
+        expectedOffset.add(85); // WT.splitOffsetPercentY
 
         when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
         when(stemCell.getLocation()).thenReturn(stemLoc);
@@ -586,7 +586,7 @@ public class PottsModuleFlyStemProliferationTest {
         when(parameters.getInt("proliferation/VOLUME_BASED_CRITVOL")).thenReturn(0);
 
         double result = module.calculateGMCDaughterCellCriticalVolume(daughterLoc);
-        assertEquals((100 * .25 * 1.2), result, EPSILON); // 100 * 0.25 * 1.2
+        assertEquals((100 * .18 * 1.2), result, EPSILON); // 100 * 0.18 * 1.2
     }
 
     @Test

@@ -128,7 +128,7 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
                 double avgVolume = volSum / count;
                 double avgCritVol = critSum / count;
                 updateCellVolumeBasedGrowthRate(avgVolume, avgCritVol);
-                System.out.println("GMC " + cell.getID() + "growth rate = " + cellGrowthRate);
+                // System.out.println("GMC " + cell.getID() + "growth rate = " + cellGrowthRate);
             }
         }
     }
