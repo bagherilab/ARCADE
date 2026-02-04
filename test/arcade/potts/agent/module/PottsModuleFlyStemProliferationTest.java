@@ -619,7 +619,7 @@ public class PottsModuleFlyStemProliferationTest {
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
         when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
-                .thenReturn("FALSE"); // ⬅️ force rule-based path
+                .thenReturn("FALSE");
         when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.0);
         when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(0);
@@ -636,7 +636,7 @@ public class PottsModuleFlyStemProliferationTest {
         PottsCellContainer container = mock(PottsCellContainer.class);
         PottsCellFlyStem newStemCell = mock(PottsCellFlyStem.class);
         when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random), anyInt(), anyDouble()))
-                .thenReturn(container); // ⬅️ relax CV match
+                .thenReturn(container);
         when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newStemCell);
 
         PottsModuleFlyStemProliferation module = spy(new PottsModuleFlyStemProliferation(stemCell));
