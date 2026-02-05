@@ -6,7 +6,11 @@ plugins {
 }
 
 version = "3.3.0"
-sourceCompatibility = 1.11
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
 
 repositories {
     mavenCentral()
@@ -62,8 +66,8 @@ jacocoTestReport {
         })
     }
     reports {
-        xml.enabled true
-        html.enabled true
+        xml.required.set(true)
+        html.required.set(true)
     }
 }
 
