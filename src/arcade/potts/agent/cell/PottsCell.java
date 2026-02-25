@@ -57,6 +57,9 @@ public abstract class PottsCell implements Cell {
     /** Cell state. */
     private CellState state;
 
+    /** Cell prospero (IN PROGRESS) */
+    private double prospero;
+
     /** Cell age [ticks]. */
     int age;
 
@@ -120,6 +123,7 @@ public abstract class PottsCell implements Cell {
         this.links = links;
         this.criticalVolume = container.criticalVolume;
         this.criticalHeight = container.criticalHeight;
+        this.prospero = 0; // PROSPERO
 
         setState(container.state);
 
@@ -139,6 +143,10 @@ public abstract class PottsCell implements Cell {
             this.targetRegionSurfaces = null;
         }
     }
+
+    public double getProspero() { return prospero; }
+
+    public void setProspero(double prospero) { this.prospero = prospero; }
 
     @Override
     public int getID() {

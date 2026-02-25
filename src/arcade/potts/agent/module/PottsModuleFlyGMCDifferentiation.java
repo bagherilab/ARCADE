@@ -32,6 +32,14 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
         pdeLike = (cell.getParameters().getInt("proliferation/PDELIKE") != 0);
     }
 
+    @Override
+    public void step(MersenneTwisterFast random, Simulation sim) {
+        super.step(random, sim);
+        double synthesisRate = -1; // magic number
+        cell.setProspero(Math.max(0, cell.getProspero() + synthesisRate));
+        System.out.println("GMC ID " + cell.getID() + " prospero: " + cell.getProspero());
+    }
+
     /**
      * Adds a cell to the simulation.
      *

@@ -161,6 +161,14 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     @Override
+    public void step(MersenneTwisterFast random, Simulation sim) {
+        super.step(random, sim);
+        double synthesisRate = 1; // magic number
+        cell.setProspero(cell.getProspero() + synthesisRate);
+        System.out.println("Stem ID " + cell.getID() + " prospero: " + cell.getProspero());
+    }
+
+    @Override
     public void addCell(MersenneTwisterFast random, Simulation sim) {
         Potts potts = ((PottsSimulation) sim).getPotts();
         PottsCellFlyStem flyStemCell = (PottsCellFlyStem) cell;
@@ -477,7 +485,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         PottsCellContainer container =
                 ((PottsCellFlyStem) cell)
                         .make(newID, State.PROLIFERATIVE, random, cell.getPop(), criticalVol);
-        scheduleNewCell(container, daughterLoc, sim, potts, random);
+        System.out.print("Creating daughter stem cell");
+        scheduleNewCell(container, daughterLoc, sim, potts, random, 0);
     }
 
     /**
@@ -509,7 +518,11 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         PottsCellContainer container =
                 ((PottsCellFlyStem) cell)
                         .make(newID, State.PROLIFERATIVE, random, newPop, criticalVolume);
-        scheduleNewCell(container, daughterLoc, sim, potts, random);
+        PottsCellFlyStem flyStemCell = (PottsCellFlyStem) this.cell;
+        double daughterProspero = (flyStemCell.getStemType() == StemType.WT)
+                ? flyStemCell.getProspero() : (flyStemCell.getProspero() / 2.0); // the 0 could be something else too
+        System.out.print("Creating daughter GMC with prospero " + daughterProspero);
+        scheduleNewCell(container, daughterLoc, sim, potts, random, daughterProspero);
     }
 
     /**
@@ -526,7 +539,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             PottsLocation daughterLoc,
             Simulation sim,
             Potts potts,
-            MersenneTwisterFast random) {
+            MersenneTwisterFast random,
+            double daughterProspero
+    ) {
         PottsCell newCell =
                 (PottsCell) container.convert(sim.getCellFactory(), daughterLoc, random);
         if (newCell.getClass() == PottsCellFlyStem.class) {
@@ -536,6 +551,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         potts.register(newCell);
         newCell.reset(potts.ids, potts.regions);
         newCell.schedule(sim.getSchedule());
+        System.out.println(" and ID " + newCell.getID());
+        newCell.setProspero(daughterProspero);
+        this.cell.setProspero(this.cell.getProspero() - daughterProspero);
     }
 
     /**
