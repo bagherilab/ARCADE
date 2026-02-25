@@ -246,13 +246,14 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     protected void updateGrowthRateBasedOnOtherNBs(Simulation sim) {
-        int npRaw;
+        int nbsInContact;
         if (pdeLike) {
-            npRaw = getNBsInSimulation(sim).size();
+            int nbsInSim = getNBsInSimulation(sim).size();
+            nbsInContact = nbsInSim - 1;
         } else {
-            npRaw = getNBNeighbors(sim).size();
+            nbsInContact = getNBNeighbors(sim).size();
         }
-        double np = Math.max(0.0, (double) npRaw);
+        double np = Math.max(0.0, (double) nbsInContact);
 
         double Kn = Math.pow(nbContactHalfMax, nbContactHillN);
         double Npn = Math.pow(np, nbContactHillN);
@@ -617,9 +618,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             criticalVol =
                     ((PottsCellFlyStem) cell).getCriticalVolume()
                             * sizeTarget
-                            * ((PottsCellFlyStem) cell)
-                                    .getStemType()
-                                    .daughterCellCriticalVolumeProportion;
+                            * StemType.WT.daughterCellCriticalVolumeProportion;
             return criticalVol;
         }
     }
