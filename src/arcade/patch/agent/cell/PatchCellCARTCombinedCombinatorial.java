@@ -39,9 +39,6 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
     /** Number of bound synnotch receptors on this cell. */
     public int boundSynNotch;
 
-    /** maximum CAR receptors possible. */
-    protected final int maxCars;
-
     /** poisson distribution. */
     PatchCellCARTCombinedInducible.PoissonFactory poissonFactory;
 
@@ -84,7 +81,6 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
         synNotchThreshold = parameters.getDouble("SYNNOTCH_THRESHOLD") * synnotchs;
         basalCARGenerationRate = parameters.getDouble("K_CAR_GENERATION");
         boundSynNotch = 0;
-        maxCars = 50000;
         poissonFactory = Poisson::new;
     }
 
@@ -193,5 +189,14 @@ public abstract class PatchCellCARTCombinedCombinatorial extends PatchCellCARTCo
             boundCell = null;
         }
         boundSynNotch = 0;
+    }
+
+    /**
+     * returns the synnotch threshold.
+     *
+     * @return the synnotch threshold
+     */
+    public double getSynNotchThreshold() {
+        return synNotchThreshold;
     }
 }

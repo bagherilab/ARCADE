@@ -65,6 +65,10 @@ public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombina
             LogicalCARs type) {
         super(container, location, parameters, links);
         this.type = type;
+        if (this.type.equals(LogicalCARs.INDUCIBLE_SYNNOTCH)) {
+            // for receptor based circuits, receptor binding depends on initial receptors
+            this.startCars = cars;
+        }
     }
 
     @Override
@@ -98,7 +102,11 @@ public class PatchCellCARTCombinedInducible extends PatchCellCARTCombinedCombina
     protected void synNotchCARCalculation() {
         double n = 4.4;
         int newCars =
-                (int) (maxCars / (1 + Math.pow(synNotchThreshold, n) / Math.pow(boundSynNotch, n)));
+                (int)
+                        (MAX_CARS
+                                / (1
+                                        + Math.pow(synNotchThreshold, n)
+                                                / Math.pow(boundSynNotch, n)));
         cars = Math.max((int) (cars - (carDegradationConstant * cars * TAU)), newCars);
     }
 

@@ -93,6 +93,10 @@ public class PatchCellTissue extends PatchCell {
     @Override
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
+
+        if (sim.getSchedule().getTime() >= 2500) {
+            int a = 0;
+        }
         // Increase age of cell.
         age++;
 

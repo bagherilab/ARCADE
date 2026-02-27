@@ -55,6 +55,10 @@
     <population id="SYNNOTCHS" value="1000" description="average number of SynNotch receptors on a SynNotch T-cell" />
     <population id="SYNNOTCH_ANTIGENS" value="0" description="average number of synNotch antigens on a tissue cancer cell" />
 
+    <!-- iCAR specific parameters -->
+    <population id="PROTEASOME_PRODUCTION_RATIO" value="1" description="ratio of proteasome production to degradation" />
+    <population id="PDEL" value="0" description="whether or not inhibitory mechanism is initiated" />
+    <population id="ICAR_AFFINITY" value="7.8E-6" unit="M" description="affinity of iCAR receptor for antigen" />
 
 
     <!-- migration module parameters -->

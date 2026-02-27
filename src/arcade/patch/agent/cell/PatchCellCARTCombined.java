@@ -60,10 +60,6 @@ public class PatchCellCARTCombined extends PatchCellCART {
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
 
-        if (sim.getSchedule().getTime() == 2880) {
-            int a = 0;
-        }
-
         super.age++;
 
         if (state != State.APOPTOTIC && age > apoptosisAge) {
@@ -155,7 +151,7 @@ public class PatchCellCARTCombined extends PatchCellCART {
                     if (super.getBindingFlag() == AntigenFlag.BOUND_CELL_RECEPTOR) {
                         super.unbind();
                     }
-                    // Check activation status. If cell has been activated before,
+                    // Check activation status. If cell has been activated before,s
                     // it will proliferate. If not, it will migrate.
                     if (activated) {
                         super.setState(State.PROLIFERATIVE);

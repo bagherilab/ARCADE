@@ -120,6 +120,9 @@ public abstract class PatchCellCART extends PatchCell {
     /** Target cell that current T cell is bound to. */
     protected PatchCell boundTarget;
 
+    /** maximum number of CAR receptors on a T cell. */
+    static final int MAX_CARS = 50000;
+
     /**
      * Creates a {@code PatchCellCART} agent. *
      *
@@ -185,8 +188,8 @@ public abstract class PatchCellCART extends PatchCell {
         selfBeta = parameters.getDouble("SELF_BETA");
         contactFraction = parameters.getDouble("CONTACT_FRAC");
         maxAntigenBinding = parameters.getInt("MAX_ANTIGEN_BINDING");
-        startCars = parameters.getInt("CARS");
-        cars = startCars;
+        startCars = MAX_CARS;
+        cars = parameters.getInt("CARS");
     }
 
     /**
@@ -277,7 +280,7 @@ public abstract class PatchCellCART extends PatchCell {
      * @param beta fudge factor for receptor binding
      * @return the binding probability for the receptor
      */
-    private double computeProbability(
+    protected double computeProbability(
             double antigens,
             double kD,
             int currentReceptors,
@@ -323,7 +326,7 @@ public abstract class PatchCellCART extends PatchCell {
      * @param tissueCell the target cell to bind to
      * @return the target tissue cell to bind to
      */
-    private PatchCellTissue bindToSelfAntigen(PatchCellTissue tissueCell) {
+    protected PatchCellTissue bindToSelfAntigen(PatchCellTissue tissueCell) {
         super.setBindingFlag(AntigenFlag.BOUND_CELL_RECEPTOR);
         boundSelfAntigensCount++;
         return tissueCell;
@@ -351,7 +354,7 @@ public abstract class PatchCellCART extends PatchCell {
      * @param loc current location of the cell
      * @return bag of all tissue cells in neighborhood and current location
      */
-    private Bag getAllTissueNeighbors(PatchGrid grid, PatchLocation loc) {
+    protected Bag getAllTissueNeighbors(PatchGrid grid, PatchLocation loc) {
         Bag neighbors = new Bag();
         getTissueAgents(neighbors, grid.getObjectsAtLocation(loc));
         for (Location neighborLocation : loc.getNeighbors()) {
@@ -386,6 +389,7 @@ public abstract class PatchCellCART extends PatchCell {
         if (startReceptors == 0) {
             correctedStartReceptors = 1;
         }
+
         return (targets * contactFraction / (affinity * beta + targets * contactFraction))
                 * (currentReceptors / correctedStartReceptors)
                 * alpha;
@@ -408,7 +412,7 @@ public abstract class PatchCellCART extends PatchCell {
      * @param loc the current location of the cell
      * @return the affinity per receptor molecule
      */
-    private double computeAffinity(double affinity, PatchLocation loc) {
+    protected double computeAffinity(double affinity, PatchLocation loc) {
         return affinity * (loc.getVolume() * 1e-15 * 6.022E23);
     }
 
