@@ -1048,15 +1048,15 @@ public class PottsModuleFlyStemProliferationTest {
 
         module = spy(new PottsModuleFlyStemProliferation(stemCell));
 
-        // N = 6 in-simulation (K = 3, n = 2 → 9/(9+36)=0.2 → 4.0)
-        HashSet<PottsCellFlyStem> six = new HashSet<>();
-        for (int i = 0; i < 6; i++) {
+        // N = 7 in-simulation, 6 neighbors (K = 3, n = 2 → 9/(9+36)=0.2 → 4.0)
+        HashSet<PottsCellFlyStem> seven = new HashSet<>();
+        for (int i = 0; i < 7; i++) {
             PottsCellFlyStem n = mock(PottsCellFlyStem.class);
             when(n.getID()).thenReturn(200 + i);
-            six.add(n);
+            seven.add(n);
         }
         doReturn(new HashSet<PottsCellFlyStem>()).when(module).getNBNeighbors(sim);
-        doReturn(six).when(module).getNBsInSimulation(sim);
+        doReturn(seven).when(module).getNBsInSimulation(sim);
 
         module.updateGrowthRateBasedOnOtherNBs(sim);
 
