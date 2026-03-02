@@ -27,8 +27,8 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":6,"i3":6,"i4":6,"i5":6};
-var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],8:["t4","Concrete Methods"]};
+var data = {"i0":6};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -140,15 +140,12 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </dl>
 <dl>
 <dt>Direct Known Subclasses:</dt>
-<dd><code><a href="PottsModuleProliferationSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationSimple</a></code></dd>
+<dd><code><a href="PottsModuleProliferationVolumeBasedDivision.html" title="class in arcade.potts.agent.module">PottsModuleProliferationVolumeBasedDivision</a></code>, <code><a href="PottsModuleProliferationWithCellCycleCheck.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheck</a></code></dd>
 </dl>
 <hr>
 <pre>public abstract class <span class="typeNameLabel">PottsModuleProliferation</span>
 extends <a href="PottsModule.html" title="class in arcade.potts.agent.module">PottsModule</a></pre>
-<div class="block">Extension of <a href="PottsModule.html" title="class in arcade.potts.agent.module"><code>PottsModule</code></a> for proliferation.
-
- <p>During proliferation, cells cycle through G1, S, G2, and M phases. Once the cell complete M
- phase, it divides to create a new daughter cell.</div>
+<div class="block">Abstract extention of <a href="PottsModule.html" title="class in arcade.potts.agent.module"><code>PottsModule</code></a> for proliferation modules.</div>
 </li>
 </ul>
 </div>
@@ -205,7 +202,7 @@ extends <a href="PottsModule.html" title="class in arcade.potts.agent.module">Po
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(arcade.potts.agent.cell.PottsCell)">PottsModuleProliferation</a></span>&#8203;(<a href="../cell/PottsCell.html" title="class in arcade.potts.agent.cell">PottsCell</a>&nbsp;cell)</code></th>
 <td class="colLast">
-<div class="block">Creates a proliferation <code>Module</code> for the given <a href="../cell/PottsCell.html" title="class in arcade.potts.agent.cell"><code>PottsCell</code></a>.</div>
+<div class="block">Creates a proliferation module.</div>
 </td>
 </tr>
 </table>
@@ -220,55 +217,18 @@ extends <a href="PottsModule.html" title="class in arcade.potts.agent.module">Po
 </a>
 <h3>Method Summary</h3>
 <table class="memberSummary">
-<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t3" class="tableTab"><span><a href="javascript:show(4);">Abstract Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t3" class="tableTab"><span><a href="javascript:show(4);">Abstract Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
 <th class="colSecond" scope="col">Method</th>
 <th class="colLast" scope="col">Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code>(package private) void</code></td>
+<td class="colFirst"><code>(package private) abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#addCell(ec.util.MersenneTwisterFast,arcade.core.sim.Simulation)">addCell</a></span>&#8203;(ec.util.MersenneTwisterFast&nbsp;random,
        <a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim)</code></th>
 <td class="colLast">
 <div class="block">Adds a cell to the simulation.</div>
-</td>
-</tr>
-<tr id="i1" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#step(ec.util.MersenneTwisterFast,arcade.core.sim.Simulation)">step</a></span>&#8203;(ec.util.MersenneTwisterFast&nbsp;random,
-    <a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim)</code></th>
-<td class="colLast">
-<div class="block">Calls the step method for the current simple phase.</div>
-</td>
-</tr>
-<tr id="i2" class="altColor">
-<td class="colFirst"><code>(package private) abstract void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#stepG1(ec.util.MersenneTwisterFast)">stepG1</a></span>&#8203;(ec.util.MersenneTwisterFast&nbsp;random)</code></th>
-<td class="colLast">
-<div class="block">Performs actions for G1 phase.</div>
-</td>
-</tr>
-<tr id="i3" class="rowColor">
-<td class="colFirst"><code>(package private) abstract void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#stepG2(ec.util.MersenneTwisterFast)">stepG2</a></span>&#8203;(ec.util.MersenneTwisterFast&nbsp;random)</code></th>
-<td class="colLast">
-<div class="block">Performs actions for G2 phase.</div>
-</td>
-</tr>
-<tr id="i4" class="altColor">
-<td class="colFirst"><code>(package private) abstract void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#stepM(ec.util.MersenneTwisterFast,arcade.core.sim.Simulation)">stepM</a></span>&#8203;(ec.util.MersenneTwisterFast&nbsp;random,
-     <a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim)</code></th>
-<td class="colLast">
-<div class="block">Performs actions for M phase.</div>
-</td>
-</tr>
-<tr id="i5" class="rowColor">
-<td class="colFirst"><code>(package private) abstract void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#stepS(ec.util.MersenneTwisterFast)">stepS</a></span>&#8203;(ec.util.MersenneTwisterFast&nbsp;random)</code></th>
-<td class="colLast">
-<div class="block">Performs actions for S phase.</div>
 </td>
 </tr>
 </table>
@@ -285,6 +245,13 @@ extends <a href="PottsModule.html" title="class in arcade.potts.agent.module">Po
 </a>
 <h3>Methods inherited from class&nbsp;java.lang.Object</h3>
 <code>clone, equals, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></li>
+</ul>
+<ul class="blockList">
+<li class="blockList"><a id="methods.inherited.from.class.arcade.core.agent.module.Module">
+<!--   -->
+</a>
+<h3>Methods inherited from interface&nbsp;arcade.core.agent.module.<a href="../../../core/agent/module/Module.html" title="interface in arcade.core.agent.module">Module</a></h3>
+<code><a href="../../../core/agent/module/Module.html#step(ec.util.MersenneTwisterFast,arcade.core.sim.Simulation)">step</a></code></li>
 </ul>
 </li>
 </ul>
@@ -309,10 +276,10 @@ extends <a href="PottsModule.html" title="class in arcade.potts.agent.module">Po
 <li class="blockList">
 <h4>PottsModuleProliferation</h4>
 <pre>public&nbsp;PottsModuleProliferation&#8203;(<a href="../cell/PottsCell.html" title="class in arcade.potts.agent.cell">PottsCell</a>&nbsp;cell)</pre>
-<div class="block">Creates a proliferation <code>Module</code> for the given <a href="../cell/PottsCell.html" title="class in arcade.potts.agent.cell"><code>PottsCell</code></a>.</div>
+<div class="block">Creates a proliferation module.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>cell</code> - the <a href="../cell/PottsCell.html" title="class in arcade.potts.agent.cell"><code>PottsCell</code></a> the module is associated with</dd>
+<dd><code>cell</code> - the cell to which this module is attached</dd>
 </dl>
 </li>
 </ul>
@@ -326,92 +293,15 @@ extends <a href="PottsModule.html" title="class in arcade.potts.agent.module">Po
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a id="step(ec.util.MersenneTwisterFast,arcade.core.sim.Simulation)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>step</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;step&#8203;(ec.util.MersenneTwisterFast&nbsp;random,
-                 <a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim)</pre>
-<div class="block">Calls the step method for the current simple phase.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>random</code> - the random number generator</dd>
-<dd><code>sim</code> - the simulation instance</dd>
-</dl>
-</li>
-</ul>
-<a id="stepG1(ec.util.MersenneTwisterFast)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>stepG1</h4>
-<pre class="methodSignature">abstract&nbsp;void&nbsp;stepG1&#8203;(ec.util.MersenneTwisterFast&nbsp;random)</pre>
-<div class="block">Performs actions for G1 phase.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>random</code> - the random number generator</dd>
-</dl>
-</li>
-</ul>
-<a id="stepS(ec.util.MersenneTwisterFast)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>stepS</h4>
-<pre class="methodSignature">abstract&nbsp;void&nbsp;stepS&#8203;(ec.util.MersenneTwisterFast&nbsp;random)</pre>
-<div class="block">Performs actions for S phase.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>random</code> - the random number generator</dd>
-</dl>
-</li>
-</ul>
-<a id="stepG2(ec.util.MersenneTwisterFast)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>stepG2</h4>
-<pre class="methodSignature">abstract&nbsp;void&nbsp;stepG2&#8203;(ec.util.MersenneTwisterFast&nbsp;random)</pre>
-<div class="block">Performs actions for G2 phase.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>random</code> - the random number generator</dd>
-</dl>
-</li>
-</ul>
-<a id="stepM(ec.util.MersenneTwisterFast,arcade.core.sim.Simulation)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>stepM</h4>
-<pre class="methodSignature">abstract&nbsp;void&nbsp;stepM&#8203;(ec.util.MersenneTwisterFast&nbsp;random,
-                    <a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim)</pre>
-<div class="block">Performs actions for M phase.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>random</code> - the random number generator</dd>
-<dd><code>sim</code> - the simulation instance</dd>
-</dl>
-</li>
-</ul>
 <a id="addCell(ec.util.MersenneTwisterFast,arcade.core.sim.Simulation)">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>addCell</h4>
-<pre class="methodSignature">void&nbsp;addCell&#8203;(ec.util.MersenneTwisterFast&nbsp;random,
-             <a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim)</pre>
-<div class="block">Adds a cell to the simulation.
-
- <p>The cell location is split, along with any regions. The new cell is created, initialized,
- and added to the schedule. Both cells are reset and remain in the proliferative state.</div>
+<pre class="methodSignature">abstract&nbsp;void&nbsp;addCell&#8203;(ec.util.MersenneTwisterFast&nbsp;random,
+                      <a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim)</pre>
+<div class="block">Adds a cell to the simulation.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>random</code> - the random number generator</dd>

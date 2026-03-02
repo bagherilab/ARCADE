@@ -664,11 +664,16 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </dd>
 <dt><span class="memberNameLink"><a href="../arcade/patch/sim/output/PatchOutputSerializer.SitesGraphSerializer.html#%3Cinit%3E()">SitesGraphSerializer()</a></span> - Constructor for class arcade.patch.sim.output.<a href="../arcade/patch/sim/output/PatchOutputSerializer.SitesGraphSerializer.html" title="class in arcade.patch.sim.output">PatchOutputSerializer.SitesGraphSerializer</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html#SIZE_CHECKPOINT">SIZE_CHECKPOINT</a></span> - Static variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationSimple</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html#SIZE_CHECKPOINT">SIZE_CHECKPOINT</a></span> - Static variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheckSimple</a></dt>
 <dd>
 <div class="block">Threshold for critical volume size checkpoint.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html#sizeTarget">sizeTarget</a></span> - Variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationSimple</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationVolumeBasedDivision.html#sizeTarget">sizeTarget</a></span> - Variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationVolumeBasedDivision.html" title="class in arcade.potts.agent.module">PottsModuleProliferationVolumeBasedDivision</a></dt>
+<dd>
+<div class="block">Target ratio of critical volume for division size checkpoint (cell must reach CRITICAL_VOLUME
+ * SIZE_TARGET * SIZE_CHECKPOINT to divide).</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html#sizeTarget">sizeTarget</a></span> - Variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheckSimple</a></dt>
 <dd>
 <div class="block">Target ratio of critical volume for division size checkpoint (cell must reach CRITICAL_VOLUME
  * SIZE_TARGET * SIZE_CHECKPOINT to divide).</div>
@@ -864,10 +869,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleNecrosis.html#step(ec.util.MersenneTwisterFast,arcade.core.sim.Simulation)">step(MersenneTwisterFast, Simulation)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleNecrosis.html" title="class in arcade.potts.agent.module">PottsModuleNecrosis</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferation.html#step(ec.util.MersenneTwisterFast,arcade.core.sim.Simulation)">step(MersenneTwisterFast, Simulation)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferation.html" title="class in arcade.potts.agent.module">PottsModuleProliferation</a></dt>
-<dd>
-<div class="block">Calls the step method for the current simple phase.</div>
-</dd>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationVolumeBasedDivision.html#step(ec.util.MersenneTwisterFast,arcade.core.sim.Simulation)">step(MersenneTwisterFast, Simulation)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationVolumeBasedDivision.html" title="class in arcade.potts.agent.module">PottsModuleProliferationVolumeBasedDivision</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheck.html#step(ec.util.MersenneTwisterFast,arcade.core.sim.Simulation)">step(MersenneTwisterFast, Simulation)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheck.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheck</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleQuiescence.html#step(ec.util.MersenneTwisterFast,arcade.core.sim.Simulation)">step(MersenneTwisterFast, Simulation)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleQuiescence.html" title="class in arcade.potts.agent.module">PottsModuleQuiescence</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../arcade/core/sim/output/OutputSaver.html#step(sim.engine.SimState)">step(SimState)</a></span> - Method in class arcade.core.sim.output.<a href="../arcade/core/sim/output/OutputSaver.html" title="class in arcade.core.sim.output">OutputSaver</a></dt>
@@ -965,19 +970,19 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Performs actions for early apoptosis phase.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferation.html#stepG1(ec.util.MersenneTwisterFast)">stepG1(MersenneTwisterFast)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferation.html" title="class in arcade.potts.agent.module">PottsModuleProliferation</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheck.html#stepG1(ec.util.MersenneTwisterFast)">stepG1(MersenneTwisterFast)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheck.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheck</a></dt>
 <dd>
 <div class="block">Performs actions for G1 phase.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html#stepG1(ec.util.MersenneTwisterFast)">stepG1(MersenneTwisterFast)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationSimple</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html#stepG1(ec.util.MersenneTwisterFast)">stepG1(MersenneTwisterFast)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheckSimple</a></dt>
 <dd>
 <div class="block">Performs actions for G1 phase.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferation.html#stepG2(ec.util.MersenneTwisterFast)">stepG2(MersenneTwisterFast)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferation.html" title="class in arcade.potts.agent.module">PottsModuleProliferation</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheck.html#stepG2(ec.util.MersenneTwisterFast)">stepG2(MersenneTwisterFast)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheck.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheck</a></dt>
 <dd>
 <div class="block">Performs actions for G2 phase.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html#stepG2(ec.util.MersenneTwisterFast)">stepG2(MersenneTwisterFast)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationSimple</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html#stepG2(ec.util.MersenneTwisterFast)">stepG2(MersenneTwisterFast)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheckSimple</a></dt>
 <dd>
 <div class="block">Performs actions for G2 phase.</div>
 </dd>
@@ -993,11 +998,11 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Performs actions for late apoptosis phase.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferation.html#stepM(ec.util.MersenneTwisterFast,arcade.core.sim.Simulation)">stepM(MersenneTwisterFast, Simulation)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferation.html" title="class in arcade.potts.agent.module">PottsModuleProliferation</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheck.html#stepM(ec.util.MersenneTwisterFast,arcade.core.sim.Simulation)">stepM(MersenneTwisterFast, Simulation)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheck.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheck</a></dt>
 <dd>
 <div class="block">Performs actions for M phase.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html#stepM(ec.util.MersenneTwisterFast,arcade.core.sim.Simulation)">stepM(MersenneTwisterFast, Simulation)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationSimple</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html#stepM(ec.util.MersenneTwisterFast,arcade.core.sim.Simulation)">stepM(MersenneTwisterFast, Simulation)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheckSimple</a></dt>
 <dd>
 <div class="block">Performs actions for M phase.</div>
 </dd>
@@ -1027,11 +1032,11 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Number of steps in Monte Carlo Step.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferation.html#stepS(ec.util.MersenneTwisterFast)">stepS(MersenneTwisterFast)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferation.html" title="class in arcade.potts.agent.module">PottsModuleProliferation</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheck.html#stepS(ec.util.MersenneTwisterFast)">stepS(MersenneTwisterFast)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheck.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheck</a></dt>
 <dd>
 <div class="block">Performs actions for S phase.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html#stepS(ec.util.MersenneTwisterFast)">stepS(MersenneTwisterFast)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationSimple</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html#stepS(ec.util.MersenneTwisterFast)">stepS(MersenneTwisterFast)</a></span> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheckSimple</a></dt>
 <dd>
 <div class="block">Performs actions for S phase.</div>
 </dd>
@@ -1039,11 +1044,11 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Steps for early apoptosis (steps).</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html#stepsG1">stepsG1</a></span> - Variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationSimple</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html#stepsG1">stepsG1</a></span> - Variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheckSimple</a></dt>
 <dd>
 <div class="block">Steps for G1 phase (steps).</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html#stepsG2">stepsG2</a></span> - Variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationSimple</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html#stepsG2">stepsG2</a></span> - Variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheckSimple</a></dt>
 <dd>
 <div class="block">Steps for G2 phase (steps).</div>
 </dd>
@@ -1051,11 +1056,11 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Steps for late apoptosis (steps).</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html#stepsM">stepsM</a></span> - Variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationSimple</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html#stepsM">stepsM</a></span> - Variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheckSimple</a></dt>
 <dd>
 <div class="block">Steps for M phase (steps).</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html#stepsS">stepsS</a></span> - Variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationSimple</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html#stepsS">stepsS</a></span> - Variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheckSimple</a></dt>
 <dd>
 <div class="block">Steps for S phase (steps).</div>
 </dd>
