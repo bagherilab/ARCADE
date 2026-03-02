@@ -14,11 +14,11 @@ import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.State;
 
 /**
- * Implementation of {@link PottsModuleProliferationSimple} for fly GMC agents. These cells divide
- * into two {@link PottsCellFlyNeuron} cells. The links must be set in the setup file so that 100%
- * of the daughter cells are Neurons.
+ * Implementation of {@link PottsModuleProliferationVolumeBasedDivision} for fly GMC agents. These
+ * cells divide into two {@link PottsCellFlyNeuron} cells. The links must be set in the setup file
+ * so that 100% of the daughter cells are Neurons.
  */
-public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationSimple {
+public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVolumeBasedDivision {
 
     /**
      * Creates a fly GMC proliferation module.
@@ -29,58 +29,67 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationSi
 <span class="fc" id="L29">        super(cell);</span>
 <span class="fc" id="L30">    }</span>
 
+    /**
+     * Adds a cell to the simulation.
+     *
+     * &lt;p&gt;The cell location is split. The new neuron cell is created, initialized, and added to the
+     * schedule. This cell's location is also assigned to a new Neuron cell.
+     *
+     * @param random the random number generator
+     * @param sim the simulation instance
+     */
     @Override
     void addCell(MersenneTwisterFast random, Simulation sim) {
-<span class="fc" id="L34">        Potts potts = ((PottsSimulation) sim).getPotts();</span>
+<span class="fc" id="L43">        Potts potts = ((PottsSimulation) sim).getPotts();</span>
 
         // Split current location
-<span class="fc" id="L37">        Location newLocation = ((PottsLocation2D) cell.getLocation()).split(random);</span>
+<span class="fc" id="L46">        Location newLocation = ((PottsLocation2D) cell.getLocation()).split(random);</span>
 
         // Reset current cell
-<span class="fc" id="L40">        cell.reset(potts.ids, potts.regions);</span>
+<span class="fc" id="L49">        cell.reset(potts.ids, potts.regions);</span>
 
         // Create and schedule new neuron cell
-<span class="fc" id="L43">        int newID = sim.getID();</span>
-<span class="fc" id="L44">        CellContainer newContainer = cell.make(newID, State.QUIESCENT, random);</span>
-<span class="fc" id="L45">        PottsCell newCell =</span>
-<span class="fc" id="L46">                (PottsCell) newContainer.convert(sim.getCellFactory(), newLocation, random);</span>
-<span class="fc" id="L47">        sim.getGrid().addObject(newCell, null);</span>
-<span class="fc" id="L48">        potts.register(newCell);</span>
-<span class="fc" id="L49">        newCell.reset(potts.ids, potts.regions);</span>
-<span class="fc" id="L50">        newCell.schedule(sim.getSchedule());</span>
+<span class="fc" id="L52">        int newID = sim.getID();</span>
+<span class="fc" id="L53">        CellContainer newContainer = cell.make(newID, State.QUIESCENT, random);</span>
+<span class="fc" id="L54">        PottsCell newCell =</span>
+<span class="fc" id="L55">                (PottsCell) newContainer.convert(sim.getCellFactory(), newLocation, random);</span>
+<span class="fc" id="L56">        sim.getGrid().addObject(newCell, null);</span>
+<span class="fc" id="L57">        potts.register(newCell);</span>
+<span class="fc" id="L58">        newCell.reset(potts.ids, potts.regions);</span>
+<span class="fc" id="L59">        newCell.schedule(sim.getSchedule());</span>
 
         // remove old GMC cell from simulation
-<span class="fc" id="L53">        PottsCellFlyGMC oldCell = (PottsCellFlyGMC) cell;</span>
-<span class="fc" id="L54">        Location location = oldCell.getLocation();</span>
-<span class="fc" id="L55">        sim.getGrid().removeObject(oldCell, location);</span>
-<span class="fc" id="L56">        oldCell.stop();</span>
+<span class="fc" id="L62">        PottsCellFlyGMC oldCell = (PottsCellFlyGMC) cell;</span>
+<span class="fc" id="L63">        Location location = oldCell.getLocation();</span>
+<span class="fc" id="L64">        sim.getGrid().removeObject(oldCell, location);</span>
+<span class="fc" id="L65">        oldCell.stop();</span>
 
         // create new neuron cell and add to simulation.
-<span class="fc" id="L59">        int newPop = oldCell.getLinks().next(random);</span>
+<span class="fc" id="L68">        int newPop = oldCell.getLinks().next(random);</span>
 
-<span class="fc" id="L61">        PottsCellContainer differentiatedGMCContainer =</span>
+<span class="fc" id="L70">        PottsCellContainer differentiatedGMCContainer =</span>
                 new PottsCellContainer(
-<span class="fc" id="L63">                        oldCell.getID(),</span>
-<span class="fc" id="L64">                        oldCell.getParent(),</span>
+<span class="fc" id="L72">                        oldCell.getID(),</span>
+<span class="fc" id="L73">                        oldCell.getParent(),</span>
                         newPop,
-<span class="fc" id="L66">                        oldCell.getAge(),</span>
-<span class="fc" id="L67">                        oldCell.getDivisions(),</span>
+<span class="fc" id="L75">                        oldCell.getAge(),</span>
+<span class="fc" id="L76">                        oldCell.getDivisions(),</span>
                         State.QUIESCENT,
                         null,
                         0,
                         null,
-<span class="fc" id="L72">                        oldCell.getCriticalVolume(),</span>
-<span class="fc" id="L73">                        oldCell.getCriticalHeight(),</span>
-<span class="fc" id="L74">                        oldCell.getCriticalRegionVolumes(),</span>
-<span class="fc" id="L75">                        oldCell.getCriticalRegionHeights());</span>
-<span class="fc" id="L76">        PottsCellFlyNeuron differentiatedGMC =</span>
+<span class="fc" id="L81">                        oldCell.getCriticalVolume(),</span>
+<span class="fc" id="L82">                        oldCell.getCriticalHeight(),</span>
+<span class="fc" id="L83">                        oldCell.getCriticalRegionVolumes(),</span>
+<span class="fc" id="L84">                        oldCell.getCriticalRegionHeights());</span>
+<span class="fc" id="L85">        PottsCellFlyNeuron differentiatedGMC =</span>
                 (PottsCellFlyNeuron)
-<span class="fc" id="L78">                        differentiatedGMCContainer.convert(sim.getCellFactory(), location, random);</span>
+<span class="fc" id="L87">                        differentiatedGMCContainer.convert(sim.getCellFactory(), location, random);</span>
 
-<span class="fc" id="L80">        sim.getGrid().addObject(differentiatedGMC, null);</span>
-<span class="fc" id="L81">        potts.register(differentiatedGMC);</span>
-<span class="fc" id="L82">        differentiatedGMC.reset(potts.ids, potts.regions);</span>
-<span class="fc" id="L83">        differentiatedGMC.schedule(sim.getSchedule());</span>
-<span class="fc" id="L84">    }</span>
+<span class="fc" id="L89">        sim.getGrid().addObject(differentiatedGMC, null);</span>
+<span class="fc" id="L90">        potts.register(differentiatedGMC);</span>
+<span class="fc" id="L91">        differentiatedGMC.reset(potts.ids, potts.regions);</span>
+<span class="fc" id="L92">        differentiatedGMC.schedule(sim.getSchedule());</span>
+<span class="fc" id="L93">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

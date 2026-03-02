@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PottsModuleProliferationVolumeBasedDivision.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.agent.module</a> &gt; <span class="el_source">PottsModuleProliferationVolumeBasedDivision.java</span></div><h1>PottsModuleProliferationVolumeBasedDivision.java</h1><pre class="source lang-java linenums">package arcade.potts.agent.module;
+
+import ec.util.MersenneTwisterFast;
+import arcade.core.sim.Simulation;
+import arcade.core.util.Parameters;
+import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.util.PottsEnums.Phase;
+
+/**
+ * Implementation of {@link PottsModule} for fly GMC agents. These cells divide into two {@link
+ * PottsCellFlyNeuron} cells. The links must be set in the setup file so that 100% of the daughter
+ * cells are Neurons.
+ */
+public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsModuleProliferation {
+
+    /** Overall growth rate for cell (voxels/tick). */
+    final double cellGrowthRate;
+
+    /**
+     * Target ratio of critical volume for division size checkpoint (cell must reach CRITICAL_VOLUME
+     * * SIZE_TARGET * SIZE_CHECKPOINT to divide).
+     */
+    final double sizeTarget;
+
+    /**
+     * Creates a proliferation module in which division is solely dependent on cell volume.
+     *
+     * @param cell the cell to which this module is attached
+     */
+    public PottsModuleProliferationVolumeBasedDivision(PottsCell cell) {
+<span class="fc" id="L31">        super(cell);</span>
+<span class="fc" id="L32">        Parameters parameters = cell.getParameters();</span>
+<span class="fc" id="L33">        sizeTarget = parameters.getDouble(&quot;proliferation/SIZE_TARGET&quot;);</span>
+<span class="fc" id="L34">        cellGrowthRate = parameters.getDouble(&quot;proliferation/CELL_GROWTH_RATE&quot;);</span>
+<span class="fc" id="L35">        setPhase(Phase.UNDEFINED);</span>
+<span class="fc" id="L36">    }</span>
+
+    @Override
+    public void step(MersenneTwisterFast random, Simulation sim) {
+<span class="fc" id="L40">        cell.updateTarget(cellGrowthRate, sizeTarget);</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        boolean sizeCheck = cell.getVolume() &gt;= sizeTarget * cell.getCriticalVolume();</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">        if (sizeCheck) {</span>
+<span class="fc" id="L43">            addCell(random, sim);</span>
+        }
+<span class="fc" id="L45">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
