@@ -7,9 +7,8 @@ import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.util.PottsEnums.Phase;
 
 /**
- * Implementation of {@link PottsModule} for fly GMC agents. These cells divide into two {@link
- * PottsCellFlyNeuron} cells. The links must be set in the setup file so that 100% of the daughter
- * cells are Neurons.
+ * Implementation of {@link PottsModule} for fly GMC agents. The links must be set in the setup file
+ * so that 100% of the daughter cells are Neurons.
  */
 public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsModuleProliferation {
 
