@@ -99,7 +99,6 @@ public abstract class PottsCell implements Cell {
     /** Cell population links. */
     final GrabBag links;
 
-    public double prospero;
 
     /**
      * Creates a {@code PottsCell} agent.
@@ -123,7 +122,6 @@ public abstract class PottsCell implements Cell {
         this.criticalVolume = container.criticalVolume;
         this.criticalHeight = container.criticalHeight;
 
-        this.prospero = 0.0;
         setState(container.state);
 
         if (module != null && container.phase != null) {
@@ -192,10 +190,6 @@ public abstract class PottsCell implements Cell {
     public Parameters getParameters() {
         return parameters;
     }
-
-    public double getProspero() {return prospero;}
-
-    public void setProspero(double prospero) {this.prospero = prospero;}
 
     /**
      * Checks if the cell has regions.

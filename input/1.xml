@@ -10,7 +10,7 @@
         </potts>
         <agents>
             <populations>
-                <population id="fly-stem-wt" class="fly-stem-wt" init="1" >
+                <population id="fly-stem-mudmut" class="fly-stem-mudmut" init="1" >
                     <population.link id="fly-gmc" weight="1"/>
                     <population.parameter id="proliferation/SIZE_TARGET" value="1.2" />
                     <population.parameter id="CRITICAL_VOLUME" value="170" units="um^3" conversion="DS^-3" />

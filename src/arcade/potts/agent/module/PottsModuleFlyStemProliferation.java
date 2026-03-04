@@ -3,6 +3,8 @@ package arcade.potts.agent.module;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashSet;
+
+import arcade.potts.agent.cell.PottsCellFly;
 import sim.util.Bag;
 import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
@@ -163,10 +165,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
         super.step(random, sim);
-
-        double synthesisRate = 4;
-        PottsCell cell = this.cell;
-        cell.setProspero(cell.getProspero() + synthesisRate);
+        double synthesisRate = 1; // magic number
+        ((PottsCellFly) cell).setProspero(((PottsCellFly) cell).getProspero() + synthesisRate);
+        System.out.println("Stem ID " + cell.getID() + " prospero: " + ((PottsCellFly) cell).getProspero());
     }
 
     @Override
@@ -486,8 +487,16 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         PottsCellContainer container =
                 ((PottsCellFlyStem) cell)
                         .make(newID, State.PROLIFERATIVE, random, cell.getPop(), criticalVol);
-        scheduleNewCell(container, daughterLoc, sim, potts, random, 0);
-        ((PottsCellFlyStem) cell).setProspero(0); // parent NB resets
+        System.out.print("Creating daughter stem cell");
+        if (random.nextBoolean()) { // 50% of the time, split prospero evenly
+            scheduleNewCell(container, daughterLoc, sim, potts, random, (((PottsCellFly) cell).getProspero() / 2));
+        } else { // 50% of the time, randomly choose which cell gets all the prospero
+            if (random.nextBoolean()) {
+                scheduleNewCell(container, daughterLoc, sim, potts, random, ((PottsCellFly) cell).getProspero());
+            } else {
+                scheduleNewCell(container, daughterLoc, sim, potts, random, 0);
+            }
+        }
     }
 
     /**
@@ -520,11 +529,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 ((PottsCellFlyStem) cell)
                         .make(newID, State.PROLIFERATIVE, random, newPop, criticalVolume);
         PottsCellFlyStem flyStemCell = (PottsCellFlyStem) cell;
-        double daughterProspero = (flyStemCell.getStemType() == StemType.WT)
-                ? flyStemCell.getProspero() : (flyStemCell.getProspero() / 2.0);
-        System.out.println(daughterProspero);
-// the 0 could be something else too
-        scheduleNewCell(container, daughterLoc, sim, potts, random, daughterProspero);
+//        double daughterProspero = (flyStemCell.getStemType() == StemType.WT)
+//                ? flyStemCell.getProspero() : (flyStemCell.getProspero() / 2.0);
+        System.out.print("Creating daughter GMC with prospero " + ((PottsCellFly) cell).getProspero());
+        scheduleNewCell(container, daughterLoc, sim, potts, random, ((PottsCellFly) cell).getProspero());
     }
 
     /**
@@ -547,12 +555,13 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         if (newCell.getClass() == PottsCellFlyStem.class) {
             ((PottsCellFlyStem) newCell).setApicalAxis(getDaughterCellApicalAxis(random));
         }
-        System.out.println("Debugging" + daughterProspero);
-        newCell.setProspero(daughterProspero);
         sim.getGrid().addObject(newCell, null);
         potts.register(newCell);
         newCell.reset(potts.ids, potts.regions);
         newCell.schedule(sim.getSchedule());
+        System.out.println(" and ID " + newCell.getID());
+        ((PottsCellFly) newCell).setProspero(daughterProspero);
+        ((PottsCellFly) cell).setProspero(((PottsCellFly) cell).getProspero() - daughterProspero);
     }
 
     /**
