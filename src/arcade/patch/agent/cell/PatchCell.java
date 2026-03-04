@@ -32,6 +32,10 @@ import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.util.PatchEnums;
+import arcade.patch.util.PatchEnums.Domain;
+import arcade.patch.util.PatchEnums.Flag;
+import arcade.patch.util.PatchEnums.Ordering;
+import arcade.patch.util.PatchEnums.State;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.Flag;
 import static arcade.patch.util.PatchEnums.Ordering;
@@ -123,11 +127,11 @@ public abstract class PatchCell implements Cell {
     /** Cell parameters. */
     final Parameters parameters;
 
+    /** List of cell cycle lengths (in minutes). */
+    public final Bag cycles = new Bag();
+
     /** Cell population links. */
     final GrabBag links;
-
-    /** List of cell cycle lengths (in minutes). */
-    private final Bag cycles = new Bag();
 
     /** If cell is stopped in the simulation. */
     private boolean isStopped;
@@ -410,7 +414,8 @@ public abstract class PatchCell implements Cell {
                 volume,
                 height,
                 criticalVolume,
-                criticalHeight);
+                criticalHeight,
+                cycles);
     }
 
     /**

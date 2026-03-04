@@ -42,6 +42,9 @@ public class PatchCellTissue extends PatchCell {
     /** Cell surface PDL1 count. */
     private final int selfTargets;
 
+    /** Cell surface SynNotch antigen count */
+    private int synNotchAntigens;
+
     /**
      * Creates a tissue {@code PatchCell} agent.
      *
@@ -66,6 +69,7 @@ public class PatchCellTissue extends PatchCell {
         super(container, location, parameters, links);
         carAntigens = parameters.getInt("CAR_ANTIGENS");
         selfTargets = parameters.getInt("SELF_TARGETS");
+        synNotchAntigens = parameters.getInt("SYNNOTCH_ANTIGENS");
     }
 
     @Override
@@ -82,12 +86,17 @@ public class PatchCellTissue extends PatchCell {
                 volume,
                 height,
                 criticalVolume,
-                criticalHeight);
+                criticalHeight,
+                cycles);
     }
 
     @Override
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
+
+        if (sim.getSchedule().getTime() >= 2500) {
+            int a = 0;
+        }
         // Increase age of cell.
         age++;
 
@@ -152,5 +161,19 @@ public class PatchCellTissue extends PatchCell {
      */
     public int getSelfAntigens() {
         return selfTargets;
+    }
+
+    /**
+     * Returns the number of synnotch antigens on this cell.
+     *
+     * @return the number of self receptor antigens on this cell.
+     */
+    public int getSynNotchAntigens() {
+        return synNotchAntigens;
+    }
+
+    public void updateSynNotchAntigens(int add, int subtract) {
+        synNotchAntigens += add;
+        synNotchAntigens -= subtract;
     }
 }

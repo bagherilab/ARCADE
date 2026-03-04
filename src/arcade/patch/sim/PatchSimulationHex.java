@@ -7,6 +7,8 @@ import arcade.core.util.MiniBox;
 import arcade.patch.agent.action.PatchActionConvert;
 import arcade.patch.agent.action.PatchActionInsert;
 import arcade.patch.agent.action.PatchActionRemove;
+import arcade.patch.agent.action.PatchActionReplace;
+import arcade.patch.agent.action.PatchActionTreat;
 import arcade.patch.agent.cell.PatchCellFactory;
 import arcade.patch.env.component.PatchComponentCycle;
 import arcade.patch.env.component.PatchComponentDegrade;
@@ -58,6 +60,10 @@ public final class PatchSimulationHex extends PatchSimulation {
                 return new PatchActionRemove(series, parameters);
             case "convert":
                 return new PatchActionConvert(series, parameters);
+            case "replace":
+                return new PatchActionReplace(series, parameters);
+            case "treat":
+                return new PatchActionTreat(series, parameters);
             default:
                 return null;
         }
