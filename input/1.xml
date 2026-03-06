@@ -18,7 +18,7 @@
                     <population.parameter id="proliferation/BASAL_APOPTOSIS_RATE" value="0"/>
                     <population.parameter id="proliferation/VOLUME_BASED_CRITICAL_VOLUME" value="1"/>
                     <population.parameter id="proliferation/DIV_ROTATION_DISTRIBUTION" value="NORMAL(MU=36,SIGMA=30)"/>
-                    <population.parameter id="proliferation/APICAL_AXIS_RULESET" value="rotation" />
+                    <population.parameter id="proliferation/APICAL_AXIS_RULESET" value="normal" />
                     <population.parameter id="proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION" value="NORMAL(MU=0,SIGMA=30)" />
                     <population.parameter id="proliferation/DIFFERENTIATION_RULESET" value="volume" />
                     <population.parameter id="proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE" value="386" />

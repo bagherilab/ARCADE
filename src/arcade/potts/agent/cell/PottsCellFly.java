@@ -13,9 +13,8 @@ public abstract class PottsCellFly extends PottsCell {
         this.prospero = 0;
     }
 
-    public double getProspero() {return prospero;}
+    public double getProspero() { return prospero; }
 
-    public void setProspero(double prospero) {this.prospero = prospero;}
-
+    public void setProspero(double prospero) { this.prospero = prospero; }
 
 }
