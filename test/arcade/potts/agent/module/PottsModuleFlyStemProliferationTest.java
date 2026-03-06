@@ -493,6 +493,14 @@ public class PottsModuleFlyStemProliferationTest {
         assertEquals(Phase.UNDEFINED, module.phase); // remains UNDEFINED
     }
 
+    public void step_incrementsProspero_prosperoIsUpdated() {
+        // TODO: Figure out why this test is not running
+        assertTrue(false);
+//        when(stemCell.getProspero()).thenReturn(5.0);
+//        module.step(random, sim);
+//        verify(stemCell).setProspero(6.0);
+    }
+
     // Apical axis rule tests
 
     @Test
