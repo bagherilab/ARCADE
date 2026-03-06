@@ -487,16 +487,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         PottsCellContainer container =
                 ((PottsCellFlyStem) cell)
                         .make(newID, State.PROLIFERATIVE, random, cell.getPop(), criticalVol);
-        System.out.print("Creating daughter stem cell");
-        if (random.nextBoolean()) { // 50% of the time, split prospero evenly
-            scheduleNewCell(container, daughterLoc, sim, potts, random, (((PottsCellFly) cell).getProspero() / 2));
-        } else { // 50% of the time, randomly choose which cell gets all the prospero
-            if (random.nextBoolean()) {
-                scheduleNewCell(container, daughterLoc, sim, potts, random, ((PottsCellFly) cell).getProspero());
-            } else {
-                scheduleNewCell(container, daughterLoc, sim, potts, random, 0);
-            }
-        }
+
+        double daughterProspero = splitStemProspero(((PottsCellFly) cell).getProspero(), random);
+        System.out.print("Creating daughter stem cell with prospero " + daughterProspero + " and ");
+        scheduleNewCell(container, daughterLoc, sim, potts, random, daughterProspero);
     }
 
     /**
@@ -529,10 +523,39 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 ((PottsCellFlyStem) cell)
                         .make(newID, State.PROLIFERATIVE, random, newPop, criticalVolume);
         PottsCellFlyStem flyStemCell = (PottsCellFlyStem) cell;
-//        double daughterProspero = (flyStemCell.getStemType() == StemType.WT)
-//                ? flyStemCell.getProspero() : (flyStemCell.getProspero() / 2.0);
-        System.out.print("Creating daughter GMC with prospero " + ((PottsCellFly) cell).getProspero());
+
+        System.out.print("Creating daughter GMC with prospero " + ((PottsCellFly) cell).getProspero()
+                + " and ");
         scheduleNewCell(container, daughterLoc, sim, potts, random, ((PottsCellFly) cell).getProspero());
+    }
+
+    /**
+     * Determines how prospero is split between the parent and daughter cell.
+     * Can be edited to change behavior. Current prototype behavior divides the
+     * prospero evenly 50% of the time, and randomly selects which cell gets all
+     * prospero the other 50% of the time.
+     *
+     * @param parentProspero the parent cell's prospero to be divided
+     * @param random the random number generator
+     *
+     * @return double with daughter prospero amount
+     */
+    private double splitStemProspero(
+            double parentProspero,
+            MersenneTwisterFast random) {
+        if (parentProspero <= 0) {
+            return 0;
+        }
+
+        if (random.nextBoolean()) { // 50% of the time, split prospero evenly
+            return parentProspero / 2;
+        } else { // 50% of the time, randomly choose which cell gets all the prospero
+            if (random.nextBoolean()) {
+                return parentProspero;
+            } else {
+                return 0;
+            }
+        }
     }
 
     /**
@@ -559,7 +582,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         potts.register(newCell);
         newCell.reset(potts.ids, potts.regions);
         newCell.schedule(sim.getSchedule());
-        System.out.println(" and ID " + newCell.getID());
+        System.out.println("ID " + newCell.getID());
+
         ((PottsCellFly) newCell).setProspero(daughterProspero);
         ((PottsCellFly) cell).setProspero(((PottsCellFly) cell).getProspero() - daughterProspero);
     }
