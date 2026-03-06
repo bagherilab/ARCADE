@@ -121,6 +121,8 @@ public class PottsModuleFlyStemProliferationTest {
         stemCellPop = 3;
         when(stemCell.getPop()).thenReturn(stemCellPop);
         when(stemCell.getCriticalVolume()).thenReturn(100.0);
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
     }
 
     @AfterEach
@@ -936,43 +938,74 @@ public class PottsModuleFlyStemProliferationTest {
                 "Only the two FlyStem cells with matching pop should be returned.");
     }
 
+    // computeEquilibriumVolume tests
+
     @Test
-    public void updateVolumeBasedGrowthRate_pdeLikeFalse_usesCellVolume() {
-        // pdeLike = 0 → should call updateCellVolumeBasedGrowthRate with THIS cell's volume
+    public void computeEquilibriumVolume_WT_returnsExpectedMidpoint() {
+        // V_div = sizeTarget * critVol = 1.2 * 100 = 120
+        // fRetain = WT.splitOffsetPercentY / 100 = 85 / 100 = 0.85
+        // V_ref = 120 * (0.85 + 1) / 2 = 120 * 0.925 = 111.0
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        assertEquals(111.0, module.computeEquilibriumVolume(), EPSILON);
+    }
+
+    @Test
+    public void computeEquilibriumVolume_MUDMUT_returnsExpectedMidpoint() {
+        // fRetain = MUDMUT.splitOffsetPercentY / 100 = 50 / 100 = 0.5
+        // V_ref = 120 * (0.5 + 1) / 2 = 120 * 0.75 = 90.0
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        assertEquals(90.0, module.computeEquilibriumVolume(), EPSILON);
+    }
+
+    @Test
+    public void computeEquilibriumVolume_differentSizeTarget_scalesCorrectly() {
+        // V_div = 2.0 * 50 = 100; V_ref = 100 * (0.85 + 1) / 2 = 92.5
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(2.0);
+        when(stemCell.getCriticalVolume()).thenReturn(50.0);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        assertEquals(92.5, module.computeEquilibriumVolume(), EPSILON);
+    }
+
+    @Test
+    public void computeEquilibriumVolume_differentCritVol_scalesCorrectly() {
+        // V_div = 1.0 * 200 = 200; V_ref = 200 * (0.85 + 1) / 2 = 185.0
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.0);
+        when(stemCell.getCriticalVolume()).thenReturn(200.0);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        assertEquals(185.0, module.computeEquilibriumVolume(), EPSILON);
+    }
+
+    @Test
+    public void updateVolumeBasedGrowthRate_pdeLikeFalse_usesCellVolumeAndEquilibriumRef() {
+        // pdeLike = 0 → uses this cell's own volume and computeEquilibriumVolume() as the ref
         when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
         when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
-
-        // Make the current cell's volume distinctive so we can verify it
-        when(stemCell.getLocation()).thenReturn(stemLoc);
         when(stemLoc.getVolume()).thenReturn(42.5);
 
         module = spy(new PottsModuleFlyStemProliferation(stemCell));
-
-        // We only want to verify the value it was called with
         doNothing().when(module).updateCellVolumeBasedGrowthRate(anyDouble(), anyDouble());
-        when(stemCell.getCriticalVolume()).thenReturn(100.0);
 
         module.updateVolumeBasedGrowthRate(sim);
 
-        verify(module, times(1)).updateCellVolumeBasedGrowthRate(eq(42.5), eq(100.0));
+        // V_ref = sizeTarget * critVol * (WT.splitOffsetPercentY/100 + 1) / 2
+        //       = 1.2 * 100 * (0.85 + 1) / 2 = 111.0
+        verify(module, times(1)).updateCellVolumeBasedGrowthRate(eq(42.5), eq(111.0));
         verify(module, never()).getNBsInSimulation(any());
     }
 
     @Test
-    public void
-            updateVolumeBasedGrowthRate_pdeLikeTrue_usesAverageVolumeAndAverageCritVolAcrossNBs() {
-        // pdeLike = 1 (PDE-like) and dynamicGrowthRateNBContact must be 0 to avoid ctor exception
+    public void updateVolumeBasedGrowthRate_pdeLikeTrue_usesAverageVolumeAndEquilibriumRef() {
+        // pdeLike = 1 → averages volumes across all NBs; uses computeEquilibriumVolume() as the ref
         when(parameters.getInt("proliferation/PDELIKE")).thenReturn(1);
         when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(0);
 
         module = spy(new PottsModuleFlyStemProliferation(stemCell));
 
-        // NB mocks
         PottsCellFlyStem nbA = mock(PottsCellFlyStem.class);
         PottsCellFlyStem nbB = mock(PottsCellFlyStem.class);
         PottsCellFlyStem nbC = mock(PottsCellFlyStem.class);
 
-        // Location mocks for each NB
         PottsLocation locA = mock(PottsLocation.class);
         PottsLocation locB = mock(PottsLocation.class);
         PottsLocation locC = mock(PottsLocation.class);
@@ -981,29 +1014,24 @@ public class PottsModuleFlyStemProliferationTest {
         when(nbB.getLocation()).thenReturn(locB);
         when(nbC.getLocation()).thenReturn(locC);
 
-        // Volumes: 10, 20, 40 -> avg = 70/3
+        // Volumes: 10, 20, 40 → avg = 70/3
         when(locA.getVolume()).thenReturn(10.0);
         when(locB.getVolume()).thenReturn(20.0);
         when(locC.getVolume()).thenReturn(40.0);
 
-        // Critical volumes: 90, 110, 100 -> avg = 300/3 = 100
-        when(nbA.getCriticalVolume()).thenReturn(90.0);
-        when(nbB.getCriticalVolume()).thenReturn(110.0);
-        when(nbC.getCriticalVolume()).thenReturn(100.0);
-
         HashSet<PottsCellFlyStem> allNBs = new HashSet<>(Arrays.asList(nbA, nbB, nbC));
-
         doReturn(allNBs).when(module).getNBsInSimulation(sim);
         doNothing().when(module).updateCellVolumeBasedGrowthRate(anyDouble(), anyDouble());
 
         module.updateVolumeBasedGrowthRate(sim);
 
-        double expectedAvgVol = (10.0 + 20.0 + 40.0) / 3.0; // 23.333333333333332
-        double expectedAvgCrit = (90.0 + 110.0 + 100.0) / 3.0; // 100.0
+        double expectedAvgVol = (10.0 + 20.0 + 40.0) / 3.0;
+        // V_ref = 1.2 * 100 * (0.85 + 1) / 2 = 111.0  (critVol from module's own cell)
+        double expectedVRef = 111.0;
 
         verify(module, times(1)).getNBsInSimulation(sim);
         verify(module, times(1))
-                .updateCellVolumeBasedGrowthRate(eq(expectedAvgVol), eq(expectedAvgCrit));
+                .updateCellVolumeBasedGrowthRate(eq(expectedAvgVol), eq(expectedVRef));
     }
 
     @Test

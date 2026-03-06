@@ -200,21 +200,46 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     public void updateVolumeBasedGrowthRate(Simulation sim) {
+        double vRef = computeEquilibriumVolume();
         if (pdeLike == false) {
-            updateCellVolumeBasedGrowthRate(
-                    cell.getLocation().getVolume(), cell.getCriticalVolume());
+            updateCellVolumeBasedGrowthRate(cell.getLocation().getVolume(), vRef);
         } else {
             HashSet<PottsCellFlyStem> nbsInSimulation = getNBsInSimulation(sim);
             double volSum = 0.0;
-            double critVolSum = 0.0;
             for (PottsCellFlyStem nb : nbsInSimulation) {
                 volSum += nb.getLocation().getVolume();
-                critVolSum += nb.getCriticalVolume();
             }
             double avgVolume = volSum / nbsInSimulation.size();
-            double avgCritVol = critVolSum / nbsInSimulation.size();
-            updateCellVolumeBasedGrowthRate(avgVolume, avgCritVol);
+            updateCellVolumeBasedGrowthRate(avgVolume, vRef);
         }
+    }
+
+    /**
+     * Computes the expected equilibrium average NB volume from structural parameters, using a
+     * rectangular approximation for the post-division volume retained by the NB.
+     *
+     * <p>For a NB growing at constant rate, the time-averaged volume over one cell cycle equals the
+     * arithmetic midpoint between birth volume and division volume:
+     *
+     * <pre>
+     *   V_ref = (V_birth + V_div) / 2
+     *         = sizeTarget * critVol * (f_retain + 1) / 2
+     * </pre>
+     *
+     * where {@code f_retain = splitOffsetPercentY / 100} approximates the fraction of the
+     * pre-division volume retained by the NB after asymmetric division (rectangular cell
+     * approximation).
+     *
+     * <p>This reference volume is used as the normalization denominator in the volume-based growth
+     * rate formula, ensuring that at equilibrium the effective growth rate equals {@code
+     * cellGrowthRateBase}.
+     *
+     * @return the expected equilibrium average NB volume
+     */
+    double computeEquilibriumVolume() {
+        double vDiv = sizeTarget * cell.getCriticalVolume();
+        double fRetain = ((PottsCellFlyStem) cell).getStemType().splitOffsetPercentY / 100.0;
+        return vDiv * (fRetain + 1.0) / 2.0;
     }
 
     /**
