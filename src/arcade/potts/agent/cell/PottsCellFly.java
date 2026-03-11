@@ -4,10 +4,6 @@ import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
-import arcade.potts.agent.module.PottsModule;
-import arcade.potts.util.PottsEnums;
-
-import java.util.EnumMap;
 
 public abstract class PottsCellFly extends PottsCell {
     private double prospero;
@@ -18,9 +14,13 @@ public abstract class PottsCellFly extends PottsCell {
         this.prospero = 0;
     }
 
-    public double getProspero() { return prospero; }
+    public double getProspero() {
+        return prospero;
+    }
 
-    public void setProspero(double prospero) { this.prospero = prospero; }
+    public void setProspero(double prospero) {
+        this.prospero = prospero;
+    }
 
     @Override
     public CellContainer convert() {
@@ -39,7 +39,6 @@ public abstract class PottsCellFly extends PottsCell {
                 container.criticalHeight,
                 container.criticalRegionVolumes,
                 container.criticalRegionHeights,
-                this.getProspero()
-        );
+                this.getProspero());
     }
 }

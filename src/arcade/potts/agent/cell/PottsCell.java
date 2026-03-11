@@ -99,7 +99,6 @@ public abstract class PottsCell implements Cell {
     /** Cell population links. */
     final GrabBag links;
 
-
     /**
      * Creates a {@code PottsCell} agent.
      *
