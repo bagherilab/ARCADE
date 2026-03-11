@@ -31,6 +31,8 @@ public final class PottsARCADE extends ARCADE {
 
     @Override
     public OutputSaver getSaver(Series series) {
-        return new PottsOutputSaver(series);
+        PottsOutputSaver saver = new PottsOutputSaver(series);
+        saver.saveProspero = settings.contains("SAVE_PROSPERO");
+        return saver;
     }
 }

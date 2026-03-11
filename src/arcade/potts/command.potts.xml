@@ -1,2 +1,3 @@
 <commands>
+    <switch id="SAVE_PROSPERO" short="p" long="prospero" help="Save the PROSPERO output files" />
 </commands>

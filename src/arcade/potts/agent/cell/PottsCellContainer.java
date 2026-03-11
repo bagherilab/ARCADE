@@ -59,10 +59,15 @@ public final class PottsCellContainer implements CellContainer {
     /** Critical region cell heights [voxels]. */
     public final EnumMap<Region, Double> criticalRegionHeights;
 
+    /** Cell prospero [TODO: determine units] */
+    public final Double prospero;
+
     /**
      * Creates a {@code PottsCellContainer} instance.
      *
      * <p>The container does not have any regions.
+     *
+     * <p>The container does not have prospero.
      *
      * @param id the cell ID
      * @param parent the parent ID
@@ -99,11 +104,14 @@ public final class PottsCellContainer implements CellContainer {
                 criticalVolume,
                 criticalHeight,
                 null,
+                null,
                 null);
     }
 
     /**
      * Creates a {@code PottsCellContainer} instance.
+     *
+     * <p>The container does not have prospero.
      *
      * @param id the cell ID
      * @param parent the parent ID
@@ -146,6 +154,56 @@ public final class PottsCellContainer implements CellContainer {
         this.criticalHeight = criticalHeight;
         this.criticalRegionVolumes = criticalRegionVolumes;
         this.criticalRegionHeights = criticalRegionHeights;
+        this.prospero = null;
+    }
+
+    /**
+     * Creates a {@code PottsCellContainer} instance.
+     *
+     * @param id the cell ID
+     * @param parent the parent ID
+     * @param pop the cell population index
+     * @param age the cell age
+     * @param divisions the number of cell divisions
+     * @param state the cell state
+     * @param phase the cell phase
+     * @param voxels the cell size
+     * @param regionVoxels the cell region sizes
+     * @param criticalVolume the critical volume
+     * @param criticalHeight the critical height
+     * @param criticalRegionVolumes the critical region volumes
+     * @param criticalRegionHeights the critical surface heights
+     * @param prospero the cell prospero
+     */
+    public PottsCellContainer(
+            int id,
+            int parent,
+            int pop,
+            int age,
+            int divisions,
+            CellState state,
+            Phase phase,
+            int voxels,
+            EnumMap<Region, Integer> regionVoxels,
+            double criticalVolume,
+            double criticalHeight,
+            EnumMap<Region, Double> criticalRegionVolumes,
+            EnumMap<Region, Double> criticalRegionHeights,
+            Double prospero) {
+        this.id = id;
+        this.parent = parent;
+        this.pop = pop;
+        this.age = age;
+        this.divisions = divisions;
+        this.state = state;
+        this.phase = phase;
+        this.voxels = voxels;
+        this.regionVoxels = regionVoxels;
+        this.criticalVolume = criticalVolume;
+        this.criticalHeight = criticalHeight;
+        this.criticalRegionVolumes = criticalRegionVolumes;
+        this.criticalRegionHeights = criticalRegionHeights;
+        this.prospero = prospero;
     }
 
     @Override

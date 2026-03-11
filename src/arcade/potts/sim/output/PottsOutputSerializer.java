@@ -2,6 +2,7 @@ package arcade.potts.sim.output;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -18,6 +19,7 @@ import arcade.potts.env.location.PottsLocationContainer;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.PottsSeries;
 import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;
+import static arcade.potts.sim.PottsSimulation.PROSPERO_TYPE;
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
 
@@ -53,6 +55,7 @@ public final class PottsOutputSerializer {
         gsonBuilder.registerTypeAdapter(
                 PottsLocationContainer.class, new PottsLocationSerializer());
         gsonBuilder.registerTypeAdapter(Voxel.class, new VoxelSerializer());
+        gsonBuilder.registerTypeAdapter(PROSPERO_TYPE, new ProsperoSerializer());
         return gsonBuilder.create();
     }
 
@@ -142,6 +145,10 @@ public final class PottsOutputSerializer {
             json.addProperty("state", ((State) src.state).name());
             json.addProperty("phase", src.phase.name());
             json.addProperty("voxels", src.voxels);
+
+            if (src.prospero != null) {
+                json.addProperty("prospero", src.prospero);
+            }
 
             JsonArray criticals = new JsonArray();
             criticals.add((int) (100 * src.criticalVolume) / 100.0);
@@ -272,6 +279,21 @@ public final class PottsOutputSerializer {
             json.add(src.x);
             json.add(src.y);
             json.add(src.z);
+            return json;
+        }
+    }
+
+    static class ProsperoSerializer implements JsonSerializer<HashMap<Integer, Double>> {
+        @Override
+        public JsonElement serialize(
+                HashMap<Integer, Double> src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonArray json = new JsonArray();
+            for (Integer id : src.keySet()) {
+                JsonObject entry = new JsonObject();
+                entry.addProperty("id", id);
+                entry.addProperty("prospero", src.get(id));
+                json.add(entry);
+            }
             return json;
         }
     }
