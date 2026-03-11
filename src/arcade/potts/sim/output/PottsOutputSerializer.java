@@ -284,6 +284,7 @@ public final class PottsOutputSerializer {
     }
 
     static class ProsperoSerializer implements JsonSerializer<HashMap<Integer, Double>> {
+        @Override
         public JsonElement serialize(
                 HashMap<Integer, Double> src, Type typeOfSrc, JsonSerializationContext context) {
             JsonArray json = new JsonArray();
