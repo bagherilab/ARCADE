@@ -41,11 +41,4 @@ public final class PottsOutputSaver extends OutputSaver {
             saveProspero(tick);
         }
     }
-
-    @Override
-    public void step(SimState simstate) {
-        super.step(simstate);
-        int tick = (int) simstate.schedule.getTime();
-        save(tick);
-    }
 }
