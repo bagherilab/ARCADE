@@ -10,6 +10,7 @@ import arcade.patch.agent.action.PatchActionRemove;
 import arcade.patch.agent.cell.PatchCellFactory;
 import arcade.patch.env.component.PatchComponentCycle;
 import arcade.patch.env.component.PatchComponentDegrade;
+import arcade.patch.env.component.PatchComponentGrowth;
 import arcade.patch.env.component.PatchComponentPulse;
 import arcade.patch.env.component.PatchComponentRemodel;
 import arcade.patch.env.component.PatchComponentSitesGraphTri;
@@ -82,6 +83,8 @@ public final class PatchSimulationHex extends PatchSimulation {
                 return new PatchComponentDegrade(series, parameters);
             case "remodel":
                 return new PatchComponentRemodel(series, parameters);
+            case "growth":
+                return new PatchComponentGrowth(series, parameters);
             default:
                 return null;
         }
