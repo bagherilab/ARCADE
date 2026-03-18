@@ -163,6 +163,8 @@ task updateVersion (group: "versioning", description: "Syncs gradle version with
     }
 }
 
+copyJar.mustRunAfter spotlessMisc, spotlessJava, compileTestJava, test, jacocoTestReport
+
 build.dependsOn copyJar
 
 test.finalizedBy jacocoTestReport
