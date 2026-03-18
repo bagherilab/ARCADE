@@ -4,10 +4,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
-import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.agent.cell.PottsCellContainer;
-import arcade.potts.agent.cell.PottsCellFlyGMC;
-import arcade.potts.agent.cell.PottsCellFlyNeuron;
+import arcade.potts.agent.cell.*;
 import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
@@ -61,6 +58,16 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
      */
     double computeEquilibriumVolume() {
         return (initialSize + sizeTarget * cell.getCriticalVolume()) / 2.0;
+    }
+
+    @Override
+    public void step(MersenneTwisterFast random, Simulation sim) {
+        super.step(random, sim);
+        double synthesisRate = -1; // magic number
+        ((PottsCellFly) cell)
+                .setProspero(Math.max(0, ((PottsCellFly) cell).getProspero() + synthesisRate));
+        System.out.println(
+                "GMC ID " + cell.getID() + " prospero: " + ((PottsCellFly) cell).getProspero());
     }
 
     /**

@@ -105,6 +105,8 @@ public final class PottsCellContainer implements CellContainer {
     /**
      * Creates a {@code PottsCellContainer} instance.
      *
+     * <p>The container does not have prospero.
+     *
      * @param id the cell ID
      * @param parent the parent ID
      * @param pop the cell population index

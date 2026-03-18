@@ -1,7 +1,10 @@
 package arcade.potts.sim;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import com.google.gson.reflect.TypeToken;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import arcade.core.agent.action.Action;
@@ -19,12 +22,16 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellFactory;
+import arcade.potts.agent.cell.PottsCellFly;
 import arcade.potts.env.grid.PottsGrid;
 import arcade.potts.env.location.PottsLocationFactory;
 import static arcade.potts.util.PottsEnums.Ordering;
 
 /** Abstract implementation for potts {@link Simulation} instances. */
 public abstract class PottsSimulation extends SimState implements Simulation {
+
+    public static final Type PROSPERO_TYPE = new TypeToken<HashMap<Integer, Double>>() {}.getType();
+
     /** {@link arcade.core.sim.Series} object containing this simulation. */
     final PottsSeries series;
 
@@ -280,5 +287,16 @@ public abstract class PottsSimulation extends SimState implements Simulation {
             int tick = (int) schedule.getTime() + 1;
             series.saver.save(tick);
         }
+    }
+
+    public final HashMap<Integer, Double> getAllProspero() {
+        HashMap<Integer, Double> prosperoMap = new HashMap<>();
+
+        for (Object obj : grid.getAllObjects()) {
+            PottsCellFly cell = (PottsCellFly) obj;
+            prosperoMap.put(cell.getID(), cell.getProspero());
+        }
+
+        return prosperoMap;
     }
 }

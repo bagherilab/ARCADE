@@ -11,7 +11,7 @@ import arcade.potts.agent.module.PottsModuleFlyStemProliferation;
 import arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
 
-public class PottsCellFlyStem extends PottsCell {
+public class PottsCellFlyStem extends PottsCellFly {
     /** Enum outlining parameters for each cell type. */
     public enum StemType {
         /** Wild type stem cell. */

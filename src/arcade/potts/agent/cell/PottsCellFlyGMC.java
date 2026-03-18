@@ -16,7 +16,7 @@ import arcade.potts.util.PottsEnums.State;
  * PottsModuleProliferationVolumeBasedDivision} module. The basal apoptosis rate of this cell should
  * be set to 0 in the setup file.
  */
-public class PottsCellFlyGMC extends PottsCell {
+public class PottsCellFlyGMC extends PottsCellFly {
 
     /**
      * Creates a fly GMC {@code PottsCell} agent.
