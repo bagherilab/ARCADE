@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import arcade.potts.agent.cell.PottsCellFly;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sim.engine.Schedule;
@@ -33,6 +35,8 @@ public class PottsSimulationTest {
     static final long RANDOM_SEED = randomSeed();
 
     private static final int TOTAL_LOCATIONS = 6;
+
+    float EPSILON = 1e-6f;
 
     static Series seriesZeroPop;
 
@@ -652,4 +656,43 @@ public class PottsSimulationTest {
         verify(saver, never()).schedule(eq(schedule));
         verify(saver).save((int) time + 1);
     }
+
+    @Test
+    public void getAllProspero_multipleCells_returnsCorrectMap() {
+        PottsSimulation sim = mock(PottsSimulation.class, CALLS_REAL_METHODS);
+        sim.grid = mock(Grid.class);
+
+        PottsCellFly cell1 = mock(PottsCellFly.class);
+        PottsCellFly cell2 = mock(PottsCellFly.class);
+        when(cell1.getID()).thenReturn(1);
+        when(cell1.getProspero()).thenReturn(3.0);
+        when(cell2.getID()).thenReturn(2);
+        when(cell2.getProspero()).thenReturn(7.0);
+
+        Bag objects = new Bag();
+        objects.add(cell1);
+        objects.add(cell2);
+
+        doReturn(objects).when(sim.grid).getAllObjects();
+        HashMap<Integer, Double> result = sim.getAllProspero();
+
+        assertEquals(2, result.size());
+        assertEquals(3.0, result.get(1), EPSILON);
+        assertEquals(7.0, result.get(2), EPSILON);
+    }
+
+    @Test
+    public void getAllProspero_emptyGrid_returnsEmptyMap() {
+        PottsSimulation sim = mock(PottsSimulation.class, CALLS_REAL_METHODS);
+        sim.grid = mock(Grid.class);
+        Bag empty = new Bag();
+
+        doReturn(empty).when(sim.grid).getAllObjects();
+
+        HashMap<Integer, Double> result = sim.getAllProspero();
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
 }

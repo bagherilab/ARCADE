@@ -493,11 +493,43 @@ public class PottsModuleFlyStemProliferationTest {
         assertEquals(Phase.UNDEFINED, module.phase); // remains UNDEFINED
     }
 
-    // @Test // does not pass
+     @Test
     public void step_incrementsProspero_prosperoIsUpdated() {
+        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(0);
+        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        when(stemCell.getVolume()).thenReturn(0.0); // we don't want addCell to be called
         when(stemCell.getProspero()).thenReturn(5.0);
         module.step(random, sim);
         verify(stemCell).setProspero(6.0);
+    }
+
+    @Test
+    public void splitStemProspero_zeroProspero_returnsZero() {
+        assertEquals(0.0,
+                PottsModuleFlyStemProliferation.splitStemProspero(0.0, random), EPSILON);
+    }
+
+    @Test
+    public void splitStemProspero_evenSplit_returnsHalf() {
+        when(random.nextBoolean()).thenReturn(true);
+        assertEquals(5.0,
+                PottsModuleFlyStemProliferation.splitStemProspero(10.0, random), EPSILON);
+    }
+
+    @Test
+    public void splitStemProspero_unevenSplitDaughterGetsAll_returnsAll() {
+        when(random.nextBoolean()).thenReturn(false, true);
+        assertEquals(10.0,
+                PottsModuleFlyStemProliferation.splitStemProspero(10.0, random), EPSILON);
+    }
+
+    @Test
+    public void splitStemProspero_unevenSplitDaughterGetsNone_returnsZero() {
+        when(random.nextBoolean()).thenReturn(false, false);
+        assertEquals(0.0,
+                PottsModuleFlyStemProliferation.splitStemProspero(10.0, random), EPSILON);
     }
 
     // Apical axis rule tests

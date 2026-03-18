@@ -542,7 +542,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * @param random the random number generator
      * @return double with daughter prospero amount
      */
-    private double splitStemProspero(double parentProspero, MersenneTwisterFast random) {
+    static double splitStemProspero(double parentProspero, MersenneTwisterFast random) {
         if (parentProspero <= 0) {
             return 0;
         }
