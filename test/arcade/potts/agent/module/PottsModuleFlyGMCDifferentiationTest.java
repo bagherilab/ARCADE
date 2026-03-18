@@ -180,13 +180,16 @@ public class PottsModuleFlyGMCDifferentiationTest {
     }
 
     @Test
-    public void updateGrowthRate_dynamicOn_pdeLikeFalse_usesSelfVolumeAndCrit() {
+    public void updateGrowthRate_dynamicOn_pdeLikeFalse_usesSelfVolumeAndEquilibriumRef() {
         when(gmcCell.getParameters()).thenReturn(parameters);
         when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(1);
         when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
         when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
 
-        // Self values
+        // initialSize is captured at construction from location.getVolume() = 30.0
+        // critVol at update time = 150.0
+        // vRef = (30.0 + 1.2 * 150.0) / 2 = (30.0 + 180.0) / 2 = 105.0
         when(gmcCell.getCriticalVolume()).thenReturn(150.0);
         when(gmcCell.getLocation().getVolume()).thenReturn(30.0);
 
@@ -201,18 +204,21 @@ public class PottsModuleFlyGMCDifferentiationTest {
 
         module.updateGrowthRate(sim);
 
+        double expectedVRef = (30.0 + 1.2 * 150.0) / 2.0; // 105.0
         org.mockito.Mockito.verify(module)
                 .updateCellVolumeBasedGrowthRate(
                         org.mockito.ArgumentMatchers.eq(30.0),
-                        org.mockito.ArgumentMatchers.eq(150.0));
+                        org.mockito.ArgumentMatchers.eq(expectedVRef));
     }
 
     @Test
-    public void updateGrowthRate_dynamicOnPdeLikeTrue_usesAverageVolumeAndCritAcrossGMCs() {
+    public void
+            updateGrowthRate_dynamicOnPdeLikeTrue_usesAverageVolumeAndEquilibriumRefAcrossGMCs() {
         // Flags
         when(gmcCell.getParameters()).thenReturn(parameters);
         when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(1);
         when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
         when(parameters.getInt("proliferation/PDELIKE")).thenReturn(1);
 
         // Same population for all GMCs we want included
@@ -264,12 +270,71 @@ public class PottsModuleFlyGMCDifferentiationTest {
 
         module.updateGrowthRate(sim);
 
+        // avgVol = (30 + 10 + 20) / 3 = 20.0
+        // avgCritVol = (150 + 100 + 200) / 3 = 150.0
+        // avgVRef = avgCritVol * (1 + sizeTarget) / 2 = 150.0 * (1 + 1.2) / 2 = 165.0
         double expectedAvgVol = (30.0 + 10.0 + 20.0) / 3.0; // 20.0
         double expectedAvgCrit = (150.0 + 100.0 + 200.0) / 3.0; // 150.0
+        double expectedAvgVRef = expectedAvgCrit * (1.0 + 1.2) / 2.0; // 165.0
 
         org.mockito.Mockito.verify(module)
                 .updateCellVolumeBasedGrowthRate(
                         org.mockito.ArgumentMatchers.eq(expectedAvgVol),
-                        org.mockito.ArgumentMatchers.eq(expectedAvgCrit));
+                        org.mockito.ArgumentMatchers.eq(expectedAvgVRef));
+    }
+
+    // computeEquilibriumVolume tests
+
+    @Test
+    public void computeEquilibriumVolume_returnsArithmeticMeanOfBirthAndDivisionVolumes() {
+        // initialSize = location.getVolume() at construction = 30.0
+        // critVol at call time = 150.0; sizeTarget = 1.2
+        // vRef = (30.0 + 1.2 * 150.0) / 2 = (30.0 + 180.0) / 2 = 105.0
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
+        when(gmcCell.getLocation().getVolume()).thenReturn(30.0);
+        when(gmcCell.getCriticalVolume()).thenReturn(150.0);
+
+        PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
+        org.junit.jupiter.api.Assertions.assertEquals(
+                105.0, module.computeEquilibriumVolume(), 1e-9);
+    }
+
+    @Test
+    public void computeEquilibriumVolume_differentSizeTarget_scalesCorrectly() {
+        // initialSize = 30.0; critVol = 100.0; sizeTarget = 2.0
+        // vRef = (30.0 + 2.0 * 100.0) / 2 = 230.0 / 2 = 115.0
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(2.0);
+        when(gmcCell.getLocation().getVolume()).thenReturn(30.0);
+        when(gmcCell.getCriticalVolume()).thenReturn(100.0);
+
+        PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
+        org.junit.jupiter.api.Assertions.assertEquals(
+                115.0, module.computeEquilibriumVolume(), 1e-9);
+    }
+
+    @Test
+    public void computeEquilibriumVolume_differentInitialSize_scalesCorrectly() {
+        // initialSize = 50.0; critVol = 150.0; sizeTarget = 1.2
+        // vRef = (50.0 + 1.2 * 150.0) / 2 = (50.0 + 180.0) / 2 = 115.0
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
+        when(gmcCell.getLocation().getVolume()).thenReturn(50.0);
+        when(gmcCell.getCriticalVolume()).thenReturn(150.0);
+
+        PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
+        org.junit.jupiter.api.Assertions.assertEquals(
+                115.0, module.computeEquilibriumVolume(), 1e-9);
+    }
+
+    @Test
+    public void computeEquilibriumVolume_differentCritVol_scalesCorrectly() {
+        // initialSize = 30.0; critVol = 200.0; sizeTarget = 1.2
+        // vRef = (30.0 + 1.2 * 200.0) / 2 = (30.0 + 240.0) / 2 = 135.0
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
+        when(gmcCell.getLocation().getVolume()).thenReturn(30.0);
+        when(gmcCell.getCriticalVolume()).thenReturn(200.0);
+
+        PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
+        org.junit.jupiter.api.Assertions.assertEquals(
+                135.0, module.computeEquilibriumVolume(), 1e-9);
     }
 }

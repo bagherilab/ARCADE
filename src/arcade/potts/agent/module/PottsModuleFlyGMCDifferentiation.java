@@ -23,6 +23,12 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
     Boolean pdeLike;
 
     /**
+     * Volume of this GMC at the time it was born (voxels). Used as the lower bound of the cell
+     * cycle when computing the equilibrium reference volume.
+     */
+    final double initialSize;
+
+    /**
      * Creates a fly GMC proliferation module.
      *
      * @param cell the cell to which this module is attached
@@ -30,6 +36,31 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
     public PottsModuleFlyGMCDifferentiation(PottsCellFlyGMC cell) {
         super(cell);
         pdeLike = (cell.getParameters().getInt("proliferation/PDELIKE") != 0);
+        initialSize = cell.getLocation().getVolume();
+    }
+
+    /**
+     * Computes the expected equilibrium average GMC volume over one cell cycle.
+     *
+     * <p>A GMC is born at {@code initialSize} and divides once it reaches {@code sizeTarget *
+     * criticalVolume}. Under constant-rate growth, the time-average volume over the cycle is the
+     * arithmetic mean of the birth and division volumes:
+     *
+     * <pre>
+     *   V_ref = (V_birth + V_div) / 2
+     *         = (initialSize + sizeTarget * criticalVolume) / 2
+     * </pre>
+     *
+     * <p>This reference is used as the normalization denominator in the volume-based growth rate
+     * formula, ensuring that at equilibrium the effective growth rate equals {@code
+     * cellGrowthRateBase}. This is directly analogous to {@link
+     * PottsModuleFlyStemProliferation#computeEquilibriumVolume()}, which uses the same arithmetic
+     * mean but derives the birth volume geometrically from the NB split-offset parameter.
+     *
+     * @return the expected equilibrium average GMC volume
+     */
+    double computeEquilibriumVolume() {
+        return (initialSize + sizeTarget * cell.getCriticalVolume()) / 2.0;
     }
 
     /**
@@ -101,9 +132,14 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
         } else {
             if (!pdeLike) {
                 updateCellVolumeBasedGrowthRate(
-                        cell.getLocation().getVolume(), cell.getCriticalVolume());
+                        cell.getLocation().getVolume(), computeEquilibriumVolume());
             } else {
-                // PDE-like: use population-wide averages for GMCs (same pop as this cell)
+                // PDE-like: use population-wide averages for GMCs (same pop as this cell).
+                // The reference volume is the population-average equilibrium volume:
+                //   avgVRef = avgCritVol * (1 + sizeTarget) / 2
+                // This assumes VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER = 1 (so each GMC's
+                // birth volume equals its critVol). For multiplier != 1, avgCritVol would need
+                // to be replaced by the mean of (critVol_i / multiplier + sizeTarget*critVol_i)/2.
                 sim.util.Bag objs = sim.getGrid().getAllObjects();
 
                 double volSum = 0.0;
@@ -127,8 +163,8 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
                 }
                 double avgVolume = volSum / count;
                 double avgCritVol = critSum / count;
-                updateCellVolumeBasedGrowthRate(avgVolume, avgCritVol);
-                // System.out.println("GMC " + cell.getID() + "growth rate = " + cellGrowthRate);
+                double avgVRef = avgCritVol * (1.0 + sizeTarget) / 2.0;
+                updateCellVolumeBasedGrowthRate(avgVolume, avgVRef);
             }
         }
     }
