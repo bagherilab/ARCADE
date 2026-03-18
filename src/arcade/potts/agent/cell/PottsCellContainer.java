@@ -59,7 +59,7 @@ public final class PottsCellContainer implements CellContainer {
     /** Critical region cell heights [voxels]. */
     public final EnumMap<Region, Double> criticalRegionHeights;
 
-    /** Cell prospero [TODO: determine units] */
+    /** Cell prospero [TODO: determine units]. */
     public final Double prospero;
 
     /**
