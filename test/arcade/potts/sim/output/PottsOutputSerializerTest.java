@@ -3,6 +3,8 @@ package arcade.potts.sim.output;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
+
 import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -48,22 +50,28 @@ public class PottsOutputSerializerTest {
             };
 
     public static void checkAdaptors(Gson gson) {
-        TypeToken<PottsSeries> series = new TypeToken<PottsSeries>() {};
+        TypeToken<PottsSeries> series = new TypeToken<PottsSeries>() {
+        };
         assertSame(gson.getAdapter(series).getClass(), TreeTypeAdapter.class);
 
-        TypeToken<CellContainer> cellContainer = new TypeToken<CellContainer>() {};
+        TypeToken<CellContainer> cellContainer = new TypeToken<CellContainer>() {
+        };
         assertSame(gson.getAdapter(cellContainer).getClass(), TreeTypeAdapter.class);
 
-        TypeToken<PottsCellContainer> cell = new TypeToken<PottsCellContainer>() {};
+        TypeToken<PottsCellContainer> cell = new TypeToken<PottsCellContainer>() {
+        };
         assertSame(gson.getAdapter(cell).getClass(), TreeTypeAdapter.class);
 
-        TypeToken<LocationContainer> locationContainer = new TypeToken<LocationContainer>() {};
+        TypeToken<LocationContainer> locationContainer = new TypeToken<LocationContainer>() {
+        };
         assertSame(gson.getAdapter(locationContainer).getClass(), TreeTypeAdapter.class);
 
-        TypeToken<PottsLocationContainer> location = new TypeToken<PottsLocationContainer>() {};
+        TypeToken<PottsLocationContainer> location = new TypeToken<PottsLocationContainer>() {
+        };
         assertSame(gson.getAdapter(location).getClass(), TreeTypeAdapter.class);
 
-        TypeToken<Voxel> voxel = new TypeToken<Voxel>() {};
+        TypeToken<Voxel> voxel = new TypeToken<Voxel>() {
+        };
         assertSame(gson.getAdapter(voxel).getClass(), TreeTypeAdapter.class);
     }
 
@@ -513,4 +521,37 @@ public class PottsOutputSerializerTest {
         JsonElement json = serializer.serialize(voxel, null, null);
         assertEquals(expected, json.toString());
     }
+
+    @Test
+    public void serialize_forProspero_createsJSON() {
+        ProsperoSerializer serializer = new ProsperoSerializer();
+        HashMap<Integer, Double> cells = new HashMap<>();
+        int numCells = randomIntBetween(1, 100);
+        int startId = randomIntBetween(1, 100);
+
+        for (int i = 0; i < numCells; i++) {
+            cells.put(startId, randomDoubleBetween(1, 100));
+            startId++;
+        }
+
+        StringBuilder expected = new StringBuilder();
+        int i = 0;
+        expected.append("[");
+        for (Integer id : cells.keySet()) {
+            expected.append("{\"id\":").append(id)
+                    .append(",\"prospero\":").append(cells.get(id)).append("}");
+            if (i < cells.size() - 1) {
+                expected.append(","); // to match JSON formatting
+            }
+            i++;
+        }
+        expected.append("]");
+
+
+        JsonElement json = serializer.serialize(cells, null, null);
+        assertEquals(expected.toString(), json.toString());
+    }
 }
+
+
+
