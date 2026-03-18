@@ -493,7 +493,7 @@ public class PottsModuleFlyStemProliferationTest {
         assertEquals(Phase.UNDEFINED, module.phase); // remains UNDEFINED
     }
 
-     @Test
+    @Test
     public void step_incrementsProspero_prosperoIsUpdated() {
         when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(0);
         when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
@@ -507,29 +507,26 @@ public class PottsModuleFlyStemProliferationTest {
 
     @Test
     public void splitStemProspero_zeroProspero_returnsZero() {
-        assertEquals(0.0,
-                PottsModuleFlyStemProliferation.splitStemProspero(0.0, random), EPSILON);
+        assertEquals(0.0, PottsModuleFlyStemProliferation.splitStemProspero(0.0, random), EPSILON);
     }
 
     @Test
     public void splitStemProspero_evenSplit_returnsHalf() {
         when(random.nextBoolean()).thenReturn(true);
-        assertEquals(5.0,
-                PottsModuleFlyStemProliferation.splitStemProspero(10.0, random), EPSILON);
+        assertEquals(5.0, PottsModuleFlyStemProliferation.splitStemProspero(10.0, random), EPSILON);
     }
 
     @Test
     public void splitStemProspero_unevenSplitDaughterGetsAll_returnsAll() {
         when(random.nextBoolean()).thenReturn(false, true);
-        assertEquals(10.0,
-                PottsModuleFlyStemProliferation.splitStemProspero(10.0, random), EPSILON);
+        assertEquals(
+                10.0, PottsModuleFlyStemProliferation.splitStemProspero(10.0, random), EPSILON);
     }
 
     @Test
     public void splitStemProspero_unevenSplitDaughterGetsNone_returnsZero() {
         when(random.nextBoolean()).thenReturn(false, false);
-        assertEquals(0.0,
-                PottsModuleFlyStemProliferation.splitStemProspero(10.0, random), EPSILON);
+        assertEquals(0.0, PottsModuleFlyStemProliferation.splitStemProspero(10.0, random), EPSILON);
     }
 
     // Apical axis rule tests
@@ -1089,7 +1086,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         // N = 6 in-simulation (K = 3, n = 2 → 9/(9+36)=0.2 → 4.0)
         HashSet<PottsCellFlyStem> six = new HashSet<>();
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i <= 6; i++) {
             PottsCellFlyStem n = mock(PottsCellFlyStem.class);
             when(n.getID()).thenReturn(200 + i);
             six.add(n);
@@ -1099,7 +1096,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         module.updateGrowthRateBasedOnOtherNBs(sim);
 
-        // assertEquals(4.0, module.cellGrowthRate, 1e-6); // not passing for me!
+        assertEquals(4.0, module.cellGrowthRate, 1e-6);
         verify(module, times(1)).getNBsInSimulation(sim);
         verify(module, never()).getNBNeighbors(sim);
     }
