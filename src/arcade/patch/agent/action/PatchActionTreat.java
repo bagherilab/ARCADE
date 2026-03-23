@@ -32,6 +32,7 @@ import arcade.patch.env.location.PatchLocation;
 import arcade.patch.env.location.PatchLocationContainer;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.sim.PatchSimulation;
+import arcade.patch.util.PatchEnums.ComponentType;
 import arcade.patch.util.PatchEnums.Immune;
 import arcade.patch.util.PatchEnums.Ordering;
 
@@ -112,18 +113,9 @@ public class PatchActionTreat implements Action {
      */
     public void step(SimState simstate) {
         PatchSimulation sim = (PatchSimulation) simstate;
-        String type = "null";
         PatchGrid grid = (PatchGrid) sim.getGrid();
         PatchComponentSites comp = (PatchComponentSites) sim.getComponent("SITES");
-
-        // Determine type of sites component implemented.
-        if (comp instanceof PatchComponentSitesSource) {
-            type = "source";
-        } else if (comp instanceof PatchComponentSitesPattern) {
-            type = "pattern";
-        } else if (comp instanceof PatchComponentSitesGraph) {
-            type = "graph";
-        }
+        ComponentType type = comp.getComponentType();
 
         Set<String> immuneCells =
                 Arrays.stream(Immune.values()).map(Enum::name).collect(Collectors.toSet());
@@ -167,29 +159,28 @@ public class PatchActionTreat implements Action {
      */
     private void findLocations(
             PatchComponentSites comp,
-            String type,
+            ComponentType type,
             ArrayList<LocationContainer> locs,
             ArrayList<Location> siteLocs,
             PatchSimulation sim) {
-        if (type.equals("graph")) {
-            findGraphSites(comp, locs, siteLocs, sim);
-        } else if (type.equals("source") || type.equals("pattern")) {
-            double[][][] damage;
-            boolean[][][] sitesLat;
 
-            if (type.equals("source")) {
+        double[][][] damage;
+        boolean[][][] sitesLat;
+
+        switch (type) {
+            case GRAPH:
+                findGraphSites(comp, locs, siteLocs, sim);
+                break;
+            case SOURCE:
                 damage = ((PatchComponentSitesSource) comp).getDamage();
                 sitesLat = ((PatchComponentSitesSource) comp).getSources();
-            } else {
+                pruneSite(locs, sim, damage, sitesLat, siteLocs);
+                break;
+            case PATTERN:
                 damage = ((PatchComponentSitesPattern) comp).getDamage();
                 sitesLat = ((PatchComponentSitesPattern) comp).getPatterns();
-            }
-            pruneSite(locs, sim, damage, sitesLat, siteLocs);
-        } else {
-            throw new IllegalArgumentException(
-                    "Invalid component type: "
-                            + type
-                            + ". Must be of type source, pattern, or graph.");
+                pruneSite(locs, sim, damage, sitesLat, siteLocs);
+                break;
         }
     }
 

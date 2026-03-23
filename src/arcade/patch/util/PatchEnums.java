@@ -292,4 +292,21 @@ public final class PatchEnums {
             return values()[rng.nextInt(values().length - 1) + 1];
         }
     }
+
+    /** Enum for component types. */
+    public enum ComponentType {
+        GRAPH,
+        SOURCE,
+        PATTERN;
+
+        /**
+         * Randomly selects a {@code ComponentType}.
+         *
+         * @param rng the random number generator
+         * @return a random {@code ComponentType}
+         */
+        public static ComponentType random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
+        }
+    }
 }
