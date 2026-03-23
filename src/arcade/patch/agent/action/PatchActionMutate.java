@@ -21,7 +21,7 @@ import static arcade.patch.util.PatchEnums.Ordering;
  * Implementation of {@link Action} for converting cells to a different class.
  *
  * <p>The action is stepped once after {@code TIME_DELAY}. The action will convert all the healthy
- * cells within the radius cells of the given population.
+ * tissue cells within the given radius into cancer cells.
  */
 public class PatchActionMutate implements Action {
     /** Time delay before calling the action [min]. */
