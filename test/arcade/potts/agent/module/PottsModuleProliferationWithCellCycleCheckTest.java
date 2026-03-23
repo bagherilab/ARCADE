@@ -18,15 +18,16 @@ import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
 
-public class PottsModuleProliferationTest {
+public class PottsModuleProliferationWithCellCycleCheckTest {
     static MersenneTwisterFast randomMock = new MersenneTwisterFast();
 
     static PottsSimulation simMock = mock(PottsSimulation.class);
 
     static PottsCell cellMock = mock(PottsCell.class);
 
-    static class PottsModuleProliferationMock extends PottsModuleProliferation {
-        PottsModuleProliferationMock(PottsCell cell) {
+    static class PottsModuleProliferationwithCellCycleCheckMock
+            extends PottsModuleProliferationWithCellCycleCheck {
+        PottsModuleProliferationwithCellCycleCheckMock(PottsCell cell) {
             super(cell);
         }
 
@@ -53,20 +54,23 @@ public class PottsModuleProliferationTest {
 
     @Test
     public void constructor_initializesFactory() {
-        PottsModuleProliferationMock module = new PottsModuleProliferationMock(cellMock);
+        PottsModuleProliferationWithCellCycleCheck module =
+                new PottsModuleProliferationwithCellCycleCheckMock(cellMock);
         assertNotNull(module.poissonFactory);
     }
 
     @Test
     public void getPhase_defaultConstructor_returnsValue() {
-        PottsModuleProliferation module = new PottsModuleProliferationMock(cellMock);
+        PottsModuleProliferationWithCellCycleCheck module =
+                new PottsModuleProliferationwithCellCycleCheckMock(cellMock);
         assertEquals(Phase.PROLIFERATIVE_G1, module.getPhase());
     }
 
     @Test
     public void setPhase_givenValue_setsValue() {
         Phase phase = Phase.random(randomMock);
-        PottsModuleProliferation module = new PottsModuleProliferationMock(cellMock);
+        PottsModuleProliferationWithCellCycleCheck module =
+                new PottsModuleProliferationwithCellCycleCheckMock(cellMock);
         module.setPhase(phase);
         assertEquals(phase, module.phase);
     }
@@ -74,7 +78,8 @@ public class PottsModuleProliferationTest {
     @Test
     public void setPhase_givenValue_resetsSteps() {
         Phase phase = Phase.random(randomMock);
-        PottsModuleProliferation module = new PottsModuleProliferationMock(cellMock);
+        PottsModuleProliferationWithCellCycleCheck module =
+                new PottsModuleProliferationwithCellCycleCheckMock(cellMock);
         module.currentSteps = randomIntBetween(1, 10);
         module.setPhase(phase);
         assertEquals(0, module.currentSteps);
@@ -82,7 +87,8 @@ public class PottsModuleProliferationTest {
 
     @Test
     public void step_givenPhaseG1_callsMethod() {
-        PottsModuleProliferation module = spy(new PottsModuleProliferationMock(cellMock));
+        PottsModuleProliferationWithCellCycleCheck module =
+                spy(new PottsModuleProliferationwithCellCycleCheckMock(cellMock));
         module.phase = Phase.PROLIFERATIVE_G1;
 
         module.step(randomMock, simMock);
@@ -94,7 +100,8 @@ public class PottsModuleProliferationTest {
 
     @Test
     public void step_givenPhaseS_callsMethod() {
-        PottsModuleProliferation module = spy(new PottsModuleProliferationMock(cellMock));
+        PottsModuleProliferationWithCellCycleCheck module =
+                spy(new PottsModuleProliferationwithCellCycleCheckMock(cellMock));
         module.phase = Phase.PROLIFERATIVE_S;
 
         module.step(randomMock, simMock);
@@ -106,7 +113,8 @@ public class PottsModuleProliferationTest {
 
     @Test
     public void step_givenPhaseG2_callsMethod() {
-        PottsModuleProliferation module = spy(new PottsModuleProliferationMock(cellMock));
+        PottsModuleProliferationWithCellCycleCheck module =
+                spy(new PottsModuleProliferationwithCellCycleCheckMock(cellMock));
         module.phase = Phase.PROLIFERATIVE_G2;
 
         module.step(randomMock, simMock);
@@ -118,7 +126,8 @@ public class PottsModuleProliferationTest {
 
     @Test
     public void step_givenPhaseM_callsMethod() {
-        PottsModuleProliferation module = spy(new PottsModuleProliferationMock(cellMock));
+        PottsModuleProliferationWithCellCycleCheck module =
+                spy(new PottsModuleProliferationwithCellCycleCheckMock(cellMock));
         doNothing().when(module).addCell(randomMock, simMock);
         module.phase = Phase.PROLIFERATIVE_M;
 
@@ -131,7 +140,8 @@ public class PottsModuleProliferationTest {
 
     @Test
     public void step_invalidPhase_doesNothing() {
-        PottsModuleProliferation module = spy(new PottsModuleProliferationMock(cellMock));
+        PottsModuleProliferationWithCellCycleCheck module =
+                spy(new PottsModuleProliferationwithCellCycleCheckMock(cellMock));
         module.phase = Phase.UNDEFINED;
 
         module.step(randomMock, simMock);
@@ -178,7 +188,8 @@ public class PottsModuleProliferationTest {
         doNothing().when(cell).reset(any(), any());
         doNothing().when(newCell).reset(any(), any());
 
-        PottsModuleProliferation module = new PottsModuleProliferationMock(cell);
+        PottsModuleProliferationWithCellCycleCheck module =
+                new PottsModuleProliferationwithCellCycleCheckMock(cell);
         module.addCell(randomMock, sim);
 
         verify(cell).reset(potts.ids, potts.regions);

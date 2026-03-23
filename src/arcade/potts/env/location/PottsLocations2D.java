@@ -2,6 +2,9 @@ package arcade.potts.env.location;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import arcade.core.util.Vector;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Region;
 
@@ -69,5 +72,11 @@ public final class PottsLocations2D extends PottsLocations implements Location2D
     @Override
     ArrayList<Voxel> getSelected(Voxel focus, double n) {
         return Location2D.getSelected(locations.get(Region.DEFAULT).voxels, focus, n);
+    }
+
+    @Override
+    Voxel getOffsetInApicalFrame(ArrayList<Integer> offsets, Vector apicalAxis) {
+        throw new UnsupportedOperationException(
+                "getOffsetInApicalFrame is not implemented for PottsLocations2D");
     }
 }
