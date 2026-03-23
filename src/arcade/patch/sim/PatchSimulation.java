@@ -229,7 +229,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         events.add(event);
     }
 
-    /** Clear events queue */
+    /** Clear events queue. */
     public void clearEvents() {
         events.clear();
     }
