@@ -220,22 +220,6 @@ public class PatchActionTreat implements Action {
             ArrayList<CoordinateXYZ> spans = new ArrayList<>();
             ArrayList<Location> spanLocs = new ArrayList<>();
 
-            // if (Objects.equals(coord, "Hex")) {
-            //     spans = (
-            //             ((PatchComponentSitesGraphTri) graphSites)
-            //                     .getSpan(edge.getFrom(), edge.getTo()));
-            //     for (CoordinateXYZ span : spans) {
-            //         spanLocs.add(((PatchComponentSitesGraphTri) graphSites).getLocation(span));
-            //     }
-            // } else {
-            //     spans = (
-            //             ((PatchComponentSitesGraphRect) graphSites)
-            //                     .getSpan(edge.getFrom(), edge.getTo()));
-            //     for (CoordinateXYZ span : spans) {
-            //         spanLocs.add(((PatchComponentSitesGraphRect) graphSites).getLocation(span));
-            //     }
-            // }
-
             spans = graphSites.getSpan(edge.getFrom(), edge.getTo());
             for (CoordinateXYZ span : spans) {
                 Location newLoc = graphSites.getLocation(span);
