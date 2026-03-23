@@ -98,7 +98,7 @@ public abstract class PatchComponentSites implements Component {
     }
 
     /**
-     * Returns what type of {@code ComponentType} this is
+     * Returns what type of {@code ComponentType} this is.
      *
      * @return the component type
      */
