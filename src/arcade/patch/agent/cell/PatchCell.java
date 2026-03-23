@@ -19,6 +19,7 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModuleApoptosis;
 import arcade.patch.agent.module.PatchModuleCytotoxicity;
+import arcade.patch.agent.module.PatchModuleInactive;
 import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleNecrosis;
 import arcade.patch.agent.module.PatchModuleProliferation;
@@ -367,6 +368,9 @@ public abstract class PatchCell implements Cell {
                 break;
             case STIMULATORY:
                 module = new PatchModuleStimulation(this);
+                break;
+            case INACTIVE:
+                module = new PatchModuleInactive(this);
                 break;
             default:
                 module = null;

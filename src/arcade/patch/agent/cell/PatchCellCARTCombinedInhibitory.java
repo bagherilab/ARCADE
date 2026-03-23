@@ -151,28 +151,27 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
             int maxSearch = (int) Math.min(neighbors, searchAbility);
             for (int i = 0; i < maxSearch; i++) {
                 Cell cell = (Cell) allAgents.get(i);
-                if (cell.getState() != State.APOPTOTIC && cell.getState() != State.NECROTIC) {
-                    PatchCellTissue tissueCell = (PatchCellTissue) cell;
-                    double selfTargets = tissueCell.getSynNotchAntigens();
+                PatchCellTissue tissueCell = (PatchCellTissue) cell;
+                double selfTargets = tissueCell.getSynNotchAntigens();
 
-                    double probabilitySelf =
-                            computeProbability(
-                                    selfTargets,
-                                    kDSelf,
-                                    synnotchs,
-                                    initialSynnotchReceptors,
-                                    selfAlpha,
-                                    selfBeta);
+                double probabilitySelf =
+                        computeProbability(
+                                selfTargets,
+                                kDSelf,
+                                synnotchs,
+                                initialSynnotchReceptors,
+                                selfAlpha,
+                                selfBeta);
 
-                    double randomSelf = random.nextDouble();
+                double randomSelf = random.nextDouble();
 
-                    if (probabilitySelf >= randomSelf) {
-                        boundPD1 = true;
-                        boundSelfAntigensCount++;
-                        synnotchs--;
-                    } else {
-                        boundPD1 = false;
-                    }
+                if (probabilitySelf >= randomSelf) {
+                    boundPD1 = true;
+                    boundSynNotch++;
+                    synnotchs--;
+                    return;
+                } else {
+                    boundPD1 = false;
                 }
             }
         }
@@ -213,12 +212,20 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
                     && state != State.SENESCENT
                     && state != State.EXHAUSTED
                     && state != State.STARVED
+                    && state != State.INACTIVE
                     && energy < 0) {
-
                 super.setState(State.STARVED);
                 super.unbind();
             } else if (state == State.STARVED && energy >= 0) {
                 super.setState(State.UNDEFINED);
+            } else if (state != State.ANERGIC
+                    && state != State.SENESCENT
+                    && state != State.EXHAUSTED
+                    && state != State.STARVED
+                    && state != State.INACTIVE
+                    && boundPD1) {
+                super.setState(State.INACTIVE);
+                this.activated = false;
             }
         }
 
@@ -239,8 +246,7 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
                 super.boundTarget = target;
 
                 // If cell is bound to both antigen and self it will become anergic.
-                if (super.getBindingFlag() == AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR
-                        || (boundPD1 && super.getBindingFlag() == AntigenFlag.BOUND_ANTIGEN)) {
+                if (super.getBindingFlag() == AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR) {
                     if (simstate.random.nextDouble() > super.anergicFraction) {
                         super.setState(State.APOPTOTIC);
                     } else {
@@ -254,8 +260,7 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
 
                     // Check overstimulation. If cell has bound to
                     // target antigens too many times, becomes exhausted.
-                    if (boundCARAntigensCount > maxAntigenBinding
-                            || boundSelfAntigensCount > maxAntigenBinding) {
+                    if (boundCARAntigensCount > maxAntigenBinding) {
                         if (simstate.random.nextDouble() > super.exhaustedFraction) {
                             super.setState(State.APOPTOTIC);
                         } else {

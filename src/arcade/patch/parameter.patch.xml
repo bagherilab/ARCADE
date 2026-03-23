@@ -152,6 +152,10 @@
     <action class="treat" id="MAX_DAMAGE_SEED" value="1E7" description="maximum damage value at which T-cells can seed next to in source or pattern source" />
     <action class="treat" id="MIN_RADIUS_SEED" value="2.0" description="minimum radius value at which T-cells can seed next to in graph source" />
 
+    <!-- mutate action parameters -->
+    <action class="mutate" id="TIME_DELAY" value="0" units="min" description="time delay before calling the action" />
+    <action class="mutate" id="INSERT_RADIUS" value="1" description="grid radius that cells are inserted into" />
+
     <!-- COMPONENTS ======================================================== -->
 
     <!-- source sites component parameters -->

@@ -105,6 +105,9 @@ public final class PatchEnums {
         /** Code for anergic cells. */
         ANERGIC,
 
+        /** Code for inactive cells. */
+        INACTIVE,
+
         /** Code for starved cells. */
         STARVED,
 

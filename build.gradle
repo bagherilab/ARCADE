@@ -62,8 +62,8 @@ jacocoTestReport {
         })
     }
     reports {
-        xml.enabled true
-        html.enabled true
+        xml.required.set(true)
+        html.required.set(true)
     }
 }
 
@@ -160,6 +160,8 @@ task updateVersion (group: "versioning", description: "Syncs gradle version with
 }
 
 build.dependsOn copyJar
+
+copyJar.mustRunAfter check, jacocoTestReport
 
 test.finalizedBy jacocoTestReport
 

@@ -6,6 +6,7 @@ import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
 import arcade.patch.agent.action.PatchActionConvert;
 import arcade.patch.agent.action.PatchActionInsert;
+import arcade.patch.agent.action.PatchActionMutate;
 import arcade.patch.agent.action.PatchActionRemove;
 import arcade.patch.agent.action.PatchActionReplace;
 import arcade.patch.agent.action.PatchActionTreat;
@@ -64,6 +65,8 @@ public final class PatchSimulationRect extends PatchSimulation {
                 return new PatchActionReplace(series, parameters);
             case "treat":
                 return new PatchActionTreat(series, parameters);
+            case "mutate":
+                return new PatchActionMutate(series, parameters);
             default:
                 return null;
         }
