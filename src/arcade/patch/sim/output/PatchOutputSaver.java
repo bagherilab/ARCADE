@@ -67,7 +67,7 @@ public final class PatchOutputSaver extends OutputSaver {
     }
 
     /**
-     * Save the collection of events to a JSON.
+     * Save the collection of events to a JSON. Clears events queue after writing to file.
      *
      * @param tick the simulation tick
      */
@@ -78,6 +78,7 @@ public final class PatchOutputSaver extends OutputSaver {
                 String json = gson.toJson(events);
                 String path = prefix + String.format("_%06d.EVENTS.json", tick);
                 write(path, format(json, FORMAT_ELEMENTS));
+                ((PatchSimulation) sim).clearEvents();
             }
         }
     }

@@ -11,6 +11,8 @@ import arcade.patch.agent.cell.PatchCellTissue;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
+import arcade.patch.util.PatchEnums.Domain;
+import arcade.patch.util.PatchEnums.State;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -76,13 +78,14 @@ public class PatchModuleCytotoxicity extends PatchModule {
                 // Log cytotoxicity event
                 PatchSimulation patchSim = (PatchSimulation) sim;
                 Map<String, Object> eventData = new HashMap<>();
-                eventData.put("t-cell-id", cell.getID());
-                eventData.put("tissue-cell-id", target.getID());
-                eventData.put("tissue-cell-type", target.getPop());
                 eventData.put("type", "lysis");
                 eventData.put("timestamp", (int) ((PatchSimulation) sim).getSchedule().getTime());
+                eventData.put("cell-id", cell.getID());
+                eventData.put("target-cell-id", target.getID());
+                eventData.put("target-cell-type", target.getPop());
                 eventData.put(
-                        "tissue-location", ((PatchLocation) target.getLocation()).getCoordinate());
+                        "target-cell-location",
+                        ((PatchLocation) target.getLocation()).getCoordinate());
                 patchSim.logEvent(eventData);
             }
         }
