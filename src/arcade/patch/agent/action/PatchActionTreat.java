@@ -3,7 +3,6 @@ package arcade.patch.agent.action;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import sim.engine.Schedule;
@@ -24,8 +23,6 @@ import arcade.patch.agent.cell.PatchCellTissue;
 import arcade.patch.env.component.PatchComponentSites;
 import arcade.patch.env.component.PatchComponentSitesGraph;
 import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
-import arcade.patch.env.component.PatchComponentSitesGraphRect;
-import arcade.patch.env.component.PatchComponentSitesGraphTri;
 import arcade.patch.env.component.PatchComponentSitesPattern;
 import arcade.patch.env.component.PatchComponentSitesSource;
 import arcade.patch.env.grid.PatchGrid;
@@ -35,6 +32,7 @@ import arcade.patch.env.location.PatchLocation;
 import arcade.patch.env.location.PatchLocationContainer;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.sim.PatchSimulation;
+import arcade.patch.util.PatchEnums.ComponentType;
 import arcade.patch.util.PatchEnums.Immune;
 import arcade.patch.util.PatchEnums.Ordering;
 
@@ -89,6 +87,11 @@ public class PatchActionTreat implements Action {
                 ((PatchSeries) series).patch.get("GEOMETRY").equalsIgnoreCase("HEX")
                         ? "Hex"
                         : "Rect";
+        if (this.coord.equals("Hex")) {
+            this.latPositions = 9;
+        } else {
+            this.latPositions = 16;
+        }
 
         populations = new ArrayList<>();
     }
@@ -110,22 +113,9 @@ public class PatchActionTreat implements Action {
      */
     public void step(SimState simstate) {
         PatchSimulation sim = (PatchSimulation) simstate;
-        String type = "null";
         PatchGrid grid = (PatchGrid) sim.getGrid();
         PatchComponentSites comp = (PatchComponentSites) sim.getComponent("SITES");
-
-        // Get a sample location to determine the number of subpositions
-        PatchLocation sampleLoc = (PatchLocation) sim.getAllLocations().iterator().next();
-        latPositions = (int) (-3.5 * sampleLoc.getSubcoordinates().size() + 30);
-
-        // Determine type of sites component implemented.
-        if (comp instanceof PatchComponentSitesSource) {
-            type = "source";
-        } else if (comp instanceof PatchComponentSitesPattern) {
-            type = "pattern";
-        } else if (comp instanceof PatchComponentSitesGraph) {
-            type = "graph";
-        }
+        ComponentType type = comp.getComponentType();
 
         Set<String> immuneCells =
                 Arrays.stream(Immune.values()).map(Enum::name).collect(Collectors.toSet());
@@ -141,6 +131,7 @@ public class PatchActionTreat implements Action {
             }
 
             maxConfluency = population.getInt("MAX_DENSITY");
+            maxConfluency = (maxConfluency >= 0 ? maxConfluency : Integer.MAX_VALUE);
 
             int pop = population.getInt("CODE");
 
@@ -168,29 +159,28 @@ public class PatchActionTreat implements Action {
      */
     private void findLocations(
             PatchComponentSites comp,
-            String type,
+            ComponentType type,
             ArrayList<LocationContainer> locs,
             ArrayList<Location> siteLocs,
             PatchSimulation sim) {
-        if (type.equals("graph")) {
-            findGraphSites(comp, locs, siteLocs);
-        } else if (type.equals("source") || type.equals("pattern")) {
-            double[][][] damage;
-            boolean[][][] sitesLat;
 
-            if (type.equals("source")) {
+        double[][][] damage;
+        boolean[][][] sitesLat;
+
+        switch (type) {
+            case GRAPH:
+                findGraphSites(comp, locs, siteLocs, sim);
+                break;
+            case SOURCE:
                 damage = ((PatchComponentSitesSource) comp).getDamage();
                 sitesLat = ((PatchComponentSitesSource) comp).getSources();
-            } else {
+                pruneSite(locs, sim, damage, sitesLat, siteLocs);
+                break;
+            case PATTERN:
                 damage = ((PatchComponentSitesPattern) comp).getDamage();
                 sitesLat = ((PatchComponentSitesPattern) comp).getPatterns();
-            }
-            pruneSite(locs, sim, damage, sitesLat, siteLocs);
-        } else {
-            throw new IllegalArgumentException(
-                    "Invalid component type: "
-                            + type
-                            + ". Must be of type source, pattern, or graph.");
+                pruneSite(locs, sim, damage, sitesLat, siteLocs);
+                break;
         }
     }
 
@@ -200,14 +190,16 @@ public class PatchActionTreat implements Action {
      * @param comp the component
      * @param locs the locations to check
      * @param siteLocs the locations that meet the criteria
+     * @param sim the simulation instance
      */
     private void findGraphSites(
             PatchComponentSites comp,
             ArrayList<LocationContainer> locs,
-            ArrayList<Location> siteLocs) {
-        Graph graph = ((PatchComponentSitesGraph) comp).getGraph();
-        Bag allEdges = new Bag(graph.getAllEdges());
+            ArrayList<Location> siteLocs,
+            PatchSimulation sim) {
         PatchComponentSitesGraph graphSites = (PatchComponentSitesGraph) comp;
+        Graph graph = graphSites.getGraph();
+        Bag allEdges = new Bag(graph.getAllEdges());
 
         Set<Coordinate> coordinateSet =
                 locs.stream()
@@ -216,19 +208,18 @@ public class PatchActionTreat implements Action {
 
         for (Object edgeObj : allEdges) {
             SiteEdge edge = (SiteEdge) edgeObj;
-            Bag allEdgeLocs = new Bag();
-            if (Objects.equals(coord, "Hex")) {
-                allEdgeLocs.add(
-                        ((PatchComponentSitesGraphTri) graphSites)
-                                .getSpan(edge.getFrom(), edge.getTo()));
-            } else {
-                allEdgeLocs.add(
-                        ((PatchComponentSitesGraphRect) graphSites)
-                                .getSpan(edge.getFrom(), edge.getTo()));
+            ArrayList<CoordinateXYZ> spans = new ArrayList<>();
+            ArrayList<Location> spanLocs = new ArrayList<>();
+
+            spans = graphSites.getSpan(edge.getFrom(), edge.getTo());
+            for (CoordinateXYZ span : spans) {
+                Location newLoc = graphSites.getLocation(span);
+                if (newLoc != null) {
+                    spanLocs.add(newLoc);
+                }
             }
 
-            for (Object locObj : allEdgeLocs) {
-                Location loc = (Location) locObj;
+            for (Location loc : spanLocs) {
                 if (coordinateSet.contains(((PatchLocation) loc).getCoordinate())) {
                     if (edge.getRadius() >= minDamageRadius) {
                         for (int p = 0; p < latPositions; p++) {
@@ -303,6 +294,10 @@ public class PatchActionTreat implements Action {
         for (int i = 0; i < dose; i++) {
             int id = sim.getID();
 
+            if (coordinates.isEmpty()) {
+                break;
+            }
+
             PatchLocation loc = ((PatchLocation) coordinates.remove(0));
 
             while (!coordinates.isEmpty() && !checkLocationSpace(loc, grid)) {
@@ -318,6 +313,7 @@ public class PatchActionTreat implements Action {
             PatchCellContainer cellContainer = sim.cellFactory.createCellForPopulation(id, pop);
 
             Location location = locationContainer.convert(sim.locationFactory, cellContainer);
+
             PatchCell cell =
                     (PatchCell) cellContainer.convert(sim.cellFactory, location, sim.random);
 
@@ -360,9 +356,7 @@ public class PatchActionTreat implements Action {
             for (Object cellObj : bag) {
                 PatchCell cell = (PatchCell) cellObj;
                 if (cell instanceof PatchCellCART) {
-                    totalVol =
-                            PatchCell.calculateTotalVolume(bag)
-                                    + parameters.getDouble("T_CELL_VOL_AVG");
+                    totalVol = PatchCell.calculateTotalVolume(bag) + cell.getVolume();
                     currentHeight = totalVol / locArea;
                 }
                 if (cell instanceof PatchCellTissue) {
