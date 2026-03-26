@@ -27,6 +27,7 @@ import arcade.patch.env.location.PatchLocationHex;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.sim.PatchSimulation;
 import arcade.patch.util.PatchEnums;
+import arcade.patch.util.PatchEnums.ComponentType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -104,6 +105,7 @@ public class PatchActionTreatTest {
         locations.add(container2);
         when(gridMock.getObjectsAtLocation(loc)).thenReturn(mockBag1);
         when(gridMock.getObjectsAtLocation(loc2)).thenReturn(mockBag2);
+        when(sources.getComponentType()).thenReturn(ComponentType.SOURCE);
         when(sim.getLocations()).thenReturn(locations);
         Set<Location> newLocations = new java.util.HashSet<>();
         newLocations.add(new PatchLocationHex(c2));

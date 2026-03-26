@@ -205,11 +205,7 @@ public final class PatchEnums {
         /** Code for cd4 T cell. */
         CART_CD4,
         /** Code for cd8 T cell. */
-        CART_CD8,
-        /** Code for macrophage cell. */
-        MACROPHAGE,
-        /** Code for killer cd8 cell. */
-        KILLER;
+        CART_CD8;
 
         /**
          * Randomly selects a {@code Immune} cell type.
