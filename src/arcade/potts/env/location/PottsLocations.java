@@ -6,6 +6,8 @@ import java.util.EnumSet;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
+import arcade.core.util.Vector;
+import arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Region;
 
 /**
@@ -285,5 +287,11 @@ public abstract class PottsLocations extends PottsLocation {
         }
 
         return splitLocation;
+    }
+
+    @Override
+    Voxel getOffsetInApicalFrame(ArrayList<Integer> offsets, Vector apicalAxis) {
+        throw new UnsupportedOperationException(
+                "getOffsetInApicalFrame is not implemented for PottsLocations");
     }
 }

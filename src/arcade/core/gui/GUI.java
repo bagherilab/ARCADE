@@ -371,7 +371,7 @@ public class GUI implements ActionListener {
     }
 
     /** Custom file filter for XML files. */
-    private static class XMLFileFilter extends FileFilter {
+    private static final class XMLFileFilter extends FileFilter {
         /**
          * Determines if the file is an XML file.
          *

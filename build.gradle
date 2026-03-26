@@ -161,6 +161,8 @@ task updateVersion (group: "versioning", description: "Syncs gradle version with
 
 build.dependsOn copyJar
 
+copyJar.mustRunAfter check, jacocoTestReport
+
 test.finalizedBy jacocoTestReport
 
 bumpMajor.finalizedBy updateVersion
