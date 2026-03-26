@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":6,"i1":6,"i2":6,"i3":10,"i4":10,"i5":10,"i6":10,"i7":6,"i8":10};
+var data = {"i0":6,"i1":6,"i2":6,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":6,"i9":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -399,34 +399,41 @@ extends <a href="PatchComponentSites.html" title="class in arcade.patch.env.comp
 </td>
 </tr>
 <tr id="i4" class="altColor">
+<td class="colFirst"><code><a href="../../util/PatchEnums.ComponentType.html" title="enum in arcade.patch.util">PatchEnums.ComponentType</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getComponentType()">getComponentType</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Returns what type of <code>ComponentType</code> this is.</div>
+</td>
+</tr>
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>double[][][]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getDamage()">getDamage</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the underlying pattern damage array.</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>boolean[][][]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPatterns()">getPatterns</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the underlying pattern sites array.</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#initializeDamageArrays()">initializeDamageArrays</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Initializes damage array to 1.0 (no damage).</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>(package private) abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#initializePatternArray()">initializePatternArray</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Initializes sites in pattern array.</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#step(sim.engine.SimState)">step</a></span>&#8203;(sim.engine.SimState&nbsp;simstate)</code></th>
 <td class="colLast">&nbsp;</td>
@@ -771,10 +778,27 @@ extends <a href="PatchComponentSites.html" title="class in arcade.patch.env.comp
 <a id="step(sim.engine.SimState)">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>step</h4>
 <pre class="methodSignature">public&nbsp;void&nbsp;step&#8203;(sim.engine.SimState&nbsp;simstate)</pre>
+</li>
+</ul>
+<a id="getComponentType()">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>getComponentType</h4>
+<pre class="methodSignature">public&nbsp;<a href="../../util/PatchEnums.ComponentType.html" title="enum in arcade.patch.util">PatchEnums.ComponentType</a>&nbsp;getComponentType()</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="PatchComponentSites.html#getComponentType()">PatchComponentSites</a></code></span></div>
+<div class="block">Returns what type of <code>ComponentType</code> this is.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="PatchComponentSites.html#getComponentType()">getComponentType</a></code>&nbsp;in class&nbsp;<code><a href="PatchComponentSites.html" title="class in arcade.patch.env.component">PatchComponentSites</a></code></dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the component type</dd>
+</dl>
 </li>
 </ul>
 </li>

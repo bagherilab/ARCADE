@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":6,"i4":6,"i5":10,"i6":6,"i7":10,"i8":10,"i9":10,"i10":10};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":6,"i5":6,"i6":10,"i7":6,"i8":10,"i9":10,"i10":10,"i11":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -367,20 +367,27 @@ extends <a href="PatchComponentSites.html" title="class in arcade.patch.env.comp
 </td>
 </tr>
 <tr id="i2" class="altColor">
+<td class="colFirst"><code><a href="../../util/PatchEnums.ComponentType.html" title="enum in arcade.patch.util">PatchEnums.ComponentType</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getComponentType()">getComponentType</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Returns what type of <code>ComponentType</code> this is.</div>
+</td>
+</tr>
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code><a href="../../../core/util/Graph.html" title="class in arcade.core.util">Graph</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getGraph()">getGraph</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the <a href="../../../core/util/Graph.html" title="class in arcade.core.util"><code>Graph</code></a> representing the sites.</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>(package private) abstract <a href="../../../core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLocation(arcade.patch.env.location.CoordinateXYZ)">getLocation</a></span>&#8203;(<a href="../location/CoordinateXYZ.html" title="class in arcade.patch.env.location">CoordinateXYZ</a>&nbsp;span)</code></th>
 <td class="colLast">
 <div class="block">Converts the given span coordinate to the corresponding location.</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>(package private) abstract java.util.ArrayList&lt;<a href="../location/CoordinateXYZ.html" title="class in arcade.patch.env.location">CoordinateXYZ</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSpan(arcade.patch.env.component.PatchComponentSitesGraph.SiteNode,arcade.patch.env.component.PatchComponentSitesGraph.SiteNode)">getSpan</a></span>&#8203;(<a href="PatchComponentSitesGraph.SiteNode.html" title="class in arcade.patch.env.component">PatchComponentSitesGraph.SiteNode</a>&nbsp;from,
        <a href="PatchComponentSitesGraph.SiteNode.html" title="class in arcade.patch.env.component">PatchComponentSitesGraph.SiteNode</a>&nbsp;to)</code></th>
@@ -388,35 +395,35 @@ extends <a href="PatchComponentSites.html" title="class in arcade.patch.env.comp
 <div class="block">Gets the lattice coordinates spanned by an edge between two nodes.</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>(package private) <a href="../../../core/util/Graph.html" title="class in arcade.core.util">Graph</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#initializeGraph(ec.util.MersenneTwisterFast)">initializeGraph</a></span>&#8203;(ec.util.MersenneTwisterFast&nbsp;random)</code></th>
 <td class="colLast">
 <div class="block">Initializes graph for representing sites.</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>(package private) abstract <a href="PatchComponentSitesGraphFactory.html" title="class in arcade.patch.env.component">PatchComponentSitesGraphFactory</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#makeGraphFactory(arcade.core.sim.Series)">makeGraphFactory</a></span>&#8203;(<a href="../../../core/sim/Series.html" title="class in arcade.core.sim">Series</a>&nbsp;series)</code></th>
 <td class="colLast">
 <div class="block">Creates a factory for graphs.</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#simpleStep()">simpleStep</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Graph step that only considers differences in concentration.</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>private void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#stepGraph(java.lang.String)">stepGraph</a></span>&#8203;(java.lang.String&nbsp;code)</code></th>
 <td class="colLast">
 <div class="block">Steps through graph to calculate concentrations and partial pressures.</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>private java.util.ArrayList&lt;<a href="PatchComponentSitesGraph.SiteNode.html" title="class in arcade.patch.env.component">PatchComponentSitesGraph.SiteNode</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#traverseEdge(arcade.patch.env.component.PatchComponentSitesGraph.SiteNode,java.lang.String)">traverseEdge</a></span>&#8203;(<a href="PatchComponentSitesGraph.SiteNode.html" title="class in arcade.patch.env.component">PatchComponentSitesGraph.SiteNode</a>&nbsp;node,
             java.lang.String&nbsp;code)</code></th>
@@ -424,7 +431,7 @@ extends <a href="PatchComponentSites.html" title="class in arcade.patch.env.comp
 <div class="block">Traverses through the graph based on edges.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>private java.util.ArrayList&lt;<a href="PatchComponentSitesGraph.SiteNode.html" title="class in arcade.patch.env.component">PatchComponentSitesGraph.SiteNode</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#traverseNode(arcade.patch.env.component.PatchComponentSitesGraph.SiteNode,java.lang.String)">traverseNode</a></span>&#8203;(<a href="PatchComponentSitesGraph.SiteNode.html" title="class in arcade.patch.env.component">PatchComponentSitesGraph.SiteNode</a>&nbsp;node,
             java.lang.String&nbsp;code)</code></th>
@@ -802,7 +809,7 @@ extends <a href="PatchComponentSites.html" title="class in arcade.patch.env.comp
 <a id="traverseNode(arcade.patch.env.component.PatchComponentSitesGraph.SiteNode,java.lang.String)">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>traverseNode</h4>
 <pre class="methodSignature">private&nbsp;java.util.ArrayList&lt;<a href="PatchComponentSitesGraph.SiteNode.html" title="class in arcade.patch.env.component">PatchComponentSitesGraph.SiteNode</a>&gt;&nbsp;traverseNode&#8203;(<a href="PatchComponentSitesGraph.SiteNode.html" title="class in arcade.patch.env.component">PatchComponentSitesGraph.SiteNode</a>&nbsp;node,
@@ -814,6 +821,23 @@ extends <a href="PatchComponentSites.html" title="class in arcade.patch.env.comp
 <dd><code>code</code> - the molecule code</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>a list of children nodes to traverse</dd>
+</dl>
+</li>
+</ul>
+<a id="getComponentType()">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>getComponentType</h4>
+<pre class="methodSignature">public&nbsp;<a href="../../util/PatchEnums.ComponentType.html" title="enum in arcade.patch.util">PatchEnums.ComponentType</a>&nbsp;getComponentType()</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="PatchComponentSites.html#getComponentType()">PatchComponentSites</a></code></span></div>
+<div class="block">Returns what type of <code>ComponentType</code> this is.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="PatchComponentSites.html#getComponentType()">getComponentType</a></code>&nbsp;in class&nbsp;<code><a href="PatchComponentSites.html" title="class in arcade.patch.env.component">PatchComponentSites</a></code></dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the component type</dd>
 </dl>
 </li>
 </ul>

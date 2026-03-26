@@ -27,8 +27,8 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10};
-var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var data = {"i0":6,"i1":10,"i2":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -257,13 +257,20 @@ implements <a href="../../../core/env/component/Component.html" title="interface
 </a>
 <h3>Method Summary</h3>
 <table class="memberSummary">
-<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t3" class="tableTab"><span><a href="javascript:show(4);">Abstract Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
 <th class="colSecond" scope="col">Method</th>
 <th class="colLast" scope="col">Description</th>
 </tr>
 <tr id="i0" class="altColor">
+<td class="colFirst"><code>abstract <a href="../../util/PatchEnums.ComponentType.html" title="enum in arcade.patch.util">PatchEnums.ComponentType</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getComponentType()">getComponentType</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Returns what type of <code>ComponentType</code> this is.</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#register(arcade.core.sim.Simulation,java.lang.String)">register</a></span>&#8203;(<a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim,
         java.lang.String&nbsp;layer)</code></th>
@@ -271,7 +278,7 @@ implements <a href="../../../core/env/component/Component.html" title="interface
 <div class="block">Registers a lattice layer to the component.</div>
 </td>
 </tr>
-<tr id="i1" class="rowColor">
+<tr id="i2" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#schedule(sim.engine.Schedule)">schedule</a></span>&#8203;(sim.engine.Schedule&nbsp;schedule)</code></th>
 <td class="colLast">
@@ -403,7 +410,7 @@ implements <a href="../../../core/env/component/Component.html" title="interface
 <a id="register(arcade.core.sim.Simulation,java.lang.String)">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>register</h4>
 <pre class="methodSignature">public&nbsp;void&nbsp;register&#8203;(<a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim,
@@ -416,6 +423,20 @@ implements <a href="../../../core/env/component/Component.html" title="interface
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sim</code> - the simulation instance</dd>
 <dd><code>layer</code> - the lattice layer</dd>
+</dl>
+</li>
+</ul>
+<a id="getComponentType()">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>getComponentType</h4>
+<pre class="methodSignature">public abstract&nbsp;<a href="../../util/PatchEnums.ComponentType.html" title="enum in arcade.patch.util">PatchEnums.ComponentType</a>&nbsp;getComponentType()</pre>
+<div class="block">Returns what type of <code>ComponentType</code> this is.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the component type</dd>
 </dl>
 </li>
 </ul>
