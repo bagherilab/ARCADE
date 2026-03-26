@@ -168,6 +168,7 @@ public class PatchActionTreat implements Action {
         boolean[][][] sitesLat;
 
         switch (type) {
+            default:
             case GRAPH:
                 findGraphSites(comp, locs, siteLocs, sim);
                 break;
