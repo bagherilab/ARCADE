@@ -27,8 +27,8 @@ public class PatchActionMutate implements Action {
     /** Time delay before calling the action [min]. */
     private final int timeDelay;
 
-    /** Grid radius that cells are inserted into. */
-    private final int insertRadius;
+    /** Grid radius where cells are mutated. */
+    private final int mutateRadius;
 
     /** Population code for cancer. */
     private int cancerPop;
@@ -36,18 +36,18 @@ public class PatchActionMutate implements Action {
     /** Population code for healthy cells. */
     private int healthyPop;
 
-    /** Grid depth that cells are inserted into. */
-    private final int insertDepth;
+    /** Grid depth that cells are mutated. */
+    private final int mutateDepth;
 
     /**
-     * Creates a {@link Action} for converting cell agent classes.
+     * Creates a {@link Action} for converting healthy cell agents into cancer cell agents.
      *
      * <p>Loaded parameters include:
      *
      * <ul>
      *   <li>{@code TIME_DELAY} = time delay before calling the action
-     *   <li>{@code INSERT_RADIUS} = grid radius that cells are inserted into
-     *   <li>{@code INSERT_DEPTH} = grid depth that cells are inserted into
+     *   <li>{@code MUTATE_RADIUS} = grid radius where cells are mutated
+     *   <li>{@code MUTATE_DEPTH} = grid depth that cells are mutated
      * </ul>
      *
      * @param series the simulation series
@@ -56,11 +56,11 @@ public class PatchActionMutate implements Action {
     public PatchActionMutate(Series series, MiniBox parameters) {
         // Set loaded parameters.
         timeDelay = parameters.getInt("TIME_DELAY");
-        insertRadius = parameters.getInt("INSERT_RADIUS");
-        insertDepth = ((PatchSeries) series).depth;
+        mutateRadius = parameters.getInt("MUTATE_RADIUS");
+        mutateDepth = ((PatchSeries) series).depth;
         healthyPop = -1;
         cancerPop = -1;
-        // grab popuation codes for healthy and cancer cells
+        // Grab popuation codes for healthy and cancer cells.
         for (String popName : series.populations.keySet()) {
             if (series.populations.get(popName).get("CLASS").contains("tissue")) {
                 healthyPop = series.populations.get(popName).getInt("CODE");
@@ -90,7 +90,7 @@ public class PatchActionMutate implements Action {
 
         // Get cells at center of simulation.
         ArrayList<Coordinate> coordinates =
-                sim.locationFactory.getCoordinates(insertRadius, insertDepth);
+                sim.locationFactory.getCoordinates(mutateRadius, mutateDepth);
         for (Coordinate coordinate : coordinates) {
             Bag bag = (Bag) grid.getObjectAt(coordinate.hashCode());
 
@@ -101,12 +101,13 @@ public class PatchActionMutate implements Action {
             for (int i = 0; i < bag.numObjs; i++) {
                 // Select old cell and remove from simulation.
                 PatchCell oldCell = (PatchCell) bag.get(i);
+                // Only remove and mutate if cell is healthy.
                 if (oldCell.getPop() == healthyPop) {
                     Location location = oldCell.getLocation();
                     grid.removeObject(oldCell, oldCell.getLocation());
                     oldCell.stop();
 
-                    // Create new cell and add to simulation.
+                    // Create new cancer cell and add to simulation.
                     PatchCellContainer cellContainer =
                             new PatchCellContainer(
                                     oldCell.getID(),
