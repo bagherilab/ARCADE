@@ -224,5 +224,27 @@ public final class PatchEnums {
 <span class="fc" id="L224">            return values()[rng.nextInt(values().length - 1) + 1];</span>
         }
     }
+
+    /** Enum for component types. */
+<span class="nc" id="L229">    public enum ComponentType {</span>
+        /** Code for graph component. */
+<span class="nc" id="L231">        GRAPH,</span>
+
+        /** Code for source component. */
+<span class="nc" id="L234">        SOURCE,</span>
+
+        /** Code for pattern component. */
+<span class="nc" id="L237">        PATTERN;</span>
+
+        /**
+         * Randomly selects a {@code ComponentType}.
+         *
+         * @param rng the random number generator
+         * @return a random {@code ComponentType}
+         */
+        public static ComponentType random(MersenneTwisterFast rng) {
+<span class="nc" id="L246">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+        }
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
