@@ -19,6 +19,7 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
 
     Boolean pdeLike;
 
+    /* Rate of Prospero degradation (ticks^-1). */
     final double prosperoDegradationRate;
 
     /**

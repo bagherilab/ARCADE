@@ -86,6 +86,9 @@
     <population.module module="proliferation" id="VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER" value="1" description="if enabled, GMC critical volume = daughter_volume × multiplier" />
     <!-- Deterministic Differentiation-->
     <population.module module="proliferation" id="HAS_DETERMINISTIC_DIFFERENTIATION" value="TRUE" description="if TRUE, differentiation is determined deterministically" />
+    <!-- Prospero synthesis and degradation rates -->
+    <population.module module="proliferation" id="PROSPERO_SYNTHESIS_RATE" value="1" units="Prospero/hour" conversion="DT" description="synthesis rate of Prospero" />
+    <population.module module="proliferation" id="PROSPERO_DEGRADATION_RATE" value="-1" units="Prospero/hour" conversion="DT" description="degradation rate of Prospero" />
 
     <!-- apoptosis module parameters -->
     <population.module module="apoptosis" id="RATE_EARLY" value="4" units="steps/hour" conversion="DT" description="rate of events in early apoptosis phase" />
@@ -96,8 +99,5 @@
     <population.module module="apoptosis" id="CYTOPLASMIC_BLEBBING_RATE" value="175" units="um^3/hour" conversion="DS^-3.DT" description="basal rate of cytoplasmic blebbing" />
     <population.module module="apoptosis" id="NUCLEUS_PYKNOSIS_RATE" value="100" units="um^3/hour" conversion="DS^-3.DT" description="basal rate of nuclear pyknosis" />
     <population.module module="apoptosis" id="NUCLEUS_FRAGMENTATION_RATE" value="75" units="um^3/hour" conversion="DS^-3.DT" description="basal rate of nuclear fragmentation" />
-
-    <population.module module="proliferation" id="PROSPERO_SYNTHESIS_RATE" value="1" units="Prospero/hour" conversion="DT" description="synthesis rate of Prospero" />
-    <population.module module="proliferation" id="PROSPERO_DEGRADATION_RATE" value="-1" units="Prospero/hour" conversion="DT" description="degradation rate of Prospero" />
 
 </parameters>

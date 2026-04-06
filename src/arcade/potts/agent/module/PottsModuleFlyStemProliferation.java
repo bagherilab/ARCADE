@@ -39,6 +39,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /** Basal rate of apoptosis (ticks^-1). */
     final double basalApoptosisRate;
 
+    /** Rate of Prospero synthesis (ticks^-1). */
     final double prosperoSynthesisRate;
 
     /** Distribution that determines rotational offset of cell's division plane. */

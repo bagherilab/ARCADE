@@ -141,8 +141,8 @@ public class PottsModuleFlyGMCDifferentiationTest {
         PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
 
         org.junit.jupiter.api.Assertions.assertFalse(module.pdeLike);
-        org.junit.jupiter.api.Assertions.assertEquals(-1.0, module.prosperoDegradationRate, EPSILON);
-
+        org.junit.jupiter.api.Assertions.assertEquals(
+                -1.0, module.prosperoDegradationRate, EPSILON);
     }
 
     @Test

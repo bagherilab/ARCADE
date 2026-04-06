@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
-import arcade.potts.agent.cell.PottsCellFlyGMC;
+import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.location.PottsLocation2D;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -18,7 +18,7 @@ public class PottsModuleProliferationVolumeBasedDivisionTest {
         boolean addCellCalled = false;
         boolean growthRateUpdated = false;
 
-        PottsModuleProliferationVolumeBasedDivisionMock(PottsCellFlyGMC cell) {
+        PottsModuleProliferationVolumeBasedDivisionMock(PottsCell cell) {
             super(cell);
         }
 
@@ -35,7 +35,7 @@ public class PottsModuleProliferationVolumeBasedDivisionTest {
 
     @Test
     public void constructor_setsParameters() {
-        PottsCellFlyGMC cell = mock(PottsCellFlyGMC.class);
+        PottsCell cell = mock(PottsCell.class);
         Parameters parameters = mock(Parameters.class);
         doReturn(parameters).when(cell).getParameters();
 
@@ -55,7 +55,7 @@ public class PottsModuleProliferationVolumeBasedDivisionTest {
 
     @Test
     public void step_belowCheckpoint_updatesTarget() {
-        PottsCellFlyGMC cell = mock(PottsCellFlyGMC.class);
+        PottsCell cell = mock(PottsCell.class);
         Parameters params = mock(Parameters.class);
         when(cell.getParameters()).thenReturn(params);
         when(params.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
@@ -76,7 +76,7 @@ public class PottsModuleProliferationVolumeBasedDivisionTest {
     @Test
     public void step_atOrAboveCheckpoint_triggersAddCell() {
 
-        PottsCellFlyGMC cell = mock(PottsCellFlyGMC.class);
+        PottsCell cell = mock(PottsCell.class);
         Parameters params = mock(Parameters.class);
         when(cell.getParameters()).thenReturn(params);
         when(params.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
@@ -97,7 +97,7 @@ public class PottsModuleProliferationVolumeBasedDivisionTest {
     @Test
     public void updateVolumeBasedGrowthRate_ratioOne_keepsBaseRate() {
         // baseGrowth = 4.0, volume = Ka => growth = 4.0
-        PottsCellFlyGMC cell = mock(PottsCellFlyGMC.class);
+        PottsCell cell = mock(PottsCell.class);
         Parameters params = mock(Parameters.class);
         PottsLocation2D loc = mock(PottsLocation2D.class);
 
@@ -122,7 +122,7 @@ public class PottsModuleProliferationVolumeBasedDivisionTest {
     @Test
     public void updateVolumeBasedGrowthRate_ratioGreaterThanOne_scalesUpByPowerLaw() {
         // baseGrowth = 2.0, ratio = 2.0, sensitivity = 3 => 2 * 2^3 = 2 * 8 = 12
-        PottsCellFlyGMC cell = mock(PottsCellFlyGMC.class);
+        PottsCell cell = mock(PottsCell.class);
         Parameters params = mock(Parameters.class);
         PottsLocation2D loc = mock(PottsLocation2D.class);
 
@@ -147,7 +147,7 @@ public class PottsModuleProliferationVolumeBasedDivisionTest {
     @Test
     public void updateVolumeBasedGrowthRate_ratioLessThanOne_scalesDownByPowerLaw() {
         // baseGrowth = 4.0, ratio = 0.5, sensitivity = 2.0 => 4 * 0.5^2 = 1.0
-        PottsCellFlyGMC cell = mock(PottsCellFlyGMC.class);
+        PottsCell cell = mock(PottsCell.class);
         Parameters params = mock(Parameters.class);
         PottsLocation2D loc = mock(PottsLocation2D.class);
 
@@ -172,7 +172,7 @@ public class PottsModuleProliferationVolumeBasedDivisionTest {
     @Test
     public void updateVolumeBasedGrowthRate_zeroSensitivity_returnsBaseRateRegardlessOfVolume() {
         // sensitivity = 0 => growth = baseGrowth * ratio^0 = baseGrowth
-        PottsCellFlyGMC cell = mock(PottsCellFlyGMC.class);
+        PottsCell cell = mock(PottsCell.class);
         Parameters params = mock(Parameters.class);
         PottsLocation2D loc = mock(PottsLocation2D.class);
 

@@ -135,9 +135,11 @@ public class PottsModuleFlyStemProliferationTest {
         when(parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE")).thenReturn(0.04);
         when(parameters.getDouble("proliferation/PROSPERO_SYNTHESIS_RATE")).thenReturn(0.895);
         when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
-        when(parameters.getDistribution("proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION")).thenReturn(dist);
+        when(parameters.getDistribution("proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION"))
+                .thenReturn(dist);
         when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(0);
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_SELF_REPRESSION")).thenReturn(0);
+        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_SELF_REPRESSION"))
+                .thenReturn(0);
 
         module = new PottsModuleFlyStemProliferation(stemCell);
 
