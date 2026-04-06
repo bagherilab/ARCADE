@@ -7,9 +7,11 @@ import arcade.core.util.Parameters;
 import arcade.potts.agent.cell.PottsCellFlyGMC;
 import arcade.potts.env.location.PottsLocation2D;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class PottsModuleProliferationVolumeBasedDivisionTest {
+    private static final double EPSILON = 1E-10;
 
     static class PottsModuleProliferationVolumeBasedDivisionMock
             extends PottsModuleProliferationVolumeBasedDivision {
@@ -29,6 +31,26 @@ public class PottsModuleProliferationVolumeBasedDivisionTest {
         public void updateGrowthRate(Simulation sim) {
             growthRateUpdated = true;
         }
+    }
+
+    @Test
+    public void constructor_setsParameters() {
+        PottsCellFlyGMC cell = mock(PottsCellFlyGMC.class);
+        Parameters parameters = mock(Parameters.class);
+        doReturn(parameters).when(cell).getParameters();
+
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.5);
+        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(3.0);
+        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(1);
+        when(parameters.getDouble("proliferation/GROWTH_RATE_VOLUME_SENSITIVITY")).thenReturn(2.0);
+
+        PottsModuleProliferationVolumeBasedDivisionMock module =
+                new PottsModuleProliferationVolumeBasedDivisionMock(cell);
+
+        assertEquals(1.5, module.sizeTarget, EPSILON);
+        assertEquals(3.0, module.cellGrowthRateBase, EPSILON);
+        assertTrue(module.dynamicGrowthRateVolume);
+        assertEquals(2.0, module.growthRateVolumeSensitivity, EPSILON);
     }
 
     @Test
