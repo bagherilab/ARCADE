@@ -62,6 +62,8 @@ public class PottsModuleFlyGMCDifferentiationTest {
 
     private MockedConstruction<PottsCellContainer> mockedConstruction;
 
+    float EPSILON = 1e-6f;
+
     @BeforeEach
     public final void setupMocks() {
         dummyIDs = new int[1][1][1];
@@ -129,6 +131,18 @@ public class PottsModuleFlyGMCDifferentiationTest {
     @AfterEach
     final void tearDown() {
         mockedConstruction.close();
+    }
+
+    @Test
+    public void constructor_setsParameters() {
+        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
+        when(parameters.getDouble("proliferation/PROSPERO_DEGRADATION_RATE")).thenReturn(-1.0);
+
+        PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
+
+        org.junit.jupiter.api.Assertions.assertFalse(module.pdeLike);
+        org.junit.jupiter.api.Assertions.assertEquals(-1.0, module.prosperoDegradationRate, EPSILON);
+
     }
 
     @Test
