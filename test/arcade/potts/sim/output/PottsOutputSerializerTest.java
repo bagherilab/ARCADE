@@ -4,7 +4,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
-
 import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -50,28 +49,22 @@ public class PottsOutputSerializerTest {
             };
 
     public static void checkAdaptors(Gson gson) {
-        TypeToken<PottsSeries> series = new TypeToken<PottsSeries>() {
-        };
+        TypeToken<PottsSeries> series = new TypeToken<PottsSeries>() {};
         assertSame(gson.getAdapter(series).getClass(), TreeTypeAdapter.class);
 
-        TypeToken<CellContainer> cellContainer = new TypeToken<CellContainer>() {
-        };
+        TypeToken<CellContainer> cellContainer = new TypeToken<CellContainer>() {};
         assertSame(gson.getAdapter(cellContainer).getClass(), TreeTypeAdapter.class);
 
-        TypeToken<PottsCellContainer> cell = new TypeToken<PottsCellContainer>() {
-        };
+        TypeToken<PottsCellContainer> cell = new TypeToken<PottsCellContainer>() {};
         assertSame(gson.getAdapter(cell).getClass(), TreeTypeAdapter.class);
 
-        TypeToken<LocationContainer> locationContainer = new TypeToken<LocationContainer>() {
-        };
+        TypeToken<LocationContainer> locationContainer = new TypeToken<LocationContainer>() {};
         assertSame(gson.getAdapter(locationContainer).getClass(), TreeTypeAdapter.class);
 
-        TypeToken<PottsLocationContainer> location = new TypeToken<PottsLocationContainer>() {
-        };
+        TypeToken<PottsLocationContainer> location = new TypeToken<PottsLocationContainer>() {};
         assertSame(gson.getAdapter(location).getClass(), TreeTypeAdapter.class);
 
-        TypeToken<Voxel> voxel = new TypeToken<Voxel>() {
-        };
+        TypeToken<Voxel> voxel = new TypeToken<Voxel>() {};
         assertSame(gson.getAdapter(voxel).getClass(), TreeTypeAdapter.class);
     }
 
@@ -538,8 +531,11 @@ public class PottsOutputSerializerTest {
         int i = 0;
         expected.append("[");
         for (Integer id : cells.keySet()) {
-            expected.append("{\"id\":").append(id)
-                    .append(",\"prospero\":").append(cells.get(id)).append("}");
+            expected.append("{\"id\":")
+                    .append(id)
+                    .append(",\"prospero\":")
+                    .append(cells.get(id))
+                    .append("}");
             if (i < cells.size() - 1) {
                 expected.append(","); // to match JSON formatting
             }
@@ -547,11 +543,7 @@ public class PottsOutputSerializerTest {
         }
         expected.append("]");
 
-
         JsonElement json = serializer.serialize(cells, null, null);
         assertEquals(expected.toString(), json.toString());
     }
 }
-
-
-

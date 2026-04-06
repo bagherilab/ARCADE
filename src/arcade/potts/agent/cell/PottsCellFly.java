@@ -1,6 +1,5 @@
 package arcade.potts.agent.cell;
 
-import arcade.core.agent.cell.Cell;
 import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
@@ -10,8 +9,7 @@ import arcade.core.util.Parameters;
  *
  * <p>Cells follow {@link PottsCell} rules, but additionally keep track of the amount of prospero.
  *
- * [TODO: fix class comment]
- *
+ * <p>[TODO: fix class comment]
  */
 public abstract class PottsCellFly extends PottsCell {
 
@@ -41,5 +39,4 @@ public abstract class PottsCellFly extends PottsCell {
     public void setProspero(double prospero) {
         this.prospero = prospero;
     }
-
 }

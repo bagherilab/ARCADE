@@ -39,6 +39,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /** Basal rate of apoptosis (ticks^-1). */
     final double basalApoptosisRate;
 
+    final double prosperoSynthesisRate;
+
     /** Distribution that determines rotational offset of cell's division plane. */
     final NormalDistribution splitDirectionDistribution;
 
@@ -117,6 +119,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         Parameters parameters = cell.getParameters();
 
         basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
+        prosperoSynthesisRate = parameters.getDouble("proliferation/PROSPERO_SYNTHESIS_RATE");
         splitDirectionDistribution =
                 (NormalDistribution)
                         parameters.getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION");
@@ -164,8 +167,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
         super.step(random, sim);
-        double synthesisRate = 1; // magic number
-        ((PottsCellFly) cell).setProspero(((PottsCellFly) cell).getProspero() + synthesisRate);
+        ((PottsCellFly) cell)
+                .setProspero(((PottsCellFly) cell).getProspero() + prosperoSynthesisRate);
         System.out.println(
                 "Stem ID " + cell.getID() + " prospero: " + ((PottsCellFly) cell).getProspero());
     }

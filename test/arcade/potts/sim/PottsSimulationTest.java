@@ -4,8 +4,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-
-import arcade.potts.agent.cell.PottsCellFly;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sim.engine.Schedule;
@@ -20,6 +18,7 @@ import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.agent.cell.PottsCellFactory;
+import arcade.potts.agent.cell.PottsCellFly;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocationContainer;
 import arcade.potts.env.location.PottsLocationFactory;
@@ -694,5 +693,4 @@ public class PottsSimulationTest {
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
-
 }

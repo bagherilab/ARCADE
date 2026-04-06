@@ -1,20 +1,18 @@
 package arcade.potts.sim.output;
 
-import arcade.core.sim.output.OutputSaver;
-import arcade.potts.sim.PottsSeries;
-import arcade.potts.sim.PottsSimulation;
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 import arcade.core.sim.Series;
+import arcade.core.sim.output.OutputSaver;
 import arcade.core.sim.output.OutputSerializerTest;
-
-import java.lang.reflect.Field;
-import java.util.HashMap;
-
+import arcade.potts.sim.PottsSeries;
+import arcade.potts.sim.PottsSimulation;
+import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.randomIntBetween;
 import static arcade.core.ARCADETestUtilities.randomString;
 import static arcade.potts.sim.PottsSimulation.PROSPERO_TYPE;
-import static org.mockito.Mockito.*;
 
 public class PottsOutputSaverTest {
     @Test

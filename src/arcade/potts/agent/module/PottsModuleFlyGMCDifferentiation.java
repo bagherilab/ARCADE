@@ -19,6 +19,8 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
 
     Boolean pdeLike;
 
+    final double prosperoDegradationRate;
+
     /**
      * Creates a fly GMC proliferation module.
      *
@@ -27,14 +29,16 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
     public PottsModuleFlyGMCDifferentiation(PottsCellFlyGMC cell) {
         super(cell);
         pdeLike = (cell.getParameters().getInt("proliferation/PDELIKE") != 0);
+        prosperoDegradationRate =
+                cell.getParameters().getDouble("proliferation/PROSPERO_DEGRADATION_RATE");
     }
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
         super.step(random, sim);
-        double synthesisRate = -1; // magic number
         ((PottsCellFly) cell)
-                .setProspero(Math.max(0, ((PottsCellFly) cell).getProspero() + synthesisRate));
+                .setProspero(
+                        Math.max(0, ((PottsCellFly) cell).getProspero() + prosperoDegradationRate));
         System.out.println(
                 "GMC ID " + cell.getID() + " prospero: " + ((PottsCellFly) cell).getProspero());
     }

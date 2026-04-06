@@ -1,7 +1,6 @@
 package arcade.potts.sim.output;
 
 import com.google.gson.Gson;
-import sim.engine.SimState;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSaver;
 import arcade.potts.sim.PottsSimulation;
