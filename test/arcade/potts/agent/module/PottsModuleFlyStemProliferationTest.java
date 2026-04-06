@@ -131,6 +131,28 @@ public class PottsModuleFlyStemProliferationTest {
     // Constructor tests
 
     @Test
+    public void constructor_setsParameters() {
+        when(parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE")).thenReturn(0.04);
+        when(parameters.getDouble("proliferation/PROSPERO_SYNTHESIS_RATE")).thenReturn(0.895);
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
+        when(parameters.getDistribution("proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION")).thenReturn(dist);
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(0);
+        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_SELF_REPRESSION")).thenReturn(0);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertEquals(0.04, module.basalApoptosisRate, EPSILON);
+        assertEquals(0.895, module.prosperoSynthesisRate, EPSILON);
+        assertNotNull(module.splitDirectionDistribution);
+        assertEquals("volume", module.differentiationRuleset);
+        assertEquals(0.5, module.range, EPSILON);
+        assertEquals("global", module.apicalAxisRuleset);
+        assertNotNull(module.apicalAxisRotationDistribution);
+        assertFalse(module.volumeBasedCriticalVolume);
+        assertFalse(module.dynamicGrowthRateNBSelfRepression);
+    }
+
+    @Test
     public void constructor_volumeRuleset_setsExpectedFields() {
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
@@ -498,6 +520,7 @@ public class PottsModuleFlyStemProliferationTest {
         when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(0);
         when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
+        when(parameters.getDouble("proliferation/PROSPERO_SYNTHESIS_RATE")).thenReturn(1.0);
         module = new PottsModuleFlyStemProliferation(stemCell);
         when(stemCell.getVolume()).thenReturn(0.0); // we don't want addCell to be called
         when(stemCell.getProspero()).thenReturn(5.0);
