@@ -151,7 +151,7 @@ public class PottsModuleFlyGMCDifferentiationTest {
 
         verify(grid).addObject(newCell, null);
         verify(potts).register(newCell);
-        verify(newCell).reset(dummyIDs, dummyRegions);
+        verify(newCell).initialize(dummyIDs, dummyRegions);
         verify(newCell).schedule(schedule);
 
         verify(grid).removeObject(gmcCell, location);
@@ -162,7 +162,7 @@ public class PottsModuleFlyGMCDifferentiationTest {
                 (PottsCellFlyNeuron) constructed.convert(cellFactory, location, random);
         verify(grid).addObject(diffCell, null);
         verify(potts).register(diffCell);
-        verify(diffCell).reset(dummyIDs, dummyRegions);
+        verify(diffCell).initialize(dummyIDs, dummyRegions);
         verify(diffCell).schedule(schedule);
     }
 
@@ -187,9 +187,8 @@ public class PottsModuleFlyGMCDifferentiationTest {
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
         when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
 
-        // initialSize is captured at construction from location.getVolume() = 30.0
-        // critVol at update time = 150.0
-        // vRef = (30.0 + 1.2 * 150.0) / 2 = (30.0 + 180.0) / 2 = 105.0
+        // critVol = 150.0; sizeTarget = 1.2
+        // vRef = critVol * (1 + sizeTarget) / 2 = 150.0 * 2.2 / 2 = 165.0
         when(gmcCell.getCriticalVolume()).thenReturn(150.0);
         when(gmcCell.getLocation().getVolume()).thenReturn(30.0);
 
@@ -204,7 +203,7 @@ public class PottsModuleFlyGMCDifferentiationTest {
 
         module.updateGrowthRate(sim);
 
-        double expectedVRef = (30.0 + 1.2 * 150.0) / 2.0; // 105.0
+        double expectedVRef = 150.0 * (1.0 + 1.2) / 2.0; // 165.0
         org.mockito.Mockito.verify(module)
                 .updateCellVolumeBasedGrowthRate(
                         org.mockito.ArgumentMatchers.eq(30.0),
@@ -286,55 +285,38 @@ public class PottsModuleFlyGMCDifferentiationTest {
     // computeEquilibriumVolume tests
 
     @Test
-    public void computeEquilibriumVolume_returnsArithmeticMeanOfBirthAndDivisionVolumes() {
-        // initialSize = location.getVolume() at construction = 30.0
-        // critVol at call time = 150.0; sizeTarget = 1.2
-        // vRef = (30.0 + 1.2 * 150.0) / 2 = (30.0 + 180.0) / 2 = 105.0
+    public void computeEquilibriumVolume_returnsArithmeticMeanOfCritAndDivisionVolumes() {
+        // critVol = 150.0; sizeTarget = 1.2
+        // vRef = critVol * (1 + sizeTarget) / 2 = 150.0 * 2.2 / 2 = 165.0
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
-        when(gmcCell.getLocation().getVolume()).thenReturn(30.0);
         when(gmcCell.getCriticalVolume()).thenReturn(150.0);
 
         PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
         org.junit.jupiter.api.Assertions.assertEquals(
-                105.0, module.computeEquilibriumVolume(), 1e-9);
+                165.0, module.computeEquilibriumVolume(), 1e-9);
     }
 
     @Test
     public void computeEquilibriumVolume_differentSizeTarget_scalesCorrectly() {
-        // initialSize = 30.0; critVol = 100.0; sizeTarget = 2.0
-        // vRef = (30.0 + 2.0 * 100.0) / 2 = 230.0 / 2 = 115.0
+        // critVol = 100.0; sizeTarget = 2.0
+        // vRef = 100.0 * (1 + 2.0) / 2 = 150.0
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(2.0);
-        when(gmcCell.getLocation().getVolume()).thenReturn(30.0);
         when(gmcCell.getCriticalVolume()).thenReturn(100.0);
 
         PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
         org.junit.jupiter.api.Assertions.assertEquals(
-                115.0, module.computeEquilibriumVolume(), 1e-9);
-    }
-
-    @Test
-    public void computeEquilibriumVolume_differentInitialSize_scalesCorrectly() {
-        // initialSize = 50.0; critVol = 150.0; sizeTarget = 1.2
-        // vRef = (50.0 + 1.2 * 150.0) / 2 = (50.0 + 180.0) / 2 = 115.0
-        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
-        when(gmcCell.getLocation().getVolume()).thenReturn(50.0);
-        when(gmcCell.getCriticalVolume()).thenReturn(150.0);
-
-        PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
-        org.junit.jupiter.api.Assertions.assertEquals(
-                115.0, module.computeEquilibriumVolume(), 1e-9);
+                150.0, module.computeEquilibriumVolume(), 1e-9);
     }
 
     @Test
     public void computeEquilibriumVolume_differentCritVol_scalesCorrectly() {
-        // initialSize = 30.0; critVol = 200.0; sizeTarget = 1.2
-        // vRef = (30.0 + 1.2 * 200.0) / 2 = (30.0 + 240.0) / 2 = 135.0
+        // critVol = 200.0; sizeTarget = 1.2
+        // vRef = 200.0 * (1 + 1.2) / 2 = 220.0
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
-        when(gmcCell.getLocation().getVolume()).thenReturn(30.0);
         when(gmcCell.getCriticalVolume()).thenReturn(200.0);
 
         PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
         org.junit.jupiter.api.Assertions.assertEquals(
-                135.0, module.computeEquilibriumVolume(), 1e-9);
+                220.0, module.computeEquilibriumVolume(), 1e-9);
     }
 }

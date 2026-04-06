@@ -303,7 +303,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         double offset = sampleDivisionPlaneOffset();
 
         if (flyStemCell.getStemType() == StemType.WT
-                || (flyStemCell.getStemType() == StemType.MUDMUT && Math.abs(offset) < 45)) {
+                || (flyStemCell.getStemType() == StemType.MUDMUT
+                        && (Math.abs(offset - splitDirectionDistribution.getExpected()) <= 45))) {
             return getWTDivisionPlaneWithRotationalVariance(flyStemCell, offset);
         } else {
             return getMUDDivisionPlane(flyStemCell);
@@ -488,7 +489,6 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      */
     private void makeDaughterStemCell(
             PottsLocation daughterLoc, Simulation sim, Potts potts, MersenneTwisterFast random) {
-        cell.reset(potts.ids, potts.regions);
         int newID = sim.getID();
         double criticalVol;
         if (volumeBasedCriticalVolume) {
@@ -500,6 +500,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         } else {
             criticalVol = cell.getCriticalVolume();
         }
+        cell.reset(potts.ids, potts.regions);
         PottsCellContainer container =
                 ((PottsCellFlyStem) cell)
                         .make(newID, State.PROLIFERATIVE, random, cell.getPop(), criticalVol);
@@ -637,7 +638,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             criticalVol =
                     Math.max(
                             gmcLoc.getVolume() * volumeBasedCriticalVolumeMultiplier,
-                            initialSize * .2);
+                            initialSize * .1);
             return criticalVol;
         } else {
             criticalVol =

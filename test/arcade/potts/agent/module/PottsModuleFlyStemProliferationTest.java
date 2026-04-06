@@ -274,7 +274,7 @@ public class PottsModuleFlyStemProliferationTest {
     public void getCellSplitVoxel_WT_callsLocationOffsetWithCorrectParams() {
         ArrayList<Integer> expectedOffset = new ArrayList<>();
         expectedOffset.add(50); // WT.splitOffsetPercentX
-        expectedOffset.add(85); // WT.splitOffsetPercentY
+        expectedOffset.add(86); // WT.splitOffsetPercentY
 
         when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
         when(stemCell.getLocation()).thenReturn(stemLoc);
@@ -315,7 +315,7 @@ public class PottsModuleFlyStemProliferationTest {
         Voxel splitVoxel = new Voxel(3, 4, 5);
         ArrayList<Integer> expectedOffset = new ArrayList<>();
         expectedOffset.add(50); // WT x offset percent
-        expectedOffset.add(80); // WT y offset percent
+        expectedOffset.add(86); // WT y offset percent
 
         module = new PottsModuleFlyStemProliferation(stemCell);
 
@@ -588,7 +588,7 @@ public class PottsModuleFlyStemProliferationTest {
         when(parameters.getInt("proliferation/VOLUME_BASED_CRITVOL")).thenReturn(0);
 
         double result = module.calculateGMCDaughterCellCriticalVolume(daughterLoc);
-        assertEquals((100 * .18 * 1.2), result, EPSILON); // 100 * 0.18 * 1.2
+        assertEquals((100 * .14 * 1.2), result, EPSILON); // 100 * 0.14 * 1.2
     }
 
     @Test
@@ -943,10 +943,10 @@ public class PottsModuleFlyStemProliferationTest {
     @Test
     public void computeEquilibriumVolume_WT_returnsExpectedMidpoint() {
         // V_div = sizeTarget * critVol = 1.2 * 100 = 120
-        // fRetain = WT.splitOffsetPercentY / 100 = 85 / 100 = 0.85
-        // V_ref = 120 * (0.85 + 1) / 2 = 120 * 0.925 = 111.0
+        // fRetain = WT.splitOffsetPercentY / 100 = 86 / 100 = 0.86
+        // V_ref = 120 * (0.86 + 1) / 2 = 120 * 0.93 = 111.6
         module = new PottsModuleFlyStemProliferation(stemCell);
-        assertEquals(111.0, module.computeEquilibriumVolume(), EPSILON);
+        assertEquals(111.6, module.computeEquilibriumVolume(), EPSILON);
     }
 
     @Test
@@ -960,20 +960,20 @@ public class PottsModuleFlyStemProliferationTest {
 
     @Test
     public void computeEquilibriumVolume_differentSizeTarget_scalesCorrectly() {
-        // V_div = 2.0 * 50 = 100; V_ref = 100 * (0.85 + 1) / 2 = 92.5
+        // V_div = 2.0 * 50 = 100; V_ref = 100 * (0.86 + 1) / 2 = 93.0
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(2.0);
         when(stemCell.getCriticalVolume()).thenReturn(50.0);
         module = new PottsModuleFlyStemProliferation(stemCell);
-        assertEquals(92.5, module.computeEquilibriumVolume(), EPSILON);
+        assertEquals(93.0, module.computeEquilibriumVolume(), EPSILON);
     }
 
     @Test
     public void computeEquilibriumVolume_differentCritVol_scalesCorrectly() {
-        // V_div = 1.0 * 200 = 200; V_ref = 200 * (0.85 + 1) / 2 = 185.0
+        // V_div = 1.0 * 200 = 200; V_ref = 200 * (0.86 + 1) / 2 = 186.0
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.0);
         when(stemCell.getCriticalVolume()).thenReturn(200.0);
         module = new PottsModuleFlyStemProliferation(stemCell);
-        assertEquals(185.0, module.computeEquilibriumVolume(), EPSILON);
+        assertEquals(186.0, module.computeEquilibriumVolume(), EPSILON);
     }
 
     @Test
@@ -989,8 +989,8 @@ public class PottsModuleFlyStemProliferationTest {
         module.updateVolumeBasedGrowthRate(sim);
 
         // V_ref = sizeTarget * critVol * (WT.splitOffsetPercentY/100 + 1) / 2
-        //       = 1.2 * 100 * (0.85 + 1) / 2 = 111.0
-        verify(module, times(1)).updateCellVolumeBasedGrowthRate(eq(42.5), eq(111.0));
+        //       = 1.2 * 100 * (0.86 + 1) / 2 = 111.6
+        verify(module, times(1)).updateCellVolumeBasedGrowthRate(eq(42.5), eq(111.6));
         verify(module, never()).getNBsInSimulation(any());
     }
 
@@ -1026,8 +1026,8 @@ public class PottsModuleFlyStemProliferationTest {
         module.updateVolumeBasedGrowthRate(sim);
 
         double expectedAvgVol = (10.0 + 20.0 + 40.0) / 3.0;
-        // V_ref = 1.2 * 100 * (0.85 + 1) / 2 = 111.0  (critVol from module's own cell)
-        double expectedVRef = 111.0;
+        // V_ref = 1.2 * 100 * (0.86 + 1) / 2 = 111.6  (critVol from module's own cell)
+        double expectedVRef = 111.6;
 
         verify(module, times(1)).getNBsInSimulation(sim);
         verify(module, times(1))

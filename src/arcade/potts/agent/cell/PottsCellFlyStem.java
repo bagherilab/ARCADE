@@ -15,10 +15,10 @@ public class PottsCellFlyStem extends PottsCell {
     /** Enum outlining parameters for each cell type. */
     public enum StemType {
         /** Wild type stem cell. */
-        WT(50, 85, 0, 0.18),
+        WT(50, 86, 0),
 
         /** mud Mutant stem cell. */
-        MUDMUT(50, 50, -90, 0.5);
+        MUDMUT(50, 50, -90);
 
         /** Percentage x offset from cell edge where division will occur. */
         public final int splitOffsetPercentX;
@@ -30,8 +30,9 @@ public class PottsCellFlyStem extends PottsCell {
         public final double splitDirectionRotation;
 
         /**
-         * The proportion of the stem cell's critical volume that will be the daughter cell's
-         * critical volume.
+         * The proportion of the NB division volume allocated to the GMC daughter cell. Derived
+         * from {@code splitOffsetPercentY} as {@code 1 - splitOffsetPercentY / 100}, consistent
+         * with the rectangular-cell approximation used elsewhere in the proliferation module.
          */
         public final double daughterCellCriticalVolumeProportion;
 
@@ -41,18 +42,12 @@ public class PottsCellFlyStem extends PottsCell {
          * @param splitOffsetPercentX percentage x offset from cell edge where division will occur
          * @param splitOffsetPercentY percentage y offset from cell edge where division will occur
          * @param splitDirectionRotation the plane of division's rotation off the apical vector
-         * @param daughterCellCriticalVolumeProportion proportion of the stem cell's critical volume
-         *     that will be the daughter cell's critical volume
          */
-        StemType(
-                int splitOffsetPercentX,
-                int splitOffsetPercentY,
-                double splitDirectionRotation,
-                double daughterCellCriticalVolumeProportion) {
+        StemType(int splitOffsetPercentX, int splitOffsetPercentY, double splitDirectionRotation) {
             this.splitOffsetPercentX = splitOffsetPercentX;
             this.splitOffsetPercentY = splitOffsetPercentY;
             this.splitDirectionRotation = splitDirectionRotation;
-            this.daughterCellCriticalVolumeProportion = daughterCellCriticalVolumeProportion;
+            this.daughterCellCriticalVolumeProportion = 1.0 - splitOffsetPercentY / 100.0;
         }
     }
 

@@ -23,12 +23,6 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
     Boolean pdeLike;
 
     /**
-     * Volume of this GMC at the time it was born (voxels). Used as the lower bound of the cell
-     * cycle when computing the equilibrium reference volume.
-     */
-    final double initialSize;
-
-    /**
      * Creates a fly GMC proliferation module.
      *
      * @param cell the cell to which this module is attached
@@ -36,38 +30,41 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
     public PottsModuleFlyGMCDifferentiation(PottsCellFlyGMC cell) {
         super(cell);
         pdeLike = (cell.getParameters().getInt("proliferation/PDELIKE") != 0);
-        initialSize = cell.getLocation().getVolume();
     }
 
     /**
      * Computes the expected equilibrium average GMC volume over one cell cycle.
      *
-     * <p>A GMC is born at {@code initialSize} and divides once it reaches {@code sizeTarget *
-     * criticalVolume}. Under constant-rate growth, the time-average volume over the cycle is the
-     * arithmetic mean of the birth and division volumes:
+     * <p>In the Potts model, a cell's target volume is initialized to {@code criticalVolume} on
+     * reset. The Potts energy immediately drives the cell's actual volume toward this target,
+     * regardless of the current growth rate. As a result, the volume-regulated growth phase
+     * effectively begins at {@code criticalVolume} (not the birth volume), even when {@code
+     * VOLUME_BASED_CRITICAL_VOLUME} is off and birth volume is below {@code criticalVolume}.
+     *
+     * <p>The regulated growth phase therefore runs from {@code criticalVolume} to {@code sizeTarget
+     * * criticalVolume}. Under constant-rate growth, the time-average volume over this phase is the
+     * arithmetic mean of the two endpoints:
      *
      * <pre>
-     *   V_ref = (V_birth + V_div) / 2
-     *         = (initialSize + sizeTarget * criticalVolume) / 2
+     *   V_ref = (criticalVolume + sizeTarget * criticalVolume) / 2
+     *         = criticalVolume * (1 + sizeTarget) / 2
      * </pre>
      *
-     * <p>This reference is used as the normalization denominator in the volume-based growth rate
-     * formula, ensuring that at equilibrium the effective growth rate equals {@code
-     * cellGrowthRateBase}. This is directly analogous to {@link
-     * PottsModuleFlyStemProliferation#computeEquilibriumVolume()}, which uses the same arithmetic
-     * mean but derives the birth volume geometrically from the NB split-offset parameter.
+     * <p>This formula is consistent with the PDE-like branch, which uses {@code avgCritVol * (1 +
+     * sizeTarget) / 2}, and holds whether or not {@code VOLUME_BASED_CRITICAL_VOLUME} is enabled.
      *
      * @return the expected equilibrium average GMC volume
      */
     double computeEquilibriumVolume() {
-        return (initialSize + sizeTarget * cell.getCriticalVolume()) / 2.0;
+        return cell.getCriticalVolume() * (1.0 + sizeTarget) / 2.0;
     }
 
     /**
      * Adds a cell to the simulation.
      *
      * <p>The cell location is split. The new neuron cell is created, initialized, and added to the
-     * schedule. This cell's location is also assigned to a new Neuron cell.
+     * schedule. This cell's location is also assigned to a new Neuron cell. The critical volume of
+     * both neurons is set to the initial volume of each neuron's location.
      *
      * @param random the random number generator
      * @param sim the simulation instance
@@ -89,7 +86,7 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
                 (PottsCell) newContainer.convert(sim.getCellFactory(), newLocation, random);
         sim.getGrid().addObject(newCell, null);
         potts.register(newCell);
-        newCell.reset(potts.ids, potts.regions);
+        newCell.initialize(potts.ids, potts.regions);
         newCell.schedule(sim.getSchedule());
 
         // remove old GMC cell from simulation
@@ -122,7 +119,7 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
 
         sim.getGrid().addObject(differentiatedGMC, null);
         potts.register(differentiatedGMC);
-        differentiatedGMC.reset(potts.ids, potts.regions);
+        differentiatedGMC.initialize(potts.ids, potts.regions);
         differentiatedGMC.schedule(sim.getSchedule());
     }
 
