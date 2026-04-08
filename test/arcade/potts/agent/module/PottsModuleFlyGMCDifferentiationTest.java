@@ -22,6 +22,8 @@ import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.Region;
 import arcade.potts.util.PottsEnums.State;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -136,13 +138,21 @@ public class PottsModuleFlyGMCDifferentiationTest {
     @Test
     public void constructor_setsParameters() {
         when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
-        when(parameters.getDouble("proliferation/PROSPERO_DEGRADATION_RATE")).thenReturn(-1.0);
+        when(parameters.getDouble("proliferation/PROSPERO_DEGRADATION_RATE")).thenReturn(1.0);
 
         PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
 
         org.junit.jupiter.api.Assertions.assertFalse(module.pdeLike);
         org.junit.jupiter.api.Assertions.assertEquals(
-                -1.0, module.prosperoDegradationRate, EPSILON);
+                1.0, module.prosperoDegradationRate, EPSILON);
+    }
+
+    @Test
+    public void constructor_negativeProsperoDegradationRate_throwsException() {
+        when(parameters.getDouble("proliferation/PROSPERO_DEGRADATION_RATE")).thenReturn(-1.0);
+
+        assertThrows(
+                IllegalArgumentException.class, () -> new PottsModuleFlyGMCDifferentiation(gmcCell));
     }
 
     @Test
