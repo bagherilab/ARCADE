@@ -32,6 +32,9 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
         pdeLike = (cell.getParameters().getInt("proliferation/PDELIKE") != 0);
         prosperoDegradationRate =
                 cell.getParameters().getDouble("proliferation/PROSPERO_DEGRADATION_RATE");
+        if (prosperoDegradationRate < 0) {
+            throw new IllegalArgumentException("Prospero degradation rate should not be negative");
+        }
     }
 
     @Override
