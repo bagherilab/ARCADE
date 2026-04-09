@@ -56,6 +56,11 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
     /** max number of iCAR receptors on iCAR surface. */
     static final int MAX_SYNNOTCHS = 20000;
 
+    /** Probability of migration after release. */
+    private final double MIGRATION_PROBABILITY = 0.5;
+
+    private String releaseType;
+
     /**
      * Creates a tissue {@code PatchCellCARTCombinedInhibitory} agent. *
      *
@@ -106,6 +111,7 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
         initialSynnotchReceptors = parameters.getInt("SYNNOTCHS");
         pdel = parameters.getInt("PDEL") > 0 ? true : false;
         icarReceptorAffinity = parameters.getDouble("ICAR_AFFINITY");
+        releaseType = parameters.getString("RELEASE_TYPE").toLowerCase();
         // for receptor based circuits, receptor binding depends on initial receptors
         if (this.type.equals(LogicalCARs.INHIBITORY_RECEPTOR)) {
             this.startCars = cars;
@@ -216,6 +222,7 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
                     && energy < 0) {
                 super.setState(State.STARVED);
                 super.unbind();
+                release(simstate);
             } else if (state == State.STARVED && energy >= 0) {
                 super.setState(State.UNDEFINED);
             } else if (state != State.ANERGIC
@@ -239,6 +246,7 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
                     super.setState(State.SENESCENT);
                 }
                 super.unbind();
+                release(simstate);
                 this.activated = false;
             } else {
                 // CAR receptor binding
@@ -253,6 +261,7 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
                         super.setState(State.ANERGIC);
                     }
                     super.unbind();
+                    release(simstate);
                     this.activated = false;
                 } else if (super.getBindingFlag() == AntigenFlag.BOUND_ANTIGEN) {
                     // If cell is only bound to target antigen, the cell
@@ -267,6 +276,7 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
                             super.setState(State.EXHAUSTED);
                         }
                         super.unbind();
+                        release(simstate);
                         this.activated = false;
                     } else {
                         // if CD8 cell is properly activated, it can be cytotoxic
@@ -278,6 +288,7 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
                     // If self binding, unbind
                     if (super.getBindingFlag() == AntigenFlag.BOUND_CELL_RECEPTOR) {
                         super.unbind();
+                        release(simstate);
                     }
                     // Check activation status. If cell has been activated before,s
                     // it will proliferate. If not, it will migrate.
@@ -343,5 +354,51 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
     /** Calculates the proportion of inhibition given amount of SynNotch bound * */
     public boolean isInhibited() {
         return (synNotchThreshold <= boundSynNotch);
+    }
+
+    /** Increases migration probability after binding. */
+    public void release(SimState simstate) {
+        if (releaseType.equals("simple")) {
+            if (simstate.random.nextDouble() < MIGRATION_PROBABILITY) {
+                super.setState(State.MIGRATORY);
+            }
+        } else if (releaseType.equals("complex")) {
+            wirtzRelease(simstate);
+        }
+    }
+
+    /**
+     * Increases migration probability after binding. Probability is calculated based on number of
+     * immune cell neighbors.
+     */
+    public void wirtzRelease(SimState simstate) {
+        double wirtzProbability =
+                computeMigrationProbability(countImmuneNeighbors((Simulation) simstate));
+        if (simstate.random.nextDouble() < wirtzProbability) {
+            super.setState(State.MIGRATORY);
+        }
+    }
+
+    public double computeMigrationProbability(int immuneNeighborsCount) {
+        // probability should be a hill function where
+        // x is immuneNeighbors and y is probability between 0 and 1
+        double hill = 1;
+        int halfMax = 5;
+        return Math.pow(immuneNeighborsCount, hill)
+                / (Math.pow(halfMax, hill) + Math.pow(immuneNeighborsCount, hill));
+    }
+
+    public int countImmuneNeighbors(Simulation sim) {
+        Bag immuneNeighbors = new Bag();
+        PatchGrid grid = (PatchGrid) sim.getGrid();
+        for (Location neighborLocation : location.getNeighbors()) {
+            Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));
+            for (Object obj : bag) {
+                if (obj instanceof PatchCellCART) {
+                    immuneNeighbors.add(obj);
+                }
+            }
+        }
+        return immuneNeighbors.size();
     }
 }

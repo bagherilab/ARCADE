@@ -1,5 +1,6 @@
 package arcade.patch.agent.module;
 
+import sim.engine.SimState;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
@@ -7,7 +8,6 @@ import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.cell.PatchCellCARTCombinedInhibitory;
 import arcade.patch.agent.cell.PatchCellTissue;
-import arcade.patch.util.PatchEnums.State;
 import static arcade.patch.util.PatchEnums.State;
 
 /**
@@ -39,6 +39,7 @@ public class PatchModuleInactive extends PatchModule {
 
         Parameters parameters = cell.getParameters();
         this.timeDelay = parameters.getInt("BOUND_TIME");
+
         this.ticker = 0;
     }
 
@@ -56,9 +57,10 @@ public class PatchModuleInactive extends PatchModule {
         }
 
         if (ticker >= timeDelay) {
-            ((PatchCellCART) cell).unbind();
             ((PatchCellCARTCombinedInhibitory) cell).boundPD1 = false;
             cell.setState(State.UNDEFINED);
+            ((PatchCellCART) cell).unbind();
+            ((PatchCellCARTCombinedInhibitory) cell).release((SimState) sim);
         }
 
         ticker++;
