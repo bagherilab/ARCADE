@@ -135,7 +135,8 @@ public class PatchActionTreat implements Action {
             ArrayList<LocationContainer> locs = sim.getLocations();
             ArrayList<Location> siteLocs = new ArrayList<Location>();
 
-            // Find sites without specified level of damage based on component type.
+            // Find available insertion sites based on component type.
+            // No cells will be inserted if there are no available sites.
             findLocations(comp, type, locs, siteLocs, sim);
             Utilities.shuffleList(siteLocs, sim.random);
             // sort locations in descending order from highest to lowest density
@@ -145,7 +146,9 @@ public class PatchActionTreat implements Action {
     }
 
     /**
-     * Helper method to find possible locations to insert T-cells.
+     * Helper method to find possible locations to insert T-cells. For graph-based sites, find
+     * locations next to edges with radius greater than threshold. For source and pattern-based
+     * sites, find locations next to sites with damage less than threshold.
      *
      * @param comp the component
      * @param type the type of component (source, pattern, or graph)
