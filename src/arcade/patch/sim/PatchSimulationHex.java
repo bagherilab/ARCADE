@@ -60,7 +60,7 @@ public final class PatchSimulationHex extends PatchSimulation {
             case "convert":
                 return new PatchActionConvert(series, parameters);
             case "treat":
-                return new PatchActionTreat(series, parameters);
+                return new PatchActionTreat(series, parameters, "Hex");
             default:
                 return null;
         }
