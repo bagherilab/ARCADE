@@ -137,7 +137,7 @@ public class PatchActionTreatTest {
         private final ArrayList<MiniBox> testPopulations;
 
         TestPatchActionTreat(Series series, MiniBox parameters, ArrayList<MiniBox> populations) {
-            super(series, parameters);
+            super(series, parameters, "Hex");
             this.testPopulations = populations;
 
             HashMap<String, MiniBox> populationsMap = new HashMap<>();

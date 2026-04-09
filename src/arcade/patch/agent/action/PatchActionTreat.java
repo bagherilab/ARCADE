@@ -30,7 +30,6 @@ import arcade.patch.env.location.Coordinate;
 import arcade.patch.env.location.CoordinateXYZ;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.env.location.PatchLocationContainer;
-import arcade.patch.sim.PatchSeries;
 import arcade.patch.sim.PatchSimulation;
 import arcade.patch.util.PatchEnums.ComponentType;
 import arcade.patch.util.PatchEnums.Immune;
@@ -76,17 +75,15 @@ public class PatchActionTreat implements Action {
      *
      * @param series the simulation series
      * @param parameters the component parameters dictionary
+     * @param coordinateSystem the coordinate system for the simulation
      */
-    public PatchActionTreat(Series series, MiniBox parameters) {
+    public PatchActionTreat(Series series, MiniBox parameters, String coordinateSystem) {
         this.delay = parameters.getInt("TIME_DELAY");
         this.dose = parameters.getInt("DOSE");
         this.maxDamage = parameters.getDouble("MAX_DAMAGE_SEED");
         this.minDamageRadius = parameters.getDouble("MIN_RADIUS_SEED");
         this.parameters = parameters;
-        this.coord =
-                ((PatchSeries) series).patch.get("GEOMETRY").equalsIgnoreCase("HEX")
-                        ? "Hex"
-                        : "Rect";
+        this.coord = coordinateSystem;
         if (this.coord.equals("Hex")) {
             this.latPositions = 9;
         } else {
@@ -186,7 +183,8 @@ public class PatchActionTreat implements Action {
     }
 
     /**
-     * Helper method to check if radius is wide enough for T-cells to pass through.
+     * Helper method that will check locations for radius size. If radius is large enough, add to
+     * list of possible sites to insert T-cells.
      *
      * @param comp the component
      * @param locs the locations to check
@@ -233,8 +231,8 @@ public class PatchActionTreat implements Action {
     }
 
     /**
-     * Helper method to remove locations that are not next to a site or have too much damage for
-     * T-cells to pass through.
+     * Helper method to remove locations from possible T-cell sites that are not next to a site or
+     * have too much damage for T-cells to pass through.
      *
      * @param locs the locations to check
      * @param sim the simuation instance
@@ -268,7 +266,7 @@ public class PatchActionTreat implements Action {
     }
 
     /**
-     * Helper method to sort locations.
+     * Helper method to sort locations based on cell density.
      *
      * @param grid the simulation grid
      * @param loc the current location being looked
@@ -324,7 +322,7 @@ public class PatchActionTreat implements Action {
     }
 
     /**
-     * Helper method to check if location is available.
+     * Helper method to check if location is available based on cell density and available volume.
      *
      * @param grid the simulation grid
      * @param loc the current location being looked at
