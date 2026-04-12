@@ -4,13 +4,11 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.agent.cell.PottsCellFlyNeuron;
 import arcade.potts.util.PottsEnums.Phase;
 
 /**
- * Implementation of {@link PottsModule} for fly GMC agents. These cells divide into two {@link
- * PottsCellFlyNeuron} cells. The links must be set in the setup file so that 100% of the daughter
- * cells are Neurons.
+ * Implementation of {@link PottsModule} for agents that divide upon reaching a volume threshold
+ * without any cell-cycle duration requirements.
  */
 public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsModuleProliferation {
 
