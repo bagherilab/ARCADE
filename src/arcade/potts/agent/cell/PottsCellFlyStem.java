@@ -30,9 +30,9 @@ public class PottsCellFlyStem extends PottsCell {
         public final double splitDirectionRotation;
 
         /**
-         * The proportion of the NB division volume allocated to the GMC daughter cell. Derived
-         * from {@code splitOffsetPercentY} as {@code 1 - splitOffsetPercentY / 100}, consistent
-         * with the rectangular-cell approximation used elsewhere in the proliferation module.
+         * The proportion of the NB division volume allocated to the GMC daughter cell. Derived from
+         * {@code splitOffsetPercentY} as {@code 1 - splitOffsetPercentY / 100}, consistent with the
+         * rectangular-cell approximation used elsewhere in the proliferation module.
          */
         public final double daughterCellCriticalVolumeProportion;
 

@@ -12,13 +12,9 @@ import arcade.potts.util.PottsEnums.State;
 /**
  * Implementation of {@link PottsCell} for fly GMC agents. These cells divide into two {@link
  * PottsCellFlyNeuron} cells. The links must be set in the setup file so that 100% of the daughter
-<<<<<<< HEAD
  * cells are Neurons. The differentiation of the parent cell is handled by the {@link
  * PottsModuleProliferationVolumeBasedDivision} module. The basal apoptosis rate of this cell should
  * be set to 0 in the setup file.
-=======
- * cells are Neurons. The basal apoptosis rate of this cell should be set to 0 in the setup file.
->>>>>>> main
  */
 public class PottsCellFlyGMC extends PottsCell {
 
