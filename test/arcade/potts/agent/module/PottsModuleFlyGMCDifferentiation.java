@@ -16,13 +16,14 @@ import arcade.potts.util.PottsEnums.State;
 /**
  * Implementation of {@link PottsModuleProliferationVolumeBasedDivision} for fly GMC agents. These
  * cells divide into two {@link PottsCellFlyNeuron} cells. The links must be set in the setup file
- * so that 100% of the daughter cells are Neurons. Implementation of {@link
- * PottsModuleProliferationVolumeBasedDivision} for fly GMC agents. These cells divide into two
- * {@link PottsCellFlyNeuron} cells. The links must be set in the setup file so that 100% of the
- * daughter cells are Neurons.
+ * so that 100% of the daughter cells are Neurons.
  */
 public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVolumeBasedDivision {
 
+    /**
+     * Indicates whether GMC growth rate is based on individual cell conditions or average cell
+     * conditions
+     */
     Boolean pdeLike;
 
     /**
@@ -39,10 +40,10 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
      * Computes the expected equilibrium average GMC volume over one cell cycle.
      *
      * <p>In the Potts model, a cell's target volume is initialized to {@code criticalVolume} on
-     * reset. The Potts energy immediately drives the cell's actual volume toward this target,
-     * regardless of the current growth rate. As a result, the volume-regulated growth phase
-     * effectively begins at {@code criticalVolume} (not the birth volume), even when {@code
-     * VOLUME_BASED_CRITICAL_VOLUME} is off and birth volume is below {@code criticalVolume}.
+     * reset. The Potts energy drives the cell's actual volume toward this target, regardless of
+     * current growth rate. As a result, the volume-regulated growth phase effectively begins at
+     * {@code criticalVolume} (not the birth volume), even when {@code VOLUME_BASED_CRITICAL_VOLUME}
+     * is off and birth volume is below {@code criticalVolume}.
      *
      * <p>The regulated growth phase therefore runs from {@code criticalVolume} to {@code sizeTarget
      * * criticalVolume}. Under constant-rate growth, the time-average volume over this phase is the
@@ -52,9 +53,6 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
      *   V_ref = (criticalVolume + sizeTarget * criticalVolume) / 2
      *         = criticalVolume * (1 + sizeTarget) / 2
      * </pre>
-     *
-     * <p>This formula is consistent with the PDE-like branch, which uses {@code avgCritVol * (1 +
-     * sizeTarget) / 2}, and holds whether or not {@code VOLUME_BASED_CRITICAL_VOLUME} is enabled.
      *
      * @return the expected equilibrium average GMC volume
      */
@@ -126,7 +124,17 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
         differentiatedGMC.schedule(sim.getSchedule());
     }
 
-    public void updateGrowthRate(Simulation sim) {
+    /**
+     * Updates the GMC growth rate for the current simulation step.
+     *
+     * <p>If dynamic growth is disabled, the basal growth rate is used. Otherwise, the update is
+     * volume-based: either from this cell's own volume relative to its equilibrium reference
+     * volume, or in {@code pdeLike} mode from the population-average GMC volume and average
+     * equilibrium reference volume for cells in the same population.
+     *
+     * @param sim the simulation instance used to access the cell population
+     */
+    public final void updateGrowthRate(Simulation sim) {
         if (!dynamicGrowthRateVolume) {
             cellGrowthRate = cellGrowthRateBase;
         } else {
