@@ -17,7 +17,6 @@ public class PottsModuleProliferationVolumeBasedDivisionTest {
 
         boolean addCellCalled = false;
 
-
         boolean growthRateUpdated = false;
 
         PottsModuleProliferationVolumeBasedDivisionMock(PottsCellFlyGMC cell) {
