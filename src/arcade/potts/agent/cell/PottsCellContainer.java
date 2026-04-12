@@ -10,6 +10,8 @@ import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
+import arcade.potts.util.PottsEnums.Phase;
+import arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Region;
 
@@ -176,6 +178,10 @@ public final class PottsCellContainer implements CellContainer {
                 return new PottsCellFlyNeuron(this, location, parameters, links);
             case "fly-gmc":
                 return new PottsCellFlyGMC(this, location, parameters, links);
+            case "fly-stem-wt":
+                return new PottsCellFlyStem(this, location, parameters, links);
+            case "fly-stem-mudmut":
+                return new PottsCellFlyStem(this, location, parameters, links);
             default:
             case "stem":
                 return new PottsCellStem(this, location, parameters, links);
