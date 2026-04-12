@@ -7,6 +7,8 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.core.util.Vector;
+import arcade.core.util.distributions.NormalDistribution;
+import arcade.potts.agent.module.PottsModuleFlyStemProliferation;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.util.PottsEnums.Phase;
 import arcade.potts.util.PottsEnums.State;
@@ -163,6 +165,27 @@ public class PottsCellFlyStemTest {
                 assertNull(cell.getModule());
             }
         }
+    }
+
+    @Test
+    void setStateModule_proliferative_createsFlyStemProliferationModule() {
+        NormalDistribution distMock = mock(NormalDistribution.class);
+        doReturn("fly-stem-wt").when(parametersMock).getString("CLASS");
+        doReturn("FALSE")
+                .when(parametersMock)
+                .getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION");
+        doReturn("volume").when(parametersMock).getString("proliferation/DIFFERENTIATION_RULESET");
+        doReturn("global").when(parametersMock).getString("proliferation/APICAL_AXIS_RULESET");
+        doReturn(distMock)
+                .when(parametersMock)
+                .getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION");
+        doReturn(distMock)
+                .when(parametersMock)
+                .getDistribution("proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION");
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(baseContainer, locationMock, parametersMock, links);
+        cell.setStateModule(State.PROLIFERATIVE);
+        assertInstanceOf(PottsModuleFlyStemProliferation.class, cell.getModule());
     }
 
     @Test

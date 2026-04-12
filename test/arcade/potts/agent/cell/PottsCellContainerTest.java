@@ -6,6 +6,7 @@ import java.util.EnumSet;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.potts.env.location.PottsLocation;
@@ -116,6 +117,66 @@ public class PottsCellContainerTest {
         PottsCellContainer cellContainer =
                 new PottsCellContainer(id, 0, 0, 0, 0, null, null, 0, 0, 0);
         assertEquals(id, cellContainer.getID());
+    }
+
+    @Test
+    public void convert_flyStemWT_createsPottsCellFlyStem() {
+        Location location = mock(PottsLocation.class);
+        PottsCellFactory factory = new PottsCellFactory();
+
+        int cellPop = randomIntBetween(1, 10);
+        MiniBox parameters = new MiniBox();
+        parameters.put("CLASS", "fly-stem-wt");
+
+        GrabBag links = new GrabBag();
+        links.add(1, 1);
+        factory.popToParameters.put(cellPop, parameters);
+        factory.popToLinks.put(cellPop, links);
+        factory.popToRegions.put(cellPop, false);
+
+        PottsCellContainer container =
+                new PottsCellContainer(
+                        randomIntBetween(1, 10),
+                        randomIntBetween(1, 10),
+                        cellPop,
+                        randomIntBetween(1, 100),
+                        randomIntBetween(1, 100),
+                        State.UNDEFINED,
+                        Phase.UNDEFINED,
+                        0,
+                        randomDoubleBetween(10, 100),
+                        randomDoubleBetween(10, 100));
+        assertInstanceOf(PottsCellFlyStem.class, container.convert(factory, location, RANDOM));
+    }
+
+    @Test
+    public void convert_flyStemMUDMUT_createsPottsCellFlyStem() {
+        Location location = mock(PottsLocation.class);
+        PottsCellFactory factory = new PottsCellFactory();
+
+        int cellPop = randomIntBetween(1, 10);
+        MiniBox parameters = new MiniBox();
+        parameters.put("CLASS", "fly-stem-mudmut");
+
+        GrabBag links = new GrabBag();
+        links.add(1, 1);
+        factory.popToParameters.put(cellPop, parameters);
+        factory.popToLinks.put(cellPop, links);
+        factory.popToRegions.put(cellPop, false);
+
+        PottsCellContainer container =
+                new PottsCellContainer(
+                        randomIntBetween(1, 10),
+                        randomIntBetween(1, 10),
+                        cellPop,
+                        randomIntBetween(1, 100),
+                        randomIntBetween(1, 100),
+                        State.UNDEFINED,
+                        Phase.UNDEFINED,
+                        0,
+                        randomDoubleBetween(10, 100),
+                        randomDoubleBetween(10, 100));
+        assertInstanceOf(PottsCellFlyStem.class, container.convert(factory, location, RANDOM));
     }
 
     @Test
