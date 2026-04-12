@@ -116,7 +116,8 @@ public class PottsCellFlyStem extends PottsCell {
     @Override
     public PottsCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
         throw new UnsupportedOperationException(
-                "make(int, CellState, MersenneTwisterFast) not supported. Please use make(int, CellState, MersenneTwisterFast, int, double) instead.");
+                "make(int, CellState, MersenneTwisterFast) not supported."
+                        + "Please use make(int, CellState, MersenneTwisterFast, int, double) instead.");
     }
 
     /**
