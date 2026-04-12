@@ -62,7 +62,7 @@ public class PottsModuleFlyStemProliferationTest {
 
     NormalDistribution dist;
 
-    float EPSILON = 1e-6f;
+    final float EPSILON = 1e-6f;
 
     int stemCellPop;
 
@@ -690,14 +690,15 @@ public class PottsModuleFlyStemProliferationTest {
                 .thenReturn(container);
         when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newStemCell);
 
-        PottsModuleFlyStemProliferation module = spy(new PottsModuleFlyStemProliferation(stemCell));
-        doReturn(0.0).when(module).sampleDivisionPlaneOffset();
+        PottsModuleFlyStemProliferation spyModule =
+                spy(new PottsModuleFlyStemProliferation(stemCell));
+        doReturn(0.0).when(spyModule).sampleDivisionPlaneOffset();
         doReturn(dummyPlane)
-                .when(module)
+                .when(spyModule)
                 .getWTDivisionPlaneWithRotationalVariance(eq(stemCell), anyDouble());
 
         try (MockedStatic<PottsLocation> mocked = mockStatic(PottsLocation.class)) {
-            module.addCell(random, sim);
+            spyModule.addCell(random, sim);
             mocked.verify(() -> PottsLocation.swapVoxels(stemLoc, daughterLoc));
         }
 
@@ -730,13 +731,14 @@ public class PottsModuleFlyStemProliferationTest {
         when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newStemCell);
 
         // Spy and override division plane logic
-        PottsModuleFlyStemProliferation module = spy(new PottsModuleFlyStemProliferation(stemCell));
+        PottsModuleFlyStemProliferation spyModule =
+                spy(new PottsModuleFlyStemProliferation(stemCell));
         doReturn(dummyPlane)
-                .when(module)
+                .when(spyModule)
                 .getWTDivisionPlaneWithRotationalVariance(eq(stemCell), anyDouble());
 
         try (MockedStatic<PottsLocation> mocked = mockStatic(PottsLocation.class)) {
-            module.addCell(random, sim);
+            spyModule.addCell(random, sim);
             mocked.verify(() -> PottsLocation.swapVoxels(any(), any()), never());
         }
         verify(newStemCell).schedule(any());
@@ -771,13 +773,14 @@ public class PottsModuleFlyStemProliferationTest {
         when(stemCell.getCriticalVolume()).thenReturn(100.0);
         when(stemCell.getPop()).thenReturn(stemCellPop);
 
-        module = spy(new PottsModuleFlyStemProliferation(stemCell));
+        PottsModuleFlyStemProliferation spyModule =
+                spy(new PottsModuleFlyStemProliferation(stemCell));
         Plane dummyPlane = mock(Plane.class);
-        doReturn(dummyPlane).when(module).getMUDDivisionPlane(eq(stemCell));
+        doReturn(dummyPlane).when(spyModule).getMUDDivisionPlane(eq(stemCell));
         when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
-        doReturn(true).when(module).daughterStem(any(), any(), any());
+        doReturn(true).when(spyModule).daughterStem(any(), any(), any());
 
-        module.addCell(random, sim);
+        spyModule.addCell(random, sim);
 
         verify(newCell).schedule(any());
     }
@@ -1346,7 +1349,7 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    void testDaughterStem_RuleBased_VolumeTrue() {
+    void daughterStem_volumeRuleBased_true() {
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("FALSE");
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
@@ -1363,7 +1366,7 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    void testDaughterStem_RuleBased_VolumeFalse() {
+    void daughterStem_volumeRuleBased_false() {
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("FALSE");
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");

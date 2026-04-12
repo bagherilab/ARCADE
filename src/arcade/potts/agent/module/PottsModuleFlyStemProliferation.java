@@ -23,6 +23,9 @@ import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Phase;
+import arcade.potts.util.PottsEnums.State;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
@@ -86,13 +89,15 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      */
     final double nbContactHillN;
 
-    /*
+    /**
      * Boolean flag for whether the daughter cell's differentiation is determined deterministically.
      */
     final boolean hasDeterministicDifferentiation;
 
+    /** The cell's initial size/volume (in voxels). */
     final double initialSize;
 
+    /** Epsilon. */
     public static final double EPSILON = 1e-8;
 
     /**
@@ -188,9 +193,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * @param sim the simulation
      */
     public void updateGrowthRate(Simulation sim) {
-        if (dynamicGrowthRateVolume == true) {
+        if (dynamicGrowthRateVolume) {
             updateVolumeBasedGrowthRate(sim);
-        } else if (dynamicGrowthRateNBSelfRepression == true) {
+        } else if (dynamicGrowthRateNBSelfRepression) {
             updateGrowthRateBasedOnOtherNBs(sim);
         } else {
             cellGrowthRate = cellGrowthRateBase;
@@ -216,7 +221,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      */
     public void updateVolumeBasedGrowthRate(Simulation sim) {
         double vRef = computeEquilibriumVolume();
-        if (pdeLike == false) {
+        if (!pdeLike) {
             updateCellVolumeBasedGrowthRate(cell.getLocation().getVolume(), vRef);
         } else {
             HashSet<PottsCellFlyStem> nbsInSimulation = getNBsInSimulation(sim);
@@ -308,16 +313,16 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         } else {
             nbsInContact = getNBNeighbors(sim).size();
         }
-        double np = Math.max(0.0, (double) nbsInContact);
+        double neighborSignal = Math.max(0.0, (double) nbsInContact);
 
-        double Kn = Math.pow(nbContactHalfMax, nbContactHillN);
-        double Npn = Math.pow(np, nbContactHillN);
+        double kHalfMaxPowN = Math.pow(nbContactHalfMax, nbContactHillN);
+        double neighborSignalPowN = Math.pow(neighborSignal, nbContactHillN);
 
         double hillRepression;
-        if (Kn == 0.0) {
-            hillRepression = (np == 0.0) ? 1.0 : 0.0;
+        if (kHalfMaxPowN == 0.0) {
+            hillRepression = (neighborSignal == 0.0) ? 1.0 : 0.0;
         } else {
-            hillRepression = Kn / (Kn + Npn);
+            hillRepression = kHalfMaxPowN / (kHalfMaxPowN + neighborSignalPowN);
         }
 
         cellGrowthRate = cellGrowthRateBase * hillRepression;
@@ -361,10 +366,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      */
     public Plane getWTDivisionPlaneWithRotationalVariance(
             PottsCellFlyStem cell, double rotationOffset) {
-        Vector apical_axis = cell.getApicalAxis();
+        Vector apicalAxis = cell.getApicalAxis();
         Vector rotatedNormalVector =
                 Vector.rotateVectorAroundAxis(
-                        apical_axis, Direction.XY_PLANE.vector, rotationOffset);
+                        apicalAxis, Direction.XY_PLANE.vector, rotationOffset);
         Voxel splitVoxel = getCellSplitVoxel(StemType.WT, cell, rotatedNormalVector);
         return new Plane(
                 new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), rotatedNormalVector);
@@ -388,10 +393,16 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Gets the voxel location the cell's plane of division will pass through.
+     * Computes the voxel through which the division plane passes for a given cell.
      *
-     * @param cell the {@link PottsCellFlyStem} to get the division location for
-     * @return the voxel location where the cell will split
+     * <p>The split position is determined from the stem-type-specific offset percentages,
+     * interpreted in the cell's apical frame. The supplied normal vector is assumed to already
+     * reflect any rule-based rotation of the division plane.
+     *
+     * @param stemType the {@link StemType} providing the split offset percentages
+     * @param cell the {@link PottsCellFlyStem} whose division position is being computed
+     * @param rotatedNormalVector the division plane normal after any rule-based rotation
+     * @return the voxel used as the anchor point for the division plane
      */
     public static Voxel getCellSplitVoxel(
             StemType stemType, PottsCellFlyStem cell, Vector rotatedNormalVector) {
@@ -420,9 +431,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 double vol2 = loc2.getVolume();
                 if (Math.abs(vol1 - vol2) < range) {
                     return true;
-                } else {
-                    return false;
                 }
+                return false;
             } else if (differentiationRuleset.equals("location")) {
                 double[] centroid1 = loc1.getCentroid();
                 double[] centroid2 = loc2.getCentroid();
@@ -434,12 +444,13 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 "Invalid differentiation ruleset: " + differentiationRuleset);
     }
 
-    /*
-     * Determines whether the daughter cell should be a neuroblast or a GMC according to the orientation.
-     * This is deterministic.
+    /**
+     * Determines whether the daughter cell should be a neuroblast or a GMC according to the
+     * orientation. This is deterministic.
      *
      * @param divisionPlane
-     * @return {@code true} if the daughter should be a stem cell. {@code false} if the daughter should be a GMC.
+     * @return {@code true} if the daughter should be a stem cell. {@code false} if the daughter
+     *     should be a GMC.
      */
     private boolean daughterStemDeterministic(Plane divisionPlane) {
 
@@ -501,7 +512,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Makes a daughter NB cell
+     * Makes a daughter NB cell.
      *
      * @param daughterLoc the location of the daughter NB cell
      * @param sim the simulation
@@ -526,7 +537,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Makes a daughter GMC cell
+     * Makes a daughter GMC cell.
      *
      * @param parentLoc the location of the parent NB cell
      * @param daughterLoc the location of the daughter GMC cell
@@ -595,7 +606,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             case "uniform":
                 if (!(apicalAxisRotationDistribution instanceof UniformDistribution)) {
                     throw new IllegalArgumentException(
-                            "apicalAxisRotationDistribution must be a UniformDistribution under the uniform apical axis ruleset.");
+                            "apicalAxisRotationDistribution must be a UniformDistribution"
+                                    + "under the uniform apical axis ruleset.");
                 }
                 Vector newRandomApicalAxis =
                         Vector.rotateVectorAroundAxis(
@@ -608,7 +620,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             case "normal":
                 if (!(apicalAxisRotationDistribution instanceof NormalDistribution)) {
                     throw new IllegalArgumentException(
-                            "apicalAxisRotationDistribution must be a NormalDistribution under the rotation apical axis ruleset.");
+                            "apicalAxisRotationDistribution must be a NormalDistribution"
+                                    + "under the rotation apical axis ruleset.");
                 }
                 Vector newRotatedApicalAxis =
                         Vector.rotateVectorAroundAxis(
@@ -645,7 +658,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Calculates the critical volume of a GMC daughter cell
+     * Calculates the critical volume of a GMC daughter cell.
      *
      * @param gmcLoc the location of the GMC daughter cell
      * @return the critical volume of the GMC daughter cell
@@ -696,12 +709,20 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         return (proj1 < proj2) ? loc2 : loc1; // higher projection = more basal
     }
 
+    /**
+     * Gets all cell objects in the simulation that are Neuroblasts.
+     *
+     * @param sim the simulation
+     * @return a HashSet of all PottsCellFlyStem cell objects in the simulation
+     */
     public HashSet<PottsCellFlyStem> getNBsInSimulation(Simulation sim) {
         HashSet<PottsCellFlyStem> nbsInSimulation = new HashSet<>();
         Bag simObjects = sim.getGrid().getAllObjects();
         for (int i = 0; i < simObjects.numObjs; i++) {
             Object o = simObjects.objs[i];
-            if (!(o instanceof PottsCell)) continue; // skip non-cell objects
+            if (!(o instanceof PottsCell)) {
+                continue; // skip non-cell objects
+            }
             PottsCell cellInSim = (PottsCell) o;
             if (cell.getPop() == cellInSim.getPop() && o instanceof PottsCellFlyStem) {
                 nbsInSimulation.add((PottsCellFlyStem) o);
