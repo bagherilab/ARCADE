@@ -146,9 +146,6 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
                 // PDE-like: use population-wide averages for GMCs (same pop as this cell).
                 // The reference volume is the population-average equilibrium volume:
                 //   avgVRef = avgCritVol * (1 + sizeTarget) / 2
-                // This assumes VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER = 1 (so each GMC's
-                // birth volume equals its critVol). For multiplier != 1, avgCritVol would need
-                // to be replaced by the mean of (critVol_i / multiplier + sizeTarget*critVol_i)/2.
                 sim.util.Bag objs = sim.getGrid().getAllObjects();
 
                 double volSum = 0.0;

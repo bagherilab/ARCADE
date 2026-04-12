@@ -64,6 +64,13 @@
     <population.module module="proliferation" id="NUCLEUS_GROWTH_RATE" value="30" units="um^3/hour" conversion="DS^-3.DT" description="basal rate of nucleus growth" />
     <population.module module="proliferation" id="NUCLEUS_CONDENSATION_FRACTION" value="0.5" description="fraction of nuclear volume when condensed" />
 
+    <!-- ── Fly cell proliferation module parameters ───────────────────── -->
+    <!-- ── Dictating whether NB behavior should be the same across all NBs ──────── -->
+    <population.module module="proliferation" id="PDELIKE" value="0" description="1 → all cells of a given type have same growth and division dynamics based on average metrics across the population; 0 → Cell growth and division is determined on a cell-by-cell basis, cells can differ from other cells of the same type" />
+    <!-- ── Growth rate sensitivity to cell volume dynamics ───────────────────── -->
+    <population.module module="proliferation" id="DYNAMIC_GROWTH_RATE_VOLUME" value="0" description="1 → enable volume-sensitive growth rate; 0 → disabled" />
+    <population.module module="proliferation" id="GROWTH_RATE_VOLUME_SENSITIVITY" value="3.0" description="exponent in (volume/criticalVolume)^sensitivity when volume rule is enabled" />
+
     <!-- apoptosis module parameters -->
     <population.module module="apoptosis" id="RATE_EARLY" value="4" units="steps/hour" conversion="DT" description="rate of events in early apoptosis phase" />
     <population.module module="apoptosis" id="RATE_LATE" value="1.8" units="steps/hour" conversion="DT" description="rate of events in late apoptosis phase" />
