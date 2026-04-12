@@ -23,6 +23,7 @@ import arcade.potts.util.PottsEnums.State;
  */
 public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVolumeBasedDivision {
 
+     /** Indicates whether GMC growth rate is based on individual cell conditions or average cell conditions */
     Boolean pdeLike;
 
     /**
