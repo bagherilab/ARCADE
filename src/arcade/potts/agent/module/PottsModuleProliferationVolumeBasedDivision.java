@@ -7,19 +7,30 @@ import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.util.PottsEnums.Phase;
 
 /**
- * Implementation of {@link PottsModule} for fly GMC agents. The links must be set in the setup file
- * so that 100% of the daughter cells are Neurons.
+ * Implementation of {@link PottsModule} for agents that divide upon reaching a volume threshold
+ * without any cell-cycle duration requirements.
  */
 public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsModuleProliferation {
 
-    /** Overall growth rate for cell (voxels/tick). */
-    final double cellGrowthRate;
+    /** Base growth rate for cells (voxels/tick). */
+    final double cellGrowthRateBase;
+
+    /** Current growth rate for stem cells (voxels/tick). */
+    double cellGrowthRate;
 
     /**
      * Target ratio of critical volume for division size checkpoint (cell must reach CRITICAL_VOLUME
      * * SIZE_TARGET * SIZE_CHECKPOINT to divide).
      */
     final double sizeTarget;
+
+    /** Boolean flag indicating whether the growth rate should follow volume-sensitive ruleset. */
+    final boolean dynamicGrowthRateVolume;
+
+    /**
+     * Sensitivity of growth rate to cell volume, only relevant if dynamicGrowthRateVolume is true.
+     */
+    final double growthRateVolumeSensitivity;
 
     /**
      * Creates a proliferation module in which division is solely dependent on cell volume.
@@ -30,16 +41,34 @@ public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsM
         super(cell);
         Parameters parameters = cell.getParameters();
         sizeTarget = parameters.getDouble("proliferation/SIZE_TARGET");
-        cellGrowthRate = parameters.getDouble("proliferation/CELL_GROWTH_RATE");
+        cellGrowthRateBase = parameters.getDouble("proliferation/CELL_GROWTH_RATE");
+        dynamicGrowthRateVolume =
+                (parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME") != 0);
+        growthRateVolumeSensitivity =
+                parameters.getDouble("proliferation/GROWTH_RATE_VOLUME_SENSITIVITY");
         setPhase(Phase.UNDEFINED);
+        cellGrowthRate = cellGrowthRateBase;
     }
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
+        updateGrowthRate(sim);
         cell.updateTarget(cellGrowthRate, sizeTarget);
         boolean sizeCheck = cell.getVolume() >= sizeTarget * cell.getCriticalVolume();
         if (sizeCheck) {
             addCell(random, sim);
         }
+    }
+
+    /**
+     * Updates the effective growth rate according to boolean flags specified in parameters.
+     *
+     * @param sim the simulation
+     */
+    public abstract void updateGrowthRate(Simulation sim);
+
+    public void updateCellVolumeBasedGrowthRate(double volume, double cellCriticalVolume) {
+        double Ka = cellCriticalVolume;
+        cellGrowthRate = cellGrowthRateBase * Math.pow((volume / Ka), growthRateVolumeSensitivity);
     }
 }
