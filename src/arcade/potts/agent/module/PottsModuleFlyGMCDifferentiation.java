@@ -1,5 +1,6 @@
 package arcade.potts.agent.module;
 
+import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.Location;
@@ -143,7 +144,7 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
                 // PDE-like: use population-wide averages for GMCs (same pop as this cell).
                 // The reference volume is the population-average equilibrium volume:
                 //   avgVRef = avgCritVol * (1 + sizeTarget) / 2
-                sim.util.Bag objs = sim.getGrid().getAllObjects();
+                Bag objs = sim.getGrid().getAllObjects();
 
                 double volSum = 0.0;
                 double critSum = 0.0;
@@ -151,18 +152,17 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
 
                 for (int i = 0; i < objs.numObjs; i++) {
                     Object o = objs.objs[i];
-                    if (!(o instanceof arcade.potts.agent.cell.PottsCell)) {
+                    if (!(o instanceof PottsCell)) {
                         continue;
                     }
 
-                    arcade.potts.agent.cell.PottsCell c = (arcade.potts.agent.cell.PottsCell) o;
+                    PottsCell c = (PottsCell) o;
                     if (c.getPop() != cell.getPop()) {
                         continue; // keep to same population
                     }
 
-                    if (o instanceof arcade.potts.agent.cell.PottsCellFlyGMC) {
-                        arcade.potts.agent.cell.PottsCellFlyGMC gmc =
-                                (arcade.potts.agent.cell.PottsCellFlyGMC) o;
+                    if (o instanceof PottsCellFlyGMC) {
+                        PottsCellFlyGMC gmc = (PottsCellFlyGMC) o;
                         volSum += gmc.getLocation().getVolume();
                         critSum += gmc.getCriticalVolume();
                         count++;
