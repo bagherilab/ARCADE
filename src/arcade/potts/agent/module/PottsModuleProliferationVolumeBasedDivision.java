@@ -77,15 +77,16 @@ public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsM
      * cellGrowthRate = cellGrowthRateBase * (volume / referenceVolume)^growthRateVolumeSensitivity
      * </pre>
      *
-     * <p>The reference volume is the scale at which the basal growth rate is recovered. In the
-     * simplest case this can be the cell's critical volume, but callers may also supply another
+     * <p>The reference volume is the cell volume at which the basal growth rate is recovered. In
+     * the simplest case this can be the cell's critical volume, but users may use another
      * biologically motivated reference such as an equilibrium or population-averaged volume.
      *
      * @param volume the current volume used in the growth-rate scaling
      * @param referenceVolume the reference volume that defines the baseline growth-rate scale
      */
-    public void updateCellVolumeBasedGrowthRate(double volume, double cellCriticalVolume) {
-        double Ka = cellCriticalVolume;
-        cellGrowthRate = cellGrowthRateBase * Math.pow((volume / Ka), growthRateVolumeSensitivity);
+    public void updateCellVolumeBasedGrowthRate(double volume, double referenceVolume) {
+        double refVol = referenceVolume;
+        cellGrowthRate =
+                cellGrowthRateBase * Math.pow((volume / refVol), growthRateVolumeSensitivity);
     }
 }

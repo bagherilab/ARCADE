@@ -23,7 +23,10 @@ import arcade.potts.util.PottsEnums.State;
  */
 public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVolumeBasedDivision {
 
-     /** Indicates whether GMC growth rate is based on individual cell conditions or average cell conditions */
+    /**
+     * Indicates whether GMC growth rate is based on individual cell conditions or average cell
+     * conditions.
+     */
     Boolean pdeLike;
 
     /**
@@ -127,6 +130,11 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
         differentiatedGMC.schedule(sim.getSchedule());
     }
 
+    /**
+     * Updates the effective growth rate according to boolean flags specified in parameters.
+     *
+     * @param sim the simulation
+     */
     public void updateGrowthRate(Simulation sim) {
         if (!dynamicGrowthRateVolume) {
             cellGrowthRate = cellGrowthRateBase;
@@ -149,10 +157,14 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
 
                 for (int i = 0; i < objs.numObjs; i++) {
                     Object o = objs.objs[i];
-                    if (!(o instanceof arcade.potts.agent.cell.PottsCell)) continue;
+                    if (!(o instanceof arcade.potts.agent.cell.PottsCell)) {
+                        continue;
+                    }
 
                     arcade.potts.agent.cell.PottsCell c = (arcade.potts.agent.cell.PottsCell) o;
-                    if (c.getPop() != cell.getPop()) continue; // keep to same population
+                    if (c.getPop() != cell.getPop()) {
+                        continue; // keep to same population
+                    }
 
                     if (o instanceof arcade.potts.agent.cell.PottsCellFlyGMC) {
                         arcade.potts.agent.cell.PottsCellFlyGMC gmc =
