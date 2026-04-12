@@ -689,7 +689,8 @@ public class PottsModuleFlyStemProliferationTest {
                 .thenReturn(container);
         when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newStemCell);
 
-        PottsModuleFlyStemProliferation spyModule = spy(new PottsModuleFlyStemProliferation(stemCell));
+        PottsModuleFlyStemProliferation spyModule =
+                spy(new PottsModuleFlyStemProliferation(stemCell));
         doReturn(0.0).when(spyModule).sampleDivisionPlaneOffset();
         doReturn(dummyPlane)
                 .when(spyModule)
@@ -729,7 +730,8 @@ public class PottsModuleFlyStemProliferationTest {
         when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newStemCell);
 
         // Spy and override division plane logic
-        PottsModuleFlyStemProliferation spyModule = spy(new PottsModuleFlyStemProliferation(stemCell));
+        PottsModuleFlyStemProliferation spyModule =
+                spy(new PottsModuleFlyStemProliferation(stemCell));
         doReturn(dummyPlane)
                 .when(spyModule)
                 .getWTDivisionPlaneWithRotationalVariance(eq(stemCell), anyDouble());
@@ -770,7 +772,8 @@ public class PottsModuleFlyStemProliferationTest {
         when(stemCell.getCriticalVolume()).thenReturn(100.0);
         when(stemCell.getPop()).thenReturn(stemCellPop);
 
-        PottsModuleFlyStemProliferation spyModule = spy(new PottsModuleFlyStemProliferation(stemCell));
+        PottsModuleFlyStemProliferation spyModule =
+                spy(new PottsModuleFlyStemProliferation(stemCell));
         Plane dummyPlane = mock(Plane.class);
         doReturn(dummyPlane).when(spyModule).getMUDDivisionPlane(eq(stemCell));
         when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
