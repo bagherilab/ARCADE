@@ -98,6 +98,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         // Default centroid and volume values (sometimes overridden in tests)
         when(stemLoc.getVolume()).thenReturn(10.0);
+        when(stemCell.getVolume()).thenReturn(10.0);
         when(daughterLoc.getVolume()).thenReturn(5.0);
         when(stemLoc.getCentroid()).thenReturn(new double[] {0, 1.0, 0});
         when(daughterLoc.getCentroid()).thenReturn(new double[] {0, 1.6, 0});
@@ -648,8 +649,7 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void
-        calculateGMCDaughterCellCriticalVolume_volumeBasedOnVerySmallVolume_returnsFloor() {
+    public void calculateGMCDaughterCellCriticalVolume_volumeBasedOnVerySmallVolume_returnsFloor() {
         // @BeforeEach: stemLoc.getVolume()=10.0, so initialSize=10.0 → floor = 10.0 * 0.1 = 1.0
         // gmcLoc.getVolume()=0.5 < 1.0, so Math.max picks the floor
         when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(1);
