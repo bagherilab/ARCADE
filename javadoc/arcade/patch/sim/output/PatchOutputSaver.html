@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":10};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -168,12 +168,19 @@ extends <a href="../../../core/sim/output/OutputSaver.html" title="class in arca
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#saveEvents">saveEvents</a></span></code></th>
+<td class="colLast">
+<div class="block"><code>true</code> to save events, <code>false</code> otherwise.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#saveGraph">saveGraph</a></span></code></th>
 <td class="colLast">
 <div class="block"><code>true</code> to save graph components, <code>false</code> otherwise.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#saveLattice">saveLattice</a></span></code></th>
 <td class="colLast">
@@ -251,6 +258,13 @@ extends <a href="../../../core/sim/output/OutputSaver.html" title="class in arca
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#saveEventsToFile(int)">saveEventsToFile</a></span>&#8203;(int&nbsp;tick)</code></th>
+<td class="colLast">
+<div class="block">Save the collection of events to a JSON.</div>
+</td>
+</tr>
+<tr id="i4" class="altColor">
+<td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#saveLayers(int)">saveLayers</a></span>&#8203;(int&nbsp;tick)</code></th>
 <td class="colLast">
 <div class="block">Save the collection of <a href="../../env/lattice/PatchLattice.html" title="class in arcade.patch.env.lattice"><code>PatchLattice</code></a> to a JSON, by location.</div>
@@ -300,11 +314,21 @@ extends <a href="../../../core/sim/output/OutputSaver.html" title="class in arca
 <a id="saveLattice">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>saveLattice</h4>
 <pre>public&nbsp;boolean saveLattice</pre>
 <div class="block"><code>true</code> to save lattices, <code>false</code> otherwise.</div>
+</li>
+</ul>
+<a id="saveEvents">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>saveEvents</h4>
+<pre>public&nbsp;boolean saveEvents</pre>
+<div class="block"><code>true</code> to save events, <code>false</code> otherwise.</div>
 </li>
 </ul>
 </li>
@@ -380,6 +404,20 @@ extends <a href="../../../core/sim/output/OutputSaver.html" title="class in arca
 <h4>saveLayers</h4>
 <pre class="methodSignature">public&nbsp;void&nbsp;saveLayers&#8203;(int&nbsp;tick)</pre>
 <div class="block">Save the collection of <a href="../../env/lattice/PatchLattice.html" title="class in arcade.patch.env.lattice"><code>PatchLattice</code></a> to a JSON, by location.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>tick</code> - the simulation tick</dd>
+</dl>
+</li>
+</ul>
+<a id="saveEventsToFile(int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>saveEventsToFile</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;saveEventsToFile&#8203;(int&nbsp;tick)</pre>
+<div class="block">Save the collection of events to a JSON. Clears events queue after writing to file.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>tick</code> - the simulation tick</dd>

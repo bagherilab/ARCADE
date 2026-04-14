@@ -27,7 +27,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":6,"i19":6,"i20":6,"i21":6,"i22":6,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":6,"i22":6,"i23":6,"i24":6,"i25":6,"i26":10,"i27":10,"i28":10,"i29":10,"i30":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -193,62 +193,69 @@ implements <a href="../../core/sim/Simulation.html" title="interface in arcade.c
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>private java.util.List&lt;java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#events">events</a></span></code></th>
+<td class="colLast">
+<div class="block">List to store events throughout the simulation.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>(package private) <a href="../../core/env/grid/Grid.html" title="interface in arcade.core.env.grid">Grid</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#grid">grid</a></span></code></th>
 <td class="colLast">
 <div class="block"><a href="../../core/env/grid/Grid.html" title="interface in arcade.core.env.grid"><code>Grid</code></a> containing agents in the simulation.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>(package private) int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#id">id</a></span></code></th>
 <td class="colLast">
 <div class="block">Cell ID tracker.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="../env/lattice/PatchLatticeFactory.html" title="class in arcade.patch.env.lattice">PatchLatticeFactory</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#latticeFactory">latticeFactory</a></span></code></th>
 <td class="colLast">
 <div class="block">Lattice factory instance for the simulation.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>(package private) java.util.HashMap&lt;java.lang.String,&#8203;<a href="../../core/env/lattice/Lattice.html" title="interface in arcade.core.env.lattice">Lattice</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#lattices">lattices</a></span></code></th>
 <td class="colLast">
 <div class="block">Map of <a href="../../core/env/lattice/Lattice.html" title="interface in arcade.core.env.lattice"><code>Lattice</code></a> objects in the simulation.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="../env/location/PatchLocationFactory.html" title="class in arcade.patch.env.location">PatchLocationFactory</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#locationFactory">locationFactory</a></span></code></th>
 <td class="colLast">
 <div class="block">Location factory instance for the simulation.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>static java.lang.reflect.Type</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#PATCH_LAYER_TYPE">PATCH_LAYER_TYPE</a></span></code></th>
 <td class="colLast">
 <div class="block">Hidden utility object type for gson implementation.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>private java.util.Set&lt;<a href="../../core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#possibleLocations">possibleLocations</a></span></code></th>
 <td class="colLast">
 <div class="block">List of all possible locations.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>(package private) int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#seed">seed</a></span></code></th>
 <td class="colLast">
 <div class="block">Random number generator seed for this simulation.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>(package private) <a href="PatchSeries.html" title="class in arcade.patch.sim">PatchSeries</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#series">series</a></span></code></th>
 <td class="colLast">
@@ -313,131 +320,152 @@ implements <a href="../../core/sim/Simulation.html" title="interface in arcade.c
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#clearEvents()">clearEvents</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Clear events queue.</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
+<td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#doOutput(boolean)">doOutput</a></span>&#8203;(boolean&nbsp;isScheduled)</code></th>
 <td class="colLast">
 <div class="block">Runs output methods.</div>
 </td>
 </tr>
-<tr id="i1" class="rowColor">
+<tr id="i2" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#finish()">finish</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Called at the end of the simulation.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code><a href="../../core/agent/action/Action.html" title="interface in arcade.core.agent.action">Action</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getAction(java.lang.String)">getAction</a></span>&#8203;(java.lang.String&nbsp;key)</code></th>
 <td class="colLast">
 <div class="block">Gets the <a href="../../core/agent/action/Action.html" title="interface in arcade.core.agent.action"><code>Action</code></a> object for a given key.</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>java.util.Set&lt;<a href="../../core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getAllLocations()">getAllLocations</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the set of all possible locations.</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code><a href="../../core/agent/cell/CellFactory.html" title="interface in arcade.core.agent.cell">CellFactory</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCellFactory()">getCellFactory</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the initialized <a href="../../core/agent/cell/CellFactory.html" title="interface in arcade.core.agent.cell"><code>CellFactory</code></a> for the simulation.</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>java.util.ArrayList&lt;<a href="../../core/agent/cell/CellContainer.html" title="interface in arcade.core.agent.cell">CellContainer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCells()">getCells</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the list of <a href="../../core/agent/cell/CellContainer.html" title="interface in arcade.core.agent.cell"><code>CellContainer</code></a> objects.</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code><a href="../../core/env/component/Component.html" title="interface in arcade.core.env.component">Component</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getComponent(java.lang.String)">getComponent</a></span>&#8203;(java.lang.String&nbsp;key)</code></th>
 <td class="colLast">
 <div class="block">Gets the <a href="../../core/env/component/Component.html" title="interface in arcade.core.env.component"><code>Component</code></a> object for a given key.</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>java.util.Set&lt;java.lang.String&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getComponentKeys()">getComponentKeys</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the set of keys for the component hash set.</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i9" class="rowColor">
+<td class="colFirst"><code>java.util.List&lt;java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getEvents()">getEvents</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Get the list of events logged during the simulation.</div>
+</td>
+</tr>
+<tr id="i10" class="altColor">
 <td class="colFirst"><code><a href="../../core/env/grid/Grid.html" title="interface in arcade.core.env.grid">Grid</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getGrid()">getGrid</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the <a href="../../core/env/grid/Grid.html" title="interface in arcade.core.env.grid"><code>Grid</code></a> object.</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getID()">getID</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the next available ID in the simulation.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code><a href="../../core/env/lattice/Lattice.html" title="interface in arcade.core.env.lattice">Lattice</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLattice(java.lang.String)">getLattice</a></span>&#8203;(java.lang.String&nbsp;key)</code></th>
 <td class="colLast">
 <div class="block">Gets the <a href="../../core/env/lattice/Lattice.html" title="interface in arcade.core.env.lattice"><code>Lattice</code></a> object for a given key.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>java.util.Set&lt;java.lang.String&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLatticeKeys()">getLatticeKeys</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the set of keys for the lattice hash set.</div>
 </td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code>java.util.HashMap&lt;<a href="../../core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>,&#8203;java.util.HashMap&lt;java.lang.String,&#8203;java.lang.Double&gt;&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLayers()">getLayers</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Generate a hashmap of the layers keyed by location and by the layer ID.</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code><a href="../../core/env/location/LocationFactory.html" title="interface in arcade.core.env.location">LocationFactory</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLocationFactory()">getLocationFactory</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the initialized <a href="../../core/env/location/LocationFactory.html" title="interface in arcade.core.env.location"><code>LocationFactory</code></a> for the simulation.</div>
 </td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code>java.util.ArrayList&lt;<a href="../../core/env/location/LocationContainer.html" title="interface in arcade.core.env.location">LocationContainer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLocations()">getLocations</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the list of <a href="../../core/env/location/LocationContainer.html" title="interface in arcade.core.env.location"><code>LocationContainer</code></a> objects.</div>
 </td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i17" class="rowColor">
 <td class="colFirst"><code>sim.engine.Schedule</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSchedule()">getSchedule</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the current schedule for the simulation.</div>
 </td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i18" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSeed()">getSeed</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the random number generator seed.</div>
 </td>
 </tr>
-<tr id="i17" class="rowColor">
+<tr id="i19" class="rowColor">
 <td class="colFirst"><code><a href="../../core/sim/Series.html" title="class in arcade.core.sim">Series</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSeries()">getSeries</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the <a href="../../core/sim/Series.html" title="class in arcade.core.sim"><code>Series</code></a> object for the current simulation.</div>
 </td>
 </tr>
-<tr id="i18" class="altColor">
+<tr id="i20" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#logEvent(java.util.Map)">logEvent</a></span>&#8203;(java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;event)</code></th>
+<td class="colLast">
+<div class="block">Log an event to the simulation's event list.</div>
+</td>
+</tr>
+<tr id="i21" class="rowColor">
 <td class="colFirst"><code>abstract <a href="../../core/agent/action/Action.html" title="interface in arcade.core.agent.action">Action</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#makeAction(java.lang.String,arcade.core.util.MiniBox)">makeAction</a></span>&#8203;(java.lang.String&nbsp;actionClass,
           <a href="../../core/util/MiniBox.html" title="class in arcade.core.util">MiniBox</a>&nbsp;parameters)</code></th>
@@ -445,14 +473,14 @@ implements <a href="../../core/sim/Simulation.html" title="interface in arcade.c
 <div class="block">Creates an instance of the given action.</div>
 </td>
 </tr>
-<tr id="i19" class="rowColor">
+<tr id="i22" class="altColor">
 <td class="colFirst"><code>abstract <a href="../agent/cell/PatchCellFactory.html" title="class in arcade.patch.agent.cell">PatchCellFactory</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#makeCellFactory()">makeCellFactory</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Creates a factory for cells.</div>
 </td>
 </tr>
-<tr id="i20" class="altColor">
+<tr id="i23" class="rowColor">
 <td class="colFirst"><code>abstract <a href="../../core/env/component/Component.html" title="interface in arcade.core.env.component">Component</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#makeComponent(java.lang.String,arcade.core.util.MiniBox)">makeComponent</a></span>&#8203;(java.lang.String&nbsp;componentClass,
              <a href="../../core/util/MiniBox.html" title="class in arcade.core.util">MiniBox</a>&nbsp;parameters)</code></th>
@@ -460,49 +488,49 @@ implements <a href="../../core/sim/Simulation.html" title="interface in arcade.c
 <div class="block">Creates an instance of the given component.</div>
 </td>
 </tr>
-<tr id="i21" class="rowColor">
+<tr id="i24" class="altColor">
 <td class="colFirst"><code>abstract <a href="../env/lattice/PatchLatticeFactory.html" title="class in arcade.patch.env.lattice">PatchLatticeFactory</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#makeLatticeFactory()">makeLatticeFactory</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Creates a factory for lattices.</div>
 </td>
 </tr>
-<tr id="i22" class="altColor">
+<tr id="i25" class="rowColor">
 <td class="colFirst"><code>abstract <a href="../env/location/PatchLocationFactory.html" title="class in arcade.patch.env.location">PatchLocationFactory</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#makeLocationFactory()">makeLocationFactory</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Creates a factory for locations.</div>
 </td>
 </tr>
-<tr id="i23" class="rowColor">
+<tr id="i26" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#scheduleActions()">scheduleActions</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Schedules any <a href="../../core/agent/action/Action.html" title="interface in arcade.core.agent.action"><code>Action</code></a> instances.</div>
 </td>
 </tr>
-<tr id="i24" class="altColor">
+<tr id="i27" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#scheduleComponents()">scheduleComponents</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Schedules any <a href="../../core/env/component/Component.html" title="interface in arcade.core.env.component"><code>Component</code></a> instances.</div>
 </td>
 </tr>
-<tr id="i25" class="rowColor">
+<tr id="i28" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setupAgents()">setupAgents</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Sets up the agents in the grid for the simulation.</div>
 </td>
 </tr>
-<tr id="i26" class="altColor">
+<tr id="i29" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setupEnvironment()">setupEnvironment</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Sets up the environment using lattices for the simulation.</div>
 </td>
 </tr>
-<tr id="i27" class="rowColor">
+<tr id="i30" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#start()">start</a></span>()</code></th>
 <td class="colLast">
@@ -619,6 +647,16 @@ implements <a href="../../core/sim/Simulation.html" title="interface in arcade.c
 <h4>id</h4>
 <pre>int id</pre>
 <div class="block">Cell ID tracker.</div>
+</li>
+</ul>
+<a id="events">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>events</h4>
+<pre>private final&nbsp;java.util.List&lt;java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&gt; events</pre>
+<div class="block">List to store events throughout the simulation.</div>
 </li>
 </ul>
 <a id="locationFactory">
@@ -963,6 +1001,44 @@ implements <a href="../../core/sim/Simulation.html" title="interface in arcade.c
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the set of locations</dd>
+</dl>
+</li>
+</ul>
+<a id="logEvent(java.util.Map)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>logEvent</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;logEvent&#8203;(java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&nbsp;event)</pre>
+<div class="block">Log an event to the simulation's event list.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>event</code> - logging information corresponding to the event</dd>
+</dl>
+</li>
+</ul>
+<a id="clearEvents()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>clearEvents</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;clearEvents()</pre>
+<div class="block">Clear events queue.</div>
+</li>
+</ul>
+<a id="getEvents()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getEvents</h4>
+<pre class="methodSignature">public&nbsp;java.util.List&lt;java.util.Map&lt;java.lang.String,&#8203;java.lang.Object&gt;&gt;&nbsp;getEvents()</pre>
+<div class="block">Get the list of events logged during the simulation.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the list of events</dd>
 </dl>
 </li>
 </ul>
