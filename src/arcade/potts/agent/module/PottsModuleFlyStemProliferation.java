@@ -238,7 +238,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      */
     double computeEquilibriumVolume() {
         double vDiv = sizeTarget * cell.getCriticalVolume();
-        double fRetain = ((PottsCellFlyStem) cell).getStemType().splitOffsetPercentY / 100.0;
+        double fRetain = StemType.WT.splitOffsetPercentY / 100.0;
         return vDiv * (fRetain + 1.0) / 2.0;
     }
 

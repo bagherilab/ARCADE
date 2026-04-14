@@ -951,11 +951,12 @@ public class PottsModuleFlyStemProliferationTest {
 
     @Test
     public void computeEquilibriumVolume_MUDMUT_returnsExpectedMidpoint() {
-        // fRetain = MUDMUT.splitOffsetPercentY / 100 = 50 / 100 = 0.5
-        // V_ref = 120 * (0.5 + 1) / 2 = 120 * 0.75 = 90.0
+        // V_ref uses WT fRetain regardless of cell type (V_ref is the WT biological equilibrium)
+        // fRetain = WT.splitOffsetPercentY / 100 = 86 / 100 = 0.86
+        // V_ref = 120 * (0.86 + 1) / 2 = 120 * 0.93 = 111.6
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
         module = new PottsModuleFlyStemProliferation(stemCell);
-        assertEquals(90.0, module.computeEquilibriumVolume(), EPSILON);
+        assertEquals(111.6, module.computeEquilibriumVolume(), EPSILON);
     }
 
     @Test
