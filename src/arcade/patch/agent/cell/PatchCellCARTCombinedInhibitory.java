@@ -59,7 +59,11 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
     /** Probability of migration after release. */
     private final double MIGRATION_PROBABILITY = 0.5;
 
+    /** Method of calculating migration probability. */
     private String releaseType;
+
+    /** If release-based migration is turned on. */
+    private boolean migration;
 
     /**
      * Creates a tissue {@code PatchCellCARTCombinedInhibitory} agent. *
@@ -112,6 +116,7 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
         pdel = parameters.getInt("PDEL") > 0 ? true : false;
         icarReceptorAffinity = parameters.getDouble("ICAR_AFFINITY");
         releaseType = parameters.getString("RELEASE_TYPE").toLowerCase();
+        migration = parameters.getInt("MIGRATION") > 0 ? true : false;
         // for receptor based circuits, receptor binding depends on initial receptors
         if (this.type.equals(LogicalCARs.INHIBITORY_RECEPTOR)) {
             this.startCars = cars;
@@ -358,12 +363,14 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
 
     /** Increases migration probability after binding. */
     public void release(SimState simstate) {
-        if (releaseType.equals("simple")) {
-            if (simstate.random.nextDouble() < MIGRATION_PROBABILITY) {
-                super.setState(State.MIGRATORY);
+        if (migration) {
+            if (releaseType.equals("simple")) {
+                if (simstate.random.nextDouble() < MIGRATION_PROBABILITY) {
+                    super.setState(State.MIGRATORY);
+                }
+            } else if (releaseType.equals("complex")) {
+                wirtzRelease(simstate);
             }
-        } else if (releaseType.equals("complex")) {
-            wirtzRelease(simstate);
         }
     }
 
