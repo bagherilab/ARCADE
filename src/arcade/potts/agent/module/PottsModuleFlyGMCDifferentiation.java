@@ -14,11 +14,11 @@ import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.State;
 
 /**
- * Implementation of {@link PottsModuleProliferationSimple} for fly GMC agents. These cells divide
- * into two {@link PottsCellFlyNeuron} cells. The links must be set in the setup file so that 100%
- * of the daughter cells are Neurons.
+ * Implementation of {@link PottsModuleProliferationVolumeBasedDivision} for fly GMC agents. These
+ * cells divide into two {@link PottsCellFlyNeuron} cells. The links must be set in the setup file
+ * so that 100% of the daughter cells are Neurons.
  */
-public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationSimple {
+public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVolumeBasedDivision {
 
     /**
      * Creates a fly GMC proliferation module.
@@ -29,6 +29,15 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationSi
         super(cell);
     }
 
+    /**
+     * Adds a cell to the simulation.
+     *
+     * <p>The cell location is split. The new neuron cell is created, initialized, and added to the
+     * schedule. This cell's location is also assigned to a new Neuron cell.
+     *
+     * @param random the random number generator
+     * @param sim the simulation instance
+     */
     @Override
     void addCell(MersenneTwisterFast random, Simulation sim) {
         Potts potts = ((PottsSimulation) sim).getPotts();

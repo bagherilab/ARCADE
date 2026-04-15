@@ -87,6 +87,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         this.locationFactory = makeLocationFactory();
         this.cellFactory = makeCellFactory();
         this.latticeFactory = makeLatticeFactory();
+        this.events = new ArrayList<>();
     }
 
     @Override
@@ -237,6 +238,29 @@ public abstract class PatchSimulation extends SimState implements Simulation {
             locations.add(container.convert(locationFactory, null));
         }
         return locations;
+    }
+
+    /**
+     * Log an event to the simulation's event list.
+     *
+     * @param event logging information corresponding to the event
+     */
+    public void logEvent(Map<String, Object> event) {
+        events.add(event);
+    }
+
+    /** Clear events queue. */
+    public void clearEvents() {
+        events.clear();
+    }
+
+    /**
+     * Get the list of events logged during the simulation.
+     *
+     * @return the list of events
+     */
+    public List<Map<String, Object>> getEvents() {
+        return new ArrayList<>(events);
     }
 
     /**

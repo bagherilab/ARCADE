@@ -295,8 +295,13 @@ public final class PatchEnums {
 
     /** Enum for component types. */
     public enum ComponentType {
+        /** Code for graph component. */
         GRAPH,
+
+        /** Code for source component. */
         SOURCE,
+
+        /** Code for pattern component. */
         PATTERN;
 
         /**

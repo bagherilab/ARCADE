@@ -11,6 +11,9 @@ import arcade.patch.env.operation.PatchOperationGenerator;
 import arcade.patch.util.PatchEnums.Category;
 import arcade.patch.util.PatchEnums.ComponentType;
 import arcade.patch.util.PatchEnums.Ordering;
+import arcade.patch.util.PatchEnums.Category;
+import arcade.patch.util.PatchEnums.ComponentType;
+import arcade.patch.util.PatchEnums.Ordering;
 import static arcade.patch.util.PatchEnums.Category;
 import static arcade.patch.util.PatchEnums.Ordering;
 
@@ -97,5 +100,10 @@ public abstract class PatchComponentSites implements Component {
         layers.add(siteLayer);
     }
 
+    /**
+     * Returns what type of {@code ComponentType} this is.
+     *
+     * @return the component type
+     */
     public abstract ComponentType getComponentType();
 }
