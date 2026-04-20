@@ -90,7 +90,7 @@ jobs:
         run: cat build/reports/coverage-reports/delta-coverage/report.md >> $GITHUB_STEP_SUMMARY
 
       - name: Add disclaimer
-        run: cat "The summary table should list class files and percent changes on each row, with totals at the bottom. If you have no class file changes, your totals will show NaN. Run ./gradlew test deltaCoverage locally to view line-by-line changes. [Plugin Documentation](https://gw-kit.github.io/delta-coverage-plugin/stable/)" >> $GITHUB_STEP_SUMMARY
+        run: echo "The summary table should list class files and percent changes on each row, with totals at the bottom. If you have no class file changes, your totals will show NaN. Run ./gradlew test deltaCoverage locally to view line-by-line changes. [Plugin Documentation](https://gw-kit.github.io/delta-coverage-plugin/stable/)" >> $GITHUB_STEP_SUMMARY
 
   update-build-badges:
     if: ${{ always() && github.ref == 'refs/heads/main' }}
