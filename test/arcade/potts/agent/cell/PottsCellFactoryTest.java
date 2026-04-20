@@ -1,6 +1,7 @@
 package arcade.potts.agent.cell;
 
 import java.lang.reflect.Field;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -270,6 +271,20 @@ public class PottsCellFactoryTest {
             assertTrue(factory.popToRegions.get(pop));
             assertEquals(links[i], factory.popToLinks.get(pop));
         }
+    }
+
+    @Test
+    public void parseValues_invalidPopulationLink_throwsInvalidParameterException() {
+        Series series = mock(Series.class);
+        series.populations = new HashMap<>();
+
+        MiniBox population = new MiniBox();
+        population.put("CODE", 1);
+        population.put("(LINK)" + TAG_SEPARATOR + "NONEXISTENT", 1);
+        series.populations.put("A", population);
+
+        PottsCellFactory factory = new PottsCellFactory();
+        assertThrows(InvalidParameterException.class, () -> factory.parseValues(series));
     }
 
     @Test
