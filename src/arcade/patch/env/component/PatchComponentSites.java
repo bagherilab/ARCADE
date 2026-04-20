@@ -11,9 +11,6 @@ import arcade.patch.env.operation.PatchOperationGenerator;
 import arcade.patch.util.PatchEnums.Category;
 import arcade.patch.util.PatchEnums.ComponentType;
 import arcade.patch.util.PatchEnums.Ordering;
-import arcade.patch.util.PatchEnums.Category;
-import arcade.patch.util.PatchEnums.ComponentType;
-import arcade.patch.util.PatchEnums.Ordering;
 import static arcade.patch.util.PatchEnums.Category;
 import static arcade.patch.util.PatchEnums.Ordering;
 
