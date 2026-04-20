@@ -2,6 +2,8 @@ package arcade.patch.agent.module;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import arcade.patch.agent.event.ProliferationEventLog;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
@@ -133,13 +135,15 @@ public class PatchModuleProliferation extends PatchModule {
 
                     // Log proliferation event
                     PatchSimulation patchSim = (PatchSimulation) sim;
-                    Map<String, Object> eventData = new HashMap<>();
-                    eventData.put("type", "proliferation");
-                    eventData.put(
-                            "timestamp", (int) ((PatchSimulation) sim).getSchedule().getTime());
-                    eventData.put("cell-id", cell.getID());
-                    eventData.put("cycle-length", duration);
-                    patchSim.logEvent(eventData);
+                    ProliferationEventLog eventLog = new ProliferationEventLog(
+                            (int) ((PatchSimulation) sim).getSchedule().getTime(), cell.getID(), duration);
+//                    Map<String, Object> eventData = new HashMap<>();
+//                    eventData.put("type", "proliferation");
+//                    eventData.put(
+//                            "timestamp", (int) ((PatchSimulation) sim).getSchedule().getTime());
+//                    eventData.put("cell-id", cell.getID());
+//                    eventData.put("cycle-length", duration);
+                    patchSim.logEvent(eventLog.eventDetails());
 
                     // TODO: Update environment generator sites.
                 } else {
