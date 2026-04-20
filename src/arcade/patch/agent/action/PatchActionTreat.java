@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import arcade.patch.util.PatchUtilities;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.util.Bag;
@@ -17,9 +19,7 @@ import arcade.core.util.Graph;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Utilities;
 import arcade.patch.agent.cell.PatchCell;
-import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.cell.PatchCellContainer;
-import arcade.patch.agent.cell.PatchCellTissue;
 import arcade.patch.env.component.PatchComponentSites;
 import arcade.patch.env.component.PatchComponentSitesGraph;
 import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
@@ -332,43 +332,46 @@ public class PatchActionTreat implements Action {
      * @return boolean indicating if location is free
      */
     protected boolean checkLocationSpace(Location loc, PatchGrid grid) {
-        boolean available;
-        int locMax = this.maxConfluency;
-        double locVolume = ((PatchLocation) loc).getVolume();
-        double locArea = ((PatchLocation) loc).getArea();
 
-        Bag bag = new Bag(grid.getObjectsAtLocation(loc));
-        int n = bag.numObjs; // number of agents in location
-
-        if (n == 0) {
-            // no cells in location
-            available = true;
-        } else if (n >= locMax) {
-            // location already full
-            available = false;
-        } else {
-            available = true;
-            double totalVol = PatchCell.calculateTotalVolume(bag);
-            double currentHeight = totalVol / locArea;
-
-            if (totalVol > locVolume) {
-                available = false;
-            }
-
-            for (Object cellObj : bag) {
-                PatchCell cell = (PatchCell) cellObj;
-                if (cell instanceof PatchCellCART) {
-                    totalVol = PatchCell.calculateTotalVolume(bag) + cell.getVolume();
-                    currentHeight = totalVol / locArea;
-                }
-                if (cell instanceof PatchCellTissue) {
-                    if (currentHeight > cell.getCriticalHeight()) {
-                        available = false;
-                    }
-                }
-            }
-        }
-
-        return available;
+        //        boolean available;
+        //        int locMax = this.maxConfluency;
+        //        double locVolume = ((PatchLocation) loc).getVolume();
+        //        double locArea = ((PatchLocation) loc).getArea();
+        //
+        //        Bag bag = new Bag(grid.getObjectsAtLocation(loc));
+        //        int n = bag.numObjs; // number of agents in location
+        //
+        //        if (n == 0) {
+        //            // no cells in location
+        //            available = true;
+        //        } else if (n >= locMax) {
+        //            // location already full
+        //            available = false;
+        //        } else {
+        //            available = true;
+        //            double totalVol = PatchCell.calculateTotalVolume(bag);
+        //            double currentHeight = totalVol / locArea;
+        //
+        //            if (totalVol > locVolume) {
+        //                available = false;
+        //            }
+        //
+        //            for (Object cellObj : bag) {
+        //                PatchCell cell = (PatchCell) cellObj;
+        //                if (cell instanceof PatchCellCART) {
+        //                    totalVol = PatchCell.calculateTotalVolume(bag) + cell.getVolume();
+        //                    currentHeight = totalVol / locArea;
+        //                }
+        //                if (cell instanceof PatchCellTissue) {
+        //                    if (currentHeight > cell.getCriticalHeight()) {
+        //                        available = false;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //
+        //        return available;
+        return PatchUtilities.checkLocation(
+                (PatchLocation) loc, grid, 0, null, null, null, this.maxConfluency, false);
     }
 }

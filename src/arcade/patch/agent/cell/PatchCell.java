@@ -2,6 +2,8 @@ package arcade.patch.agent.cell;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import arcade.patch.util.PatchUtilities;
 import sim.engine.Schedule;
 import sim.engine.Stoppable;
 import sim.util.Bag;
@@ -17,6 +19,7 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
+import arcade.core.util.Utilities;
 import arcade.patch.agent.module.PatchModuleApoptosis;
 import arcade.patch.agent.module.PatchModuleCytotoxicity;
 import arcade.patch.agent.module.PatchModuleMigration;
@@ -534,35 +537,44 @@ public abstract class PatchCell implements Cell {
             double maxHeight,
             int population,
             int maxDensity) {
-        double locationVolume = loc.getVolume();
-        double locationArea = loc.getArea();
-        PatchGrid grid = (PatchGrid) sim.getGrid();
-
-        Bag bag = new Bag(grid.getObjectsAtLocation(loc));
-
-        if (bag.numObjs != 0) {
-            double proposedVolume = calculateTotalVolume(bag) + addedVolume;
-            double proposedHeight = proposedVolume / locationArea;
-
-            if (proposedVolume > locationVolume || proposedHeight > maxHeight) {
-                return false;
-            }
-
-            int count = 0;
-            for (Object obj : bag) {
-                PatchCell cell = (PatchCell) obj;
-                if (proposedHeight > cell.getCriticalHeight()) {
-                    return false;
-                }
-                if (cell.getPop() == population) {
-                    count++;
-                    if (count >= maxDensity) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
+        //        double locationVolume = loc.getVolume();
+        //        double locationArea = loc.getArea();
+        //        PatchGrid grid = (PatchGrid) sim.getGrid();
+        //
+        //        Bag bag = new Bag(grid.getObjectsAtLocation(loc));
+        //
+        //        if (bag.numObjs != 0) {
+        //            double proposedVolume = calculateTotalVolume(bag) + addedVolume;
+        //            double proposedHeight = proposedVolume / locationArea;
+        //
+        //            if (proposedVolume > locationVolume || proposedHeight > maxHeight) {
+        //                return false;
+        //            }
+        //
+        //            int count = 0;
+        //            for (Object obj : bag) {
+        //                PatchCell cell = (PatchCell) obj;
+        //                if (proposedHeight > cell.getCriticalHeight()) {
+        //                    return false;
+        //                }
+        //                if (cell.getPop() == population) {
+        //                    count++;
+        //                    if (count >= maxDensity) {
+        //                        return false;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        return true;
+        return PatchUtilities.checkLocation(
+                loc,
+                (PatchGrid) sim.getGrid(),
+                addedVolume,
+                maxHeight,
+                population,
+                maxDensity,
+                null,
+                true);
     }
 
     /**
