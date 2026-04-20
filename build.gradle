@@ -3,6 +3,7 @@ plugins {
     id "jacoco"
     id "com.palantir.git-version" version "3.0.0"
     id "com.diffplug.spotless" version "6.25.0"
+    id "io.github.surpsg.delta-coverage" version "2.5.0"
 }
 
 version = "3.3.0"
@@ -68,6 +69,17 @@ jacocoTestReport {
     reports {
         xml.required.set(true)
         html.required.set(true)
+    }
+}
+
+deltaCoverageReport {
+    diffSource {
+        diffSource.git.diffBase.set("refs/remotes/origin/main")
+    }
+
+    reports {
+        html.set(true)
+        xml.set(true)
     }
 }
 
