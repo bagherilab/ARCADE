@@ -80,6 +80,7 @@ deltaCoverageReport {
     reports {
         html.set(true)
         xml.set(true)
+        markdown.set(true)
     }
 }
 
