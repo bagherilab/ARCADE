@@ -31,6 +31,22 @@ public final class PatchOutputSaver extends OutputSaver {
         super(series);
     }
 
+    /**
+     * Save the collection of events to a JSON.
+     *
+     * @param tick the simulation tick
+     */
+    public void saveEventsToFile(int tick) {
+        if (saveEvents) {
+            List<Map<String, Object>> events = ((PatchSimulation) sim).getEvents();
+            if (!events.isEmpty()) {
+                String json = gson.toJson(events);
+                String path = prefix + String.format("_%06d.EVENTS.json", tick);
+                write(path, format(json, FORMAT_ELEMENTS));
+            }
+        }
+    }
+
     @Override
     protected Gson makeGSON() {
         return PatchOutputSerializer.makeGSON();
@@ -64,23 +80,6 @@ public final class PatchOutputSaver extends OutputSaver {
         String json = gson.toJson(((PatchSimulation) sim).getLayers(), PATCH_LAYER_TYPE);
         String patch = prefix + String.format("_%06d.LAYERS.json", tick);
         write(patch, format(json, FORMAT_ELEMENTS));
-    }
-
-    /**
-     * Save the collection of events to a JSON. Clears events queue after writing to file.
-     *
-     * @param tick the simulation tick
-     */
-    public void saveEventsToFile(int tick) {
-        if (saveEvents) {
-            List<Map<String, Object>> events = ((PatchSimulation) sim).getEvents();
-            if (!events.isEmpty()) {
-                String json = gson.toJson(events);
-                String path = prefix + String.format("_%06d.EVENTS.json", tick);
-                write(path, format(json, FORMAT_ELEMENTS));
-                ((PatchSimulation) sim).clearEvents();
-            }
-        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package arcade.patch.agent.cell;
 
+import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
@@ -9,6 +10,7 @@ import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
+import arcade.patch.util.PatchEnums.LogicalCARs;
 
 /**
  * Implementation of {@link CellContainer} for {@link PatchCell} agents.
@@ -47,6 +49,9 @@ public final class PatchCellContainer implements CellContainer {
     /** Critical cell height [um]. */
     public final double criticalHeight;
 
+    /** Cell cycles. */
+    public final Bag cycles;
+
     /**
      * Creates a {@code PatchCellContainer} instance.
      *
@@ -60,6 +65,7 @@ public final class PatchCellContainer implements CellContainer {
      * @param height the cell height
      * @param criticalVolume the critical volume
      * @param criticalHeight the critical height
+     * @param cycles the cell cycles
      */
     public PatchCellContainer(
             int id,
@@ -71,7 +77,8 @@ public final class PatchCellContainer implements CellContainer {
             double volume,
             double height,
             double criticalVolume,
-            double criticalHeight) {
+            double criticalHeight,
+            Bag cycles) {
         this.id = id;
         this.parent = parent;
         this.pop = pop;
@@ -82,6 +89,7 @@ public final class PatchCellContainer implements CellContainer {
         this.height = height;
         this.criticalVolume = criticalVolume;
         this.criticalHeight = criticalHeight;
+        this.cycles = cycles;
     }
 
     @Override
@@ -119,6 +127,20 @@ public final class PatchCellContainer implements CellContainer {
                 return new PatchCellCARTCD8(this, location, parameters, links);
             case "cart_cd4":
                 return new PatchCellCARTCD4(this, location, parameters, links);
+            case "combined":
+                return new PatchCellCARTCombined(this, location, parameters, links);
+            case "inducible_synnotch":
+                return new PatchCellCARTCombinedInducible(
+                        this, location, parameters, links, LogicalCARs.INDUCIBLE_SYNNOTCH);
+            case "inhibitory_receptor":
+                return new PatchCellCARTCombinedInhibitory(
+                        this, location, parameters, links, LogicalCARs.INHIBITORY_RECEPTOR);
+            case "inducible_inflammation":
+                return new PatchCellCARTCombinedInducible(
+                        this, location, parameters, links, LogicalCARs.INDUCIBLE_INFLAMMATION);
+            case "inhibitory_inflammation":
+                return new PatchCellCARTCombinedInhibitory(
+                        this, location, parameters, links, LogicalCARs.INHIBITORY_INFLAMMATION);
             case "random":
                 return new PatchCellRandom(this, location, parameters, links);
         }

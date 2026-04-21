@@ -19,6 +19,7 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.module.PatchModuleApoptosis;
 import arcade.patch.agent.module.PatchModuleCytotoxicity;
+import arcade.patch.agent.module.PatchModuleInactive;
 import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleNecrosis;
 import arcade.patch.agent.module.PatchModuleProliferation;
@@ -32,6 +33,10 @@ import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.util.PatchEnums;
+import arcade.patch.util.PatchEnums.Domain;
+import arcade.patch.util.PatchEnums.Flag;
+import arcade.patch.util.PatchEnums.Ordering;
+import arcade.patch.util.PatchEnums.State;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.Flag;
 import static arcade.patch.util.PatchEnums.Ordering;
@@ -123,11 +128,11 @@ public abstract class PatchCell implements Cell {
     /** Cell parameters. */
     final Parameters parameters;
 
+    /** List of cell cycle lengths (in minutes). */
+    public final Bag cycles = new Bag();
+
     /** Cell population links. */
     final GrabBag links;
-
-    /** List of cell cycle lengths (in minutes). */
-    private final Bag cycles = new Bag();
 
     /** If cell is stopped in the simulation. */
     private boolean isStopped;
@@ -364,6 +369,9 @@ public abstract class PatchCell implements Cell {
             case STIMULATORY:
                 module = new PatchModuleStimulation(this);
                 break;
+            case INACTIVE:
+                module = new PatchModuleInactive(this);
+                break;
             default:
                 module = null;
                 break;
@@ -410,7 +418,8 @@ public abstract class PatchCell implements Cell {
                 volume,
                 height,
                 criticalVolume,
-                criticalHeight);
+                criticalHeight,
+                cycles);
     }
 
     /**
