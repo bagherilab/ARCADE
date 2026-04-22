@@ -16,9 +16,14 @@ import arcade.potts.util.PottsEnums.State;
 /**
  * Implementation of {@link PottsModuleProliferationVolumeBasedDivision} for fly GMC agents. These
  * cells divide into two {@link PottsCellFlyNeuron} cells. The links must be set in the setup file
- * so that 100% of the daughter cells are Neurons.
+ * so that 100% of the daughter cells are Neurons. Implementation of {@link
+ * PottsModuleProliferationVolumeBasedDivision} for fly GMC agents. These cells divide into two
+ * {@link PottsCellFlyNeuron} cells. The links must be set in the setup file so that 100% of the
+ * daughter cells are Neurons.
  */
 public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVolumeBasedDivision {
+
+    Boolean pdeLike;
 
     /**
      * Creates a fly GMC proliferation module.
@@ -27,13 +32,42 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
      */
     public PottsModuleFlyGMCDifferentiation(PottsCellFlyGMC cell) {
         super(cell);
+        pdeLike = (cell.getParameters().getInt("proliferation/PDELIKE") != 0);
+    }
+
+    /**
+     * Computes the expected equilibrium average GMC volume over one cell cycle.
+     *
+     * <p>In the Potts model, a cell's target volume is initialized to {@code criticalVolume} on
+     * reset. The Potts energy immediately drives the cell's actual volume toward this target,
+     * regardless of the current growth rate. As a result, the volume-regulated growth phase
+     * effectively begins at {@code criticalVolume} (not the birth volume), even when {@code
+     * VOLUME_BASED_CRITICAL_VOLUME} is off and birth volume is below {@code criticalVolume}.
+     *
+     * <p>The regulated growth phase therefore runs from {@code criticalVolume} to {@code sizeTarget
+     * * criticalVolume}. Under constant-rate growth, the time-average volume over this phase is the
+     * arithmetic mean of the two endpoints:
+     *
+     * <pre>
+     *   V_ref = (criticalVolume + sizeTarget * criticalVolume) / 2
+     *         = criticalVolume * (1 + sizeTarget) / 2
+     * </pre>
+     *
+     * <p>This formula is consistent with the PDE-like branch, which uses {@code avgCritVol * (1 +
+     * sizeTarget) / 2}, and holds whether or not {@code VOLUME_BASED_CRITICAL_VOLUME} is enabled.
+     *
+     * @return the expected equilibrium average GMC volume
+     */
+    double computeEquilibriumVolume() {
+        return cell.getCriticalVolume() * (1.0 + sizeTarget) / 2.0;
     }
 
     /**
      * Adds a cell to the simulation.
      *
      * <p>The cell location is split. The new neuron cell is created, initialized, and added to the
-     * schedule. This cell's location is also assigned to a new Neuron cell.
+     * schedule. This cell's location is also assigned to a new Neuron cell. The critical volume of
+     * both neurons is set to the initial volume of each neuron's location.
      *
      * @param random the random number generator
      * @param sim the simulation instance
@@ -55,7 +89,7 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
                 (PottsCell) newContainer.convert(sim.getCellFactory(), newLocation, random);
         sim.getGrid().addObject(newCell, null);
         potts.register(newCell);
-        newCell.reset(potts.ids, potts.regions);
+        newCell.initialize(potts.ids, potts.regions);
         newCell.schedule(sim.getSchedule());
 
         // remove old GMC cell from simulation
@@ -88,7 +122,50 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
 
         sim.getGrid().addObject(differentiatedGMC, null);
         potts.register(differentiatedGMC);
-        differentiatedGMC.reset(potts.ids, potts.regions);
+        differentiatedGMC.initialize(potts.ids, potts.regions);
         differentiatedGMC.schedule(sim.getSchedule());
+    }
+
+    public void updateGrowthRate(Simulation sim) {
+        if (!dynamicGrowthRateVolume) {
+            cellGrowthRate = cellGrowthRateBase;
+        } else {
+            if (!pdeLike) {
+                updateCellVolumeBasedGrowthRate(
+                        cell.getLocation().getVolume(), computeEquilibriumVolume());
+            } else {
+                // PDE-like: use population-wide averages for GMCs (same pop as this cell).
+                // The reference volume is the population-average equilibrium volume:
+                //   avgVRef = avgCritVol * (1 + sizeTarget) / 2
+                // This assumes VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER = 1 (so each GMC's
+                // birth volume equals its critVol). For multiplier != 1, avgCritVol would need
+                // to be replaced by the mean of (critVol_i / multiplier + sizeTarget*critVol_i)/2.
+                sim.util.Bag objs = sim.getGrid().getAllObjects();
+
+                double volSum = 0.0;
+                double critSum = 0.0;
+                int count = 0;
+
+                for (int i = 0; i < objs.numObjs; i++) {
+                    Object o = objs.objs[i];
+                    if (!(o instanceof arcade.potts.agent.cell.PottsCell)) continue;
+
+                    arcade.potts.agent.cell.PottsCell c = (arcade.potts.agent.cell.PottsCell) o;
+                    if (c.getPop() != cell.getPop()) continue; // keep to same population
+
+                    if (o instanceof arcade.potts.agent.cell.PottsCellFlyGMC) {
+                        arcade.potts.agent.cell.PottsCellFlyGMC gmc =
+                                (arcade.potts.agent.cell.PottsCellFlyGMC) o;
+                        volSum += gmc.getLocation().getVolume();
+                        critSum += gmc.getCriticalVolume();
+                        count++;
+                    }
+                }
+                double avgVolume = volSum / count;
+                double avgCritVol = critSum / count;
+                double avgVRef = avgCritVol * (1.0 + sizeTarget) / 2.0;
+                updateCellVolumeBasedGrowthRate(avgVolume, avgVRef);
+            }
+        }
     }
 }
