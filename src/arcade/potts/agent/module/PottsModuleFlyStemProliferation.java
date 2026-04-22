@@ -92,6 +92,14 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
     final double initialSize;
 
+    /**
+     * Population-level baseline critical volume in voxels (from the XML CRITICAL_VOLUME parameter,
+     * always converted to voxels). Used as the fixed V_ref denominator in volume-based growth rate
+     * scaling, so that V_ref stays anchored to the WT equilibrium regardless of per-cell critVol
+     * overrides (relevant when VOLUME_BASED_CRITICAL_VOLUME=1 causes daughter critVols to shrink).
+     */
+    final double populationCriticalVolume;
+
     public static final double EPSILON = 1e-8;
 
     /**
@@ -154,6 +162,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         hasDeterministicDifferentiation = hasDeterministicDifferentiationString.equals("TRUE");
 
         initialSize = cell.getVolume();
+        populationCriticalVolume = parameters.getDouble("CRITICAL_VOLUME");
 
         pdeLike = (parameters.getInt("proliferation/PDELIKE") != 0);
 
@@ -237,7 +246,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * @return the expected equilibrium average NB volume
      */
     double computeEquilibriumVolume() {
-        double vDiv = sizeTarget * cell.getCriticalVolume();
+        double vDiv = sizeTarget * populationCriticalVolume;
         double fRetain = StemType.WT.splitOffsetPercentY / 100.0;
         return vDiv * (fRetain + 1.0) / 2.0;
     }
@@ -271,14 +280,13 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     protected void updateGrowthRateBasedOnOtherNBs(Simulation sim) {
-        int nbsInContact;
+        int nbSignal;
         if (pdeLike) {
-            int nbsInSim = getNBsInSimulation(sim).size();
-            nbsInContact = nbsInSim - 1;
+            nbSignal = getNBsInSimulation(sim).size(); // include self in average
         } else {
-            nbsInContact = getNBNeighbors(sim).size();
+            nbSignal = getNBNeighbors(sim).size(); // only look at neighbors
         }
-        double np = Math.max(0.0, (double) nbsInContact);
+        double np = Math.max(0.0, (double) nbSignal);
 
         double Kn = Math.pow(nbContactHalfMax, nbContactHillN);
         double Npn = Math.pow(np, nbContactHillN);

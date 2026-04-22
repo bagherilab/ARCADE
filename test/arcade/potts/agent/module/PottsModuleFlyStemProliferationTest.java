@@ -123,6 +123,7 @@ public class PottsModuleFlyStemProliferationTest {
         when(stemCell.getCriticalVolume()).thenReturn(100.0);
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
+        when(parameters.getDouble("CRITICAL_VOLUME")).thenReturn(100.0);
     }
 
     @AfterEach
@@ -951,28 +952,37 @@ public class PottsModuleFlyStemProliferationTest {
 
     @Test
     public void computeEquilibriumVolume_MUDMUT_returnsExpectedMidpoint() {
-        // V_ref uses WT fRetain regardless of cell type (V_ref is the WT biological equilibrium)
+        // V_ref uses WT fRetain and population critVol regardless of cell type.
+        // Cell critVol is intentionally different from population critVol to show
+        // that V_ref uses the population parameter, not the per-cell value.
+        // populationCritVol (CRITICAL_VOLUME param) = 100, cell.getCriticalVolume() = 200
         // fRetain = WT.splitOffsetPercentY / 100 = 86 / 100 = 0.86
+        // V_div = sizeTarget * populationCritVol = 1.2 * 100 = 120
         // V_ref = 120 * (0.86 + 1) / 2 = 120 * 0.93 = 111.6
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(stemCell.getCriticalVolume()).thenReturn(200.0); // differs from CRITICAL_VOLUME param
         module = new PottsModuleFlyStemProliferation(stemCell);
         assertEquals(111.6, module.computeEquilibriumVolume(), EPSILON);
     }
 
     @Test
     public void computeEquilibriumVolume_differentSizeTarget_scalesCorrectly() {
-        // V_div = 2.0 * 50 = 100; V_ref = 100 * (0.86 + 1) / 2 = 93.0
+        // V_div = sizeTarget * populationCritVol = 2.0 * 100 = 200
+        // V_ref = 200 * (0.86 + 1) / 2 = 200 * 0.93 = 186.0
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(2.0);
-        when(stemCell.getCriticalVolume()).thenReturn(50.0);
         module = new PottsModuleFlyStemProliferation(stemCell);
-        assertEquals(93.0, module.computeEquilibriumVolume(), EPSILON);
+        assertEquals(186.0, module.computeEquilibriumVolume(), EPSILON);
     }
 
     @Test
     public void computeEquilibriumVolume_differentCritVol_scalesCorrectly() {
+        // V_ref scales with CRITICAL_VOLUME parameter (population-level), not
+        // cell.getCriticalVolume().
+        // CRITICAL_VOLUME param = 200, cell.getCriticalVolume() = 100 (setup default, intentionally
+        // different)
         // V_div = 1.0 * 200 = 200; V_ref = 200 * (0.86 + 1) / 2 = 186.0
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.0);
-        when(stemCell.getCriticalVolume()).thenReturn(200.0);
+        when(parameters.getDouble("CRITICAL_VOLUME")).thenReturn(200.0);
         module = new PottsModuleFlyStemProliferation(stemCell);
         assertEquals(186.0, module.computeEquilibriumVolume(), EPSILON);
     }
@@ -1047,7 +1057,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         module = spy(new PottsModuleFlyStemProliferation(stemCell));
 
-        // N = 4 neighbors (K = 4, n = 2 → repression 0.5 → 12 * 0.5 = 6)
+        // N = 4 neighbors + 1 self = 5 (K = 4, n = 2 → hill = 16/41 → 12 * 16/41)
         HashSet<PottsCellFlyStem> four = new HashSet<>();
         for (int i = 0; i < 4; i++) {
             PottsCellFlyStem n = mock(PottsCellFlyStem.class);
@@ -1060,7 +1070,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         module.updateGrowthRateBasedOnOtherNBs(sim);
 
-        assertEquals(6.0, module.cellGrowthRate, 1e-6);
+        assertEquals(12.0 * 16.0 / 41.0, module.cellGrowthRate, 1e-6);
         verify(module, times(1)).getNBNeighbors(sim);
         verify(module, never()).getNBsInSimulation(sim);
     }
@@ -1077,7 +1087,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         module = spy(new PottsModuleFlyStemProliferation(stemCell));
 
-        // N = 7 in-simulation, 6 neighbors (K = 3, n = 2 → 9/(9+36)=0.2 → 4.0)
+        // N = 7 in-simulation (K = 3, n = 2 → 9/(9+49)=9/58 → 20 * 9/58)
         HashSet<PottsCellFlyStem> seven = new HashSet<>();
         for (int i = 0; i < 7; i++) {
             PottsCellFlyStem n = mock(PottsCellFlyStem.class);
@@ -1089,13 +1099,13 @@ public class PottsModuleFlyStemProliferationTest {
 
         module.updateGrowthRateBasedOnOtherNBs(sim);
 
-        assertEquals(4.0, module.cellGrowthRate, 1e-6);
+        assertEquals(20.0 * 9.0 / 58.0, module.cellGrowthRate, 1e-6);
         verify(module, times(1)).getNBsInSimulation(sim);
         verify(module, never()).getNBNeighbors(sim);
     }
 
     @Test
-    public void updateGrowthRateBasedOnOtherNBs_KZeroandZeroNeighbors_returnsBase() {
+    public void updateGrowthRateBasedOnOtherNBs_KZeroAndOnlySelf_returnsZero() {
         when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
         when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
 
@@ -1105,12 +1115,12 @@ public class PottsModuleFlyStemProliferationTest {
 
         module = spy(new PottsModuleFlyStemProliferation(stemCell));
 
-        // N = 0 → with your guard, repression = 1.0 when K=0 & N=0
+        // 0 neighbors + 1 self = np=1; K=0 guard: Kn=0 & np>0 → hillRepression=0.0
         doReturn(new HashSet<PottsCellFlyStem>()).when(module).getNBNeighbors(sim);
 
         module.updateGrowthRateBasedOnOtherNBs(sim);
 
-        assertEquals(10.0, module.cellGrowthRate, 1e-6);
+        assertEquals(0.0, module.cellGrowthRate, 1e-6);
     }
 
     @Test
@@ -1147,7 +1157,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         module = spy(new PottsModuleFlyStemProliferation(stemCell));
 
-        // N = 2 → R = K/(K+N) = 4/(4+2) = 2/3
+        // 2 neighbors + 1 self = np=3 → R = K/(K+N) = 4/(4+3) = 4/7
         HashSet<PottsCellFlyStem> two = new HashSet<>();
         for (int i = 0; i < 2; i++) {
             PottsCellFlyStem nn = mock(PottsCellFlyStem.class);
@@ -1158,7 +1168,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         module.updateGrowthRateBasedOnOtherNBs(sim);
 
-        assertEquals(10.0 * (2.0 / 3.0), module.cellGrowthRate, 1e-6);
+        assertEquals(10.0 * 4.0 / 7.0, module.cellGrowthRate, 1e-6);
     }
 
     @Test

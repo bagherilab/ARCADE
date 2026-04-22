@@ -72,7 +72,7 @@
     <population.module module="proliferation" id="GROWTH_RATE_VOLUME_SENSITIVITY" value="3.0" description="exponent in (volume/criticalVolume)^sensitivity when volume rule is enabled" />
     <!-- ── NB Growth rate sensitivity to neighboring NBs, only valid if growth and division is not universal ────── -->
     <population.module module="proliferation" id="DYNAMIC_GROWTH_RATE_NB_SELF_REPRESSION" value="0" description="1 → enable NB-NB repression; 0 → disabled (mutually exclusive with volume rule)" />
-    <population.module module="proliferation" id="NB_CONTACT_HALF_MAX" value="1.0" units="neighbors" description="K: NB neighbor count giving 50% repression" />
+    <population.module module="proliferation" id="NB_CONTACT_HALF_MAX" value="2.0" units="neighbors" description="K: NB neighbor count giving 50% repression" />
     <population.module module="proliferation" id="NB_CONTACT_HILL_N" value="3.0" description="Hill exponent controlling repression steepness" />
     <!-- ── NB division rules ───────────────────────────── -->
     <population.module module="proliferation" id="DIFFERENTIATION_RULESET" value="volume" description="GMC/NB identity rule: 'volume' or 'location'" />
