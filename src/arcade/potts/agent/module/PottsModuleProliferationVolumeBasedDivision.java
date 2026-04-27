@@ -43,7 +43,10 @@ public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsM
         }
         // TEST CHANGES:
         if (true) {
-            System.out.println("test");
+            System.out.println("tested");
+        }
+        if (false) {
+            System.out.println("untested");
         }
     }
 }
