@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import arcade.patch.util.PatchUtilities;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.util.Bag;
@@ -34,6 +32,7 @@ import arcade.patch.sim.PatchSimulation;
 import arcade.patch.util.PatchEnums.ComponentType;
 import arcade.patch.util.PatchEnums.Immune;
 import arcade.patch.util.PatchEnums.Ordering;
+import arcade.patch.util.PatchUtilities;
 
 /**
  * Implementation of {@link Action} for inserting T-cell agents.
@@ -371,7 +370,9 @@ public class PatchActionTreat implements Action {
         //        }
         //
         //        return available;
-        return PatchUtilities.checkLocation(
-                (PatchLocation) loc, grid, 0, null, null, null, this.maxConfluency, false);
+        Bag bag = new Bag(grid.getObjectsAtLocation(loc));
+        return PatchUtilities.checkLocationHeight((PatchLocation) loc, bag, 0, null, false)
+                && PatchUtilities.checkLocationOccupancy(
+                        bag, (PatchLocation) loc, this.maxConfluency, 0);
     }
 }

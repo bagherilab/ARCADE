@@ -2,8 +2,6 @@ package arcade.patch.agent.cell;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import arcade.patch.util.PatchUtilities;
 import sim.engine.Schedule;
 import sim.engine.Stoppable;
 import sim.util.Bag;
@@ -19,7 +17,6 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
-import arcade.core.util.Utilities;
 import arcade.patch.agent.module.PatchModuleApoptosis;
 import arcade.patch.agent.module.PatchModuleCytotoxicity;
 import arcade.patch.agent.module.PatchModuleMigration;
@@ -35,6 +32,7 @@ import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.util.PatchEnums;
+import arcade.patch.util.PatchUtilities;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.Flag;
 import static arcade.patch.util.PatchEnums.Ordering;
@@ -566,15 +564,10 @@ public abstract class PatchCell implements Cell {
         //            }
         //        }
         //        return true;
-        return PatchUtilities.checkLocation(
-                loc,
-                (PatchGrid) sim.getGrid(),
-                addedVolume,
-                maxHeight,
-                population,
-                maxDensity,
-                null,
-                true);
+        Bag bag = new Bag(((PatchGrid) sim.getGrid()).getObjectsAtLocation(loc));
+        return PatchUtilities.checkLocationOccupancy(bag, loc, null, addedVolume)
+                && PatchUtilities.checkLocationDensity(loc, bag, population, maxDensity)
+                && PatchUtilities.checkLocationHeight(loc, bag, addedVolume, maxHeight, true);
     }
 
     /**
