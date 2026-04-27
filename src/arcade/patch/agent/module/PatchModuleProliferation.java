@@ -1,9 +1,5 @@
 package arcade.patch.agent.module;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import arcade.patch.agent.event.ProliferationEventLog;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
@@ -19,8 +15,7 @@ import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
 import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.State;
-import static arcade.patch.util.PatchEnums.Domain;
-import static arcade.patch.util.PatchEnums.State;
+import arcade.patch.util.ProliferationEventLog;
 
 /**
  * Extension of {@link PatchModule} for proliferation.
@@ -135,14 +130,16 @@ public class PatchModuleProliferation extends PatchModule {
 
                     // Log proliferation event
                     PatchSimulation patchSim = (PatchSimulation) sim;
-                    ProliferationEventLog eventLog = new ProliferationEventLog(
-                            (int) ((PatchSimulation) sim).getSchedule().getTime(), cell.getID(), duration);
-//                    Map<String, Object> eventData = new HashMap<>();
-//                    eventData.put("type", "proliferation");
-//                    eventData.put(
-//                            "timestamp", (int) ((PatchSimulation) sim).getSchedule().getTime());
-//                    eventData.put("cell-id", cell.getID());
-//                    eventData.put("cycle-length", duration);
+                    ProliferationEventLog eventLog =
+                            new ProliferationEventLog(
+                                    (int) sim.getSchedule().getTime(), cell.getID(), duration);
+                    //                    Map<String, Object> eventData = new HashMap<>();
+                    //                    eventData.put("type", "proliferation");
+                    //                    eventData.put(
+                    //                            "timestamp", (int) ((PatchSimulation)
+                    // sim).getSchedule().getTime());
+                    //                    eventData.put("cell-id", cell.getID());
+                    //                    eventData.put("cycle-length", duration);
                     patchSim.logEvent(eventLog.eventDetails());
 
                     // TODO: Update environment generator sites.
