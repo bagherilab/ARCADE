@@ -41,5 +41,9 @@ public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsM
         if (sizeCheck) {
             addCell(random, sim);
         }
+        // TEST CHANGES:
+        if (true) {
+            System.out.println("test");
+        }
     }
 }
