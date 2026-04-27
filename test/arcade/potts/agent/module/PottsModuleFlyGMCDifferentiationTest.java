@@ -22,12 +22,13 @@ import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.Region;
 import arcade.potts.util.PottsEnums.State;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -143,8 +144,7 @@ public class PottsModuleFlyGMCDifferentiationTest {
         PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
 
         org.junit.jupiter.api.Assertions.assertFalse(module.pdeLike);
-        org.junit.jupiter.api.Assertions.assertEquals(
-                1.0, module.prosperoDegradationRate, EPSILON);
+        org.junit.jupiter.api.Assertions.assertEquals(1.0, module.prosperoDegradationRate, EPSILON);
     }
 
     @Test
@@ -152,7 +152,26 @@ public class PottsModuleFlyGMCDifferentiationTest {
         when(parameters.getDouble("proliferation/PROSPERO_DEGRADATION_RATE")).thenReturn(-1.0);
 
         assertThrows(
-                IllegalArgumentException.class, () -> new PottsModuleFlyGMCDifferentiation(gmcCell));
+                IllegalArgumentException.class,
+                () -> new PottsModuleFlyGMCDifferentiation(gmcCell));
+    }
+
+    @Test
+    public void step_decrementsProspero_prosperoIsUpdated() {
+        when(parameters.getDouble("proliferation/PROSPERO_DEGRADATION_RATE")).thenReturn(6.0);
+
+        PottsModuleFlyGMCDifferentiation module =
+                spy(new PottsModuleFlyGMCDifferentiation(gmcCell));
+
+        doNothing().when(module).addCell(any(MersenneTwisterFast.class), any(Simulation.class));
+
+        when(gmcCell.getProspero()).thenReturn(10.0);
+        module.step(random, sim);
+        verify(gmcCell).setProspero(4.0);
+
+        when(gmcCell.getProspero()).thenReturn(4.0);
+        module.step(random, sim);
+        verify(gmcCell).setProspero(0.0);
     }
 
     @Test
