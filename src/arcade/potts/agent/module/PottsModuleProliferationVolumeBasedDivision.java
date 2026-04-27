@@ -45,7 +45,7 @@ public abstract class PottsModuleProliferationVolumeBasedDivision extends PottsM
         if (true) {
             System.out.println("tested");
         }
-        if (false) {
+        if (cell.getVolume() < 0) {
             System.out.println("untested");
         }
     }
