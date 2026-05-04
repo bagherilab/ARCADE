@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "parent": 0,
+    "pop": 1,
+    "age": 88,
+    "divisions": 3,
+    "state": "PROLIFERATIVE",
+    "phase": "UNDEFINED",
+    "voxels": 2019,
+    "criticals": [1925.92, 8.43]
+  },
+  {
+    "id": 2,
+    "parent": 1,
+    "pop": 2,
+    "age": 88,
+    "divisions": 1,
+    "state": "PROLIFERATIVE",
+    "phase": "UNDEFINED",
+    "voxels": 538,
+    "criticals": [314.0, 8.43]
+  },
+  {
+    "id": 3,
+    "parent": 1,
+    "pop": 2,
+    "age": 88,
+    "divisions": 2,
+    "state": "PROLIFERATIVE",
+    "phase": "UNDEFINED",
+    "voxels": 471,
+    "criticals": [349.0, 8.43]
+  },
+  {
+    "id": 4,
+    "parent": 1,
+    "pop": 2,
+    "age": 88,
+    "divisions": 3,
+    "state": "PROLIFERATIVE",
+    "phase": "UNDEFINED",
+    "voxels": 365,
+    "criticals": [341.0, 8.43]
+  }
+]

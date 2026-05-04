@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1,
+    "parent": 0,
+    "pop": 1,
+    "age": 48,
+    "divisions": 1,
+    "state": "PROLIFERATIVE",
+    "phase": "UNDEFINED",
+    "voxels": 2217,
+    "criticals": [1925.92, 8.43]
+  },
+  {
+    "id": 2,
+    "parent": 1,
+    "pop": 2,
+    "age": 48,
+    "divisions": 1,
+    "state": "PROLIFERATIVE",
+    "phase": "UNDEFINED",
+    "voxels": 385,
+    "criticals": [314.0, 8.43]
+  }
+]

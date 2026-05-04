@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1,
+    "parent": 0,
+    "pop": 1,
+    "age": 176,
+    "divisions": 6,
+    "state": "PROLIFERATIVE",
+    "phase": "UNDEFINED",
+    "voxels": 2124,
+    "criticals": [1925.92, 8.43]
+  },
+  {
+    "id": 6,
+    "parent": 2,
+    "pop": 3,
+    "age": 176,
+    "divisions": 2,
+    "state": "QUIESCENT",
+    "phase": "UNDEFINED",
+    "voxels": 300,
+    "criticals": [314.0, 8.43]
+  },
+  {
+    "id": 8,
+    "parent": 3,
+    "pop": 3,
+    "age": 176,
+    "divisions": 3,
+    "state": "QUIESCENT",
+    "phase": "UNDEFINED",
+    "voxels": 356,
+    "criticals": [349.0, 8.43]
+  },
+  {
+    "id": 10,
+    "parent": 4,
+    "pop": 3,
+    "age": 176,
+    "divisions": 4,
+    "state": "QUIESCENT",
+    "phase": "UNDEFINED",
+    "voxels": 309,
+    "criticals": [341.0, 8.43]
+  },
+  {
+    "id": 5,
+    "parent": 1,
+    "pop": 2,
+    "age": 176,
+    "divisions": 4,
+    "state": "PROLIFERATIVE",
+    "phase": "UNDEFINED",
+    "voxels": 609,
+    "criticals": [356.0, 8.43]
+  },
+  {
+    "id": 2,
+    "parent": 1,
+    "pop": 3,
+    "age": 176,
+    "divisions": 2,
+    "state": "QUIESCENT",
+    "phase": "UNDEFINED",
+    "voxels": 325,
+    "criticals": [314.0, 8.43]
+  },
+  {
+    "id": 7,
+    "parent": 1,
+    "pop": 2,
+    "age": 176,
+    "divisions": 5,
+    "state": "PROLIFERATIVE",
+    "phase": "UNDEFINED",
+    "voxels": 484,
+    "criticals": [330.0, 8.43]
+  },
+  {
+    "id": 3,
+    "parent": 1,
+    "pop": 3,
+    "age": 176,
+    "divisions": 3,
+    "state": "QUIESCENT",
+    "phase": "UNDEFINED",
+    "voxels": 341,
+    "criticals": [349.0, 8.43]
+  },
+  {
+    "id": 9,
+    "parent": 1,
+    "pop": 2,
+    "age": 176,
+    "divisions": 6,
+    "state": "PROLIFERATIVE",
+    "phase": "UNDEFINED",
+    "voxels": 361,
+    "criticals": [313.0, 8.43]
+  },
+  {
+    "id": 4,
+    "parent": 1,
+    "pop": 3,
+    "age": 176,
+    "divisions": 4,
+    "state": "QUIESCENT",
+    "phase": "UNDEFINED",
+    "voxels": 375,
+    "criticals": [341.0, 8.43]
+  }
+]

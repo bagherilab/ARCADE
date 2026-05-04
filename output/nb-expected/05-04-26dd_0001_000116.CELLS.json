@@ -1,0 +1,57 @@
+[
+  {
+    "id": 1,
+    "parent": 0,
+    "pop": 1,
+    "age": 116,
+    "divisions": 4,
+    "state": "PROLIFERATIVE",
+    "phase": "UNDEFINED",
+    "voxels": 2046,
+    "criticals": [1925.92, 8.43]
+  },
+  {
+    "id": 2,
+    "parent": 1,
+    "pop": 2,
+    "age": 116,
+    "divisions": 1,
+    "state": "PROLIFERATIVE",
+    "phase": "UNDEFINED",
+    "voxels": 625,
+    "criticals": [314.0, 8.43]
+  },
+  {
+    "id": 3,
+    "parent": 1,
+    "pop": 2,
+    "age": 116,
+    "divisions": 2,
+    "state": "PROLIFERATIVE",
+    "phase": "UNDEFINED",
+    "voxels": 579,
+    "criticals": [349.0, 8.43]
+  },
+  {
+    "id": 4,
+    "parent": 1,
+    "pop": 2,
+    "age": 116,
+    "divisions": 3,
+    "state": "PROLIFERATIVE",
+    "phase": "UNDEFINED",
+    "voxels": 467,
+    "criticals": [341.0, 8.43]
+  },
+  {
+    "id": 5,
+    "parent": 1,
+    "pop": 2,
+    "age": 116,
+    "divisions": 4,
+    "state": "PROLIFERATIVE",
+    "phase": "UNDEFINED",
+    "voxels": 385,
+    "criticals": [356.0, 8.43]
+  }
+]

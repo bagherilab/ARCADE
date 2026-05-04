@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "parent": 0,
+    "pop": 1,
+    "age": 4,
+    "divisions": 0,
+    "state": "PROLIFERATIVE",
+    "phase": "UNDEFINED",
+    "voxels": 1970,
+    "criticals": [1925.92, 8.43]
+  }
+]
