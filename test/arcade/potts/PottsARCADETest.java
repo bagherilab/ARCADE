@@ -47,28 +47,40 @@ public class PottsARCADETest {
     }
 
     @Test
-    public void main_noVis_nbFileComparison(@TempDir Path path) throws Exception {
-        String expectedName = "nb-expected";
-        File expectedDir = new File("output/" + expectedName);
+    public void main_noVis_fileComparison(@TempDir Path path) throws Exception {
+        // Expects an input file at input/[name].xml and expected output files in output/[name]-expected
+        String[] names = { "nb" };
 
-        Path source = Path.of("input", "nb.xml");
-        Path setupFile = path.resolve("nb.xml");
+        for (String name : names) {
+            String inputFile = name + ".xml";
+            File expectedDir = new File("output/" + name + "-expected");
 
-        Files.copy(source, setupFile);
+            Path source = Path.of("input", inputFile);
+            Path setupFile = path.resolve(name + ".xml");
 
-        String[] args =
-                new String[] {"potts", setupFile.toString(), path.toAbsolutePath().toString()};
-        ARCADE.main(args);
+            Files.copy(source, setupFile);
 
-        for (File expectedFile : expectedDir.listFiles()) {
-            File actualFile = new File(path.toFile(), expectedFile.getName());
+            String[] args =
+                    new String[] {"potts", setupFile.toString(), path.toAbsolutePath().toString()};
+            ARCADE.main(args);
 
-            assertTrue(actualFile.exists());
+            File[] expectedFiles = expectedDir.listFiles();
+            assertNotNull(expectedFiles, "Expected directory not found or empty: " + expectedDir);
 
-            String expectedContent = Files.readString(expectedFile.toPath());
-            String actualContent = Files.readString(actualFile.toPath());
+            for (File expectedFile : expectedFiles) {
+                File actualFile = new File(path.toFile(), expectedFile.getName());
 
-            assertEquals(expectedContent, actualContent);
+                assertTrue(actualFile.exists());
+
+                // Remove version field because executable name is nondeterministic
+                String expectedContent = Files.readString(expectedFile.toPath())
+                        .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "");
+
+                String actualContent = Files.readString(actualFile.toPath())
+                        .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "");
+
+                assertEquals(expectedContent, actualContent);
+            }
         }
     }
 
