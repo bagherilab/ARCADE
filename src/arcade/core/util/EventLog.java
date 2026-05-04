@@ -5,9 +5,9 @@ import java.util.Map;
 /**
  * Abstract class representing a logged simulation event.
  *
- * <p>{@code EventLog} objects capture specific events that occur during a simulation,
- * recording when the event happened and what type of event it was. Subclasses define
- * the specific details of each event type.
+ * <p>{@code EventLog} objects capture specific events that occur during a simulation, recording
+ * when the event happened and what type of event it was. Subclasses define the specific details of
+ * each event type.
  */
 public abstract class EventLog {
 

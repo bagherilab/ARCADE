@@ -8,10 +8,9 @@ import arcade.patch.env.location.Coordinate;
 /**
  * Concrete implementation of {@link EventLog} for lysis events.
  *
- * <p>{@code LysisEventLog} objects are created when a CD8 CAR T-cell successfully kills
- * a target tissue cell, capturing the ID, type, and location of the target
- * cell at the time of lysis, as well as the ID of the CAR T-cell and the time at
- * which lysis occurred.
+ * <p>{@code LysisEventLog} objects are created when a CD8 CAR T-cell successfully kills a target
+ * tissue cell, capturing the ID, type, and location of the target cell at the time of lysis, as
+ * well as the ID of the CAR T-cell and the time at which lysis occurred.
  */
 public class LysisEventLog extends EventLog {
 
@@ -56,8 +55,8 @@ public class LysisEventLog extends EventLog {
     /**
      * Returns a map of key-value pairs describing the details of this lysis event.
      *
-     * <p>The map includes the event type, timestamp, the ID of the cell that
-     * performed lysis, and the ID, type, and location of the target cell that underwent lysis.
+     * <p>The map includes the event type, timestamp, the ID of the cell that performed lysis, and
+     * the ID, type, and location of the target cell that underwent lysis.
      *
      * @return a Map containing the lysis event's details
      */

@@ -7,10 +7,9 @@ import arcade.core.util.EventLog;
 /**
  * Concrete implementation of {@link EventLog} for lysis events.
  *
- * <p>{@code ProliferationEventLog} objects are created when a cell successfully
- * completes its cell cycle and divides, capturing the ID of the dividing
- * cell and the duration of its cell cycle, as well as the time at which
- * proliferation occurred.
+ * <p>{@code ProliferationEventLog} objects are created when a cell successfully completes its cell
+ * cycle and divides, capturing the ID of the dividing cell and the duration of its cell cycle, as
+ * well as the time at which proliferation occurred.
  */
 public class ProliferationEventLog extends EventLog {
 
@@ -28,7 +27,8 @@ public class ProliferationEventLog extends EventLog {
      *
      * @param timestamp the simulation timestep at which proliferation occurred
      * @param cellId the ID of the cell that proliferated.
-     * @param cycleLength the duration of the cell cycle from the start of proliferation to division.
+     * @param cycleLength the duration of the cell cycle from the start of proliferation to
+     *     division.
      */
     public ProliferationEventLog(int timestamp, int cellId, int cycleLength) {
 
@@ -40,8 +40,8 @@ public class ProliferationEventLog extends EventLog {
     /**
      * Returns a map of key-value pairs describing the details of this proliferation event.
      *
-     * <p>The map includes the event type, timestamp, the ID of the cell that proliferated,
-     * and the duration of the cell cycle from the start of proliferation to division.
+     * <p>The map includes the event type, timestamp, the ID of the cell that proliferated, and the
+     * duration of the cell cycle from the start of proliferation to division.
      *
      * @return a Map containing the proliferation event's details
      */
