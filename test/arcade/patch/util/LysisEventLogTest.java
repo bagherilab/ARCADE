@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class LysisEventLogTest {
 
     private static final Coordinate COORDINATE = (Coordinate) new CoordinateXYZ(0, 1, 2);
+
     private static final LysisEventLog LOG = new LysisEventLog(10, 1, 2, 3, COORDINATE);
 
     @Test

@@ -5,6 +5,14 @@ import java.util.Map;
 import arcade.core.util.EventLog;
 import arcade.patch.env.location.Coordinate;
 
+/**
+ * Concrete implementation of {@link EventLog} for lysis events.
+ *
+ * <p>{@code LysisEventLog} objects are created when a CD8 CAR T-cell successfully kills
+ * a target tissue cell, capturing the ID, type, and location of the target
+ * cell at the time of lysis, as well as the ID of the CAR T-cell and the time at
+ * which lysis occurred.
+ */
 public class LysisEventLog extends EventLog {
 
     /** The event type identifier for lysis events. */
@@ -19,7 +27,7 @@ public class LysisEventLog extends EventLog {
     /** The type of the cell that underwent lysis. */
     public final int targetCellType;
 
-    /** The location of the cell underwent lysis, at the time of lysis */
+    /** The location of the cell underwent lysis, at the time of lysis. */
     public final Coordinate targetCellLocation;
 
     /**
