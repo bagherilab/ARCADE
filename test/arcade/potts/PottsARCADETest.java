@@ -48,8 +48,9 @@ public class PottsARCADETest {
 
     @Test
     public void main_noVis_fileComparison(@TempDir Path path) throws Exception {
-        // Expects an input file at input/[name].xml and expected output files in output/[name]-expected
-        String[] names = { "nb" };
+        // Expects an input file at input/[name].xml and expected output files in
+        // output/[name]-expected
+        String[] names = {"nb"};
 
         for (String name : names) {
             String inputFile = name + ".xml";
@@ -73,11 +74,13 @@ public class PottsARCADETest {
                 assertTrue(actualFile.exists());
 
                 // Remove version field because executable name is nondeterministic
-                String expectedContent = Files.readString(expectedFile.toPath())
-                        .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "");
+                String expectedContent =
+                        Files.readString(expectedFile.toPath())
+                                .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "");
 
-                String actualContent = Files.readString(actualFile.toPath())
-                        .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "");
+                String actualContent =
+                        Files.readString(actualFile.toPath())
+                                .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "");
 
                 assertEquals(expectedContent, actualContent);
             }
