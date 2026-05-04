@@ -133,13 +133,6 @@ public class PatchModuleProliferation extends PatchModule {
                     ProliferationEventLog eventLog =
                             new ProliferationEventLog(
                                     (int) sim.getSchedule().getTime(), cell.getID(), duration);
-                    //                    Map<String, Object> eventData = new HashMap<>();
-                    //                    eventData.put("type", "proliferation");
-                    //                    eventData.put(
-                    //                            "timestamp", (int) ((PatchSimulation)
-                    // sim).getSchedule().getTime());
-                    //                    eventData.put("cell-id", cell.getID());
-                    //                    eventData.put("cycle-length", duration);
                     patchSim.logEvent(eventLog.eventDetails());
 
                     // TODO: Update environment generator sites.

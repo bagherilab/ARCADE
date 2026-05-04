@@ -19,7 +19,7 @@ public class EventLogTest {
     }
 
     @Test
-    public void constructor_setsAllFields() {
+    public void constructor_called_setsAllFields() {
         EventLog log = new EventLogMock(10, "TEST_EVENT");
         assertEquals(10, log.timestamp);
         assertEquals("TEST_EVENT", log.eventType);

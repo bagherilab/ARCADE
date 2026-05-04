@@ -74,16 +74,6 @@ public class PatchModuleCytotoxicity extends PatchModule {
 
                 // Log cytotoxicity event
                 PatchSimulation patchSim = (PatchSimulation) sim;
-                //                Map<String, Object> eventData = new HashMap<>();
-                //                eventData.put("type", "lysis");
-                //                eventData.put("timestamp", (int) ((PatchSimulation)
-                // sim).getSchedule().getTime());
-                //                eventData.put("cell-id", cell.getID());
-                //                eventData.put("target-cell-id", target.getID());
-                //                eventData.put("target-cell-type", target.getPop());
-                //                eventData.put(
-                //                        "target-cell-location",
-                //                        ((PatchLocation) target.getLocation()).getCoordinate());
                 LysisEventLog eventLog =
                         new LysisEventLog(
                                 (int) sim.getSchedule().getTime(),

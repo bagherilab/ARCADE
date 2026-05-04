@@ -12,7 +12,7 @@ public class LysisEventLogTest {
     private static final LysisEventLog LOG = new LysisEventLog(10, 1, 2, 3, COORDINATE);
 
     @Test
-    public void constructor_setsAllFields() {
+    public void constructor_called_setsAllFields() {
         assertEquals(10, LOG.timestamp);
         assertEquals("lysis", LOG.eventType);
         assertEquals(1, LOG.cellId);

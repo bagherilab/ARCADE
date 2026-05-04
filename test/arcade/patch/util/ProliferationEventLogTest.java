@@ -9,7 +9,7 @@ public class ProliferationEventLogTest {
     private static final ProliferationEventLog LOG = new ProliferationEventLog(10, 1, 100);
 
     @Test
-    public void constructor_setsAllFields() {
+    public void constructor_called_setsAllFields() {
         assertEquals(10, LOG.timestamp);
         assertEquals("proliferation", LOG.eventType);
         assertEquals(1, LOG.cellId);
