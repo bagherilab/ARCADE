@@ -47,6 +47,32 @@ public class PottsARCADETest {
     }
 
     @Test
+    public void main_noVis_nbFileComparison(@TempDir Path path) throws Exception {
+        String expectedName = "nb-expected";
+        File expectedDir = new File("output/" + expectedName);
+
+        Path source = Path.of("input", "nb.xml");
+        Path setupFile = path.resolve("nb.xml");
+
+        Files.copy(source, setupFile);
+
+        String[] args =
+                new String[] {"potts", setupFile.toString(), path.toAbsolutePath().toString()};
+        ARCADE.main(args);
+
+        for (File expectedFile : expectedDir.listFiles()) {
+            File actualFile = new File(path.toFile(), expectedFile.getName());
+
+            assertTrue(actualFile.exists());
+
+            String expectedContent = Files.readString(expectedFile.toPath());
+            String actualContent = Files.readString(actualFile.toPath());
+
+            assertEquals(expectedContent, actualContent);
+        }
+    }
+
+    @Test
     public void main_withVis_savesNothing(@TempDir Path path) throws Exception {
         String name = "main_withVis_savesNothing";
         Path setupFile = Files.createFile(path.resolve("setup.xml"));
