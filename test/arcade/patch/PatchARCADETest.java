@@ -10,8 +10,6 @@ import arcade.core.sim.Series;
 import arcade.patch.sim.input.PatchInputBuilder;
 import arcade.patch.sim.output.PatchOutputLoader;
 import arcade.patch.sim.output.PatchOutputSaver;
-
-import static com.sun.media.rtp.RTCPSDESItem.names;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -86,12 +84,11 @@ public class PatchARCADETest {
         }
     }
 
-
     @Test
     public void main_noVis_fileComparison_simple_example(@TempDir Path path) throws Exception {
         // Expects an input file at input/[name].xml and expected output files in
         // expected/[name]-expected
-        String name ="simple-example";
+        String name = "simple-example";
         String inputFile = name + ".xml";
         File expectedDir = new File("expected/" + name + "-expected");
 
