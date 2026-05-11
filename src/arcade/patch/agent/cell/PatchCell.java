@@ -566,7 +566,7 @@ public abstract class PatchCell implements Cell {
         //        return true;
         Bag bag = new Bag(((PatchGrid) sim.getGrid()).getObjectsAtLocation(loc));
         return PatchUtilities.checkLocationOccupancy(bag, loc, null, addedVolume)
-                && PatchUtilities.checkLocationDensity(loc, bag, population, maxDensity)
+                && PatchUtilities.checkLocationDensity(bag, population, maxDensity)
                 && PatchUtilities.checkLocationHeight(loc, bag, addedVolume, maxHeight, true);
     }
 

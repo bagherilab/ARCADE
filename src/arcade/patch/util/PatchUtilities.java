@@ -5,12 +5,10 @@ import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellTissue;
 import arcade.patch.env.location.PatchLocation;
 
-public class PatchUtilities {
-    public final class Utilities {
-        /** Hidden utility class constructor. */
-        protected Utilities() {
-            throw new UnsupportedOperationException();
-        }
+public final class PatchUtilities {
+
+    protected PatchUtilities() {
+        throw new UnsupportedOperationException();
     }
 
     public static boolean checkLocationHeight(
@@ -40,8 +38,7 @@ public class PatchUtilities {
         return true;
     }
 
-    public static boolean checkLocationDensity(
-            PatchLocation loc, Bag bag, Integer population, Integer maxDensity) {
+    public static boolean checkLocationDensity(Bag bag, Integer population, Integer maxDensity) {
         if (population == null || maxDensity == null) {
             return true;
         }
