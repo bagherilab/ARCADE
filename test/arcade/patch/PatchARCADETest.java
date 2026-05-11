@@ -22,10 +22,6 @@ public class PatchARCADETest {
                 + "<patch /></series></set>";
     }
 
-    static String normalize(String s) {
-        return s.replace("\r\n", "\n").trim();
-    }
-
     @Test
     public void main_noVis_savesFiles(@TempDir Path path) throws Exception {
         String name = "main_noVis_savesFiles";
@@ -50,7 +46,7 @@ public class PatchARCADETest {
         }
     }
 
-    /* @Test
+    @Test
     public void main_noVis_fileComparison_basic(@TempDir Path path) throws Exception {
         // Expects an input file at input/[name].xml and expected output files in
         // expected/[name]-expected
@@ -124,7 +120,7 @@ public class PatchARCADETest {
 
             assertEquals(expectedContent, actualContent);
         }
-    }*/
+    }
 
     @Test
     public void main_withVis_savesNothing(@TempDir Path path) throws Exception {
