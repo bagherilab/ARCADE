@@ -17,9 +17,7 @@ import arcade.core.util.Graph;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Utilities;
 import arcade.patch.agent.cell.PatchCell;
-import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.cell.PatchCellContainer;
-import arcade.patch.agent.cell.PatchCellTissue;
 import arcade.patch.env.component.PatchComponentSites;
 import arcade.patch.env.component.PatchComponentSitesGraph;
 import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
@@ -34,6 +32,7 @@ import arcade.patch.sim.PatchSimulation;
 import arcade.patch.util.PatchEnums.ComponentType;
 import arcade.patch.util.PatchEnums.Immune;
 import arcade.patch.util.PatchEnums.Ordering;
+import arcade.patch.util.PatchUtilities;
 
 /**
  * Implementation of {@link Action} for inserting T-cell agents.
@@ -332,43 +331,10 @@ public class PatchActionTreat implements Action {
      * @return boolean indicating if location is free
      */
     protected boolean checkLocationSpace(Location loc, PatchGrid grid) {
-        boolean available;
-        int locMax = this.maxConfluency;
-        double locVolume = ((PatchLocation) loc).getVolume();
-        double locArea = ((PatchLocation) loc).getArea();
 
         Bag bag = new Bag(grid.getObjectsAtLocation(loc));
-        int n = bag.numObjs; // number of agents in location
-
-        if (n == 0) {
-            // no cells in location
-            available = true;
-        } else if (n >= locMax) {
-            // location already full
-            available = false;
-        } else {
-            available = true;
-            double totalVol = PatchCell.calculateTotalVolume(bag);
-            double currentHeight = totalVol / locArea;
-
-            if (totalVol > locVolume) {
-                available = false;
-            }
-
-            for (Object cellObj : bag) {
-                PatchCell cell = (PatchCell) cellObj;
-                if (cell instanceof PatchCellCART) {
-                    totalVol = PatchCell.calculateTotalVolume(bag) + cell.getVolume();
-                    currentHeight = totalVol / locArea;
-                }
-                if (cell instanceof PatchCellTissue) {
-                    if (currentHeight > cell.getCriticalHeight()) {
-                        available = false;
-                    }
-                }
-            }
-        }
-
-        return available;
+        return PatchUtilities.checkLocationHeight((PatchLocation) loc, bag, 0, null, false)
+                && PatchUtilities.checkLocationOccupancy(
+                        bag, (PatchLocation) loc, this.maxConfluency, 0);
     }
 }
