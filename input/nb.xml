@@ -1,7 +1,7 @@
 <set prefix="05-04-26">
     <series name="dd" start="1" end="1"
             ds=".3" margin="0" height="1" length="802" width="802"
-            dt=".083" ticks="576" interval="4">
+            dt=".083" ticks="576" interval="192">
         <potts>
             <potts.term id="volume" />
             <potts.term id="adhesion" />
