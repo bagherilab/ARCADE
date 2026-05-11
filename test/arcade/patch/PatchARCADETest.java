@@ -54,7 +54,7 @@ public class PatchARCADETest {
 
         for (String name : names) {
             String inputFile = name + ".xml";
-            File expectedDir = new File("output/" + name + "-expected");
+            File expectedDir = new File("expected/" + name + "-expected");
 
             Path source = Path.of("input", inputFile);
             Path setupFile = path.resolve(name + ".xml");
