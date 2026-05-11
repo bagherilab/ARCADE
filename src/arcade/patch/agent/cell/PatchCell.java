@@ -535,35 +535,7 @@ public abstract class PatchCell implements Cell {
             double maxHeight,
             int population,
             int maxDensity) {
-        //        double locationVolume = loc.getVolume();
-        //        double locationArea = loc.getArea();
-        //        PatchGrid grid = (PatchGrid) sim.getGrid();
-        //
-        //        Bag bag = new Bag(grid.getObjectsAtLocation(loc));
-        //
-        //        if (bag.numObjs != 0) {
-        //            double proposedVolume = calculateTotalVolume(bag) + addedVolume;
-        //            double proposedHeight = proposedVolume / locationArea;
-        //
-        //            if (proposedVolume > locationVolume || proposedHeight > maxHeight) {
-        //                return false;
-        //            }
-        //
-        //            int count = 0;
-        //            for (Object obj : bag) {
-        //                PatchCell cell = (PatchCell) obj;
-        //                if (proposedHeight > cell.getCriticalHeight()) {
-        //                    return false;
-        //                }
-        //                if (cell.getPop() == population) {
-        //                    count++;
-        //                    if (count >= maxDensity) {
-        //                        return false;
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        return true;
+
         Bag bag = new Bag(((PatchGrid) sim.getGrid()).getObjectsAtLocation(loc));
         return PatchUtilities.checkLocationOccupancy(bag, loc, null, addedVolume)
                 && PatchUtilities.checkLocationDensity(bag, population, maxDensity)

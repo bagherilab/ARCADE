@@ -332,44 +332,6 @@ public class PatchActionTreat implements Action {
      */
     protected boolean checkLocationSpace(Location loc, PatchGrid grid) {
 
-        //        boolean available;
-        //        int locMax = this.maxConfluency;
-        //        double locVolume = ((PatchLocation) loc).getVolume();
-        //        double locArea = ((PatchLocation) loc).getArea();
-        //
-        //        Bag bag = new Bag(grid.getObjectsAtLocation(loc));
-        //        int n = bag.numObjs; // number of agents in location
-        //
-        //        if (n == 0) {
-        //            // no cells in location
-        //            available = true;
-        //        } else if (n >= locMax) {
-        //            // location already full
-        //            available = false;
-        //        } else {
-        //            available = true;
-        //            double totalVol = PatchCell.calculateTotalVolume(bag);
-        //            double currentHeight = totalVol / locArea;
-        //
-        //            if (totalVol > locVolume) {
-        //                available = false;
-        //            }
-        //
-        //            for (Object cellObj : bag) {
-        //                PatchCell cell = (PatchCell) cellObj;
-        //                if (cell instanceof PatchCellCART) {
-        //                    totalVol = PatchCell.calculateTotalVolume(bag) + cell.getVolume();
-        //                    currentHeight = totalVol / locArea;
-        //                }
-        //                if (cell instanceof PatchCellTissue) {
-        //                    if (currentHeight > cell.getCriticalHeight()) {
-        //                        available = false;
-        //                    }
-        //                }
-        //            }
-        //        }
-        //
-        //        return available;
         Bag bag = new Bag(grid.getObjectsAtLocation(loc));
         return PatchUtilities.checkLocationHeight((PatchLocation) loc, bag, 0, null, false)
                 && PatchUtilities.checkLocationOccupancy(

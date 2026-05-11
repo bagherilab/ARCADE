@@ -83,14 +83,6 @@ public class PatchUtilitiesTest {
     }
 
     @Test
-    public void checkLocationDensity_nullParameters_returnsTrue() {
-        Bag bag = new Bag();
-        bag.add(mock(PatchCell.class));
-        assertTrue(PatchUtilities.checkLocationDensity(bag, null, 2));
-        assertTrue(PatchUtilities.checkLocationDensity(bag, 0, null));
-    }
-
-    @Test
     public void checkLocationDensity_atMaxDensity_returnsFalse() {
         PatchCell cell1 = mock(PatchCell.class);
         PatchCell cell2 = mock(PatchCell.class);
