@@ -22,6 +22,10 @@ public class PottsARCADETest {
                 + "</series></set>";
     }
 
+    static String normalize(String s) {
+        return s.replace("\r\n", "\n").trim();
+    }
+
     @Test
     public void main_noVis_savesFiles(@TempDir Path path) throws Exception {
         String name = "main_noVis_savesFiles";
@@ -80,7 +84,7 @@ public class PottsARCADETest {
                     Files.readString(actualFile.toPath())
                             .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "");
 
-            assertEquals(expectedContent, actualContent);
+            assertEquals(normalize(expectedContent), normalize(actualContent));
         }
     }
 
