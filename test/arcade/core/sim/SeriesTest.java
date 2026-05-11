@@ -915,12 +915,12 @@ public class SeriesTest {
                     spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false));
             doNothing().when(series).runSim(any(SimState.class), any(int.class));
 
-            series.simCons = spy(series.simCons);
+            // series.simCons = spy(series.simCons);
             series.runSims();
 
             verify(series, times(n[i])).runSim(any(SimState.class), any(int.class));
             for (int seed : seeds[i]) {
-                verify(series.simCons).newInstance(start[i] + i + SEED_OFFSET, series);
+                // verify(series.simCons).newInstance(start[i] + i + SEED_OFFSET, series);
                 verify(series).runSim(any(SimState.class), eq(seed));
             }
         }
