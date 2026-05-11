@@ -10,6 +10,8 @@ import arcade.core.sim.Series;
 import arcade.patch.sim.input.PatchInputBuilder;
 import arcade.patch.sim.output.PatchOutputLoader;
 import arcade.patch.sim.output.PatchOutputSaver;
+
+import static com.sun.media.rtp.RTCPSDESItem.names;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -47,43 +49,79 @@ public class PatchARCADETest {
     }
 
     @Test
-    public void main_noVis_fileComparison(@TempDir Path path) throws Exception {
+    public void main_noVis_fileComparison_basic(@TempDir Path path) throws Exception {
         // Expects an input file at input/[name].xml and expected output files in
-        // output/[name]-expected
-        String[] names = {"basic", "simple-example"};
+        // expected/[name]-expected
+        String name = "basic";
+        String inputFile = name + ".xml";
+        File expectedDir = new File("expected/" + name + "-expected");
 
-        for (String name : names) {
-            String inputFile = name + ".xml";
-            File expectedDir = new File("expected/" + name + "-expected");
+        Path source = Path.of("input", inputFile);
+        Path setupFile = path.resolve(name + ".xml");
 
-            Path source = Path.of("input", inputFile);
-            Path setupFile = path.resolve(name + ".xml");
+        Files.copy(source, setupFile);
 
-            Files.copy(source, setupFile);
+        String[] args =
+                new String[] {"patch", setupFile.toString(), path.toAbsolutePath().toString()};
+        ARCADE.main(args);
 
-            String[] args =
-                    new String[] {"patch", setupFile.toString(), path.toAbsolutePath().toString()};
-            ARCADE.main(args);
+        File[] expectedFiles = expectedDir.listFiles();
+        assertNotNull(expectedFiles, "Expected directory not found or empty: " + expectedDir);
 
-            File[] expectedFiles = expectedDir.listFiles();
-            assertNotNull(expectedFiles, "Expected directory not found or empty: " + expectedDir);
+        for (File expectedFile : expectedFiles) {
+            File actualFile = new File(path.toFile(), expectedFile.getName());
 
-            for (File expectedFile : expectedFiles) {
-                File actualFile = new File(path.toFile(), expectedFile.getName());
+            assertTrue(actualFile.exists());
 
-                assertTrue(actualFile.exists());
+            // Remove version field because executable name is nondeterministic
+            String expectedContent =
+                    Files.readString(expectedFile.toPath())
+                            .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "");
 
-                // Remove version field because executable name is nondeterministic
-                String expectedContent =
-                        Files.readString(expectedFile.toPath())
-                                .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "");
+            String actualContent =
+                    Files.readString(actualFile.toPath())
+                            .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "");
 
-                String actualContent =
-                        Files.readString(actualFile.toPath())
-                                .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "");
+            assertEquals(expectedContent, actualContent);
+        }
+    }
 
-                assertEquals(expectedContent, actualContent);
-            }
+
+    @Test
+    public void main_noVis_fileComparison_simple_example(@TempDir Path path) throws Exception {
+        // Expects an input file at input/[name].xml and expected output files in
+        // expected/[name]-expected
+        String name ="simple-example";
+        String inputFile = name + ".xml";
+        File expectedDir = new File("expected/" + name + "-expected");
+
+        Path source = Path.of("input", inputFile);
+        Path setupFile = path.resolve(name + ".xml");
+
+        Files.copy(source, setupFile);
+
+        String[] args =
+                new String[] {"patch", setupFile.toString(), path.toAbsolutePath().toString()};
+        ARCADE.main(args);
+
+        File[] expectedFiles = expectedDir.listFiles();
+        assertNotNull(expectedFiles, "Expected directory not found or empty: " + expectedDir);
+
+        for (File expectedFile : expectedFiles) {
+            File actualFile = new File(path.toFile(), expectedFile.getName());
+
+            assertTrue(actualFile.exists());
+
+            // Remove version field because executable name is nondeterministic
+            String expectedContent =
+                    Files.readString(expectedFile.toPath())
+                            .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "");
+
+            String actualContent =
+                    Files.readString(actualFile.toPath())
+                            .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "");
+
+            assertEquals(expectedContent, actualContent);
         }
     }
 

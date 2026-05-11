@@ -47,43 +47,40 @@ public class PottsARCADETest {
     }
 
     @Test
-    public void main_noVis_fileComparison(@TempDir Path path) throws Exception {
+    public void main_noVis_fileComparison_nb(@TempDir Path path) throws Exception {
         // Expects an input file at input/[name].xml and expected output files in
-        // output/[name]-expected
-        String[] names = {"nb"};
+        // expected/[name]-expected
+        String name = "nb";
+        String inputFile = name + ".xml";
+        File expectedDir = new File("expected/" + name + "-expected");
 
-        for (String name : names) {
-            String inputFile = name + ".xml";
-            File expectedDir = new File("expected/" + name + "-expected");
+        Path source = Path.of("input", inputFile);
+        Path setupFile = path.resolve(name + ".xml");
 
-            Path source = Path.of("input", inputFile);
-            Path setupFile = path.resolve(name + ".xml");
+        Files.copy(source, setupFile);
 
-            Files.copy(source, setupFile);
+        String[] args =
+                new String[] {"potts", setupFile.toString(), path.toAbsolutePath().toString()};
+        ARCADE.main(args);
 
-            String[] args =
-                    new String[] {"potts", setupFile.toString(), path.toAbsolutePath().toString()};
-            ARCADE.main(args);
+        File[] expectedFiles = expectedDir.listFiles();
+        assertNotNull(expectedFiles, "Expected directory not found or empty: " + expectedDir);
 
-            File[] expectedFiles = expectedDir.listFiles();
-            assertNotNull(expectedFiles, "Expected directory not found or empty: " + expectedDir);
+        for (File expectedFile : expectedFiles) {
+            File actualFile = new File(path.toFile(), expectedFile.getName());
 
-            for (File expectedFile : expectedFiles) {
-                File actualFile = new File(path.toFile(), expectedFile.getName());
+            assertTrue(actualFile.exists());
 
-                assertTrue(actualFile.exists());
+            // Remove version field because executable name is nondeterministic
+            String expectedContent =
+                    Files.readString(expectedFile.toPath())
+                            .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "");
 
-                // Remove version field because executable name is nondeterministic
-                String expectedContent =
-                        Files.readString(expectedFile.toPath())
-                                .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "");
+            String actualContent =
+                    Files.readString(actualFile.toPath())
+                            .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "");
 
-                String actualContent =
-                        Files.readString(actualFile.toPath())
-                                .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "");
-
-                assertEquals(expectedContent, actualContent);
-            }
+            assertEquals(expectedContent, actualContent);
         }
     }
 
