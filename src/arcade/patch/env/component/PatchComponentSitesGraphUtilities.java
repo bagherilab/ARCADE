@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.logging.Logger;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.Graph;
@@ -21,9 +20,6 @@ import static arcade.patch.env.component.PatchComponentSitesGraphFactory.Root;
 
 /** Container for utility functions used by {@link PatchComponentSitesGraph}. */
 abstract class PatchComponentSitesGraphUtilities {
-    private static final Logger LOGGER =
-            Logger.getLogger(PatchComponentSitesGraphUtilities.class.getName());
-
     /** Calculation types. */
     enum CalculationType {
         /** Code for upstream radius calculation for all edge types. */
@@ -1003,9 +999,6 @@ abstract class PatchComponentSitesGraphUtilities {
         }
         while (node != null && !node.equals(start)) {
             Bag b = graph.getEdgesIn(node);
-            if (b == null) {
-                LOGGER.info("NODETOINBAG IS NULL IN GETPATH FOR NODE " + node.toString());
-            }
             if (b.numObjs == 1) {
                 path.add((SiteEdge) b.objs[0]);
             } else if (b.numObjs == 2) {
@@ -1017,17 +1010,10 @@ abstract class PatchComponentSitesGraphUtilities {
                     path.add(edgeB);
                 }
             }
-
-            // if (node.prev == null) {
-            //     LOGGER.info("START: " + start + " END: " + end);
-            //     LOGGER.info("PREV IS NULL" + node);
-            // }
-
             node = node.prev;
         }
 
         if (node == null) {
-            // LOGGER.info("Path in getPath is: " + path);
             return null;
         }
 
@@ -1291,7 +1277,6 @@ abstract class PatchComponentSitesGraphUtilities {
             SiteEdge edge = (SiteEdge) obj;
             if (edge.flow < 0) {
                 negative = true;
-                LOGGER.info("Negative flow detected, recalculating.");
                 break;
             }
         }
@@ -1318,8 +1303,6 @@ abstract class PatchComponentSitesGraphUtilities {
                 for (Object obj : out) {
                     SiteEdge edge = (SiteEdge) obj;
                     if (edge.flow < MINIMUM_FLOW_RATE || Double.isNaN(edge.flow)) {
-                        LOGGER.info("Removing Edge. 1309, edge: " + edge);
-                        LOGGER.info("Flow: " + edge.flow);
                         graph.removeEdge(edge);
                         edge.getFrom().pressure = Double.NaN;
                         edge.getTo().pressure = Double.NaN;
@@ -1335,8 +1318,6 @@ abstract class PatchComponentSitesGraphUtilities {
                 for (Object obj : in) {
                     SiteEdge edge = (SiteEdge) obj;
                     if (edge.flow < MINIMUM_FLOW_RATE || Double.isNaN(edge.flow)) {
-                        LOGGER.info("Removing Edge. 1325, edge: " + edge);
-                        LOGGER.info("Flow: " + edge.flow);
                         graph.removeEdge(edge);
                         edge.getFrom().pressure = Double.NaN;
                         edge.getTo().pressure = Double.NaN;
@@ -1354,13 +1335,11 @@ abstract class PatchComponentSitesGraphUtilities {
                     double totalFlow = edge1.flow + edge2.flow;
 
                     if (edge1.flow / totalFlow < MINIMUM_FLOW_PERCENT) {
-                        LOGGER.info("Removing Edge. 1343, edge: " + edge1);
                         graph.removeEdge(edge1);
                         edge1.getFrom().pressure = Double.NaN;
                         edge1.getTo().pressure = Double.NaN;
                         updateGraph(graph);
                     } else if (edge2.flow / totalFlow < MINIMUM_FLOW_PERCENT) {
-                        LOGGER.info("Removing Edge. 1349, edge: " + edge2);
                         graph.removeEdge(edge2);
                         edge2.getFrom().pressure = Double.NaN;
                         edge2.getTo().pressure = Double.NaN;
@@ -1371,7 +1350,6 @@ abstract class PatchComponentSitesGraphUtilities {
         }
 
         if (removeMin) {
-            LOGGER.info("Removing Edge. 1360, edge: " + minEdge);
             graph.removeEdge(minEdge);
             minEdge.getFrom().pressure = Double.NaN;
             minEdge.getTo().pressure = Double.NaN;
