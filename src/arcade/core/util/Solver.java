@@ -18,7 +18,7 @@ import static arcade.core.util.Matrix.*;
  * </ul>
  */
 public class Solver {
-    
+
     /** Error tolerance for Cash-Karp. */
     private static final double ERROR = 1E-5;
 
