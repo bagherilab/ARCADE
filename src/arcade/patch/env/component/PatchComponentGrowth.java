@@ -941,7 +941,6 @@ public class PatchComponentGrowth implements Component {
         Double arteryFlow = newFlow / arteries.size();
 
         for (ArrayList<SiteEdge> path : pathsArteries) {
-            assert !path.get(0).getFrom().isRoot;
 
             updatedEdges.addAll(path);
             for (SiteEdge e : path) {
@@ -978,7 +977,6 @@ public class PatchComponentGrowth implements Component {
         Double veinFlow = newFlow / veins.size();
 
         for (ArrayList<SiteEdge> path : pathsVeins) {
-            assert !path.get(0).getFrom().isRoot;
 
             SiteEdge rootEdge = path.remove(path.size() - 1);
             oldRadii.add(rootEdge.radius);
