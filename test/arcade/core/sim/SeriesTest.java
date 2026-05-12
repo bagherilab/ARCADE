@@ -694,6 +694,27 @@ public class SeriesTest {
     }
 
     @Test
+    public void parseParameter_withNegativeValueInDistribution_parsesSuccessfully() {
+        MiniBox box = new MiniBox();
+        String parameter = randomString();
+        String distribution = "UNIFORM";
+
+        double valueMin = -180.0;
+        double valueMax = 180.0;
+        String valueCode = String.format("%s(MIN=%f,MAX=%f)", distribution, valueMin, valueMax);
+
+        MiniBox values = new MiniBox();
+        values.put(parameter, valueCode);
+        MiniBox scales = new MiniBox();
+
+        Series.parseParameter(box, parameter, "", values, scales);
+
+        assertEquals(distribution, box.get("(DISTRIBUTION)" + TAG_SEPARATOR + parameter));
+        assertEquals(valueMin, box.getDouble(parameter + "_MIN"), EPSILON);
+        assertEquals(valueMax, box.getDouble(parameter + "_MAX"), EPSILON);
+    }
+
+    @Test
     public void parseConversion_invalidConversion_returnsOne() {
         assertEquals(1, Series.parseConversion(randomString(), DS, DZ, DT), EPSILON);
     }

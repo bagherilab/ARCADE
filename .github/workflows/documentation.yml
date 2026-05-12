@@ -68,6 +68,7 @@ jobs:
       run: bundle exec jekyll build
       env:
         JEKYLL_ENV: production
+        JEKYLL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Upload Jekyll site artifact
       uses: actions/upload-artifact@v4

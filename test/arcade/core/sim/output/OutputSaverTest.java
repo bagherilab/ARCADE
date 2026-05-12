@@ -191,14 +191,20 @@ public class OutputSaverTest {
     }
 
     @Test
-    public void step_singleStep_callsSave() {
-        OutputSaver saver = mock(OutputSaver.class, CALLS_REAL_METHODS);
+    public void step_atIntervalTick_callsSave() {
+        Series series = mock(Series.class);
+        int interval = randomIntBetween(1, 100);
+        doReturn(interval).when(series).getInterval();
+
+        OutputSaver saver = spy(new OutputSaverMock(series));
         doNothing().when(saver).saveCells(anyInt());
         doNothing().when(saver).saveLocations(anyInt());
 
         SimState simstate = mock(SimState.class);
         simstate.schedule = mock(Schedule.class);
-        int tick = randomIntBetween(1, 100);
+
+        int tick = randomIntBetween(1, 10) * interval;
+
         doReturn((double) tick).when(simstate.schedule).getTime();
 
         saver.prefix = randomString();
@@ -209,13 +215,36 @@ public class OutputSaverTest {
     }
 
     @Test
+    public void step_atNotIntervalTick_doesNotCallSave() {
+        Series series = mock(Series.class);
+        int interval = randomIntBetween(5, 100);
+        doReturn(interval).when(series).getInterval();
+
+        OutputSaver saver = spy(new OutputSaverMock(series));
+        doNothing().when(saver).saveCells(anyInt());
+        doNothing().when(saver).saveLocations(anyInt());
+
+        SimState simstate = mock(SimState.class);
+        simstate.schedule = mock(Schedule.class);
+
+        int tick = randomIntBetween(1, 10) * interval - 1;
+
+        doReturn((double) tick).when(simstate.schedule).getTime();
+
+        saver.prefix = randomString();
+
+        saver.step(simstate);
+        verify(saver, never()).saveCells(tick);
+        verify(saver, never()).saveLocations(tick);
+    }
+
+    @Test
     public void schedule_validInput_callsMethod() {
         Schedule schedule = mock(Schedule.class);
         OutputSaver saver = mock(OutputSaver.class, CALLS_REAL_METHODS);
         doReturn(null).when(schedule).scheduleRepeating(anyDouble(), anyInt(), any(), anyDouble());
-        double interval = randomDoubleBetween(1, 10);
-        saver.schedule(schedule, interval);
-        verify(schedule).scheduleRepeating(Schedule.EPOCH, -1, saver, interval);
+        saver.schedule(schedule);
+        verify(schedule).scheduleRepeating(Schedule.EPOCH, -1, saver, 1);
     }
 
     @Test

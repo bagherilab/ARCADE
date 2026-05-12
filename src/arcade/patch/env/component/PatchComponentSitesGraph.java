@@ -15,8 +15,12 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Solver;
 import arcade.core.util.Solver.Function;
 import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeDirection;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeLevel;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeTag;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeType;
 import arcade.patch.env.location.CoordinateXYZ;
 import arcade.patch.sim.PatchSeries;
+import arcade.patch.util.PatchEnums.ComponentType;
 import static arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeLevel;
 import static arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeTag;
 import static arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeType;
@@ -920,5 +924,10 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         }
 
         return children;
+    }
+
+    @Override
+    public ComponentType getComponentType() {
+        return ComponentType.GRAPH;
     }
 }

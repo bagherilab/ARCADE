@@ -35,7 +35,7 @@ public abstract class Series {
 
     /** Regular expression for distributions. */
     public static final String DISTRIBUTION_REGEX =
-            "^([A-Z\\_]+)\\(([A-Z]+)=([\\d\\.]+)(?:,([A-Z]+)=([\\d\\.]+))*\\)$";
+            "^([A-Z\\_]+)\\(([A-Z]+)=(-?[\\d\\.]+)(?:,([A-Z]+)=(-?[\\d\\.]+))*\\)$";
 
     /** Offset of random seed to avoid using seed of 0. */
     public static final int SEED_OFFSET = 1000;

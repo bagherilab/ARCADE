@@ -45,6 +45,9 @@ public abstract class OutputSaver implements Steppable {
     /** {@link arcade.core.sim.Simulation} instance. */
     protected Simulation sim;
 
+    /** Snapshot interval in ticks. */
+    private final int interval;
+
     /**
      * Creates an {@code OutputSaver} for the series.
      *
@@ -53,6 +56,7 @@ public abstract class OutputSaver implements Steppable {
     public OutputSaver(Series series) {
         this.series = series;
         this.gson = makeGSON();
+        this.interval = series.getInterval();
     }
 
     /**
@@ -109,7 +113,9 @@ public abstract class OutputSaver implements Steppable {
     @Override
     public void step(SimState simstate) {
         int tick = (int) simstate.schedule.getTime();
-        save(tick);
+        if (tick % interval == 0) {
+            save(tick);
+        }
     }
 
     /**
@@ -126,10 +132,9 @@ public abstract class OutputSaver implements Steppable {
      * Schedules the saver to take snapshots at the given interval.
      *
      * @param schedule the simulation schedule
-     * @param interval the interval (in ticks) between snapshots
      */
-    public void schedule(Schedule schedule, double interval) {
-        schedule.scheduleRepeating(Schedule.EPOCH, -1, this, interval);
+    public void schedule(Schedule schedule) {
+        schedule.scheduleRepeating(Schedule.EPOCH, -1, this, 1);
     }
 
     /**

@@ -6,6 +6,10 @@ import java.util.HashMap;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
+import arcade.core.util.Vector;
+import arcade.potts.env.location.PottsLocationTest.PottsLocationMock;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Region;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
@@ -962,5 +966,15 @@ public class PottsLocationsTest {
         assertEquals(2, loc.locations.get(Region.UNDEFINED).voxels.size());
         assertEquals(2, split.locations.get(Region.DEFAULT).voxels.size());
         assertEquals(2, split.locations.get(Region.DEFAULT).voxels.size());
+    }
+
+    @Test
+    public void getOffsetInApicalFrame_called_raisesUnsupportedOperationException() {
+        PottsLocationsMock loc = new PottsLocationsMock(voxelListForMultipleRegionsA);
+        Vector apicalAxis = new Vector(0, 1, 0);
+        ArrayList<Integer> offsets = new ArrayList<>();
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> loc.getOffsetInApicalFrame(offsets, apicalAxis));
     }
 }
