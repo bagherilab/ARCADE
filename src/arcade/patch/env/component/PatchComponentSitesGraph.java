@@ -3,7 +3,6 @@ package arcade.patch.env.component;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.logging.Logger;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
@@ -50,8 +49,6 @@ import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.*;
  * {@code A} / {@code a} for an artery or {@code V} / {@code v} for a vein.
  */
 public abstract class PatchComponentSitesGraph extends PatchComponentSites {
-    /** Logger for {@code PatchComponentSitesGraph}. */
-    private static final Logger LOGGER = Logger.getLogger(PatchComponentSitesGraph.class.getName());
 
     /** Tolerance for difference in internal and external concentrations. */
     private static final double DELTA_TOLERANCE = 1E-8;
@@ -321,10 +318,6 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                     intConc = edge.fraction.get(layer.name) * concentration; // fmol/um^3
                     intConcNew = intConc; // fmol/um^3
                     extConcNew = extConc; // fmol/um^3
-
-                    if (Double.isNaN(intConc) || Double.isNaN(extConc)) {
-                        LOGGER.info(layer.name + ": NaN (1)");
-                    }
                 }
 
                 if (Math.abs(intConc - extConc) > DELTA_TOLERANCE) {
@@ -341,9 +334,6 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                             intConcNew = (intConcNew * flow + pa * extConcNew) / (flow + pa);
                             dmdt = pa * (intConcNew - extConcNew);
                             extConcNew += dmdt / latticePatchVolume;
-                        }
-                        if (Double.isNaN(intConcNew) || Double.isNaN(extConcNew)) {
-                            LOGGER.info(layer.name + ": NaN (2)");
                         }
                     }
 
@@ -369,9 +359,6 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                     if (layer.name.equalsIgnoreCase("OXYGEN")) {
                         edge.transport.put(layer.name, (intConc - intConcNew) * edge.flow);
                     } else {
-                        if (Double.isNaN((intConc - intConcNew) / concentration)) {
-                            LOGGER.info(layer.name + ": NaN (3)");
-                        }
                         edge.transport.put(layer.name, (intConc - intConcNew) / concentration);
                     }
                 }
@@ -907,9 +894,6 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
             } else {
                 node.oxygen = Solver.bisection(func, 0, MAX_OXYGEN_PARTIAL_PRESSURE);
             }
-
-            assert node.oxygen >= 0;
-            assert !Double.isNaN(node.oxygen);
 
             // Recurse through output edges.
             for (Object obj : out) {
