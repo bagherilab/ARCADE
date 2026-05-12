@@ -1,5 +1,4 @@
 package arcade.patch.env.component;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
