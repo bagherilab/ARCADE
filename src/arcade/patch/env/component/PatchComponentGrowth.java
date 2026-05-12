@@ -738,7 +738,6 @@ public class PatchComponentGrowth implements Component {
                 maxVal = map.get(dir);
             }
         }
-        assert maxDir != EdgeDirection.UNDEFINED;
         return maxDir;
     }
 
