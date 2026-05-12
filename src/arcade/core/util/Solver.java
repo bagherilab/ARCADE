@@ -1,7 +1,6 @@
 package arcade.core.util;
 
 import java.util.ArrayList;
-import java.util.logging.Logger;
 import arcade.core.util.Matrix.Value;
 import static arcade.core.util.Matrix.*;
 
@@ -19,9 +18,6 @@ import static arcade.core.util.Matrix.*;
  * </ul>
  */
 public class Solver {
-    /** Logger for {@code Solver}. */
-    private static final Logger LOGGER = Logger.getLogger(Solver.class.getName());
-
     /** Error tolerance for Cash-Karp. */
     private static final double ERROR = 1E-5;
 
