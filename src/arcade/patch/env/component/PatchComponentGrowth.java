@@ -1363,8 +1363,6 @@ public class PatchComponentGrowth implements Component {
                 // SiteNode existing = validateNodeObject(proposed);
                 SiteNode existing = (SiteNode) graph.lookup(proposed);
 
-                assert existing != null;
-
                 if (Double.isNaN(existing.pressure)) {
                     return null;
                 }
