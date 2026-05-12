@@ -1198,8 +1198,6 @@ public class PatchComponentGrowth implements Component {
      * @return Outcome.SUCCESS for successful update, Outcome.FAILURE for failure
      */
     private Outcome calculateVeinRootRadius(SiteEdge edge, double flow, Adjustment adjustment) {
-        assert flow >= 0;
-
         double adjustedFlow = (adjustment == Adjustment.DECREASE) ? -1 * flow : flow;
         double originalRadius = edge.radius;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
