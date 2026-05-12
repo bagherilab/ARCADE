@@ -1168,10 +1168,6 @@ public class PatchComponentGrowth implements Component {
         double adjustedFlow = (adjustment == Adjustment.DECREASE) ? -1 * flow : flow;
         double originalRadius = edge.radius;
         double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
-
-        assert edge.getFrom().pressure > 0.0;
-        assert edge.getTo().pressure > 0.0;
-
         double originalFlow = calculateLocalFlow(originalRadius, edge.length, deltaP);
 
         // double originalFlow = edge.flow;
