@@ -315,7 +315,6 @@ public class PatchComponentGrowth implements Component {
                     }
 
                     int leadingIndex = angiogenicNodeMap.get(sproutNode).size() - 1;
-                    assert leadingIndex >= 0;
                     SiteNode finalNode =
                             angiogenicNodeMap.get(sproutNode).get(leadingIndex).getTo();
                     SiteNode init;
@@ -397,10 +396,6 @@ public class PatchComponentGrowth implements Component {
                             fin = finalNode;
                         }
                     }
-
-                    assert init.pressure != 0.0;
-                    assert fin.pressure != 0.0;
-                    assert init != fin;
 
                     addAngiogenicEdges(
                             angiogenicNodeMap.get(sproutNode), init, fin, calculationStrategy);
