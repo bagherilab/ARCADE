@@ -680,7 +680,6 @@ public class PatchComponentGrowth implements Component {
                 return dir;
             }
         }
-        assert false;
         return EdgeDirection.UNDEFINED;
     }
 
