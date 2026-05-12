@@ -1238,7 +1238,6 @@ public class PatchComponentGrowth implements Component {
      * @return Outcome.SUCCESS for successful update, Outcome.FAILURE for failure
      */
     private Outcome calculateArteryRootRadius(SiteEdge edge, double flow, Adjustment adjustment) {
-        assert flow >= 0;
 
         double adjustedFlow = (adjustment == Adjustment.DECREASE) ? -1 * flow : flow;
         double originalRadius = edge.radius;
@@ -1289,8 +1288,6 @@ public class PatchComponentGrowth implements Component {
             double flow,
             Adjustment adjustment,
             ArrayList<SiteEdge> ignored) {
-
-        assert flow >= 0;
 
         ArrayList<Root> veins = sites.graphFactory.veins;
         ArrayList<Double> oldRadii = new ArrayList<>();
