@@ -20,6 +20,7 @@ import static arcade.patch.env.component.PatchComponentSitesGraphFactory.Root;
 
 /** Container for utility functions used by {@link PatchComponentSitesGraph}. */
 abstract class PatchComponentSitesGraphUtilities {
+
     /** Calculation types. */
     enum CalculationType {
         /** Code for upstream radius calculation for all edge types. */
