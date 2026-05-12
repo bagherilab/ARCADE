@@ -5,7 +5,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.logging.Logger;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.util.Bag;
@@ -56,8 +55,6 @@ import static arcade.patch.util.PatchEnums.Ordering;
  * the flow rate of the new edge from the original edge.
  */
 public class PatchComponentGrowth implements Component {
-    /** Logger for {@code PatchComponentGrowth}. */
-    private static final Logger LOGGER = Logger.getLogger(PatchComponentGrowth.class.getName());
 
     /** Default edge level to add to the graph from this component. */
     private static final EdgeLevel DEFAULT_EDGE_LEVEL = EdgeLevel.LEVEL_2;
