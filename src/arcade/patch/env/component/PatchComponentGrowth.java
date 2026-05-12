@@ -1011,9 +1011,6 @@ public class PatchComponentGrowth implements Component {
 
         Bag edges = graph.getEdgesOut(start);
 
-        assert edges != null;
-        assert edges.size() >= 2;
-
         edges = graph.getEdgesOut(start);
         if (edges.size() != 2) {
             return Outcome.FAILURE;
