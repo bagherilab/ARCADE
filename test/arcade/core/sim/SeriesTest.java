@@ -917,7 +917,9 @@ public class SeriesTest {
             doNothing().when(series).runSim(any(SimState.class), any(int.class));
 
             Constructor<?> mockSimCons = mock(Constructor.class);
-            doReturn(new SimulationMock(0, series)).when(mockSimCons).newInstance(any(Object[].class));
+            doReturn(new SimulationMock(0, series))
+                    .when(mockSimCons)
+                    .newInstance(any(Object[].class));
             series.simCons = mockSimCons;
 
             series.runSims();
