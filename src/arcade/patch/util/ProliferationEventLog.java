@@ -5,7 +5,7 @@ import java.util.Map;
 import arcade.core.util.EventLog;
 
 /**
- * Concrete implementation of {@link EventLog} for lysis events.
+ * Concrete implementation of {@link EventLog} for proliferation events.
  *
  * <p>{@code ProliferationEventLog} objects are created when a cell successfully completes its cell
  * cycle and divides, capturing the ID of the dividing cell and the duration of its cell cycle, as
