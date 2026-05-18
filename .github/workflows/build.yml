@@ -34,6 +34,13 @@ jobs:
         name: jacoco-coverage
         path: build/reports/jacoco/test/html
 
+    - name: Upload error logs
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: error-logs
+        path: file:///home/runner/work/ARCADE/ARCADE/build/reports/tests/test/index.html
+
   publish-jacoco-coverage:
     if: ${{ always() && github.ref == 'refs/heads/main' }}
 
