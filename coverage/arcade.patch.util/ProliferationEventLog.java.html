@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProliferationEventLog.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.util</a> &gt; <span class="el_source">ProliferationEventLog.java</span></div><h1>ProliferationEventLog.java</h1><pre class="source lang-java linenums">package arcade.patch.util;
+
+import java.util.HashMap;
+import java.util.Map;
+import arcade.core.util.EventLog;
+
+/**
+ * Concrete implementation of {@link EventLog} for proliferation events.
+ *
+ * &lt;p&gt;{@code ProliferationEventLog} objects are created when a cell successfully completes its cell
+ * cycle and divides, capturing the ID of the dividing cell and the duration of its cell cycle, as
+ * well as the time at which proliferation occurred.
+ */
+public class ProliferationEventLog extends EventLog {
+
+    /** The event type identifier for proliferation events. */
+    public static final String EVENT_TYPE = &quot;proliferation&quot;;
+
+    /** The ID of the cell that proliferated. */
+    public final int cellId;
+
+    /** The duration of the cell cycle from the start of proliferation to division. */
+    public final int cycleLength;
+
+    /**
+     * Constructs a {@code ProliferationEventLog} with the given event details.
+     *
+     * @param timestamp the simulation timestep at which proliferation occurred
+     * @param cellId the ID of the cell that proliferated.
+     * @param cycleLength the duration of the cell cycle from the start of proliferation to
+     *     division.
+     */
+    public ProliferationEventLog(int timestamp, int cellId, int cycleLength) {
+
+<span class="fc" id="L35">        super(timestamp, EVENT_TYPE);</span>
+<span class="fc" id="L36">        this.cellId = cellId;</span>
+<span class="fc" id="L37">        this.cycleLength = cycleLength;</span>
+<span class="fc" id="L38">    }</span>
+
+    /**
+     * Returns a map of key-value pairs describing the details of this proliferation event.
+     *
+     * &lt;p&gt;The map includes the event type, timestamp, the ID of the cell that proliferated, and the
+     * duration of the cell cycle from the start of proliferation to division.
+     *
+     * @return a Map containing the proliferation event's details
+     */
+    @Override
+    public Map&lt;String, Object&gt; eventDetails() {
+<span class="fc" id="L50">        Map&lt;String, Object&gt; map = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L51">        map.put(&quot;event-type&quot;, EVENT_TYPE);</span>
+<span class="fc" id="L52">        map.put(&quot;timestamp&quot;, super.timestamp);</span>
+<span class="fc" id="L53">        map.put(&quot;cell-id&quot;, cellId);</span>
+<span class="fc" id="L54">        map.put(&quot;cycle-length&quot;, cycleLength);</span>
+<span class="fc" id="L55">        return map;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

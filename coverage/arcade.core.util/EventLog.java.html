@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EventLog.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.core.util</a> &gt; <span class="el_source">EventLog.java</span></div><h1>EventLog.java</h1><pre class="source lang-java linenums">package arcade.core.util;
+
+import java.util.Map;
+
+/**
+ * Abstract class representing a logged simulation event.
+ *
+ * &lt;p&gt;{@code EventLog} objects capture specific events that occur during a simulation, recording
+ * when the event happened and what type of event it was. Subclasses define the specific details of
+ * each event type.
+ */
+public abstract class EventLog {
+
+    /** The timestep at which this log was created. */
+    public final int timestamp;
+
+    /** A String identifier representing the type of event that was logged. */
+    public final String eventType;
+
+    /**
+     * Constructs an {@code EventLog} with the given timestamp and event type.
+     *
+     * @param timestamp the simulation timestep at which the event occurred
+     * @param eventType a String identifier representing the type of event
+     */
+<span class="fc" id="L26">    public EventLog(int timestamp, String eventType) {</span>
+<span class="fc" id="L27">        this.timestamp = timestamp;</span>
+<span class="fc" id="L28">        this.eventType = eventType;</span>
+<span class="fc" id="L29">    }</span>
+
+    /**
+     * Returns a map of key-value pairs describing the details of this event.
+     *
+     * @return a Map containing the event's details
+     */
+    public abstract Map&lt;String, Object&gt; eventDetails();
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
