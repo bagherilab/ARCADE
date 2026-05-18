@@ -921,9 +921,9 @@ public class SeriesTest {
             for (int seed : seeds[i]) {
                 verify(series).runSim(any(SimState.class), eq(seed));
                 // runSim() can only be called if the simulation instance was successfully created
-                // this means that including the previous verification was not specifically necessary
-                // because our current verify still makes sure things work, which needs a new instance
-                // to be created to pass.
+                // this means that including the previous verification was not specifically
+                // necessary because our current verify still makes sure things work, which needs
+                // a new instance to be created to pass.
             }
         }
     }
