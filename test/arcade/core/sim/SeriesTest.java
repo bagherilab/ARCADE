@@ -1,5 +1,6 @@
 package arcade.core.sim;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -915,15 +916,16 @@ public class SeriesTest {
                     spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false));
             doNothing().when(series).runSim(any(SimState.class), any(int.class));
 
+            Constructor<?> mockSimCons = mock(Constructor.class);
+            doReturn(new SimulationMock(0, series)).when(mockSimCons).newInstance(any(Object[].class));
+            series.simCons = mockSimCons;
+
             series.runSims();
 
             verify(series, times(n[i])).runSim(any(SimState.class), any(int.class));
             for (int seed : seeds[i]) {
+                verify(series.simCons).newInstance(start[i] + i + SEED_OFFSET, series);
                 verify(series).runSim(any(SimState.class), eq(seed));
-                // runSim() can only be called if the simulation instance was successfully created
-                // this means that including the previous verification was not specifically
-                // necessary because our current verify still makes sure things work, which needs
-                // a new instance to be created to pass.
             }
         }
     }
