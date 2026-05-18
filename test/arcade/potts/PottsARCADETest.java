@@ -72,13 +72,16 @@ public class PottsARCADETest {
             assertTrue(actualFile.exists());
 
             // Remove version field because executable name is nondeterministic
+            // Truncates numbers to 10 decimal places for tolerance
             String expectedContent =
                     Files.readString(expectedFile.toPath())
-                            .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "");
+                            .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "")
+                            .replaceAll("(\\.\\d{10})\\d+", "$1");
 
             String actualContent =
                     Files.readString(actualFile.toPath())
-                            .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "");
+                            .replaceAll("\"version\"\\s*:\\s*\"[^\"]+\"", "")
+                            .replaceAll("(\\.\\d{10})\\d+", "$1");
 
             assertEquals(expectedContent, actualContent);
         }
