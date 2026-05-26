@@ -22,6 +22,9 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
     /* Rate of Prospero degradation (ticks^-1). */
     final double prosperoDegradationRate;
 
+    /* Rate of Deadpan degradation (ticks^-1). */
+    final double deadpanDegradationRate;
+
     /**
      * Creates a fly GMC proliferation module.
      *
@@ -32,8 +35,14 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
         pdeLike = (cell.getParameters().getInt("proliferation/PDELIKE") != 0);
         prosperoDegradationRate =
                 cell.getParameters().getDouble("proliferation/PROSPERO_DEGRADATION_RATE");
+        deadpanDegradationRate =
+                cell.getParameters().getDouble("proliferation/DEADPAN_DEGRADATION_RATE");
+
         if (prosperoDegradationRate < 0) {
             throw new IllegalArgumentException("Prospero degradation rate should not be negative");
+        }
+        if (deadpanDegradationRate < 0) {
+            throw new IllegalArgumentException("Deadpan degradation rate should not be negative");
         }
     }
 
@@ -43,8 +52,16 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
         ((PottsCellFly) cell)
                 .setProspero(
                         Math.max(0, ((PottsCellFly) cell).getProspero() - prosperoDegradationRate));
+        ((PottsCellFly) cell)
+                .setDeadpan(
+                        Math.max(0, ((PottsCellFly) cell).getDeadpan() - deadpanDegradationRate));
         System.out.println(
-                "GMC ID " + cell.getID() + " prospero: " + ((PottsCellFly) cell).getProspero());
+                "GMC ID "
+                        + cell.getID()
+                        + " prospero: "
+                        + ((PottsCellFly) cell).getProspero()
+                        + ", deadpan: "
+                        + ((PottsCellFly) cell).getDeadpan());
     }
 
     /**

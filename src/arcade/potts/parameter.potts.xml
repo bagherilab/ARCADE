@@ -88,7 +88,10 @@
     <population.module module="proliferation" id="HAS_DETERMINISTIC_DIFFERENTIATION" value="TRUE" description="if TRUE, differentiation is determined deterministically" />
     <!-- Prospero synthesis and degradation rates -->
     <population.module module="proliferation" id="PROSPERO_SYNTHESIS_RATE" value="1" units="Prospero/hour" conversion="DT" description="synthesis rate of Prospero" />
-    <population.module module="proliferation" id="PROSPERO_DEGRADATION_RATE" value="-1" units="Prospero/hour" conversion="DT" description="degradation rate of Prospero" />
+    <population.module module="proliferation" id="PROSPERO_DEGRADATION_RATE" value="1" units="Prospero/hour" conversion="DT" description="degradation rate of Prospero" />
+    <!-- Deadpan synthesis and degradation rates -->
+    <population.module module="proliferation" id="DEADPAN_SYNTHESIS_RATE" value="1" units="Deadpan/hour" conversion="DT" description="synthesis rate of Deadpan" />
+    <population.module module="proliferation" id="DEADPAN_DEGRADATION_RATE" value="1" units="Deadpan/hour" conversion="DT" description="degradation rate of Deadpan" />
 
     <!-- apoptosis module parameters -->
     <population.module module="apoptosis" id="RATE_EARLY" value="4" units="steps/hour" conversion="DT" description="rate of events in early apoptosis phase" />

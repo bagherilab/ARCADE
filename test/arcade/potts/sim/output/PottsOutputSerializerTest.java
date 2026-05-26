@@ -546,4 +546,36 @@ public class PottsOutputSerializerTest {
         JsonElement json = serializer.serialize(cells, null, null);
         assertEquals(expected.toString(), json.toString());
     }
+
+    @Test
+    public void serialize_forDeadpan_createsJSON() {
+        DeadpanSerializer serializer = new DeadpanSerializer();
+        HashMap<Integer, Double> cells = new HashMap<>();
+        int numCells = randomIntBetween(1, 100);
+        int startId = randomIntBetween(1, 100);
+
+        for (int i = 0; i < numCells; i++) {
+            cells.put(startId, randomDoubleBetween(1, 100));
+            startId++;
+        }
+
+        StringBuilder expected = new StringBuilder();
+        int i = 0;
+        expected.append("[");
+        for (Integer id : cells.keySet()) {
+            expected.append("{\"id\":")
+                    .append(id)
+                    .append(",\"deadpan\":")
+                    .append(cells.get(id))
+                    .append("}");
+            if (i < cells.size() - 1) {
+                expected.append(","); // to match JSON formatting
+            }
+            i++;
+        }
+        expected.append("]");
+
+        JsonElement json = serializer.serialize(cells, null, null);
+        assertEquals(expected.toString(), json.toString());
+    }
 }

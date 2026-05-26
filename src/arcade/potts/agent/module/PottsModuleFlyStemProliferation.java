@@ -42,6 +42,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /** Rate of Prospero synthesis (ticks^-1). */
     final double prosperoSynthesisRate;
 
+    /** Rate of Deadpan synthesis (ticks^-1). */
+    final double deadpanSynthesisRate;
+
     /** Distribution that determines rotational offset of cell's division plane. */
     final NormalDistribution splitDirectionDistribution;
 
@@ -121,6 +124,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
         prosperoSynthesisRate = parameters.getDouble("proliferation/PROSPERO_SYNTHESIS_RATE");
+        deadpanSynthesisRate = parameters.getDouble("proliferation/DEADPAN_SYNTHESIS_RATE");
         splitDirectionDistribution =
                 (NormalDistribution)
                         parameters.getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION");
@@ -170,8 +174,14 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         super.step(random, sim);
         ((PottsCellFly) cell)
                 .setProspero(((PottsCellFly) cell).getProspero() + prosperoSynthesisRate);
+        ((PottsCellFly) cell).setDeadpan(((PottsCellFly) cell).getDeadpan() + deadpanSynthesisRate);
         System.out.println(
-                "Stem ID " + cell.getID() + " prospero: " + ((PottsCellFly) cell).getProspero());
+                "Stem ID "
+                        + cell.getID()
+                        + " prospero: "
+                        + ((PottsCellFly) cell).getProspero()
+                        + ", deadpan: "
+                        + ((PottsCellFly) cell).getDeadpan());
     }
 
     @Override

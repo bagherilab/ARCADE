@@ -16,10 +16,14 @@ public abstract class PottsCellFly extends PottsCell {
     /** Amount of prospero in cell. */
     private double prospero;
 
+    /** Amount of deadpan in cell. */
+    private double deadpan;
+
     public PottsCellFly(
             PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
         this.prospero = 0;
+        this.deadpan = 0;
     }
 
     /**
@@ -38,5 +42,23 @@ public abstract class PottsCellFly extends PottsCell {
      */
     public void setProspero(double prospero) {
         this.prospero = prospero;
+    }
+
+    /**
+     * Gets the amount of deadpan in the cell.
+     *
+     * @return the amount of deadpan in the cell.
+     */
+    public double getDeadpan() {
+        return deadpan;
+    }
+
+    /**
+     * Sets the amount of deadpan for the cell.
+     *
+     * @param deadpan the amount of deadpan in the cell.
+     */
+    public void setDeadpan(double deadpan) {
+        this.deadpan = deadpan;
     }
 }

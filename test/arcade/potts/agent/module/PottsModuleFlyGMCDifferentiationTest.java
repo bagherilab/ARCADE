@@ -140,16 +140,27 @@ public class PottsModuleFlyGMCDifferentiationTest {
     public void constructor_setsParameters() {
         when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
         when(parameters.getDouble("proliferation/PROSPERO_DEGRADATION_RATE")).thenReturn(1.0);
+        when(parameters.getDouble("proliferation/DEADPAN_DEGRADATION_RATE")).thenReturn(2.0);
 
         PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
 
         org.junit.jupiter.api.Assertions.assertFalse(module.pdeLike);
         org.junit.jupiter.api.Assertions.assertEquals(1.0, module.prosperoDegradationRate, EPSILON);
+        org.junit.jupiter.api.Assertions.assertEquals(2.0, module.deadpanDegradationRate, EPSILON);
     }
 
     @Test
     public void constructor_negativeProsperoDegradationRate_throwsException() {
         when(parameters.getDouble("proliferation/PROSPERO_DEGRADATION_RATE")).thenReturn(-1.0);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new PottsModuleFlyGMCDifferentiation(gmcCell));
+    }
+
+    @Test
+    public void constructor_negativeDeadpanDegradationRate_throwsException() {
+        when(parameters.getDouble("proliferation/DEADPAN_DEGRADATION_RATE")).thenReturn(-2.0);
 
         assertThrows(
                 IllegalArgumentException.class,
@@ -172,6 +183,24 @@ public class PottsModuleFlyGMCDifferentiationTest {
         when(gmcCell.getProspero()).thenReturn(4.0);
         module.step(random, sim);
         verify(gmcCell).setProspero(0.0);
+    }
+
+    @Test
+    public void step_decrementsDeadpan_deadpanIsUpdated() {
+        when(parameters.getDouble("proliferation/DEADPAN_DEGRADATION_RATE")).thenReturn(4.0);
+
+        PottsModuleFlyGMCDifferentiation module =
+                spy(new PottsModuleFlyGMCDifferentiation(gmcCell));
+
+        doNothing().when(module).addCell(any(MersenneTwisterFast.class), any(Simulation.class));
+
+        when(gmcCell.getDeadpan()).thenReturn(5.0);
+        module.step(random, sim);
+        verify(gmcCell).setDeadpan(1.0);
+
+        when(gmcCell.getDeadpan()).thenReturn(1.0);
+        module.step(random, sim);
+        verify(gmcCell).setDeadpan(0.0);
     }
 
     @Test

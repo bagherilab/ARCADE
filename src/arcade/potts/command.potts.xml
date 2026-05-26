@@ -1,3 +1,4 @@
 <commands>
     <switch id="SAVE_PROSPERO" short="p" long="prospero" help="Save the PROSPERO output files" />
+    <switch id="SAVE_DEADPAN" short="d" long="deadpan" help="Save the DEADPAN output files" />
 </commands>

@@ -134,6 +134,7 @@ public class PottsModuleFlyStemProliferationTest {
     public void constructor_setsParameters() {
         when(parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE")).thenReturn(0.04);
         when(parameters.getDouble("proliferation/PROSPERO_SYNTHESIS_RATE")).thenReturn(0.895);
+        when(parameters.getDouble("proliferation/DEADPAN_SYNTHESIS_RATE")).thenReturn(0.314);
         when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
         when(parameters.getDistribution("proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION"))
                 .thenReturn(dist);
@@ -145,6 +146,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         assertEquals(0.04, module.basalApoptosisRate, EPSILON);
         assertEquals(0.895, module.prosperoSynthesisRate, EPSILON);
+        assertEquals(0.314, module.deadpanSynthesisRate, EPSILON);
         assertNotNull(module.splitDirectionDistribution);
         assertEquals("volume", module.differentiationRuleset);
         assertEquals(0.5, module.range, EPSILON);
@@ -518,16 +520,19 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void step_incrementsProspero_prosperoIsUpdated() {
+    public void step_incrementsProsperoAndDeadpan_prosperoAndDeadpanAreUpdated() {
         when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(0);
         when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
         when(parameters.getDouble("proliferation/PROSPERO_SYNTHESIS_RATE")).thenReturn(1.0);
+        when(parameters.getDouble("proliferation/DEADPAN_SYNTHESIS_RATE")).thenReturn(2.0);
         module = new PottsModuleFlyStemProliferation(stemCell);
         when(stemCell.getVolume()).thenReturn(0.0); // we don't want addCell to be called
         when(stemCell.getProspero()).thenReturn(5.0);
+        when(stemCell.getDeadpan()).thenReturn(2.0);
         module.step(random, sim);
         verify(stemCell).setProspero(6.0);
+        verify(stemCell).setDeadpan(4.0);
     }
 
     @Test

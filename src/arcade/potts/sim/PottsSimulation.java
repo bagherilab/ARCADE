@@ -32,6 +32,8 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 
     public static final Type PROSPERO_TYPE = new TypeToken<HashMap<Integer, Double>>() {}.getType();
 
+    public static final Type DEADPAN_TYPE = new TypeToken<HashMap<Integer, Double>>() {}.getType();
+
     /** {@link arcade.core.sim.Series} object containing this simulation. */
     final PottsSeries series;
 
@@ -298,5 +300,16 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         }
 
         return prosperoMap;
+    }
+
+    public final HashMap<Integer, Double> getAllDeadpan() {
+        HashMap<Integer, Double> deadpanMap = new HashMap<>();
+
+        for (Object obj : grid.getAllObjects()) {
+            PottsCellFly cell = (PottsCellFly) obj;
+            deadpanMap.put(cell.getID(), cell.getDeadpan());
+        }
+
+        return deadpanMap;
     }
 }

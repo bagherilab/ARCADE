@@ -33,6 +33,7 @@ public final class PottsARCADE extends ARCADE {
     public OutputSaver getSaver(Series series) {
         PottsOutputSaver saver = new PottsOutputSaver(series);
         saver.saveProspero = settings.contains("SAVE_PROSPERO");
+        saver.saveDeadpan = settings.contains("SAVE_DEADPAN");
         return saver;
     }
 }
