@@ -19,11 +19,11 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
 
     Boolean pdeLike;
 
-    /* Rate of Prospero degradation (ticks^-1). */
-    final double prosperoDegradationRate;
+    /* Rate of Prospero change (ticks^-1). */
+    final double prosperoRate;
 
-    /* Rate of Deadpan degradation (ticks^-1). */
-    final double deadpanDegradationRate;
+    /* Rate of Deadpan change (ticks^-1). */
+    final double deadpanRate;
 
     /**
      * Creates a fly GMC proliferation module.
@@ -33,28 +33,17 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
     public PottsModuleFlyGMCDifferentiation(PottsCellFlyGMC cell) {
         super(cell);
         pdeLike = (cell.getParameters().getInt("proliferation/PDELIKE") != 0);
-        prosperoDegradationRate =
-                cell.getParameters().getDouble("proliferation/PROSPERO_DEGRADATION_RATE");
-        deadpanDegradationRate =
-                cell.getParameters().getDouble("proliferation/DEADPAN_DEGRADATION_RATE");
-
-        if (prosperoDegradationRate < 0) {
-            throw new IllegalArgumentException("Prospero degradation rate should not be negative");
-        }
-        if (deadpanDegradationRate < 0) {
-            throw new IllegalArgumentException("Deadpan degradation rate should not be negative");
-        }
+        prosperoRate = cell.getParameters().getDouble("proliferation/PROSPERO_RATE");
+        deadpanRate = cell.getParameters().getDouble("proliferation/DEADPAN_RATE");
     }
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
         super.step(random, sim);
         ((PottsCellFly) cell)
-                .setProspero(
-                        Math.max(0, ((PottsCellFly) cell).getProspero() - prosperoDegradationRate));
+                .setProspero(Math.max(0, ((PottsCellFly) cell).getProspero() + prosperoRate));
         ((PottsCellFly) cell)
-                .setDeadpan(
-                        Math.max(0, ((PottsCellFly) cell).getDeadpan() - deadpanDegradationRate));
+                .setDeadpan(Math.max(0, ((PottsCellFly) cell).getDeadpan() + deadpanRate));
         System.out.println(
                 "GMC ID "
                         + cell.getID()

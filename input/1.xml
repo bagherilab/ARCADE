@@ -24,29 +24,23 @@
                     <population.parameter id="proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE" value="386" />
                     <population.parameter id="proliferation/DYNAMIC_GROWTH_RATE_VOLUME" value="0" />
                     <population.parameter id="proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT" value="0" />
-                    <population.parameter id="proliferation/PROSPERO_SYNTHESIS_RATE" value="3" />
-                    <population.parameter id="proliferation/PROSPERO_DEGRADATION_RATE" value="-20" />
-                    <population.parameter id="proliferation/DEADPAN_SYNTHESIS_RATE" value="3" />
-                    <population.parameter id="proliferation/DEADPAN_DEGRADATION_RATE" value="-20" />
+                    <population.parameter id="proliferation/PROSPERO_RATE" value="0.1" />
+                    <population.parameter id="proliferation/DEADPAN_RATE" value="0.1" />
                 </population>
                 <population id="fly-gmc" class="fly-gmc" init="0">
                     <population.link id="fly-neuron" weight="1"/>
                     <population.parameter id="proliferation/BASAL_APOPTOSIS_RATE" value="0"/>
                     <population.parameter id="proliferation/CELL_GROWTH_RATE" value="5" units="um^2/hour" conversion="DS^-2.DT"/>
                     <population.parameter id="proliferation/DYNAMIC_GROWTH_RATE_VOLUME" value="0" />
-                    <population.parameter id="proliferation/PROSPERO_SYNTHESIS_RATE" value="3" />
-                    <population.parameter id="proliferation/PROSPERO_DEGRADATION_RATE" value="20" />
-                    <population.parameter id="proliferation/DEADPAN_SYNTHESIS_RATE" value="3" />
-                    <population.parameter id="proliferation/DEADPAN_DEGRADATION_RATE" value="20" />
+                    <population.parameter id="proliferation/PROSPERO_RATE" value="-100" />
+                    <population.parameter id="proliferation/DEADPAN_RATE" value="-100" />
                 </population>
                 <population id="fly-neuron" class="fly-neuron" init="0">
                     <population.parameter id="proliferation/CELL_GROWTH_RATE" value="0"/>
                     <population.parameter id="proliferation/BASAL_APOPTOSIS_RATE" value="0"/>
                     <population.parameter id="CRITICAL_VOLUME" value="11" units="um^3" conversion="DS^-3" />
-                    <population.parameter id="proliferation/PROSPERO_SYNTHESIS_RATE" value="3" />
-                    <population.parameter id="proliferation/PROSPERO_DEGRADATION_RATE" value="20" />
-                    <population.parameter id="proliferation/DEADPAN_SYNTHESIS_RATE" value="3" />
-                    <population.parameter id="proliferation/DEADPAN_DEGRADATION_RATE" value="20" />
+                    <population.parameter id="proliferation/PROSPERO_RATE" value="20" />
+                    <population.parameter id="proliferation/DEADPAN_RATE" value="20" />
                 </population>
             </populations>
         </agents>

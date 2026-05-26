@@ -39,11 +39,11 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /** Basal rate of apoptosis (ticks^-1). */
     final double basalApoptosisRate;
 
-    /** Rate of Prospero synthesis (ticks^-1). */
-    final double prosperoSynthesisRate;
+    /** Rate of Prospero change (ticks^-1). */
+    final double prosperoRate;
 
-    /** Rate of Deadpan synthesis (ticks^-1). */
-    final double deadpanSynthesisRate;
+    /** Rate of Deadpan change (ticks^-1). */
+    final double deadpanRate;
 
     /** Distribution that determines rotational offset of cell's division plane. */
     final NormalDistribution splitDirectionDistribution;
@@ -123,8 +123,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         Parameters parameters = cell.getParameters();
 
         basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
-        prosperoSynthesisRate = parameters.getDouble("proliferation/PROSPERO_SYNTHESIS_RATE");
-        deadpanSynthesisRate = parameters.getDouble("proliferation/DEADPAN_SYNTHESIS_RATE");
+        prosperoRate = parameters.getDouble("proliferation/PROSPERO_RATE");
+        deadpanRate = parameters.getDouble("proliferation/DEADPAN_RATE");
         splitDirectionDistribution =
                 (NormalDistribution)
                         parameters.getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION");
@@ -172,9 +172,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
         super.step(random, sim);
-        ((PottsCellFly) cell)
-                .setProspero(((PottsCellFly) cell).getProspero() + prosperoSynthesisRate);
-        ((PottsCellFly) cell).setDeadpan(((PottsCellFly) cell).getDeadpan() + deadpanSynthesisRate);
+        ((PottsCellFly) cell).setProspero(((PottsCellFly) cell).getProspero() + prosperoRate);
+        ((PottsCellFly) cell).setDeadpan(((PottsCellFly) cell).getDeadpan() + deadpanRate);
         System.out.println(
                 "Stem ID "
                         + cell.getID()

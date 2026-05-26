@@ -22,7 +22,6 @@ import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.Region;
 import arcade.potts.util.PottsEnums.State;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -139,37 +138,19 @@ public class PottsModuleFlyGMCDifferentiationTest {
     @Test
     public void constructor_setsParameters() {
         when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
-        when(parameters.getDouble("proliferation/PROSPERO_DEGRADATION_RATE")).thenReturn(1.0);
-        when(parameters.getDouble("proliferation/DEADPAN_DEGRADATION_RATE")).thenReturn(2.0);
+        when(parameters.getDouble("proliferation/PROSPERO_RATE")).thenReturn(-1.0);
+        when(parameters.getDouble("proliferation/DEADPAN_RATE")).thenReturn(-2.0);
 
         PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
 
         org.junit.jupiter.api.Assertions.assertFalse(module.pdeLike);
-        org.junit.jupiter.api.Assertions.assertEquals(1.0, module.prosperoDegradationRate, EPSILON);
-        org.junit.jupiter.api.Assertions.assertEquals(2.0, module.deadpanDegradationRate, EPSILON);
-    }
-
-    @Test
-    public void constructor_negativeProsperoDegradationRate_throwsException() {
-        when(parameters.getDouble("proliferation/PROSPERO_DEGRADATION_RATE")).thenReturn(-1.0);
-
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> new PottsModuleFlyGMCDifferentiation(gmcCell));
-    }
-
-    @Test
-    public void constructor_negativeDeadpanDegradationRate_throwsException() {
-        when(parameters.getDouble("proliferation/DEADPAN_DEGRADATION_RATE")).thenReturn(-2.0);
-
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> new PottsModuleFlyGMCDifferentiation(gmcCell));
+        org.junit.jupiter.api.Assertions.assertEquals(-1.0, module.prosperoRate, EPSILON);
+        org.junit.jupiter.api.Assertions.assertEquals(-2.0, module.deadpanRate, EPSILON);
     }
 
     @Test
     public void step_decrementsProspero_prosperoIsUpdated() {
-        when(parameters.getDouble("proliferation/PROSPERO_DEGRADATION_RATE")).thenReturn(6.0);
+        when(parameters.getDouble("proliferation/PROSPERO_RATE")).thenReturn(-6.0);
 
         PottsModuleFlyGMCDifferentiation module =
                 spy(new PottsModuleFlyGMCDifferentiation(gmcCell));
@@ -187,7 +168,7 @@ public class PottsModuleFlyGMCDifferentiationTest {
 
     @Test
     public void step_decrementsDeadpan_deadpanIsUpdated() {
-        when(parameters.getDouble("proliferation/DEADPAN_DEGRADATION_RATE")).thenReturn(4.0);
+        when(parameters.getDouble("proliferation/DEADPAN_RATE")).thenReturn(-4.0);
 
         PottsModuleFlyGMCDifferentiation module =
                 spy(new PottsModuleFlyGMCDifferentiation(gmcCell));
