@@ -3,6 +3,8 @@ package arcade.patch;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import com.google.gson.JsonArray;
@@ -117,6 +119,7 @@ public class PatchARCADETest {
     }
 
     @Test
+    @Tag("fileComparison")
     public void main_noVis_fileComparison(@TempDir Path path) throws Exception {
         // Expects an input file at input/[name].xml and expected output files in
         // expected/[name]-expected
