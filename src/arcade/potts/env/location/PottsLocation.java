@@ -665,7 +665,7 @@ public abstract class PottsLocation implements Location {
      * @param apicalAxis the apical axis of the cell
      * @return a Bag containing the voxels within the threshold and side
      */
-    public Bag getDirectionalVoxelSubset(
+    public static Bag getDirectionalVoxelSubset(
             Side side,
             double thresholdPercent,
             ArrayList<Voxel> voxels,
