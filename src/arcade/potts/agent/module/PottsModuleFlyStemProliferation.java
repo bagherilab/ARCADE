@@ -206,9 +206,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 parentLoc.getDirectionalVoxelSubset(Side.BASAL, 0.33, voxels, centroid, apicalAxis);
 
         double apicalFrac =
-                apicalFractionInDaughter(apicalVoxels, daughterLoc, divisionPlane, random);
+                voxelFraction(apicalVoxels, daughterLoc);
         double basalFrac =
-                apicalFractionInDaughter(basalVoxels, daughterLoc, divisionPlane, random);
+                voxelFraction(basalVoxels, daughterLoc);
 
         double parentDeadpan = ((PottsCellFly) cell).getDeadpan();
         double parentProspero = ((PottsCellFly) cell).getProspero();
@@ -612,34 +612,30 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     //    }
 
     /**
-     * Calculates the fraction of apical voxels in daughter A's location post-division, used to
-     * distribute DPN.
+     * Calculates the fraction of voxels in a daughter cell to distribute
+     * transcription factors.
      *
-     * @param apicalVoxels voxels in the apical region
+     * @param voxels voxels in the region of interest
      * @param daughterLoc the daughter cell's location
-     * @param divisionPlane the division plane
-     * @param random the random number generator
-     * @return fraction of apical voxels in daughter A
+     * @return fraction of voxels in the daughter cell
      */
-    static double apicalFractionInDaughter(
-            Bag apicalVoxels,
-            PottsLocation daughterLoc,
-            Plane divisionPlane,
-            MersenneTwisterFast random) {
+    static double voxelFraction(
+            Bag voxels,
+            PottsLocation daughterLoc) {
 
-        if (apicalVoxels.numObjs == 0) {
+        if (voxels.numObjs == 0) {
             return 0.5;
         }
 
         HashSet<Voxel> daughterVoxelSet = new HashSet<>(daughterLoc.getVoxels());
         double inDaughter = 0;
 
-        for (int i = 0; i < apicalVoxels.numObjs; i++) {
-            if (daughterVoxelSet.contains(apicalVoxels.objs[i])) {
+        for (int i = 0; i < voxels.numObjs; i++) {
+            if (daughterVoxelSet.contains(voxels.objs[i])) {
                 inDaughter++;
             }
         }
-        return inDaughter / apicalVoxels.numObjs;
+        return inDaughter / voxels.numObjs;
     }
 
     /**
