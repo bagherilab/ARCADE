@@ -19,8 +19,7 @@ import arcade.potts.env.location.PottsLocationContainer;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.PottsSeries;
 import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;
-import static arcade.potts.sim.PottsSimulation.DEADPAN_TYPE;
-import static arcade.potts.sim.PottsSimulation.PROSPERO_TYPE;
+import static arcade.potts.sim.PottsSimulation.TRANSCRIPTION_FACTORS_TYPE;
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
 
@@ -56,8 +55,8 @@ public final class PottsOutputSerializer {
         gsonBuilder.registerTypeAdapter(
                 PottsLocationContainer.class, new PottsLocationSerializer());
         gsonBuilder.registerTypeAdapter(Voxel.class, new VoxelSerializer());
-        gsonBuilder.registerTypeAdapter(PROSPERO_TYPE, new ProsperoSerializer());
-        gsonBuilder.registerTypeAdapter(DEADPAN_TYPE, new DeadpanSerializer());
+        gsonBuilder.registerTypeAdapter(
+                TRANSCRIPTION_FACTORS_TYPE, new TranscriptionFactorsSerializer());
         return gsonBuilder.create();
     }
 
@@ -281,30 +280,17 @@ public final class PottsOutputSerializer {
         }
     }
 
-    static class ProsperoSerializer implements JsonSerializer<HashMap<Integer, Double>> {
+    static class TranscriptionFactorsSerializer
+            implements JsonSerializer<HashMap<Integer, double[]>> {
         @Override
         public JsonElement serialize(
-                HashMap<Integer, Double> src, Type typeOfSrc, JsonSerializationContext context) {
+                HashMap<Integer, double[]> src, Type typeOfSrc, JsonSerializationContext context) {
             JsonArray json = new JsonArray();
             for (Integer id : src.keySet()) {
                 JsonObject entry = new JsonObject();
                 entry.addProperty("id", id);
-                entry.addProperty("prospero", src.get(id));
-                json.add(entry);
-            }
-            return json;
-        }
-    }
-
-    static class DeadpanSerializer implements JsonSerializer<HashMap<Integer, Double>> {
-        @Override
-        public JsonElement serialize(
-                HashMap<Integer, Double> src, Type typeOfSrc, JsonSerializationContext context) {
-            JsonArray json = new JsonArray();
-            for (Integer id : src.keySet()) {
-                JsonObject entry = new JsonObject();
-                entry.addProperty("id", id);
-                entry.addProperty("deadpan", src.get(id));
+                entry.addProperty("prospero", src.get(id)[0]);
+                entry.addProperty("deadpan", src.get(id)[1]);
                 json.add(entry);
             }
             return json;

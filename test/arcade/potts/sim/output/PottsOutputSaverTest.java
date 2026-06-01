@@ -12,7 +12,7 @@ import arcade.potts.sim.PottsSimulation;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.randomIntBetween;
 import static arcade.core.ARCADETestUtilities.randomString;
-import static arcade.potts.sim.PottsSimulation.PROSPERO_TYPE;
+import static arcade.potts.sim.PottsSimulation.TRANSCRIPTION_FACTORS_TYPE;
 
 public class PottsOutputSaverTest {
     @Test
@@ -25,11 +25,11 @@ public class PottsOutputSaverTest {
     }
 
     @Test
-    public void saveProspero_called_savesContents() {
+    public void saveTranscriptionFactors_called_savesContents() {
         HashMap<Integer, Double> prospero = new HashMap<>();
         int tick = randomIntBetween(0, 10);
         PottsSimulation sim = mock(PottsSimulation.class);
-        doReturn(prospero).when(sim).getAllProspero();
+        doReturn(prospero).when(sim).getAllTranscriptionFactors();
 
         PottsSeries series = mock(PottsSeries.class);
         PottsOutputSaver saver = spy(new PottsOutputSaver(series));
@@ -44,7 +44,7 @@ public class PottsOutputSaverTest {
 
         Gson gson = mock(Gson.class);
         String contents = randomString();
-        doReturn(contents).when(gson).toJson(prospero, PROSPERO_TYPE);
+        doReturn(contents).when(gson).toJson(prospero, TRANSCRIPTION_FACTORS_TYPE);
 
         try {
             Field field = OutputSaver.class.getDeclaredField("gson");
@@ -53,8 +53,11 @@ public class PottsOutputSaverTest {
         } catch (Exception ignored) {
         }
 
-        saver.saveProspero(tick);
-        verify(gson).toJson(prospero, PROSPERO_TYPE);
-        verify(saver).write(saver.prefix + String.format("_%06d.PROSPERO.json", tick), contents);
+        saver.saveTranscriptionFactors(tick);
+        verify(gson).toJson(prospero, TRANSCRIPTION_FACTORS_TYPE);
+        verify(saver)
+                .write(
+                        saver.prefix + String.format("_%06d.TRANSCRIPTION_FACTORS.json", tick),
+                        contents);
     }
 }

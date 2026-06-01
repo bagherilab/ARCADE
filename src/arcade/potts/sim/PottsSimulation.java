@@ -30,9 +30,8 @@ import static arcade.potts.util.PottsEnums.Ordering;
 /** Abstract implementation for potts {@link Simulation} instances. */
 public abstract class PottsSimulation extends SimState implements Simulation {
 
-    public static final Type PROSPERO_TYPE = new TypeToken<HashMap<Integer, Double>>() {}.getType();
-
-    public static final Type DEADPAN_TYPE = new TypeToken<HashMap<Integer, Double>>() {}.getType();
+    public static final Type TRANSCRIPTION_FACTORS_TYPE =
+            new TypeToken<HashMap<Integer, double[]>>() {}.getType();
 
     /** {@link arcade.core.sim.Series} object containing this simulation. */
     final PottsSeries series;
@@ -291,25 +290,15 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         }
     }
 
-    public final HashMap<Integer, Double> getAllProspero() {
-        HashMap<Integer, Double> prosperoMap = new HashMap<>();
+    public final HashMap<Integer, double[]> getAllTranscriptionFactors() {
+        HashMap<Integer, double[]> transcriptionFactorMap = new HashMap<>();
 
         for (Object obj : grid.getAllObjects()) {
             PottsCellFly cell = (PottsCellFly) obj;
-            prosperoMap.put(cell.getID(), cell.getProspero());
+            transcriptionFactorMap.put(
+                    cell.getID(), new double[] {cell.getProspero(), cell.getDeadpan()});
         }
 
-        return prosperoMap;
-    }
-
-    public final HashMap<Integer, Double> getAllDeadpan() {
-        HashMap<Integer, Double> deadpanMap = new HashMap<>();
-
-        for (Object obj : grid.getAllObjects()) {
-            PottsCellFly cell = (PottsCellFly) obj;
-            deadpanMap.put(cell.getID(), cell.getDeadpan());
-        }
-
-        return deadpanMap;
+        return transcriptionFactorMap;
     }
 }

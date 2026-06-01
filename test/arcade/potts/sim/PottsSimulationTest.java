@@ -657,7 +657,7 @@ public class PottsSimulationTest {
     }
 
     @Test
-    public void getAllProspero_multipleCells_returnsCorrectMap() {
+    public void getAllTranscriptionFactors_multipleCells_returnsCorrectMap() {
         PottsSimulation sim = mock(PottsSimulation.class, CALLS_REAL_METHODS);
         sim.grid = mock(Grid.class);
 
@@ -665,68 +665,32 @@ public class PottsSimulationTest {
         PottsCellFly cell2 = mock(PottsCellFly.class);
         when(cell1.getID()).thenReturn(1);
         when(cell1.getProspero()).thenReturn(3.0);
+        when(cell1.getDeadpan()).thenReturn(1.0);
         when(cell2.getID()).thenReturn(2);
         when(cell2.getProspero()).thenReturn(7.0);
+        when(cell2.getDeadpan()).thenReturn(3.0);
 
         Bag objects = new Bag();
         objects.add(cell1);
         objects.add(cell2);
 
         doReturn(objects).when(sim.grid).getAllObjects();
-        HashMap<Integer, Double> result = sim.getAllProspero();
+        HashMap<Integer, double[]> result = sim.getAllTranscriptionFactors();
 
         assertEquals(2, result.size());
-        assertEquals(3.0, result.get(1), EPSILON);
-        assertEquals(7.0, result.get(2), EPSILON);
+        assertArrayEquals(new double[] {3.0, 1.0}, result.get(1), EPSILON);
+        assertArrayEquals(new double[] {7.0, 3.0}, result.get(2), EPSILON);
     }
 
     @Test
-    public void getAllProspero_emptyGrid_returnsEmptyMap() {
+    public void getAllTranscriptionFactors_emptyGrid_returnsEmptyMap() {
         PottsSimulation sim = mock(PottsSimulation.class, CALLS_REAL_METHODS);
         sim.grid = mock(Grid.class);
         Bag empty = new Bag();
 
         doReturn(empty).when(sim.grid).getAllObjects();
 
-        HashMap<Integer, Double> result = sim.getAllProspero();
-
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    public void getAllDeadpan_multipleCells_returnsCorrectMap() {
-        PottsSimulation sim = mock(PottsSimulation.class, CALLS_REAL_METHODS);
-        sim.grid = mock(Grid.class);
-
-        PottsCellFly cell1 = mock(PottsCellFly.class);
-        PottsCellFly cell2 = mock(PottsCellFly.class);
-        when(cell1.getID()).thenReturn(1);
-        when(cell1.getDeadpan()).thenReturn(3.0);
-        when(cell2.getID()).thenReturn(2);
-        when(cell2.getDeadpan()).thenReturn(7.0);
-
-        Bag objects = new Bag();
-        objects.add(cell1);
-        objects.add(cell2);
-
-        doReturn(objects).when(sim.grid).getAllObjects();
-        HashMap<Integer, Double> result = sim.getAllDeadpan();
-
-        assertEquals(2, result.size());
-        assertEquals(3.0, result.get(1), EPSILON);
-        assertEquals(7.0, result.get(2), EPSILON);
-    }
-
-    @Test
-    public void getAllDeadpan_emptyGrid_returnsEmptyMap() {
-        PottsSimulation sim = mock(PottsSimulation.class, CALLS_REAL_METHODS);
-        sim.grid = mock(Grid.class);
-        Bag empty = new Bag();
-
-        doReturn(empty).when(sim.grid).getAllObjects();
-
-        HashMap<Integer, Double> result = sim.getAllDeadpan();
+        HashMap<Integer, double[]> result = sim.getAllTranscriptionFactors();
 
         assertNotNull(result);
         assertTrue(result.isEmpty());

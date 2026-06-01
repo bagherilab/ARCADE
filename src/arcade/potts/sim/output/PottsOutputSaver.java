@@ -4,8 +4,7 @@ import com.google.gson.Gson;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSaver;
 import arcade.potts.sim.PottsSimulation;
-import static arcade.potts.sim.PottsSimulation.DEADPAN_TYPE;
-import static arcade.potts.sim.PottsSimulation.PROSPERO_TYPE;
+import static arcade.potts.sim.PottsSimulation.TRANSCRIPTION_FACTORS_TYPE;
 
 /** Custom saver for potts-specific serialization. */
 public final class PottsOutputSaver extends OutputSaver {
@@ -18,29 +17,21 @@ public final class PottsOutputSaver extends OutputSaver {
         super(series);
     }
 
-    /** {@code true} to save prospero, {@code false} otherwise. */
-    public boolean saveProspero;
-
-    /** {@code true} to save deadpan, {@code false} otherwise. */
-    public boolean saveDeadpan;
+    /** {@code true} to save transcription factors, {@code false} otherwise. */
+    public boolean saveTranscriptionFactors;
 
     @Override
     protected Gson makeGSON() {
         return PottsOutputSerializer.makeGSON();
     }
 
-    public void saveProspero(int tick) {
+    public void saveTranscriptionFactors(int tick) {
         if (sim instanceof PottsSimulation) {
-            String json = gson.toJson(((PottsSimulation) sim).getAllProspero(), PROSPERO_TYPE);
-            String patch = prefix + String.format("_%06d.PROSPERO.json", tick);
-            write(patch, format(json, FORMAT_ELEMENTS));
-        }
-    }
-
-    public void saveDeadpan(int tick) {
-        if (sim instanceof PottsSimulation) {
-            String json = gson.toJson(((PottsSimulation) sim).getAllDeadpan(), DEADPAN_TYPE);
-            String patch = prefix + String.format("_%06d.DEADPAN.json", tick);
+            String json =
+                    gson.toJson(
+                            ((PottsSimulation) sim).getAllTranscriptionFactors(),
+                            TRANSCRIPTION_FACTORS_TYPE);
+            String patch = prefix + String.format("_%06d.TRANSCRIPTION_FACTORS.json", tick);
             write(patch, format(json, FORMAT_ELEMENTS));
         }
     }
@@ -48,11 +39,8 @@ public final class PottsOutputSaver extends OutputSaver {
     @Override
     public void save(int tick) {
         super.save(tick);
-        if (saveProspero) {
-            saveProspero(tick);
-        }
-        if (saveDeadpan) {
-            saveDeadpan(tick);
+        if (saveTranscriptionFactors) {
+            saveTranscriptionFactors(tick);
         }
     }
 }
