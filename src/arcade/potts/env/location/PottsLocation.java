@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import sim.util.Bag;
 import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
@@ -13,6 +14,7 @@ import arcade.core.util.Utilities;
 import arcade.core.util.Vector;
 import arcade.potts.util.PottsEnums.Direction;
 import arcade.potts.util.PottsEnums.Region;
+import arcade.potts.util.PottsEnums.Side;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Region;
 
@@ -619,7 +621,7 @@ public abstract class PottsLocation implements Location {
     abstract Voxel getOffsetInApicalFrame(ArrayList<Integer> offsets, Vector apicalAxis);
 
     /**
-     * Gets the direction of the slice orthagonal to the direction with the smallest diameter.
+     * Gets the direction of the slice orthogonal to the direction with the smallest diameter.
      *
      * @param random the seeded random number generator
      * @return the direction of the slice
@@ -651,6 +653,60 @@ public abstract class PottsLocation implements Location {
 
         // Convert diameter direction to slice direction.
         return (d == Direction.UNDEFINED ? Direction.random(random) : getSlice(d, diameters));
+    }
+
+    /**
+     * Gets the voxels up to a threshold from a side of the cell.
+     *
+     * @param side the side of the cell
+     * @param thresholdPercent the threshold percent of voxels to get
+     * @param voxels the list of voxels in the cell to check
+     * @param centroid the centroid of the cell
+     * @param apicalAxis the apical axis of the cell
+     * @return a Bag containing the voxels within the threshold and side
+     */
+    public Bag getDirectionalVoxelSubset(
+            Side side,
+            double thresholdPercent,
+            ArrayList<Voxel> voxels,
+            double[] centroid,
+            Vector apicalAxis) {
+        double minProj = Double.MAX_VALUE;
+        double maxProj = -Double.MAX_VALUE;
+        double[] projections = new double[voxels.size()];
+
+        for (int i = 0; i < voxels.size(); i++) {
+            Voxel v = voxels.get(i);
+            double comp =
+                    (v.x - centroid[0]) * apicalAxis.getX()
+                            + (v.y - centroid[1]) * apicalAxis.getY()
+                            + (v.z - centroid[2]) * apicalAxis.getZ();
+            projections[i] = comp;
+            minProj = Math.min(minProj, comp);
+            maxProj = Math.max(maxProj, comp);
+        }
+
+        double range = maxProj - minProj;
+        double cutoff;
+        if (side == Side.APICAL) {
+            cutoff = maxProj - thresholdPercent * range;
+        } else if (side == Side.BASAL) {
+            cutoff = minProj + thresholdPercent * range;
+        } else {
+            throw new IllegalArgumentException("Side must be APICAL or BASAL, but was: " + side);
+        }
+
+        Bag result = new Bag();
+
+        for (int i = 0; i < voxels.size(); i++) {
+            Voxel v = voxels.get(i);
+            if (side == Side.APICAL && projections[i] >= cutoff) {
+                result.add(v);
+            } else if (side == Side.BASAL && projections[i] <= cutoff) {
+                result.add(v);
+            }
+        }
+        return result;
     }
 
     @Override

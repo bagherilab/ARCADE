@@ -222,4 +222,26 @@ public final class PottsEnums {
             return values()[rng.nextInt(values().length - 1) + 1];
         }
     }
+
+    /** Cell side codes for potts simulations. */
+    public enum Side {
+        /** Undefined side. */
+        UNDEFINED,
+
+        /** Apical cell side. */
+        APICAL,
+
+        /** Basal cell side. */
+        BASAL;
+
+        /**
+         * Randomly selects a {@code Side}.
+         *
+         * @param rng the random number generator
+         * @return a random {@code Side}
+         */
+        public static Side random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
+        }
+    }
 }

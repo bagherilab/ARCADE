@@ -26,6 +26,7 @@ import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.Direction;
 import arcade.potts.util.PottsEnums.Phase;
+import arcade.potts.util.PottsEnums.Side;
 import arcade.potts.util.PottsEnums.State;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Phase;
@@ -194,8 +195,30 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         boolean isDaughterStem = daughterStem(parentLoc, daughterLoc, divisionPlane);
 
+        ArrayList<Voxel> voxels = ((PottsLocation) cell.getLocation()).getVoxels();
+        double[] centroid = ((PottsLocation) cell.getLocation()).getCentroid();
+        Vector apicalAxis = flyStemCell.getApicalAxis();
+
+        Bag apicalVoxels =
+                parentLoc.getDirectionalVoxelSubset(
+                        Side.APICAL, 0.33, voxels, centroid, apicalAxis);
+        Bag basalVoxels =
+                parentLoc.getDirectionalVoxelSubset(Side.BASAL, 0.33, voxels, centroid, apicalAxis);
+
+        double apicalFrac =
+                apicalFractionInDaughter(apicalVoxels, daughterLoc, divisionPlane, random);
+        double basalFrac =
+                apicalFractionInDaughter(basalVoxels, daughterLoc, divisionPlane, random);
+
+        double parentDeadpan = ((PottsCellFly) cell).getDeadpan();
+        double parentProspero = ((PottsCellFly) cell).getProspero();
+
+        double daughterProspero = parentProspero * basalFrac;
+        double daughterDeadpan = parentDeadpan * apicalFrac;
+
         if (isDaughterStem) {
-            makeDaughterStemCell(daughterLoc, sim, potts, random);
+            makeDaughterStemCell(
+                    daughterLoc, sim, potts, random, daughterProspero, daughterDeadpan);
         } else {
             makeDaughterGMC(
                     parentLoc,
@@ -203,7 +226,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                     sim,
                     potts,
                     random,
-                    divisionPlane.getUnitNormalVector());
+                    divisionPlane.getUnitNormalVector(),
+                    daughterProspero,
+                    daughterDeadpan);
         }
     }
 
@@ -485,7 +510,12 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * @param random the random number generator
      */
     private void makeDaughterStemCell(
-            PottsLocation daughterLoc, Simulation sim, Potts potts, MersenneTwisterFast random) {
+            PottsLocation daughterLoc,
+            Simulation sim,
+            Potts potts,
+            MersenneTwisterFast random,
+            double daughterProspero,
+            double daughterDeadpan) {
         cell.reset(potts.ids, potts.regions);
         int newID = sim.getID();
         double criticalVol;
@@ -502,9 +532,14 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 ((PottsCellFlyStem) cell)
                         .make(newID, State.PROLIFERATIVE, random, cell.getPop(), criticalVol);
 
-        double daughterProspero = splitStemProspero(((PottsCellFly) cell).getProspero(), random);
-        System.out.print("Creating daughter stem cell with prospero " + daughterProspero + " and ");
-        scheduleNewCell(container, daughterLoc, sim, potts, random, daughterProspero);
+        System.out.print(
+                "Creating daughter stem cell with prospero "
+                        + daughterProspero
+                        + ", deadpan "
+                        + daughterDeadpan
+                        + ", ");
+        scheduleNewCell(
+                container, daughterLoc, sim, potts, random, daughterProspero, daughterDeadpan);
     }
 
     /**
@@ -523,7 +558,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             Simulation sim,
             Potts potts,
             MersenneTwisterFast random,
-            Vector divisionPlaneNormal) {
+            Vector divisionPlaneNormal,
+            double daughterProspero,
+            double daughterDeadpan) {
         Location gmcLoc = determineGMCLocation(parentLoc, daughterLoc, divisionPlaneNormal);
 
         if (parentLoc == gmcLoc) {
@@ -540,35 +577,69 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         System.out.print(
                 "Creating daughter GMC with prospero "
-                        + ((PottsCellFly) cell).getProspero()
-                        + " and ");
+                        + daughterProspero
+                        + ", deadpan "
+                        + daughterDeadpan
+                        + ", ");
         scheduleNewCell(
-                container, daughterLoc, sim, potts, random, ((PottsCellFly) cell).getProspero());
+                container, daughterLoc, sim, potts, random, daughterProspero, daughterDeadpan);
     }
 
+    //    /**
+    //     * Determines how prospero is split between the parent and daughter cell. Can be edited to
+    //     * change behavior. Current prototype behavior divides the prospero evenly 50% of the
+    // time, and
+    //     * randomly selects which cell gets all prospero the other 50% of the time.
+    //     *
+    //     * @param parentProspero the parent cell's prospero to be divided
+    //     * @param random the random number generator
+    //     * @return double with daughter prospero amount
+    //     */
+    //    static double splitStemProspero(double parentProspero, MersenneTwisterFast random) {
+    //        if (parentProspero <= 0) {
+    //            return 0;
+    //        }
+    //
+    //        if (random.nextBoolean()) { // 50% of the time, split prospero evenly
+    //            return parentProspero / 2;
+    //        } else { // 50% of the time, randomly choose which cell gets all the prospero
+    //            if (random.nextBoolean()) {
+    //                return parentProspero;
+    //            } else {
+    //                return 0;
+    //            }
+    //        }
+    //    }
+
     /**
-     * Determines how prospero is split between the parent and daughter cell. Can be edited to
-     * change behavior. Current prototype behavior divides the prospero evenly 50% of the time, and
-     * randomly selects which cell gets all prospero the other 50% of the time.
+     * Calculates the fraction of apical voxels in daughter A's location post-division, used to
+     * distribute DPN.
      *
-     * @param parentProspero the parent cell's prospero to be divided
+     * @param apicalVoxels voxels in the apical region
+     * @param daughterLoc the daughter cell's location
+     * @param divisionPlane the division plane
      * @param random the random number generator
-     * @return double with daughter prospero amount
+     * @return fraction of apical voxels in daughter A
      */
-    static double splitStemProspero(double parentProspero, MersenneTwisterFast random) {
-        if (parentProspero <= 0) {
-            return 0;
+    static double apicalFractionInDaughter(
+            Bag apicalVoxels,
+            PottsLocation daughterLoc,
+            Plane divisionPlane,
+            MersenneTwisterFast random) {
+
+        if (apicalVoxels.numObjs == 0) {
+            return 0.5;
         }
 
-        if (random.nextBoolean()) { // 50% of the time, split prospero evenly
-            return parentProspero / 2;
-        } else { // 50% of the time, randomly choose which cell gets all the prospero
-            if (random.nextBoolean()) {
-                return parentProspero;
-            } else {
-                return 0;
+        HashSet<Voxel> daughterVoxelSet = new HashSet<>(daughterLoc.getVoxels());
+        double inDaughter = 0;
+
+        for (int i = 0; i < apicalVoxels.numObjs; i++) {
+            if (daughterVoxelSet.contains(apicalVoxels.objs[i])) {
+                inDaughter++;
             }
         }
+        return inDaughter / apicalVoxels.numObjs;
     }
 
     /**
@@ -586,7 +657,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             Simulation sim,
             Potts potts,
             MersenneTwisterFast random,
-            double daughterProspero) {
+            double daughterProspero,
+            double daughterDeadpan) {
         PottsCell newCell =
                 (PottsCell) container.convert(sim.getCellFactory(), daughterLoc, random);
         if (newCell.getClass() == PottsCellFlyStem.class) {
@@ -596,10 +668,14 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         potts.register(newCell);
         newCell.reset(potts.ids, potts.regions);
         newCell.schedule(sim.getSchedule());
+
         System.out.println("ID " + newCell.getID());
 
         ((PottsCellFly) newCell).setProspero(daughterProspero);
         ((PottsCellFly) cell).setProspero(((PottsCellFly) cell).getProspero() - daughterProspero);
+
+        ((PottsCellFly) newCell).setDeadpan(daughterDeadpan);
+        ((PottsCellFly) cell).setDeadpan(((PottsCellFly) cell).getDeadpan() - daughterDeadpan);
     }
 
     /**
