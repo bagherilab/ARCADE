@@ -205,10 +205,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         Bag basalVoxels =
                 parentLoc.getDirectionalVoxelSubset(Side.BASAL, 0.33, voxels, centroid, apicalAxis);
 
-        double apicalFrac =
-                voxelFraction(apicalVoxels, daughterLoc);
-        double basalFrac =
-                voxelFraction(basalVoxels, daughterLoc);
+        double apicalFrac = voxelFraction(apicalVoxels, daughterLoc);
+        double basalFrac = voxelFraction(basalVoxels, daughterLoc);
 
         double parentDeadpan = ((PottsCellFly) cell).getDeadpan();
         double parentProspero = ((PottsCellFly) cell).getProspero();
@@ -612,16 +610,13 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     //    }
 
     /**
-     * Calculates the fraction of voxels in a daughter cell to distribute
-     * transcription factors.
+     * Calculates the fraction of voxels in a daughter cell to distribute transcription factors.
      *
      * @param voxels voxels in the region of interest
      * @param daughterLoc the daughter cell's location
      * @return fraction of voxels in the daughter cell
      */
-    static double voxelFraction(
-            Bag voxels,
-            PottsLocation daughterLoc) {
+    static double voxelFraction(Bag voxels, PottsLocation daughterLoc) {
 
         if (voxels.numObjs == 0) {
             return 0.5;
