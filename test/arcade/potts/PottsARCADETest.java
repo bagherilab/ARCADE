@@ -122,8 +122,7 @@ public class PottsARCADETest {
     public void main_noVis_fileComparison(@TempDir Path path) throws Exception {
         // Expects an input file at input/[name].xml and expected output files in
         // expected/[name]-expected
-        if (true)
-            ;
+        if (true) {}
         String[] names = {"nb"};
 
         for (String name : names) {
