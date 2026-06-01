@@ -3,14 +3,13 @@ package arcade.potts;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import arcade.core.ARCADE;
 import arcade.core.sim.Series;
 import arcade.potts.sim.input.PottsInputBuilder;
@@ -42,10 +41,11 @@ public class PottsARCADETest {
             if (expPrim.isNumber() && actPrim.isNumber()) {
                 double expVal = expPrim.getAsDouble();
                 double actVal = actPrim.getAsDouble();
-                assertEquals(expVal, actVal, EPSILON,
-                        "Numeric mismatch at " + context);
+                assertEquals(expVal, actVal, EPSILON, "Numeric mismatch at " + context);
             } else {
-                assertEquals(expPrim.getAsString(), actPrim.getAsString(),
+                assertEquals(
+                        expPrim.getAsString(),
+                        actPrim.getAsString(),
                         "Value mismatch at " + context);
             }
             return;
@@ -54,8 +54,7 @@ public class PottsARCADETest {
         if (expected.isJsonArray() && actual.isJsonArray()) {
             JsonArray expArr = expected.getAsJsonArray();
             JsonArray actArr = actual.getAsJsonArray();
-            assertEquals(expArr.size(), actArr.size(),
-                    "Array length mismatch at " + context);
+            assertEquals(expArr.size(), actArr.size(), "Array length mismatch at " + context);
             for (int i = 0; i < expArr.size(); i++) {
                 assertJsonEquals(expArr.get(i), actArr.get(i), context + "[" + i + "]");
             }
@@ -65,17 +64,20 @@ public class PottsARCADETest {
         if (expected.isJsonObject() && actual.isJsonObject()) {
             JsonObject expObj = expected.getAsJsonObject();
             JsonObject actObj = actual.getAsJsonObject();
-            assertEquals(expObj.keySet(), actObj.keySet(),
-                    "Object keys mismatch at " + context);
+            assertEquals(expObj.keySet(), actObj.keySet(), "Object keys mismatch at " + context);
             for (String key : expObj.keySet()) {
                 assertJsonEquals(expObj.get(key), actObj.get(key), context + "." + key);
             }
             return;
         }
 
-        fail("Type mismatch at " + context
-                + ": expected " + expected.getClass().getSimpleName()
-                + " but got " + actual.getClass().getSimpleName());
+        fail(
+                "Type mismatch at "
+                        + context
+                        + ": expected "
+                        + expected.getClass().getSimpleName()
+                        + " but got "
+                        + actual.getClass().getSimpleName());
     }
 
     private void removeVersion(JsonElement element) {
@@ -141,8 +143,10 @@ public class PottsARCADETest {
 
                 assertTrue(actualFile.exists());
 
-                JsonElement expectedJson = JsonParser.parseString(Files.readString(expectedFile.toPath()));
-                JsonElement actualJson = JsonParser.parseString(Files.readString(actualFile.toPath()));
+                JsonElement expectedJson =
+                        JsonParser.parseString(Files.readString(expectedFile.toPath()));
+                JsonElement actualJson =
+                        JsonParser.parseString(Files.readString(actualFile.toPath()));
 
                 // Remove version field because executable name is nondeterministic
                 removeVersion(expectedJson);
