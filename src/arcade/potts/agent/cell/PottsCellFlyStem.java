@@ -18,7 +18,10 @@ public class PottsCellFlyStem extends PottsCellFly {
         WT(50, 85, 0, 0.18),
 
         /** mud Mutant stem cell. */
-        MUDMUT(50, 50, -90, 0.5);
+        MUDMUT(50, 50, -90, 0.5),
+
+        /** Nanobody stem cell */
+        NANOBODY(50, 14, 0, 0.5);
 
         /** Percentage x offset from cell edge where division will occur. */
         public final int splitOffsetPercentX;
@@ -85,6 +88,9 @@ public class PottsCellFlyStem extends PottsCellFly {
                 break;
             case "fly-stem-mudmut":
                 stemType = StemType.MUDMUT;
+                break;
+            case "fly-stem-nanobody":
+                stemType = StemType.NANOBODY;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown StemType: " + stemTypeString);
