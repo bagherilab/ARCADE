@@ -46,7 +46,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /** Rate of Deadpan change (ticks^-1). */
     final double deadpanRate;
 
-    /** Ratio of Prospero to Deadpan to determine daughter cell identity. */
+    /** Threshold ratio of Prospero to Deadpan in daughter cell to determine cell identity. */
     final double tfRatio;
 
     /** Distribution that determines rotational offset of cell's division plane. */
