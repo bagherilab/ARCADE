@@ -46,6 +46,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /** Rate of Deadpan change (ticks^-1). */
     final double deadpanRate;
 
+    /** Ratio of Prospero to Deadpan to determine daughter cell identity. */
+    final double tfRatio;
+
     /** Distribution that determines rotational offset of cell's division plane. */
     final NormalDistribution splitDirectionDistribution;
 
@@ -126,6 +129,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
         prosperoRate = parameters.getDouble("proliferation/PROSPERO_RATE");
         deadpanRate = parameters.getDouble("proliferation/DEADPAN_RATE");
+        tfRatio = parameters.getDouble("proliferation/TF_RATIO");
         splitDirectionDistribution =
                 (NormalDistribution)
                         parameters.getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION");
@@ -191,28 +195,32 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         Plane divisionPlane = chooseDivisionPlane(flyStemCell);
         PottsLocation2D parentLoc = (PottsLocation2D) cell.getLocation();
-        PottsLocation daughterLoc = (PottsLocation) parentLoc.split(random, divisionPlane);
-
-        boolean isDaughterStem = daughterStem(parentLoc, daughterLoc, divisionPlane);
 
         ArrayList<Voxel> voxels = ((PottsLocation) cell.getLocation()).getVoxels();
         double[] centroid = ((PottsLocation) cell.getLocation()).getCentroid();
         Vector apicalAxis = flyStemCell.getApicalAxis();
 
         Bag apicalVoxels =
-                parentLoc.getDirectionalVoxelSubset(
+                PottsLocation.getDirectionalVoxelSubset(
                         Side.APICAL, 0.33, voxels, centroid, apicalAxis);
         Bag basalVoxels =
-                parentLoc.getDirectionalVoxelSubset(Side.BASAL, 0.33, voxels, centroid, apicalAxis);
+                PottsLocation.getDirectionalVoxelSubset(
+                        Side.BASAL, 0.33, voxels, centroid, apicalAxis);
 
-        double apicalFrac = voxelFraction(apicalVoxels, daughterLoc);
+        PottsLocation daughterLoc = (PottsLocation) parentLoc.split(random, divisionPlane);
+
         double basalFrac = voxelFraction(basalVoxels, daughterLoc);
+        double apicalFrac = voxelFraction(apicalVoxels, daughterLoc);
 
-        double parentDeadpan = ((PottsCellFly) cell).getDeadpan();
         double parentProspero = ((PottsCellFly) cell).getProspero();
+        double parentDeadpan = ((PottsCellFly) cell).getDeadpan();
 
         double daughterProspero = parentProspero * basalFrac;
         double daughterDeadpan = parentDeadpan * apicalFrac;
+
+        boolean isDaughterStem =
+                daughterStem(
+                        parentLoc, daughterLoc, divisionPlane, daughterProspero, daughterDeadpan);
 
         if (isDaughterStem) {
             makeDaughterStemCell(
@@ -410,7 +418,11 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * @param loc2 the other cell location post division
      * @return whether or not the daughter cell should be a stem cell
      */
-    private boolean daughterStemRuleBasedDifferentiation(PottsLocation loc1, PottsLocation loc2) {
+    private boolean daughterStemRuleBasedDifferentiation(
+            PottsLocation loc1,
+            PottsLocation loc2,
+            double daughterProspero,
+            double daughterDeadpan) {
         if (((PottsCellFlyStem) cell).getStemType() == StemType.WT) {
             return false;
         } else if (((PottsCellFlyStem) cell).getStemType() == StemType.MUDMUT) {
@@ -427,6 +439,11 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 double[] centroid2 = loc2.getCentroid();
                 return (centroidsWithinRangeAlongApicalAxis(
                         centroid1, centroid2, ((PottsCellFlyStem) cell).getApicalAxis(), range));
+            } else if (differentiationRuleset.equals("tfRatio")) {
+                if (daughterDeadpan <= 0) {
+                    return daughterProspero <= 0;
+                }
+                return (daughterProspero / daughterDeadpan) < tfRatio;
             }
         }
         throw new IllegalArgumentException(
@@ -469,10 +486,15 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      *     a GMC
      */
     public boolean daughterStem(
-            PottsLocation2D parentsLoc, PottsLocation daughterLoc, Plane divisionPlane) {
+            PottsLocation2D parentsLoc,
+            PottsLocation daughterLoc,
+            Plane divisionPlane,
+            double daughterProspero,
+            double daughterDeadpan) {
         return hasDeterministicDifferentiation
                 ? daughterStemDeterministic(divisionPlane)
-                : daughterStemRuleBasedDifferentiation(parentsLoc, daughterLoc);
+                : daughterStemRuleBasedDifferentiation(
+                        parentsLoc, daughterLoc, daughterProspero, daughterDeadpan);
     }
 
     /**
@@ -617,20 +639,24 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * @return fraction of voxels in the daughter cell
      */
     static double voxelFraction(Bag voxels, PottsLocation daughterLoc) {
-
         if (voxels.numObjs == 0) {
             return 0.5;
         }
 
-        HashSet<Voxel> daughterVoxelSet = new HashSet<>(daughterLoc.getVoxels());
-        double inDaughter = 0;
+        ArrayList<Voxel> daughterVoxels = daughterLoc.getVoxels();
+        double daughterCount = 0;
 
         for (int i = 0; i < voxels.numObjs; i++) {
-            if (daughterVoxelSet.contains(voxels.objs[i])) {
-                inDaughter++;
+            Voxel v = (Voxel) voxels.objs[i];
+            for (Voxel d : daughterVoxels) {
+                if (v.x == d.x && v.y == d.y && v.z == d.z) {
+                    daughterCount++;
+                    break;
+                }
             }
         }
-        return inDaughter / voxels.numObjs;
+
+        return daughterCount / voxels.numObjs;
     }
 
     /**
@@ -724,6 +750,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 return getSmallerLocation(parentLoc, daughterLoc);
             case "location":
                 return getBasalLocation(parentLoc, daughterLoc, divisionPlaneNormal);
+            case "tfRatio":
+                return getSmallerLocation(
+                        parentLoc,
+                        daughterLoc); // TODO: Ask Sophia which location makes more biological sense
             default:
                 throw new IllegalArgumentException(
                         "Invalid differentiation ruleset: " + differentiationRuleset);

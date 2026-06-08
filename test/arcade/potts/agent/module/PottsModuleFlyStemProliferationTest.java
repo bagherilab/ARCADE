@@ -1294,7 +1294,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         PottsModuleFlyStemProliferation module = new PottsModuleFlyStemProliferation(stemCell);
 
-        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class));
+        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 0, 0);
 
         assertTrue(result, "Expected true since |10-5| < range");
     }
@@ -1311,7 +1311,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         PottsModuleFlyStemProliferation module = new PottsModuleFlyStemProliferation(stemCell);
 
-        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class));
+        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 0, 0);
 
         assertFalse(result, "Expected false since |10-5| > range");
     }
