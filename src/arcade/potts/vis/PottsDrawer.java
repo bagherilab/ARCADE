@@ -20,6 +20,7 @@ import sim.util.gui.ColorMap;
 import arcade.core.agent.cell.Cell;
 import arcade.core.env.grid.Grid;
 import arcade.core.vis.*;
+import arcade.potts.agent.cell.PottsCellFly;
 import arcade.potts.agent.module.PottsModule;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
@@ -69,7 +70,10 @@ public abstract class PottsDrawer extends Drawer {
         VOLUME,
 
         /** Code for encoding visualization by height. */
-        HEIGHT
+        HEIGHT,
+
+        /** Code for encoding visualization by transcription factors. */
+        PRODPN
     }
 
     /**
@@ -326,6 +330,8 @@ public abstract class PottsDrawer extends Drawer {
                     break;
                 case OVERLAY:
                     drawOverlay(arr, regions[index]);
+                case PRODPN:
+                    drawSlice(arr, ids[index], grid);
                 default:
                     break;
             }
@@ -496,6 +502,20 @@ public abstract class PottsDrawer extends Drawer {
                         case HEIGHT:
                             arr[a][b] = cell.getHeight();
                             break;
+                        case PRODPN:
+                            if (cell instanceof PottsCellFly) {
+                                double pro = ((PottsCellFly) cell).getProspero();
+                                double dpn = ((PottsCellFly) cell).getDeadpan();
+                                if (pro > dpn) {
+                                    arr[a][b] = 2;
+                                } else if (dpn > pro) {
+                                    arr[a][b] = 3;
+                                } else {
+                                    arr[a][b] = 1;
+                                }
+                            } else {
+                                arr[a][b] = 0;
+                            }
                         default:
                             break;
                     }

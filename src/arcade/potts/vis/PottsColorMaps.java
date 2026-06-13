@@ -76,6 +76,17 @@ public class PottsColorMaps {
                     },
                     new double[] {0, 0.1, 1});
 
+    /** Color map for Prospero/Deadpan concentrations. */
+    static final Colors MAP_PRODPN =
+            new Colors(
+                    new Color[] {
+                        new Color(0, 0, 0, 0),
+                        new Color(150, 150, 150), // neither
+                        new Color(237, 105, 255), // PRO
+                        new Color(105, 247, 255), // DPN
+                    },
+                    new double[] {0, 1, 2, 3});
+
     /** Color map for cell volume. */
     final Colors mapVolume;
 

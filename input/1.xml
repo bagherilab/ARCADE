@@ -22,17 +22,16 @@
                     <population.parameter id="proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION" value="NORMAL(MU=0,SIGMA=30)" />
                     <population.parameter id="proliferation/TF_RATIO" value="2" />
                     <population.parameter id="proliferation/PROSPERO_RATE" value="0.1" />
-                    <population.parameter id="proliferation/DEADPAN_RATE" value="0" />
+                    <population.parameter id="proliferation/DEADPAN_RATE" value="0.1" />
                     <population.parameter id="proliferation/DIFFERENTIATION_RULESET" value="tfRatio" />
-                    <population.parameter id="proliferation/HAS_DETERMINISTIC_DIFFERENTIATION" value="FALSE" />
                 </population>
                 <population id="fly-gmc" class="fly-gmc" init="0">
                     <population.link id="fly-neuron" weight="1"/>
                     <population.parameter id="proliferation/BASAL_APOPTOSIS_RATE" value="0"/>
                     <population.parameter id="proliferation/CELL_GROWTH_RATE" value="5" units="um^2/hour" conversion="DS^-2.DT"/>
                     <population.parameter id="proliferation/DYNAMIC_GROWTH_RATE_VOLUME" value="0" />
-                    <population.parameter id="proliferation/PROSPERO_RATE" value="-1" />
-                    <population.parameter id="proliferation/DEADPAN_RATE" value="-1" />
+                    <population.parameter id="proliferation/PROSPERO_RATE" value="-0.1" />
+                    <population.parameter id="proliferation/DEADPAN_RATE" value="-0.1" />
                 </population>
                 <population id="fly-neuron" class="fly-neuron" init="0">
                     <population.parameter id="proliferation/CELL_GROWTH_RATE" value="0"/>
