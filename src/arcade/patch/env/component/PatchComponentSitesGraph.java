@@ -244,7 +244,6 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         if (checkDisconnected()) {
             return;
         }
-        ;
 
         // Iterate through each molecule.
         for (SiteLayer layer : layers) {
