@@ -77,6 +77,17 @@ public final class Graph {
         }
     }
 
+    /**
+     * Replaces this graph with the combined contents of two graphs.
+     *
+     * <p>All existing edges are removed and the edges from {@code graph1} and {@code graph2} are
+     * copied into this graph. This method should be used after node references have been merged or
+     * reconciled between the two graphs, producing a single graph containing the same edge objects
+     * of both inputs.
+     *
+     * @param graph1 the first graph to combine
+     * @param graph2 the second graph to combine
+     */
     public void combine(Graph graph1, Graph graph2) {
         clear();
         for (Object obj : graph2.getAllEdges()) {
@@ -329,7 +340,7 @@ public final class Graph {
     }
 
     /**
-     * Adds edge to graph.
+     * Adds edge to graph. Default behavior is to duplicate nodes.
      *
      * @param edge the edge to add
      */
@@ -341,6 +352,13 @@ public final class Graph {
         setLinks(edge);
     }
 
+    /**
+     * Adds edge to graph.
+     *
+     * @param edge the edge to add
+     * @param duplicate {@code true} if desired behavior is to duplicate nodes, {@code false}
+     *     otherwise
+     */
     public void addEdge(Edge edge, boolean duplicate) {
         allEdges.add(edge);
         setOutMap(edge.getFrom(), edge, duplicate);
@@ -391,6 +409,8 @@ public final class Graph {
      *
      * @param node the node hash
      * @param edge the edge
+     * @param duplicate {@code true} if desired behavior is to duplicate nodes, {@code false}
+     *     otherwise
      */
     private void setOutMap(Node node, Edge edge, boolean duplicate) {
         Bag objs = nodeToOutBag.get(node);
@@ -424,6 +444,8 @@ public final class Graph {
      *
      * @param node the node hash
      * @param edge the edge
+     * @param duplicate {@code true} if desired behavior is to duplicate nodes, {@code false}
+     *     otherwise
      */
     private void setInMap(Node node, Edge edge, boolean duplicate) {
         Bag objs = nodeToInBag.get(node);

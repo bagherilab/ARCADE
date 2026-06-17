@@ -6,9 +6,16 @@ import java.util.LinkedHashSet;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.Graph;
+import arcade.core.util.Graph.Edge;
 import arcade.core.util.Graph.Strategy;
 import arcade.core.util.Matrix;
 import arcade.core.util.Solver;
+import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
+import arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeCategory;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeLevel;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeType;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.Root;
 import static arcade.core.util.Graph.Edge;
 import static arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
 import static arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
@@ -1161,6 +1168,15 @@ abstract class PatchComponentSitesGraphUtilities {
         } while (checkForNegativeFlow(graph));
     }
 
+    /**
+     * Iteratively removes leaf branches from a graph.
+     *
+     * <p>A leaf branch is an edge connected to a non-root node with either no outgoing edges or no
+     * incoming edges. Such edges are marked as ignored and their endpoint pressures are set to
+     * {@link Double#NaN}. The process is repeated until no additional leaf branches remain.
+     *
+     * @param graph the graph to trim
+     */
     static void trimGraph(Graph graph) {
         ArrayList<SiteEdge> list;
         Graph gCurr = graph;
@@ -1198,9 +1214,16 @@ abstract class PatchComponentSitesGraphUtilities {
         } while (list.size() != 0);
     }
 
-    // This *MIGHT* be a problem, I think we could revisit adding this check.
-    // I'm not sure why it would get to the point where there would be a negative flow in the graph?
+    /**
+     * Checks whether any edge in the graph has a negative flow value.
+     *
+     * @param graph the graph to inspect
+     * @return {@code true} if at least one edge has a flow less than zero; {@code false} otherwise
+     */
     static boolean checkForNegativeFlow(Graph graph) {
+        // This *MIGHT* be a problem, I think we could revisit adding this check.
+        // I'm not sure why it would get to the point where there would be a negative flow in the
+        // graph?
         boolean negative = false;
         for (Object obj : graph.getAllEdges()) {
             SiteEdge edge = (SiteEdge) obj;

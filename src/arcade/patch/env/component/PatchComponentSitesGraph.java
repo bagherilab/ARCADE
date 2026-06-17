@@ -13,6 +13,9 @@ import arcade.core.util.Graph.Node;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Solver;
 import arcade.core.util.Solver.Function;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeLevel;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeTag;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeType;
 import arcade.patch.env.location.CoordinateXYZ;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.util.PatchEnums.ComponentType;
@@ -360,6 +363,16 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         }
     }
 
+    /**
+     * Checks whether the graph remains connected to at least one root node.
+     *
+     * <p>A graph is considered connected if it contains a non-ignored edge originating from a root
+     * node. If no such edge exists, all layer delta values are reset to zero to reflect the
+     * disconnected state.
+     *
+     * @return {@code true} if the graph is disconnected and the layer deltas were reset; {@code
+     *     false} if the graph remains connected
+     */
     private boolean checkDisconnected() {
         Bag allEdges = new Bag(graph.getAllEdges());
 
@@ -623,6 +636,11 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
             return flow;
         }
 
+        /**
+         * Get the concentration fraction in edge as a string.
+         *
+         * @return the string represenation of the fraction
+         */
         public String getFraction() {
             StringBuilder sb = new StringBuilder();
             for (String key : fraction.keySet()) {
@@ -631,6 +649,11 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
             return sb.toString();
         }
 
+        /**
+         * Get the concentration fraction transported out as a string.
+         *
+         * @return the string represenation of the fraction
+         */
         public String getTransport() {
             StringBuilder sb = new StringBuilder();
             for (String key : transport.keySet()) {
