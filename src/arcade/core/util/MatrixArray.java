@@ -11,6 +11,26 @@ import arcade.core.util.Matrix.Value;
  * using the successive over-relaxation method in {@link arcade.core.util.Solver}.
  */
 public class MatrixArray {
+    /** Number of rows in the matrix. */
+    int nRows;
+
+    /** Number of columns in the matrix. */
+    int nColumns;
+
+    /** List of non-zero values in the matrix. */
+    Value[] values;
+
+    /**
+     * Constructs a sparse matrix from a dense two-dimensional array.
+     *
+     * <p>All non-zero elements of the input matrix are stored in the internal sparse
+     * representation. The input matrix must be rectangular; that is, every row must have the same
+     * number of columns.
+     *
+     * @param a the dense matrix to convert
+     * @throws IllegalArgumentException if the matrix is empty, contains empty rows, or is not
+     *     rectangular
+     */
     public MatrixArray(double[][] a) {
         nRows = a.length;
         if (nRows == 0) {
@@ -50,9 +70,19 @@ public class MatrixArray {
         }
     } // ctor
 
-    public MatrixArray(ArrayList<Value> alValues, int i_nRows, int i_Columns) {
-        nRows = i_nRows;
-        nColumns = i_Columns;
+    /**
+     * Constructs a sparse matrix from a collection of matrix entries.
+     *
+     * <p>The entries are sorted by row and column index and copied into an internal array to
+     * support efficient sparse matrix operations such as matrix-vector multiplication.
+     *
+     * @param alValues the non-zero matrix entries
+     * @param rows the number of rows in the matrix
+     * @param columns the number of columns in the matrix
+     */
+    public MatrixArray(ArrayList<Value> alValues, int rows, int columns) {
+        nRows = rows;
+        nColumns = columns;
         values = new Value[alValues.size()];
 
         Collections.sort(
@@ -109,6 +139,17 @@ public class MatrixArray {
         return subbed;
     }
 
+    /**
+     * Multiplies this matrix by a vector.
+     *
+     * <p>The matrix is stored in sparse form, so only non-zero entries are processed during the
+     * multiplication.
+     *
+     * @param b the vector to multiply by
+     * @return the resulting vector {@code A * b}
+     * @throws IllegalArgumentException if the vector length is not compatible with the matrix
+     *     dimensions
+     */
     public double[] multiply(double[] b) {
         if (b.length != nRows) {
             throw new IllegalArgumentException("MatrixArray.multiply (by a vector): conformation");
@@ -122,8 +163,4 @@ public class MatrixArray {
 
         return multiplied;
     }
-
-    int nRows;
-    int nColumns;
-    Value[] values;
 }
