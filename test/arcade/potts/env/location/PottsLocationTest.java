@@ -1669,8 +1669,12 @@ public class PottsLocationTest {
     @Test
     public void getDirectionalVoxelSubset_halfBasal_returnsCorrectBag() {
         ArrayList<Voxel> voxels = new ArrayList<>();
+        Bag expected = new Bag();
         for (int i = 0; i < 10; i++) {
             voxels.add(new Voxel(0, 0, i));
+            if (i < 5) {
+                expected.add(new Voxel(0, 0, i));
+            }
         }
         Bag result =
                 PottsLocation.getDirectionalVoxelSubset(
@@ -1680,12 +1684,6 @@ public class PottsLocationTest {
                         new double[] {0, 0, 0},
                         new Vector(0, 0, 1));
         assertEquals(5, result.size());
-        Bag expected = new Bag();
-        expected.add(new Voxel(0, 0, 0));
-        expected.add(new Voxel(0, 0, 1));
-        expected.add(new Voxel(0, 0, 2));
-        expected.add(new Voxel(0, 0, 3));
-        expected.add(new Voxel(0, 0, 4));
         for (Object voxel : expected) {
             assertTrue(result.contains(voxel));
         }
@@ -1694,8 +1692,10 @@ public class PottsLocationTest {
     @Test
     public void getDirectionalVoxelSubset_allBasal_returnsCorrectBag() {
         ArrayList<Voxel> voxels = new ArrayList<>();
+        Bag expected = new Bag();
         for (int i = 0; i < 5; i++) {
             voxels.add(new Voxel(0, 0, i));
+            expected.add(new Voxel(0, 0, i));
         }
         Bag result =
                 PottsLocation.getDirectionalVoxelSubset(
@@ -1705,12 +1705,6 @@ public class PottsLocationTest {
                         new double[] {0, 0, 0},
                         new Vector(0, 0, 1));
         assertEquals(5, result.size());
-        Bag expected = new Bag();
-        expected.add(new Voxel(0, 0, 0));
-        expected.add(new Voxel(0, 0, 1));
-        expected.add(new Voxel(0, 0, 2));
-        expected.add(new Voxel(0, 0, 3));
-        expected.add(new Voxel(0, 0, 4));
         for (Object voxel : expected) {
             assertTrue(result.contains(voxel));
         }
@@ -1736,8 +1730,12 @@ public class PottsLocationTest {
     @Test
     public void getDirectionalVoxelSubset_halfApical_returnsCorrectBag() {
         ArrayList<Voxel> voxels = new ArrayList<>();
+        Bag expected = new Bag();
         for (int i = 0; i < 10; i++) {
             voxels.add(new Voxel(0, 0, i));
+            if (i >= 5) {
+                expected.add(new Voxel(0, 0, i));
+            }
         }
         Bag result =
                 PottsLocation.getDirectionalVoxelSubset(
@@ -1747,12 +1745,6 @@ public class PottsLocationTest {
                         new double[] {0, 0, 0},
                         new Vector(0, 0, 1));
         assertEquals(5, result.size());
-        Bag expected = new Bag();
-        expected.add(new Voxel(0, 0, 5));
-        expected.add(new Voxel(0, 0, 6));
-        expected.add(new Voxel(0, 0, 7));
-        expected.add(new Voxel(0, 0, 8));
-        expected.add(new Voxel(0, 0, 9));
         for (Object voxel : expected) {
             assertTrue(result.contains(voxel));
         }
@@ -1761,8 +1753,11 @@ public class PottsLocationTest {
     @Test
     public void getDirectionalVoxelSubset_allApical_returnsCorrectBag() {
         ArrayList<Voxel> voxels = new ArrayList<>();
+        Bag expected = new Bag();
         for (int i = 0; i < 5; i++) {
             voxels.add(new Voxel(0, 0, i));
+            expected.add(new Voxel(0, 0, i));
+
         }
         Bag result =
                 PottsLocation.getDirectionalVoxelSubset(
@@ -1772,12 +1767,6 @@ public class PottsLocationTest {
                         new double[] {0, 0, 0},
                         new Vector(0, 0, 1));
         assertEquals(5, result.size());
-        Bag expected = new Bag();
-        expected.add(new Voxel(0, 0, 0));
-        expected.add(new Voxel(0, 0, 1));
-        expected.add(new Voxel(0, 0, 2));
-        expected.add(new Voxel(0, 0, 3));
-        expected.add(new Voxel(0, 0, 4));
         for (Object voxel : expected) {
             assertTrue(result.contains(voxel));
         }
@@ -1800,8 +1789,146 @@ public class PottsLocationTest {
         assertTrue(result.contains(new Voxel(0, 0, 4)));
     }
 
-    // add diagonal vector tests that take more thinking
-    // and an assertThrows test
-    // maybe also a one voxel test
-    // and a test that tests when both are 50, there's not any overlap betwen the two
+    @Test
+    public void getDirectionalVoxelSubset_singleVoxelBasal_returnsIt() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(3, 4, 5));
+        Bag result = PottsLocation.getDirectionalVoxelSubset(
+                PottsEnums.Side.BASAL, 0.5, voxels,
+                new double[]{0, 0, 0}, new Vector(0, 0, 1));
+        assertEquals(1, result.size());
+        assertTrue(result.contains(new Voxel(3, 4, 5)));
+    }
+
+    @Test
+    public void getDirectionalVoxelSubset_singleVoxelApical_returnsIt() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(3, 4, 5));
+        Bag result = PottsLocation.getDirectionalVoxelSubset(
+                PottsEnums.Side.APICAL, 0.5, voxels,
+                new double[]{0, 0, 0}, new Vector(0, 0, 1));
+        assertEquals(1, result.size());
+        assertTrue(result.contains(new Voxel(3, 4, 5)));
+    }
+
+    @Test
+    public void getDirectionalVoxelSubset_negativeThreshold_throwsIllegalArgument() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 0, 0));
+        assertThrows(IllegalArgumentException.class, () ->
+                PottsLocation.getDirectionalVoxelSubset(
+                        PottsEnums.Side.BASAL,
+                        -0.5,
+                        voxels,
+                        new double[]{0, 0, 0},
+                        new Vector(0, 0, 1)));
+    }
+
+    @Test
+    public void getDirectionalVoxelSubset_thresholdAboveOne_throwsIllegalArgument() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 0, 0));
+        assertThrows(IllegalArgumentException.class, () ->
+                PottsLocation.getDirectionalVoxelSubset(
+                        PottsEnums.Side.BASAL,
+                        1.5,
+                        voxels,
+                        new double[]{0, 0, 0},
+                        new Vector(0, 0, 1)));
+    }
+
+    @Test
+    public void getDirectionalVoxelSubset_invalidSide_throwsIllegalArgument() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 0, 0));
+        assertThrows(IllegalArgumentException.class, () ->
+                PottsLocation.getDirectionalVoxelSubset(
+                        PottsEnums.Side.UNDEFINED,
+                        0.5, voxels,
+                        new double[]{0, 0, 0}, new Vector(0, 0, 1)));
+    }
+
+    @Test
+    public void getDirectionalVoxelSubset_halfBasalHalfApical_noOverlap() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            voxels.add(new Voxel(0, 0, i));
+        }
+        double[] centroid = {0, 0, 0};
+        Vector axis = new Vector(0, 0, 1);
+
+        Bag basal = PottsLocation.getDirectionalVoxelSubset(
+                PottsEnums.Side.BASAL, 0.5, voxels, centroid, axis);
+        Bag apical = PottsLocation.getDirectionalVoxelSubset(
+                PottsEnums.Side.APICAL, 0.5, voxels, centroid, axis);
+
+        for (Object v : basal) {
+            assertFalse(apical.contains(v));
+        }
+    }
+
+    @Test
+    public void getDirectionalVoxelSubset_nonZeroCentroid_returnsCorrectBasalHalf() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        for (int i = 10; i < 20; i++) {
+            voxels.add(new Voxel(0, 0, i));
+        }
+        Bag result = PottsLocation.getDirectionalVoxelSubset(
+                PottsEnums.Side.BASAL, 0.5, voxels,
+                new double[]{0, 0, 14.5}, new Vector(0, 0, 1));
+        assertEquals(5, result.size());
+        for (int i = 10; i < 15; i++) {
+            assertTrue(result.contains(new Voxel(0, 0, i)));
+        }
+    }
+
+    @Test
+    public void getDirectionalVoxelSubset_diagonalAxis_halfBasal_returnsCorrectBag() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            voxels.add(new Voxel(i, i, 0));
+        }
+        double inv = 1.0 / Math.sqrt(2);
+        Bag result = PottsLocation.getDirectionalVoxelSubset(
+                PottsEnums.Side.BASAL, 0.5, voxels,
+                new double[]{0, 0, 0}, new Vector(inv, inv, 0));
+        assertEquals(3, result.size());
+        assertTrue(result.contains(new Voxel(0, 0, 0)));
+        assertTrue(result.contains(new Voxel(1, 1, 0)));
+        assertTrue(result.contains(new Voxel(2, 2, 0)));
+    }
+
+    @Test
+    public void getDirectionalVoxelSubset_diagonalAxis_halfApical_returnsCorrectBag() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            voxels.add(new Voxel(i, i, 0));
+        }
+        double inv = 1.0 / Math.sqrt(2);
+        Bag result = PottsLocation.getDirectionalVoxelSubset(
+                PottsEnums.Side.APICAL, 0.5, voxels,
+                new double[]{0, 0, 0}, new Vector(inv, inv, 0));
+        assertEquals(3, result.size());
+        assertTrue(result.contains(new Voxel(2, 2, 0)));
+        assertTrue(result.contains(new Voxel(3, 3, 0)));
+        assertTrue(result.contains(new Voxel(4, 4, 0)));
+    }
+
+    @Test
+    public void getDirectionalVoxelSubset_varyingXY_doesNotAffectProjectionOnZAxis() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(5, 3, 0));
+        voxels.add(new Voxel(1, 9, 1));
+        voxels.add(new Voxel(2, 7, 2));
+        voxels.add(new Voxel(8, 0, 3));
+        voxels.add(new Voxel(4, 4, 4));
+        Bag result = PottsLocation.getDirectionalVoxelSubset(
+                PottsEnums.Side.BASAL, 0.5, voxels,
+                new double[]{0, 0, 0}, new Vector(0, 0, 1));
+        assertEquals(3, result.size());
+        assertTrue(result.contains(new Voxel(5, 3, 0)));
+        assertTrue(result.contains(new Voxel(1, 9, 1)));
+        assertTrue(result.contains(new Voxel(2, 7, 2)));
+    }
+
 }
