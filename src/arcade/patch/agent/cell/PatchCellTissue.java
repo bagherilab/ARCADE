@@ -135,7 +135,7 @@ public class PatchCellTissue extends PatchCell {
             module.step(simstate.random, sim);
         }
 
-        // Step remaining processes.
+        // Step remaining optional processes.
         if (processes.get(Domain.SENSING) != null) {
             processes.get(Domain.SENSING).step(simstate.random, sim);
         }
