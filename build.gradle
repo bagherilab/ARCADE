@@ -68,6 +68,18 @@ jacocoTestReport {
     }
 }
 
+deltaCoverageReport {
+    diffSource {
+        diffSource.git.diffBase.set("refs/remotes/origin/main")
+    }
+
+    reports {
+        html.set(true)
+        xml.set(true)
+        markdown.set(true)
+    }
+}
+
 spotless {
     java {
         removeUnusedImports()
