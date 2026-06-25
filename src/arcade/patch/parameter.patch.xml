@@ -56,11 +56,11 @@
     <population id="SYNNOTCH_ANTIGENS" value="0" description="average number of synNotch antigens on a tissue cancer cell" />
 
     <!-- iCAR specific parameters -->
-    <population id="PROTEASOME_PRODUCTION_RATIO" value="1" description="ratio of proteasome production to degradation" />
     <population id="PDEL" value="0" description="whether or not inhibitory mechanism is initiated" />
     <population id="ICAR_AFFINITY" value="7.8E-6" unit="M" description="affinity of iCAR receptor for antigen" />
     <population id="RELEASE_TYPE" value="none" description="type of release mechanism" />
     <population id="MIGRATION" value="0" description="whether or not release-based migration is initiated" />
+    <population id="TIME_DELAY" value="0" description="time delay for iCAR receptor expression" />
 
 
     <!-- migration module parameters -->
@@ -156,7 +156,7 @@
 
     <!-- mutate action parameters -->
     <action class="mutate" id="TIME_DELAY" value="0" units="min" description="time delay before calling the action" />
-    <action class="mutate" id="INSERT_RADIUS" value="1" description="grid radius that cells are inserted into" />
+    <action class="mutate" id="MUTATE_RADIUS" value="1" description="grid radius that cells are inserted into" />
 
     <!-- COMPONENTS ======================================================== -->
 

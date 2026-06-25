@@ -29,18 +29,6 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
     /** time step for tau stepping. */
     private static final int TAU = 60;
 
-    /** Tracker for internal proteasome levels. */
-    private double proteasome;
-
-    /** Current proteasome production rate. */
-    private double proteasomeProdRate;
-
-    /** Proteasome threshold for CAR activation. */
-    private double proteasomeActivationThreshold;
-
-    /** Basal rate of proteasome decay. */
-    private static final double BASAL_PROTEASOME_DECAY_RATE = 0.1;
-
     /** Synnotch binding status. */
     public boolean boundPD1 = false;
 
@@ -53,9 +41,6 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
     /** icar_affinity. */
     private double icarReceptorAffinity;
 
-    /** max number of iCAR receptors on iCAR surface. */
-    static final int MAX_SYNNOTCHS = 20000;
-
     /** Probability of migration after release. */
     private final double MIGRATION_PROBABILITY = 0.5;
 
@@ -64,6 +49,9 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
 
     /** If release-based migration is turned on. */
     private boolean migration;
+
+    /** Time delay for iCAR receptor expression. */
+    private int timeDelay;
 
     /**
      * Creates a tissue {@code PatchCellCARTCombinedInhibitory} agent. *
@@ -107,28 +95,30 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
             LogicalCARs type) {
         super(container, location, parameters, links);
         this.type = type;
-        proteasome = 0;
-        proteasomeProdRate =
-                parameters.getInt("PROTEASOME_PRODUCTION_RATIO") * BASAL_PROTEASOME_DECAY_RATE;
-        double maxProteasome = parameters.getInt("PROTEASOME_PRODUCTION_RATIO") * synnotchs;
-        proteasomeActivationThreshold = parameters.getDouble("SYNNOTCH_THRESHOLD") * maxProteasome;
         initialSynnotchReceptors = parameters.getInt("SYNNOTCHS");
         pdel = parameters.getInt("PDEL") > 0 ? true : false;
         icarReceptorAffinity = parameters.getDouble("ICAR_AFFINITY");
         releaseType = parameters.getString("RELEASE_TYPE").toLowerCase();
         migration = parameters.getInt("MIGRATION") > 0 ? true : false;
+        timeDelay = parameters.getInt("TIME_DELAY");
         // for receptor based circuits, receptor binding depends on initial receptors
         if (this.type.equals(LogicalCARs.INHIBITORY_RECEPTOR)) {
             this.startCars = cars;
-        } else {
-            // for inflammation based circuits, receptor binding depends on max receptors
-            this.initialSynnotchReceptors = MAX_SYNNOTCHS;
         }
     }
 
     @Override
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
+        // If time delay is 0, will express initial synnotch receptors.
+        // Otherwise, will express receptors based on time delay.
+        int currentTime = (int) (sim.getSchedule().getTime());
+        if (currentTime < timeDelay) {
+            synnotchs = 0;
+            // expressSynNotch(sim, currentTime);
+        } else if (currentTime == timeDelay) {
+            synnotchs = initialSynnotchReceptors;
+        }
         if (type.equals(LogicalCARs.INHIBITORY_INFLAMMATION)) {
             // primary receptor binding
             if (!pdel) {
@@ -145,8 +135,22 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
         }
     }
 
-    public void bindTargetPD1(Simulation sim, PatchLocation loc, MersenneTwisterFast random) {
+    // calculates synnotch expression based on time delay.
+    // If time delay is greater than 0, will express receptors based on hill function
+    // where x is time and y is proportion of max receptors.
+    // Hill coefficent is 1
+    private void expressSynNotch(Simulation sim, int currentTime) {
+        double kD = computeK(timeDelay);
+        synnotchs = (int) (initialSynnotchReceptors * (currentTime / (kD + currentTime)));
+    }
 
+    // compute halfway point given that expression should reach
+    // 99% of max once time delay is reached
+    private double computeK(int delay) {
+        return (1.0 / 99) * delay;
+    }
+
+    public void bindTargetPD1(Simulation sim, PatchLocation loc, MersenneTwisterFast random) {
         double kDSelf = computeAffinity(icarReceptorAffinity, loc);
         PatchGrid grid = (PatchGrid) sim.getGrid();
 
@@ -328,14 +332,14 @@ public class PatchCellCARTCombinedInhibitory extends PatchCellCARTCombinedCombin
 
     /** Calculates the number of cars produced for receptor circuit. * */
     protected void receptorCars() {
-        proteasome = proteasomeProdRate * boundSynNotch - BASAL_PROTEASOME_DECAY_RATE * proteasome;
         double n = 4.4;
         int removeCARs =
                 (int)
                         (MAX_CARS
                                 / (1
-                                        + Math.pow(proteasome, n)
-                                                / Math.pow(proteasomeActivationThreshold, n)));
+                                        + Math.pow(boundSynNotch, n)
+                                                / Math.pow(synNotchThreshold, n)));
+
         cars = Math.min(cars + (int) (basalCARGenerationRate * TAU), removeCARs);
     }
 
