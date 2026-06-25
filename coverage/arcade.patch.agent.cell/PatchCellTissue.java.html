@@ -134,7 +134,12 @@ public class PatchCellTissue extends PatchCell {
 <span class="pc bpc" id="L134" title="1 of 2 branches missed.">        if (module != null) {</span>
 <span class="fc" id="L135">            module.step(simstate.random, sim);</span>
         }
-<span class="fc" id="L137">    }</span>
+
+        // Step remaining optional processes.
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">        if (processes.get(Domain.SENSING) != null) {</span>
+<span class="nc" id="L140">            processes.get(Domain.SENSING).step(simstate.random, sim);</span>
+        }
+<span class="fc" id="L142">    }</span>
 
     /**
      * Returns the number of CAR antigens on this cell.
@@ -142,7 +147,7 @@ public class PatchCellTissue extends PatchCell {
      * @return the number of CAR antigens on this cell.
      */
     public int getCarAntigens() {
-<span class="nc" id="L145">        return carAntigens;</span>
+<span class="nc" id="L150">        return carAntigens;</span>
     }
 
     /**
@@ -151,7 +156,7 @@ public class PatchCellTissue extends PatchCell {
      * @return the number of self receptor antigens on this cell.
      */
     public int getSelfAntigens() {
-<span class="nc" id="L154">        return selfTargets;</span>
+<span class="nc" id="L159">        return selfTargets;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -19,7 +19,7 @@ public abstract class PatchProcessSensing extends PatchProcess {
 <span class="fc" id="L19">    }</span>
 
     /**
-     * Creates a {@code PatchProcessSignaling} for given version.
+     * Creates a {@code PatchProcessSensing} for given version.
      *
      * @param cell the {@link PatchCell} the process is associated with
      * @param version the process version
@@ -27,8 +27,8 @@ public abstract class PatchProcessSensing extends PatchProcess {
      */
     public static PatchProcess make(PatchCell cell, String version) {
 <span class="nc bnc" id="L29" title="All 2 branches missed.">        switch (version.toUpperCase()) {</span>
-            case &quot;SIMPLE&quot;:
-<span class="nc" id="L31">                return new PatchProcessSensingSimple(cell);</span>
+            case &quot;HYPOXIC&quot;:
+<span class="nc" id="L31">                return new PatchProcessSensingHypoxic(cell);</span>
             default:
 <span class="nc" id="L33">                return null;</span>
         }
