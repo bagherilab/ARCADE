@@ -1,7 +1,5 @@
 package arcade.patch.agent.module;
 
-import java.util.HashMap;
-import java.util.Map;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
@@ -11,10 +9,9 @@ import arcade.patch.agent.cell.PatchCellTissue;
 import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
+import arcade.patch.util.LysisEventLog;
 import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.State;
-import static arcade.patch.util.PatchEnums.Domain;
-import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Implementation of {@link Module} for killing tissue agents.
@@ -77,16 +74,14 @@ public class PatchModuleCytotoxicity extends PatchModule {
 
                 // Log cytotoxicity event
                 PatchSimulation patchSim = (PatchSimulation) sim;
-                Map<String, Object> eventData = new HashMap<>();
-                eventData.put("type", "lysis");
-                eventData.put("timestamp", (int) ((PatchSimulation) sim).getSchedule().getTime());
-                eventData.put("cell-id", cell.getID());
-                eventData.put("target-cell-id", target.getID());
-                eventData.put("target-cell-type", target.getPop());
-                eventData.put(
-                        "target-cell-location",
-                        ((PatchLocation) target.getLocation()).getCoordinate());
-                patchSim.logEvent(eventData);
+                LysisEventLog eventLog =
+                        new LysisEventLog(
+                                (int) sim.getSchedule().getTime(),
+                                cell.getID(),
+                                target.getID(),
+                                target.getPop(),
+                                ((PatchLocation) target.getLocation()).getCoordinate());
+                patchSim.logEvent(eventLog.eventDetails());
             }
         }
 
