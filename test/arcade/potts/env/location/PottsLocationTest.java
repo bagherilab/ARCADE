@@ -1868,6 +1868,32 @@ public class PottsLocationTest {
     }
 
     @Test
+    public void getDirectionalVoxelSubset_voxelsInBothBags_hasOverlap() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        for (int i = 0; i < 9; i++) {
+            voxels.add(new Voxel(0, 0, i));
+        }
+        double[] centroid = {0, 0, 0};
+        Vector axis = new Vector(0, 0, 1);
+
+        Bag basal = PottsLocation.getDirectionalVoxelSubset(
+                PottsEnums.Side.BASAL, 0.5, voxels, centroid, axis);
+        Bag apical = PottsLocation.getDirectionalVoxelSubset(
+                PottsEnums.Side.APICAL, 0.5, voxels, centroid, axis);
+
+        boolean voxelOnLineInBasal = false;
+        for (Object v : basal) {
+            if (((Voxel) v).equals(new Voxel(0, 0, 4))) {
+                voxelOnLineInBasal = true;
+                assertTrue(apical.contains(v));
+            } else {
+                assertFalse(apical.contains(v));
+            }
+        }
+        assertTrue(voxelOnLineInBasal);
+    }
+
+    @Test
     public void getDirectionalVoxelSubset_nonZeroCentroid_returnsCorrectBasalHalf() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         for (int i = 10; i < 20; i++) {
