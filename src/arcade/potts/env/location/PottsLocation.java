@@ -659,8 +659,8 @@ public abstract class PottsLocation implements Location {
      * Gets the voxels up to a threshold from a side of the cell.
      *
      * @param side the side of the cell, must be APICAL or BASAL
-     * @param thresholdPercent the threshold percent of voxels to get,
-     *                         must be between 0 and 1 (inclusive)
+     * @param thresholdPercent the threshold percent of voxels to get, must be between 0 and 1
+     *     (inclusive)
      * @param voxels the list of voxels in the cell to check
      * @param centroid the centroid of the cell
      * @param apicalAxis the apical axis of the cell
@@ -674,10 +674,9 @@ public abstract class PottsLocation implements Location {
             Vector apicalAxis) {
 
         if (thresholdPercent < 0 || thresholdPercent > 1) {
-            throw new IllegalArgumentException("The threshold perfect of voxels to get is not " +
-                    "between 0 and 1.");
+            throw new IllegalArgumentException(
+                    "The threshold perfect of voxels to get is not " + "between 0 and 1.");
         }
-
 
         double minProj = Double.MAX_VALUE;
         double maxProj = -Double.MAX_VALUE;

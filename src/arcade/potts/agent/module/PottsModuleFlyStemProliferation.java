@@ -28,6 +28,7 @@ import arcade.potts.util.PottsEnums.Direction;
 import arcade.potts.util.PottsEnums.Phase;
 import arcade.potts.util.PottsEnums.Side;
 import arcade.potts.util.PottsEnums.State;
+import arcade.potts.util.PottsUtilities;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
@@ -206,6 +207,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         Bag basalVoxels =
                 PottsLocation.getDirectionalVoxelSubset(
                         Side.BASAL, 0.33, voxels, centroid, apicalAxis);
+
+        PottsUtilities.splitBagDupesRandomly(apicalVoxels, basalVoxels, random);
 
         PottsLocation daughterLoc = (PottsLocation) parentLoc.split(random, divisionPlane);
 
