@@ -36,7 +36,7 @@ jobs:
     - name: Generate javadoc
       run: |
         ./gradlew javadoc
-        rm docs/javadoc/*.zip
+        rm -f docs/javadoc/*.zip
 
     - name: Upload Gradle javadoc artifact
       uses: actions/upload-artifact@v4
