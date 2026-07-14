@@ -675,7 +675,7 @@ public abstract class PottsLocation implements Location {
 
         if (thresholdPercent < 0 || thresholdPercent > 1) {
             throw new IllegalArgumentException(
-                    "The threshold perfect of voxels to get is not " + "between 0 and 1.");
+                    "The threshold percent of voxels to get is not " + "between 0 and 1.");
         }
 
         double minProj = Double.MAX_VALUE;

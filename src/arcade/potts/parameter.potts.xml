@@ -86,11 +86,13 @@
     <population.module module="proliferation" id="VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER" value="1" description="if enabled, GMC critical volume = daughter_volume × multiplier" />
     <!-- Deterministic Differentiation-->
     <population.module module="proliferation" id="HAS_DETERMINISTIC_DIFFERENTIATION" value="TRUE" description="if TRUE, differentiation is determined deterministically" />
-    <!-- Prospero synthesis and degradation rates -->
+    <!-- Prospero and Deadpan rates of change -->
     <population.module module="proliferation" id="PROSPERO_RATE" value="1" units="Prospero/hour" conversion="DT" description="rate of change of Prospero" />
-    <!-- Deadpan synthesis and degradation rates -->
     <population.module module="proliferation" id="DEADPAN_RATE" value="1" units="Deadpan/hour" conversion="DT" description="rate of change of Deadpan" />
-    <!-- Transcription factor ratio -->
+    <!-- Transcription factor ratio (Prospero : Deadpan) -->
+    <population.module module="proliferation" id="APICAL_THRESHOLD" value="0.5" description="Percent threshold of apical voxels considered when dividing Deadpan at cell division. APICAL_THRESHOLD + BASAL_THRESHOLD should be less than or equal to 1." />
+    <population.module module="proliferation" id="BASAL_THRESHOLD" value="0.5" description="Percent threshold of basal voxels considered when dividing Prospero at cell division. APICAL_THRESHOLD + BASAL_THRESHOLD should be less than or equal to 1." />
+    <!-- Transcription factor ratio (Prospero : Deadpan) -->
     <population.module module="proliferation" id="TF_RATIO" value="1" description="Ratio of Prospero to Deadpan driving differentiation" />
 
     <!-- apoptosis module parameters -->

@@ -32,6 +32,7 @@ import arcade.potts.util.PottsUtilities;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
+import static arcade.potts.util.PottsUtilities.voxelFraction;
 
 public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVolumeBasedDivision {
 
@@ -46,6 +47,12 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
     /** Rate of Deadpan change (ticks^-1). */
     final double deadpanRate;
+
+    /** Percent threshold of apical voxels considered when dividing Deadpan at cell division. The sum of apicalThreshold and basalThreshold should not exceed 1. */
+    final double apicalThreshold;
+
+    /** Percent threshold of basal voxels considered when dividing Prospero at cell division. The sum of apicalThreshold and basalThreshold should not exceed 1. */
+    final double basalThreshold;
 
     /** Threshold ratio of Prospero to Deadpan in daughter cell to determine cell identity. */
     final double tfRatio;
@@ -130,6 +137,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
         prosperoRate = parameters.getDouble("proliferation/PROSPERO_RATE");
         deadpanRate = parameters.getDouble("proliferation/DEADPAN_RATE");
+        apicalThreshold = parameters.getDouble("proliferation/APICAL_THRESHOLD");
+        basalThreshold = parameters.getDouble("proliferation/BASAL_THRESHOLD");
         tfRatio = parameters.getDouble("proliferation/TF_RATIO");
         splitDirectionDistribution =
                 (NormalDistribution)
@@ -151,6 +160,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         if (dynamicGrowthRateVolume && dynamicGrowthRateNBSelfRepression) {
             throw new InvalidParameterException(
                     "Dynamic growth rate can be either volume-based or NB-contact-based, not both.");
+        }
+
+        if (apicalThreshold + basalThreshold > 1 || apicalThreshold < 0 || basalThreshold < 0) {
+            throw new InvalidParameterException("Apical and basal thresholds should be nonnegative and not overlap (check that apicalThreshold + basalThreshold <= 1)");
         }
 
         volumeBasedCriticalVolumeMultiplier =
@@ -203,10 +216,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         Bag apicalVoxels =
                 PottsLocation.getDirectionalVoxelSubset(
-                        Side.APICAL, 0.33, voxels, centroid, apicalAxis);
+                        Side.APICAL, apicalThreshold, voxels, centroid, apicalAxis);
         Bag basalVoxels =
                 PottsLocation.getDirectionalVoxelSubset(
-                        Side.BASAL, 0.33, voxels, centroid, apicalAxis);
+                        Side.BASAL, basalThreshold, voxels, centroid, apicalAxis);
 
         PottsUtilities.splitBagDupesRandomly(apicalVoxels, basalVoxels, random);
 
@@ -446,7 +459,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 if (daughterDeadpan <= 0) {
                     return daughterProspero <= 0;
                 }
-                return (daughterProspero / daughterDeadpan) < tfRatio;
+                return (daughterProspero / daughterDeadpan) <= tfRatio;
             }
         }
         throw new IllegalArgumentException(
@@ -633,34 +646,6 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     //            }
     //        }
     //    }
-
-    /**
-     * Calculates the fraction of voxels in a daughter cell to distribute transcription factors.
-     *
-     * @param voxels voxels in the region of interest
-     * @param daughterLoc the daughter cell's location
-     * @return fraction of voxels in the daughter cell
-     */
-    static double voxelFraction(Bag voxels, PottsLocation daughterLoc) {
-        if (voxels.numObjs == 0) {
-            return 0.5;
-        }
-
-        ArrayList<Voxel> daughterVoxels = daughterLoc.getVoxels();
-        double daughterCount = 0;
-
-        for (int i = 0; i < voxels.numObjs; i++) {
-            Voxel v = (Voxel) voxels.objs[i];
-            for (Voxel d : daughterVoxels) {
-                if (v.x == d.x && v.y == d.y && v.z == d.z) {
-                    daughterCount++;
-                    break;
-                }
-            }
-        }
-
-        return daughterCount / voxels.numObjs;
-    }
 
     /**
      * Adds a new cell to the simulation grid and schedule. Resets the parent cell.
