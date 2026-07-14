@@ -48,10 +48,16 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /** Rate of Deadpan change (ticks^-1). */
     final double deadpanRate;
 
-    /** Percent threshold of apical voxels considered when dividing Deadpan at cell division. The sum of apicalThreshold and basalThreshold should not exceed 1. */
+    /**
+     * Percent threshold of apical voxels considered when dividing Deadpan at cell division. The sum
+     * of apicalThreshold and basalThreshold should not exceed 1.
+     */
     final double apicalThreshold;
 
-    /** Percent threshold of basal voxels considered when dividing Prospero at cell division. The sum of apicalThreshold and basalThreshold should not exceed 1. */
+    /**
+     * Percent threshold of basal voxels considered when dividing Prospero at cell division. The sum
+     * of apicalThreshold and basalThreshold should not exceed 1.
+     */
     final double basalThreshold;
 
     /** Threshold ratio of Prospero to Deadpan in daughter cell to determine cell identity. */
@@ -163,7 +169,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         }
 
         if (apicalThreshold + basalThreshold > 1 || apicalThreshold < 0 || basalThreshold < 0) {
-            throw new InvalidParameterException("Apical and basal thresholds should be nonnegative and not overlap (check that apicalThreshold + basalThreshold <= 1)");
+            throw new InvalidParameterException(
+                    "Apical and basal thresholds should be nonnegative and not overlap (check that apicalThreshold + basalThreshold <= 1)");
         }
 
         volumeBasedCriticalVolumeMultiplier =

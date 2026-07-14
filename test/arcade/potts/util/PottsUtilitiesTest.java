@@ -1,15 +1,10 @@
 package arcade.potts.util;
 
-import ec.util.MersenneTwisterFast;
-import org.junit.jupiter.api.Test;
-import sim.util.Bag;
-import arcade.patch.agent.cell.PatchCell;
-import arcade.patch.agent.cell.PatchCellTissue;
-import arcade.patch.env.location.PatchLocation;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import org.junit.jupiter.api.Test;
+import sim.util.Bag;
+import ec.util.MersenneTwisterFast;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -21,7 +16,8 @@ public class PottsUtilitiesTest {
     }
 
     @Test
-    public void splitBagDupesRandomly_allDuplicatesallRandomFalse_firstBagEmptiedSecondBagUnchanged() {
+    public void
+            splitBagDupesRandomly_allDuplicatesallRandomFalse_firstBagEmptiedSecondBagUnchanged() {
         Bag firstBag = new Bag();
         Bag secondBag = new Bag();
         Object a = new Object();
@@ -95,7 +91,8 @@ public class PottsUtilitiesTest {
     }
 
     @Test
-    public void splitBagDupesRandomly_someDuplicatesallRandomTrue_itemsRemovedFromSecondBagFirstBagUnchanged() {
+    public void
+            splitBagDupesRandomly_someDuplicatesallRandomTrue_itemsRemovedFromSecondBagFirstBagUnchanged() {
         Bag firstBag = new Bag();
         Bag secondBag = new Bag();
         Object a = new Object();

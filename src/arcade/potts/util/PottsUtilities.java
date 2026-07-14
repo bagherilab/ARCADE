@@ -1,11 +1,10 @@
 package arcade.potts.util;
 
-import arcade.potts.env.location.PottsLocation;
-import arcade.potts.env.location.Voxel;
+import java.util.ArrayList;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
-
-import java.util.ArrayList;
+import arcade.potts.env.location.PottsLocation;
+import arcade.potts.env.location.Voxel;
 
 /** Utility class providing static helper methods for Potts simulations. */
 public final class PottsUtilities {
@@ -28,7 +27,6 @@ public final class PottsUtilities {
             }
         }
     }
-
 
     /**
      * Calculates the fraction of voxels in a daughter cell to distribute transcription factors.
