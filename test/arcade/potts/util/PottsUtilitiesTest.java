@@ -21,7 +21,7 @@ public class PottsUtilitiesTest {
     }
 
     @Test
-    public void splitBagDupesRandomly_allDuplicates_allRandomFalse_firstBagEmptiedSecondBagUnchanged() {
+    public void splitBagDupesRandomly_allDuplicatesallRandomFalse_firstBagEmptiedSecondBagUnchanged() {
         Bag firstBag = new Bag();
         Bag secondBag = new Bag();
         Object a = new Object();
@@ -95,7 +95,7 @@ public class PottsUtilitiesTest {
     }
 
     @Test
-    public void splitBagDupesRandomly_someDuplicates_allRandomTrue_itemsRemovedFromSecondBagFirstBagUnchanged() {
+    public void splitBagDupesRandomly_someDuplicatesallRandomTrue_itemsRemovedFromSecondBagFirstBagUnchanged() {
         Bag firstBag = new Bag();
         Bag secondBag = new Bag();
         Object a = new Object();
