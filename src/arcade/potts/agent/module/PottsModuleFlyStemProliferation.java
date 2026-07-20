@@ -31,7 +31,8 @@ import arcade.potts.util.PottsEnums.State;
 import arcade.potts.util.PottsUtilities;
 import static arcade.potts.util.PottsUtilities.voxelFraction;
 
-public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVolumeBasedDivision {
+public abstract class PottsModuleFlyStemProliferation
+        extends PottsModuleProliferationVolumeBasedDivision {
 
     /** Threshold for critical volume size checkpoint. */
     static final double SIZE_CHECKPOINT = 0.95;
@@ -60,17 +61,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /** Threshold ratio of Prospero to Deadpan in daughter cell to determine cell identity. */
     final double tfRatio;
 
-    /** Wild type stem cell split offset percent for x (0-100). */
-    final int wtLikeX;
+    final int likeX;
 
-    /** Wild type stem cell split offset percent for y (0-100). */
-    final int wtLikeY;
-
-    /** Mud mutant stem cell split offset percent for x (0-100). */
-    final int mmLikeX;
-
-    /** Mud mutant stem cell split offset percent for y (0-100). */
-    final int mmLikeY;
+    final int likeY;
 
     /** Distribution that determines rotational offset of cell's division plane. */
     final NormalDistribution splitDirectionDistribution;
@@ -155,10 +148,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         apicalThreshold = parameters.getDouble("proliferation/APICAL_THRESHOLD");
         basalThreshold = parameters.getDouble("proliferation/BASAL_THRESHOLD");
         tfRatio = parameters.getDouble("proliferation/TF_RATIO");
-        wtLikeX = parameters.getInt("proliferation/WT_LIKE_X");
-        wtLikeY = parameters.getInt("proliferation/WT_LIKE_Y");
-        mmLikeX = parameters.getInt("proliferation/MM_LIKE_X");
-        mmLikeY = parameters.getInt("proliferation/MM_LIKE_Y");
+        likeX = parameters.getInt("proliferation/LIKE_X");
+        likeY = parameters.getInt("proliferation/LIKE_Y");
         splitDirectionDistribution =
                 (NormalDistribution)
                         parameters.getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION");
@@ -364,16 +355,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * @param flyStemCell the stem cell this module is attached to
      * @return the plane along which this cell should divide
      */
-    protected Plane chooseDivisionPlane(PottsCellFlyStem flyStemCell) {
-        double offset = sampleDivisionPlaneOffset();
-
-        if (flyStemCell.getStemType() == StemType.WT
-                || (flyStemCell.getStemType() == StemType.MUDMUT && Math.abs(offset) < 45)) {
-            return getWTDivisionPlaneWithRotationalVariance(flyStemCell, offset);
-        } else {
-            return getMUDDivisionPlane(flyStemCell);
-        }
-    }
+    protected abstract Plane chooseDivisionPlane(PottsCellFlyStem flyStemCell);
 
     /**
      * Gets the rotation offset for the division plane according to splitDirectionDistribution.
@@ -399,37 +381,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         Vector rotatedNormalVector =
                 Vector.rotateVectorAroundAxis(
                         apical_axis, Direction.XY_PLANE.vector, rotationOffset);
-        Voxel splitVoxel =
-                getCellSplitVoxel(StemType.WT, cell, rotatedNormalVector, wtLikeX, wtLikeY);
+        Voxel splitVoxel = getCellSplitVoxel(StemType.WT, cell, rotatedNormalVector, likeX, likeY);
         return new Plane(
                 new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), rotatedNormalVector);
-    }
-
-    /**
-     * Gets the division plane for the cell. This follows MUDMUT division rules. The division plane
-     * is not rotated.
-     *
-     * @param cell the {@link PottsCellFlyStem} to get the division plane for
-     * @return the division plane for the cell
-     */
-    public Plane getMUDDivisionPlane(PottsCellFlyStem cell) {
-        Vector defaultNormal =
-                Vector.rotateVectorAroundAxis(
-                        cell.getApicalAxis(),
-                        Direction.XY_PLANE.vector,
-                        StemType.MUDMUT.splitDirectionRotation);
-        Voxel splitVoxel =
-                getCellSplitVoxel(StemType.MUDMUT, cell, defaultNormal, mmLikeX, mmLikeY);
-        // System.out.println(
-        //         "in getMUDDivisionPlane, default Normal = ("
-        //                 + defaultNormal.getX()
-        //                 + ", "
-        //                 + +defaultNormal.getY()
-        //                 + ", "
-        //                 + +defaultNormal.getZ()
-        //                 + ", "
-        //                 + ")");
-        return new Plane(new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), defaultNormal);
     }
 
     /**

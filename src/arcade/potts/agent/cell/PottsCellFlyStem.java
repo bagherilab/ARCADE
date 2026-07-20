@@ -7,7 +7,8 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 import arcade.core.util.Vector;
 import arcade.potts.agent.module.PottsModule;
-import arcade.potts.agent.module.PottsModuleFlyStemProliferation;
+import arcade.potts.agent.module.PottsModuleFlyStemProliferationMM;
+import arcade.potts.agent.module.PottsModuleFlyStemProliferationWT;
 import arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
 
@@ -151,7 +152,19 @@ public class PottsCellFlyStem extends PottsCellFly {
     void setStateModule(CellState newState) {
         switch ((State) newState) {
             case PROLIFERATIVE:
-                module = new PottsModuleFlyStemProliferation(this);
+                switch (stemType) {
+                    case WT:
+                        module = new PottsModuleFlyStemProliferationWT(this);
+                        break;
+                    case MUDMUT:
+                        module = new PottsModuleFlyStemProliferationMM(this);
+                        break;
+                    case NANOBODY:
+                        break;
+                    default:
+                        module = null;
+                        break;
+                }
                 break;
             default:
                 module = null;
