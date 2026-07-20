@@ -1,5 +1,6 @@
 package arcade.potts.agent.module;
 
+import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.Location;
@@ -132,49 +133,96 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
     /**
      * Updates the effective growth rate according to boolean flags specified in parameters.
      *
+     * <p>The rule is selected as follows. When {@code DYNAMIC_GROWTH_RATE_VOLUME} is off the growth
+     * rate is simply the basal rate. When it is on, {@code PDELIKE} chooses between a per-cell rule
+     * (this cell's own volume against its equilibrium volume) and a PDE-like rule (population
+     * averages across GMCs of the same population). {@code PDELIKE} therefore only has an effect
+     * while {@code DYNAMIC_GROWTH_RATE_VOLUME} is on.
+     *
      * @param sim the simulation
      */
     public void updateGrowthRate(Simulation sim) {
         if (!dynamicGrowthRateVolume) {
             cellGrowthRate = cellGrowthRateBase;
+        } else if (!pdeLike) {
+            updateCellVolumeBasedGrowthRate(
+                    cell.getLocation().getVolume(), computeEquilibriumVolume());
         } else {
-            if (!pdeLike) {
-                updateCellVolumeBasedGrowthRate(
-                        cell.getLocation().getVolume(), computeEquilibriumVolume());
+            // PDE-like: use population-wide averages for GMCs (same pop as this cell).
+            // The reference volume is the population-average equilibrium volume:
+            //   avgVRef = avgCritVol * (1 + sizeTarget) / 2
+            VolumeAverages averages = getPopulationVolumeAverages(sim);
+
+            if (averages.count == 0) {
+                cellGrowthRate = cellGrowthRateBase;
             } else {
-                // PDE-like: use population-wide averages for GMCs (same pop as this cell).
-                // The reference volume is the population-average equilibrium volume:
-                //   avgVRef = avgCritVol * (1 + sizeTarget) / 2
-                sim.util.Bag objs = sim.getGrid().getAllObjects();
-
-                double volSum = 0.0;
-                double critSum = 0.0;
-                int count = 0;
-
-                for (int i = 0; i < objs.numObjs; i++) {
-                    Object o = objs.objs[i];
-                    if (!(o instanceof arcade.potts.agent.cell.PottsCell)) {
-                        continue;
-                    }
-
-                    arcade.potts.agent.cell.PottsCell c = (arcade.potts.agent.cell.PottsCell) o;
-                    if (c.getPop() != cell.getPop()) {
-                        continue; // keep to same population
-                    }
-
-                    if (o instanceof arcade.potts.agent.cell.PottsCellFlyGMC) {
-                        arcade.potts.agent.cell.PottsCellFlyGMC gmc =
-                                (arcade.potts.agent.cell.PottsCellFlyGMC) o;
-                        volSum += gmc.getLocation().getVolume();
-                        critSum += gmc.getCriticalVolume();
-                        count++;
-                    }
-                }
-                double avgVolume = volSum / count;
-                double avgCritVol = critSum / count;
-                double avgVRef = avgCritVol * (1.0 + sizeTarget) / 2.0;
-                updateCellVolumeBasedGrowthRate(avgVolume, avgVRef);
+                double avgVRef = averages.averageCriticalVolume * (1.0 + sizeTarget) / 2.0;
+                updateCellVolumeBasedGrowthRate(averages.averageVolume, avgVRef);
             }
+        }
+    }
+
+    /**
+     * Computes population-average volume statistics across GMCs sharing this cell's population.
+     *
+     * <p>The object grid is traversed once, accumulating both the current volume and the critical
+     * volume of every {@link PottsCellFlyGMC} whose population matches this cell's.
+     *
+     * @param sim the simulation
+     * @return the population volume averages, with a {@code count} of zero if no GMCs were found
+     */
+    VolumeAverages getPopulationVolumeAverages(Simulation sim) {
+        Bag objs = sim.getGrid().getAllObjects();
+
+        double volSum = 0.0;
+        double critSum = 0.0;
+        int count = 0;
+
+        for (int i = 0; i < objs.numObjs; i++) {
+            if (!(objs.objs[i] instanceof PottsCellFlyGMC)) {
+                continue;
+            }
+
+            PottsCellFlyGMC gmc = (PottsCellFlyGMC) objs.objs[i];
+            if (gmc.getPop() != cell.getPop()) {
+                continue; // keep to same population
+            }
+
+            volSum += gmc.getLocation().getVolume();
+            critSum += gmc.getCriticalVolume();
+            count++;
+        }
+
+        if (count == 0) {
+            return new VolumeAverages(0, 0.0, 0.0);
+        }
+
+        return new VolumeAverages(count, volSum / count, critSum / count);
+    }
+
+    /** Population-average volume statistics for the GMCs of a single population. */
+    static final class VolumeAverages {
+
+        /** Number of GMCs included in the averages. */
+        final int count;
+
+        /** Average current volume across the included GMCs. */
+        final double averageVolume;
+
+        /** Average critical volume across the included GMCs. */
+        final double averageCriticalVolume;
+
+        /**
+         * Creates a set of population volume averages.
+         *
+         * @param count the number of GMCs included in the averages
+         * @param averageVolume the average current volume
+         * @param averageCriticalVolume the average critical volume
+         */
+        VolumeAverages(int count, double averageVolume, double averageCriticalVolume) {
+            this.count = count;
+            this.averageVolume = averageVolume;
+            this.averageCriticalVolume = averageCriticalVolume;
         }
     }
 }
