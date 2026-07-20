@@ -2,6 +2,9 @@ package arcade.potts.util;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import arcade.potts.env.location.PottsLocation;
+import arcade.potts.env.location.Voxel;
 import org.junit.jupiter.api.Test;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
@@ -9,6 +12,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class PottsUtilitiesTest {
+    private static final double EPSILON = 1E-10;
+
 
     @Test
     public void constructor_called_throwsException() {
@@ -121,4 +126,121 @@ public class PottsUtilitiesTest {
             assertTrue(bag.contains(obj));
         }
     }
+
+    @Test
+    public void voxelFraction_emptyBag_returnsZero() {
+        Bag voxels = new Bag();
+        PottsLocation daughterLoc = mock(PottsLocation.class);
+
+        double fraction = PottsUtilities.voxelFraction(voxels, daughterLoc);
+
+        assertEquals(0, fraction);
+    }
+
+    @Test
+    public void voxelFraction_noOverlapWithDaughter_returnsZero() {
+        Bag voxels = new Bag();
+        voxels.add(new Voxel(0, 0, 0));
+        voxels.add(new Voxel(1, 1, 1));
+
+        PottsLocation daughterLoc = mock(PottsLocation.class);
+        ArrayList<Voxel> daughterVoxels = new ArrayList<>(List.of(new Voxel(5, 5, 5)));
+        when(daughterLoc.getVoxels()).thenReturn(daughterVoxels);
+
+        double fraction = PottsUtilities.voxelFraction(voxels, daughterLoc);
+
+        assertEquals(0, fraction);
+    }
+
+    @Test
+    public void voxelFraction_allVoxelsInDaughter_returnsOne() {
+        Bag voxels = new Bag();
+        Voxel a = new Voxel(0, 0, 0);
+        Voxel b = new Voxel(1, 1, 1);
+        voxels.add(a);
+        voxels.add(b);
+
+        PottsLocation daughterLoc = mock(PottsLocation.class);
+        ArrayList<Voxel> daughterVoxels = new ArrayList<>(List.of(a, b));
+        when(daughterLoc.getVoxels()).thenReturn(daughterVoxels);
+
+        double fraction = PottsUtilities.voxelFraction(voxels, daughterLoc);
+
+        assertEquals(1, fraction);
+    }
+
+    @Test
+    public void voxelFraction_someVoxelsInDaughter_returnsPartialFraction() {
+        Bag voxels = new Bag();
+        Voxel a = new Voxel(0, 0, 0);
+        Voxel b = new Voxel(1, 1, 1);
+        Voxel c = new Voxel(2, 2, 2);
+        Voxel d = new Voxel(3, 3, 3);
+        voxels.add(a);
+        voxels.add(b);
+        voxels.add(c);
+        voxels.add(d);
+
+        PottsLocation daughterLoc = mock(PottsLocation.class);
+        ArrayList<Voxel> daughterVoxels = new ArrayList<>(List.of(a, c));
+        when(daughterLoc.getVoxels()).thenReturn(daughterVoxels);
+
+        double fraction = PottsUtilities.voxelFraction(voxels, daughterLoc);
+
+        assertEquals(0.5, fraction);
+    }
+
+    @Test
+    public void voxelFraction_emptyDaughterVoxels_returnsZero() {
+        Bag voxels = new Bag();
+        voxels.add(new Voxel(0, 0, 0));
+        voxels.add(new Voxel(1, 1, 1));
+
+        PottsLocation daughterLoc = mock(PottsLocation.class);
+        when(daughterLoc.getVoxels()).thenReturn(new ArrayList<>());
+
+        double fraction = PottsUtilities.voxelFraction(voxels, daughterLoc);
+
+        assertEquals(0, fraction);
+    }
+
+    @Test
+    public void voxelFraction_matchingCoordinatesDifferentObjects_countsAsMatch() {
+        Bag voxels = new Bag();
+        Voxel a = new Voxel(0, 0, 0);
+        Voxel b = new Voxel(1, 1, 1);
+        Voxel c = new Voxel(2, 2, 2);
+        Voxel d = new Voxel(3, 3, 3);
+        voxels.add(a);
+        voxels.add(b);
+        voxels.add(c);
+        voxels.add(d);
+        PottsLocation daughterLoc = mock(PottsLocation.class);
+        ArrayList<Voxel> daughterVoxels = new ArrayList<>(List.of(new Voxel(0, 0, 0)));
+        when(daughterLoc.getVoxels()).thenReturn(daughterVoxels);
+
+        double fraction = PottsUtilities.voxelFraction(voxels, daughterLoc);
+
+        assertEquals(0.25, fraction);
+    }
+
+    @Test
+    public void voxelFraction_oneOfSevenMatch_returnsPreciseFraction() {
+        Bag voxels = new Bag();
+        Voxel a = new Voxel(0, 0, 0);
+        for (int i = 1; i <= 6; i++) {
+            voxels.add(new Voxel(i, i, i));
+        }
+        voxels.add(a);
+
+        PottsLocation daughterLoc = mock(PottsLocation.class);
+        ArrayList<Voxel> daughterVoxels = new ArrayList<>(List.of(a));
+        when(daughterLoc.getVoxels()).thenReturn(daughterVoxels);
+
+        double fraction = PottsUtilities.voxelFraction(voxels, daughterLoc);
+
+        assertEquals(1.0 / 7.0, fraction, EPSILON);
+    }
+
+
 }
