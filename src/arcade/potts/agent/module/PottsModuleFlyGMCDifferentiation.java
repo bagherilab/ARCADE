@@ -85,7 +85,9 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
 
         // Create and schedule new neuron cell
         int newID = sim.getID();
-        CellContainer newContainer = cell.make(newID, State.QUIESCENT, random);
+        CellContainer newContainer =
+                ((PottsCellFlyGMC) cell)
+                        .make(newID, State.QUIESCENT, newLocation.getVolume(), random);
         PottsCell newCell =
                 (PottsCell) newContainer.convert(sim.getCellFactory(), newLocation, random);
         sim.getGrid().addObject(newCell, null);
@@ -113,7 +115,7 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
                         null,
                         0,
                         null,
-                        oldCell.getCriticalVolume(),
+                        location.getVolume(),
                         oldCell.getCriticalHeight(),
                         oldCell.getCriticalRegionVolumes(),
                         oldCell.getCriticalRegionHeights());

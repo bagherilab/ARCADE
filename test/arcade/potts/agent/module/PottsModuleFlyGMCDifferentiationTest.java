@@ -133,10 +133,18 @@ public class PottsModuleFlyGMCDifferentiationTest {
 
     @Test
     public void addCell_called_callsExpectedMethods() {
-        // When the module calls make() on the cell, return Quiescent PottsCellContainer
-        // mock
+        double newLocVol = 42.0;
+        double locVol = 50.0;
+        when(newLocation.getVolume()).thenReturn(newLocVol);
+        when(location.getVolume()).thenReturn(locVol);
+
+        // When the module calls make() on the cell, return Quiescent PottsCellContainer mock
         container = mock(PottsCellContainer.class);
-        when(gmcCell.make(eq(123), eq(State.QUIESCENT), any(MersenneTwisterFast.class)))
+        when(gmcCell.make(
+                        eq(123),
+                        eq(State.QUIESCENT),
+                        eq(newLocVol),
+                        any(MersenneTwisterFast.class)))
                 .thenReturn(container);
         newCell = mock(PottsCell.class);
         when(container.convert(eq(cellFactory), eq(newLocation), any(MersenneTwisterFast.class)))
@@ -147,7 +155,7 @@ public class PottsModuleFlyGMCDifferentiationTest {
         module.addCell(random, sim);
         verify(location).split(random);
         verify(gmcCell).reset(dummyIDs, dummyRegions);
-        verify(gmcCell).make(123, State.QUIESCENT, random);
+        verify(gmcCell).make(123, State.QUIESCENT, newLocVol, random);
 
         verify(grid).addObject(newCell, null);
         verify(potts).register(newCell);
