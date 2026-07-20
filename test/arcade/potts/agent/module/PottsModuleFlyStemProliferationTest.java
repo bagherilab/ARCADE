@@ -292,7 +292,7 @@ public class PottsModuleFlyStemProliferationTest {
     public void getCellSplitVoxel_WT_callsLocationOffsetWithCorrectParams() {
         ArrayList<Integer> expectedOffset = new ArrayList<>();
         expectedOffset.add(50); // WT.splitOffsetPercentX
-        expectedOffset.add(85); // WT.splitOffsetPercentY
+        expectedOffset.add(93); // WT.splitOffsetPercentY
 
         when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
         when(stemCell.getLocation()).thenReturn(stemLoc);
@@ -300,7 +300,7 @@ public class PottsModuleFlyStemProliferationTest {
                 .thenReturn(new Voxel(0, 0, 0));
 
         PottsModuleFlyStemProliferation.getCellSplitVoxel(
-                PottsCellFlyStem.StemType.WT, stemCell, stemCell.getApicalAxis());
+                PottsCellFlyStem.StemType.WT, stemCell, stemCell.getApicalAxis(), 50, 93);
         verify(stemLoc).getOffsetInApicalFrame(eq(expectedOffset), any(Vector.class));
     }
 
@@ -316,7 +316,7 @@ public class PottsModuleFlyStemProliferationTest {
                 .thenReturn(new Voxel(0, 0, 0));
 
         PottsModuleFlyStemProliferation.getCellSplitVoxel(
-                PottsCellFlyStem.StemType.MUDMUT, stemCell, stemCell.getApicalAxis());
+                PottsCellFlyStem.StemType.MUDMUT, stemCell, stemCell.getApicalAxis(), 50, 50);
         verify(stemLoc).getOffsetInApicalFrame(eq(expectedOffset), any(Vector.class));
     }
 

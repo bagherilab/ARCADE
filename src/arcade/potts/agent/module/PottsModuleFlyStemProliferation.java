@@ -29,9 +29,6 @@ import arcade.potts.util.PottsEnums.Phase;
 import arcade.potts.util.PottsEnums.Side;
 import arcade.potts.util.PottsEnums.State;
 import arcade.potts.util.PottsUtilities;
-import static arcade.potts.util.PottsEnums.Direction;
-import static arcade.potts.util.PottsEnums.Phase;
-import static arcade.potts.util.PottsEnums.State;
 import static arcade.potts.util.PottsUtilities.voxelFraction;
 
 public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVolumeBasedDivision {
@@ -62,6 +59,18 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
     /** Threshold ratio of Prospero to Deadpan in daughter cell to determine cell identity. */
     final double tfRatio;
+
+    /** Wild type stem cell split offset percent for x (0-100). */
+    final int wtLikeX;
+
+    /** Wild type stem cell split offset percent for y (0-100). */
+    final int wtLikeY;
+
+    /** Mud mutant stem cell split offset percent for x (0-100). */
+    final int mmLikeX;
+
+    /** Mud mutant stem cell split offset percent for y (0-100). */
+    final int mmLikeY;
 
     /** Distribution that determines rotational offset of cell's division plane. */
     final NormalDistribution splitDirectionDistribution;
@@ -146,6 +155,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         apicalThreshold = parameters.getDouble("proliferation/APICAL_THRESHOLD");
         basalThreshold = parameters.getDouble("proliferation/BASAL_THRESHOLD");
         tfRatio = parameters.getDouble("proliferation/TF_RATIO");
+        wtLikeX = parameters.getInt("proliferation/WT_LIKE_X");
+        wtLikeY = parameters.getInt("proliferation/WT_LIKE_Y");
+        mmLikeX = parameters.getInt("proliferation/MM_LIKE_X");
+        mmLikeY = parameters.getInt("proliferation/MM_LIKE_Y");
         splitDirectionDistribution =
                 (NormalDistribution)
                         parameters.getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION");
@@ -386,7 +399,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         Vector rotatedNormalVector =
                 Vector.rotateVectorAroundAxis(
                         apical_axis, Direction.XY_PLANE.vector, rotationOffset);
-        Voxel splitVoxel = getCellSplitVoxel(StemType.WT, cell, rotatedNormalVector);
+        Voxel splitVoxel =
+                getCellSplitVoxel(StemType.WT, cell, rotatedNormalVector, wtLikeX, wtLikeY);
         return new Plane(
                 new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), rotatedNormalVector);
     }
@@ -404,7 +418,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                         cell.getApicalAxis(),
                         Direction.XY_PLANE.vector,
                         StemType.MUDMUT.splitDirectionRotation);
-        Voxel splitVoxel = getCellSplitVoxel(StemType.MUDMUT, cell, defaultNormal);
+        Voxel splitVoxel =
+                getCellSplitVoxel(StemType.MUDMUT, cell, defaultNormal, mmLikeX, mmLikeY);
         // System.out.println(
         //         "in getMUDDivisionPlane, default Normal = ("
         //                 + defaultNormal.getX()
@@ -424,10 +439,14 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * @return the voxel location where the cell will split
      */
     public static Voxel getCellSplitVoxel(
-            StemType stemType, PottsCellFlyStem cell, Vector rotatedNormalVector) {
+            StemType stemType,
+            PottsCellFlyStem cell,
+            Vector rotatedNormalVector,
+            int likeX,
+            int likeY) {
         ArrayList<Integer> splitOffsetPercent = new ArrayList<>();
-        splitOffsetPercent.add(stemType.splitOffsetPercentX);
-        splitOffsetPercent.add(stemType.splitOffsetPercentY);
+        splitOffsetPercent.add(likeX);
+        splitOffsetPercent.add(likeY);
         return ((PottsLocation2D) cell.getLocation())
                 .getOffsetInApicalFrame(splitOffsetPercent, rotatedNormalVector);
     }
@@ -627,32 +646,6 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         scheduleNewCell(
                 container, daughterLoc, sim, potts, random, daughterProspero, daughterDeadpan);
     }
-
-    //    /**
-    //     * Determines how prospero is split between the parent and daughter cell. Can be edited to
-    //     * change behavior. Current prototype behavior divides the prospero evenly 50% of the
-    // time, and
-    //     * randomly selects which cell gets all prospero the other 50% of the time.
-    //     *
-    //     * @param parentProspero the parent cell's prospero to be divided
-    //     * @param random the random number generator
-    //     * @return double with daughter prospero amount
-    //     */
-    //    static double splitStemProspero(double parentProspero, MersenneTwisterFast random) {
-    //        if (parentProspero <= 0) {
-    //            return 0;
-    //        }
-    //
-    //        if (random.nextBoolean()) { // 50% of the time, split prospero evenly
-    //            return parentProspero / 2;
-    //        } else { // 50% of the time, randomly choose which cell gets all the prospero
-    //            if (random.nextBoolean()) {
-    //                return parentProspero;
-    //            } else {
-    //                return 0;
-    //            }
-    //        }
-    //    }
 
     /**
      * Adds a new cell to the simulation grid and schedule. Resets the parent cell.

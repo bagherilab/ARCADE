@@ -15,19 +15,19 @@ public class PottsCellFlyStem extends PottsCellFly {
     /** Enum outlining parameters for each cell type. */
     public enum StemType {
         /** Wild type stem cell. */
-        WT(50, 85, 0, 0.18),
+        WT(0, 0.18),
 
         /** mud Mutant stem cell. */
-        MUDMUT(50, 50, -90, 0.5),
+        MUDMUT(-90, 0.5),
 
         /** Nanobody stem cell */
-        NANOBODY(50, 14, 0, 0.5);
+        NANOBODY(0, 0.5);
 
-        /** Percentage x offset from cell edge where division will occur. */
-        public final int splitOffsetPercentX;
-
-        /** Percentage y offset from cell edge where division will occur. */
-        public final int splitOffsetPercentY;
+        //        /** Percentage x offset from cell edge where division will occur. */
+        //        public final int splitOffsetPercentX;
+        //
+        //        /** Percentage y offset from cell edge where division will occur. */
+        //        public final int splitOffsetPercentY;
 
         /** Default direction of division is rotated this much off the apical vector. */
         public final double splitDirectionRotation;
@@ -41,19 +41,20 @@ public class PottsCellFlyStem extends PottsCellFly {
         /**
          * Constructor for StemType.
          *
-         * @param splitOffsetPercentX percentage x offset from cell edge where division will occur
-         * @param splitOffsetPercentY percentage y offset from cell edge where division will occur
+         * <p>// * @param splitOffsetPercentX percentage x offset from cell edge where division will
+         * occur // * @param splitOffsetPercentY percentage y offset from cell edge where division
+         * will occur
+         *
          * @param splitDirectionRotation the plane of division's rotation off the apical vector
          * @param daughterCellCriticalVolumeProportion proportion of the stem cell's critical volume
          *     that will be the daughter cell's critical volume
          */
         StemType(
-                int splitOffsetPercentX,
-                int splitOffsetPercentY,
-                double splitDirectionRotation,
-                double daughterCellCriticalVolumeProportion) {
-            this.splitOffsetPercentX = splitOffsetPercentX;
-            this.splitOffsetPercentY = splitOffsetPercentY;
+                //                int splitOffsetPercentX,
+                //                int splitOffsetPercentY,
+                double splitDirectionRotation, double daughterCellCriticalVolumeProportion) {
+            //            this.splitOffsetPercentX = splitOffsetPercentX;
+            //            this.splitOffsetPercentY = splitOffsetPercentY;
             this.splitDirectionRotation = splitDirectionRotation;
             this.daughterCellCriticalVolumeProportion = daughterCellCriticalVolumeProportion;
         }

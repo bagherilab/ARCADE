@@ -94,6 +94,11 @@
     <population.module module="proliferation" id="BASAL_THRESHOLD" value="0.5" description="Percent threshold of basal voxels considered when dividing Prospero at cell division. APICAL_THRESHOLD + BASAL_THRESHOLD should be less than or equal to 1." />
     <!-- Transcription factor ratio (Prospero : Deadpan) -->
     <population.module module="proliferation" id="TF_RATIO" value="1" description="Ratio of Prospero to Deadpan driving differentiation" />
+    <!-- Stem type cell offset percentages (0-100) -->
+    <population.module module="proliferation" id="WT_LIKE_X" value="50" description="Wild type stem cell split offset percent for x" />
+    <population.module module="proliferation" id="WT_LIKE_Y" value="93" description="Wild type stem cell split offset percent for y" />
+    <population.module module="proliferation" id="MM_LIKE_X" value="50" description="Mud mutant stem cell split offset percent for x" />
+    <population.module module="proliferation" id="WM_LIKE_y" value="50" description="Mud mutant stem cell split offset percent for y" />
 
     <!-- apoptosis module parameters -->
     <population.module module="apoptosis" id="RATE_EARLY" value="4" units="steps/hour" conversion="DT" description="rate of events in early apoptosis phase" />
