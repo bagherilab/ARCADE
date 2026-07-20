@@ -2,18 +2,16 @@ package arcade.potts.util;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import arcade.potts.env.location.PottsLocation;
-import arcade.potts.env.location.Voxel;
 import org.junit.jupiter.api.Test;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
+import arcade.potts.env.location.PottsLocation;
+import arcade.potts.env.location.Voxel;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class PottsUtilitiesTest {
     private static final double EPSILON = 1E-10;
-
 
     @Test
     public void constructor_called_throwsException() {
@@ -241,6 +239,4 @@ public class PottsUtilitiesTest {
 
         assertEquals(1.0 / 7.0, fraction, EPSILON);
     }
-
-
 }
