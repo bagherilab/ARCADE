@@ -129,6 +129,10 @@ public class PottsModuleFlyStemProliferationTest {
         when(parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE")).thenReturn(0.04);
         when(parameters.getDouble("proliferation/PROSPERO_RATE")).thenReturn(0.895);
         when(parameters.getDouble("proliferation/DEADPAN_RATE")).thenReturn(0.314);
+//        when(parameters.getInt("proliferation/WT_LIKE_X")).thenReturn(15);
+//        when(parameters.getInt("proliferation/WT_LIKE_Y")).thenReturn(92);
+//        when(parameters.getInt("proliferation/MM_LIKE_X")).thenReturn(65);
+//        when(parameters.getInt("proliferation/MM_LIKE_Y")).thenReturn(35);
         when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
         when(parameters.getDistribution("proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION"))
                 .thenReturn(dist);
@@ -173,6 +177,19 @@ public class PottsModuleFlyStemProliferationTest {
         assertNotNull(module.splitDirectionDistribution);
         assertEquals("location", module.differentiationRuleset);
         assertEquals(0.99, module.range, EPSILON);
+        assertEquals(arcade.potts.util.PottsEnums.Phase.UNDEFINED, module.phase);
+    }
+
+    @Test
+    public void constructor_tfRuleset_setsExpectedFields() {
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("tfRatio");
+        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
+                .thenReturn(0.10);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertNotNull(module.splitDirectionDistribution);
+        assertEquals("tfRatio", module.differentiationRuleset);
+        assertEquals(0.10, module.range, EPSILON);
         assertEquals(arcade.potts.util.PottsEnums.Phase.UNDEFINED, module.phase);
     }
 

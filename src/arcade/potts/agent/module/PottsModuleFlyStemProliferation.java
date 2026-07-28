@@ -463,6 +463,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 return (centroidsWithinRangeAlongApicalAxis(
                         centroid1, centroid2, ((PottsCellFlyStem) cell).getApicalAxis(), range));
             } else if (differentiationRuleset.equals("tfRatio")) {
+                System.out.println("WOO: Prospero comparison branch reached");
                 if (daughterDeadpan <= 0) {
                     return daughterProspero <= 0;
                 }

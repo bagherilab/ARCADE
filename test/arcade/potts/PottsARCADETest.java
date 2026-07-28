@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import com.google.gson.*;
 import arcade.core.ARCADE;
 import arcade.core.sim.Series;
 import arcade.potts.sim.input.PottsInputBuilder;
@@ -14,6 +15,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class PottsARCADETest {
+    private static final double EPSILON = 1E-10;
+
     static String makeSetup(String name) {
         return "<set>"
                 + "<series name=\""
@@ -71,6 +74,115 @@ public class PottsARCADETest {
             File locationOutput =
                     new File(path.toAbsolutePath() + "/" + name + "_" + tp + ".LOCATIONS.json");
             assertFalse(locationOutput.exists());
+        }
+    }
+
+    private void assertJsonEquals(JsonElement expected, JsonElement actual, String context) {
+        if (expected.isJsonNull() && actual.isJsonNull()) {
+            return;
+        }
+
+        if (expected.isJsonPrimitive() && actual.isJsonPrimitive()) {
+            JsonPrimitive expPrim = expected.getAsJsonPrimitive();
+            JsonPrimitive actPrim = actual.getAsJsonPrimitive();
+
+            if (expPrim.isNumber() && actPrim.isNumber()) {
+                double expVal = expPrim.getAsDouble();
+                double actVal = actPrim.getAsDouble();
+                assertEquals(expVal, actVal, EPSILON, "Numeric mismatch at " + context);
+            } else {
+                assertEquals(
+                        expPrim.getAsString(),
+                        actPrim.getAsString(),
+                        "Value mismatch at " + context);
+            }
+            return;
+        }
+
+        if (expected.isJsonArray() && actual.isJsonArray()) {
+            JsonArray expArr = expected.getAsJsonArray();
+            JsonArray actArr = actual.getAsJsonArray();
+            assertEquals(expArr.size(), actArr.size(), "Array length mismatch at " + context);
+            for (int i = 0; i < expArr.size(); i++) {
+                assertJsonEquals(expArr.get(i), actArr.get(i), context + "[" + i + "]");
+            }
+            return;
+        }
+
+        if (expected.isJsonObject() && actual.isJsonObject()) {
+            JsonObject expObj = expected.getAsJsonObject();
+            JsonObject actObj = actual.getAsJsonObject();
+            assertEquals(expObj.keySet(), actObj.keySet(), "Object keys mismatch at " + context);
+            for (String key : expObj.keySet()) {
+                assertJsonEquals(expObj.get(key), actObj.get(key), context + "." + key);
+            }
+            return;
+        }
+
+        fail(
+                "Type mismatch at "
+                        + context
+                        + ": expected "
+                        + expected.getClass().getSimpleName()
+                        + " but got "
+                        + actual.getClass().getSimpleName());
+    }
+
+    private void removeKey(JsonElement element, String key) {
+        if (element.isJsonObject()) {
+            JsonObject obj = element.getAsJsonObject();
+            obj.remove(key);
+            for (String k : obj.keySet()) {
+                removeKey(obj.get(k), key);
+            }
+        } else if (element.isJsonArray()) {
+            for (JsonElement item : element.getAsJsonArray()) {
+                removeKey(item, key);
+            }
+        }
+    }
+
+    @Test
+    public void main_noVis_fileComparison(@TempDir Path path) throws Exception {
+        // Expects an input file at input/[name].xml and expected output files in
+        // expected/[name]-expected
+        String[] names = {"1"};
+
+        for (String name : names) {
+            String inputFile = name + ".xml";
+            File expectedDir = new File("output/" + name + "-expected");
+
+            Path source = Path.of("input", inputFile);
+            Path setupFile = path.resolve(name + ".xml");
+
+            Files.copy(source, setupFile);
+
+            String[] args =
+                    new String[] {"potts", setupFile.toString(), path.toAbsolutePath().toString(), "--loadpath", "input/", "--locations"};
+            ARCADE.main(args);
+
+            File[] expectedFiles = expectedDir.listFiles();
+            assertNotNull(expectedFiles, "Expected directory not found or empty: " + expectedDir);
+
+            for (File expectedFile : expectedFiles) {
+                File actualFile = new File(path.toFile(), expectedFile.getName());
+
+                assertTrue(actualFile.exists());
+
+                JsonElement expectedJson =
+                        JsonParser.parseString(Files.readString(expectedFile.toPath()));
+                JsonElement actualJson =
+                        JsonParser.parseString(Files.readString(actualFile.toPath()));
+
+                // Remove version field because executable name is nondeterministic
+                removeKey(expectedJson, "version");
+                removeKey(actualJson, "version");
+
+                removeKey(expectedJson, "proliferation/DIFFERENTIATION_RULESET");
+                removeKey(actualJson, "proliferation/DIFFERENTIATION_RULESET");
+
+                assertJsonEquals(expectedJson, actualJson, expectedFile.getName());
+            }
         }
     }
 
