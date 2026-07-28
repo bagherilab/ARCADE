@@ -1,10 +1,10 @@
 package arcade.potts.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
-import arcade.potts.env.location.PottsLocation;
-import arcade.potts.env.location.Voxel;
 
 /** Utility class providing static helper methods for Potts simulations. */
 public final class PottsUtilities {
@@ -29,31 +29,37 @@ public final class PottsUtilities {
     }
 
     /**
-     * Calculates the fraction of voxels in a daughter cell to distribute transcription factors.
-     * Returns 0 if the voxels Bag is empty.
+     * Calculates the fraction of elements in one list that are also present in another list.
+     * Returns 0 if either list is empty.
      *
-     * @param voxels voxels in the region of interest
-     * @param daughterLoc the daughter cell's location
-     * @return fraction of voxels in the daughter cell
+     * @param list1 the list whose fraction is being calculated (denominator)
+     * @param list2 the list to check membership against
+     * @return fraction of elements in list1 that are also found in list2
      */
-    public static double voxelFraction(Bag voxels, PottsLocation daughterLoc) {
-        if (voxels.numObjs == 0) {
+    public static <T> double listFraction(Collection<T> list1, Collection<T> list2) {
+        if (list1.isEmpty() || list2.isEmpty()) {
             return 0;
         }
 
-        ArrayList<Voxel> daughterVoxels = daughterLoc.getVoxels();
-        double daughterCount = 0;
+        double elementCount = 0;
 
-        for (int i = 0; i < voxels.numObjs; i++) {
-            Voxel v = (Voxel) voxels.objs[i];
-            for (Voxel d : daughterVoxels) {
-                if (v.x == d.x && v.y == d.y && v.z == d.z) {
-                    daughterCount++;
+        for (T item : list1) {
+            for (Object obj : list2) {
+                if (item.equals(obj)) {
+                    elementCount++;
                     break;
                 }
             }
         }
 
-        return daughterCount / voxels.numObjs;
+        return elementCount / list1.size();
+    }
+
+    public static <T> Collection<T> asCollection(Bag bag, Class<T> type) {
+        List<T> list = new ArrayList<>(bag.numObjs);
+        for (int i = 0; i < bag.numObjs; i++) {
+            list.add(type.cast(bag.objs[i]));
+        }
+        return list;
     }
 }
