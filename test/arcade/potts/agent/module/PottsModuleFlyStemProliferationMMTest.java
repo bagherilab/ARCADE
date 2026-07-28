@@ -141,7 +141,7 @@ public class PottsModuleFlyStemProliferationMMTest {
     }
 
     @Test
-    public void chooseDivisionPlane_MUDMUT_withLowOffset_callsWTVariant() {
+    public void chooseDivisionPlane_MUDMUT_withLowOffset_callsWTLikeVariant() {
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
         when(dist.nextDouble()).thenReturn(10.0); // abs(offset) < 45 → WT logic
 
@@ -150,12 +150,12 @@ public class PottsModuleFlyStemProliferationMMTest {
         Plane expectedPlane = mock(Plane.class);
         doReturn(expectedPlane)
                 .when(module)
-                .getWTDivisionPlaneWithRotationalVariance(stemCell, 10.0);
+                .getWTLikeDivisionPlaneWithRotationalVariance(stemCell, 10.0);
 
         Plane result = module.chooseDivisionPlane(stemCell);
 
         assertEquals(expectedPlane, result);
-        verify(module).getWTDivisionPlaneWithRotationalVariance(stemCell, 10.0);
+        verify(module).getWTLikeDivisionPlaneWithRotationalVariance(stemCell, 10.0);
         verify(module, never()).getMUDDivisionPlane(any());
     }
 
@@ -173,6 +173,6 @@ public class PottsModuleFlyStemProliferationMMTest {
 
         assertEquals(expectedPlane, result);
         verify(module).getMUDDivisionPlane(stemCell);
-        verify(module, never()).getWTDivisionPlaneWithRotationalVariance(any(), anyDouble());
+        verify(module, never()).getWTLikeDivisionPlaneWithRotationalVariance(any(), anyDouble());
     }
 }

@@ -11,6 +11,6 @@ public class PottsModuleFlyStemProliferationWT extends PottsModuleFlyStemProlife
 
     protected Plane chooseDivisionPlane(PottsCellFlyStem flyStemCell) {
         double rotationOffset = sampleDivisionPlaneOffset();
-        return getWTDivisionPlaneWithRotationalVariance(flyStemCell, rotationOffset);
+        return getWTLikeDivisionPlaneWithRotationalVariance(flyStemCell, rotationOffset);
     }
 }

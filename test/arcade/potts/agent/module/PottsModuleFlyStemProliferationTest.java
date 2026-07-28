@@ -319,7 +319,7 @@ public class PottsModuleFlyStemProliferationTest {
     // Division plane tests
 
     @Test
-    public void getWTDivisionPlaneWithRotationalVariance_rotatesCorrectlyAndReturnsPlane() {
+    public void getWTLikeDivisionPlaneWithRotationalVariance_rotatesCorrectlyAndReturnsPlane() {
         Vector apicalAxis = new Vector(0, 1, 0);
         when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
 
@@ -342,7 +342,8 @@ public class PottsModuleFlyStemProliferationTest {
 
         when(stemLoc.getOffsetInApicalFrame(any(), eq(expectedNormal))).thenReturn(splitVoxel);
 
-        Plane result = module.getWTDivisionPlaneWithRotationalVariance(stemCell, offsetRotation);
+        Plane result =
+                module.getWTLikeDivisionPlaneWithRotationalVariance(stemCell, offsetRotation);
 
         Double3D refPoint = result.getReferencePoint();
         assertEquals(3.0, refPoint.x, EPSILON);

@@ -1,6 +1,7 @@
 package arcade.potts.agent.module;
 
 import sim.util.Double3D;
+import arcade.core.util.Parameters;
 import arcade.core.util.Plane;
 import arcade.core.util.Vector;
 import arcade.potts.agent.cell.PottsCellFlyStem;
@@ -9,15 +10,22 @@ import arcade.potts.util.PottsEnums;
 
 public class PottsModuleFlyStemProliferationMM extends PottsModuleFlyStemProliferation {
 
+    final int mmLikeX;
+
+    final int mmLikeY;
+
     public PottsModuleFlyStemProliferationMM(PottsCellFlyStem cell) {
         super(cell);
+        Parameters parameters = cell.getParameters();
+        mmLikeX = parameters.getInt("proliferation/MM_LIKE_X");
+        mmLikeY = parameters.getInt("proliferation/MM_LIKE_Y");
     }
 
     @Override
     protected Plane chooseDivisionPlane(PottsCellFlyStem flyStemCell) {
         double offset = sampleDivisionPlaneOffset();
         if (Math.abs(offset) < 45) {
-            return getWTDivisionPlaneWithRotationalVariance(flyStemCell, offset);
+            return getWTLikeDivisionPlaneWithRotationalVariance(flyStemCell, offset);
         }
         return getMUDDivisionPlane(flyStemCell);
     }
@@ -37,7 +45,7 @@ public class PottsModuleFlyStemProliferationMM extends PottsModuleFlyStemProlife
                         PottsCellFlyStem.StemType.MUDMUT.splitDirectionRotation);
         Voxel splitVoxel =
                 getCellSplitVoxel(
-                        PottsCellFlyStem.StemType.MUDMUT, cell, defaultNormal, likeX, likeY);
+                        PottsCellFlyStem.StemType.MUDMUT, cell, defaultNormal, mmLikeX, mmLikeY);
         return new Plane(new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), defaultNormal);
     }
 }

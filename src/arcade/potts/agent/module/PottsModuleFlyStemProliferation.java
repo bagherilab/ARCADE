@@ -60,9 +60,9 @@ public abstract class PottsModuleFlyStemProliferation
     /** Threshold ratio of Prospero to Deadpan in daughter cell to determine cell identity. */
     final double tfRatio;
 
-    final int likeX;
+    final int wtLikeX;
 
-    final int likeY;
+    final int wtLikeY;
 
     /** Distribution that determines rotational offset of cell's division plane. */
     final NormalDistribution splitDirectionDistribution;
@@ -147,8 +147,8 @@ public abstract class PottsModuleFlyStemProliferation
         apicalThreshold = parameters.getDouble("proliferation/APICAL_THRESHOLD");
         basalThreshold = parameters.getDouble("proliferation/BASAL_THRESHOLD");
         tfRatio = parameters.getDouble("proliferation/TF_RATIO");
-        likeX = parameters.getInt("proliferation/LIKE_X");
-        likeY = parameters.getInt("proliferation/LIKE_Y");
+        wtLikeX = parameters.getInt("proliferation/WT_LIKE_X");
+        wtLikeY = parameters.getInt("proliferation/WT_LIKE_Y");
         splitDirectionDistribution =
                 (NormalDistribution)
                         parameters.getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION");
@@ -380,13 +380,14 @@ public abstract class PottsModuleFlyStemProliferation
      * @param rotationOffset the angle to rotate the plane
      * @return the division plane for the cell
      */
-    public Plane getWTDivisionPlaneWithRotationalVariance(
+    public Plane getWTLikeDivisionPlaneWithRotationalVariance(
             PottsCellFlyStem cell, double rotationOffset) {
         Vector apical_axis = cell.getApicalAxis();
         Vector rotatedNormalVector =
                 Vector.rotateVectorAroundAxis(
                         apical_axis, Direction.XY_PLANE.vector, rotationOffset);
-        Voxel splitVoxel = getCellSplitVoxel(StemType.WT, cell, rotatedNormalVector, likeX, likeY);
+        Voxel splitVoxel =
+                getCellSplitVoxel(StemType.WT, cell, rotatedNormalVector, wtLikeX, wtLikeY);
         return new Plane(
                 new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), rotatedNormalVector);
     }

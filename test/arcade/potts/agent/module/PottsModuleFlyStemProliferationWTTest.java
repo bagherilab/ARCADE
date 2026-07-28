@@ -111,7 +111,7 @@ public class PottsModuleFlyStemProliferationWTTest {
     }
 
     @Test
-    public void chooseDivisionPlane_WT_callsWTVariant() {
+    public void chooseDivisionPlane_WT_callsWTLikeVariant() {
         when(dist.nextDouble()).thenReturn(12.0); // this can be any value
 
         module = spy(new PottsModuleFlyStemProliferationWT(stemCell));
@@ -119,11 +119,11 @@ public class PottsModuleFlyStemProliferationWTTest {
         Plane expectedPlane = mock(Plane.class);
         doReturn(expectedPlane)
                 .when(module)
-                .getWTDivisionPlaneWithRotationalVariance(stemCell, 12.0);
+                .getWTLikeDivisionPlaneWithRotationalVariance(stemCell, 12.0);
 
         Plane result = module.chooseDivisionPlane(stemCell);
 
         assertEquals(expectedPlane, result);
-        verify(module).getWTDivisionPlaneWithRotationalVariance(stemCell, 12.0);
+        verify(module).getWTLikeDivisionPlaneWithRotationalVariance(stemCell, 12.0);
     }
 }

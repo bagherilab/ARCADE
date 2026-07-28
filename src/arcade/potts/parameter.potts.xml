@@ -95,9 +95,10 @@
     <!-- Transcription factor ratio (Prospero : Deadpan) -->
     <population.module module="proliferation" id="TF_RATIO" value="1" description="Ratio of Prospero to Deadpan driving differentiation" />
     <!-- Stem type cell offset percentages (0-100) -->
-    <population.module module="proliferation" id="LIKE_X" value="50" description="Stem cell split offset percent for x" />
-    <population.module module="proliferation" id="LIKE_Y" value="93" description="Stem cell split offset percent for y" />
-
+    <population.module module="proliferation" id="WT_LIKE_X" value="50" description="Wild type stem cell split offset percent for x" />
+    <population.module module="proliferation" id="WT_LIKE_Y" value="93" description="Wild type stem cell split offset percent for y" />
+    <population.module module="proliferation" id="MM_LIKE_X" value="50" description="Mud mutant stem cell split offset percent for x" />
+    <population.module module="proliferation" id="WM_LIKE_y" value="50" description="Mud mutant stem cell split offset percent for y" />
     <!-- apoptosis module parameters -->
     <population.module module="apoptosis" id="RATE_EARLY" value="4" units="steps/hour" conversion="DT" description="rate of events in early apoptosis phase" />
     <population.module module="apoptosis" id="RATE_LATE" value="1.8" units="steps/hour" conversion="DT" description="rate of events in late apoptosis phase" />
