@@ -420,37 +420,11 @@ public abstract class PottsModuleFlyStemProliferation
      * @param loc2 the other cell location post division
      * @return whether or not the daughter cell should be a stem cell
      */
-    private boolean daughterStemRuleBasedDifferentiation(
+    protected abstract boolean daughterStemRuleBasedDifferentiation(
             PottsLocation loc1,
             PottsLocation loc2,
             double daughterProspero,
-            double daughterDeadpan) {
-        if (((PottsCellFlyStem) cell).getStemType() == StemType.WT) {
-            return false;
-        } else if (((PottsCellFlyStem) cell).getStemType() == StemType.MUDMUT) {
-            if (differentiationRuleset.equals("volume")) {
-                double vol1 = loc1.getVolume();
-                double vol2 = loc2.getVolume();
-                if (Math.abs(vol1 - vol2) < range) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else if (differentiationRuleset.equals("location")) {
-                double[] centroid1 = loc1.getCentroid();
-                double[] centroid2 = loc2.getCentroid();
-                return (centroidsWithinRangeAlongApicalAxis(
-                        centroid1, centroid2, ((PottsCellFlyStem) cell).getApicalAxis(), range));
-            } else if (differentiationRuleset.equals("tfRatio")) {
-                if (daughterDeadpan <= 0) {
-                    return daughterProspero <= 0;
-                }
-                return (daughterProspero / daughterDeadpan) <= tfRatio;
-            }
-        }
-        throw new IllegalArgumentException(
-                "Invalid differentiation ruleset: " + differentiationRuleset);
-    }
+            double daughterDeadpan);
 
     /*
      * Determines whether the daughter cell should be a neuroblast or a GMC according to the orientation.

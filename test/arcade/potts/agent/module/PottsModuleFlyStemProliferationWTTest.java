@@ -126,4 +126,19 @@ public class PottsModuleFlyStemProliferationWTTest {
         assertEquals(expectedPlane, result);
         verify(module).getWTLikeDivisionPlaneWithRotationalVariance(stemCell, 12.0);
     }
+
+    @Test
+    void testDaughterStem_RuleBased_WTAlwaysReturnsFalse() {
+        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
+                .thenReturn("FALSE");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
+                .thenReturn(10.0);
+
+        module = new PottsModuleFlyStemProliferationWT(stemCell);
+
+        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 0, 0);
+
+        assertFalse(result); // should ALWAYS be false.
+    }
 }
