@@ -79,4 +79,20 @@ public class PottsModuleFlyStemProliferationMM extends PottsModuleFlyStemProlife
         throw new IllegalArgumentException(
                 "Invalid differentiation ruleset: " + differentiationRuleset);
     }
+
+    @Override
+    protected boolean daughterStemDeterministic(Plane divisionPlane) {
+        Vector normalVector = divisionPlane.getUnitNormalVector();
+
+        Vector apicalAxis = ((PottsCellFlyStem) cell).getApicalAxis();
+        Vector expectedMUDNormalVector =
+                Vector.rotateVectorAroundAxis(
+                        apicalAxis,
+                        PottsEnums.Direction.XY_PLANE.vector,
+                        PottsCellFlyStem.StemType.MUDMUT.splitDirectionRotation);
+        // If TRUE, the daughter should be stem. Otherwise, should be GMC
+        return Math.abs(normalVector.getX() - expectedMUDNormalVector.getX()) <= EPSILON
+                && Math.abs(normalVector.getY() - expectedMUDNormalVector.getY()) <= EPSILON
+                && Math.abs(normalVector.getZ() - expectedMUDNormalVector.getZ()) <= EPSILON;
+    }
 }

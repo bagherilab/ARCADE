@@ -24,4 +24,9 @@ public class PottsModuleFlyStemProliferationWT extends PottsModuleFlyStemProlife
 
         return false;
     }
+
+    @Override
+    protected boolean daughterStemDeterministic(Plane divisionPlane) {
+        return false;
+    }
 }

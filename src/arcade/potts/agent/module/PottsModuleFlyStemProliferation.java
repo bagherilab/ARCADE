@@ -433,21 +433,7 @@ public abstract class PottsModuleFlyStemProliferation
      * @param divisionPlane
      * @return {@code true} if the daughter should be a stem cell. {@code false} if the daughter should be a GMC.
      */
-    private boolean daughterStemDeterministic(Plane divisionPlane) {
-
-        Vector normalVector = divisionPlane.getUnitNormalVector();
-
-        Vector apicalAxis = ((PottsCellFlyStem) cell).getApicalAxis();
-        Vector expectedMUDNormalVector =
-                Vector.rotateVectorAroundAxis(
-                        apicalAxis,
-                        Direction.XY_PLANE.vector,
-                        StemType.MUDMUT.splitDirectionRotation);
-        // If TRUE, the daughter should be stem. Otherwise, should be GMC
-        return Math.abs(normalVector.getX() - expectedMUDNormalVector.getX()) <= EPSILON
-                && Math.abs(normalVector.getY() - expectedMUDNormalVector.getY()) <= EPSILON
-                && Math.abs(normalVector.getZ() - expectedMUDNormalVector.getZ()) <= EPSILON;
-    }
+    protected abstract boolean daughterStemDeterministic(Plane divisionPlane);
 
     /**
      * Determines whether a daughter cell should remain a stem cell or differentiate into a GMC.
