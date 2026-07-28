@@ -72,6 +72,12 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /** Mud mutant stem cell split offset percent for y (0-100). */
     final int mmLikeY;
 
+    /** Nanobody stem cell split offset percent for x (0-100). */
+    final int nanoLikeX;
+
+    /** Nanobody stem cell split offset percent for y (0-100). */
+    final int nanoLikeY;
+
     /** Distribution that determines rotational offset of cell's division plane. */
     final NormalDistribution splitDirectionDistribution;
 
@@ -159,6 +165,18 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         wtLikeY = parameters.getInt("proliferation/WT_LIKE_Y");
         mmLikeX = parameters.getInt("proliferation/MM_LIKE_X");
         mmLikeY = parameters.getInt("proliferation/MM_LIKE_Y");
+
+        if (parameters.getInt("proliferation/NANO_LIKE_X") == -1) {
+            nanoLikeX = 1 - wtLikeX;
+        } else {
+            nanoLikeX = parameters.getInt("proliferation/NANO_LIKE_X");
+        }
+        if (parameters.getInt("proliferation/NANO_LIKE_Y") == -1) {
+            nanoLikeY = 1 - wtLikeY;
+        } else {
+            nanoLikeY = parameters.getInt("proliferation/NANO_LIKE_Y");
+        }
+
         splitDirectionDistribution =
                 (NormalDistribution)
                         parameters.getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION");
