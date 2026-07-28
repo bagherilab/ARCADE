@@ -29,7 +29,6 @@ import arcade.potts.util.PottsEnums.Phase;
 import arcade.potts.util.PottsEnums.Side;
 import arcade.potts.util.PottsEnums.State;
 import arcade.potts.util.PottsUtilities;
-import static arcade.potts.util.PottsUtilities.voxelFraction;
 
 public abstract class PottsModuleFlyStemProliferation
         extends PottsModuleProliferationVolumeBasedDivision {
@@ -236,8 +235,14 @@ public abstract class PottsModuleFlyStemProliferation
 
         PottsLocation daughterLoc = (PottsLocation) parentLoc.split(random, divisionPlane);
 
-        double basalFrac = voxelFraction(basalVoxels, daughterLoc);
-        double apicalFrac = voxelFraction(apicalVoxels, daughterLoc);
+        double basalFrac =
+                PottsUtilities.listFraction(
+                        PottsUtilities.asCollection(basalVoxels, Voxel.class),
+                        daughterLoc.getVoxels());
+        double apicalFrac =
+                PottsUtilities.listFraction(
+                        PottsUtilities.asCollection(apicalVoxels, Voxel.class),
+                        daughterLoc.getVoxels());
 
         double parentProspero = ((PottsCellFly) cell).getProspero();
         double parentDeadpan = ((PottsCellFly) cell).getDeadpan();
