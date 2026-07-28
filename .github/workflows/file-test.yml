@@ -1,0 +1,43 @@
+name: File Comparison Tests
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  check-approvals:
+    runs-on: ubuntu-latest
+    outputs:
+      approved: ${{ steps.check.outputs.approved }}
+    steps:
+      - name: Check approval count
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const reviews = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+            });
+
+            const approvals = reviews.data.filter(r => r.state === 'APPROVED');
+            const uniqueApprovals = new Set(approvals.map(r => r.user.login)).size;
+
+            core.setOutput('approved', uniqueApprovals >= 2 ? 'true' : 'false');
+
+  file-comparison-tests:
+    needs: check-approvals
+    if: needs.check-approvals.outputs.approved == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'corretto'
+
+      - name: Run file comparison tests
+        run: ./gradlew fileComparisonTest

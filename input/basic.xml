@@ -1,0 +1,86 @@
+<set prefix="logging_">
+    <series name="tcell_treatment" start="0" end="0" ticks="10080" interval="1440" radius="34" margin="6" depth="1">
+        <patch>
+            <patch.parameter id="GEOMETRY" value="hex" />
+            <patch.parameter id="INITIALIZATION" value="random" description="Patch initialization (inward or outward or random)" />
+        </patch>
+        <agents>
+            <populations>
+                <population id="cancerous" init="2000" class="cancer">
+                    <population.process id="METABOLISM" version="complex" />
+                    <population.process id="SIGNALING" version="complex"  />
+                    <population.parameter id="METABOLIC_PREFERENCE" process="metabolism" scale="1.5" />
+                    <population.parameter id="MIGRATORY_THRESHOLD" process="signaling" scale="0.5"/>
+                    <population.parameter id="CAR_ANTIGENS" value="1000" />
+                </population>
+
+                <population id="8" init="0" class="cart_cd8">
+                    <population.parameter id="CELL_AGE_MAX" value="10080" unit="min" />
+                    <population.parameter id="DIVISION_POTENTIAL" value="10" />
+                    <population.process id="METABOLISM" version="cart" />
+                    <population.process id="INFLAMMATION" version="cd8" />
+                    <population.parameter id="CAR_AFFINITY" value="10E-7" />
+                    <population.parameter id="CELL_VOLUME" value="NORMAL(MU=175,SIGMA=10)" unit="um^3" />
+                    <population.parameter id="SYNTHESIS_DURATION" value="360"  />
+                    <population.parameter id="COMPRESSION_TOLERANCE" value="-1" />
+                </population>
+
+                <population id="4" init="0" class="cart_cd4">
+                    <population.parameter id="CELL_AGE_MAX" value="10080" unit="min" description="T maximum cell age (1 week)" />
+                    <population.parameter id="DIVISION_POTENTIAL" value="10" />
+                    <population.process id="METABOLISM" version="cart" />
+                    <population.process id="INFLAMMATION" version="cd4"/>
+                    <population.parameter id="CAR_AFFINITY" value="10E-7" />
+                    <population.parameter id="CELL_VOLUME" value="NORMAL(MU=175,SIGMA=10)" unit="um^3" />
+                    <population.parameter id="SYNTHESIS_DURATION" value="360"  />
+                    <population.parameter id="COMPRESSION_TOLERANCE" value="-1" />
+                </population>
+
+            </populations>
+        </agents>
+
+        <actions>
+             <action id="ADD_T_CELLS" class="insert">
+                <action.parameter id="TIME_DELAY" value="10" />
+                <action.parameter id="DOSE" value="125" />
+                <action.register id="4" />
+                <action.register id="8" />
+            </action>
+        </actions>
+
+        <environments>
+            <layers>
+               <layer id="GLUCOSE">
+                    <layer.parameter id="INITIAL_CONCENTRATION" value="0.005" />
+                    <layer.parameter id="DIFFUSIVITY" operation="diffuser" value="39.0" />
+                    <layer.parameter id="CONCENTRATION" operation="generator" value="0.005" units="fmol/um^3" description="equal to 5 umol/cm^3" />
+                    <layer.operation id="GENERATOR" />
+                    <layer.operation id="DIFFUSER" />
+                </layer>
+                <layer id="OXYGEN">
+                    <layer.parameter id="INITIAL_CONCENTRATION" value="100" />
+                    <layer.parameter id="DIFFUSIVITY" operation="diffuser" value="2000.0" />
+                    <layer.parameter id="CONCENTRATION" operation="generator" value="100" units="mmHg" />
+                    <layer.operation id="DIFFUSER" />
+                    <layer.operation id="GENERATOR" />
+                </layer>
+                <layer id="TGFA">
+                    <layer.parameter id="INITIAL_CONCENTRATION" value="150" />
+                    <layer.parameter id="DIFFUSIVITY" operation="diffuser" value="51.8" />
+                    <layer.operation id="DIFFUSER" />
+                </layer>
+                <layer id="IL-2">
+                    <layer.parameter id="INITIAL_CONCENTRATION" value="0" />
+                    <layer.parameter id="DIFFUSIVITY" operation="diffuser" value="10.0" />
+                    <layer.operation id="DIFFUSER" />
+                </layer>
+            </layers>
+            <components>
+                <component id="SITES" class="source_sites">
+                    <component.register id="GLUCOSE" />
+                    <component.register id="OXYGEN" />
+                </component>
+            </components>
+        </environments>
+    </series>
+</set>
