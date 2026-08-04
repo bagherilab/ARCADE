@@ -10,6 +10,7 @@ import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.core.util.Plane;
+import arcade.core.util.Utilities;
 import arcade.core.util.Vector;
 import arcade.core.util.distributions.Distribution;
 import arcade.core.util.distributions.NormalDistribution;
@@ -245,13 +246,11 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         PottsLocation daughterLoc = (PottsLocation) parentLoc.split(random, divisionPlane);
 
         double basalFrac =
-                PottsUtilities.listFraction(
-                        PottsUtilities.asCollection(basalVoxels, Voxel.class),
-                        daughterLoc.getVoxels());
+                Utilities.collectionFraction(
+                        Utilities.asCollection(basalVoxels, Voxel.class), daughterLoc.getVoxels());
         double apicalFrac =
-                PottsUtilities.listFraction(
-                        PottsUtilities.asCollection(apicalVoxels, Voxel.class),
-                        daughterLoc.getVoxels());
+                Utilities.collectionFraction(
+                        Utilities.asCollection(apicalVoxels, Voxel.class), daughterLoc.getVoxels());
 
         double parentProspero = ((PottsCellFly) cell).getProspero();
         double parentDeadpan = ((PottsCellFly) cell).getDeadpan();
