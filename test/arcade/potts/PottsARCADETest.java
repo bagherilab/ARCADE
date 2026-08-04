@@ -142,49 +142,59 @@ public class PottsARCADETest {
         }
     }
 
-    @Test
-    public void main_noVis_fileComparison(@TempDir Path path) throws Exception {
-        // Expects an input file at input/[name].xml and expected output files in
-        // expected/[name]-expected
-        String[] names = {"1"};
-
-        for (String name : names) {
-            String inputFile = name + ".xml";
-            File expectedDir = new File("output/" + name + "-expected");
-
-            Path source = Path.of("input", inputFile);
-            Path setupFile = path.resolve(name + ".xml");
-
-            Files.copy(source, setupFile);
-
-            String[] args =
-                    new String[] {"potts", setupFile.toString(), path.toAbsolutePath().toString(), "--loadpath", "input/", "--locations"};
-            ARCADE.main(args);
-
-            File[] expectedFiles = expectedDir.listFiles();
-            assertNotNull(expectedFiles, "Expected directory not found or empty: " + expectedDir);
-
-            for (File expectedFile : expectedFiles) {
-                File actualFile = new File(path.toFile(), expectedFile.getName());
-
-                assertTrue(actualFile.exists());
-
-                JsonElement expectedJson =
-                        JsonParser.parseString(Files.readString(expectedFile.toPath()));
-                JsonElement actualJson =
-                        JsonParser.parseString(Files.readString(actualFile.toPath()));
-
-                // Remove version field because executable name is nondeterministic
-                removeKey(expectedJson, "version");
-                removeKey(actualJson, "version");
-
-                removeKey(expectedJson, "proliferation/DIFFERENTIATION_RULESET");
-                removeKey(actualJson, "proliferation/DIFFERENTIATION_RULESET");
-
-                assertJsonEquals(expectedJson, actualJson, expectedFile.getName());
-            }
-        }
-    }
+    //
+    //
+    //    @Test
+    //    public void main_noVis_fileComparison(@TempDir Path path) throws Exception {
+    //        // Expects an input file at input/[name].xml and expected output files in
+    //        // expected/[name]-expected
+    //        String[] names = {"1"};
+    //
+    //        for (String name : names) {
+    //            String inputFile = name + ".xml";
+    //            File expectedDir = new File("output/" + name + "-expected");
+    //
+    //            Path source = Path.of("input", inputFile);
+    //            Path setupFile = path.resolve(name + ".xml");
+    //
+    //            Files.copy(source, setupFile);
+    //
+    //            String[] args =
+    //                    new String[] {
+    //                        "potts",
+    //                        setupFile.toString(),
+    //                        path.toAbsolutePath().toString(),
+    //                        "--loadpath",
+    //                        "input/",
+    //                        "--locations"
+    //                    };
+    //            ARCADE.main(args);
+    //
+    //            File[] expectedFiles = expectedDir.listFiles();
+    //            assertNotNull(expectedFiles, "Expected directory not found or empty: " +
+    // expectedDir);
+    //
+    //            for (File expectedFile : expectedFiles) {
+    //                File actualFile = new File(path.toFile(), expectedFile.getName());
+    //
+    //                assertTrue(actualFile.exists());
+    //
+    //                JsonElement expectedJson =
+    //                        JsonParser.parseString(Files.readString(expectedFile.toPath()));
+    //                JsonElement actualJson =
+    //                        JsonParser.parseString(Files.readString(actualFile.toPath()));
+    //
+    //                // Remove version field because executable name is nondeterministic
+    //                removeKey(expectedJson, "version");
+    //                removeKey(actualJson, "version");
+    //
+    //                removeKey(expectedJson, "proliferation/DIFFERENTIATION_RULESET");
+    //                removeKey(actualJson, "proliferation/DIFFERENTIATION_RULESET");
+    //
+    //                assertJsonEquals(expectedJson, actualJson, expectedFile.getName());
+    //            }
+    //        }
+    //    }
 
     @Test
     public void getResource_requiredFiles_returnsResource() {

@@ -16,7 +16,7 @@
         </potts>
         <agents>
             <populations>
-                <population id="fly-stem-mm" class="fly-stem-mmx`" init="1" >
+                <population id="fly-stem-wt" class="fly-stem-wt" init="1" >
                     <population.link id="fly-gmc" weight="1"/>
                     <population.parameter id="proliferation/SIZE_TARGET" value="1.2" />
                     <population.parameter id="CRITICAL_VOLUME" value="170" units="um^3" conversion="DS^-3" />
@@ -27,8 +27,8 @@
                     <population.parameter id="proliferation/APICAL_AXIS_RULESET" value="normal" />
                     <population.parameter id="proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION" value="NORMAL(MU=0,SIGMA=30)" />
 
-                    <population.parameter id="proliferation/PROSPERO_RATE" value="10" />
-                    <population.parameter id="proliferation/DEADPAN_RATE" value="0" />
+                    <population.parameter id="proliferation/PROSPERO_RATE" value="20" />
+                    <population.parameter id="proliferation/DEADPAN_RATE" value="10" />
                     <population.parameter id="proliferation/HAS_DETERMINISTIC_DIFFERENTIATION" value="FALSE"/>
                     <population.parameter id="proliferation/DIFFERENTIATION_RULESET" value="tfRatio" />
                     <population.parameter id="proliferation/TF_RATIO" value="2" />

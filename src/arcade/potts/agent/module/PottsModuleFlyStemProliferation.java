@@ -200,13 +200,13 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         super.step(random, sim);
         ((PottsCellFly) cell).setProspero(((PottsCellFly) cell).getProspero() + prosperoRate);
         ((PottsCellFly) cell).setDeadpan(((PottsCellFly) cell).getDeadpan() + deadpanRate);
-        System.out.println(
-                "Stem ID "
-                        + cell.getID()
-                        + " prospero: "
-                        + ((PottsCellFly) cell).getProspero()
-                        + ", deadpan: "
-                        + ((PottsCellFly) cell).getDeadpan());
+        //        System.out.println(
+        //                "Stem ID "
+        //                        + cell.getID()
+        //                        + " prospero: "
+        //                        + ((PottsCellFly) cell).getProspero()
+        //                        + ", deadpan: "
+        //                        + ((PottsCellFly) cell).getDeadpan());
     }
 
     @Override
@@ -257,7 +257,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                     random,
                     divisionPlane.getUnitNormalVector(),
                     daughterProspero,
-                    daughterDeadpan);
+                    daughterDeadpan,
+                    parentDeadpan - daughterDeadpan);
         }
     }
 
@@ -446,29 +447,25 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             PottsLocation loc2,
             double daughterProspero,
             double daughterDeadpan) {
-        if (((PottsCellFlyStem) cell).getStemType() == StemType.WT) {
-            return false;
-        } else if (((PottsCellFlyStem) cell).getStemType() == StemType.MUDMUT) {
-            if (differentiationRuleset.equals("volume")) {
-                double vol1 = loc1.getVolume();
-                double vol2 = loc2.getVolume();
-                if (Math.abs(vol1 - vol2) < range) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else if (differentiationRuleset.equals("location")) {
-                double[] centroid1 = loc1.getCentroid();
-                double[] centroid2 = loc2.getCentroid();
-                return (centroidsWithinRangeAlongApicalAxis(
-                        centroid1, centroid2, ((PottsCellFlyStem) cell).getApicalAxis(), range));
-            } else if (differentiationRuleset.equals("tfRatio")) {
-                System.out.println("WOO: Prospero comparison branch reached");
-                if (daughterDeadpan <= 0) {
-                    return daughterProspero <= 0;
-                }
-                return (daughterProspero / daughterDeadpan) <= tfRatio;
+        if (differentiationRuleset.equals("volume")) {
+            double vol1 = loc1.getVolume();
+            double vol2 = loc2.getVolume();
+            if (Math.abs(vol1 - vol2) < range) {
+                return true;
+            } else {
+                return false;
             }
+        } else if (differentiationRuleset.equals("location")) {
+            double[] centroid1 = loc1.getCentroid();
+            double[] centroid2 = loc2.getCentroid();
+            return (centroidsWithinRangeAlongApicalAxis(
+                    centroid1, centroid2, ((PottsCellFlyStem) cell).getApicalAxis(), range));
+        } else if (differentiationRuleset.equals("tfRatio")) {
+            System.out.println("WOO: Prospero comparison branch reached");
+            if (daughterDeadpan <= 0) {
+                return daughterProspero <= 0;
+            }
+            return (daughterProspero / daughterDeadpan) <= tfRatio;
         }
         throw new IllegalArgumentException(
                 "Invalid differentiation ruleset: " + differentiationRuleset);
@@ -604,8 +601,23 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             MersenneTwisterFast random,
             Vector divisionPlaneNormal,
             double daughterProspero,
-            double daughterDeadpan) {
-        Location gmcLoc = determineGMCLocation(parentLoc, daughterLoc, divisionPlaneNormal);
+            double daughterDeadpan,
+            double parentDeadpan) {
+        Location gmcLoc =
+                determineGMCLocation(
+                        parentLoc,
+                        daughterLoc,
+                        divisionPlaneNormal,
+                        daughterDeadpan,
+                        parentDeadpan);
+
+        if (differentiationRuleset.equals("tfRatio") && daughterDeadpan > 0 && daughterProspero >= tfRatio * daughterDeadpan) {
+            if (gmcLoc == daughterLoc && daughterDeadpan > parentDeadpan) {
+                throw new IllegalStateException("tfRatio GMC division Prospero to Deadpan ratio assertion failed");
+            } else if (gmcLoc == parentLoc && parentDeadpan > daughterDeadpan) {
+                throw new IllegalStateException("tfRatio GMC division Prospero to Deadpan ratio assertion failed");
+            }
+        }
 
         if (parentLoc == gmcLoc) {
             PottsLocation.swapVoxels(parentLoc, daughterLoc);
@@ -740,16 +752,19 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * @return the location that should be the GMC
      */
     private Location determineGMCLocation(
-            PottsLocation parentLoc, PottsLocation daughterLoc, Vector divisionPlaneNormal) {
+            PottsLocation parentLoc,
+            PottsLocation daughterLoc,
+            Vector divisionPlaneNormal,
+            double daughterDeadpan,
+            double parentDeadpan) {
         switch (differentiationRuleset) {
             case "volume":
                 return getSmallerLocation(parentLoc, daughterLoc);
             case "location":
                 return getBasalLocation(parentLoc, daughterLoc, divisionPlaneNormal);
             case "tfRatio":
-                return getSmallerLocation(
-                        parentLoc,
-                        daughterLoc); // TODO: Ask Sophia which location makes more biological sense
+                return getLowerDeadpanLocation(
+                        parentLoc, parentDeadpan, daughterLoc, daughterDeadpan);
             default:
                 throw new IllegalArgumentException(
                         "Invalid differentiation ruleset: " + differentiationRuleset);
@@ -809,6 +824,20 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         double proj2 = Vector.dotProduct(c2, apicalAxis);
 
         return (proj1 < proj2) ? loc2 : loc1; // higher projection = more basal
+    }
+
+    /**
+     * Gets the location with lower Deadpan and returns it.
+     *
+     * @param loc1 the {@link PottsLocation} to compare.
+     * @param deadpan1 the amount of deadpan in loc1.
+     * @param loc2 {@link PottsLocation} to compare.
+     * @param deadpan2 the amount of deadpan in loc2.
+     * @return the smaller location.
+     */
+    public static Location getLowerDeadpanLocation(
+            Location loc1, double deadpan1, Location loc2, double deadpan2) {
+        return (deadpan2 - deadpan1 <= EPSILON) ? loc2 : loc1;
     }
 
     public HashSet<PottsCellFlyStem> getNBsInSimulation(Simulation sim) {

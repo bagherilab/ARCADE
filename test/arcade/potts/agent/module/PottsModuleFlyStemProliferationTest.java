@@ -11,6 +11,7 @@ import sim.util.Bag;
 import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.grid.Grid;
+import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
@@ -129,10 +130,10 @@ public class PottsModuleFlyStemProliferationTest {
         when(parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE")).thenReturn(0.04);
         when(parameters.getDouble("proliferation/PROSPERO_RATE")).thenReturn(0.895);
         when(parameters.getDouble("proliferation/DEADPAN_RATE")).thenReturn(0.314);
-//        when(parameters.getInt("proliferation/WT_LIKE_X")).thenReturn(15);
-//        when(parameters.getInt("proliferation/WT_LIKE_Y")).thenReturn(92);
-//        when(parameters.getInt("proliferation/MM_LIKE_X")).thenReturn(65);
-//        when(parameters.getInt("proliferation/MM_LIKE_Y")).thenReturn(35);
+        //        when(parameters.getInt("proliferation/WT_LIKE_X")).thenReturn(15);
+        //        when(parameters.getInt("proliferation/WT_LIKE_Y")).thenReturn(92);
+        //        when(parameters.getInt("proliferation/MM_LIKE_X")).thenReturn(65);
+        //        when(parameters.getInt("proliferation/MM_LIKE_Y")).thenReturn(35);
         when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
         when(parameters.getDistribution("proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION"))
                 .thenReturn(dist);
@@ -241,6 +242,42 @@ public class PottsModuleFlyStemProliferationTest {
         PottsLocation result =
                 PottsModuleFlyStemProliferation.getBasalLocation(loc1, loc2, apicalAxis);
         assertEquals(loc1, result);
+    }
+
+    @Test
+    public void getLowerDeadpanLocation_loc1HasLessDeadpan_returnsLoc1() {
+        PottsLocation loc1 = mock(PottsLocation.class);
+        PottsLocation loc2 = mock(PottsLocation.class);
+        Location gmc =
+                PottsModuleFlyStemProliferation.getLowerDeadpanLocation(loc1, 1.0, loc2, 5.0);
+        assertEquals(loc1, gmc);
+    }
+
+    @Test
+    public void getLowerDeadpanLocation_loc2HasLessDeadpan_returnsLoc2() {
+        PottsLocation loc1 = mock(PottsLocation.class);
+        PottsLocation loc2 = mock(PottsLocation.class);
+        Location gmc =
+                PottsModuleFlyStemProliferation.getLowerDeadpanLocation(loc1, 5.0, loc2, 1.0);
+        assertEquals(loc2, gmc);
+    }
+
+    @Test
+    public void getLowerDeadpanLocation_equalDeadpan_returnsSecondLocation() {
+        PottsLocation loc1 = mock(PottsLocation.class);
+        PottsLocation loc2 = mock(PottsLocation.class);
+        Location gmc =
+                PottsModuleFlyStemProliferation.getLowerDeadpanLocation(loc1, 2.5, loc2, 2.5);
+        assertEquals(loc2, gmc);
+    }
+
+    @Test
+    public void getLowerDeadpanLocation_bothZero_returnsSecondLocation() {
+        PottsLocation loc1 = mock(PottsLocation.class);
+        PottsLocation loc2 = mock(PottsLocation.class);
+        Location gmc =
+                PottsModuleFlyStemProliferation.getLowerDeadpanLocation(loc1, 0.0, loc2, 0.0);
+        assertEquals(loc2, gmc);
     }
 
     @Test
@@ -1331,5 +1368,53 @@ public class PottsModuleFlyStemProliferationTest {
         boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 0, 0);
 
         assertFalse(result, "Expected false since |10-5| > range");
+    }
+
+    @Test
+    void testDaughterStem_RuleBased_TfRatioTrue() {
+        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
+                .thenReturn("FALSE");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("tfRatio");
+        when(parameters.getDouble("proliferation/TF_RATIO")).thenReturn(2.0);
+
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+
+        PottsModuleFlyStemProliferation module = new PottsModuleFlyStemProliferation(stemCell);
+
+        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 1.0, 4.0);
+
+        assertTrue(result, "Expected true since prospero/deadpan (0.25) <= tfRatio (2.0)");
+    }
+
+    @Test
+    void testDaughterStem_RuleBased_TfRatioFalse() {
+        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
+                .thenReturn("FALSE");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("tfRatio");
+        when(parameters.getDouble("proliferation/TF_RATIO")).thenReturn(2.0);
+
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+
+        PottsModuleFlyStemProliferation module = new PottsModuleFlyStemProliferation(stemCell);
+
+        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 4.0, 1.0);
+
+        assertFalse(result, "Expected false since prospero/deadpan (4.0) > tfRatio (2.0)");
+    }
+
+    @Test
+    void testDaughterStem_TfRatioZeroDeadpanZeroProspero_returnsTrue() {
+        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
+                .thenReturn("FALSE");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("tfRatio");
+        when(parameters.getDouble("proliferation/TF_RATIO")).thenReturn(2.0);
+
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+
+        PottsModuleFlyStemProliferation module = new PottsModuleFlyStemProliferation(stemCell);
+
+        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 0.0, 0.0);
+
+        assertTrue(result, "Expected true when both prospero and deadpan are zero");
     }
 }
