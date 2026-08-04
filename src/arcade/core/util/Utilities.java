@@ -1,7 +1,10 @@
 package arcade.core.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.ListIterator;
+import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 
 /** Container class for utility methods. */
@@ -64,5 +67,48 @@ public final class Utilities {
         Object temp = arr[i];
         arr[i] = arr[j];
         arr[j] = temp;
+    }
+
+    /**
+     * Calculates the fraction of elements in one collection that are also present in another
+     * collection. Returns 0 if either list is empty.
+     *
+     * @param collection1 the collection whose fraction is being calculated (denominator)
+     * @param collection2 the collection to check membership against, items be the same type as
+     *     collection1
+     * @return fraction of elements in collection1 that are also found in collection2
+     */
+    public static <T> double collectionFraction(
+            Collection<T> collection1, Collection<T> collection2) {
+        if (collection1.isEmpty() || collection2.isEmpty()) {
+            return 0;
+        }
+        double elementCount = 0;
+        for (T item : collection1) {
+            for (Object obj : collection2) {
+                if (item.equals(obj)) {
+                    elementCount++;
+                    break;
+                }
+            }
+        }
+        return elementCount / collection1.size();
+    }
+
+    /**
+     * Converts the given Bag into a typed Collection, with each element being cast to the given
+     * type. Insertion order is preserved.
+     *
+     * @param bag the bag to convert
+     * @param type the class object representing the target element type
+     * @return a new Collection<T> containing the bag's elements, cast to provided type
+     * @param <T> the target element type
+     */
+    public static <T> Collection<T> asCollection(Bag bag, Class<T> type) {
+        List<T> list = new ArrayList<>(bag.numObjs);
+        for (int i = 0; i < bag.numObjs; i++) {
+            list.add(type.cast(bag.objs[i]));
+        }
+        return list;
     }
 }
