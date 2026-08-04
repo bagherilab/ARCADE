@@ -98,7 +98,9 @@
     <population.module module="proliferation" id="WT_LIKE_X" value="50" description="Wild type stem cell split offset percent for x" />
     <population.module module="proliferation" id="WT_LIKE_Y" value="93" description="Wild type stem cell split offset percent for y" />
     <population.module module="proliferation" id="MM_LIKE_X" value="50" description="Mud mutant stem cell split offset percent for x" />
-    <population.module module="proliferation" id="WM_LIKE_y" value="50" description="Mud mutant stem cell split offset percent for y" />
+    <population.module module="proliferation" id="MM_LIKE_Y" value="50" description="Mud mutant stem cell split offset percent for y" />
+    <population.module module="proliferation" id="NANO_LIKE_X" value="-1" description="Nanobody stem cell split offset percent for x" />
+    <population.module module="proliferation" id="NANO_LIKE_Y" value="-1" description="Nanobody stem cell split offset percent for y" />
 
     <!-- apoptosis module parameters -->
     <population.module module="apoptosis" id="RATE_EARLY" value="4" units="steps/hour" conversion="DT" description="rate of events in early apoptosis phase" />
