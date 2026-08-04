@@ -77,6 +77,7 @@ public final class Utilities {
      * @param collection2 the collection to check membership against, items be the same type as
      *     collection1
      * @return fraction of elements in collection1 that are also found in collection2
+     * @param <T> the element type present in the two collections
      */
     public static <T> double collectionFraction(
             Collection<T> collection1, Collection<T> collection2) {
