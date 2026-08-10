@@ -73,11 +73,11 @@ public final class Utilities {
      * Calculates the fraction of elements in one collection that are also present in another
      * collection. Returns 0 if either list is empty.
      *
+     * @param <T> the element type present in the two collections
      * @param collection1 the collection whose fraction is being calculated (denominator)
      * @param collection2 the collection to check membership against, items be the same type as
      *     collection1
      * @return fraction of elements in collection1 that are also found in collection2
-     * @param <T> the element type present in the two collections
      */
     public static <T> double collectionFraction(
             Collection<T> collection1, Collection<T> collection2) {
@@ -100,10 +100,10 @@ public final class Utilities {
      * Converts the given Bag into a typed Collection, with each element being cast to the given
      * type. Insertion order is preserved.
      *
+     * @param <T> the target element type
      * @param bag the bag to convert
      * @param type the class object representing the target element type
      * @return a new Collection<T> containing the bag's elements, cast to provided type
-     * @param <T> the target element type
      */
     public static <T> Collection<T> asCollection(Bag bag, Class<T> type) {
         List<T> list = new ArrayList<>(bag.numObjs);
