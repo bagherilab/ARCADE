@@ -244,7 +244,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         boolean isDaughterStem =
                 daughterStem(
                         parentLoc, daughterLoc, divisionPlane, daughterProspero, daughterDeadpan);
-
+        System.out.println("daughterProspero=" + daughterProspero + ", daughterDeadpan=" + daughterDeadpan + ", basalFrac=" + basalFrac + ", daughterStem=" + isDaughterStem);
         if (isDaughterStem) {
             makeDaughterStemCell(
                     daughterLoc, sim, potts, random, daughterProspero, daughterDeadpan);
@@ -463,7 +463,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         } else if (differentiationRuleset.equals("tfRatio")) {
             System.out.println("WOO: Prospero comparison branch reached");
             if (daughterDeadpan <= 0) {
-                return daughterProspero <= 0;
+                return daughterProspero < 0;
             }
             return (daughterProspero / daughterDeadpan) <= tfRatio;
         }
@@ -763,7 +763,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             case "location":
                 return getBasalLocation(parentLoc, daughterLoc, divisionPlaneNormal);
             case "tfRatio":
-                return getLowerDeadpanLocation(
+                return getLessDeadpanLocation(
                         parentLoc, parentDeadpan, daughterLoc, daughterDeadpan);
             default:
                 throw new IllegalArgumentException(
@@ -827,7 +827,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Gets the location with lower Deadpan and returns it.
+     * Gets the location with less Deadpan and returns it.
      *
      * @param loc1 the {@link PottsLocation} to compare.
      * @param deadpan1 the amount of deadpan in loc1.
@@ -835,8 +835,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * @param deadpan2 the amount of deadpan in loc2.
      * @return the smaller location.
      */
-    public static Location getLowerDeadpanLocation(
+    public static Location getLessDeadpanLocation(
             Location loc1, double deadpan1, Location loc2, double deadpan2) {
+        System.out.println("getting less deadpan location");
         return (deadpan2 - deadpan1 <= EPSILON) ? loc2 : loc1;
     }
 

@@ -245,38 +245,38 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void getLowerDeadpanLocation_loc1HasLessDeadpan_returnsLoc1() {
+    public void getLessDeadpanLocation_loc1HasLessDeadpan_returnsLoc1() {
         PottsLocation loc1 = mock(PottsLocation.class);
         PottsLocation loc2 = mock(PottsLocation.class);
         Location gmc =
-                PottsModuleFlyStemProliferation.getLowerDeadpanLocation(loc1, 1.0, loc2, 5.0);
+                PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 1.0, loc2, 5.0);
         assertEquals(loc1, gmc);
     }
 
     @Test
-    public void getLowerDeadpanLocation_loc2HasLessDeadpan_returnsLoc2() {
+    public void getLessDeadpanLocation_loc2HasLessDeadpan_returnsLoc2() {
         PottsLocation loc1 = mock(PottsLocation.class);
         PottsLocation loc2 = mock(PottsLocation.class);
         Location gmc =
-                PottsModuleFlyStemProliferation.getLowerDeadpanLocation(loc1, 5.0, loc2, 1.0);
+                PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 5.0, loc2, 1.0);
         assertEquals(loc2, gmc);
     }
 
     @Test
-    public void getLowerDeadpanLocation_equalDeadpan_returnsSecondLocation() {
+    public void getLessDeadpanLocation_equalDeadpan_returnsSecondLocation() {
         PottsLocation loc1 = mock(PottsLocation.class);
         PottsLocation loc2 = mock(PottsLocation.class);
         Location gmc =
-                PottsModuleFlyStemProliferation.getLowerDeadpanLocation(loc1, 2.5, loc2, 2.5);
+                PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 2.5, loc2, 2.5);
         assertEquals(loc2, gmc);
     }
 
     @Test
-    public void getLowerDeadpanLocation_bothZero_returnsSecondLocation() {
+    public void getLessDeadpanLocation_bothZero_returnsSecondLocation() {
         PottsLocation loc1 = mock(PottsLocation.class);
         PottsLocation loc2 = mock(PottsLocation.class);
         Location gmc =
-                PottsModuleFlyStemProliferation.getLowerDeadpanLocation(loc1, 0.0, loc2, 0.0);
+                PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 0.0, loc2, 0.0);
         assertEquals(loc2, gmc);
     }
 
@@ -1377,13 +1377,15 @@ public class PottsModuleFlyStemProliferationTest {
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("tfRatio");
         when(parameters.getDouble("proliferation/TF_RATIO")).thenReturn(2.0);
 
-        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
-
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
         PottsModuleFlyStemProliferation module = new PottsModuleFlyStemProliferation(stemCell);
+        boolean wtResult = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 1.0, 4.0);
+        assertTrue(wtResult, "WT: Expected true since prospero/deadpan (0.25) <= tfRatio (2.0)");
 
-        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 1.0, 4.0);
-
-        assertTrue(result, "Expected true since prospero/deadpan (0.25) <= tfRatio (2.0)");
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        boolean mudResult = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 1.0, 4.0);
+        assertTrue(mudResult, "Mud: Expected true since prospero/deadpan (0.25) <= tfRatio (2.0)");
     }
 
     @Test
@@ -1393,13 +1395,15 @@ public class PottsModuleFlyStemProliferationTest {
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("tfRatio");
         when(parameters.getDouble("proliferation/TF_RATIO")).thenReturn(2.0);
 
-        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
-
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
         PottsModuleFlyStemProliferation module = new PottsModuleFlyStemProliferation(stemCell);
+        boolean wtResult = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 4.0, 1.0);
+        assertFalse(wtResult, "WT: Expected false since prospero/deadpan (4.0) > tfRatio (2.0)");
 
-        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 4.0, 1.0);
-
-        assertFalse(result, "Expected false since prospero/deadpan (4.0) > tfRatio (2.0)");
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        boolean mudResult = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 4.0, 1.0);
+        assertFalse(mudResult, "Mud: Expected false since prospero/deadpan (4.0) > tfRatio (2.0)");
     }
 
     @Test
@@ -1413,8 +1417,8 @@ public class PottsModuleFlyStemProliferationTest {
 
         PottsModuleFlyStemProliferation module = new PottsModuleFlyStemProliferation(stemCell);
 
-        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 0.0, 0.0);
+        boolean result = !module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 0.0, 0.0);
 
-        assertTrue(result, "Expected true when both prospero and deadpan are zero");
+        assertTrue(result, "Expected false when both prospero and deadpan are zero");
     }
 }
