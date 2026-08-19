@@ -193,8 +193,6 @@ public class PottsModuleFlyGMCDifferentiationTest {
         when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(1);
         when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
-
-        // critVol = 150.0; sizeTarget = 1.2
         // vRef = critVol * (1 + sizeTarget) / 2 = 150.0 * 2.2 / 2 = 165.0
         when(gmcCell.getCriticalVolume()).thenReturn(150.0);
         when(gmcCell.getLocation().getVolume()).thenReturn(30.0);
