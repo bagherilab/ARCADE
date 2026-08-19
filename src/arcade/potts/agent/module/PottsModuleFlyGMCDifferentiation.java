@@ -22,19 +22,12 @@ import arcade.potts.util.PottsEnums.State;
 public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVolumeBasedDivision {
 
     /**
-     * Indicates whether GMC growth rate is based on individual cell conditions or average cell
-     * conditions.
-     */
-    Boolean pdeLike;
-
-    /**
      * Creates a fly GMC proliferation module.
      *
      * @param cell the cell to which this module is attached
      */
     public PottsModuleFlyGMCDifferentiation(PottsCellFlyGMC cell) {
         super(cell);
-        pdeLike = (cell.getParameters().getInt("proliferation/PDELIKE") != 0);
     }
 
     /**
@@ -134,31 +127,17 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
      * Updates the effective growth rate according to boolean flags specified in parameters.
      *
      * <p>The rule is selected as follows. When {@code DYNAMIC_GROWTH_RATE_VOLUME} is off the growth
-     * rate is simply the basal rate. When it is on, {@code PDELIKE} chooses between a per-cell rule
-     * (this cell's own volume against its equilibrium volume) and a PDE-like rule (population
-     * averages across GMCs of the same population). {@code PDELIKE} therefore only has an effect
-     * while {@code DYNAMIC_GROWTH_RATE_VOLUME} is on.
+     * rate is simply the basal rate. When it is on, cells use a per-cell rule that compares each
+     * cell's own volume against its equilibrium volume
      *
      * @param sim the simulation
      */
     public void updateGrowthRate(Simulation sim) {
         if (!dynamicGrowthRateVolume) {
             cellGrowthRate = cellGrowthRateBase;
-        } else if (!pdeLike) {
+        } else {
             updateCellVolumeBasedGrowthRate(
                     cell.getLocation().getVolume(), computeEquilibriumVolume());
-        } else {
-            // PDE-like: use population-wide averages for GMCs (same pop as this cell).
-            // The reference volume is the population-average equilibrium volume:
-            //   avgVRef = avgCritVol * (1 + sizeTarget) / 2
-            VolumeAverages averages = getPopulationVolumeAverages(sim);
-
-            if (averages.count == 0) {
-                cellGrowthRate = cellGrowthRateBase;
-            } else {
-                double avgVRef = averages.averageCriticalVolume * (1.0 + sizeTarget) / 2.0;
-                updateCellVolumeBasedGrowthRate(averages.averageVolume, avgVRef);
-            }
         }
     }
 

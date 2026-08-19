@@ -188,12 +188,11 @@ public class PottsModuleFlyGMCDifferentiationTest {
     }
 
     @Test
-    public void updateGrowthRate_dynamicOn_pdeLikeFalse_usesSelfVolumeAndEquilibriumRef() {
+    public void updateGrowthRate_dynamicOn_usesSelfVolumeAndEquilibriumRef() {
         when(gmcCell.getParameters()).thenReturn(parameters);
         when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(1);
         when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
-        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
 
         // critVol = 150.0; sizeTarget = 1.2
         // vRef = critVol * (1 + sizeTarget) / 2 = 150.0 * 2.2 / 2 = 165.0
@@ -216,78 +215,6 @@ public class PottsModuleFlyGMCDifferentiationTest {
                 .updateCellVolumeBasedGrowthRate(
                         org.mockito.ArgumentMatchers.eq(30.0),
                         org.mockito.ArgumentMatchers.eq(expectedVRef));
-    }
-
-    @Test
-    public void
-            updateGrowthRate_dynamicOnPdeLikeTrue_usesAverageVolumeAndEquilibriumRefAcrossGMCs() {
-        // Flags
-        when(gmcCell.getParameters()).thenReturn(parameters);
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(1);
-        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
-        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
-        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(1);
-
-        // Same population for all GMCs we want included
-        when(gmcCell.getPop()).thenReturn(3);
-
-        // Self (included in average)
-        when(gmcCell.getLocation().getVolume()).thenReturn(30.0);
-        when(gmcCell.getCriticalVolume()).thenReturn(150.0);
-
-        // Two more GMCs in same population
-        PottsCellFlyGMC gmcB = mock(PottsCellFlyGMC.class);
-        PottsCellFlyGMC gmcC = mock(PottsCellFlyGMC.class);
-        when(gmcB.getPop()).thenReturn(3);
-        when(gmcC.getPop()).thenReturn(3);
-
-        PottsLocation locB = mock(PottsLocation.class);
-        PottsLocation locC = mock(PottsLocation.class);
-        when(gmcB.getLocation()).thenReturn(locB);
-        when(gmcC.getLocation()).thenReturn(locC);
-        when(locB.getVolume()).thenReturn(10.0);
-        when(locC.getVolume()).thenReturn(20.0);
-        when(gmcB.getCriticalVolume()).thenReturn(100.0);
-        when(gmcC.getCriticalVolume()).thenReturn(200.0);
-
-        // Noise: different type and/or different pop → must be ignored
-        PottsCell randomOtherPop = mock(PottsCell.class);
-        when(randomOtherPop.getPop()).thenReturn(99);
-        PottsCellFlyNeuron neuronSamePop = mock(PottsCellFlyNeuron.class);
-        when(neuronSamePop.getPop()).thenReturn(3);
-
-        // Bag with self + two GMCs + noise
-        sim.util.Bag bag = new sim.util.Bag();
-        bag.add(gmcCell); // self GMC (pop 3)
-        bag.add(gmcB); // GMC (pop 3)
-        bag.add(gmcC); // GMC (pop 3)
-        bag.add(randomOtherPop); // different pop → ignored
-        bag.add(neuronSamePop); // not a GMC → ignored
-        when(sim.getGrid().getAllObjects()).thenReturn(bag);
-
-        PottsModuleFlyGMCDifferentiation module =
-                org.mockito.Mockito.spy(new PottsModuleFlyGMCDifferentiation(gmcCell));
-
-        // Observe the averaged args
-        org.mockito.Mockito.doNothing()
-                .when(module)
-                .updateCellVolumeBasedGrowthRate(
-                        org.mockito.ArgumentMatchers.anyDouble(),
-                        org.mockito.ArgumentMatchers.anyDouble());
-
-        module.updateGrowthRate(sim);
-
-        // avgVol = (30 + 10 + 20) / 3 = 20.0
-        // avgCritVol = (150 + 100 + 200) / 3 = 150.0
-        // avgVRef = avgCritVol * (1 + sizeTarget) / 2 = 150.0 * (1 + 1.2) / 2 = 165.0
-        double expectedAvgVol = (30.0 + 10.0 + 20.0) / 3.0; // 20.0
-        double expectedAvgCrit = (150.0 + 100.0 + 200.0) / 3.0; // 150.0
-        double expectedAvgVRef = expectedAvgCrit * (1.0 + 1.2) / 2.0; // 165.0
-
-        org.mockito.Mockito.verify(module)
-                .updateCellVolumeBasedGrowthRate(
-                        org.mockito.ArgumentMatchers.eq(expectedAvgVol),
-                        org.mockito.ArgumentMatchers.eq(expectedAvgVRef));
     }
 
     // computeEquilibriumVolume tests
