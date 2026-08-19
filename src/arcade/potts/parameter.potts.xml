@@ -65,7 +65,6 @@
     <population.module module="proliferation" id="NUCLEUS_CONDENSATION_FRACTION" value="0.5" description="fraction of nuclear volume when condensed" />
 
     <!-- ── Fly cell proliferation module parameters ───────────────────── -->
-    <!-- ── Growth rate sensitivity to cell volume dynamics ───────────────────── -->
     <population.module module="proliferation" id="DYNAMIC_GROWTH_RATE_VOLUME" value="0" description="1 → enable volume-sensitive growth rate; 0 → disabled" />
     <population.module module="proliferation" id="GROWTH_RATE_VOLUME_SENSITIVITY" value="3.0" description="exponent in (volume/criticalVolume)^sensitivity when volume rule is enabled" />
 
