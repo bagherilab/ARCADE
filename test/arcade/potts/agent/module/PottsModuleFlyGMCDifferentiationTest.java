@@ -230,7 +230,7 @@ public class PottsModuleFlyGMCDifferentiationTest {
     }
 
     @Test
-    public void computeEquilibriumVolume_differentSizeTarget_scalesCorrectly() {
+    public void computeEquilibriumVolume_doubleSizeTarget_scalesCorrectly() {
         // critVol = 100.0; sizeTarget = 2.0
         // vRef = 100.0 * (1 + 2.0) / 2 = 150.0
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(2.0);
