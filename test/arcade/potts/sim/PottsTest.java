@@ -61,7 +61,7 @@ public class PottsTest {
         }
 
         @Override
-        HashSet<Integer> getUniqueIDs(int x, int y, int z) {
+        public HashSet<Integer> getUniqueIDs(int x, int y, int z) {
             HashSet<Integer> set = new HashSet<>();
             if (x == 0 && y == 0) {
                 set.add(1);
