@@ -47,7 +47,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     final NormalDistribution splitDirectionDistribution;
 
     /**
-     * Ruleset for determining which daughter cell is the GMC. Can be `smaller_gmc` or `basal_gmc`.
+     * Ruleset for determining which daughter cell is the GMC. Can be `smaller_gmc`, `basal_gmc`,
+     * `random`, or `apical_gmc`.
      */
     final String differentiationRuleset;
 
@@ -519,7 +520,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             Potts potts,
             MersenneTwisterFast random,
             Vector divisionPlaneNormal) {
-        Location gmcLoc = determineGMCLocation(parentLoc, daughterLoc, divisionPlaneNormal);
+        Location gmcLoc = determineGMCLocation(parentLoc, daughterLoc, divisionPlaneNormal, random);
 
         if (parentLoc == gmcLoc) {
             PottsLocation.swapVoxels(parentLoc, daughterLoc);
@@ -608,15 +609,23 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * @param parentLoc the parent cell location
      * @param daughterLoc the daughter cell location
      * @param divisionPlaneNormal the normal vector to the plane of division
+     * @param random the random number generator
      * @return the location that should be the GMC
      */
-    private Location determineGMCLocation(
-            PottsLocation parentLoc, PottsLocation daughterLoc, Vector divisionPlaneNormal) {
+    Location determineGMCLocation(
+            PottsLocation parentLoc,
+            PottsLocation daughterLoc,
+            Vector divisionPlaneNormal,
+            MersenneTwisterFast random) {
         switch (differentiationRuleset) {
             case "smaller_gmc":
                 return getSmallerLocation(parentLoc, daughterLoc);
             case "basal_gmc":
                 return getBasalLocation(parentLoc, daughterLoc, divisionPlaneNormal);
+            case "random":
+                return random.nextBoolean() ? parentLoc : daughterLoc;
+            case "apical_gmc":
+                return getApicalLocation(parentLoc, daughterLoc, divisionPlaneNormal);
             default:
                 throw new IllegalArgumentException(
                         "Invalid differentiation ruleset: " + differentiationRuleset);
@@ -673,5 +682,19 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         double proj2 = Vector.dotProduct(c2, apicalAxis);
 
         return (proj1 < proj2) ? loc2 : loc1; // higher projection = more basal
+    }
+
+    /**
+     * Gets the location that is higher along the apical axis (opposite of getBasalLocation).
+     *
+     * @param loc1 {@link PottsLocation} to compare.
+     * @param loc2 {@link PottsLocation} to compare.
+     * @param apicalAxis Unit {@link Vector} defining the apical-basal direction.
+     * @return the apical location (higher along the apical axis).
+     */
+    public static PottsLocation getApicalLocation(
+            PottsLocation loc1, PottsLocation loc2, Vector apicalAxis) {
+        PottsLocation basalLoc = getBasalLocation(loc1, loc2, apicalAxis);
+        return (basalLoc == loc1) ? loc2 : loc1;
     }
 }

@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.grid.Grid;
+import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 import arcade.core.util.Plane;
@@ -238,6 +239,72 @@ public class PottsModuleFlyStemProliferationTest {
         PottsLocation result =
                 PottsModuleFlyStemProliferation.getBasalLocation(loc1, loc2, apicalAxis);
         assertEquals(loc1, result);
+    }
+
+    @Test
+    public void getApicalLocation_centroidsDifferent_returnsApicalCentroid() {
+        PottsLocation loc1 = mock(PottsLocation.class);
+        PottsLocation loc2 = mock(PottsLocation.class);
+        when(loc1.getCentroid()).thenReturn(new double[] {0, 2, 0});
+        when(loc2.getCentroid()).thenReturn(new double[] {0, 1, 0});
+        Vector apicalAxis = new Vector(0, 1, 0);
+
+        PottsLocation result =
+                PottsModuleFlyStemProliferation.getApicalLocation(loc1, loc2, apicalAxis);
+        assertEquals(loc2, result);
+    }
+
+    @Test
+    public void getApicalLocation_centroidsSame_returnsSecondLocation() {
+        PottsLocation loc1 = mock(PottsLocation.class);
+        PottsLocation loc2 = mock(PottsLocation.class);
+        when(loc1.getCentroid()).thenReturn(new double[] {0, 2, 0});
+        when(loc2.getCentroid()).thenReturn(new double[] {0, 2, 0});
+        Vector apicalAxis = new Vector(0, 1, 0);
+
+        PottsLocation result =
+                PottsModuleFlyStemProliferation.getApicalLocation(loc1, loc2, apicalAxis);
+        assertEquals(loc2, result);
+    }
+
+    @Test
+    public void determineGMCLocation_random_nextBooleanTrue_returnsParent() {
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("random");
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        when(random.nextBoolean()).thenReturn(true);
+
+        Location result =
+                module.determineGMCLocation(
+                        stemLoc, (PottsLocation) daughterLoc, new Vector(0, 1, 0), random);
+        assertEquals(stemLoc, result);
+    }
+
+    @Test
+    public void determineGMCLocation_random_nextBooleanFalse_returnsDaughter() {
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("random");
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        when(random.nextBoolean()).thenReturn(false);
+
+        Location result =
+                module.determineGMCLocation(
+                        stemLoc, (PottsLocation) daughterLoc, new Vector(0, 1, 0), random);
+        assertEquals(daughterLoc, result);
+    }
+
+    @Test
+    public void determineGMCLocation_apicalGmc_returnsApicalLocation() {
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("apical_gmc");
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        PottsLocation loc1 = mock(PottsLocation.class);
+        PottsLocation loc2 = mock(PottsLocation.class);
+        when(loc1.getCentroid()).thenReturn(new double[] {0, 2, 0});
+        when(loc2.getCentroid()).thenReturn(new double[] {0, 1, 0});
+        Vector apicalAxis = new Vector(0, 1, 0);
+
+        Location result = module.determineGMCLocation(loc1, loc2, apicalAxis, random);
+        assertEquals(loc2, result);
     }
 
     @Test
