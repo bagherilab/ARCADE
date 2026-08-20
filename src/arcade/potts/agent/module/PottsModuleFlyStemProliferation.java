@@ -14,10 +14,7 @@ import arcade.core.util.Vector;
 import arcade.core.util.distributions.Distribution;
 import arcade.core.util.distributions.NormalDistribution;
 import arcade.core.util.distributions.UniformDistribution;
-import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.agent.cell.PottsCellContainer;
-import arcade.potts.agent.cell.PottsCellFly;
-import arcade.potts.agent.cell.PottsCellFlyStem;
+import arcade.potts.agent.cell.*;
 import arcade.potts.agent.cell.PottsCellFlyStem.StemType;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocation2D;
@@ -62,6 +59,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
     /** Threshold ratio of Prospero to Deadpan in daughter cell to determine cell identity. */
     final double tfRatio;
+
+    final boolean allowParentDifferentiation;
 
     /** Distribution that determines rotational offset of cell's division plane. */
     final NormalDistribution splitDirectionDistribution;
@@ -160,6 +159,14 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         volumeBasedCriticalVolume =
                 (parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME") != 0);
 
+        allowParentDifferentiation =
+                (parameters.getInt("proliferation/ALLOW_PARENT_DIFFERENTIATION") != 0);
+
+        if (allowParentDifferentiation && !differentiationRuleset.equals("tfRatio")) {
+            throw new InvalidParameterException(
+                    "this kinda doesn't work yet you messed up your input file");
+        }
+
         dynamicGrowthRateNBSelfRepression =
                 (parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_SELF_REPRESSION") != 0);
 
@@ -244,7 +251,15 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         boolean isDaughterStem =
                 daughterStem(
                         parentLoc, daughterLoc, divisionPlane, daughterProspero, daughterDeadpan);
-        System.out.println("daughterProspero=" + daughterProspero + ", daughterDeadpan=" + daughterDeadpan + ", basalFrac=" + basalFrac + ", daughterStem=" + isDaughterStem);
+        System.out.println(
+                "daughterProspero="
+                        + daughterProspero
+                        + ", daughterDeadpan="
+                        + daughterDeadpan
+                        + ", basalFrac="
+                        + basalFrac
+                        + ", daughterStem="
+                        + isDaughterStem);
         if (isDaughterStem) {
             makeDaughterStemCell(
                     daughterLoc, sim, potts, random, daughterProspero, daughterDeadpan);
@@ -259,6 +274,15 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                     daughterProspero,
                     daughterDeadpan,
                     parentDeadpan - daughterDeadpan);
+        }
+
+        if (allowParentDifferentiation) {
+            double remainingProspero = ((PottsCellFly) cell).getProspero();
+            double remainingDeadpan = ((PottsCellFly) cell).getDeadpan();
+            if (!passesTfRatioStemCheck(remainingProspero, remainingDeadpan)) {
+                differentiateParentToGMC(
+                        parentLoc, sim, potts, random, remainingProspero, remainingDeadpan);
+            }
         }
     }
 
@@ -293,6 +317,53 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             double avgCritVol = critVolSum / nbsInSimulation.size();
             updateCellVolumeBasedGrowthRate(avgVolume, avgCritVol);
         }
+    }
+
+    private void differentiateParentToGMC(
+            PottsLocation parentLoc,
+            Simulation sim,
+            Potts potts,
+            MersenneTwisterFast random,
+            double remainingProspero,
+            double remainingDeadpan) {
+
+        PottsCellFlyStem oldCell = (PottsCellFlyStem) cell;
+        Location location = oldCell.getLocation();
+
+        sim.getGrid().removeObject(oldCell, location);
+        oldCell.stop();
+
+        int newPop = oldCell.getLinks().next(random);
+        double criticalVolume = calculateGMCDaughterCellCriticalVolume((PottsLocation) location);
+
+        PottsCellContainer differentiatedParentContainer =
+                new PottsCellContainer(
+                        oldCell.getID(),
+                        oldCell.getParent(),
+                        newPop,
+                        oldCell.getAge(),
+                        oldCell.getDivisions(),
+                        State.PROLIFERATIVE,
+                        null,
+                        0,
+                        null,
+                        criticalVolume,
+                        oldCell.getCriticalHeight(),
+                        oldCell.getCriticalRegionVolumes(),
+                        oldCell.getCriticalRegionHeights());
+
+        PottsCell differentiatedParent =
+                (PottsCellFlyGMC)
+                        differentiatedParentContainer.convert(
+                                sim.getCellFactory(), location, random);
+
+        sim.getGrid().addObject(differentiatedParent, null);
+        potts.register(differentiatedParent);
+        differentiatedParent.reset(potts.ids, potts.regions);
+        differentiatedParent.schedule(sim.getSchedule());
+
+        ((PottsCellFly) differentiatedParent).setProspero(remainingProspero);
+        ((PottsCellFly) differentiatedParent).setDeadpan(remainingDeadpan);
     }
 
     /**
@@ -462,13 +533,17 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                     centroid1, centroid2, ((PottsCellFlyStem) cell).getApicalAxis(), range));
         } else if (differentiationRuleset.equals("tfRatio")) {
             System.out.println("WOO: Prospero comparison branch reached");
-            if (daughterDeadpan <= 0) {
-                return daughterProspero < 0;
-            }
-            return (daughterProspero / daughterDeadpan) <= tfRatio;
+            return passesTfRatioStemCheck(daughterProspero, daughterDeadpan);
         }
         throw new IllegalArgumentException(
                 "Invalid differentiation ruleset: " + differentiationRuleset);
+    }
+
+    private boolean passesTfRatioStemCheck(double daughterProspero, double daughterDeadpan) {
+        if (daughterDeadpan <= 0) {
+            return daughterProspero < 0;
+        }
+        return (daughterProspero / daughterDeadpan) <= tfRatio;
     }
 
     /*
@@ -611,11 +686,15 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                         daughterDeadpan,
                         parentDeadpan);
 
-        if (differentiationRuleset.equals("tfRatio") && daughterDeadpan > 0 && daughterProspero >= tfRatio * daughterDeadpan) {
+        if (differentiationRuleset.equals("tfRatio")
+                && daughterDeadpan > 0
+                && daughterProspero >= tfRatio * daughterDeadpan) {
             if (gmcLoc == daughterLoc && daughterDeadpan > parentDeadpan) {
-                throw new IllegalStateException("tfRatio GMC division Prospero to Deadpan ratio assertion failed");
+                throw new IllegalStateException(
+                        "tfRatio GMC division Prospero to Deadpan ratio assertion failed");
             } else if (gmcLoc == parentLoc && parentDeadpan > daughterDeadpan) {
-                throw new IllegalStateException("tfRatio GMC division Prospero to Deadpan ratio assertion failed");
+                throw new IllegalStateException(
+                        "tfRatio GMC division Prospero to Deadpan ratio assertion failed");
             }
         }
 

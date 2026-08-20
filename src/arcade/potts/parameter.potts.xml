@@ -94,7 +94,7 @@
     <population.module module="proliferation" id="BASAL_THRESHOLD" value="0.5" description="Percent threshold of basal voxels considered when dividing Prospero at cell division. APICAL_THRESHOLD + BASAL_THRESHOLD should be less than or equal to 1." />
     <!-- Transcription factor ratio (Prospero : Deadpan) -->
     <population.module module="proliferation" id="TF_RATIO" value="1" description="Ratio of Prospero to Deadpan driving differentiation" />
-
+    <population.module module="proliferation" id="ALLOW_PARENT_DIFFERENTIATION" value="0" description="0 -> do not allow parent differentiation, anything else, do allow" />
     <!-- apoptosis module parameters -->
     <population.module module="apoptosis" id="RATE_EARLY" value="4" units="steps/hour" conversion="DT" description="rate of events in early apoptosis phase" />
     <population.module module="apoptosis" id="RATE_LATE" value="1.8" units="steps/hour" conversion="DT" description="rate of events in late apoptosis phase" />

@@ -248,8 +248,7 @@ public class PottsModuleFlyStemProliferationTest {
     public void getLessDeadpanLocation_loc1HasLessDeadpan_returnsLoc1() {
         PottsLocation loc1 = mock(PottsLocation.class);
         PottsLocation loc2 = mock(PottsLocation.class);
-        Location gmc =
-                PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 1.0, loc2, 5.0);
+        Location gmc = PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 1.0, loc2, 5.0);
         assertEquals(loc1, gmc);
     }
 
@@ -257,8 +256,7 @@ public class PottsModuleFlyStemProliferationTest {
     public void getLessDeadpanLocation_loc2HasLessDeadpan_returnsLoc2() {
         PottsLocation loc1 = mock(PottsLocation.class);
         PottsLocation loc2 = mock(PottsLocation.class);
-        Location gmc =
-                PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 5.0, loc2, 1.0);
+        Location gmc = PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 5.0, loc2, 1.0);
         assertEquals(loc2, gmc);
     }
 
@@ -266,8 +264,7 @@ public class PottsModuleFlyStemProliferationTest {
     public void getLessDeadpanLocation_equalDeadpan_returnsSecondLocation() {
         PottsLocation loc1 = mock(PottsLocation.class);
         PottsLocation loc2 = mock(PottsLocation.class);
-        Location gmc =
-                PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 2.5, loc2, 2.5);
+        Location gmc = PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 2.5, loc2, 2.5);
         assertEquals(loc2, gmc);
     }
 
@@ -275,8 +272,7 @@ public class PottsModuleFlyStemProliferationTest {
     public void getLessDeadpanLocation_bothZero_returnsSecondLocation() {
         PottsLocation loc1 = mock(PottsLocation.class);
         PottsLocation loc2 = mock(PottsLocation.class);
-        Location gmc =
-                PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 0.0, loc2, 0.0);
+        Location gmc = PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 0.0, loc2, 0.0);
         assertEquals(loc2, gmc);
     }
 
