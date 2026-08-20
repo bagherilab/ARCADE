@@ -880,7 +880,7 @@ public class PottsModuleFlyStemProliferationTest {
         when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
 
         Plane dummyPlane = mock(Plane.class);
-        PottsModuleFlyStemProliferation module = spy(new PottsModuleFlyStemProliferation(stemCell));
+        module = spy(new PottsModuleFlyStemProliferation(stemCell));
         doReturn(dummyPlane).when(module).chooseDivisionPlane(stemCell);
         doReturn(true).when(module).daughterStem(any(), any(), any());
 
@@ -904,7 +904,7 @@ public class PottsModuleFlyStemProliferationTest {
         when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
 
         Plane dummyPlane = mock(Plane.class);
-        PottsModuleFlyStemProliferation module = spy(new PottsModuleFlyStemProliferation(stemCell));
+        module = spy(new PottsModuleFlyStemProliferation(stemCell));
         doReturn(dummyPlane).when(module).chooseDivisionPlane(stemCell);
         doReturn(true).when(module).daughterStem(any(), any(), any());
 
@@ -1153,7 +1153,7 @@ public class PottsModuleFlyStemProliferationTest {
                 .thenReturn(container);
         when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
 
-        PottsModuleFlyStemProliferation module = spy(new PottsModuleFlyStemProliferation(stemCell));
+        module = spy(new PottsModuleFlyStemProliferation(stemCell));
         doReturn(dummyPlane).when(module).chooseDivisionPlane(stemCell);
 
         module.addCell(random, sim);
@@ -1183,7 +1183,7 @@ public class PottsModuleFlyStemProliferationTest {
                 .thenReturn(container);
         when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
 
-        PottsModuleFlyStemProliferation module = spy(new PottsModuleFlyStemProliferation(stemCell));
+        module = spy(new PottsModuleFlyStemProliferation(stemCell));
         doReturn(dummyPlane).when(module).chooseDivisionPlane(stemCell);
 
         module.addCell(random, sim);
