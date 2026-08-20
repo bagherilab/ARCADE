@@ -103,8 +103,8 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public abstract class </span><span class="element-name type-name-label">PottsModuleProliferationVolumeBasedDivision</span>
 <span class="extends-implements">extends <a href="PottsModuleProliferation.html" title="class in arcade.potts.agent.module">PottsModuleProliferation</a></span></div>
-<div class="block">Implementation of <a href="PottsModule.html" title="class in arcade.potts.agent.module"><code>PottsModule</code></a> for fly GMC agents. The links must be set in the setup file
- so that 100% of the daughter cells are Neurons.</div>
+<div class="block">Implementation of <a href="PottsModule.html" title="class in arcade.potts.agent.module"><code>PottsModule</code></a> for agents that divide upon reaching a volume threshold
+ without any cell-cycle duration requirements.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -126,14 +126,29 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>(package private) final double</code></div>
+<div class="col-first even-row-color"><code>(package private) double</code></div>
 <div class="col-second even-row-color"><code><a href="#cellGrowthRate" class="member-name-link">cellGrowthRate</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">Overall growth rate for cell (voxels/tick).</div>
+<div class="block">Current growth rate for stem cells (voxels/tick).</div>
 </div>
 <div class="col-first odd-row-color"><code>(package private) final double</code></div>
-<div class="col-second odd-row-color"><code><a href="#sizeTarget" class="member-name-link">sizeTarget</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#cellGrowthRateBase" class="member-name-link">cellGrowthRateBase</a></code></div>
 <div class="col-last odd-row-color">
+<div class="block">Base growth rate for cells (voxels/tick).</div>
+</div>
+<div class="col-first even-row-color"><code>(package private) final boolean</code></div>
+<div class="col-second even-row-color"><code><a href="#dynamicGrowthRateVolume" class="member-name-link">dynamicGrowthRateVolume</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Boolean flag indicating whether the growth rate should follow volume-sensitive ruleset.</div>
+</div>
+<div class="col-first odd-row-color"><code>(package private) final double</code></div>
+<div class="col-second odd-row-color"><code><a href="#growthRateVolumeSensitivity" class="member-name-link">growthRateVolumeSensitivity</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Sensitivity of growth rate to cell volume, only relevant if dynamicGrowthRateVolume is true.</div>
+</div>
+<div class="col-first even-row-color"><code>(package private) final double</code></div>
+<div class="col-second even-row-color"><code><a href="#sizeTarget" class="member-name-link">sizeTarget</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">Target ratio of critical volume for division size checkpoint (cell must reach CRITICAL_VOLUME
  * SIZE_TARGET * SIZE_CHECKPOINT to divide).</div>
 </div>
@@ -163,7 +178,7 @@ loadScripts(document, 'script');</script>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
@@ -174,6 +189,18 @@ loadScripts(document, 'script');</script>
  <a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Performs the actions of the module during the <a href="../../../core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell"><code>Cell</code></a> step.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateCellVolumeBasedGrowthRate(double,double)" class="member-name-link">updateCellVolumeBasedGrowthRate</a><wbr>(double&nbsp;volume,
+ double&nbsp;referenceVolume)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Updates <code>cellGrowthRate</code> from a power-law relationship between current volume and a
+ reference volume.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#updateGrowthRate(arcade.core.sim.Simulation)" class="member-name-link">updateGrowthRate</a><wbr>(<a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Updates the effective growth rate according to boolean flags specified in parameters.</div>
 </div>
 </div>
 </div>
@@ -199,10 +226,17 @@ loadScripts(document, 'script');</script>
 <h2>Field Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="cellGrowthRateBase">
+<h3>cellGrowthRateBase</h3>
+<div class="member-signature"><span class="modifiers">final</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">cellGrowthRateBase</span></div>
+<div class="block">Base growth rate for cells (voxels/tick).</div>
+</section>
+</li>
+<li>
 <section class="detail" id="cellGrowthRate">
 <h3>cellGrowthRate</h3>
-<div class="member-signature"><span class="modifiers">final</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">cellGrowthRate</span></div>
-<div class="block">Overall growth rate for cell (voxels/tick).</div>
+<div class="member-signature"><span class="return-type">double</span>&nbsp;<span class="element-name">cellGrowthRate</span></div>
+<div class="block">Current growth rate for stem cells (voxels/tick).</div>
 </section>
 </li>
 <li>
@@ -211,6 +245,20 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">final</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">sizeTarget</span></div>
 <div class="block">Target ratio of critical volume for division size checkpoint (cell must reach CRITICAL_VOLUME
  * SIZE_TARGET * SIZE_CHECKPOINT to divide).</div>
+</section>
+</li>
+<li>
+<section class="detail" id="dynamicGrowthRateVolume">
+<h3>dynamicGrowthRateVolume</h3>
+<div class="member-signature"><span class="modifiers">final</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">dynamicGrowthRateVolume</span></div>
+<div class="block">Boolean flag indicating whether the growth rate should follow volume-sensitive ruleset.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="growthRateVolumeSensitivity">
+<h3>growthRateVolumeSensitivity</h3>
+<div class="member-signature"><span class="modifiers">final</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">growthRateVolumeSensitivity</span></div>
+<div class="block">Sensitivity of growth rate to cell volume, only relevant if dynamicGrowthRateVolume is true.</div>
 </section>
 </li>
 </ul>
@@ -251,6 +299,41 @@ loadScripts(document, 'script');</script>
 <dt>Parameters:</dt>
 <dd><code>random</code> - the random number generator</dd>
 <dd><code>sim</code> - the simulation instance</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="updateGrowthRate(arcade.core.sim.Simulation)">
+<h3>updateGrowthRate</h3>
+<div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">updateGrowthRate</span><wbr><span class="parameters">(<a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim)</span></div>
+<div class="block">Updates the effective growth rate according to boolean flags specified in parameters.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>sim</code> - the simulation</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="updateCellVolumeBasedGrowthRate(double,double)">
+<h3>updateCellVolumeBasedGrowthRate</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">updateCellVolumeBasedGrowthRate</span><wbr><span class="parameters">(double&nbsp;volume,
+ double&nbsp;referenceVolume)</span></div>
+<div class="block">Updates <code>cellGrowthRate</code> from a power-law relationship between current volume and a
+ reference volume.
+
+ <p>The updated rate is
+
+ <pre>
+ cellGrowthRate = cellGrowthRateBase * (volume / referenceVolume)^growthRateVolumeSensitivity
+ </pre>
+
+ <p>The reference volume is the cell volume at which the basal growth rate is recovered. In
+ the simplest case this can be the cell's critical volume, but users may use another
+ biologically motivated reference such as an equilibrium or population-averaged volume.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>volume</code> - the current volume used in the growth-rate scaling</dd>
+<dd><code>referenceVolume</code> - the reference volume that defines the baseline growth-rate scale</dd>
 </dl>
 </section>
 </li>

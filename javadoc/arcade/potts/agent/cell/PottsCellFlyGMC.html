@@ -149,15 +149,23 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="PottsCellContainer.html" title="class in arcade.potts.agent.cell">PottsCellContainer</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#make(int,arcade.core.agent.cell.CellState,ec.util.MersenneTwisterFast)" class="member-name-link">make</a><wbr>(int&nbsp;newID,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#make(int,arcade.core.agent.cell.CellState,double,ec.util.MersenneTwisterFast)" class="member-name-link">make</a><wbr>(int&nbsp;newID,
  <a href="../../../core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;newState,
+ double&nbsp;assignedCritVol,
  ec.util.MersenneTwisterFast&nbsp;random)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Creates a container for a new daughter cell with an explicit critical volume.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="PottsCellContainer.html" title="class in arcade.potts.agent.cell">PottsCellContainer</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#make(int,arcade.core.agent.cell.CellState,ec.util.MersenneTwisterFast)" class="member-name-link">make</a><wbr>(int&nbsp;newID,
+ <a href="../../../core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;newState,
+ ec.util.MersenneTwisterFast&nbsp;random)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Creates a new cell container.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>(package private) void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setStateModule(arcade.core.agent.cell.CellState)" class="member-name-link">setStateModule</a><wbr>(<a href="../../../core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;newState)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>(package private) void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setStateModule(arcade.core.agent.cell.CellState)" class="member-name-link">setStateModule</a><wbr>(<a href="../../../core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;newState)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the state module for the cell.</div>
 </div>
 </div>
@@ -220,6 +228,29 @@ loadScripts(document, 'script');</script>
 <dd><code>random</code> - the random number generator</dd>
 <dt>Returns:</dt>
 <dd>the new <code>Cell</code> object</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="make(int,arcade.core.agent.cell.CellState,double,ec.util.MersenneTwisterFast)">
+<h3>make</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="PottsCellContainer.html" title="class in arcade.potts.agent.cell">PottsCellContainer</a></span>&nbsp;<span class="element-name">make</span><wbr><span class="parameters">(int&nbsp;newID,
+ <a href="../../../core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;newState,
+ double&nbsp;assignedCritVol,
+ ec.util.MersenneTwisterFast&nbsp;random)</span></div>
+<div class="block">Creates a container for a new daughter cell with an explicit critical volume.
+
+ <p>Unlike <a href="#make(int,arcade.core.agent.cell.CellState,ec.util.MersenneTwisterFast)"><code>make(int, CellState, MersenneTwisterFast)</code></a>, which copies this cell's
+ critical volume, this overload lets the caller set the daughter's critical volume from the
+ volume it is actually born into rather than inheriting the parent's.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>newID</code> - the daughter cell ID</dd>
+<dd><code>newState</code> - the daughter cell state</dd>
+<dd><code>assignedCritVol</code> - the critical volume assigned to the daughter cell</dd>
+<dd><code>random</code> - the random number generator</dd>
+<dt>Returns:</dt>
+<dd>a container for the daughter cell</dd>
 </dl>
 </section>
 </li>
