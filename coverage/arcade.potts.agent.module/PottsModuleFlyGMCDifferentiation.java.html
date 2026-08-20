@@ -30,66 +30,112 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
 <span class="fc" id="L30">    }</span>
 
     /**
+     * Computes the expected equilibrium average GMC volume over one cell cycle.
+     *
+     * &lt;p&gt;In the Potts model, the volume-regulated growth phase effectively begins at {@code
+     * criticalVolume} (not the birth volume), even when {@code VOLUME_BASED_CRITICAL_VOLUME} is off
+     * and birth volume is below {@code criticalVolume}.
+     *
+     * &lt;p&gt;The regulated growth phase therefore runs from {@code criticalVolume} to {@code sizeTarget
+     * * criticalVolume}. Under constant-rate growth, the time-average volume over this phase is the
+     * arithmetic mean of the two endpoints:
+     *
+     * &lt;pre&gt;
+     *   V_ref = (criticalVolume + sizeTarget * criticalVolume) / 2
+     *         = criticalVolume * (1 + sizeTarget) / 2
+     * &lt;/pre&gt;
+     *
+     * &lt;p&gt;This formula is consistent with the PDE-like branch, which uses {@code avgCritVol * (1 +
+     * sizeTarget) / 2}, and holds whether or not {@code VOLUME_BASED_CRITICAL_VOLUME} is enabled.
+     *
+     * @return the expected equilibrium average GMC volume
+     */
+    double computeEquilibriumVolume() {
+<span class="fc" id="L54">        return cell.getCriticalVolume() * (1.0 + sizeTarget) / 2.0;</span>
+    }
+
+    /**
      * Adds a cell to the simulation.
      *
      * &lt;p&gt;The cell location is split. The new neuron cell is created, initialized, and added to the
-     * schedule. This cell's location is also assigned to a new Neuron cell.
+     * schedule. This cell's location is also assigned to a new Neuron cell. The critical volume of
+     * both neurons is set to the initial volume of each neuron's location.
      *
      * @param random the random number generator
      * @param sim the simulation instance
      */
     @Override
     void addCell(MersenneTwisterFast random, Simulation sim) {
-<span class="fc" id="L43">        Potts potts = ((PottsSimulation) sim).getPotts();</span>
+<span class="fc" id="L69">        Potts potts = ((PottsSimulation) sim).getPotts();</span>
 
         // Split current location
-<span class="fc" id="L46">        Location newLocation = ((PottsLocation2D) cell.getLocation()).split(random);</span>
+<span class="fc" id="L72">        Location newLocation = ((PottsLocation2D) cell.getLocation()).split(random);</span>
 
         // Reset current cell
-<span class="fc" id="L49">        cell.reset(potts.ids, potts.regions);</span>
+<span class="fc" id="L75">        cell.reset(potts.ids, potts.regions);</span>
 
         // Create and schedule new neuron cell
-<span class="fc" id="L52">        int newID = sim.getID();</span>
-<span class="fc" id="L53">        CellContainer newContainer = cell.make(newID, State.QUIESCENT, random);</span>
-<span class="fc" id="L54">        PottsCell newCell =</span>
-<span class="fc" id="L55">                (PottsCell) newContainer.convert(sim.getCellFactory(), newLocation, random);</span>
-<span class="fc" id="L56">        sim.getGrid().addObject(newCell, null);</span>
-<span class="fc" id="L57">        potts.register(newCell);</span>
-<span class="fc" id="L58">        newCell.reset(potts.ids, potts.regions);</span>
-<span class="fc" id="L59">        newCell.schedule(sim.getSchedule());</span>
+<span class="fc" id="L78">        int newID = sim.getID();</span>
+<span class="fc" id="L79">        CellContainer newContainer =</span>
+                ((PottsCellFlyGMC) cell)
+<span class="fc" id="L81">                        .make(newID, State.QUIESCENT, newLocation.getVolume(), random);</span>
+<span class="fc" id="L82">        PottsCell newCell =</span>
+<span class="fc" id="L83">                (PottsCell) newContainer.convert(sim.getCellFactory(), newLocation, random);</span>
+<span class="fc" id="L84">        sim.getGrid().addObject(newCell, null);</span>
+<span class="fc" id="L85">        potts.register(newCell);</span>
+<span class="fc" id="L86">        newCell.initialize(potts.ids, potts.regions);</span>
+<span class="fc" id="L87">        newCell.schedule(sim.getSchedule());</span>
 
         // remove old GMC cell from simulation
-<span class="fc" id="L62">        PottsCellFlyGMC oldCell = (PottsCellFlyGMC) cell;</span>
-<span class="fc" id="L63">        Location location = oldCell.getLocation();</span>
-<span class="fc" id="L64">        sim.getGrid().removeObject(oldCell, location);</span>
-<span class="fc" id="L65">        oldCell.stop();</span>
+<span class="fc" id="L90">        PottsCellFlyGMC oldCell = (PottsCellFlyGMC) cell;</span>
+<span class="fc" id="L91">        Location location = oldCell.getLocation();</span>
+<span class="fc" id="L92">        sim.getGrid().removeObject(oldCell, location);</span>
+<span class="fc" id="L93">        oldCell.stop();</span>
 
         // create new neuron cell and add to simulation.
-<span class="fc" id="L68">        int newPop = oldCell.getLinks().next(random);</span>
+<span class="fc" id="L96">        int newPop = oldCell.getLinks().next(random);</span>
 
-<span class="fc" id="L70">        PottsCellContainer differentiatedGMCContainer =</span>
+<span class="fc" id="L98">        PottsCellContainer differentiatedGMCContainer =</span>
                 new PottsCellContainer(
-<span class="fc" id="L72">                        oldCell.getID(),</span>
-<span class="fc" id="L73">                        oldCell.getParent(),</span>
+<span class="fc" id="L100">                        oldCell.getID(),</span>
+<span class="fc" id="L101">                        oldCell.getParent(),</span>
                         newPop,
-<span class="fc" id="L75">                        oldCell.getAge(),</span>
-<span class="fc" id="L76">                        oldCell.getDivisions(),</span>
+<span class="fc" id="L103">                        oldCell.getAge(),</span>
+<span class="fc" id="L104">                        oldCell.getDivisions(),</span>
                         State.QUIESCENT,
                         null,
                         0,
                         null,
-<span class="fc" id="L81">                        oldCell.getCriticalVolume(),</span>
-<span class="fc" id="L82">                        oldCell.getCriticalHeight(),</span>
-<span class="fc" id="L83">                        oldCell.getCriticalRegionVolumes(),</span>
-<span class="fc" id="L84">                        oldCell.getCriticalRegionHeights());</span>
-<span class="fc" id="L85">        PottsCellFlyNeuron differentiatedGMC =</span>
+<span class="fc" id="L109">                        location.getVolume(),</span>
+<span class="fc" id="L110">                        oldCell.getCriticalHeight(),</span>
+<span class="fc" id="L111">                        oldCell.getCriticalRegionVolumes(),</span>
+<span class="fc" id="L112">                        oldCell.getCriticalRegionHeights());</span>
+<span class="fc" id="L113">        PottsCellFlyNeuron differentiatedGMC =</span>
                 (PottsCellFlyNeuron)
-<span class="fc" id="L87">                        differentiatedGMCContainer.convert(sim.getCellFactory(), location, random);</span>
+<span class="fc" id="L115">                        differentiatedGMCContainer.convert(sim.getCellFactory(), location, random);</span>
 
-<span class="fc" id="L89">        sim.getGrid().addObject(differentiatedGMC, null);</span>
-<span class="fc" id="L90">        potts.register(differentiatedGMC);</span>
-<span class="fc" id="L91">        differentiatedGMC.reset(potts.ids, potts.regions);</span>
-<span class="fc" id="L92">        differentiatedGMC.schedule(sim.getSchedule());</span>
-<span class="fc" id="L93">    }</span>
+<span class="fc" id="L117">        sim.getGrid().addObject(differentiatedGMC, null);</span>
+<span class="fc" id="L118">        potts.register(differentiatedGMC);</span>
+<span class="fc" id="L119">        differentiatedGMC.initialize(potts.ids, potts.regions);</span>
+<span class="fc" id="L120">        differentiatedGMC.schedule(sim.getSchedule());</span>
+<span class="fc" id="L121">    }</span>
+
+    /**
+     * Updates the effective growth rate according to boolean flags specified in parameters.
+     *
+     * &lt;p&gt;The rule is selected as follows. When {@code DYNAMIC_GROWTH_RATE_VOLUME} is off the growth
+     * rate is simply the basal rate. When it is on, cells use a per-cell rule that compares each
+     * cell's own volume against its equilibrium volume
+     *
+     * @param sim the simulation
+     */
+    public void updateGrowthRate(Simulation sim) {
+<span class="fc bfc" id="L133" title="All 2 branches covered.">        if (!dynamicGrowthRateVolume) {</span>
+<span class="fc" id="L134">            cellGrowthRate = cellGrowthRateBase;</span>
+        } else {
+<span class="fc" id="L136">            updateCellVolumeBasedGrowthRate(</span>
+<span class="fc" id="L137">                    cell.getLocation().getVolume(), computeEquilibriumVolume());</span>
+        }
+<span class="fc" id="L139">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

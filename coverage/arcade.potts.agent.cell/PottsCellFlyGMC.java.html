@@ -55,16 +55,51 @@ public class PottsCellFlyGMC extends PottsCell {
                 criticalRegionHeights);
     }
 
+    /**
+     * Creates a container for a new daughter cell with an explicit critical volume.
+     *
+     * &lt;p&gt;Unlike {@link #make(int, CellState, MersenneTwisterFast)}, which copies this cell's
+     * critical volume, this overload lets the caller set the daughter's critical volume from the
+     * volume it is actually born into rather than inheriting the parent's.
+     *
+     * @param newID the daughter cell ID
+     * @param newState the daughter cell state
+     * @param assignedCritVol the critical volume assigned to the daughter cell
+     * @param random the random number generator
+     * @return a container for the daughter cell
+     */
+    public PottsCellContainer make(
+            int newID, CellState newState, double assignedCritVol, MersenneTwisterFast random) {
+<span class="fc" id="L73">        divisions++;</span>
+
+<span class="fc" id="L75">        int newPop = links.next(random);</span>
+
+<span class="fc" id="L77">        return new PottsCellContainer(</span>
+                newID,
+                id,
+                newPop,
+                age,
+                divisions,
+                newState,
+                null,
+                0,
+                null,
+                assignedCritVol,
+                criticalHeight,
+                criticalRegionVolumes,
+                criticalRegionHeights);
+    }
+
     @Override
     void setStateModule(CellState newState) {
-<span class="fc bfc" id="L60" title="All 2 branches covered.">        switch ((State) newState) {</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        switch ((State) newState) {</span>
             case PROLIFERATIVE:
-<span class="fc" id="L62">                module = new PottsModuleFlyGMCDifferentiation(this);</span>
-<span class="fc" id="L63">                break;</span>
+<span class="fc" id="L97">                module = new PottsModuleFlyGMCDifferentiation(this);</span>
+<span class="fc" id="L98">                break;</span>
             default:
-<span class="fc" id="L65">                module = null;</span>
+<span class="fc" id="L100">                module = null;</span>
                 break;
         }
-<span class="fc" id="L68">    }</span>
+<span class="fc" id="L103">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
