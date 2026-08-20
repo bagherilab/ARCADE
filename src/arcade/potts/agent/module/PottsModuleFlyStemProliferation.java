@@ -106,6 +106,15 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     final double initialSize;
 
     /**
+     * Population-level baseline critical volume in voxels, read from the population {@code
+     * CRITICAL_VOLUME} parameter. Used as the fixed V_ref denominator in volume-based growth-rate
+     * scaling, so V_ref stays anchored to the WT equilibrium regardless of per-cell critical
+     * volumes — which matters when {@code VOLUME_BASED_CRITICAL_VOLUME=1} causes daughter critVols
+     * to shrink below the population baseline.
+     */
+    final double populationCriticalVolume;
+
+    /**
      * Y-axis split offset (%) used for WT-style divisions, for any cell type. Defaults to {@code
      * StemType.WT.splitOffsetPercentY} (93), giving the normal 93/7 NB/GMC asymmetry. Set to 50 in
      * a setup file (WT or MUDMUT) to give WT-style divisions a symmetric 50/50 volume split.
@@ -193,6 +202,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         hasDeterministicDifferentiation = hasDeterministicDifferentiationString.equals("TRUE");
 
         initialSize = cell.getVolume();
+        populationCriticalVolume = parameters.getDouble("CRITICAL_VOLUME");
 
         wtDivisionSplitOffsetPercentY =
                 parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y");
@@ -276,7 +286,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      *
      * <pre>
      *   V_ref = (V_birth + V_div) / 2
-     *         = sizeTarget * critVol * (f_retain + 1) / 2
+     *         = sizeTarget * populationCriticalVolume * (f_retain + 1) / 2
      * </pre>
      *
      * where {@code f_retain = WT_DIVISION_SPLIT_OFFSET_PERCENT_Y / 100} approximates the fraction
@@ -288,10 +298,16 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * rate formula, ensuring that at the average NB volume the effective growth rate equals {@code
      * cellGrowthRateBase}.
      *
+     * <p>The population {@code CRITICAL_VOLUME} is used rather than this cell's own critical
+     * volume, so V_ref stays anchored to the WT equilibrium. Under {@code
+     * VOLUME_BASED_CRITICAL_VOLUME=1} a daughter's critVol tracks its birth volume and can drift
+     * well below the population baseline; using it here would move the reference along with the
+     * cell and defeat the regulation.
+     *
      * @return the expected average NB volume
      */
     double computeEquilibriumVolume() {
-        double vDiv = sizeTarget * cell.getCriticalVolume();
+        double vDiv = sizeTarget * populationCriticalVolume;
         double fRetain = wtDivisionSplitOffsetPercentY / 100.0;
         return vDiv * (fRetain + 1.0) / 2.0;
     }
@@ -586,7 +602,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         int newID = sim.getID();
         double criticalVol;
         if (volumeBasedCriticalVolume) {
-            criticalVol = Math.max(daughterLoc.getVolume(), initialSize * .5);
+            criticalVol = Math.max(daughterLoc.getVolume(), populationCriticalVolume * .20);
             cell.setCriticalVolume(criticalVol);
         } else {
             criticalVol = cell.getCriticalVolume();

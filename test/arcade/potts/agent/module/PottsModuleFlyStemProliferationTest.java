@@ -117,6 +117,7 @@ public class PottsModuleFlyStemProliferationTest {
                 .thenReturn("apical_axis");
         when(parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y")).thenReturn(93);
         when(parameters.getDouble("proliferation/GMC_CRITICAL_VOLUME_OVERRIDE")).thenReturn(0.0);
+        when(parameters.getDouble("CRITICAL_VOLUME")).thenReturn(100.0);
 
         // Link selection
         GrabBag links = mock(GrabBag.class);
@@ -866,6 +867,54 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
+    public void addCell_nbDaughterVolumeBasedCritVol_aboveFloor_usesBirthVolume() {
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(1);
+        when(daughterLoc.getVolume()).thenReturn(25.0);
+        // floor = populationCriticalVolume * 0.20 = 100.0 * 0.20 = 20.0
+        // expected = max(25.0, 20.0) = 25.0
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCell newCell = mock(PottsCell.class);
+        when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random), eq(stemCellPop), eq(25.0)))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+
+        Plane dummyPlane = mock(Plane.class);
+        PottsModuleFlyStemProliferation module = spy(new PottsModuleFlyStemProliferation(stemCell));
+        doReturn(dummyPlane).when(module).chooseDivisionPlane(stemCell);
+        doReturn(true).when(module).daughterStem(any(), any(), any());
+
+        module.addCell(random, sim);
+
+        verify(stemCell)
+                .make(eq(42), eq(State.PROLIFERATIVE), eq(random), eq(stemCellPop), eq(25.0));
+    }
+
+    @Test
+    public void addCell_nbDaughterVolumeBasedCritVol_belowFloor_usesPopCritVolFloor() {
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(1);
+        when(daughterLoc.getVolume()).thenReturn(5.0);
+        // floor = populationCriticalVolume * 0.20 = 100.0 * 0.20 = 20.0
+        // expected = max(5.0, 20.0) = 20.0 — the floor, not the birth volume
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCell newCell = mock(PottsCell.class);
+        when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random), eq(stemCellPop), eq(20.0)))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+
+        Plane dummyPlane = mock(Plane.class);
+        PottsModuleFlyStemProliferation module = spy(new PottsModuleFlyStemProliferation(stemCell));
+        doReturn(dummyPlane).when(module).chooseDivisionPlane(stemCell);
+        doReturn(true).when(module).daughterStem(any(), any(), any());
+
+        module.addCell(random, sim);
+
+        verify(stemCell)
+                .make(eq(42), eq(State.PROLIFERATIVE), eq(random), eq(stemCellPop), eq(20.0));
+    }
+
+    @Test
     public void calculateGMCDaughterCellCriticalVolume_withGMCOverride_returnsOverrideValue() {
         // GMC_CRITICAL_VOLUME_OVERRIDE=200 and VCV=0 → returns 200 regardless of the formula,
         // which would otherwise give 100 * 1.2 * 0.07 = 8.4
@@ -1285,16 +1334,27 @@ public class PottsModuleFlyStemProliferationTest {
     public void computeEquilibriumVolume_differentSizeTarget_scalesCorrectly() {
         // V_div = 2.0 * 50 = 100; V_ref = 100 * (0.93 + 1) / 2 = 96.5
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(2.0);
-        when(stemCell.getCriticalVolume()).thenReturn(50.0);
+        when(parameters.getDouble("CRITICAL_VOLUME")).thenReturn(50.0);
         module = new PottsModuleFlyStemProliferation(stemCell);
         assertEquals(96.5, module.computeEquilibriumVolume(), EPSILON);
     }
 
     @Test
-    public void computeEquilibriumVolume_differentCritVol_scalesCorrectly() {
+    public void computeEquilibriumVolume_called_usesPopulationValue() {
+        // The cell's own critVol (200) differs from the population CRITICAL_VOLUME (100).
+        // V_ref must follow the population value: 1.2 * 100 * (0.93 + 1) / 2 = 115.8,
+        // not the per-cell value, which would give 231.6.
+        when(parameters.getDouble("CRITICAL_VOLUME")).thenReturn(100.0);
+        when(stemCell.getCriticalVolume()).thenReturn(200.0);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        assertEquals(115.8, module.computeEquilibriumVolume(), EPSILON);
+    }
+
+    @Test
+    public void computeEquilibriumVolume_differentPopulationCritVol_scalesCorrectly() {
         // V_div = 1.0 * 200 = 200; V_ref = 200 * (0.93 + 1) / 2 = 193.0
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.0);
-        when(stemCell.getCriticalVolume()).thenReturn(200.0);
+        when(parameters.getDouble("CRITICAL_VOLUME")).thenReturn(200.0);
         module = new PottsModuleFlyStemProliferation(stemCell);
         assertEquals(193.0, module.computeEquilibriumVolume(), EPSILON);
     }
