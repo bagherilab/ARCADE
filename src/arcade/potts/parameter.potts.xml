@@ -72,7 +72,7 @@
     <population.module module="proliferation" id="NB_CONTACT_HALF_MAX" value="1.0" units="neighbors" description="K: NB neighbor count giving 50% repression" />
     <population.module module="proliferation" id="NB_CONTACT_HILL_N" value="3.0" description="Hill exponent controlling repression steepness" />
     <!-- ── NB division rules ───────────────────────────── -->
-    <population.module module="proliferation" id="DIFFERENTIATION_RULESET" value="volume" description="GMC/NB identity rule: 'volume' or 'location'" />
+    <population.module module="proliferation" id="DIFFERENTIATION_RULESET" value="smaller_gmc" description="GMC/NB identity rule: 'smaller_gmc' or 'basal_gmc'" />
     <population.module module="proliferation" id="DIFFERENTIATION_RULESET_EQUALITY_RANGE" value="10" description="tolerance for deciding GMC/NB identity (volume difference or apical axis distance)" />
     <!-- ── NB Apical axis rules ──────────────────────────────────── -->
     <population.module module="proliferation" id="APICAL_AXIS_RULESET" value="global" description="'global', 'rotation' (Normal), or 'uniform' (Uniform)" />

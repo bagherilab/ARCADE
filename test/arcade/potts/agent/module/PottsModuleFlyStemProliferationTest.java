@@ -105,7 +105,8 @@ public class PottsModuleFlyStemProliferationTest {
         when(parameters.getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION"))
                 .thenReturn(dist);
         when(dist.nextDouble()).thenReturn(0.1);
-        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
                 .thenReturn(0.5);
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
@@ -132,27 +133,28 @@ public class PottsModuleFlyStemProliferationTest {
     // Constructor tests
 
     @Test
-    public void constructor_volumeRuleset_setsExpectedFields() {
-        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+    public void constructor_smallerGmcRuleset_setsExpectedFields() {
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
                 .thenReturn(0.42);
         module = new PottsModuleFlyStemProliferation(stemCell);
 
         assertNotNull(module.splitDirectionDistribution);
-        assertEquals("volume", module.differentiationRuleset);
+        assertEquals("smaller_gmc", module.differentiationRuleset);
         assertEquals(0.42, module.range, EPSILON);
         assertEquals(arcade.potts.util.PottsEnums.Phase.UNDEFINED, module.phase);
     }
 
     @Test
-    public void constructor_locationRuleset_setsExpectedFields() {
-        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("location");
+    public void constructor_basalGmcRuleset_setsExpectedFields() {
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("basal_gmc");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
                 .thenReturn(0.99);
         module = new PottsModuleFlyStemProliferation(stemCell);
 
         assertNotNull(module.splitDirectionDistribution);
-        assertEquals("location", module.differentiationRuleset);
+        assertEquals("basal_gmc", module.differentiationRuleset);
         assertEquals(0.99, module.range, EPSILON);
         assertEquals(arcade.potts.util.PottsEnums.Phase.UNDEFINED, module.phase);
     }
@@ -501,7 +503,8 @@ public class PottsModuleFlyStemProliferationTest {
                 .thenReturn(new Voxel(1, 2, 3));
 
         // Differentiation rule
-        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
                 .thenReturn(0.5);
 
@@ -746,7 +749,8 @@ public class PottsModuleFlyStemProliferationTest {
     public void addCell_MUDMUTOffsetAboveThreshold_createsStemCell() {
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
 
-        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
         when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
         when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
         when(dist.nextDouble()).thenReturn(60.0); // triggers MUD plane
@@ -787,7 +791,8 @@ public class PottsModuleFlyStemProliferationTest {
     public void addCell_MUDMUTOffsetBelowThreshold_createsGMCWithVolumeSwap() {
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
 
-        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
         when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
         when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
         when(dist.nextDouble()).thenReturn(10.0); // below 45 threshold
@@ -1190,7 +1195,8 @@ public class PottsModuleFlyStemProliferationTest {
     void daughterStem_volumeRuleBased_true() {
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("FALSE");
-        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
                 .thenReturn(10.0); // large enough for |10 - 5| < 10
 
@@ -1207,7 +1213,8 @@ public class PottsModuleFlyStemProliferationTest {
     void daughterStem_volumeRuleBased_false() {
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("FALSE");
-        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
                 .thenReturn(1.0); // |10 - 5| = 5 > 1
 
@@ -1233,13 +1240,13 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void daughterStem_ruleBasedMUDMUTLocation_withinRange_returnsTrue() {
+    public void daughterStem_ruleBasedMUDMUTBasalGmc_withinRange_returnsTrue() {
         // @BeforeEach sets: stemLoc centroid=(0,1.0,0), daughterLoc centroid=(0,1.6,0)
         // With apical axis (0,1,0), distance along axis = |1.6 - 1.0| = 0.6
         // range=1.0 > 0.6 → within range → true
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("FALSE");
-        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("location");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("basal_gmc");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
                 .thenReturn(1.0);
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
@@ -1254,13 +1261,13 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void daughterStem_ruleBasedMUDMUTLocation_outsideRange_returnsFalse() {
+    public void daughterStem_ruleBasedMUDMUTBasalGmc_outsideRange_returnsFalse() {
         // @BeforeEach sets: stemLoc centroid=(0,1.0,0), daughterLoc centroid=(0,1.6,0)
         // With apical axis (0,1,0), distance along axis = |1.6 - 1.0| = 0.6
         // range=0.5 < 0.6 → outside range → false
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("FALSE");
-        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("location");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("basal_gmc");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
                 .thenReturn(0.5);
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);

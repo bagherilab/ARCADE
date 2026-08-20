@@ -174,7 +174,9 @@ public class PottsCellFlyStemTest {
         doReturn("FALSE")
                 .when(parametersMock)
                 .getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION");
-        doReturn("volume").when(parametersMock).getString("proliferation/DIFFERENTIATION_RULESET");
+        doReturn("smaller_gmc")
+                .when(parametersMock)
+                .getString("proliferation/DIFFERENTIATION_RULESET");
         doReturn("global").when(parametersMock).getString("proliferation/APICAL_AXIS_RULESET");
         doReturn(distMock)
                 .when(parametersMock)

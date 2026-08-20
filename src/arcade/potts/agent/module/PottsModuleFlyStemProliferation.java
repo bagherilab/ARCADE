@@ -46,7 +46,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /** Distribution that determines rotational offset of cell's division plane. */
     final NormalDistribution splitDirectionDistribution;
 
-    /** Ruleset for determining which daughter cell is the GMC. Can be `volume` or `location`. */
+    /**
+     * Ruleset for determining which daughter cell is the GMC. Can be `smaller_gmc` or `basal_gmc`.
+     */
     final String differentiationRuleset;
 
     /**
@@ -390,14 +392,14 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         if (((PottsCellFlyStem) cell).getStemType() == StemType.WT) {
             return false;
         } else if (((PottsCellFlyStem) cell).getStemType() == StemType.MUDMUT) {
-            if (differentiationRuleset.equals("volume")) {
+            if (differentiationRuleset.equals("smaller_gmc")) {
                 double vol1 = loc1.getVolume();
                 double vol2 = loc2.getVolume();
                 if (Math.abs(vol1 - vol2) < range) {
                     return true;
                 }
                 return false;
-            } else if (differentiationRuleset.equals("location")) {
+            } else if (differentiationRuleset.equals("basal_gmc")) {
                 double[] centroid1 = loc1.getCentroid();
                 double[] centroid2 = loc2.getCentroid();
                 return (centroidsWithinRangeAlongApicalAxis(
@@ -611,9 +613,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     private Location determineGMCLocation(
             PottsLocation parentLoc, PottsLocation daughterLoc, Vector divisionPlaneNormal) {
         switch (differentiationRuleset) {
-            case "volume":
+            case "smaller_gmc":
                 return getSmallerLocation(parentLoc, daughterLoc);
-            case "location":
+            case "basal_gmc":
                 return getBasalLocation(parentLoc, daughterLoc, divisionPlaneNormal);
             default:
                 throw new IllegalArgumentException(
