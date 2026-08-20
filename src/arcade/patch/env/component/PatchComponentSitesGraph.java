@@ -243,27 +243,8 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      * @param random the random number generator
      */
     void complexStep(MersenneTwisterFast random) {
-        Bag allEdges = new Bag(graph.getAllEdges());
 
-        // Check if graph has become unconnected.
-        boolean isConnected = false;
-        for (Object obj : allEdges) {
-            SiteEdge edge = (SiteEdge) obj;
-            if (edge.getFrom().isRoot && !edge.isIgnored) {
-                isConnected = true;
-                break;
-            }
-        }
-        if (!isConnected) {
-            for (SiteLayer layer : layers) {
-                for (int k = 0; k < latticeHeight; k++) {
-                    for (int i = 0; i < latticeLength; i++) {
-                        for (int j = 0; j < latticeWidth; j++) {
-                            layer.delta[k][i][j] = 0;
-                        }
-                    }
-                }
-            }
+        if (checkDisconnected()) {
             return;
         }
 
@@ -285,10 +266,11 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                 }
             }
 
-            allEdges.shuffle(random);
+            Bag currentEdges = new Bag(graph.getAllEdges());
+            currentEdges.shuffle(random);
 
             // Iterate through each edge in graph.
-            for (Object obj : allEdges) {
+            for (Object obj : currentEdges) {
                 SiteEdge edge = (SiteEdge) obj;
                 if (edge.isIgnored) {
                     continue;
@@ -382,6 +364,44 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
     }
 
     /**
+     * Checks whether the graph remains connected to at least one root node.
+     *
+     * <p>A graph is considered connected if it contains a non-ignored edge originating from a root
+     * node. If no such edge exists, all layer delta values are reset to zero to reflect the
+     * disconnected state.
+     *
+     * @return {@code true} if the graph is disconnected and the layer deltas were reset; {@code
+     *     false} if the graph remains connected
+     */
+    private boolean checkDisconnected() {
+        Bag allEdges = new Bag(graph.getAllEdges());
+
+        // Check if graph has become unconnected.
+        boolean isConnected = false;
+        for (Object obj : allEdges) {
+            SiteEdge edge = (SiteEdge) obj;
+            if (edge.getFrom().isRoot && !edge.isIgnored) {
+                isConnected = true;
+                break;
+            }
+        }
+        if (!isConnected) {
+            for (SiteLayer layer : layers) {
+                for (int k = 0; k < latticeHeight; k++) {
+                    for (int i = 0; i < latticeLength; i++) {
+                        for (int j = 0; j < latticeWidth; j++) {
+                            layer.delta[k][i][j] = 0;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Extension of {@link arcade.core.util.Graph.Node} for site nodes.
      *
      * <p>Node tracks additional hemodynamic properties including pressure and oxygen.
@@ -402,6 +422,12 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         /** Distance for Dijkstra's algorithm. */
         int distance;
 
+        /** Tick for the last update during growth. */
+        int lastUpdate;
+
+        /** Tick for when the node was added to the graph. */
+        int addTime;
+
         /** Parent node. */
         SiteNode prev;
 
@@ -419,7 +445,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         }
 
         @Override
-        public Node duplicate() {
+        public SiteNode duplicate() {
             return new SiteNode(x, y, z);
         }
 
@@ -517,7 +543,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
          * @param type the edge type
          * @param level the graph resolution level
          */
-        SiteEdge(Node from, Node to, EdgeType type, EdgeLevel level) {
+        SiteEdge(SiteNode from, SiteNode to, EdgeType type, EdgeLevel level) {
             super(from, to);
             this.type = type;
             this.level = level;
@@ -608,6 +634,32 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
          */
         public double getFlow() {
             return flow;
+        }
+
+        /**
+         * Get the concentration fraction in edge as a string.
+         *
+         * @return the string represenation of the fraction
+         */
+        public String getFraction() {
+            StringBuilder sb = new StringBuilder();
+            for (String key : fraction.keySet()) {
+                sb.append(key + ":" + fraction.get(key) + ",");
+            }
+            return sb.toString();
+        }
+
+        /**
+         * Get the concentration fraction transported out as a string.
+         *
+         * @return the string represenation of the fraction
+         */
+        public String getTransport() {
+            StringBuilder sb = new StringBuilder();
+            for (String key : transport.keySet()) {
+                sb.append(key + ":" + transport.get(key) + ",");
+            }
+            return sb.toString();
         }
     }
 
@@ -763,6 +815,10 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                 }
             }
 
+            // If the flow out is zero exit and return no children.
+            if (flowOut == 0) {
+                return children;
+            }
             // Assign new fractions.
             for (Object obj : out) {
                 SiteEdge edge = (SiteEdge) obj;

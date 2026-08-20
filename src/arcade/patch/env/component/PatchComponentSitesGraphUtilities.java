@@ -6,9 +6,16 @@ import java.util.LinkedHashSet;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.Graph;
+import arcade.core.util.Graph.Edge;
 import arcade.core.util.Graph.Strategy;
 import arcade.core.util.Matrix;
 import arcade.core.util.Solver;
+import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
+import arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeCategory;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeLevel;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeType;
+import arcade.patch.env.component.PatchComponentSitesGraphFactory.Root;
 import static arcade.core.util.Graph.Edge;
 import static arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
 import static arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
@@ -155,8 +162,19 @@ abstract class PatchComponentSitesGraphUtilities {
      * @return the flow rate coefficient
      */
     private static double getCoefficient(SiteEdge edge) {
-        double mu = PLASMA_VISCOSITY * calculateViscosity(edge.radius) / 60;
-        return (Math.PI * Math.pow(edge.radius, 4)) / (8 * mu * edge.length);
+        return getCoefficient(edge.radius, edge.length);
+    }
+
+    /**
+     * Gets flow rate coefficient in units of um<sup>3</sup>/(mmHg min).
+     *
+     * @param radius the edge radius
+     * @param length the edge length
+     * @return the flow rate coefficient
+     */
+    private static double getCoefficient(double radius, double length) {
+        double mu = PLASMA_VISCOSITY * calculateViscosity(radius) / 60;
+        return (Math.PI * Math.pow(radius, 4)) / (8 * mu * length);
     }
 
     /**
@@ -348,10 +366,11 @@ abstract class PatchComponentSitesGraphUtilities {
     /**
      * Merges the nodes from one graph with another graph.
      *
-     * @param graph1 the first graph object
-     * @param graph2 the second graph object
+     * @param graph the original graph object
+     * @param graph1 the first subgraph object
+     * @param graph2 the second subgraph object
      */
-    static void mergeGraphs(Graph graph1, Graph graph2) {
+    static void mergeGraphs(Graph graph, Graph graph1, Graph graph2) {
         // Merge nodes for subgraph.
         graph2.mergeNodes();
 
@@ -374,6 +393,7 @@ abstract class PatchComponentSitesGraphUtilities {
                 }
             }
         }
+        graph.combine(graph1, graph2);
     }
 
     /**
@@ -473,6 +493,10 @@ abstract class PatchComponentSitesGraphUtilities {
             if (div != 0) {
                 x0[id] /= div;
             }
+
+            if (node.pressure > 0) {
+                x0[id] = node.pressure;
+            }
         }
 
         double[][] sA = Matrix.scale(mA, 1E-7);
@@ -559,9 +583,19 @@ abstract class PatchComponentSitesGraphUtilities {
     static void calculateThicknesses(Graph graph) {
         for (Object obj : graph.getAllEdges()) {
             SiteEdge edge = (SiteEdge) obj;
-            double d = 2 * edge.radius;
-            edge.wall = d * (0.267 - 0.084 * Math.log10(d));
+            edge.wall = calculateThickness(edge);
         }
+    }
+
+    /**
+     * Calculates the thickness of an edge.
+     *
+     * @param edge the edge object
+     * @return the thickness of the edge
+     */
+    static double calculateThickness(SiteEdge edge) {
+        double d = 2 * edge.radius;
+        return d * (0.267 - 0.084 * Math.log10(d));
     }
 
     /**
@@ -892,7 +926,7 @@ abstract class PatchComponentSitesGraphUtilities {
             settled.add(evalNode);
 
             // If end node found, exit from loop.
-            if (evalNode == end) {
+            if (evalNode.equals(end)) {
                 break;
             }
 
@@ -1099,6 +1133,51 @@ abstract class PatchComponentSitesGraphUtilities {
      * @param graph the graph object
      */
     static void updateGraph(Graph graph) {
+        trimGraph(graph);
+
+        calculateCurrentState(graph);
+
+        // Set oxygen nodes.
+        for (Object obj : graph.getAllEdges()) {
+            SiteEdge edge = (SiteEdge) obj;
+            SiteNode to = edge.getTo();
+            SiteNode from = edge.getFrom();
+            if (Double.isNaN(to.pressure)) {
+                to.oxygen = Double.NaN;
+            }
+            if (Double.isNaN(from.pressure)) {
+                from.oxygen = Double.NaN;
+            }
+        }
+    }
+
+    /**
+     * Updates hemodynamic properties based on the current state of the graph.
+     *
+     * @param graph the graph object
+     */
+    static void calculateCurrentState(Graph graph) {
+        do {
+            calculatePressures(graph);
+            boolean reversed = reversePressures(graph);
+            if (reversed) {
+                calculatePressures(graph);
+            }
+            calculateFlows(graph);
+            calculateStresses(graph);
+        } while (checkForNegativeFlow(graph));
+    }
+
+    /**
+     * Iteratively removes leaf branches from a graph.
+     *
+     * <p>A leaf branch is an edge connected to a non-root node with either no outgoing edges or no
+     * incoming edges. Such edges are marked as ignored and their endpoint pressures are set to
+     * {@link Double#NaN}. The process is repeated until no additional leaf branches remain.
+     *
+     * @param graph the graph to trim
+     */
+    static void trimGraph(Graph graph) {
         ArrayList<SiteEdge> list;
         Graph gCurr = graph;
 
@@ -1133,27 +1212,27 @@ abstract class PatchComponentSitesGraphUtilities {
 
             gCurr = gNew;
         } while (list.size() != 0);
+    }
 
-        calculatePressures(graph);
-        boolean reversed = reversePressures(graph);
-        if (reversed) {
-            calculatePressures(graph);
-        }
-        calculateFlows(graph);
-        calculateStresses(graph);
-
-        // Set oxygen nodes.
+    /**
+     * Checks whether any edge in the graph has a negative flow value.
+     *
+     * @param graph the graph to inspect
+     * @return {@code true} if at least one edge has a flow less than zero; {@code false} otherwise
+     */
+    static boolean checkForNegativeFlow(Graph graph) {
+        // This *MIGHT* be a problem, I think we could revisit adding this check.
+        // I'm not sure why it would get to the point where there would be a negative flow in the
+        // graph?
+        boolean negative = false;
         for (Object obj : graph.getAllEdges()) {
             SiteEdge edge = (SiteEdge) obj;
-            SiteNode to = edge.getTo();
-            SiteNode from = edge.getFrom();
-            if (Double.isNaN(to.pressure)) {
-                to.oxygen = Double.NaN;
-            }
-            if (Double.isNaN(from.pressure)) {
-                from.oxygen = Double.NaN;
+            if (edge.flow < 0) {
+                negative = true;
+                break;
             }
         }
+        return negative;
     }
 
     /**
