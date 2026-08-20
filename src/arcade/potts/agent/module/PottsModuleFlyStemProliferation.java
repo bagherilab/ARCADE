@@ -105,6 +105,19 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /** The cell's initial size/volume (in voxels). */
     final double initialSize;
 
+    /**
+     * Reference vector the division-plane rotation offset is measured from. Can be `apical_axis` or
+     * `previous_division`. Under `previous_division` the division axis drifts across a cell's
+     * successive divisions; the apical axis itself is never modified by this ruleset.
+     */
+    final String divRotationReference;
+
+    /**
+     * Normal vector of the most recent division plane. {@code null} until the first division
+     * completes. Only populated under the `previous_division` rotation reference ruleset.
+     */
+    Vector previousDivisionNormal;
+
     /** Epsilon. */
     public static final double EPSILON = 1e-8;
 
@@ -160,6 +173,14 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         initialSize = cell.getVolume();
 
+        divRotationReference = parameters.getString("proliferation/DIV_ROTATION_REFERENCE");
+        if (!divRotationReference.equals("apical_axis")
+                && !divRotationReference.equals("previous_division")) {
+            throw new InvalidParameterException(
+                    "divRotationReference must be either apical_axis or previous_division");
+        }
+        previousDivisionNormal = null;
+
         setPhase(Phase.UNDEFINED);
     }
 
@@ -169,6 +190,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         PottsCellFlyStem flyStemCell = (PottsCellFlyStem) cell;
 
         Plane divisionPlane = chooseDivisionPlane(flyStemCell);
+        if (divRotationReference.equals("previous_division")) {
+            previousDivisionNormal = divisionPlane.getUnitNormalVector();
+        }
         PottsLocation2D parentLoc = (PottsLocation2D) cell.getLocation();
         PottsLocation daughterLoc = (PottsLocation) parentLoc.split(random, divisionPlane);
 
@@ -334,16 +358,24 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * splitDirectionDistribution. This follows WT division rules. The plane is rotated around the
      * XY plane.
      *
+     * <p>The vector the offset is measured from is selected by {@code DIV_ROTATION_REFERENCE}:
+     * under `apical_axis` it is the cell's apical axis, under `previous_division` it is the
+     * previous division plane's normal. The first division of a cell always falls back to the
+     * apical axis because there is no previous plane.
+     *
      * @param cell the {@link PottsCellFlyStem} to get the division plane for
      * @param rotationOffset the angle to rotate the plane
      * @return the division plane for the cell
      */
     public Plane getWTDivisionPlaneWithRotationalVariance(
             PottsCellFlyStem cell, double rotationOffset) {
-        Vector apicalAxis = cell.getApicalAxis();
+        Vector referenceVector =
+                (divRotationReference.equals("previous_division") && previousDivisionNormal != null)
+                        ? previousDivisionNormal
+                        : cell.getApicalAxis();
         Vector rotatedNormalVector =
                 Vector.rotateVectorAroundAxis(
-                        apicalAxis, Direction.XY_PLANE.vector, rotationOffset);
+                        referenceVector, Direction.XY_PLANE.vector, rotationOffset);
         Voxel splitVoxel = getCellSplitVoxel(StemType.WT, cell, rotatedNormalVector);
         return new Plane(
                 new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), rotatedNormalVector);

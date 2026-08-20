@@ -28,6 +28,7 @@ import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
+import arcade.potts.util.PottsEnums.Direction;
 import arcade.potts.util.PottsEnums.Phase;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -112,6 +113,8 @@ public class PottsModuleFlyStemProliferationTest {
                 .thenReturn(0.5);
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("TRUE");
+        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
+                .thenReturn("apical_axis");
 
         // Link selection
         GrabBag links = mock(GrabBag.class);
@@ -438,6 +441,77 @@ public class PottsModuleFlyStemProliferationTest {
         assertEquals(expectedNormal.getX(), resultNormal.getX(), EPSILON);
         assertEquals(expectedNormal.getY(), resultNormal.getY(), EPSILON);
         assertEquals(expectedNormal.getZ(), resultNormal.getZ(), EPSILON);
+    }
+
+    @Test
+    public void constructor_invalidDivRotationReference_throwsInvalidParameterException() {
+        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE")).thenReturn("sideways");
+
+        assertThrows(
+                InvalidParameterException.class,
+                () -> new PottsModuleFlyStemProliferation(stemCell));
+    }
+
+    @Test
+    public void
+            getWTDivisionPlaneWithRotationalVariance_previousDivision_noPreviousNormal_usesApicalAxis() {
+        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
+                .thenReturn("previous_division");
+        Vector apicalAxis = new Vector(0, 1, 0);
+        when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
+        when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(new Voxel(0, 0, 0));
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        assertNull(module.previousDivisionNormal);
+
+        double offset = 30.0;
+        Vector expectedNormal =
+                Vector.rotateVectorAroundAxis(apicalAxis, Direction.XY_PLANE.vector, offset);
+        module.getWTDivisionPlaneWithRotationalVariance(stemCell, offset);
+
+        verify(stemLoc).getOffsetInApicalFrame(any(), eq(expectedNormal));
+    }
+
+    @Test
+    public void
+            getWTDivisionPlaneWithRotationalVariance_previousDivision_withPreviousNormal_usesPreviousNormal() {
+        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
+                .thenReturn("previous_division");
+        Vector apicalAxis = new Vector(0, 1, 0);
+        when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
+        when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(new Voxel(0, 0, 0));
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        Vector previousNormal = new Vector(1, 0, 0);
+        module.previousDivisionNormal = previousNormal;
+
+        double offset = 90.0;
+        Vector expectedNormal =
+                Vector.rotateVectorAroundAxis(previousNormal, Direction.XY_PLANE.vector, offset);
+        module.getWTDivisionPlaneWithRotationalVariance(stemCell, offset);
+
+        verify(stemLoc).getOffsetInApicalFrame(any(), eq(expectedNormal));
+    }
+
+    @Test
+    public void
+            getWTDivisionPlaneWithRotationalVariance_apicalAxis_withPreviousNormal_usesApicalAxis() {
+        // apical_axis ruleset: previous normal is ignored even if set
+        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
+                .thenReturn("apical_axis");
+        Vector apicalAxis = new Vector(0, 1, 0);
+        when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
+        when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(new Voxel(0, 0, 0));
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        module.previousDivisionNormal = new Vector(1, 0, 0); // set but should be ignored
+
+        double offset = 45.0;
+        Vector expectedNormal =
+                Vector.rotateVectorAroundAxis(apicalAxis, Direction.XY_PLANE.vector, offset);
+        module.getWTDivisionPlaneWithRotationalVariance(stemCell, offset);
+
+        verify(stemLoc).getOffsetInApicalFrame(any(), eq(expectedNormal));
     }
 
     @Test
@@ -889,6 +963,67 @@ public class PottsModuleFlyStemProliferationTest {
         }
 
         verify(newCell).schedule(any());
+    }
+
+    @Test
+    public void addCell_previousDivisionReference_updatesPreviousDivisionNormal() {
+        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
+                .thenReturn("previous_division");
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.0);
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(0);
+        when(stemLoc.getVolume()).thenReturn(10.0);
+        when(daughterLoc.getVolume()).thenReturn(5.0);
+
+        Vector expectedNormal = new Vector(1, 0, 0);
+        Plane dummyPlane = mock(Plane.class);
+        when(dummyPlane.getUnitNormalVector()).thenReturn(expectedNormal);
+        when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCell newCell = mock(PottsCell.class);
+        when(stemCell.make(anyInt(), any(), eq(random), anyInt(), anyDouble()))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+
+        PottsModuleFlyStemProliferation module = spy(new PottsModuleFlyStemProliferation(stemCell));
+        doReturn(dummyPlane).when(module).chooseDivisionPlane(stemCell);
+
+        module.addCell(random, sim);
+
+        assertEquals(expectedNormal, module.previousDivisionNormal);
+    }
+
+    @Test
+    public void addCell_apicalAxisReference_doesNotUpdatePreviousDivisionNormal() {
+        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
+                .thenReturn("apical_axis");
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.0);
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(0);
+        when(stemLoc.getVolume()).thenReturn(10.0);
+        when(daughterLoc.getVolume()).thenReturn(5.0);
+
+        Plane dummyPlane = mock(Plane.class);
+        when(dummyPlane.getUnitNormalVector()).thenReturn(new Vector(1, 0, 0));
+        when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCell newCell = mock(PottsCell.class);
+        when(stemCell.make(anyInt(), any(), eq(random), anyInt(), anyDouble()))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+
+        PottsModuleFlyStemProliferation module = spy(new PottsModuleFlyStemProliferation(stemCell));
+        doReturn(dummyPlane).when(module).chooseDivisionPlane(stemCell);
+
+        module.addCell(random, sim);
+
+        assertNull(module.previousDivisionNormal);
     }
 
     @Test

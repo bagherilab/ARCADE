@@ -78,6 +78,7 @@
     <population.module module="proliferation" id="APICAL_AXIS_RULESET" value="global" description="'global', 'rotation' (Normal), or 'uniform' (Uniform)" />
     <population.module module="proliferation" id="APICAL_AXIS_ROTATION_DISTRIBUTION" value="NORMAL(MU=0,SIGMA=0)" description="rotation angle for apical axis when APICAL_AXIS_RULESET='rotation'" />
     <population.module module="proliferation" id="DIV_ROTATION_DISTRIBUTION" value="NORMAL(MU=0,SIGMA=0)" description="rotational offset of division plane (WT rules)" />
+    <population.module module="proliferation" id="DIV_ROTATION_REFERENCE" value="apical_axis" description="vector the division plane rotation offset is measured from: 'apical_axis' (fixed reference) or 'previous_division' (previous division plane normal, so the division axis drifts across a cell's divisions)" />
     <!-- ── NB and GMC critical volume options ────────────────────────── -->
     <population.module module="proliferation" id="VOLUME_BASED_CRITICAL_VOLUME" value="0" description="1 → critical volume scales with daughter volume; 0 → use max (type-based) value" />
     <!-- Deterministic Differentiation-->
