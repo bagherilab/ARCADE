@@ -82,6 +82,7 @@
     <population.module module="proliferation" id="DIV_ROTATION_REFERENCE" value="apical_axis" description="vector the division plane rotation offset is measured from: 'apical_axis' (fixed reference) or 'previous_division' (previous division plane normal, so the division axis drifts across a cell's divisions)" />
     <!-- ── NB and GMC critical volume options ────────────────────────── -->
     <population.module module="proliferation" id="VOLUME_BASED_CRITICAL_VOLUME" value="0" description="1 → critical volume scales with daughter volume; 0 → use max (type-based) value" />
+    <population.module module="proliferation" id="GMC_CRITICAL_VOLUME_OVERRIDE" value="0" units="um^3" conversion="DS^-3" description="If &gt; 0 and VOLUME_BASED_CRITICAL_VOLUME=0, overrides the formula-derived GMC daughter critical volume with this fixed value (converted to voxels); 0 = disabled (use formula)" />
     <!-- Deterministic Differentiation-->
     <population.module module="proliferation" id="HAS_DETERMINISTIC_DIFFERENTIATION" value="TRUE" description="if TRUE, differentiation is determined deterministically" />
 

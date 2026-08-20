@@ -117,6 +117,16 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     final int wtDivisionSplitOffsetPercentY;
 
     /**
+     * Fixed GMC daughter critical volume override (voxels, after {@code DS^-3} conversion). When
+     * greater than zero and {@code VOLUME_BASED_CRITICAL_VOLUME=0}, this replaces the
+     * formula-derived value in {@link #calculateGMCDaughterCellCriticalVolume}, allowing GMC (and
+     * therefore neuron) size to be set independently of the division offset. Zero disables the
+     * override. Ignored entirely when {@code VOLUME_BASED_CRITICAL_VOLUME=1}, where critVol comes
+     * from the daughter's birth volume.
+     */
+    final double gmcCriticalVolumeOverride;
+
+    /**
      * Reference vector the division-plane rotation offset is measured from. Can be `apical_axis` or
      * `previous_division`. Under `previous_division` the division axis drifts across a cell's
      * successive divisions; the apical axis itself is never modified by this ruleset.
@@ -186,6 +196,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         wtDivisionSplitOffsetPercentY =
                 parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y");
+
+        gmcCriticalVolumeOverride =
+                parameters.getDouble("proliferation/GMC_CRITICAL_VOLUME_OVERRIDE");
 
         divRotationReference = parameters.getString("proliferation/DIV_ROTATION_REFERENCE");
         if (!divRotationReference.equals("apical_axis")
@@ -717,6 +730,13 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /**
      * Calculates the critical volume of a GMC daughter cell.
      *
+     * <p>Under {@code VOLUME_BASED_CRITICAL_VOLUME=1} the value comes from the daughter's birth
+     * volume, floored at a fraction of the parent's initial size. Otherwise it is derived from the
+     * parent's critical volume and the WT split offset unless {@code GMC_CRITICAL_VOLUME_OVERRIDE}
+     * is greater than zero, in which case that fixed value is used instead. The override lets GMC
+     * (and therefore neuron) size be set independently of the division offset, and is ignored when
+     * {@code VOLUME_BASED_CRITICAL_VOLUME=1}.
+     *
      * @param gmcLoc the location of the GMC daughter cell
      * @return the critical volume of the GMC daughter cell
      */
@@ -726,6 +746,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             criticalVol = Math.max(gmcLoc.getVolume(), initialSize * .1);
             return criticalVol;
         } else {
+            if (gmcCriticalVolumeOverride > 0) {
+                return gmcCriticalVolumeOverride;
+            }
             criticalVol =
                     ((PottsCellFlyStem) cell).getCriticalVolume()
                             * sizeTarget

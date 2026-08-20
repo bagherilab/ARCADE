@@ -116,6 +116,7 @@ public class PottsModuleFlyStemProliferationTest {
         when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
                 .thenReturn("apical_axis");
         when(parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y")).thenReturn(93);
+        when(parameters.getDouble("proliferation/GMC_CRITICAL_VOLUME_OVERRIDE")).thenReturn(0.0);
 
         // Link selection
         GrabBag links = mock(GrabBag.class);
@@ -862,6 +863,34 @@ public class PottsModuleFlyStemProliferationTest {
 
         double result = module.calculateGMCDaughterCellCriticalVolume(daughterLoc);
         assertEquals((100 * .07 * 1.2), result, EPSILON); // 100 * 0.07 * 1.2
+    }
+
+    @Test
+    public void calculateGMCDaughterCellCriticalVolume_withGMCOverride_returnsOverrideValue() {
+        // GMC_CRITICAL_VOLUME_OVERRIDE=200 and VCV=0 → returns 200 regardless of the formula,
+        // which would otherwise give 100 * 1.2 * 0.07 = 8.4
+        when(stemCell.getCriticalVolume()).thenReturn(100.0);
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(0);
+        when(parameters.getDouble("proliferation/GMC_CRITICAL_VOLUME_OVERRIDE")).thenReturn(200.0);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertEquals(200.0, module.calculateGMCDaughterCellCriticalVolume(daughterLoc), EPSILON);
+    }
+
+    @Test
+    public void calculateGMCDaughterCellCriticalVolume_withGMCOverrideAndVCVOn_ignoresOverride() {
+        // GMC_CRITICAL_VOLUME_OVERRIDE=200 but VCV=1 → override ignored, birth volume used
+        PottsLocation gmcLoc = mock(PottsLocation.class);
+        when(gmcLoc.getVolume()).thenReturn(50.0);
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(1);
+        when(parameters.getDouble("proliferation/GMC_CRITICAL_VOLUME_OVERRIDE")).thenReturn(200.0);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertEquals(50.0, module.calculateGMCDaughterCellCriticalVolume(gmcLoc), EPSILON);
     }
 
     @Test
