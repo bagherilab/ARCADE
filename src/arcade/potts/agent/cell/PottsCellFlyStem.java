@@ -19,7 +19,7 @@ public class PottsCellFlyStem extends PottsCell {
     /** Enum outlining parameters for each cell type. */
     public enum StemType {
         /** Wild type stem cell. */
-        WT(50, 86, 0),
+        WT(50, 93, 0),
 
         /** mud Mutant stem cell. */
         MUDMUT(50, 50, -90);
@@ -27,17 +27,19 @@ public class PottsCellFlyStem extends PottsCell {
         /** Percentage x offset from cell edge where division will occur. */
         public final int splitOffsetPercentX;
 
-        /** Percentage y offset from cell edge where division will occur. */
+        /**
+         * Percentage y offset from cell edge where division will occur. Under the rectangular-cell
+         * approximation used elsewhere in the proliferation module, this is also the fraction of
+         * the pre-division volume retained by the NB, leaving {@code 1 - splitOffsetPercentY / 100}
+         * for the GMC daughter.
+         *
+         * <p>This governs the MUD division plane only. The WT division path uses the {@code
+         * WT_DIVISION_SPLIT_OFFSET_PERCENT_Y} parameter instead, which may differ from this value.
+         */
         public final int splitOffsetPercentY;
 
         /** Default direction of division is rotated this much off the apical vector. */
         public final double splitDirectionRotation;
-
-        /**
-         * The proportion of the NB division volume allocated to the GMC daughter cell. Derived from
-         * {@code splitOffsetPercentY} as {@code 1 - splitOffsetPercentY / 100}
-         */
-        public final double daughterCellCriticalVolumeProportion;
 
         /**
          * Constructor for StemType.
@@ -50,7 +52,6 @@ public class PottsCellFlyStem extends PottsCell {
             this.splitOffsetPercentX = splitOffsetPercentX;
             this.splitOffsetPercentY = splitOffsetPercentY;
             this.splitDirectionRotation = splitDirectionRotation;
-            this.daughterCellCriticalVolumeProportion = 1.0 - splitOffsetPercentY / 100.0;
         }
     }
 

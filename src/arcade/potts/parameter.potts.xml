@@ -78,6 +78,7 @@
     <population.module module="proliferation" id="APICAL_AXIS_RULESET" value="global" description="'global', 'rotation' (Normal), or 'uniform' (Uniform)" />
     <population.module module="proliferation" id="APICAL_AXIS_ROTATION_DISTRIBUTION" value="NORMAL(MU=0,SIGMA=0)" description="rotation angle for apical axis when APICAL_AXIS_RULESET='rotation'" />
     <population.module module="proliferation" id="DIV_ROTATION_DISTRIBUTION" value="NORMAL(MU=0,SIGMA=0)" description="rotational offset of division plane (WT rules)" />
+    <population.module module="proliferation" id="WT_DIVISION_SPLIT_OFFSET_PERCENT_Y" value="93" description="Y-axis split offset (%) for WT-style divisions; default 93 gives 93/7 NB/GMC asymmetry. Set to 50 for a symmetric 50/50 split." />
     <population.module module="proliferation" id="DIV_ROTATION_REFERENCE" value="apical_axis" description="vector the division plane rotation offset is measured from: 'apical_axis' (fixed reference) or 'previous_division' (previous division plane normal, so the division axis drifts across a cell's divisions)" />
     <!-- ── NB and GMC critical volume options ────────────────────────── -->
     <population.module module="proliferation" id="VOLUME_BASED_CRITICAL_VOLUME" value="0" description="1 → critical volume scales with daughter volume; 0 → use max (type-based) value" />

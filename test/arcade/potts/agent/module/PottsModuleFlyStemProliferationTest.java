@@ -115,6 +115,7 @@ public class PottsModuleFlyStemProliferationTest {
                 .thenReturn("TRUE");
         when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
                 .thenReturn("apical_axis");
+        when(parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y")).thenReturn(93);
 
         // Link selection
         GrabBag links = mock(GrabBag.class);
@@ -376,7 +377,7 @@ public class PottsModuleFlyStemProliferationTest {
     public void getCellSplitVoxel_WT_callsLocationOffsetWithCorrectParams() {
         ArrayList<Integer> expectedOffset = new ArrayList<>();
         expectedOffset.add(50); // WT.splitOffsetPercentX
-        expectedOffset.add(86); // WT.splitOffsetPercentY
+        expectedOffset.add(93); // WT.splitOffsetPercentY
 
         when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
         when(stemCell.getLocation()).thenReturn(stemLoc);
@@ -417,7 +418,7 @@ public class PottsModuleFlyStemProliferationTest {
         Voxel splitVoxel = new Voxel(3, 4, 5);
         ArrayList<Integer> expectedOffset = new ArrayList<>();
         expectedOffset.add(50); // WT x offset percent
-        expectedOffset.add(86); // WT y offset percent
+        expectedOffset.add(93); // WT y offset percent
 
         module = new PottsModuleFlyStemProliferation(stemCell);
 
@@ -428,7 +429,8 @@ public class PottsModuleFlyStemProliferationTest {
                 Vector.rotateVectorAroundAxis(
                         afterBaseRotation, new Vector(0, 0, 1), offsetRotation);
 
-        when(stemLoc.getOffsetInApicalFrame(any(), eq(expectedNormal))).thenReturn(splitVoxel);
+        when(stemLoc.getOffsetInApicalFrame(eq(expectedOffset), eq(expectedNormal)))
+                .thenReturn(splitVoxel);
 
         Plane result = module.getWTDivisionPlaneWithRotationalVariance(stemCell, offsetRotation);
 
@@ -441,6 +443,89 @@ public class PottsModuleFlyStemProliferationTest {
         assertEquals(expectedNormal.getX(), resultNormal.getX(), EPSILON);
         assertEquals(expectedNormal.getY(), resultNormal.getY(), EPSILON);
         assertEquals(expectedNormal.getZ(), resultNormal.getZ(), EPSILON);
+    }
+
+    @Test
+    public void getWTDivisionPlaneWithRotationalVariance_MUDMUT_withOffset50_uses50PercentY() {
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y")).thenReturn(50);
+
+        Vector apicalAxis = new Vector(0, 1, 0);
+        when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
+
+        ArrayList<Integer> expectedOffset = new ArrayList<>();
+        expectedOffset.add(50); // WT.splitOffsetPercentX
+        expectedOffset.add(50); // overridden y offset, not WT's 93
+
+        when(stemLoc.getOffsetInApicalFrame(eq(expectedOffset), any(Vector.class)))
+                .thenReturn(new Voxel(1, 2, 3));
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        module.getWTDivisionPlaneWithRotationalVariance(stemCell, 0.0);
+
+        verify(stemLoc).getOffsetInApicalFrame(eq(expectedOffset), any(Vector.class));
+    }
+
+    @Test
+    public void getWTDivisionPlaneWithRotationalVariance_WT_withOffset50_uses50PercentY() {
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y")).thenReturn(50);
+
+        Vector apicalAxis = new Vector(0, 1, 0);
+        when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
+
+        ArrayList<Integer> expectedOffset = new ArrayList<>();
+        expectedOffset.add(50); // x
+        expectedOffset.add(50); // y override
+
+        when(stemLoc.getOffsetInApicalFrame(eq(expectedOffset), any(Vector.class)))
+                .thenReturn(new Voxel(1, 2, 3));
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        module.getWTDivisionPlaneWithRotationalVariance(stemCell, 0.0);
+
+        verify(stemLoc).getOffsetInApicalFrame(eq(expectedOffset), any(Vector.class));
+    }
+
+    @Test
+    public void computeEquilibriumVolume_withOffset50_returnsExpected() {
+        // fRetain = 50/100 = 0.50; V_div = 1.2 * 100 = 120
+        // V_ref = 120 * (0.50 + 1) / 2 = 90.0
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y")).thenReturn(50);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        assertEquals(90.0, module.computeEquilibriumVolume(), EPSILON);
+    }
+
+    @Test
+    public void calculateGMCDaughterCellCriticalVolume_withOffset50_usesOverrideProportion() {
+        // GMC proportion = 1 - 50/100 = 0.50
+        // expected = critVol * sizeTarget * 0.50 = 100 * 1.2 * 0.50 = 60.0
+        when(stemCell.getCriticalVolume()).thenReturn(100.0);
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
+        when(parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y")).thenReturn(50);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertEquals(60.0, module.calculateGMCDaughterCellCriticalVolume(daughterLoc), EPSILON);
+    }
+
+    @Test
+    public void getCellSplitVoxel_explicitOffsets_callsLocationOffsetWithThoseOffsets() {
+        ArrayList<Integer> expectedOffset = new ArrayList<>();
+        expectedOffset.add(11);
+        expectedOffset.add(22);
+
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(stemCell.getLocation()).thenReturn(stemLoc);
+        when(stemLoc.getOffsetInApicalFrame(eq(expectedOffset), any(Vector.class)))
+                .thenReturn(new Voxel(0, 0, 0));
+
+        PottsModuleFlyStemProliferation.getCellSplitVoxel(
+                11, 22, stemCell, stemCell.getApicalAxis());
+
+        verify(stemLoc).getOffsetInApicalFrame(eq(expectedOffset), any(Vector.class));
     }
 
     @Test
@@ -525,7 +610,9 @@ public class PottsModuleFlyStemProliferationTest {
         ArrayList<Integer> expectedOffset = new ArrayList<>();
         expectedOffset.add(50); // MUDMUT x offset percent
         expectedOffset.add(50); // MUDMUT y offset percent
-        when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(splitVoxel);
+        // MUD plane keeps the StemType offsets; it is not affected by
+        // WT_DIVISION_SPLIT_OFFSET_PERCENT_Y.
+        when(stemLoc.getOffsetInApicalFrame(eq(expectedOffset), any())).thenReturn(splitVoxel);
 
         module = new PottsModuleFlyStemProliferation(stemCell);
         Plane result = module.getMUDDivisionPlane(stemCell);
@@ -769,13 +856,12 @@ public class PottsModuleFlyStemProliferationTest {
         when(stemCell.getCriticalVolume()).thenReturn(100.0);
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
-        // WT has proportion = 0.2
+        // GMC proportion = 1 - WT_DIVISION_SPLIT_OFFSET_PERCENT_Y/100 = 1 - 0.93 = 0.07
 
         module = new PottsModuleFlyStemProliferation(stemCell);
-        when(parameters.getInt("proliferation/VOLUME_BASED_CRITVOL")).thenReturn(0);
 
         double result = module.calculateGMCDaughterCellCriticalVolume(daughterLoc);
-        assertEquals((100 * .14 * 1.2), result, EPSILON); // 100 * 0.14 * 1.2
+        assertEquals((100 * .07 * 1.2), result, EPSILON); // 100 * 0.07 * 1.2
     }
 
     @Test
@@ -1150,37 +1236,38 @@ public class PottsModuleFlyStemProliferationTest {
     @Test
     public void computeEquilibriumVolume_WT_returnsExpectedMidpoint() {
         // V_div = sizeTarget * critVol = 1.2 * 100 = 120
-        // fRetain = WT.splitOffsetPercentY / 100 = 86 / 100 = 0.86
-        // V_ref = 120 * (0.86 + 1) / 2 = 120 * 0.93 = 111.6
+        // fRetain = WT_DIVISION_SPLIT_OFFSET_PERCENT_Y / 100 = 93 / 100 = 0.93
+        // V_ref = 120 * (0.93 + 1) / 2 = 120 * 0.965 = 115.8
         module = new PottsModuleFlyStemProliferation(stemCell);
-        assertEquals(111.6, module.computeEquilibriumVolume(), EPSILON);
+        assertEquals(115.8, module.computeEquilibriumVolume(), EPSILON);
     }
 
     @Test
-    public void computeEquilibriumVolume_MUDMUT_returnsExpectedMidpoint() {
-        // fRetain = MUDMUT.splitOffsetPercentY / 100 = 50 / 100 = 0.5
-        // V_ref = 120 * (0.5 + 1) / 2 = 120 * 0.75 = 90.0
+    public void computeEquilibriumVolume_MUDMUT_usesWTFRetain() {
+        // fRetain comes from WT_DIVISION_SPLIT_OFFSET_PERCENT_Y (0.93) regardless of cell type,
+        // since MUDMUT cells also divide by WT rules within MUDMUT_WT_DIVISION_ANGLE_THRESHOLD.
+        // V_ref = 120 * (0.93 + 1) / 2 = 115.8
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
         module = new PottsModuleFlyStemProliferation(stemCell);
-        assertEquals(90.0, module.computeEquilibriumVolume(), EPSILON);
+        assertEquals(115.8, module.computeEquilibriumVolume(), EPSILON);
     }
 
     @Test
     public void computeEquilibriumVolume_differentSizeTarget_scalesCorrectly() {
-        // V_div = 2.0 * 50 = 100; V_ref = 100 * (0.86 + 1) / 2 = 93.0
+        // V_div = 2.0 * 50 = 100; V_ref = 100 * (0.93 + 1) / 2 = 96.5
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(2.0);
         when(stemCell.getCriticalVolume()).thenReturn(50.0);
         module = new PottsModuleFlyStemProliferation(stemCell);
-        assertEquals(93.0, module.computeEquilibriumVolume(), EPSILON);
+        assertEquals(96.5, module.computeEquilibriumVolume(), EPSILON);
     }
 
     @Test
     public void computeEquilibriumVolume_differentCritVol_scalesCorrectly() {
-        // V_div = 1.0 * 200 = 200; V_ref = 200 * (0.86 + 1) / 2 = 186.0
+        // V_div = 1.0 * 200 = 200; V_ref = 200 * (0.93 + 1) / 2 = 193.0
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.0);
         when(stemCell.getCriticalVolume()).thenReturn(200.0);
         module = new PottsModuleFlyStemProliferation(stemCell);
-        assertEquals(186.0, module.computeEquilibriumVolume(), EPSILON);
+        assertEquals(193.0, module.computeEquilibriumVolume(), EPSILON);
     }
 
     // updateGrowthRate dispatch tests
@@ -1225,7 +1312,6 @@ public class PottsModuleFlyStemProliferationTest {
 
     @Test
     public void updateVolumeBasedGrowthRate_called_usesCellVolumeAndEquilibriumRef() {
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
         when(stemLoc.getVolume()).thenReturn(42.5);
 
         module = spy(new PottsModuleFlyStemProliferation(stemCell));
@@ -1233,14 +1319,16 @@ public class PottsModuleFlyStemProliferationTest {
 
         module.updateVolumeBasedGrowthRate(sim);
 
-        // V_ref = sizeTarget * critVol * (WT.splitOffsetPercentY/100 + 1) / 2
-        //       = 1.2 * 100 * (0.86 + 1) / 2 = 111.6
-        verify(module, times(1)).updateCellVolumeBasedGrowthRate(eq(42.5), eq(111.6));
+        // V_ref = sizeTarget * critVol * (WT_DIVISION_SPLIT_OFFSET_PERCENT_Y/100 + 1) / 2
+        //       = 1.2 * 100 * (0.93 + 1) / 2 = 115.8
+        // Computed with the same operation order as the implementation, since eq() on a double is
+        // an exact match and 120.0 * 1.93 / 2.0 is 115.80000000000001.
+        double expectedVRef = 1.2 * 100.0 * (0.93 + 1.0) / 2.0;
+        verify(module, times(1)).updateCellVolumeBasedGrowthRate(eq(42.5), eq(expectedVRef));
     }
 
     @Test
     public void updateGrowthRateBasedOnOtherNBs_called_usesNeighborsBranch() {
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
 
         when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(4.0);
         when(parameters.getDouble("proliferation/NB_CONTACT_HILL_N")).thenReturn(2.0);
@@ -1265,7 +1353,6 @@ public class PottsModuleFlyStemProliferationTest {
 
     @Test
     public void updateGrowthRateBasedOnOtherNBs_KZeroandZeroNeighbors_returnsBase() {
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
 
         when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(0.0); // K = 0
         when(parameters.getDouble("proliferation/NB_CONTACT_HILL_N")).thenReturn(2.0);
@@ -1283,7 +1370,6 @@ public class PottsModuleFlyStemProliferationTest {
 
     @Test
     public void updateGrowthRateBasedOnOtherNBs_KZeroandPositiveNeighbors_returnsZero() {
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
 
         when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(0.0); // K = 0
         when(parameters.getDouble("proliferation/NB_CONTACT_HILL_N")).thenReturn(2.0);
@@ -1305,7 +1391,6 @@ public class PottsModuleFlyStemProliferationTest {
 
     @Test
     public void updateGrowthRateBasedOnOtherNBs_hillExponentOne_linearCase() {
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
 
         when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(4.0);
         when(parameters.getDouble("proliferation/NB_CONTACT_HILL_N")).thenReturn(1.0); // linear
@@ -1329,7 +1414,6 @@ public class PottsModuleFlyStemProliferationTest {
 
     @Test
     public void updateGrowthRateBasedOnOtherNBs_largeNeighbors_approachesZero() {
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
 
         when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(5.0);
         when(parameters.getDouble("proliferation/NB_CONTACT_HILL_N")).thenReturn(3.0);

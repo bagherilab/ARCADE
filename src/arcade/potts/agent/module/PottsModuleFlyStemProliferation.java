@@ -106,6 +106,17 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     final double initialSize;
 
     /**
+     * Y-axis split offset (%) used for WT-style divisions, for any cell type. Defaults to {@code
+     * StemType.WT.splitOffsetPercentY} (93), giving the normal 93/7 NB/GMC asymmetry. Set to 50 in
+     * a setup file (WT or MUDMUT) to give WT-style divisions a symmetric 50/50 volume split.
+     *
+     * <p>This applies wherever the WT division path is taken, including for MUDMUT cells dividing
+     * within {@link #MUDMUT_WT_DIVISION_ANGLE_THRESHOLD}. The {@code StemType} offsets still apply
+     * to the MUD division plane.
+     */
+    final int wtDivisionSplitOffsetPercentY;
+
+    /**
      * Reference vector the division-plane rotation offset is measured from. Can be `apical_axis` or
      * `previous_division`. Under `previous_division` the division axis drifts across a cell's
      * successive divisions; the apical axis itself is never modified by this ruleset.
@@ -172,6 +183,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         hasDeterministicDifferentiation = hasDeterministicDifferentiationString.equals("TRUE");
 
         initialSize = cell.getVolume();
+
+        wtDivisionSplitOffsetPercentY =
+                parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y");
 
         divRotationReference = parameters.getString("proliferation/DIV_ROTATION_REFERENCE");
         if (!divRotationReference.equals("apical_axis")
@@ -252,8 +266,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      *         = sizeTarget * critVol * (f_retain + 1) / 2
      * </pre>
      *
-     * where {@code f_retain = splitOffsetPercentY / 100} approximates the fraction of the
-     * pre-division volume retained by the NB after asymmetric division.
+     * where {@code f_retain = WT_DIVISION_SPLIT_OFFSET_PERCENT_Y / 100} approximates the fraction
+     * of the pre-division volume retained by the NB after asymmetric division. The WT offset is
+     * used for every cell type, since MUDMUT cells also divide by WT rules within {@link
+     * #MUDMUT_WT_DIVISION_ANGLE_THRESHOLD}.
      *
      * <p>This reference volume is used as the normalization denominator in the volume-based growth
      * rate formula, ensuring that at the average NB volume the effective growth rate equals {@code
@@ -263,7 +279,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      */
     double computeEquilibriumVolume() {
         double vDiv = sizeTarget * cell.getCriticalVolume();
-        double fRetain = ((PottsCellFlyStem) cell).getStemType().splitOffsetPercentY / 100.0;
+        double fRetain = wtDivisionSplitOffsetPercentY / 100.0;
         return vDiv * (fRetain + 1.0) / 2.0;
     }
 
@@ -376,7 +392,12 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         Vector rotatedNormalVector =
                 Vector.rotateVectorAroundAxis(
                         referenceVector, Direction.XY_PLANE.vector, rotationOffset);
-        Voxel splitVoxel = getCellSplitVoxel(StemType.WT, cell, rotatedNormalVector);
+        Voxel splitVoxel =
+                getCellSplitVoxel(
+                        StemType.WT.splitOffsetPercentX,
+                        wtDivisionSplitOffsetPercentY,
+                        cell,
+                        rotatedNormalVector);
         return new Plane(
                 new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), rotatedNormalVector);
     }
@@ -412,9 +433,31 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      */
     public static Voxel getCellSplitVoxel(
             StemType stemType, PottsCellFlyStem cell, Vector rotatedNormalVector) {
+        return getCellSplitVoxel(
+                stemType.splitOffsetPercentX,
+                stemType.splitOffsetPercentY,
+                cell,
+                rotatedNormalVector);
+    }
+
+    /**
+     * Gets the voxel location the cell's plane of division will pass through, using explicit x and
+     * y offsets rather than a {@link StemType}.
+     *
+     * @param splitOffsetPercentX percentage x offset from cell edge
+     * @param splitOffsetPercentY percentage y offset from cell edge
+     * @param cell the {@link PottsCellFlyStem} to get the division location for
+     * @param rotatedNormalVector the normal vector of the division plane
+     * @return the voxel location where the cell will split
+     */
+    public static Voxel getCellSplitVoxel(
+            int splitOffsetPercentX,
+            int splitOffsetPercentY,
+            PottsCellFlyStem cell,
+            Vector rotatedNormalVector) {
         ArrayList<Integer> splitOffsetPercent = new ArrayList<>();
-        splitOffsetPercent.add(stemType.splitOffsetPercentX);
-        splitOffsetPercent.add(stemType.splitOffsetPercentY);
+        splitOffsetPercent.add(splitOffsetPercentX);
+        splitOffsetPercent.add(splitOffsetPercentY);
         return ((PottsLocation2D) cell.getLocation())
                 .getOffsetInApicalFrame(splitOffsetPercent, rotatedNormalVector);
     }
@@ -686,7 +729,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             criticalVol =
                     ((PottsCellFlyStem) cell).getCriticalVolume()
                             * sizeTarget
-                            * StemType.WT.daughterCellCriticalVolumeProportion;
+                            * (1.0 - wtDivisionSplitOffsetPercentY / 100.0);
             return criticalVol;
         }
     }
