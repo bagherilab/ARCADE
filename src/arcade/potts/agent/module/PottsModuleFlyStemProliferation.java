@@ -3,7 +3,6 @@ package arcade.potts.agent.module;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import sim.util.Bag;
 import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
@@ -101,12 +100,6 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     public static final double EPSILON = 1e-8;
 
     /**
-     * Boolean determining whether growth and division rates are universal across all NBs. If true
-     * model behaviors is PDE-like, if false it is ABM-like.
-     */
-    final Boolean pdeLike;
-
-    /**
      * Creates a proliferation {@code Module} for the given {@link PottsCellFlyStem}.
      *
      * @param cell the {@link PottsCellFlyStem} the module is associated with
@@ -158,8 +151,6 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         initialSize = cell.getVolume();
 
-        pdeLike = (parameters.getInt("proliferation/PDELIKE") != 0);
-
         setPhase(Phase.UNDEFINED);
     }
 
@@ -205,33 +196,15 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /**
      * Updates growth rate based on cell volume relative to a reference volume.
      *
-     * <p>Growth is regulated by comparing a volume signal to an equilibrium reference. The source
-     * of the volume signal depends on the simulation mode:
-     *
-     * <ul>
-     *   <li><b>Local mode:</b> uses this cell's volume
-     *   <li><b>PDE-like mode:</b> uses the average volume of all NBs in the simulation (global
-     *       coupling)
-     * </ul>
-     *
-     * The resulting signal is passed to the volume-based growth function, which adjusts growth rate
-     * relative to the equilibrium volume.
+     * <p>Growth is regulated by comparing this cell's volume to an equilibrium reference. The
+     * difference is passed to the volume-based growth function, which adjusts growth rate relative
+     * to the equilibrium volume.
      *
      * @param sim the simulation
      */
     public void updateVolumeBasedGrowthRate(Simulation sim) {
         double vRef = computeEquilibriumVolume();
-        if (!pdeLike) {
-            updateCellVolumeBasedGrowthRate(cell.getLocation().getVolume(), vRef);
-        } else {
-            HashSet<PottsCellFlyStem> nbsInSimulation = getNBsInSimulation(sim);
-            double volSum = 0.0;
-            for (PottsCellFlyStem nb : nbsInSimulation) {
-                volSum += nb.getLocation().getVolume();
-            }
-            double avgVolume = volSum / nbsInSimulation.size();
-            updateCellVolumeBasedGrowthRate(avgVolume, vRef);
-        }
+        updateCellVolumeBasedGrowthRate(cell.getLocation().getVolume(), vRef);
     }
 
     /**
@@ -293,26 +266,17 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * Updates the neuroblast (NB) contact-dependent growth rate.
      *
      * <p>Growth is repressed as a function of NB contact using a Hill function. The number of
-     * interacting NBs is determined in one of two ways:
+     * interacting NBs is this cell's neighboring NBs (local coupling)
      *
-     * <ul>
-     *   <li><b>PDE-like mode:</b> uses the total number of NBs in the simulation (global coupling)
-     *   <li><b>Local mode:</b> uses only this cell's neighboring NBs (local coupling)
-     * </ul>
-     *
-     * The resulting repression factor scales the base growth rate, reducing growth as NB contact
+     * <p>The resulting repression factor scales the base growth rate, reducing growth as NB contact
      * increases.
      *
      * @param sim the simulation
      */
     protected void updateGrowthRateBasedOnOtherNBs(Simulation sim) {
         int nbsInContact;
-        if (pdeLike) {
-            int nbsInSim = getNBsInSimulation(sim).size();
-            nbsInContact = nbsInSim - 1;
-        } else {
-            nbsInContact = getNBNeighbors(sim).size();
-        }
+        nbsInContact = getNBNeighbors(sim).size();
+
         double neighborSignal = Math.max(0.0, (double) nbsInContact);
 
         double kHalfMaxPowN = Math.pow(nbContactHalfMax, nbContactHillN);
@@ -707,27 +671,5 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         double proj2 = Vector.dotProduct(c2, apicalAxis);
 
         return (proj1 < proj2) ? loc2 : loc1; // higher projection = more basal
-    }
-
-    /**
-     * Gets all cell objects in the simulation that are Neuroblasts.
-     *
-     * @param sim the simulation
-     * @return a HashSet of all PottsCellFlyStem cell objects in the simulation
-     */
-    public HashSet<PottsCellFlyStem> getNBsInSimulation(Simulation sim) {
-        HashSet<PottsCellFlyStem> nbsInSimulation = new HashSet<>();
-        Bag simObjects = sim.getGrid().getAllObjects();
-        for (int i = 0; i < simObjects.numObjs; i++) {
-            Object o = simObjects.objs[i];
-            if (!(o instanceof PottsCell)) {
-                continue; // skip non-cell objects
-            }
-            PottsCell cellInSim = (PottsCell) o;
-            if (cell.getPop() == cellInSim.getPop() && o instanceof PottsCellFlyStem) {
-                nbsInSimulation.add((PottsCellFlyStem) o);
-            }
-        }
-        return nbsInSimulation;
     }
 }

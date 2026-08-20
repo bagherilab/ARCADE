@@ -1,6 +1,5 @@
 package arcade.potts.agent.module;
 
-import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.Location;

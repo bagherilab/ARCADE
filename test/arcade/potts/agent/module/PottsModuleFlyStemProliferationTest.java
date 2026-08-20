@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import sim.util.Bag;
 import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.grid.Grid;
@@ -939,85 +938,6 @@ public class PottsModuleFlyStemProliferationTest {
         assertTrue(neighbors.contains(validNeighbor));
     }
 
-    @Test
-    public void getNBsInSimulation_emptyBag_returnsEmptySet() {
-        Bag bag = new Bag(); // real MASON Bag
-        when(grid.getAllObjects()).thenReturn(bag);
-
-        module = new PottsModuleFlyStemProliferation(stemCell);
-        HashSet<PottsCellFlyStem> result = module.getNBsInSimulation(sim);
-
-        assertNotNull(result);
-        assertTrue(result.isEmpty(), "Empty grid should yield empty set");
-    }
-
-    @Test
-    public void getNBsInSimulation_mixedObjects_returnsOnlyMatchingFlyStems() {
-        // Arrange: matching NB, non-matching NB, matching non-FlyStem, random object, matching NB
-        PottsCellFlyStem nbMatch1 = mock(PottsCellFlyStem.class);
-        when(nbMatch1.getPop()).thenReturn(3);
-
-        PottsCellFlyStem nbOtherPop = mock(PottsCellFlyStem.class);
-        when(nbOtherPop.getPop()).thenReturn(99);
-
-        PottsCell nonNBButSamePop = mock(PottsCell.class);
-        when(nonNBButSamePop.getPop()).thenReturn(3);
-
-        Object random = new Object();
-
-        PottsCellFlyStem nbMatch2 = mock(PottsCellFlyStem.class);
-        when(nbMatch2.getPop()).thenReturn(3);
-
-        Bag bag = new Bag();
-        bag.add(nbMatch1);
-        bag.add(nbOtherPop);
-        bag.add(nonNBButSamePop);
-        bag.add(random);
-        bag.add(nbMatch2);
-        when(grid.getAllObjects()).thenReturn(bag);
-
-        when(stemCell.getPop()).thenReturn(3);
-
-        module = new PottsModuleFlyStemProliferation(stemCell);
-        HashSet<PottsCellFlyStem> result = module.getNBsInSimulation(sim);
-
-        assertEquals(2, result.size(), "Should return exactly the two matching FlyStem NBs");
-        assertTrue(result.contains(nbMatch1));
-        assertTrue(result.contains(nbMatch2));
-    }
-
-    @Test
-    public void getNBsInSimulation_includesSelfCell() {
-        // The module's 'cell' has pop = 3 (already stubbed in @BeforeEach)
-        when(stemCell.getPop()).thenReturn(3);
-
-        // Bag contains: self (FlyStem, pop 3), another FlyStem pop 3, a non-FlyStem pop 3, and a
-        // random object
-        PottsCellFlyStem another = mock(PottsCellFlyStem.class);
-        when(another.getPop()).thenReturn(3);
-        PottsCell nonFlyStemSamePop = mock(PottsCell.class);
-        when(nonFlyStemSamePop.getPop()).thenReturn(3);
-        Object random = new Object();
-
-        Bag bag = new Bag();
-        bag.add(stemCell); // self
-        bag.add(another); // matching FlyStem
-        bag.add(nonFlyStemSamePop); // same pop but NOT FlyStem → should be ignored
-        bag.add(random); // ignored
-
-        when(grid.getAllObjects()).thenReturn(bag);
-
-        module = new PottsModuleFlyStemProliferation(stemCell);
-        HashSet<PottsCellFlyStem> result = module.getNBsInSimulation(sim);
-
-        assertTrue(result.contains(stemCell), "Result should include the module's own stem cell.");
-        assertTrue(result.contains(another), "Result should include other matching FlyStem cells.");
-        assertEquals(
-                2,
-                result.size(),
-                "Only the two FlyStem cells with matching pop should be returned.");
-    }
-
     // computeEquilibriumVolume tests
 
     @Test
@@ -1097,9 +1017,7 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void updateVolumeBasedGrowthRate_pdeLikeFalse_usesCellVolumeAndEquilibriumRef() {
-        // pdeLike = 0 → uses this cell's own volume and computeEquilibriumVolume() as the ref
-        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
+    public void updateVolumeBasedGrowthRate_called_usesCellVolumeAndEquilibriumRef() {
         when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
         when(stemLoc.getVolume()).thenReturn(42.5);
 
@@ -1111,53 +1029,10 @@ public class PottsModuleFlyStemProliferationTest {
         // V_ref = sizeTarget * critVol * (WT.splitOffsetPercentY/100 + 1) / 2
         //       = 1.2 * 100 * (0.86 + 1) / 2 = 111.6
         verify(module, times(1)).updateCellVolumeBasedGrowthRate(eq(42.5), eq(111.6));
-        verify(module, never()).getNBsInSimulation(any());
     }
 
     @Test
-    public void updateVolumeBasedGrowthRate_pdeLikeTrue_usesAverageVolumeAndEquilibriumRef() {
-        // pdeLike = 1 → averages volumes across all NBs; uses computeEquilibriumVolume() as the ref
-        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(1);
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(0);
-
-        module = spy(new PottsModuleFlyStemProliferation(stemCell));
-
-        PottsCellFlyStem nbA = mock(PottsCellFlyStem.class);
-        PottsCellFlyStem nbB = mock(PottsCellFlyStem.class);
-        PottsCellFlyStem nbC = mock(PottsCellFlyStem.class);
-
-        PottsLocation locA = mock(PottsLocation.class);
-        PottsLocation locB = mock(PottsLocation.class);
-        PottsLocation locC = mock(PottsLocation.class);
-
-        when(nbA.getLocation()).thenReturn(locA);
-        when(nbB.getLocation()).thenReturn(locB);
-        when(nbC.getLocation()).thenReturn(locC);
-
-        // Volumes: 10, 20, 40 → avg = 70/3
-        when(locA.getVolume()).thenReturn(10.0);
-        when(locB.getVolume()).thenReturn(20.0);
-        when(locC.getVolume()).thenReturn(40.0);
-
-        HashSet<PottsCellFlyStem> allNBs = new HashSet<>(Arrays.asList(nbA, nbB, nbC));
-        doReturn(allNBs).when(module).getNBsInSimulation(sim);
-        doNothing().when(module).updateCellVolumeBasedGrowthRate(anyDouble(), anyDouble());
-
-        module.updateVolumeBasedGrowthRate(sim);
-
-        double expectedAvgVol = (10.0 + 20.0 + 40.0) / 3.0;
-        // V_ref = 1.2 * 100 * (0.86 + 1) / 2 = 111.6  (critVol from module's own cell)
-        double expectedVRef = 111.6;
-
-        verify(module, times(1)).getNBsInSimulation(sim);
-        verify(module, times(1))
-                .updateCellVolumeBasedGrowthRate(eq(expectedAvgVol), eq(expectedVRef));
-    }
-
-    @Test
-    public void updateGrowthRateBasedOnOtherNBs_pdeLikeFalse_usesNeighborsBranch() {
-        // pdeLike = 0 → neighbors branch
-        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
+    public void updateGrowthRateBasedOnOtherNBs_called_usesNeighborsBranch() {
         when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
 
         when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(4.0);
@@ -1174,48 +1049,15 @@ public class PottsModuleFlyStemProliferationTest {
             four.add(n);
         }
         doReturn(four).when(module).getNBNeighbors(sim);
-        // Make sure population path is not used
-        doReturn(new HashSet<PottsCellFlyStem>()).when(module).getNBsInSimulation(sim);
 
         module.updateGrowthRateBasedOnOtherNBs(sim);
 
         assertEquals(6.0, module.cellGrowthRate, 1e-6);
         verify(module, times(1)).getNBNeighbors(sim);
-        verify(module, never()).getNBsInSimulation(sim);
-    }
-
-    @Test
-    public void updateGrowthRateBasedOnOtherNBs_pdeLikeTrue_usesPopulationBranch() {
-        // pdeLike = 1 and dynamicGrowthRateNBContact = 0 to avoid constructor exception
-        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(1);
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(0);
-
-        when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(3.0);
-        when(parameters.getDouble("proliferation/NB_CONTACT_HILL_N")).thenReturn(2.0);
-        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(20.0);
-
-        module = spy(new PottsModuleFlyStemProliferation(stemCell));
-
-        // N = 7 in-simulation, 6 neighbors (K = 3, n = 2 → 9/(9+36)=0.2 → 4.0)
-        HashSet<PottsCellFlyStem> seven = new HashSet<>();
-        for (int i = 0; i < 7; i++) {
-            PottsCellFlyStem n = mock(PottsCellFlyStem.class);
-            when(n.getID()).thenReturn(200 + i);
-            seven.add(n);
-        }
-        doReturn(new HashSet<PottsCellFlyStem>()).when(module).getNBNeighbors(sim);
-        doReturn(seven).when(module).getNBsInSimulation(sim);
-
-        module.updateGrowthRateBasedOnOtherNBs(sim);
-
-        assertEquals(4.0, module.cellGrowthRate, 1e-6);
-        verify(module, times(1)).getNBsInSimulation(sim);
-        verify(module, never()).getNBNeighbors(sim);
     }
 
     @Test
     public void updateGrowthRateBasedOnOtherNBs_KZeroandZeroNeighbors_returnsBase() {
-        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
         when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
 
         when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(0.0); // K = 0
@@ -1234,7 +1076,6 @@ public class PottsModuleFlyStemProliferationTest {
 
     @Test
     public void updateGrowthRateBasedOnOtherNBs_KZeroandPositiveNeighbors_returnsZero() {
-        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
         when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
 
         when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(0.0); // K = 0
@@ -1257,7 +1098,6 @@ public class PottsModuleFlyStemProliferationTest {
 
     @Test
     public void updateGrowthRateBasedOnOtherNBs_hillExponentOne_linearCase() {
-        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
         when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
 
         when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(4.0);
@@ -1282,7 +1122,6 @@ public class PottsModuleFlyStemProliferationTest {
 
     @Test
     public void updateGrowthRateBasedOnOtherNBs_largeNeighbors_approachesZero() {
-        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
         when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
 
         when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(5.0);
