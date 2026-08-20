@@ -30,10 +30,36 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
     }
 
     /**
+     * Computes the expected equilibrium average GMC volume over one cell cycle.
+     *
+     * <p>In the Potts model, the volume-regulated growth phase effectively begins at {@code
+     * criticalVolume} (not the birth volume), even when {@code VOLUME_BASED_CRITICAL_VOLUME} is off
+     * and birth volume is below {@code criticalVolume}.
+     *
+     * <p>The regulated growth phase therefore runs from {@code criticalVolume} to {@code sizeTarget
+     * * criticalVolume}. Under constant-rate growth, the time-average volume over this phase is the
+     * arithmetic mean of the two endpoints:
+     *
+     * <pre>
+     *   V_ref = (criticalVolume + sizeTarget * criticalVolume) / 2
+     *         = criticalVolume * (1 + sizeTarget) / 2
+     * </pre>
+     *
+     * <p>This formula is consistent with the PDE-like branch, which uses {@code avgCritVol * (1 +
+     * sizeTarget) / 2}, and holds whether or not {@code VOLUME_BASED_CRITICAL_VOLUME} is enabled.
+     *
+     * @return the expected equilibrium average GMC volume
+     */
+    double computeEquilibriumVolume() {
+        return cell.getCriticalVolume() * (1.0 + sizeTarget) / 2.0;
+    }
+
+    /**
      * Adds a cell to the simulation.
      *
      * <p>The cell location is split. The new neuron cell is created, initialized, and added to the
-     * schedule. This cell's location is also assigned to a new Neuron cell.
+     * schedule. This cell's location is also assigned to a new Neuron cell. The critical volume of
+     * both neurons is set to the initial volume of each neuron's location.
      *
      * @param random the random number generator
      * @param sim the simulation instance
@@ -50,12 +76,14 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
 
         // Create and schedule new neuron cell
         int newID = sim.getID();
-        CellContainer newContainer = cell.make(newID, State.QUIESCENT, random);
+        CellContainer newContainer =
+                ((PottsCellFlyGMC) cell)
+                        .make(newID, State.QUIESCENT, newLocation.getVolume(), random);
         PottsCell newCell =
                 (PottsCell) newContainer.convert(sim.getCellFactory(), newLocation, random);
         sim.getGrid().addObject(newCell, null);
         potts.register(newCell);
-        newCell.reset(potts.ids, potts.regions);
+        newCell.initialize(potts.ids, potts.regions);
         newCell.schedule(sim.getSchedule());
 
         // remove old GMC cell from simulation
@@ -78,7 +106,7 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
                         null,
                         0,
                         null,
-                        oldCell.getCriticalVolume(),
+                        location.getVolume(),
                         oldCell.getCriticalHeight(),
                         oldCell.getCriticalRegionVolumes(),
                         oldCell.getCriticalRegionHeights());
@@ -88,7 +116,25 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
 
         sim.getGrid().addObject(differentiatedGMC, null);
         potts.register(differentiatedGMC);
-        differentiatedGMC.reset(potts.ids, potts.regions);
+        differentiatedGMC.initialize(potts.ids, potts.regions);
         differentiatedGMC.schedule(sim.getSchedule());
+    }
+
+    /**
+     * Updates the effective growth rate according to boolean flags specified in parameters.
+     *
+     * <p>The rule is selected as follows. When {@code DYNAMIC_GROWTH_RATE_VOLUME} is off the growth
+     * rate is simply the basal rate. When it is on, cells use a per-cell rule that compares each
+     * cell's own volume against its equilibrium volume
+     *
+     * @param sim the simulation
+     */
+    public void updateGrowthRate(Simulation sim) {
+        if (!dynamicGrowthRateVolume) {
+            cellGrowthRate = cellGrowthRateBase;
+        } else {
+            updateCellVolumeBasedGrowthRate(
+                    cell.getLocation().getVolume(), computeEquilibriumVolume());
+        }
     }
 }

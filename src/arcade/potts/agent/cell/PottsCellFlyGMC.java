@@ -55,6 +55,41 @@ public class PottsCellFlyGMC extends PottsCell {
                 criticalRegionHeights);
     }
 
+    /**
+     * Creates a container for a new daughter cell with an explicit critical volume.
+     *
+     * <p>Unlike {@link #make(int, CellState, MersenneTwisterFast)}, which copies this cell's
+     * critical volume, this overload lets the caller set the daughter's critical volume from the
+     * volume it is actually born into rather than inheriting the parent's.
+     *
+     * @param newID the daughter cell ID
+     * @param newState the daughter cell state
+     * @param assignedCritVol the critical volume assigned to the daughter cell
+     * @param random the random number generator
+     * @return a container for the daughter cell
+     */
+    public PottsCellContainer make(
+            int newID, CellState newState, double assignedCritVol, MersenneTwisterFast random) {
+        divisions++;
+
+        int newPop = links.next(random);
+
+        return new PottsCellContainer(
+                newID,
+                id,
+                newPop,
+                age,
+                divisions,
+                newState,
+                null,
+                0,
+                null,
+                assignedCritVol,
+                criticalHeight,
+                criticalRegionVolumes,
+                criticalRegionHeights);
+    }
+
     @Override
     void setStateModule(CellState newState) {
         switch ((State) newState) {
