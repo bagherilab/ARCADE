@@ -22,29 +22,20 @@ import arcade.potts.util.PottsEnums.State;
 public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVolumeBasedDivision {
 
     /**
-     * Indicates whether GMC growth rate is based on individual cell conditions or average cell
-     * conditions.
-     */
-    Boolean pdeLike;
-
-    /**
      * Creates a fly GMC proliferation module.
      *
      * @param cell the cell to which this module is attached
      */
     public PottsModuleFlyGMCDifferentiation(PottsCellFlyGMC cell) {
         super(cell);
-        pdeLike = (cell.getParameters().getInt("proliferation/PDELIKE") != 0);
     }
 
     /**
      * Computes the expected equilibrium average GMC volume over one cell cycle.
      *
-     * <p>In the Potts model, a cell's target volume is initialized to {@code criticalVolume} on
-     * reset. The Potts energy immediately drives the cell's actual volume toward this target,
-     * regardless of the current growth rate. As a result, the volume-regulated growth phase
-     * effectively begins at {@code criticalVolume} (not the birth volume), even when {@code
-     * VOLUME_BASED_CRITICAL_VOLUME} is off and birth volume is below {@code criticalVolume}.
+     * <p>In the Potts model, the volume-regulated growth phase effectively begins at {@code
+     * criticalVolume} (not the birth volume), even when {@code VOLUME_BASED_CRITICAL_VOLUME} is off
+     * and birth volume is below {@code criticalVolume}.
      *
      * <p>The regulated growth phase therefore runs from {@code criticalVolume} to {@code sizeTarget
      * * criticalVolume}. Under constant-rate growth, the time-average volume over this phase is the
@@ -86,7 +77,9 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
 
         // Create and schedule new neuron cell
         int newID = sim.getID();
-        CellContainer newContainer = cell.make(newID, State.QUIESCENT, random);
+        CellContainer newContainer =
+                ((PottsCellFlyGMC) cell)
+                        .make(newID, State.QUIESCENT, newLocation.getVolume(), random);
         PottsCell newCell =
                 (PottsCell) newContainer.convert(sim.getCellFactory(), newLocation, random);
         sim.getGrid().addObject(newCell, null);
@@ -114,7 +107,7 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
                         null,
                         0,
                         null,
-                        oldCell.getCriticalVolume(),
+                        location.getVolume(),
                         oldCell.getCriticalHeight(),
                         oldCell.getCriticalRegionVolumes(),
                         oldCell.getCriticalRegionHeights());
@@ -131,48 +124,18 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
     /**
      * Updates the effective growth rate according to boolean flags specified in parameters.
      *
+     * <p>The rule is selected as follows. When {@code DYNAMIC_GROWTH_RATE_VOLUME} is off the growth
+     * rate is simply the basal rate. When it is on, cells use a per-cell rule that compares each
+     * cell's own volume against its equilibrium volume
+     *
      * @param sim the simulation
      */
     public void updateGrowthRate(Simulation sim) {
         if (!dynamicGrowthRateVolume) {
             cellGrowthRate = cellGrowthRateBase;
         } else {
-            if (!pdeLike) {
-                updateCellVolumeBasedGrowthRate(
-                        cell.getLocation().getVolume(), computeEquilibriumVolume());
-            } else {
-                // PDE-like: use population-wide averages for GMCs (same pop as this cell).
-                // The reference volume is the population-average equilibrium volume:
-                //   avgVRef = avgCritVol * (1 + sizeTarget) / 2
-                Bag objs = sim.getGrid().getAllObjects();
-
-                double volSum = 0.0;
-                double critSum = 0.0;
-                int count = 0;
-
-                for (int i = 0; i < objs.numObjs; i++) {
-                    Object o = objs.objs[i];
-                    if (!(o instanceof PottsCell)) {
-                        continue;
-                    }
-
-                    PottsCell c = (PottsCell) o;
-                    if (c.getPop() != cell.getPop()) {
-                        continue; // keep to same population
-                    }
-
-                    if (o instanceof PottsCellFlyGMC) {
-                        PottsCellFlyGMC gmc = (PottsCellFlyGMC) o;
-                        volSum += gmc.getLocation().getVolume();
-                        critSum += gmc.getCriticalVolume();
-                        count++;
-                    }
-                }
-                double avgVolume = volSum / count;
-                double avgCritVol = critSum / count;
-                double avgVRef = avgCritVol * (1.0 + sizeTarget) / 2.0;
-                updateCellVolumeBasedGrowthRate(avgVolume, avgVRef);
-            }
+            updateCellVolumeBasedGrowthRate(
+                    cell.getLocation().getVolume(), computeEquilibriumVolume());
         }
     }
 }
