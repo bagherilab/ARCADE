@@ -40,6 +40,12 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /** Threshold for critical volume size checkpoint. */
     static final double SIZE_CHECKPOINT = 0.95;
 
+    /**
+     * Maximum angular deviation (degrees) from the expected split direction within which a MUDMUT
+     * cell still divides by WT rules. Beyond this, the division uses the MUD plane.
+     */
+    static final double MUDMUT_WT_DIVISION_ANGLE_THRESHOLD = 75;
+
     /** Basal rate of apoptosis (ticks^-1). */
     final double basalApoptosisRate;
 
@@ -306,7 +312,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         if (flyStemCell.getStemType() == StemType.WT
                 || (flyStemCell.getStemType() == StemType.MUDMUT
-                        && (Math.abs(offset - splitDirectionDistribution.getExpected()) <= 45))) {
+                        && (Math.abs(offset - splitDirectionDistribution.getExpected())
+                                <= MUDMUT_WT_DIVISION_ANGLE_THRESHOLD))) {
             return getWTDivisionPlaneWithRotationalVariance(flyStemCell, offset);
         } else {
             return getMUDDivisionPlane(flyStemCell);

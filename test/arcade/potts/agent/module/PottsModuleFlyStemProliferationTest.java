@@ -495,7 +495,7 @@ public class PottsModuleFlyStemProliferationTest {
     @Test
     public void chooseDivisionPlane_MUDMUT_withLowOffset_callsWTVariant() {
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
-        when(dist.nextDouble()).thenReturn(10.0); // abs(offset) < 45 → WT logic
+        when(dist.nextDouble()).thenReturn(10.0); // abs(offset) < 75 → WT logic
 
         module = spy(new PottsModuleFlyStemProliferation(stemCell));
 
@@ -514,7 +514,7 @@ public class PottsModuleFlyStemProliferationTest {
     @Test
     public void chooseDivisionPlane_MUDMUT_withHighOffset_callsMUDVariant() {
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
-        when(dist.nextDouble()).thenReturn(60.0); // abs(offset) ≥ 45 → MUD logic
+        when(dist.nextDouble()).thenReturn(80.0); // abs(offset) > 75 → MUD logic
 
         module = spy(new PottsModuleFlyStemProliferation(stemCell));
 
@@ -820,7 +820,7 @@ public class PottsModuleFlyStemProliferationTest {
                 .thenReturn("smaller_gmc");
         when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
         when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
-        when(dist.nextDouble()).thenReturn(60.0); // triggers MUD plane
+        when(dist.nextDouble()).thenReturn(80.0); // triggers MUD plane (abs(offset) > 75)
 
         sim = mock(PottsSimulation.class);
         potts = mock(Potts.class);
@@ -862,7 +862,7 @@ public class PottsModuleFlyStemProliferationTest {
                 .thenReturn("smaller_gmc");
         when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
         when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
-        when(dist.nextDouble()).thenReturn(10.0); // below 45 threshold
+        when(dist.nextDouble()).thenReturn(10.0); // below 75 threshold
 
         when(stemLoc.getVolume()).thenReturn(5.0);
         when(daughterLoc.getVolume()).thenReturn(10.0); // triggers swap
