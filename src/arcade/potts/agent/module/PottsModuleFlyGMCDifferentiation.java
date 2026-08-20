@@ -32,11 +32,9 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
     /**
      * Computes the expected equilibrium average GMC volume over one cell cycle.
      *
-     * <p>In the Potts model, a cell's target volume is initialized to {@code criticalVolume} on
-     * reset. The Potts energy immediately drives the cell's actual volume toward this target,
-     * regardless of the current growth rate. As a result, the volume-regulated growth phase
-     * effectively begins at {@code criticalVolume} (not the birth volume), even when {@code
-     * VOLUME_BASED_CRITICAL_VOLUME} is off and birth volume is below {@code criticalVolume}.
+     * <p>In the Potts model, the volume-regulated growth phase effectively begins at {@code
+     * criticalVolume} (not the birth volume), even when {@code VOLUME_BASED_CRITICAL_VOLUME} is off
+     * and birth volume is below {@code criticalVolume}.
      *
      * <p>The regulated growth phase therefore runs from {@code criticalVolume} to {@code sizeTarget
      * * criticalVolume}. Under constant-rate growth, the time-average volume over this phase is the

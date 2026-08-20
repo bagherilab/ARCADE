@@ -64,12 +64,12 @@ public class PottsCellFlyGMC extends PottsCell {
      *
      * @param newID the daughter cell ID
      * @param newState the daughter cell state
-     * @param critVol the critical volume assigned to the daughter cell
+     * @param assignedCritVol the critical volume assigned to the daughter cell
      * @param random the random number generator
      * @return a container for the daughter cell
      */
     public PottsCellContainer make(
-            int newID, CellState newState, double critVol, MersenneTwisterFast random) {
+            int newID, CellState newState, double assignedCritVol, MersenneTwisterFast random) {
         divisions++;
 
         int newPop = links.next(random);
@@ -84,7 +84,7 @@ public class PottsCellFlyGMC extends PottsCell {
                 null,
                 0,
                 null,
-                critVol,
+                assignedCritVol,
                 criticalHeight,
                 criticalRegionVolumes,
                 criticalRegionHeights);
