@@ -531,6 +531,13 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      *     should be a GMC
      */
     private boolean daughterStemDeterministic(Plane divisionPlane) {
+        // A WT division always produces one NB and one GMC, so the daughter is never a stem cell.
+        // Without this, a WT division plane that happened to align with the expected MUD normal
+        // would be misread as a symmetric NB-NB division. Mirrors the WT case in
+        // daughterStemRuleBasedDifferentiation.
+        if (((PottsCellFlyStem) cell).getStemType() == StemType.WT) {
+            return false;
+        }
 
         Vector normalVector = divisionPlane.getUnitNormalVector();
 

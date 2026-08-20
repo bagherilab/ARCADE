@@ -1028,13 +1028,14 @@ public class PottsModuleFlyStemProliferationTest {
         when(dummyPlane.getUnitNormalVector()).thenReturn(new Vector(1, 0, 0));
         when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
 
-        // Stub cell creation
+        // Stub cell creation. A WT division always yields a GMC daughter, so the daughter's
+        // population comes from getLinks(), not the parent's population.
         PottsCellContainer container = mock(PottsCellContainer.class);
-        PottsCellFlyStem newStemCell = mock(PottsCellFlyStem.class);
-        when(stemCell.make(
-                        eq(42), eq(State.PROLIFERATIVE), eq(random), eq(stemCellPop), anyDouble()))
+        PottsCellFlyStem newDaughterCell = mock(PottsCellFlyStem.class);
+        when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random), anyInt(), anyDouble()))
                 .thenReturn(container);
-        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newStemCell);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random)))
+                .thenReturn(newDaughterCell);
 
         // Spy and override division plane logic
         PottsModuleFlyStemProliferation spyModule =
@@ -1047,7 +1048,7 @@ public class PottsModuleFlyStemProliferationTest {
             spyModule.addCell(random, sim);
             mocked.verify(() -> PottsLocation.swapVoxels(any(), any()), never());
         }
-        verify(newStemCell).schedule(any());
+        verify(newDaughterCell).schedule(any());
     }
 
     @Test
@@ -1525,8 +1526,26 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
+    public void daughterStem_deterministicWT_returnsFalse() {
+        // A WT division always yields a GMC daughter, even when the division plane normal happens
+        // to match the expected MUD normal exactly — which is the case constructed here.
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+
+        Plane plane = mock(Plane.class);
+        when(plane.getUnitNormalVector()).thenReturn(new Vector(1.0, 0, 0));
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertFalse(
+                module.daughterStem(stemLoc, daughterLoc, plane),
+                "Expected WT deterministic differentiation to always return false.");
+    }
+
+    @Test
     public void daughterStem_deterministicTruematchingNormalVector_returnsTrue() {
         // hasDeterministicDifferentiation=true is already set in @BeforeEach
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
         Vector apicalAxis = new Vector(0, 1, 0);
         when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
 
@@ -1551,6 +1570,7 @@ public class PottsModuleFlyStemProliferationTest {
     @Test
     public void daughterStem_deterministicTrueNonMatchingNormalVector_returnsFalse() {
         // hasDeterministicDifferentiation=true is already set in @BeforeEach
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
         Vector apicalAxis = new Vector(0, 1, 0);
         when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
 
