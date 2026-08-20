@@ -1,5 +1,6 @@
 package arcade.potts.agent.module;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -19,9 +20,7 @@ import arcade.core.util.Plane;
 import arcade.core.util.Vector;
 import arcade.core.util.distributions.NormalDistribution;
 import arcade.core.util.distributions.UniformDistribution;
-import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.agent.cell.PottsCellFactory;
-import arcade.potts.agent.cell.PottsCellFlyStem;
+import arcade.potts.agent.cell.*;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
@@ -29,6 +28,7 @@ import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.Phase;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.eq;
@@ -130,10 +130,7 @@ public class PottsModuleFlyStemProliferationTest {
         when(parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE")).thenReturn(0.04);
         when(parameters.getDouble("proliferation/PROSPERO_RATE")).thenReturn(0.895);
         when(parameters.getDouble("proliferation/DEADPAN_RATE")).thenReturn(0.314);
-        //        when(parameters.getInt("proliferation/WT_LIKE_X")).thenReturn(15);
-        //        when(parameters.getInt("proliferation/WT_LIKE_Y")).thenReturn(92);
-        //        when(parameters.getInt("proliferation/MM_LIKE_X")).thenReturn(65);
-        //        when(parameters.getInt("proliferation/MM_LIKE_Y")).thenReturn(35);
+        when(parameters.getInt("proliferation/ALLOW_PARENT_DIFFERENTIATION")).thenReturn(0);
         when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
         when(parameters.getDistribution("proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION"))
                 .thenReturn(dist);
@@ -146,6 +143,7 @@ public class PottsModuleFlyStemProliferationTest {
         assertEquals(0.04, module.basalApoptosisRate, EPSILON);
         assertEquals(0.895, module.prosperoRate, EPSILON);
         assertEquals(0.314, module.deadpanRate, EPSILON);
+        assertFalse(module.allowParentDifferentiation);
         assertNotNull(module.splitDirectionDistribution);
         assertEquals("volume", module.differentiationRuleset);
         assertEquals(0.5, module.range, EPSILON);
@@ -192,6 +190,27 @@ public class PottsModuleFlyStemProliferationTest {
         assertEquals("tfRatio", module.differentiationRuleset);
         assertEquals(0.10, module.range, EPSILON);
         assertEquals(arcade.potts.util.PottsEnums.Phase.UNDEFINED, module.phase);
+    }
+
+    @Test
+    public void constructor_allowParentDifferentiationWithTfRatio_setsExpectedFields() {
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("tfRatio");
+        when(parameters.getDouble("proliferation/TF_RATIO")).thenReturn(2.0);
+        when(parameters.getInt("proliferation/ALLOW_PARENT_DIFFERENTIATION")).thenReturn(1);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertTrue(module.allowParentDifferentiation);
+    }
+
+    @Test
+    public void constructor_allowParentDifferentiationWithoutTfRatio_throws() {
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        when(parameters.getInt("proliferation/ALLOW_PARENT_DIFFERENTIATION")).thenReturn(1);
+
+        assertThrows(
+                InvalidParameterException.class,
+                () -> new PottsModuleFlyStemProliferation(stemCell));
     }
 
     // Static method tests
@@ -1333,7 +1352,7 @@ public class PottsModuleFlyStemProliferationTest {
     //     }
 
     @Test
-    void testDaughterStem_RuleBased_VolumeTrue() {
+    void testDaughterStem_ruleBased_volumeTrue() {
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("FALSE");
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
@@ -1350,7 +1369,7 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    void testDaughterStem_RuleBased_VolumeFalse() {
+    void testDaughterStem_ruleBased_VolumeFalse() {
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("FALSE");
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
@@ -1367,7 +1386,7 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    void testDaughterStem_RuleBased_TfRatioTrue() {
+    void testDaughterStem_ruleBased_tfRatioTrue() {
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("FALSE");
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("tfRatio");
@@ -1385,7 +1404,7 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    void testDaughterStem_RuleBased_TfRatioFalse() {
+    void testDaughterStem_ruleBased_tfRatioFalse() {
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("FALSE");
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("tfRatio");
@@ -1403,7 +1422,7 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    void testDaughterStem_TfRatioZeroDeadpanZeroProspero_returnsTrue() {
+    void testDaughterStem_tfRatioZeroDeadpanZeroProspero_returnsTrue() {
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("FALSE");
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("tfRatio");
@@ -1416,5 +1435,25 @@ public class PottsModuleFlyStemProliferationTest {
         boolean result = !module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 0.0, 0.0);
 
         assertTrue(result, "Expected false when both prospero and deadpan are zero");
+    }
+
+    @Test
+    void passesTfRatioStemCheck_deadpanProsperoRatioLessThanTfRatio_returnsTrue() {
+        assertTrue(PottsModuleFlyStemProliferation.passesTfRatioStemCheck(2, 1, 5));
+    }
+
+    @Test
+    void passesTfRatioStemCheck_deadpanProsperoRatioGreaterThanTfRatio_returnsFalse() {
+        assertFalse(PottsModuleFlyStemProliferation.passesTfRatioStemCheck(2, 1, 1));
+    }
+
+    @Test
+    void passesTfRatioStemCheck_zeroDeadpanNonzeroProspero_returnsFalse() {
+        assertFalse(PottsModuleFlyStemProliferation.passesTfRatioStemCheck(2, 0, 5));
+    }
+
+    @Test
+    void passesTfRatioStemCheck_zeroDeadpanZeroProspero_returnsTrue() {
+        assertFalse(PottsModuleFlyStemProliferation.passesTfRatioStemCheck(0, 0, 5));
     }
 }

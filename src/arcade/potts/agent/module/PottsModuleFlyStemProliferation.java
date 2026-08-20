@@ -279,7 +279,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         if (allowParentDifferentiation) {
             double remainingProspero = ((PottsCellFly) cell).getProspero();
             double remainingDeadpan = ((PottsCellFly) cell).getDeadpan();
-            if (!passesTfRatioStemCheck(remainingProspero, remainingDeadpan)) {
+            if (!passesTfRatioStemCheck(remainingProspero, remainingDeadpan, this.tfRatio)) {
                 differentiateParentToGMC(
                         parentLoc, sim, potts, random, remainingProspero, remainingDeadpan);
             }
@@ -533,13 +533,14 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                     centroid1, centroid2, ((PottsCellFlyStem) cell).getApicalAxis(), range));
         } else if (differentiationRuleset.equals("tfRatio")) {
             System.out.println("WOO: Prospero comparison branch reached");
-            return passesTfRatioStemCheck(daughterProspero, daughterDeadpan);
+            return passesTfRatioStemCheck(daughterProspero, daughterDeadpan, this.tfRatio);
         }
         throw new IllegalArgumentException(
                 "Invalid differentiation ruleset: " + differentiationRuleset);
     }
 
-    private boolean passesTfRatioStemCheck(double daughterProspero, double daughterDeadpan) {
+    static boolean passesTfRatioStemCheck(
+            double daughterProspero, double daughterDeadpan, double tfRatio) {
         if (daughterDeadpan <= 0) {
             return daughterProspero < 0;
         }
