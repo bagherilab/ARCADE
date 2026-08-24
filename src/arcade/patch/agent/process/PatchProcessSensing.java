@@ -19,7 +19,7 @@ public abstract class PatchProcessSensing extends PatchProcess {
     }
 
     /**
-     * Creates a {@code PatchProcessSignaling} for given version.
+     * Creates a {@code PatchProcessSensing} for given version.
      *
      * @param cell the {@link PatchCell} the process is associated with
      * @param version the process version
@@ -27,8 +27,8 @@ public abstract class PatchProcessSensing extends PatchProcess {
      */
     public static PatchProcess make(PatchCell cell, String version) {
         switch (version.toUpperCase()) {
-            case "SIMPLE":
-                return new PatchProcessSensingSimple(cell);
+            case "HYPOXIC":
+                return new PatchProcessSensingHypoxic(cell);
             default:
                 return null;
         }

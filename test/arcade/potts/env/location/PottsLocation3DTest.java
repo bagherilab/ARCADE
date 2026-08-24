@@ -302,13 +302,11 @@ public class PottsLocation3DTest {
 
     @Test
     public void getOffsetInApicalFrame_called_raisesUnsupportedOperationException() {
-        {
-            PottsLocation3D loc = new PottsLocation3D(voxelListAB);
-            Vector apicalAxis = new Vector(0, 1, 0);
-            ArrayList<Integer> offsets = new ArrayList<>();
-            assertThrows(
-                    UnsupportedOperationException.class,
-                    () -> loc.getOffsetInApicalFrame(offsets, apicalAxis));
-        }
+        PottsLocation3D loc = new PottsLocation3D(voxelListAB);
+        Vector apicalAxis = new Vector(0, 1, 0);
+        ArrayList<Integer> offsets = new ArrayList<>();
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> loc.getOffsetInApicalFrame(offsets, apicalAxis));
     }
 }

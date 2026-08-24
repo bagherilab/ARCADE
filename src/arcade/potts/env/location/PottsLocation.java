@@ -621,7 +621,7 @@ public abstract class PottsLocation implements Location {
     abstract Voxel getOffsetInApicalFrame(ArrayList<Integer> offsets, Vector apicalAxis);
 
     /**
-     * Gets the direction of the slice orthogonal to the direction with the smallest diameter.
+     * Gets the direction of the slice orthagonal to the direction with the smallest diameter.
      *
      * @param random the seeded random number generator
      * @return the direction of the slice

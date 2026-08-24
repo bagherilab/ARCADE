@@ -1,11 +1,13 @@
 package arcade.potts.agent.module;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import sim.util.Bag;
 import sim.util.Double3D;
@@ -13,13 +15,13 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
-import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.core.util.Plane;
 import arcade.core.util.Vector;
 import arcade.core.util.distributions.NormalDistribution;
 import arcade.core.util.distributions.UniformDistribution;
 import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.agent.cell.PottsCellFlyStem;
 import arcade.potts.env.location.PottsLocation;
@@ -27,12 +29,16 @@ import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
+import arcade.potts.util.PottsEnums.Direction;
 import arcade.potts.util.PottsEnums.Phase;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
+import static arcade.potts.util.PottsEnums.State;
 
 public class PottsModuleFlyStemProliferationTest {
     PottsCellFlyStem stemCell;
@@ -57,7 +63,7 @@ public class PottsModuleFlyStemProliferationTest {
 
     NormalDistribution dist;
 
-    float EPSILON = 1e-6f;
+    public static final double EPSILON = 1e-6f;
 
     int stemCellPop;
 
@@ -93,6 +99,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         // Default centroid and volume values (sometimes overridden in tests)
         when(stemLoc.getVolume()).thenReturn(10.0);
+        when(stemCell.getVolume()).thenReturn(10.0);
         when(daughterLoc.getVolume()).thenReturn(5.0);
         when(stemLoc.getCentroid()).thenReturn(new double[] {0, 1.0, 0});
         when(daughterLoc.getCentroid()).thenReturn(new double[] {0, 1.6, 0});
@@ -101,11 +108,17 @@ public class PottsModuleFlyStemProliferationTest {
         when(parameters.getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION"))
                 .thenReturn(dist);
         when(dist.nextDouble()).thenReturn(0.1);
-        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
                 .thenReturn(0.5);
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("TRUE");
+        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
+                .thenReturn("apical_axis");
+        when(parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y")).thenReturn(93);
+        when(parameters.getDouble("proliferation/GMC_CRITICAL_VOLUME_OVERRIDE")).thenReturn(0.0);
+        when(parameters.getDouble("CRITICAL_VOLUME")).thenReturn(100.0);
 
         // Link selection
         GrabBag links = mock(GrabBag.class);
@@ -116,6 +129,8 @@ public class PottsModuleFlyStemProliferationTest {
         stemCellPop = 3;
         when(stemCell.getPop()).thenReturn(stemCellPop);
         when(stemCell.getCriticalVolume()).thenReturn(100.0);
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
     }
 
     @AfterEach
@@ -147,7 +162,7 @@ public class PottsModuleFlyStemProliferationTest {
         assertEquals(0.895, module.prosperoRate, EPSILON);
         assertEquals(0.314, module.deadpanRate, EPSILON);
         assertNotNull(module.splitDirectionDistribution);
-        assertEquals("volume", module.differentiationRuleset);
+        assertEquals("smaller_gmc", module.differentiationRuleset);
         assertEquals(0.5, module.range, EPSILON);
         assertEquals("global", module.apicalAxisRuleset);
         assertNotNull(module.apicalAxisRotationDistribution);
@@ -156,27 +171,28 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void constructor_volumeRuleset_setsExpectedFields() {
-        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+    public void constructor_smallerGmcRuleset_setsExpectedFields() {
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
                 .thenReturn(0.42);
         module = new PottsModuleFlyStemProliferation(stemCell);
 
         assertNotNull(module.splitDirectionDistribution);
-        assertEquals("volume", module.differentiationRuleset);
+        assertEquals("smaller_gmc", module.differentiationRuleset);
         assertEquals(0.42, module.range, EPSILON);
         assertEquals(arcade.potts.util.PottsEnums.Phase.UNDEFINED, module.phase);
     }
 
     @Test
-    public void constructor_locationRuleset_setsExpectedFields() {
-        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("location");
+    public void constructor_basalGmcRuleset_setsExpectedFields() {
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("basal_gmc");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
                 .thenReturn(0.99);
         module = new PottsModuleFlyStemProliferation(stemCell);
 
         assertNotNull(module.splitDirectionDistribution);
-        assertEquals("location", module.differentiationRuleset);
+        assertEquals("basal_gmc", module.differentiationRuleset);
         assertEquals(0.99, module.range, EPSILON);
         assertEquals(arcade.potts.util.PottsEnums.Phase.UNDEFINED, module.phase);
     }
@@ -192,6 +208,37 @@ public class PottsModuleFlyStemProliferationTest {
         assertEquals("tfRatio", module.differentiationRuleset);
         assertEquals(0.10, module.range, EPSILON);
         assertEquals(arcade.potts.util.PottsEnums.Phase.UNDEFINED, module.phase);
+    }
+
+    @Test
+    public void constructor_conflictingDynamicGrowthRateFlags_throwsInvalidParameterException() {
+        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(1);
+        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_SELF_REPRESSION"))
+                .thenReturn(1);
+
+        assertThrows(
+                InvalidParameterException.class,
+                () -> new PottsModuleFlyStemProliferation(stemCell));
+    }
+
+    @Test
+    public void
+            constructor_invalidHasDeterministicDifferentiationString_throwsInvalidParameterException() {
+        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
+                .thenReturn("yes");
+
+        assertThrows(
+                InvalidParameterException.class,
+                () -> new PottsModuleFlyStemProliferation(stemCell));
+    }
+
+    @Test
+    public void constructor_cellHasRegions_throwsUnsupportedOperationException() {
+        when(stemCell.hasRegions()).thenReturn(true);
+
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> new PottsModuleFlyStemProliferation(stemCell));
     }
 
     // Static method tests
@@ -248,8 +295,7 @@ public class PottsModuleFlyStemProliferationTest {
     public void getLessDeadpanLocation_loc1HasLessDeadpan_returnsLoc1() {
         PottsLocation loc1 = mock(PottsLocation.class);
         PottsLocation loc2 = mock(PottsLocation.class);
-        Location gmc =
-                PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 1.0, loc2, 5.0);
+        Location gmc = PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 1.0, loc2, 5.0);
         assertEquals(loc1, gmc);
     }
 
@@ -257,8 +303,7 @@ public class PottsModuleFlyStemProliferationTest {
     public void getLessDeadpanLocation_loc2HasLessDeadpan_returnsLoc2() {
         PottsLocation loc1 = mock(PottsLocation.class);
         PottsLocation loc2 = mock(PottsLocation.class);
-        Location gmc =
-                PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 5.0, loc2, 1.0);
+        Location gmc = PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 5.0, loc2, 1.0);
         assertEquals(loc2, gmc);
     }
 
@@ -266,8 +311,7 @@ public class PottsModuleFlyStemProliferationTest {
     public void getLessDeadpanLocation_equalDeadpan_returnsSecondLocation() {
         PottsLocation loc1 = mock(PottsLocation.class);
         PottsLocation loc2 = mock(PottsLocation.class);
-        Location gmc =
-                PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 2.5, loc2, 2.5);
+        Location gmc = PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 2.5, loc2, 2.5);
         assertEquals(loc2, gmc);
     }
 
@@ -275,9 +319,84 @@ public class PottsModuleFlyStemProliferationTest {
     public void getLessDeadpanLocation_bothZero_returnsSecondLocation() {
         PottsLocation loc1 = mock(PottsLocation.class);
         PottsLocation loc2 = mock(PottsLocation.class);
-        Location gmc =
-                PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 0.0, loc2, 0.0);
+        Location gmc = PottsModuleFlyStemProliferation.getLessDeadpanLocation(loc1, 0.0, loc2, 0.0);
         assertEquals(loc2, gmc);
+    }
+
+    @Test
+    public void getApicalLocation_centroidsDifferent_returnsApicalCentroid() {
+        PottsLocation loc1 = mock(PottsLocation.class);
+        PottsLocation loc2 = mock(PottsLocation.class);
+        when(loc1.getCentroid()).thenReturn(new double[] {0, 2, 0});
+        when(loc2.getCentroid()).thenReturn(new double[] {0, 1, 0});
+        Vector apicalAxis = new Vector(0, 1, 0);
+
+        PottsLocation result =
+                PottsModuleFlyStemProliferation.getApicalLocation(loc1, loc2, apicalAxis);
+        assertEquals(loc2, result);
+    }
+
+    @Test
+    public void getApicalLocation_centroidsSame_returnsSecondLocation() {
+        PottsLocation loc1 = mock(PottsLocation.class);
+        PottsLocation loc2 = mock(PottsLocation.class);
+        when(loc1.getCentroid()).thenReturn(new double[] {0, 2, 0});
+        when(loc2.getCentroid()).thenReturn(new double[] {0, 2, 0});
+        Vector apicalAxis = new Vector(0, 1, 0);
+
+        PottsLocation result =
+                PottsModuleFlyStemProliferation.getApicalLocation(loc1, loc2, apicalAxis);
+        assertEquals(loc2, result);
+    }
+
+    @Test
+    public void determineGMCLocation_random_nextBooleanTrue_returnsParent() {
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("random");
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        when(random.nextBoolean()).thenReturn(true);
+
+        Location result =
+                module.determineGMCLocation(
+                        stemLoc,
+                        (PottsLocation) daughterLoc,
+                        new Vector(0, 1, 0),
+                        0.0,
+                        0.0,
+                        random);
+        assertEquals(stemLoc, result);
+    }
+
+    @Test
+    public void determineGMCLocation_random_nextBooleanFalse_returnsDaughter() {
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("random");
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        when(random.nextBoolean()).thenReturn(false);
+
+        Location result =
+                module.determineGMCLocation(
+                        stemLoc,
+                        (PottsLocation) daughterLoc,
+                        new Vector(0, 1, 0),
+                        0.0,
+                        0.0,
+                        random);
+        assertEquals(daughterLoc, result);
+    }
+
+    @Test
+    public void determineGMCLocation_apicalGmc_returnsApicalLocation() {
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("apical_gmc");
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        PottsLocation loc1 = mock(PottsLocation.class);
+        PottsLocation loc2 = mock(PottsLocation.class);
+        when(loc1.getCentroid()).thenReturn(new double[] {0, 2, 0});
+        when(loc2.getCentroid()).thenReturn(new double[] {0, 1, 0});
+        Vector apicalAxis = new Vector(0, 1, 0);
+
+        Location result = module.determineGMCLocation(loc1, loc2, apicalAxis, 0.0, 0.0, random);
+        assertEquals(loc2, result);
     }
 
     @Test
@@ -346,7 +465,7 @@ public class PottsModuleFlyStemProliferationTest {
     public void getCellSplitVoxel_WT_callsLocationOffsetWithCorrectParams() {
         ArrayList<Integer> expectedOffset = new ArrayList<>();
         expectedOffset.add(50); // WT.splitOffsetPercentX
-        expectedOffset.add(85); // WT.splitOffsetPercentY
+        expectedOffset.add(93); // WT.splitOffsetPercentY
 
         when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
         when(stemCell.getLocation()).thenReturn(stemLoc);
@@ -387,7 +506,7 @@ public class PottsModuleFlyStemProliferationTest {
         Voxel splitVoxel = new Voxel(3, 4, 5);
         ArrayList<Integer> expectedOffset = new ArrayList<>();
         expectedOffset.add(50); // WT x offset percent
-        expectedOffset.add(80); // WT y offset percent
+        expectedOffset.add(93); // WT y offset percent
 
         module = new PottsModuleFlyStemProliferation(stemCell);
 
@@ -398,7 +517,8 @@ public class PottsModuleFlyStemProliferationTest {
                 Vector.rotateVectorAroundAxis(
                         afterBaseRotation, new Vector(0, 0, 1), offsetRotation);
 
-        when(stemLoc.getOffsetInApicalFrame(any(), eq(expectedNormal))).thenReturn(splitVoxel);
+        when(stemLoc.getOffsetInApicalFrame(eq(expectedOffset), eq(expectedNormal)))
+                .thenReturn(splitVoxel);
 
         Plane result = module.getWTDivisionPlaneWithRotationalVariance(stemCell, offsetRotation);
 
@@ -414,6 +534,160 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
+    public void getWTDivisionPlaneWithRotationalVariance_MUDMUT_withOffset50_uses50PercentY() {
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y")).thenReturn(50);
+
+        Vector apicalAxis = new Vector(0, 1, 0);
+        when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
+
+        ArrayList<Integer> expectedOffset = new ArrayList<>();
+        expectedOffset.add(50); // WT.splitOffsetPercentX
+        expectedOffset.add(50); // overridden y offset, not WT's 93
+
+        when(stemLoc.getOffsetInApicalFrame(eq(expectedOffset), any(Vector.class)))
+                .thenReturn(new Voxel(1, 2, 3));
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        module.getWTDivisionPlaneWithRotationalVariance(stemCell, 0.0);
+
+        verify(stemLoc).getOffsetInApicalFrame(eq(expectedOffset), any(Vector.class));
+    }
+
+    @Test
+    public void getWTDivisionPlaneWithRotationalVariance_WT_withOffset50_uses50PercentY() {
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y")).thenReturn(50);
+
+        Vector apicalAxis = new Vector(0, 1, 0);
+        when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
+
+        ArrayList<Integer> expectedOffset = new ArrayList<>();
+        expectedOffset.add(50); // x
+        expectedOffset.add(50); // y override
+
+        when(stemLoc.getOffsetInApicalFrame(eq(expectedOffset), any(Vector.class)))
+                .thenReturn(new Voxel(1, 2, 3));
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        module.getWTDivisionPlaneWithRotationalVariance(stemCell, 0.0);
+
+        verify(stemLoc).getOffsetInApicalFrame(eq(expectedOffset), any(Vector.class));
+    }
+
+    @Test
+    public void computeEquilibriumVolume_withOffset50_returnsExpected() {
+        // fRetain = 50/100 = 0.50; V_div = 1.2 * 100 = 120
+        // V_ref = 120 * (0.50 + 1) / 2 = 90.0
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y")).thenReturn(50);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        assertEquals(90.0, module.computeEquilibriumVolume(), EPSILON);
+    }
+
+    @Test
+    public void calculateGMCDaughterCellCriticalVolume_withOffset50_usesOverrideProportion() {
+        // GMC proportion = 1 - 50/100 = 0.50
+        // expected = critVol * sizeTarget * 0.50 = 100 * 1.2 * 0.50 = 60.0
+        when(stemCell.getCriticalVolume()).thenReturn(100.0);
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
+        when(parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y")).thenReturn(50);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertEquals(60.0, module.calculateGMCDaughterCellCriticalVolume(daughterLoc), EPSILON);
+    }
+
+    @Test
+    public void getCellSplitVoxel_explicitOffsets_callsLocationOffsetWithThoseOffsets() {
+        ArrayList<Integer> expectedOffset = new ArrayList<>();
+        expectedOffset.add(11);
+        expectedOffset.add(22);
+
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(stemCell.getLocation()).thenReturn(stemLoc);
+        when(stemLoc.getOffsetInApicalFrame(eq(expectedOffset), any(Vector.class)))
+                .thenReturn(new Voxel(0, 0, 0));
+
+        PottsModuleFlyStemProliferation.getCellSplitVoxel(
+                11, 22, stemCell, stemCell.getApicalAxis());
+
+        verify(stemLoc).getOffsetInApicalFrame(eq(expectedOffset), any(Vector.class));
+    }
+
+    @Test
+    public void constructor_invalidDivRotationReference_throwsInvalidParameterException() {
+        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE")).thenReturn("sideways");
+
+        assertThrows(
+                InvalidParameterException.class,
+                () -> new PottsModuleFlyStemProliferation(stemCell));
+    }
+
+    @Test
+    public void
+            getWTDivisionPlaneWithRotationalVariance_previousDivision_noPreviousNormal_usesApicalAxis() {
+        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
+                .thenReturn("previous_division");
+        Vector apicalAxis = new Vector(0, 1, 0);
+        when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
+        when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(new Voxel(0, 0, 0));
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        assertNull(module.previousDivisionNormal);
+
+        double offset = 30.0;
+        Vector expectedNormal =
+                Vector.rotateVectorAroundAxis(apicalAxis, Direction.XY_PLANE.vector, offset);
+        module.getWTDivisionPlaneWithRotationalVariance(stemCell, offset);
+
+        verify(stemLoc).getOffsetInApicalFrame(any(), eq(expectedNormal));
+    }
+
+    @Test
+    public void
+            getWTDivisionPlaneWithRotationalVariance_previousDivision_withPreviousNormal_usesPreviousNormal() {
+        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
+                .thenReturn("previous_division");
+        Vector apicalAxis = new Vector(0, 1, 0);
+        when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
+        when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(new Voxel(0, 0, 0));
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        Vector previousNormal = new Vector(1, 0, 0);
+        module.previousDivisionNormal = previousNormal;
+
+        double offset = 90.0;
+        Vector expectedNormal =
+                Vector.rotateVectorAroundAxis(previousNormal, Direction.XY_PLANE.vector, offset);
+        module.getWTDivisionPlaneWithRotationalVariance(stemCell, offset);
+
+        verify(stemLoc).getOffsetInApicalFrame(any(), eq(expectedNormal));
+    }
+
+    @Test
+    public void
+            getWTDivisionPlaneWithRotationalVariance_apicalAxis_withPreviousNormal_usesApicalAxis() {
+        // apical_axis ruleset: previous normal is ignored even if set
+        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
+                .thenReturn("apical_axis");
+        Vector apicalAxis = new Vector(0, 1, 0);
+        when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
+        when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(new Voxel(0, 0, 0));
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        module.previousDivisionNormal = new Vector(1, 0, 0); // set but should be ignored
+
+        double offset = 45.0;
+        Vector expectedNormal =
+                Vector.rotateVectorAroundAxis(apicalAxis, Direction.XY_PLANE.vector, offset);
+        module.getWTDivisionPlaneWithRotationalVariance(stemCell, offset);
+
+        verify(stemLoc).getOffsetInApicalFrame(any(), eq(expectedNormal));
+    }
+
+    @Test
     public void getMUDDivisionPlane_returnsRotatedPlaneWithCorrectNormal() {
         Vector apicalAxis = new Vector(0, 1, 0);
         when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
@@ -424,7 +698,9 @@ public class PottsModuleFlyStemProliferationTest {
         ArrayList<Integer> expectedOffset = new ArrayList<>();
         expectedOffset.add(50); // MUDMUT x offset percent
         expectedOffset.add(50); // MUDMUT y offset percent
-        when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(splitVoxel);
+        // MUD plane keeps the StemType offsets; it is not affected by
+        // WT_DIVISION_SPLIT_OFFSET_PERCENT_Y.
+        when(stemLoc.getOffsetInApicalFrame(eq(expectedOffset), any())).thenReturn(splitVoxel);
 
         module = new PottsModuleFlyStemProliferation(stemCell);
         Plane result = module.getMUDDivisionPlane(stemCell);
@@ -468,7 +744,7 @@ public class PottsModuleFlyStemProliferationTest {
     @Test
     public void chooseDivisionPlane_MUDMUT_withLowOffset_callsWTVariant() {
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
-        when(dist.nextDouble()).thenReturn(10.0); // abs(offset) < 45 → WT logic
+        when(dist.nextDouble()).thenReturn(10.0); // abs(offset) < 75 → WT logic
 
         module = spy(new PottsModuleFlyStemProliferation(stemCell));
 
@@ -487,7 +763,7 @@ public class PottsModuleFlyStemProliferationTest {
     @Test
     public void chooseDivisionPlane_MUDMUT_withHighOffset_callsMUDVariant() {
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
-        when(dist.nextDouble()).thenReturn(60.0); // abs(offset) ≥ 45 → MUD logic
+        when(dist.nextDouble()).thenReturn(80.0); // abs(offset) > 75 → MUD logic
 
         module = spy(new PottsModuleFlyStemProliferation(stemCell));
 
@@ -614,6 +890,51 @@ public class PottsModuleFlyStemProliferationTest {
     // EPSILON);
     //    }
 
+    @Test
+    public void step_volumeAtCheckpoint_callsAddCellPhaseStaysUndefined() {
+        // Trigger division
+        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(0);
+        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
+        when(stemCell.getCriticalVolume()).thenReturn(100.0);
+        when(stemCell.getVolume()).thenReturn(120.0); // ≥ 1.2 * 100
+
+        // Needed by calculateGMCDaughterCellCriticalVolume(...)
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+
+        // Plane/voxel path (chooseDivisionPlane -> WT ->
+        // getWTDivisionPlaneWithRotationalVariance)
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(stemLoc.getOffsetInApicalFrame(any(), any(Vector.class)))
+                .thenReturn(new Voxel(1, 2, 3));
+
+        // Differentiation rule
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
+        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
+                .thenReturn(0.5);
+
+        // Cell creation path used by scheduleNewCell(...)
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCellFlyStem newCell = mock(PottsCellFlyStem.class);
+        when(stemCell.make(anyInt(), eq(State.PROLIFERATIVE), eq(random), anyInt(), anyDouble()))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+
+        // split(...) inside addCell
+        when(stemLoc.split(eq(random), any(Plane.class))).thenReturn(daughterLoc);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        module.step(random, sim);
+
+        verify(stemCell).updateTarget(eq(4.0), anyDouble());
+        verify(stemLoc).split(eq(random), any(Plane.class)); // addCell ran
+        verify(grid).addObject(any(), isNull()); // scheduled new cell
+        verify(potts).register(any()); // registered new cell
+        assertEquals(Phase.UNDEFINED, module.phase); // remains UNDEFINED
+    }
+
     // Apical axis rule tests
 
     @Test
@@ -663,6 +984,19 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
+    public void getDaughterCellApicalAxis_normalRulesetWithUniformDistribution_throwsException() {
+        // "rotation" hits the default case; this test exercises the instanceof guard inside
+        // "normal"
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("normal");
+        when(parameters.getDistribution("proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION"))
+                .thenReturn(mock(UniformDistribution.class));
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        assertThrows(
+                IllegalArgumentException.class, () -> module.getDaughterCellApicalAxis(random));
+    }
+
+    @Test
     public void getDaughterCellApicalAxis_uniform_returnsRotatedAxis() {
         when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("uniform");
 
@@ -701,36 +1035,102 @@ public class PottsModuleFlyStemProliferationTest {
         when(stemCell.getCriticalVolume()).thenReturn(100.0);
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
         when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
-        // WT has proportion = 0.2
+        // GMC proportion = 1 - WT_DIVISION_SPLIT_OFFSET_PERCENT_Y/100 = 1 - 0.93 = 0.07
 
         module = new PottsModuleFlyStemProliferation(stemCell);
-        when(parameters.getInt("proliferation/VOLUME_BASED_CRITVOL")).thenReturn(0);
 
         double result = module.calculateGMCDaughterCellCriticalVolume(daughterLoc);
-        assertEquals((100 * .18 * 1.2), result, EPSILON); // 100 * 0.18 * 1.2
+        assertEquals((100 * .07 * 1.2), result, EPSILON); // 100 * 0.07 * 1.2
     }
 
     @Test
-    public void calculateGMCDaughterCellCriticalVolume_volumeBasedOn_returnsScaledValue() {
-        PottsLocation gmcLoc = mock(PottsLocation.class);
-        when(gmcLoc.getVolume()).thenReturn(50.0);
+    public void addCell_nbDaughterVolumeBasedCritVol_aboveFloor_usesBirthVolume() {
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(1);
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
+        when(daughterLoc.getVolume()).thenReturn(25.0);
+        // floor = populationCriticalVolume * 0.20 = 100.0 * 0.20 = 20.0
+        // expected = max(25.0, 20.0) = 25.0
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCellFlyStem newCell = mock(PottsCellFlyStem.class);
+        when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random), eq(stemCellPop), eq(25.0)))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+
+        Plane dummyPlane = mock(Plane.class);
+        module = spy(new PottsModuleFlyStemProliferation(stemCell));
+        doReturn(dummyPlane).when(module).chooseDivisionPlane(stemCell);
+        doReturn(true).when(module).daughterStem(any(), any(), any(), anyDouble(), anyDouble());
+
+        module.addCell(random, sim);
+
+        verify(stemCell)
+                .make(eq(42), eq(State.PROLIFERATIVE), eq(random), eq(stemCellPop), eq(25.0));
+    }
+
+    @Test
+    public void addCell_nbDaughterVolumeBasedCritVol_belowFloor_usesPopCritVolFloor() {
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(1);
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
+        when(daughterLoc.getVolume()).thenReturn(5.0);
+        // floor = populationCriticalVolume * 0.20 = 100.0 * 0.20 = 20.0
+        // expected = max(5.0, 20.0) = 20.0 — the floor, not the birth volume
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCellFlyStem newCell = mock(PottsCellFlyStem.class);
+        when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random), eq(stemCellPop), eq(20.0)))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+
+        Plane dummyPlane = mock(Plane.class);
+        module = spy(new PottsModuleFlyStemProliferation(stemCell));
+        doReturn(dummyPlane).when(module).chooseDivisionPlane(stemCell);
+        doReturn(true).when(module).daughterStem(any(), any(), any(), anyDouble(), anyDouble());
+
+        module.addCell(random, sim);
+
+        verify(stemCell)
+                .make(eq(42), eq(State.PROLIFERATIVE), eq(random), eq(stemCellPop), eq(20.0));
+    }
+
+    @Test
+    public void calculateGMCDaughterCellCriticalVolume_withGMCOverride_returnsOverrideValue() {
+        // GMC_CRITICAL_VOLUME_OVERRIDE=200 and VCV=0 → returns 200 regardless of the formula,
+        // which would otherwise give 100 * 1.2 * 0.07 = 8.4
         when(stemCell.getCriticalVolume()).thenReturn(100.0);
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(0);
+        when(parameters.getDouble("proliferation/GMC_CRITICAL_VOLUME_OVERRIDE")).thenReturn(200.0);
 
-        MiniBox popParametersMiniBox = mock(MiniBox.class);
-        when(popParametersMiniBox.getDouble("proliferation/SIZE_TARGET")).thenReturn(2.0);
+        module = new PottsModuleFlyStemProliferation(stemCell);
 
-        when(sim.getCellFactory()).thenReturn(factory);
-        when(factory.getParameters(stemCellPop)).thenReturn(popParametersMiniBox);
+        assertEquals(200.0, module.calculateGMCDaughterCellCriticalVolume(daughterLoc), EPSILON);
+    }
 
+    @Test
+    public void calculateGMCDaughterCellCriticalVolume_withGMCOverrideAndVCVOn_ignoresOverride() {
+        // GMC_CRITICAL_VOLUME_OVERRIDE=200 but VCV=1 → override ignored, birth volume used
+        PottsLocation gmcLoc = mock(PottsLocation.class);
+        when(gmcLoc.getVolume()).thenReturn(50.0);
         when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(1);
-        when(parameters.getDouble("proliferation/VOLUME_BASED_CRITICAL_VOLUME_MULTIPLIER"))
-                .thenReturn(1.5);
+        when(parameters.getDouble("proliferation/GMC_CRITICAL_VOLUME_OVERRIDE")).thenReturn(200.0);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertEquals(50.0, module.calculateGMCDaughterCellCriticalVolume(gmcLoc), EPSILON);
+    }
+
+    @Test
+    public void calculateGMCDaughterCellCriticalVolume_volumeBasedOn_returnsLocVolume() {
+        PottsLocation gmcLoc = mock(PottsLocation.class);
+        when(gmcLoc.getVolume()).thenReturn(50.0);
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(1);
 
         module = new PottsModuleFlyStemProliferation(stemCell);
 
         double result = module.calculateGMCDaughterCellCriticalVolume(gmcLoc);
-        assertEquals(75.0, result, EPSILON); // 50 * 1.5
+        assertEquals(50.0, result, EPSILON);
     }
 
     // addCell integration tests
@@ -899,6 +1299,258 @@ public class PottsModuleFlyStemProliferationTest {
     //    }
 
     @Test
+    public void calculateGMCDaughterCellCriticalVolume_volumeBasedOnVerySmallVolume_returnsFloor() {
+        // @BeforeEach: stemLoc.getVolume()=10.0, so initialSize=10.0 → floor = 10.0 * 0.1 = 1.0
+        // gmcLoc.getVolume()=0.5 < 1.0, so Math.max picks the floor
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(1);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        PottsLocation gmcLoc = mock(PottsLocation.class);
+        when(gmcLoc.getVolume()).thenReturn(0.5);
+
+        double result = module.calculateGMCDaughterCellCriticalVolume(gmcLoc);
+        assertEquals(1.0, result, EPSILON); // initialSize * 0.1 = 10.0 * 0.1
+    }
+
+    // addCell integration tests
+
+    @Test
+    public void addCell_WTVolumeSwap_swapsVoxelsAndCreatesNewCell() {
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
+        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
+                .thenReturn("FALSE");
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.0);
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(0);
+
+        // parent smaller than daughter -> rule-based 'volume' says parent is GMC ->
+        // triggers swap
+        when(stemLoc.getVolume()).thenReturn(5.0);
+        when(daughterLoc.getVolume()).thenReturn(10.0);
+
+        Plane dummyPlane = mock(Plane.class);
+        when(dummyPlane.getUnitNormalVector()).thenReturn(new Vector(1, 0, 0));
+        when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCellFlyStem newStemCell = mock(PottsCellFlyStem.class);
+        when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random), anyInt(), anyDouble()))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newStemCell);
+
+        PottsModuleFlyStemProliferation spyModule =
+                spy(new PottsModuleFlyStemProliferation(stemCell));
+        doReturn(0.0).when(spyModule).sampleDivisionPlaneOffset();
+        doReturn(dummyPlane)
+                .when(spyModule)
+                .getWTDivisionPlaneWithRotationalVariance(eq(stemCell), anyDouble());
+
+        try (MockedStatic<PottsLocation> mocked = mockStatic(PottsLocation.class)) {
+            mocked.when(
+                            () ->
+                                    PottsLocation.getDirectionalVoxelSubset(
+                                            any(), anyDouble(), any(), any(), any()))
+                    .thenAnswer(invocation -> new Bag());
+            spyModule.addCell(random, sim);
+            mocked.verify(() -> PottsLocation.swapVoxels(stemLoc, daughterLoc));
+        }
+
+        verify(newStemCell).schedule(any());
+    }
+
+    @Test
+    public void addCell_WTVolumeNoSwap_doesNotSwapVoxelsAndCreatesNewCell() {
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.0);
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(0);
+
+        // Set up the condition that parent volume > daughter volume → no swap
+        when(stemLoc.getVolume()).thenReturn(10.0);
+        when(daughterLoc.getVolume()).thenReturn(5.0);
+
+        // Stub division plane
+        Plane dummyPlane = mock(Plane.class);
+        when(dummyPlane.getUnitNormalVector()).thenReturn(new Vector(1, 0, 0));
+        when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
+
+        // Stub cell creation. A WT division always yields a GMC daughter, so the daughter's
+        // population comes from getLinks(), not the parent's population.
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCellFlyStem newDaughterCell = mock(PottsCellFlyStem.class);
+        when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random), anyInt(), anyDouble()))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random)))
+                .thenReturn(newDaughterCell);
+
+        // Spy and override division plane logic
+        PottsModuleFlyStemProliferation spyModule =
+                spy(new PottsModuleFlyStemProliferation(stemCell));
+        doReturn(dummyPlane)
+                .when(spyModule)
+                .getWTDivisionPlaneWithRotationalVariance(eq(stemCell), anyDouble());
+
+        try (MockedStatic<PottsLocation> mocked = mockStatic(PottsLocation.class)) {
+            mocked.when(
+                            () ->
+                                    PottsLocation.getDirectionalVoxelSubset(
+                                            any(), anyDouble(), any(), any(), any()))
+                    .thenAnswer(invocation -> new Bag());
+            spyModule.addCell(random, sim);
+            mocked.verify(() -> PottsLocation.swapVoxels(any(), any()), never());
+        }
+        verify(newDaughterCell).schedule(any());
+    }
+
+    @Test
+    public void addCell_MUDMUTOffsetAboveThreshold_createsStemCell() {
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(dist.nextDouble()).thenReturn(80.0); // triggers MUD plane (abs(offset) > 75)
+
+        sim = mock(PottsSimulation.class);
+        potts = mock(Potts.class);
+        factory = mock(PottsCellFactory.class);
+        grid = mock(Grid.class);
+        when(sim.getPotts()).thenReturn(potts);
+        when(sim.getGrid()).thenReturn(grid);
+        when(sim.getCellFactory()).thenReturn(factory);
+        when(sim.getSchedule()).thenReturn(mock(sim.engine.Schedule.class));
+        when(sim.getID()).thenReturn(42);
+        potts.ids = new int[1][1][1];
+        potts.regions = new int[1][1][1];
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCellFlyStem newCell = mock(PottsCellFlyStem.class);
+        when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random), eq(stemCellPop), eq(100.0)))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+        when(stemCell.getCriticalVolume()).thenReturn(100.0);
+        when(stemCell.getPop()).thenReturn(stemCellPop);
+
+        PottsModuleFlyStemProliferation spyModule =
+                spy(new PottsModuleFlyStemProliferation(stemCell));
+        Plane dummyPlane = mock(Plane.class);
+        doReturn(dummyPlane).when(spyModule).getMUDDivisionPlane(eq(stemCell));
+        when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
+        doReturn(true).when(spyModule).daughterStem(any(), any(), any(), anyDouble(), anyDouble());
+
+        spyModule.addCell(random, sim);
+
+        verify(newCell).schedule(any());
+    }
+
+    @Test
+    public void addCell_MUDMUTOffsetBelowThreshold_createsGMCWithVolumeSwap() {
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(dist.nextDouble()).thenReturn(10.0); // below 75 threshold
+
+        when(stemLoc.getVolume()).thenReturn(5.0);
+        when(daughterLoc.getVolume()).thenReturn(10.0); // triggers swap
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCellFlyStem newCell = mock(PottsCellFlyStem.class);
+        when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random), anyInt(), anyDouble()))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+        when(stemCell.getCriticalVolume()).thenReturn(100.0);
+        when(stemCell.getPop()).thenReturn(stemCellPop);
+
+        module = spy(new PottsModuleFlyStemProliferation(stemCell));
+        Plane dummyPlane = mock(Plane.class);
+        doReturn(dummyPlane)
+                .when(module)
+                .getWTDivisionPlaneWithRotationalVariance(eq(stemCell), anyDouble());
+        when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
+        doReturn(false).when(module).daughterStem(any(), any(), any(), anyDouble(), anyDouble());
+
+        try (MockedStatic<PottsLocation> mocked = mockStatic(PottsLocation.class)) {
+            mocked.when(
+                            () ->
+                                    PottsLocation.getDirectionalVoxelSubset(
+                                            any(), anyDouble(), any(), any(), any()))
+                    .thenAnswer(invocation -> new Bag());
+            module.addCell(random, sim);
+            mocked.verify(() -> PottsLocation.swapVoxels(stemLoc, daughterLoc));
+        }
+
+        verify(newCell).schedule(any());
+    }
+
+    @Test
+    public void addCell_previousDivisionReference_updatesPreviousDivisionNormal() {
+        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
+                .thenReturn("previous_division");
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.0);
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(0);
+        when(stemLoc.getVolume()).thenReturn(10.0);
+        when(daughterLoc.getVolume()).thenReturn(5.0);
+
+        Vector expectedNormal = new Vector(1, 0, 0);
+        Plane dummyPlane = mock(Plane.class);
+        when(dummyPlane.getUnitNormalVector()).thenReturn(expectedNormal);
+        when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCellFlyStem newCell = mock(PottsCellFlyStem.class);
+        when(stemCell.make(anyInt(), any(), eq(random), anyInt(), anyDouble()))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+
+        module = spy(new PottsModuleFlyStemProliferation(stemCell));
+        doReturn(dummyPlane).when(module).chooseDivisionPlane(stemCell);
+
+        module.addCell(random, sim);
+
+        assertEquals(expectedNormal, module.previousDivisionNormal);
+    }
+
+    @Test
+    public void addCell_apicalAxisReference_doesNotUpdatePreviousDivisionNormal() {
+        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
+                .thenReturn("apical_axis");
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.0);
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(0);
+        when(stemLoc.getVolume()).thenReturn(10.0);
+        when(daughterLoc.getVolume()).thenReturn(5.0);
+
+        Plane dummyPlane = mock(Plane.class);
+        when(dummyPlane.getUnitNormalVector()).thenReturn(new Vector(1, 0, 0));
+        when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCellFlyStem newCell = mock(PottsCellFlyStem.class);
+        when(stemCell.make(anyInt(), any(), eq(random), anyInt(), anyDouble()))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+
+        module = spy(new PottsModuleFlyStemProliferation(stemCell));
+        doReturn(dummyPlane).when(module).chooseDivisionPlane(stemCell);
+
+        module.addCell(random, sim);
+
+        assertNull(module.previousDivisionNormal);
+    }
+
+    @Test
     public void getNBNeighbors_withTwoUniqueStemNeighbors_returnsCorrectSet() {
         module = spy(new PottsModuleFlyStemProliferation(stemCell));
 
@@ -989,159 +1641,143 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void getNBsInSimulation_emptyBag_returnsEmptySet() {
-        Bag bag = new Bag(); // real MASON Bag
-        when(grid.getAllObjects()).thenReturn(bag);
+    public void getNBNeighbors_nullNeighborInGrid_skipsNullAndContinues() {
+        module = spy(new PottsModuleFlyStemProliferation(stemCell));
 
-        module = new PottsModuleFlyStemProliferation(stemCell);
-        HashSet<PottsCellFlyStem> result = module.getNBsInSimulation(sim);
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 0, 0));
+        when(stemLoc.getVoxels()).thenReturn(voxels);
 
-        assertNotNull(result);
-        assertTrue(result.isEmpty(), "Empty grid should yield empty set");
-    }
+        // Two IDs: one resolves to null, the other to a valid matching neighbor
+        HashSet<Integer> ids = new HashSet<>(Arrays.asList(7, 8));
+        when(potts.getUniqueIDs(0, 0, 0)).thenReturn(ids);
 
-    @Test
-    public void getNBsInSimulation_mixedObjects_returnsOnlyMatchingFlyStems() {
-        // Arrange: matching NB, non-matching NB, matching non-FlyStem, random object, matching NB
-        PottsCellFlyStem nbMatch1 = mock(PottsCellFlyStem.class);
-        when(nbMatch1.getPop()).thenReturn(3);
+        when(grid.getObjectAt(7)).thenReturn(null);
 
-        PottsCellFlyStem nbOtherPop = mock(PottsCellFlyStem.class);
-        when(nbOtherPop.getPop()).thenReturn(99);
+        PottsCellFlyStem validNeighbor = mock(PottsCellFlyStem.class);
+        when(validNeighbor.getID()).thenReturn(8);
+        when(validNeighbor.getPop()).thenReturn(stemCellPop);
+        when(grid.getObjectAt(8)).thenReturn(validNeighbor);
 
-        PottsCell nonNBButSamePop = mock(PottsCell.class);
-        when(nonNBButSamePop.getPop()).thenReturn(3);
+        when(stemCell.getPop()).thenReturn(stemCellPop);
+        when(stemCell.getID()).thenReturn(42);
 
-        Object random = new Object();
+        HashSet<PottsCellFlyStem> neighbors = module.getNBNeighbors(sim);
 
-        PottsCellFlyStem nbMatch2 = mock(PottsCellFlyStem.class);
-        when(nbMatch2.getPop()).thenReturn(3);
-
-        Bag bag = new Bag();
-        bag.add(nbMatch1);
-        bag.add(nbOtherPop);
-        bag.add(nonNBButSamePop);
-        bag.add(random);
-        bag.add(nbMatch2);
-        when(grid.getAllObjects()).thenReturn(bag);
-
-        when(stemCell.getPop()).thenReturn(3);
-
-        module = new PottsModuleFlyStemProliferation(stemCell);
-        HashSet<PottsCellFlyStem> result = module.getNBsInSimulation(sim);
-
-        assertEquals(2, result.size(), "Should return exactly the two matching FlyStem NBs");
-        assertTrue(result.contains(nbMatch1));
-        assertTrue(result.contains(nbMatch2));
-    }
-
-    @Test
-    public void getNBsInSimulation_includesSelfCell() {
-        // The module's 'cell' has pop = 3 (already stubbed in @BeforeEach)
-        when(stemCell.getPop()).thenReturn(3);
-
-        // Bag contains: self (FlyStem, pop 3), another FlyStem pop 3, a non-FlyStem pop 3, and a
-        // random object
-        PottsCellFlyStem another = mock(PottsCellFlyStem.class);
-        when(another.getPop()).thenReturn(3);
-        PottsCell nonFlyStemSamePop = mock(PottsCell.class);
-        when(nonFlyStemSamePop.getPop()).thenReturn(3);
-        Object random = new Object();
-
-        Bag bag = new Bag();
-        bag.add(stemCell); // self
-        bag.add(another); // matching FlyStem
-        bag.add(nonFlyStemSamePop); // same pop but NOT FlyStem → should be ignored
-        bag.add(random); // ignored
-
-        when(grid.getAllObjects()).thenReturn(bag);
-
-        module = new PottsModuleFlyStemProliferation(stemCell);
-        HashSet<PottsCellFlyStem> result = module.getNBsInSimulation(sim);
-
-        assertTrue(result.contains(stemCell), "Result should include the module's own stem cell.");
-        assertTrue(result.contains(another), "Result should include other matching FlyStem cells.");
         assertEquals(
-                2,
-                result.size(),
-                "Only the two FlyStem cells with matching pop should be returned.");
+                1, neighbors.size(), "Null grid entry should be skipped; valid neighbor returned");
+        assertTrue(neighbors.contains(validNeighbor));
+    }
+
+    // computeEquilibriumVolume tests
+
+    @Test
+    public void computeEquilibriumVolume_WT_returnsExpectedMidpoint() {
+        // V_div = sizeTarget * critVol = 1.2 * 100 = 120
+        // fRetain = WT_DIVISION_SPLIT_OFFSET_PERCENT_Y / 100 = 93 / 100 = 0.93
+        // V_ref = 120 * (0.93 + 1) / 2 = 120 * 0.965 = 115.8
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        assertEquals(115.8, module.computeEquilibriumVolume(), EPSILON);
     }
 
     @Test
-    public void updateVolumeBasedGrowthRate_pdeLikeFalse_usesCellVolume() {
-        // pdeLike = 0 → should call updateCellVolumeBasedGrowthRate with THIS cell's volume
-        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
+    public void computeEquilibriumVolume_MUDMUT_usesWTFRetain() {
+        // fRetain comes from WT_DIVISION_SPLIT_OFFSET_PERCENT_Y (0.93) regardless of cell type,
+        // since MUDMUT cells also divide by WT rules within MUDMUT_WT_DIVISION_ANGLE_THRESHOLD.
+        // V_ref = 120 * (0.93 + 1) / 2 = 115.8
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        assertEquals(115.8, module.computeEquilibriumVolume(), EPSILON);
+    }
 
-        // Make the current cell's volume distinctive so we can verify it
-        when(stemCell.getLocation()).thenReturn(stemLoc);
+    @Test
+    public void computeEquilibriumVolume_differentSizeTarget_scalesCorrectly() {
+        // V_div = 2.0 * 50 = 100; V_ref = 100 * (0.93 + 1) / 2 = 96.5
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(2.0);
+        when(parameters.getDouble("CRITICAL_VOLUME")).thenReturn(50.0);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        assertEquals(96.5, module.computeEquilibriumVolume(), EPSILON);
+    }
+
+    @Test
+    public void computeEquilibriumVolume_called_usesPopulationValue() {
+        // The cell's own critVol (200) differs from the population CRITICAL_VOLUME (100).
+        // V_ref must follow the population value: 1.2 * 100 * (0.93 + 1) / 2 = 115.8,
+        // not the per-cell value, which would give 231.6.
+        when(parameters.getDouble("CRITICAL_VOLUME")).thenReturn(100.0);
+        when(stemCell.getCriticalVolume()).thenReturn(200.0);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        assertEquals(115.8, module.computeEquilibriumVolume(), EPSILON);
+    }
+
+    @Test
+    public void computeEquilibriumVolume_differentPopulationCritVol_scalesCorrectly() {
+        // V_div = 1.0 * 200 = 200; V_ref = 200 * (0.93 + 1) / 2 = 193.0
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.0);
+        when(parameters.getDouble("CRITICAL_VOLUME")).thenReturn(200.0);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        assertEquals(193.0, module.computeEquilibriumVolume(), EPSILON);
+    }
+
+    // updateGrowthRate dispatch tests
+
+    @Test
+    public void updateGrowthRate_volumeDynamic_callsVolumeBasedMethod() {
+        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(1);
+
+        module = spy(new PottsModuleFlyStemProliferation(stemCell));
+        doNothing().when(module).updateVolumeBasedGrowthRate(any());
+
+        module.updateGrowthRate(sim);
+
+        verify(module, times(1)).updateVolumeBasedGrowthRate(sim);
+        verify(module, never()).updateGrowthRateBasedOnOtherNBs(any());
+    }
+
+    @Test
+    public void updateGrowthRate_nbSelfRepression_callsNBMethod() {
+        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_SELF_REPRESSION"))
+                .thenReturn(1);
+
+        module = spy(new PottsModuleFlyStemProliferation(stemCell));
+        doNothing().when(module).updateGrowthRateBasedOnOtherNBs(any());
+
+        module.updateGrowthRate(sim);
+
+        verify(module, times(1)).updateGrowthRateBasedOnOtherNBs(sim);
+        verify(module, never()).updateVolumeBasedGrowthRate(any());
+    }
+
+    @Test
+    public void updateGrowthRate_noFlags_setsCellGrowthRateToBase() {
+        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(7.5);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        module.updateGrowthRate(sim);
+
+        assertEquals(module.cellGrowthRateBase, module.cellGrowthRate, EPSILON);
+        assertEquals(7.5, module.cellGrowthRate, EPSILON);
+    }
+
+    @Test
+    public void updateVolumeBasedGrowthRate_called_usesCellVolumeAndEquilibriumRef() {
         when(stemLoc.getVolume()).thenReturn(42.5);
 
         module = spy(new PottsModuleFlyStemProliferation(stemCell));
-
-        // We only want to verify the value it was called with
-        doNothing().when(module).updateCellVolumeBasedGrowthRate(anyDouble(), anyDouble());
-        when(stemCell.getCriticalVolume()).thenReturn(100.0);
-
-        module.updateVolumeBasedGrowthRate(sim);
-
-        verify(module, times(1)).updateCellVolumeBasedGrowthRate(eq(42.5), eq(100.0));
-        verify(module, never()).getNBsInSimulation(any());
-    }
-
-    @Test
-    public void
-            updateVolumeBasedGrowthRate_pdeLikeTrue_usesAverageVolumeAndAverageCritVolAcrossNBs() {
-        // pdeLike = 1 (PDE-like) and dynamicGrowthRateNBContact must be 0 to avoid ctor exception
-        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(1);
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(0);
-
-        module = spy(new PottsModuleFlyStemProliferation(stemCell));
-
-        // NB mocks
-        PottsCellFlyStem nbA = mock(PottsCellFlyStem.class);
-        PottsCellFlyStem nbB = mock(PottsCellFlyStem.class);
-        PottsCellFlyStem nbC = mock(PottsCellFlyStem.class);
-
-        // Location mocks for each NB
-        PottsLocation locA = mock(PottsLocation.class);
-        PottsLocation locB = mock(PottsLocation.class);
-        PottsLocation locC = mock(PottsLocation.class);
-
-        when(nbA.getLocation()).thenReturn(locA);
-        when(nbB.getLocation()).thenReturn(locB);
-        when(nbC.getLocation()).thenReturn(locC);
-
-        // Volumes: 10, 20, 40 -> avg = 70/3
-        when(locA.getVolume()).thenReturn(10.0);
-        when(locB.getVolume()).thenReturn(20.0);
-        when(locC.getVolume()).thenReturn(40.0);
-
-        // Critical volumes: 90, 110, 100 -> avg = 300/3 = 100
-        when(nbA.getCriticalVolume()).thenReturn(90.0);
-        when(nbB.getCriticalVolume()).thenReturn(110.0);
-        when(nbC.getCriticalVolume()).thenReturn(100.0);
-
-        HashSet<PottsCellFlyStem> allNBs = new HashSet<>(Arrays.asList(nbA, nbB, nbC));
-
-        doReturn(allNBs).when(module).getNBsInSimulation(sim);
         doNothing().when(module).updateCellVolumeBasedGrowthRate(anyDouble(), anyDouble());
 
         module.updateVolumeBasedGrowthRate(sim);
 
-        double expectedAvgVol = (10.0 + 20.0 + 40.0) / 3.0; // 23.333333333333332
-        double expectedAvgCrit = (90.0 + 110.0 + 100.0) / 3.0; // 100.0
-
-        verify(module, times(1)).getNBsInSimulation(sim);
-        verify(module, times(1))
-                .updateCellVolumeBasedGrowthRate(eq(expectedAvgVol), eq(expectedAvgCrit));
+        // V_ref = sizeTarget * critVol * (WT_DIVISION_SPLIT_OFFSET_PERCENT_Y/100 + 1) / 2
+        //       = 1.2 * 100 * (0.93 + 1) / 2 = 115.8
+        // Computed with the same operation order as the implementation, since eq() on a double is
+        // an exact match and 120.0 * 1.93 / 2.0 is 115.80000000000001.
+        double expectedVRef = 1.2 * 100.0 * (0.93 + 1.0) / 2.0;
+        verify(module, times(1)).updateCellVolumeBasedGrowthRate(eq(42.5), eq(expectedVRef));
     }
 
     @Test
-    public void updateGrowthRateBasedOnOtherNBs_pdeLikeFalse_usesNeighborsBranch() {
-        // pdeLike = 0 → neighbors branch
-        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
+    public void updateGrowthRateBasedOnOtherNBs_called_usesNeighborsBranch() {
 
         when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(4.0);
         when(parameters.getDouble("proliferation/NB_CONTACT_HILL_N")).thenReturn(2.0);
@@ -1157,49 +1793,15 @@ public class PottsModuleFlyStemProliferationTest {
             four.add(n);
         }
         doReturn(four).when(module).getNBNeighbors(sim);
-        // Make sure population path is not used
-        doReturn(new HashSet<PottsCellFlyStem>()).when(module).getNBsInSimulation(sim);
 
         module.updateGrowthRateBasedOnOtherNBs(sim);
 
         assertEquals(6.0, module.cellGrowthRate, 1e-6);
         verify(module, times(1)).getNBNeighbors(sim);
-        verify(module, never()).getNBsInSimulation(sim);
-    }
-
-    @Test
-    public void updateGrowthRateBasedOnOtherNBs_pdeLikeTrue_usesPopulationBranch() {
-        // pdeLike = 1 and dynamicGrowthRateNBContact = 0 to avoid constructor exception
-        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(1);
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(0);
-
-        when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(3.0);
-        when(parameters.getDouble("proliferation/NB_CONTACT_HILL_N")).thenReturn(2.0);
-        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(20.0);
-
-        module = spy(new PottsModuleFlyStemProliferation(stemCell));
-
-        // N = 6 in-simulation (K = 3, n = 2 → 9/(9+36)=0.2 → 4.0)
-        HashSet<PottsCellFlyStem> six = new HashSet<>();
-        for (int i = 0; i <= 6; i++) {
-            PottsCellFlyStem n = mock(PottsCellFlyStem.class);
-            when(n.getID()).thenReturn(200 + i);
-            six.add(n);
-        }
-        doReturn(new HashSet<PottsCellFlyStem>()).when(module).getNBNeighbors(sim);
-        doReturn(six).when(module).getNBsInSimulation(sim);
-
-        module.updateGrowthRateBasedOnOtherNBs(sim);
-
-        assertEquals(4.0, module.cellGrowthRate, 1e-6);
-        verify(module, times(1)).getNBsInSimulation(sim);
-        verify(module, never()).getNBNeighbors(sim);
     }
 
     @Test
     public void updateGrowthRateBasedOnOtherNBs_KZeroandZeroNeighbors_returnsBase() {
-        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
 
         when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(0.0); // K = 0
         when(parameters.getDouble("proliferation/NB_CONTACT_HILL_N")).thenReturn(2.0);
@@ -1217,8 +1819,6 @@ public class PottsModuleFlyStemProliferationTest {
 
     @Test
     public void updateGrowthRateBasedOnOtherNBs_KZeroandPositiveNeighbors_returnsZero() {
-        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
 
         when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(0.0); // K = 0
         when(parameters.getDouble("proliferation/NB_CONTACT_HILL_N")).thenReturn(2.0);
@@ -1240,8 +1840,6 @@ public class PottsModuleFlyStemProliferationTest {
 
     @Test
     public void updateGrowthRateBasedOnOtherNBs_hillExponentOne_linearCase() {
-        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
 
         when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(4.0);
         when(parameters.getDouble("proliferation/NB_CONTACT_HILL_N")).thenReturn(1.0); // linear
@@ -1265,8 +1863,6 @@ public class PottsModuleFlyStemProliferationTest {
 
     @Test
     public void updateGrowthRateBasedOnOtherNBs_largeNeighbors_approachesZero() {
-        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
-        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_CONTACT")).thenReturn(1);
 
         when(parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX")).thenReturn(5.0);
         when(parameters.getDouble("proliferation/NB_CONTACT_HILL_N")).thenReturn(3.0);
@@ -1288,84 +1884,99 @@ public class PottsModuleFlyStemProliferationTest {
         assertTrue(module.cellGrowthRate < 0.01, "Growth should be ~0 with very large N.");
     }
 
-    // TODO: Have Danielle rename and fix
-    //     @Test
-    //     void daughterStem_DeterministicTrue() {
-    //         // Mock parameters
-    //         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
-    //                 .thenReturn("TRUE");
-    //
-    // when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
-    //         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
-    //                 .thenReturn(0.1);
+    @Test
+    public void daughterStem_deterministicWT_returnsFalse() {
+        // A WT division always yields a GMC daughter, even when the division plane normal happens
+        // to match the expected MUD normal exactly — which is the case constructed here.
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
 
-    //         // Mock cell type + division plane normal vector
-    //         Plane plane = mock(Plane.class);
-    //         when(plane.getUnitNormalVector()).thenReturn(new Vector(1.0, 0, 0));
+        Plane plane = mock(Plane.class);
+        when(plane.getUnitNormalVector()).thenReturn(new Vector(1.0, 0, 0));
 
-    //         // Construct module
-    //         PottsModuleFlyStemProliferation module = new
-    // PottsModuleFlyStemProliferation(stemCell);
+        module = new PottsModuleFlyStemProliferation(stemCell);
 
-    //         // Call
-    //         boolean result = module.daughterStem(stemLoc, daughterLoc, plane);
-
-    //         // Verify
-    //         assertTrue(
-    //                 result,
-    //                 "Expected daughterStemWrapper to return true for deterministic orientation");
-    //     }
-
-    //     @Test
-    //     void testDaughterStem_DeterministicFalse() {
-    //         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
-    //                 .thenReturn("TRUE");
-    //
-    // when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
-    //         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
-    //                 .thenReturn(0.1);
-
-    //         Plane plane = mock(Plane.class);
-    //         when(plane.getUnitNormalVector()).thenReturn(new Vector(0, 1.0, 0));
-
-    //         PottsModuleFlyStemProliferation module = new
-    // PottsModuleFlyStemProliferation(stemCell);
-
-    //         boolean result = module.daughterStem(stemLoc, daughterLoc, plane);
-
-    //         assertFalse(result, "Expected false when division plane normal is not (1,0,0)");
-    //     }
+        assertFalse(
+                module.daughterStem(stemLoc, daughterLoc, plane, 0.0, 0.0),
+                "Expected WT deterministic differentiation to always return false.");
+    }
 
     @Test
-    void testDaughterStem_RuleBased_VolumeTrue() {
+    public void daughterStem_deterministicTruematchingNormalVector_returnsTrue() {
+        // hasDeterministicDifferentiation=true is already set in @BeforeEach
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        Vector apicalAxis = new Vector(0, 1, 0);
+        when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
+
+        // Compute the MUDMUT expected normal the same way daughterStemDeterministic does:
+        // rotateVectorAroundAxis(apicalAxis, XY_PLANE, MUDMUT.splitDirectionRotation=-90) → (1,0,0)
+        Vector expectedNormal =
+                Vector.rotateVectorAroundAxis(
+                        apicalAxis,
+                        new Vector(0, 0, 1), // Direction.XY_PLANE.vector
+                        PottsCellFlyStem.StemType.MUDMUT.splitDirectionRotation);
+
+        Plane plane = mock(Plane.class);
+        when(plane.getUnitNormalVector()).thenReturn(expectedNormal);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        boolean result = module.daughterStem(stemLoc, daughterLoc, plane, 0.0, 0.0);
+
+        assertTrue(
+                result, "Expected true when division plane normal matches MUDMUT expected normal");
+    }
+
+    @Test
+    public void daughterStem_deterministicTrueNonMatchingNormalVector_returnsFalse() {
+        // hasDeterministicDifferentiation=true is already set in @BeforeEach
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        Vector apicalAxis = new Vector(0, 1, 0);
+        when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
+
+        // Use a normal that does NOT match the MUDMUT expected normal (1,0,0)
+        Plane plane = mock(Plane.class);
+        when(plane.getUnitNormalVector()).thenReturn(new Vector(0, 1, 0));
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        boolean result = module.daughterStem(stemLoc, daughterLoc, plane, 0.0, 0.0);
+
+        assertFalse(
+                result,
+                "Expected false when division plane normal does not match MUDMUT expected normal");
+    }
+
+    @Test
+    void daughterStem_volumeRuleBased_true() {
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("FALSE");
-        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
                 .thenReturn(10.0); // large enough for |10 - 5| < 10
 
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
 
-        PottsModuleFlyStemProliferation module = new PottsModuleFlyStemProliferation(stemCell);
+        module = new PottsModuleFlyStemProliferation(stemCell);
 
-        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 0, 0);
+        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 0.0, 0.0);
 
         assertTrue(result, "Expected true since |10-5| < range");
     }
 
     @Test
-    void testDaughterStem_RuleBased_VolumeFalse() {
+    void daughterStem_volumeRuleBased_false() {
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("FALSE");
-        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("volume");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
                 .thenReturn(1.0); // |10 - 5| = 5 > 1
 
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
 
-        PottsModuleFlyStemProliferation module = new PottsModuleFlyStemProliferation(stemCell);
+        module = new PottsModuleFlyStemProliferation(stemCell);
 
-        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 0, 0);
+        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 0.0, 0.0);
 
         assertFalse(result, "Expected false since |10-5| > range");
     }
@@ -1420,5 +2031,142 @@ public class PottsModuleFlyStemProliferationTest {
         boolean result = !module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 0.0, 0.0);
 
         assertTrue(result, "Expected false when both prospero and deadpan are zero");
+    }
+
+    @Test
+    public void daughterStem_ruleBasedWTSmallerGmc_volumesOutsideRange_returnsFalse() {
+        // @BeforeEach sets: stemLoc volume=10.0, daughterLoc volume=5.0, range=0.5
+        // |10.0 - 5.0| = 5.0 > 0.5 -> outside range -> false
+        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
+                .thenReturn("FALSE");
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 0.0, 0.0);
+
+        assertFalse(result, "Expected false: volume difference 5.0 exceeds range 0.5");
+    }
+
+    @Test
+    public void daughterStem_ruleBasedWTSmallerGmc_volumesWithinRange_returnsTrue() {
+        // A non-deterministic WT division evaluates the ruleset rather than being forced to GMC.
+        // @BeforeEach sets: stemLoc volume=10.0, daughterLoc volume=5.0
+        // |10.0 - 5.0| = 5.0 < 10.0 -> within range -> true
+        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
+                .thenReturn("FALSE");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
+        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
+                .thenReturn(10.0);
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 0.0, 0.0);
+
+        assertTrue(result, "Expected true: volume difference 5.0 is within range 10.0");
+    }
+
+    @Test
+    public void daughterStem_ruleBasedWTTfRatio_ratioAtThreshold_returnsTrue() {
+        // prospero/deadpan (2.0/1.0) == tfRatio (2.0), and the comparison is inclusive.
+        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
+                .thenReturn("FALSE");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("tfRatio");
+        when(parameters.getDouble("proliferation/TF_RATIO")).thenReturn(2.0);
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 2.0, 1.0);
+
+        assertTrue(result, "WT: Expected true since prospero/deadpan (2.0) <= tfRatio (2.0)");
+    }
+
+    @Test
+    public void daughterStem_deterministicWTTfRatio_returnsFalse() {
+        // The deterministic flag imposes differentiation: a WT daughter is always a GMC, even
+        // when the transcription factor ratio (0.25 <= 2.0) would otherwise keep it a stem cell.
+        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
+                .thenReturn("TRUE");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("tfRatio");
+        when(parameters.getDouble("proliferation/TF_RATIO")).thenReturn(2.0);
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 1.0, 4.0);
+
+        assertFalse(result, "Deterministic WT should yield a GMC regardless of the TF ratio");
+    }
+
+    @Test
+    public void daughterStem_ruleBasedNanobodyTfRatio_returnsTrue() {
+        // tfRatio decides from transcription factor levels alone, so it applies to every stem
+        // type rather than only WT and MUDMUT.
+        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
+                .thenReturn("FALSE");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("tfRatio");
+        when(parameters.getDouble("proliferation/TF_RATIO")).thenReturn(2.0);
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.NANOBODY);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 1.0, 4.0);
+
+        assertTrue(
+                result, "NANOBODY: Expected true since prospero/deadpan (0.25) <= tfRatio (2.0)");
+    }
+
+    @Test
+    public void daughterStem_ruleBasedMUDMUTBasalGmc_withinRange_returnsTrue() {
+        // @BeforeEach sets: stemLoc centroid=(0,1.0,0), daughterLoc centroid=(0,1.6,0)
+        // With apical axis (0,1,0), distance along axis = |1.6 - 1.0| = 0.6
+        // range=1.0 > 0.6 → within range → true
+        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
+                .thenReturn("FALSE");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("basal_gmc");
+        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
+                .thenReturn(1.0);
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 0.0, 0.0);
+
+        assertTrue(
+                result,
+                "Expected true: centroid distance 0.6 is within range 1.0 along apical axis");
+    }
+
+    @Test
+    public void daughterStem_ruleBasedMUDMUTBasalGmc_outsideRange_returnsFalse() {
+        // @BeforeEach sets: stemLoc centroid=(0,1.0,0), daughterLoc centroid=(0,1.6,0)
+        // With apical axis (0,1,0), distance along axis = |1.6 - 1.0| = 0.6
+        // range=0.5 < 0.6 → outside range → false
+        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
+                .thenReturn("FALSE");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("basal_gmc");
+        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
+                .thenReturn(0.5);
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 0.0, 0.0);
+
+        assertFalse(
+                result,
+                "Expected false: centroid distance 0.6 exceeds range 0.5 along apical axis");
+    }
+
+    @Test
+    public void daughterStem_ruleBasedMUDMUTInvalidRuleset_throwsException() {
+        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
+                .thenReturn("FALSE");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("invalid");
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> module.daughterStem(stemLoc, daughterLoc, mock(Plane.class), 0.0, 0.0));
     }
 }

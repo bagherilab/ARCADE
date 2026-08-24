@@ -10,6 +10,8 @@ import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
+import arcade.potts.util.PottsEnums.Phase;
+import arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Region;
 

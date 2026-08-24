@@ -125,4 +125,26 @@ public class PottsCellFlyGMCTest {
                 () -> assertNull(container.criticalRegionVolumes),
                 () -> assertNull(container.criticalRegionHeights));
     }
+
+    @Test
+    public void make_withExplicitCritVol_usesProvidedCritVol() {
+        PottsCellFlyGMC gmc =
+                new PottsCellFlyGMC(baseContainer, locationMock, parametersMock, links);
+        double explicitCritVol = cellCriticalVolume + 50.0;
+        PottsCellContainer container = gmc.make(cellID, State.QUIESCENT, explicitCritVol, random);
+        assertAll(
+                () -> assertNotNull(container),
+                () -> assertEquals(cellID, container.parent),
+                () -> assertEquals(1, container.pop),
+                () -> assertEquals(cellAge, container.age),
+                () -> assertEquals(cellDivisions + 1, container.divisions),
+                () -> assertEquals(State.QUIESCENT, container.state),
+                () -> assertNull(container.phase),
+                () -> assertEquals(0, container.voxels),
+                () -> assertNull(container.regionVoxels),
+                () -> assertEquals(explicitCritVol, container.criticalVolume, EPSILON),
+                () -> assertEquals(cellCriticalHeight, container.criticalHeight, EPSILON),
+                () -> assertNull(container.criticalRegionVolumes),
+                () -> assertNull(container.criticalRegionHeights));
+    }
 }

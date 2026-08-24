@@ -15,28 +15,30 @@ public class PottsCellFlyStem extends PottsCellFly {
     /** Enum outlining parameters for each cell type. */
     public enum StemType {
         /** Wild type stem cell. */
-        WT(50, 85, 0, 0.18),
+        WT(50, 93, 0),
 
         /** mud Mutant stem cell. */
-        MUDMUT(50, 50, -90, 0.5),
+        MUDMUT(50, 50, -90),
 
         /** Nanobody stem cell */
-        NANOBODY(50, 14, 0, 0.5);
+        NANOBODY(50, 14, 0);
 
         /** Percentage x offset from cell edge where division will occur. */
         public final int splitOffsetPercentX;
 
-        /** Percentage y offset from cell edge where division will occur. */
+        /**
+         * Percentage y offset from cell edge where division will occur. Under the rectangular-cell
+         * approximation used elsewhere in the proliferation module, this is also the fraction of
+         * the pre-division volume retained by the NB, leaving {@code 1 - splitOffsetPercentY / 100}
+         * for the GMC daughter.
+         *
+         * <p>This governs the MUD division plane only. The WT division path uses the {@code
+         * WT_DIVISION_SPLIT_OFFSET_PERCENT_Y} parameter instead, which may differ from this value.
+         */
         public final int splitOffsetPercentY;
 
         /** Default direction of division is rotated this much off the apical vector. */
         public final double splitDirectionRotation;
-
-        /**
-         * The proportion of the stem cell's critical volume that will be the daughter cell's
-         * critical volume.
-         */
-        public final double daughterCellCriticalVolumeProportion;
 
         /**
          * Constructor for StemType.
@@ -44,24 +46,18 @@ public class PottsCellFlyStem extends PottsCellFly {
          * @param splitOffsetPercentX percentage x offset from cell edge where division will occur
          * @param splitOffsetPercentY percentage y offset from cell edge where division will occur
          * @param splitDirectionRotation the plane of division's rotation off the apical vector
-         * @param daughterCellCriticalVolumeProportion proportion of the stem cell's critical volume
-         *     that will be the daughter cell's critical volume
          */
-        StemType(
-                int splitOffsetPercentX,
-                int splitOffsetPercentY,
-                double splitDirectionRotation,
-                double daughterCellCriticalVolumeProportion) {
+        StemType(int splitOffsetPercentX, int splitOffsetPercentY, double splitDirectionRotation) {
             this.splitOffsetPercentX = splitOffsetPercentX;
             this.splitOffsetPercentY = splitOffsetPercentY;
             this.splitDirectionRotation = splitDirectionRotation;
-            this.daughterCellCriticalVolumeProportion = daughterCellCriticalVolumeProportion;
         }
     }
 
     /** The type of stem cell. */
     public final StemType stemType;
 
+    /** The cell's apical axis. The vector points towards the apical membrane. */
     private Vector apicalAxis;
 
     /**
@@ -97,6 +93,11 @@ public class PottsCellFlyStem extends PottsCellFly {
         }
     }
 
+    /**
+     * Sets the apical axis.
+     *
+     * @param apicalAxis the new apical axis
+     */
     public void setApicalAxis(Vector apicalAxis) {
         this.apicalAxis = apicalAxis;
     }
@@ -118,9 +119,21 @@ public class PottsCellFlyStem extends PottsCellFly {
     @Override
     public PottsCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
         throw new UnsupportedOperationException(
-                "make(int, CellState, MersenneTwisterFast) not supported. Please use make(int, CellState, MersenneTwisterFast, int, double) instead.");
+                "make(int, CellState, MersenneTwisterFast) not supported."
+                        + "Please use make(int, CellState, MersenneTwisterFast, int, double) instead.");
     }
 
+    /**
+     * Makes a potts cell container with information about the daughter cell's population and
+     * critical volume calculated by the proliferation module.
+     *
+     * @param newID the new cell ID
+     * @param newState the new cell state
+     * @param random the random number generator
+     * @param newPop the new cell population
+     * @param daughterCellCriticalVolume the new cell's critical volume
+     * @return a {@link PottsCellContainer} with the information needed to make the daughter cell
+     */
     public PottsCellContainer make(
             int newID,
             CellState newState,
