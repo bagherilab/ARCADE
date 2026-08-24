@@ -1672,7 +1672,7 @@ public class PottsLocationTest {
         Bag expected = new Bag();
         for (int i = 0; i < 10; i++) {
             voxels.add(new Voxel(0, 0, i));
-            if (i < 5) {
+            if (i >= 5) {
                 expected.add(new Voxel(0, 0, i));
             }
         }
@@ -1724,7 +1724,7 @@ public class PottsLocationTest {
                         new double[] {0, 0, 0},
                         new Vector(0, 0, 1));
         assertEquals(1, result.size());
-        assertTrue(result.contains(new Voxel(0, 0, 0)));
+        assertTrue(result.contains(new Voxel(0, 0, 4)));
     }
 
     @Test
@@ -1733,7 +1733,7 @@ public class PottsLocationTest {
         Bag expected = new Bag();
         for (int i = 0; i < 10; i++) {
             voxels.add(new Voxel(0, 0, i));
-            if (i >= 5) {
+            if (i < 5) {
                 expected.add(new Voxel(0, 0, i));
             }
         }
@@ -1785,7 +1785,7 @@ public class PottsLocationTest {
                         new double[] {0, 0, 0},
                         new Vector(0, 0, 1));
         assertEquals(1, result.size());
-        assertTrue(result.contains(new Voxel(0, 0, 4)));
+        assertTrue(result.contains(new Voxel(0, 0, 0)));
     }
 
     @Test
@@ -1926,7 +1926,7 @@ public class PottsLocationTest {
                         new double[] {0, 0, 14.5},
                         new Vector(0, 0, 1));
         assertEquals(5, result.size());
-        for (int i = 10; i < 15; i++) {
+        for (int i = 15; i < 20; i++) {
             assertTrue(result.contains(new Voxel(0, 0, i)));
         }
     }
@@ -1946,9 +1946,9 @@ public class PottsLocationTest {
                         new double[] {0, 0, 0},
                         new Vector(inv, inv, 0));
         assertEquals(3, result.size());
-        assertTrue(result.contains(new Voxel(0, 0, 0)));
-        assertTrue(result.contains(new Voxel(1, 1, 0)));
         assertTrue(result.contains(new Voxel(2, 2, 0)));
+        assertTrue(result.contains(new Voxel(3, 3, 0)));
+        assertTrue(result.contains(new Voxel(4, 4, 0)));
     }
 
     @Test
@@ -1966,9 +1966,9 @@ public class PottsLocationTest {
                         new double[] {0, 0, 0},
                         new Vector(inv, inv, 0));
         assertEquals(3, result.size());
+        assertTrue(result.contains(new Voxel(0, 0, 0)));
+        assertTrue(result.contains(new Voxel(1, 1, 0)));
         assertTrue(result.contains(new Voxel(2, 2, 0)));
-        assertTrue(result.contains(new Voxel(3, 3, 0)));
-        assertTrue(result.contains(new Voxel(4, 4, 0)));
     }
 
     @Test
@@ -1987,8 +1987,8 @@ public class PottsLocationTest {
                         new double[] {0, 0, 0},
                         new Vector(0, 0, 1));
         assertEquals(3, result.size());
-        assertTrue(result.contains(new Voxel(5, 3, 0)));
-        assertTrue(result.contains(new Voxel(1, 9, 1)));
         assertTrue(result.contains(new Voxel(2, 7, 2)));
+        assertTrue(result.contains(new Voxel(8, 0, 3)));
+        assertTrue(result.contains(new Voxel(4, 4, 4)));
     }
 }

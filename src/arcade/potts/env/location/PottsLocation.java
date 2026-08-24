@@ -658,12 +658,17 @@ public abstract class PottsLocation implements Location {
     /**
      * Gets the voxels up to a threshold from a side of the cell.
      *
+     * <p>Follows the apical-basal convention used throughout the fly stem model: {@code
+     * apicalBasalAxis} runs from the apical toward the basal side, so a <em>larger</em> projection
+     * onto it means more basal. The same convention drives {@link #getOffsetInApicalFrame}, where a
+     * split offset of 93 places the division plane near the basal end of the cell.
+     *
      * @param side the side of the cell, must be APICAL or BASAL
      * @param thresholdPercent the threshold percent of voxels to get, must be between 0 and 1
      *     (inclusive)
      * @param voxels the list of voxels in the cell to check
      * @param centroid the centroid of the cell
-     * @param apicalAxis the apical axis of the cell
+     * @param apicalBasalAxis the cell's apical-basal axis, pointing toward the basal side
      * @return a Bag containing the voxels within the threshold and side
      */
     public static Bag getDirectionalVoxelSubset(
@@ -671,7 +676,7 @@ public abstract class PottsLocation implements Location {
             double thresholdPercent,
             ArrayList<Voxel> voxels,
             double[] centroid,
-            Vector apicalAxis) {
+            Vector apicalBasalAxis) {
 
         if (thresholdPercent < 0 || thresholdPercent > 1) {
             throw new IllegalArgumentException(
@@ -685,9 +690,9 @@ public abstract class PottsLocation implements Location {
         for (int i = 0; i < voxels.size(); i++) {
             Voxel v = voxels.get(i);
             double comp =
-                    (v.x - centroid[0]) * apicalAxis.getX()
-                            + (v.y - centroid[1]) * apicalAxis.getY()
-                            + (v.z - centroid[2]) * apicalAxis.getZ();
+                    (v.x - centroid[0]) * apicalBasalAxis.getX()
+                            + (v.y - centroid[1]) * apicalBasalAxis.getY()
+                            + (v.z - centroid[2]) * apicalBasalAxis.getZ();
             projections[i] = comp;
             minProj = Math.min(minProj, comp);
             maxProj = Math.max(maxProj, comp);
@@ -696,9 +701,9 @@ public abstract class PottsLocation implements Location {
         double range = maxProj - minProj;
         double cutoff;
         if (side == Side.APICAL) {
-            cutoff = maxProj - thresholdPercent * range;
-        } else if (side == Side.BASAL) {
             cutoff = minProj + thresholdPercent * range;
+        } else if (side == Side.BASAL) {
+            cutoff = maxProj - thresholdPercent * range;
         } else {
             throw new IllegalArgumentException("Side must be APICAL or BASAL, but was: " + side);
         }
@@ -708,9 +713,9 @@ public abstract class PottsLocation implements Location {
         for (int i = 0; i < voxels.size(); i++) {
             Voxel v = voxels.get(i);
             // boundaries are both inclusive
-            if (side == Side.APICAL && projections[i] >= cutoff) {
+            if (side == Side.APICAL && projections[i] <= cutoff) {
                 result.add(v);
-            } else if (side == Side.BASAL && projections[i] <= cutoff) {
+            } else if (side == Side.BASAL && projections[i] >= cutoff) {
                 result.add(v);
             }
         }

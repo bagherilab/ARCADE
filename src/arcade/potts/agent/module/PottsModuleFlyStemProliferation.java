@@ -1006,22 +1006,26 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Gets the location that is lower along the apical axis.
+     * Gets the basal location of the two, comparing their centroids along the division axis.
+     *
+     * <p>Callers pass the division plane's unit normal, not the cell's apical axis. Under {@code
+     * DIV_ROTATION_REFERENCE=apical_axis} that normal is the apical axis rotated by the sampled
+     * division offset; under {@code previous_division} it is the previous plane's normal.
      *
      * @param loc1 {@link PottsLocation} to compare.
      * @param loc2 {@link PottsLocation} to compare.
-     * @param apicalAxis Unit {@link Vector} defining the apical-basal direction.
-     * @return the basal location (lower along the apical axis).
+     * @param divisionAxis Unit {@link Vector} normal to the division plane.
+     * @return the basal location (the larger projection onto {@code divisionAxis}).
      */
     public static PottsLocation getBasalLocation(
-            PottsLocation loc1, PottsLocation loc2, Vector apicalAxis) {
+            PottsLocation loc1, PottsLocation loc2, Vector divisionAxis) {
         double[] centroid1 = loc1.getCentroid();
         double[] centroid2 = loc2.getCentroid();
         Vector c1 = new Vector(centroid1[0], centroid1[1], centroid1.length > 2 ? centroid1[2] : 0);
         Vector c2 = new Vector(centroid2[0], centroid2[1], centroid2.length > 2 ? centroid2[2] : 0);
 
-        double proj1 = Vector.dotProduct(c1, apicalAxis);
-        double proj2 = Vector.dotProduct(c2, apicalAxis);
+        double proj1 = Vector.dotProduct(c1, divisionAxis);
+        double proj2 = Vector.dotProduct(c2, divisionAxis);
 
         return (proj1 < proj2) ? loc2 : loc1; // higher projection = more basal
     }
@@ -1056,16 +1060,19 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Gets the location that is higher along the apical axis (opposite of getBasalLocation).
+     * Gets the apical location of the two, the opposite of {@link #getBasalLocation}.
+     *
+     * <p>As with {@link #getBasalLocation}, callers pass the division plane's unit normal rather
+     * than the cell's apical axis.
      *
      * @param loc1 {@link PottsLocation} to compare.
      * @param loc2 {@link PottsLocation} to compare.
-     * @param apicalAxis Unit {@link Vector} defining the apical-basal direction.
-     * @return the apical location (higher along the apical axis).
+     * @param divisionAxis Unit {@link Vector} normal to the division plane.
+     * @return the apical location (the smaller projection onto {@code divisionAxis}).
      */
     public static PottsLocation getApicalLocation(
-            PottsLocation loc1, PottsLocation loc2, Vector apicalAxis) {
-        PottsLocation basalLoc = getBasalLocation(loc1, loc2, apicalAxis);
+            PottsLocation loc1, PottsLocation loc2, Vector divisionAxis) {
+        PottsLocation basalLoc = getBasalLocation(loc1, loc2, divisionAxis);
         return (basalLoc == loc1) ? loc2 : loc1;
     }
 }
