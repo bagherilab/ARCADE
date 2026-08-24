@@ -31,6 +31,7 @@ import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.util.PottsEnums.Direction;
 import arcade.potts.util.PottsEnums.Phase;
+import arcade.potts.util.PottsEnums.Side;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
@@ -1358,6 +1359,74 @@ public class PottsModuleFlyStemProliferationTest {
         }
 
         verify(newStemCell).schedule(any());
+    }
+
+    @Test
+    public void addCell_gmcAtParentLocation_newCellCarriesParentTranscriptionFactorShare() {
+        // The parent is the smaller location, so 'smaller_gmc' designates it the GMC and
+        // makeDaughterGMC swaps voxels. The new cell is created at daughterLoc, which after the
+        // swap holds what were the parent's voxels, so it must carry the parent's share of each
+        // transcription factor rather than the share measured on the pre-swap daughter.
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
+        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
+                .thenReturn("FALSE");
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.0);
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(0);
+
+        // parent smaller than daughter -> 'smaller_gmc' says parent is the GMC -> triggers swap
+        when(stemLoc.getVolume()).thenReturn(5.0);
+        when(daughterLoc.getVolume()).thenReturn(10.0);
+
+        when(stemCell.getProspero()).thenReturn(10.0);
+        when(stemCell.getDeadpan()).thenReturn(20.0);
+
+        // One of the four basal voxels and one of the four apical voxels lie in the daughter, so
+        // basalFrac = apicalFrac = 0.25, giving daughterProspero = 2.5 and daughterDeadpan = 5.0.
+        ArrayList<Voxel> daughterVoxels = new ArrayList<>();
+        daughterVoxels.add(new Voxel(0, 0, 0));
+        daughterVoxels.add(new Voxel(1, 0, 0));
+        when(daughterLoc.getVoxels()).thenReturn(daughterVoxels);
+
+        Plane dummyPlane = mock(Plane.class);
+        when(dummyPlane.getUnitNormalVector()).thenReturn(new Vector(1, 0, 0));
+        when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCellFlyStem newCell = mock(PottsCellFlyStem.class);
+        when(stemCell.make(eq(42), eq(State.PROLIFERATIVE), eq(random), anyInt(), anyDouble()))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+
+        PottsModuleFlyStemProliferation spyModule =
+                spy(new PottsModuleFlyStemProliferation(stemCell));
+        doReturn(0.0).when(spyModule).sampleDivisionPlaneOffset();
+        doReturn(dummyPlane)
+                .when(spyModule)
+                .getWTDivisionPlaneWithRotationalVariance(eq(stemCell), anyDouble());
+
+        try (MockedStatic<PottsLocation> mocked = mockStatic(PottsLocation.class)) {
+            mocked.when(
+                            () ->
+                                    PottsLocation.getDirectionalVoxelSubset(
+                                            any(), anyDouble(), any(), any(), any()))
+                    .thenAnswer(
+                            invocation -> {
+                                Bag bag = new Bag();
+                                int x = invocation.getArgument(0) == Side.BASAL ? 0 : 1;
+                                for (int i = 0; i < 4; i++) {
+                                    bag.add(new Voxel(x, 0, i));
+                                }
+                                return bag;
+                            });
+            spyModule.addCell(random, sim);
+            mocked.verify(() -> PottsLocation.swapVoxels(stemLoc, daughterLoc));
+        }
+
+        // parent share = 10.0 - 2.5 prospero and 20.0 - 5.0 deadpan
+        verify(newCell).setProspero(7.5);
+        verify(newCell).setDeadpan(15.0);
     }
 
     @Test

@@ -335,6 +335,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                     divisionPlane.getUnitNormalVector(),
                     daughterProspero,
                     daughterDeadpan,
+                    parentProspero - daughterProspero,
                     parentDeadpan - daughterDeadpan);
         }
     }
@@ -762,7 +763,12 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Makes a daughter GMC cell
+     * Makes a daughter GMC cell.
+     *
+     * <p>The new cell is always created at {@code daughterLoc}. When the ruleset designates the
+     * parent's location as the GMC, the two locations' voxels are swapped, so {@code daughterLoc}
+     * then holds what were the parent's voxels. The transcription factors follow the voxels: in
+     * that case the new cell is given the parent's share and the parent retains the daughter's.
      *
      * @param parentLoc the location of the parent NB cell
      * @param daughterLoc the location of the daughter GMC cell
@@ -770,6 +776,11 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * @param potts the potts instance for this simulation
      * @param random the random number generator
      * @param divisionPlaneNormal the normal vector to the plane of division
+     * @param daughterProspero the Prospero held by the voxels at {@code daughterLoc} before any
+     *     swap
+     * @param daughterDeadpan the Deadpan held by the voxels at {@code daughterLoc} before any swap
+     * @param parentProspero the Prospero held by the voxels at {@code parentLoc} before any swap
+     * @param parentDeadpan the Deadpan held by the voxels at {@code parentLoc} before any swap
      */
     private void makeDaughterGMC(
             PottsLocation parentLoc,
@@ -780,6 +791,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             Vector divisionPlaneNormal,
             double daughterProspero,
             double daughterDeadpan,
+            double parentProspero,
             double parentDeadpan) {
         Location gmcLoc =
                 determineGMCLocation(
@@ -802,8 +814,15 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             }
         }
 
+        // The transcription factors follow the voxels: after a swap the new cell occupies what
+        // were the parent's voxels, so it takes the parent's share of each factor.
+        double newCellProspero = daughterProspero;
+        double newCellDeadpan = daughterDeadpan;
+
         if (parentLoc == gmcLoc) {
             PottsLocation.swapVoxels(parentLoc, daughterLoc);
+            newCellProspero = parentProspero;
+            newCellDeadpan = parentDeadpan;
         }
         cell.reset(potts.ids, potts.regions);
         int newID = sim.getID();
@@ -816,12 +835,12 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         System.out.print(
                 "Creating daughter GMC with prospero "
-                        + daughterProspero
+                        + newCellProspero
                         + ", deadpan "
-                        + daughterDeadpan
+                        + newCellDeadpan
                         + ", ");
         scheduleNewCell(
-                container, daughterLoc, sim, potts, random, daughterProspero, daughterDeadpan);
+                container, daughterLoc, sim, potts, random, newCellProspero, newCellDeadpan);
     }
 
     //    /**
