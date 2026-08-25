@@ -73,7 +73,9 @@ public final class Utilities {
 
     /**
      * Calculates the fraction of elements in one collection that are also present in another
-     * collection. Returns 0 if either list is empty.
+     * collection. Duplicate elements in the numeratorCollection are treated as one occurrence,
+     * while duplicates in denominatorCollection are counted individually in both total number of
+     * matches and size. Returns 0 if either list is empty.
      *
      * @param <T> the element type present in the two collections
      * @param numeratorCollection the collection to check membership against, items be the same type
