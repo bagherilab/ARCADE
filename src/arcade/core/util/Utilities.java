@@ -85,16 +85,16 @@ public final class Utilities {
         if (denominatorCollection.isEmpty() || numeratorCollection.isEmpty()) {
             return 0;
         }
-        double elementCount = 0;
+        double overlap = 0;
         for (T item : denominatorCollection) {
             for (Object obj : numeratorCollection) {
                 if (item.equals(obj)) {
-                    elementCount++;
+                    overlap++;
                     break;
                 }
             }
         }
-        return elementCount / denominatorCollection.size();
+        return overlap / denominatorCollection.size();
     }
 
     /**
