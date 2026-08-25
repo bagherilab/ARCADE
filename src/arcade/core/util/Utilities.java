@@ -74,38 +74,39 @@ public final class Utilities {
      * collection. Returns 0 if either list is empty.
      *
      * @param <T> the element type present in the two collections
-     * @param collection1 the collection whose fraction is being calculated (denominator)
-     * @param collection2 the collection to check membership against, items be the same type as
-     *     collection1
-     * @return fraction of elements in collection1 that are also found in collection2
+     * @param numeratorCollection the collection to check membership against, items be the same type
+     *     as denominatorCollection
+     * @param denominatorCollection the collection whose fraction is being calculated (denominator)
+     * @return fraction of elements in denominatorCollection that are also found in
+     *     numeratorCollection
      */
-    public static <T> double collectionFraction(
-            Collection<T> collection1, Collection<T> collection2) {
-        if (collection1.isEmpty() || collection2.isEmpty()) {
+    public static <T> double getCollectionFraction(
+            Collection<T> numeratorCollection, Collection<T> denominatorCollection) {
+        if (denominatorCollection.isEmpty() || numeratorCollection.isEmpty()) {
             return 0;
         }
         double elementCount = 0;
-        for (T item : collection1) {
-            for (Object obj : collection2) {
+        for (T item : denominatorCollection) {
+            for (Object obj : numeratorCollection) {
                 if (item.equals(obj)) {
                     elementCount++;
                     break;
                 }
             }
         }
-        return elementCount / collection1.size();
+        return elementCount / denominatorCollection.size();
     }
 
     /**
      * Converts the given Bag into a typed Collection, with each element being cast to the given
-     * type. Insertion order is preserved.
+     * type.
      *
      * @param <T> the target element type
      * @param bag the bag to convert
      * @param type the class object representing the target element type
      * @return a new Collection<T> containing the bag's elements, cast to provided type
      */
-    public static <T> Collection<T> asCollection(Bag bag, Class<T> type) {
+    public static <T> Collection<T> convertToCollection(Bag bag, Class<T> type) {
         List<T> list = new ArrayList<>(bag.numObjs);
         for (int i = 0; i < bag.numObjs; i++) {
             list.add(type.cast(bag.objs[i]));
