@@ -1,9 +1,6 @@
 package arcade.core.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 
@@ -86,12 +83,10 @@ public final class Utilities {
             return 0;
         }
         double overlap = 0;
+        Set<T> numeratorSet = new HashSet<>(numeratorCollection);
         for (T item : denominatorCollection) {
-            for (Object obj : numeratorCollection) {
-                if (item.equals(obj)) {
-                    overlap++;
-                    break;
-                }
+            if (numeratorSet.contains(item)) {
+                overlap++;
             }
         }
         return overlap / denominatorCollection.size();
