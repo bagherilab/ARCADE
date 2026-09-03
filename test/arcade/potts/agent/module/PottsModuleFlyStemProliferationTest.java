@@ -187,6 +187,69 @@ public class PottsModuleFlyStemProliferationTest {
                 () -> new PottsModuleFlyStemProliferation(stemCell));
     }
 
+    // Split offset ramp tests
+
+    @Test
+    public void computeSplitOffsetPercentY_atMean_returnsMaxOffset() {
+        when(dist.getExpected()).thenReturn(0.0);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertEquals(93.0, module.computeSplitOffsetPercentY(0.0), EPSILON);
+    }
+
+    @Test
+    public void computeSplitOffsetPercentY_atSaturation_returnsMinOffset() {
+        when(dist.getExpected()).thenReturn(0.0);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertEquals(50.0, module.computeSplitOffsetPercentY(90.0), EPSILON);
+        assertEquals(50.0, module.computeSplitOffsetPercentY(-90.0), EPSILON);
+    }
+
+    @Test
+    public void computeSplitOffsetPercentY_beyondSaturation_clampsToMinOffset() {
+        when(dist.getExpected()).thenReturn(0.0);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertEquals(50.0, module.computeSplitOffsetPercentY(150.0), EPSILON);
+        assertEquals(50.0, module.computeSplitOffsetPercentY(-150.0), EPSILON);
+    }
+
+    @Test
+    public void computeSplitOffsetPercentY_midRange_interpolatesLinearly() {
+        when(dist.getExpected()).thenReturn(0.0);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        // 93 - 43 * (45/90) = 71.5
+        assertEquals(71.5, module.computeSplitOffsetPercentY(45.0), EPSILON);
+        // 93 - 43 * (75/90) = 57.166...
+        assertEquals(93.0 - 43.0 * (75.0 / 90.0), module.computeSplitOffsetPercentY(75.0), EPSILON);
+    }
+
+    @Test
+    public void computeSplitOffsetPercentY_isSymmetricAboutMean() {
+        when(dist.getExpected()).thenReturn(0.0);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        for (double angle : new double[] {15.0, 30.0, 60.0, 88.0}) {
+            assertEquals(
+                    module.computeSplitOffsetPercentY(angle),
+                    module.computeSplitOffsetPercentY(-angle),
+                    EPSILON);
+        }
+    }
+
+    @Test
+    public void computeSplitOffsetPercentY_nonZeroMean_measuresDeviationFromMean() {
+        when(dist.getExpected()).thenReturn(36.0);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        // deviation 0 from a mean of 36
+        assertEquals(93.0, module.computeSplitOffsetPercentY(36.0), EPSILON);
+        // deviation 45 from a mean of 36
+        assertEquals(71.5, module.computeSplitOffsetPercentY(81.0), EPSILON);
+    }
+
     @Test
     public void constructor_basalGmcRuleset_setsExpectedFields() {
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("basal_gmc");

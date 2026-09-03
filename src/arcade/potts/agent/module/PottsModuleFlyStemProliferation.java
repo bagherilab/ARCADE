@@ -433,6 +433,26 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
+     * Computes the Y split offset for a division from the drawn rotation offset.
+     *
+     * <p>Under the {@code linear_ramp} ruleset the offset falls linearly from {@link
+     * #wtDivisionSplitOffsetPercentY} toward {@link #divOffsetRampMinPercentY} as the drawn angle
+     * moves away from the division distribution mean, reaching the minimum at {@link
+     * #divOffsetRampSaturationAngle} and clamping beyond it. The saturation angle defaults to 90
+     * degrees, where the resulting division plane already coincides with the MUD plane, so the ramp
+     * is a continuous generalisation of the threshold behaviour rather than a competing rule.
+     *
+     * @param rotationOffset the angle drawn from the division rotation distribution
+     * @return the Y split offset percentage for this division
+     */
+    double computeSplitOffsetPercentY(double rotationOffset) {
+        double deviation = Math.abs(rotationOffset - splitDirectionDistribution.getExpected());
+        double fraction = Math.min(deviation / divOffsetRampSaturationAngle, 1.0);
+        return wtDivisionSplitOffsetPercentY
+                - (wtDivisionSplitOffsetPercentY - divOffsetRampMinPercentY) * fraction;
+    }
+
+    /**
      * Gets the division plane for the cell after rotating the plane according to
      * splitDirectionDistribution. This follows WT division rules. The plane is rotated around the
      * XY plane.
