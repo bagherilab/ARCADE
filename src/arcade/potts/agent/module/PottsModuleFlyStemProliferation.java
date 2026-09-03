@@ -148,6 +148,29 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      */
     Vector previousDivisionNormal;
 
+    /**
+     * Ruleset determining the Y split offset for a division. Either {@code threshold} (fixed
+     * offset, with the 75-degree MUDMUT flip to the MUD plane) or {@code linear_ramp} (offset ramps
+     * from the WT offset toward {@link #divOffsetRampMinPercentY} as the drawn division angle moves
+     * away from the distribution mean).
+     */
+    final String divOffsetRuleset;
+
+    /**
+     * Angle (degrees) from the division distribution mean at which the {@code linear_ramp} offset
+     * reaches {@link #divOffsetRampMinPercentY}. Beyond this the offset is clamped.
+     */
+    final double divOffsetRampSaturationAngle;
+
+    /** Minimum Y split offset (%) approached by the {@code linear_ramp} ruleset. */
+    final int divOffsetRampMinPercentY;
+
+    /**
+     * Overrides the split offset (%) used to derive the growth-regulation reference volume. When
+     * zero, the reference is derived from the division angle distribution instead.
+     */
+    final double growthRefSplitOffsetPercentY;
+
     /** Epsilon. */
     public static final double EPSILON = 1e-8;
 
@@ -217,6 +240,17 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                     "divRotationReference must be either apical_axis or previous_division");
         }
         previousDivisionNormal = null;
+
+        divOffsetRuleset = parameters.getString("proliferation/DIV_OFFSET_RULESET");
+        if (!divOffsetRuleset.equals("threshold") && !divOffsetRuleset.equals("linear_ramp")) {
+            throw new InvalidParameterException(
+                    "divOffsetRuleset must be either threshold or linear_ramp");
+        }
+        divOffsetRampSaturationAngle =
+                parameters.getDouble("proliferation/DIV_OFFSET_RAMP_SATURATION_ANGLE");
+        divOffsetRampMinPercentY = parameters.getInt("proliferation/DIV_OFFSET_RAMP_MIN_PERCENT_Y");
+        growthRefSplitOffsetPercentY =
+                parameters.getDouble("proliferation/GROWTH_REF_SPLIT_OFFSET_PERCENT_Y");
 
         setPhase(Phase.UNDEFINED);
     }

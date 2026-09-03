@@ -55,6 +55,7 @@ public class PottsCellFlyStemTest {
 
         doReturn(0.0).when(parametersMock).getDouble(any());
         doReturn(0).when(parametersMock).getInt(any());
+        doReturn("threshold").when(parametersMock).getString("proliferation/DIV_OFFSET_RULESET");
 
         baseContainer =
                 new PottsCellContainer(

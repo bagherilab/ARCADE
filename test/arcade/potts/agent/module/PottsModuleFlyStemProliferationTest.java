@@ -118,6 +118,12 @@ public class PottsModuleFlyStemProliferationTest {
         when(parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y")).thenReturn(93);
         when(parameters.getDouble("proliferation/GMC_CRITICAL_VOLUME_OVERRIDE")).thenReturn(0.0);
         when(parameters.getDouble("CRITICAL_VOLUME")).thenReturn(100.0);
+        when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("threshold");
+        when(parameters.getDouble("proliferation/DIV_OFFSET_RAMP_SATURATION_ANGLE"))
+                .thenReturn(90.0);
+        when(parameters.getInt("proliferation/DIV_OFFSET_RAMP_MIN_PERCENT_Y")).thenReturn(50);
+        when(parameters.getDouble("proliferation/GROWTH_REF_SPLIT_OFFSET_PERCENT_Y"))
+                .thenReturn(0.0);
 
         // Link selection
         GrabBag links = mock(GrabBag.class);
@@ -151,6 +157,34 @@ public class PottsModuleFlyStemProliferationTest {
         assertEquals("smaller_gmc", module.differentiationRuleset);
         assertEquals(0.42, module.range, EPSILON);
         assertEquals(arcade.potts.util.PottsEnums.Phase.UNDEFINED, module.phase);
+    }
+
+    @Test
+    public void constructor_defaultRuleset_setsThreshold() {
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertEquals("threshold", module.divOffsetRuleset);
+        assertEquals(90.0, module.divOffsetRampSaturationAngle, EPSILON);
+        assertEquals(50, module.divOffsetRampMinPercentY);
+        assertEquals(0.0, module.growthRefSplitOffsetPercentY, EPSILON);
+    }
+
+    @Test
+    public void constructor_linearRampRuleset_setsLinearRamp() {
+        when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("linear_ramp");
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertEquals("linear_ramp", module.divOffsetRuleset);
+    }
+
+    @Test
+    public void constructor_invalidDivOffsetRuleset_throwsException() {
+        when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("nonsense");
+
+        assertThrows(
+                InvalidParameterException.class,
+                () -> new PottsModuleFlyStemProliferation(stemCell));
     }
 
     @Test
