@@ -333,6 +333,53 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
+    public void daughterStem_wtRuleBasedSymmetricSplit_returnsTrue() {
+        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
+                .thenReturn("FALSE");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
+        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
+                .thenReturn(2.0);
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(stemLoc.getVolume()).thenReturn(10.0);
+        when(daughterLoc.getVolume()).thenReturn(9.5); // difference 0.5 < range 2.0
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertTrue(module.daughterStem(stemLoc, daughterLoc, mock(Plane.class)));
+    }
+
+    @Test
+    public void daughterStem_wtRuleBasedAsymmetricSplit_returnsFalse() {
+        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
+                .thenReturn("FALSE");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
+        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
+                .thenReturn(2.0);
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(stemLoc.getVolume()).thenReturn(10.0);
+        when(daughterLoc.getVolume()).thenReturn(3.0); // difference 7.0 > range 2.0
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertFalse(module.daughterStem(stemLoc, daughterLoc, mock(Plane.class)));
+    }
+
+    @Test
+    public void daughterStem_wtDeterministic_alwaysReturnsFalse() {
+        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
+                .thenReturn("TRUE");
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(new Voxel(0, 0, 0));
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        Plane mudPlane = module.getMUDDivisionPlane(stemCell);
+
+        // Even a plane matching the MUD normal exactly must not make a WT daughter a stem cell.
+        assertFalse(module.daughterStem(stemLoc, daughterLoc, mudPlane));
+    }
+
+    @Test
     public void constructor_basalGmcRuleset_setsExpectedFields() {
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("basal_gmc");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))

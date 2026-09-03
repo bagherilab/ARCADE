@@ -597,18 +597,24 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Determines whether the daughter cell should be a neuroblast or a GMC according to the type of
-     * cell this module is attached to, the differentiation ruleset specified in the parameters, and
-     * the morphologies of the daughter cell locations.
+     * Determines whether the daughter cell should be a neuroblast or a GMC according to the
+     * differentiation ruleset specified in the parameters and the morphologies of the daughter cell
+     * locations.
+     *
+     * <p>Applies to both stem types. Whether a WT cell can produce a symmetric NB-NB division is
+     * controlled by {@code HAS_DETERMINISTIC_DIFFERENTIATION}: under {@code TRUE} the deterministic
+     * path is used instead and a WT daughter is never a stem cell; under {@code FALSE} a WT cell
+     * uses the same geometric ruleset as MUDMUT, so a sufficiently symmetric division yields two
+     * neuroblasts. Setting {@code DIFFERENTIATION_RULESET_EQUALITY_RANGE} near zero suppresses that
+     * in practice while leaving the mechanism available.
      *
      * @param loc1 one cell location post division
      * @param loc2 the other cell location post division
      * @return whether or not the daughter cell should be a stem cell
      */
     private boolean daughterStemRuleBasedDifferentiation(PottsLocation loc1, PottsLocation loc2) {
-        if (((PottsCellFlyStem) cell).getStemType() == StemType.WT) {
-            return false;
-        } else if (((PottsCellFlyStem) cell).getStemType() == StemType.MUDMUT) {
+        StemType stemType = ((PottsCellFlyStem) cell).getStemType();
+        if (stemType == StemType.WT || stemType == StemType.MUDMUT) {
             if (differentiationRuleset.equals("smaller_gmc")) {
                 double vol1 = loc1.getVolume();
                 double vol2 = loc2.getVolume();
@@ -638,8 +644,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     private boolean daughterStemDeterministic(Plane divisionPlane) {
         // A WT division always produces one NB and one GMC, so the daughter is never a stem cell.
         // Without this, a WT division plane that happened to align with the expected MUD normal
-        // would be misread as a symmetric NB-NB division. Mirrors the WT case in
-        // daughterStemRuleBasedDifferentiation.
+        // would be misread as a symmetric NB-NB division. This guard is what makes
+        // HAS_DETERMINISTIC_DIFFERENTIATION the on/off switch for WT symmetric divisions: the
+        // rule-based path applies the geometric ruleset to both stem types, this path never does
+        // for WT.
         if (((PottsCellFlyStem) cell).getStemType() == StemType.WT) {
             return false;
         }
