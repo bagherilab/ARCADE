@@ -251,6 +251,88 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
+    public void buildDivisionPlane_explicitOffset_usesThatOffset() {
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(dist.getExpected()).thenReturn(0.0);
+        when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(new Voxel(0, 0, 0));
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        module.buildDivisionPlane(stemCell, new Vector(0, 1, 0), 0.0, 57.0);
+
+        ArrayList<Integer> expected = new ArrayList<>();
+        expected.add(50);
+        expected.add(57);
+        verify(stemLoc).getOffsetInApicalFrame(eq(expected), any(Vector.class));
+    }
+
+    @Test
+    public void rampEndpoints_matchStemTypeEnumCorners() {
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        // The ramp interpolates between the two StemType corners; if the enum or the parameter
+        // defaults drift apart, the "interpolates WT -> MUD" claim silently stops being true.
+        assertEquals(
+                PottsCellFlyStem.StemType.WT.splitOffsetPercentY,
+                module.wtDivisionSplitOffsetPercentY);
+        assertEquals(
+                PottsCellFlyStem.StemType.MUDMUT.splitOffsetPercentY,
+                module.divOffsetRampMinPercentY);
+        assertEquals(
+                Math.abs(PottsCellFlyStem.StemType.MUDMUT.splitDirectionRotation),
+                module.divOffsetRampSaturationAngle,
+                EPSILON);
+    }
+
+    @Test
+    public void chooseDivisionPlane_linearRampMudmut_takesRampPathNotMudPath() {
+        when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("linear_ramp");
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(dist.getExpected()).thenReturn(0.0);
+        when(dist.nextDouble()).thenReturn(120.0); // beyond the 75-degree threshold
+        when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(new Voxel(0, 0, 0));
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        module.chooseDivisionPlane(stemCell);
+
+        // Ramp saturates, so the offset is the MUD corner rather than the 93 the old WT path used.
+        assertEquals(50.0, module.lastSplitOffsetPercentY, EPSILON);
+    }
+
+    @Test
+    public void chooseDivisionPlane_thresholdMudmutBeyondThreshold_stillUsesMudPlane() {
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(dist.getExpected()).thenReturn(0.0);
+        when(dist.nextDouble()).thenReturn(120.0);
+        when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(new Voxel(0, 0, 0));
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        Plane result = module.chooseDivisionPlane(stemCell);
+        Plane mudPlane = module.getMUDDivisionPlane(stemCell);
+
+        assertEquals(
+                mudPlane.getUnitNormalVector().getY(),
+                result.getUnitNormalVector().getY(),
+                EPSILON);
+        assertEquals(93.0, module.lastSplitOffsetPercentY, EPSILON);
+    }
+
+    @Test
+    public void chooseDivisionPlane_thresholdRuleset_recordsWtOffset() {
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(dist.getExpected()).thenReturn(0.0);
+        when(dist.nextDouble()).thenReturn(10.0);
+        when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(new Voxel(0, 0, 0));
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        module.chooseDivisionPlane(stemCell);
+
+        assertEquals(93.0, module.lastSplitOffsetPercentY, EPSILON);
+    }
+
+    @Test
     public void constructor_basalGmcRuleset_setsExpectedFields() {
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("basal_gmc");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
@@ -507,7 +589,7 @@ public class PottsModuleFlyStemProliferationTest {
     // Division plane tests
 
     @Test
-    public void getWTDivisionPlaneWithRotationalVariance_rotatesCorrectlyAndReturnsPlane() {
+    public void getWTDivisionPlane_rotatesCorrectlyAndReturnsPlane() {
         Vector apicalAxis = new Vector(0, 1, 0);
         when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
 
@@ -531,7 +613,7 @@ public class PottsModuleFlyStemProliferationTest {
         when(stemLoc.getOffsetInApicalFrame(eq(expectedOffset), eq(expectedNormal)))
                 .thenReturn(splitVoxel);
 
-        Plane result = module.getWTDivisionPlaneWithRotationalVariance(stemCell, offsetRotation);
+        Plane result = module.getWTDivisionPlane(stemCell, offsetRotation);
 
         Double3D refPoint = result.getReferencePoint();
         assertEquals(3.0, refPoint.x, EPSILON);
@@ -545,7 +627,7 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void getWTDivisionPlaneWithRotationalVariance_MUDMUT_withOffset50_uses50PercentY() {
+    public void getWTDivisionPlane_MUDMUT_withOffset50_uses50PercentY() {
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
         when(parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y")).thenReturn(50);
 
@@ -560,13 +642,13 @@ public class PottsModuleFlyStemProliferationTest {
                 .thenReturn(new Voxel(1, 2, 3));
 
         module = new PottsModuleFlyStemProliferation(stemCell);
-        module.getWTDivisionPlaneWithRotationalVariance(stemCell, 0.0);
+        module.getWTDivisionPlane(stemCell, 0.0);
 
         verify(stemLoc).getOffsetInApicalFrame(eq(expectedOffset), any(Vector.class));
     }
 
     @Test
-    public void getWTDivisionPlaneWithRotationalVariance_WT_withOffset50_uses50PercentY() {
+    public void getWTDivisionPlane_WT_withOffset50_uses50PercentY() {
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
         when(parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y")).thenReturn(50);
 
@@ -581,7 +663,7 @@ public class PottsModuleFlyStemProliferationTest {
                 .thenReturn(new Voxel(1, 2, 3));
 
         module = new PottsModuleFlyStemProliferation(stemCell);
-        module.getWTDivisionPlaneWithRotationalVariance(stemCell, 0.0);
+        module.getWTDivisionPlane(stemCell, 0.0);
 
         verify(stemLoc).getOffsetInApicalFrame(eq(expectedOffset), any(Vector.class));
     }
@@ -637,8 +719,7 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void
-            getWTDivisionPlaneWithRotationalVariance_previousDivision_noPreviousNormal_usesApicalAxis() {
+    public void getWTDivisionPlane_previousDivision_noPreviousNormal_usesApicalAxis() {
         when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
                 .thenReturn("previous_division");
         Vector apicalAxis = new Vector(0, 1, 0);
@@ -651,14 +732,13 @@ public class PottsModuleFlyStemProliferationTest {
         double offset = 30.0;
         Vector expectedNormal =
                 Vector.rotateVectorAroundAxis(apicalAxis, Direction.XY_PLANE.vector, offset);
-        module.getWTDivisionPlaneWithRotationalVariance(stemCell, offset);
+        module.getWTDivisionPlane(stemCell, offset);
 
         verify(stemLoc).getOffsetInApicalFrame(any(), eq(expectedNormal));
     }
 
     @Test
-    public void
-            getWTDivisionPlaneWithRotationalVariance_previousDivision_withPreviousNormal_usesPreviousNormal() {
+    public void getWTDivisionPlane_previousDivision_withPreviousNormal_usesPreviousNormal() {
         when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
                 .thenReturn("previous_division");
         Vector apicalAxis = new Vector(0, 1, 0);
@@ -672,14 +752,13 @@ public class PottsModuleFlyStemProliferationTest {
         double offset = 90.0;
         Vector expectedNormal =
                 Vector.rotateVectorAroundAxis(previousNormal, Direction.XY_PLANE.vector, offset);
-        module.getWTDivisionPlaneWithRotationalVariance(stemCell, offset);
+        module.getWTDivisionPlane(stemCell, offset);
 
         verify(stemLoc).getOffsetInApicalFrame(any(), eq(expectedNormal));
     }
 
     @Test
-    public void
-            getWTDivisionPlaneWithRotationalVariance_apicalAxis_withPreviousNormal_usesApicalAxis() {
+    public void getWTDivisionPlane_apicalAxis_withPreviousNormal_usesApicalAxis() {
         // apical_axis ruleset: previous normal is ignored even if set
         when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
                 .thenReturn("apical_axis");
@@ -693,7 +772,7 @@ public class PottsModuleFlyStemProliferationTest {
         double offset = 45.0;
         Vector expectedNormal =
                 Vector.rotateVectorAroundAxis(apicalAxis, Direction.XY_PLANE.vector, offset);
-        module.getWTDivisionPlaneWithRotationalVariance(stemCell, offset);
+        module.getWTDivisionPlane(stemCell, offset);
 
         verify(stemLoc).getOffsetInApicalFrame(any(), eq(expectedNormal));
     }
@@ -741,14 +820,12 @@ public class PottsModuleFlyStemProliferationTest {
         module = spy(new PottsModuleFlyStemProliferation(stemCell));
 
         Plane expectedPlane = mock(Plane.class);
-        doReturn(expectedPlane)
-                .when(module)
-                .getWTDivisionPlaneWithRotationalVariance(stemCell, 12.0);
+        doReturn(expectedPlane).when(module).getWTDivisionPlane(stemCell, 12.0);
 
         Plane result = module.chooseDivisionPlane(stemCell);
 
         assertEquals(expectedPlane, result);
-        verify(module).getWTDivisionPlaneWithRotationalVariance(stemCell, 12.0);
+        verify(module).getWTDivisionPlane(stemCell, 12.0);
         verify(module, never()).getMUDDivisionPlane(any());
     }
 
@@ -760,14 +837,12 @@ public class PottsModuleFlyStemProliferationTest {
         module = spy(new PottsModuleFlyStemProliferation(stemCell));
 
         Plane expectedPlane = mock(Plane.class);
-        doReturn(expectedPlane)
-                .when(module)
-                .getWTDivisionPlaneWithRotationalVariance(stemCell, 10.0);
+        doReturn(expectedPlane).when(module).getWTDivisionPlane(stemCell, 10.0);
 
         Plane result = module.chooseDivisionPlane(stemCell);
 
         assertEquals(expectedPlane, result);
-        verify(module).getWTDivisionPlaneWithRotationalVariance(stemCell, 10.0);
+        verify(module).getWTDivisionPlane(stemCell, 10.0);
         verify(module, never()).getMUDDivisionPlane(any());
     }
 
@@ -785,7 +860,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         assertEquals(expectedPlane, result);
         verify(module).getMUDDivisionPlane(stemCell);
-        verify(module, never()).getWTDivisionPlaneWithRotationalVariance(any(), anyDouble());
+        verify(module, never()).getWTDivisionPlane(any(), anyDouble());
     }
 
     // Step tests
@@ -823,7 +898,7 @@ public class PottsModuleFlyStemProliferationTest {
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
 
         // Plane/voxel path (chooseDivisionPlane -> WT ->
-        // getWTDivisionPlaneWithRotationalVariance)
+        // getWTDivisionPlane)
         when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
         when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
         when(stemLoc.getOffsetInApicalFrame(any(), any(Vector.class)))
@@ -1096,9 +1171,7 @@ public class PottsModuleFlyStemProliferationTest {
         PottsModuleFlyStemProliferation spyModule =
                 spy(new PottsModuleFlyStemProliferation(stemCell));
         doReturn(0.0).when(spyModule).sampleDivisionPlaneOffset();
-        doReturn(dummyPlane)
-                .when(spyModule)
-                .getWTDivisionPlaneWithRotationalVariance(eq(stemCell), anyDouble());
+        doReturn(dummyPlane).when(spyModule).getWTDivisionPlane(eq(stemCell), anyDouble());
 
         try (MockedStatic<PottsLocation> mocked = mockStatic(PottsLocation.class)) {
             spyModule.addCell(random, sim);
@@ -1137,9 +1210,7 @@ public class PottsModuleFlyStemProliferationTest {
         // Spy and override division plane logic
         PottsModuleFlyStemProliferation spyModule =
                 spy(new PottsModuleFlyStemProliferation(stemCell));
-        doReturn(dummyPlane)
-                .when(spyModule)
-                .getWTDivisionPlaneWithRotationalVariance(eq(stemCell), anyDouble());
+        doReturn(dummyPlane).when(spyModule).getWTDivisionPlane(eq(stemCell), anyDouble());
 
         try (MockedStatic<PottsLocation> mocked = mockStatic(PottsLocation.class)) {
             spyModule.addCell(random, sim);
@@ -1213,9 +1284,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         module = spy(new PottsModuleFlyStemProliferation(stemCell));
         Plane dummyPlane = mock(Plane.class);
-        doReturn(dummyPlane)
-                .when(module)
-                .getWTDivisionPlaneWithRotationalVariance(eq(stemCell), anyDouble());
+        doReturn(dummyPlane).when(module).getWTDivisionPlane(eq(stemCell), anyDouble());
         when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
         doReturn(false).when(module).daughterStem(any(), any(), any());
 

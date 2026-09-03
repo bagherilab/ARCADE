@@ -149,6 +149,14 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     Vector previousDivisionNormal;
 
     /**
+     * Y split offset (%) used by the most recent call to {@link #chooseDivisionPlane}. Under the
+     * {@code threshold} ruleset this is always {@link #wtDivisionSplitOffsetPercentY}; under {@code
+     * linear_ramp} it is the ramped value for that division. Read by the critical volume
+     * calculations so the split geometry and the resulting thresholds agree within one division.
+     */
+    double lastSplitOffsetPercentY;
+
+    /**
      * Ruleset determining the Y split offset for a division. Either {@code threshold} (fixed
      * offset, with the 75-degree MUDMUT flip to the MUD plane) or {@code linear_ramp} (offset ramps
      * from the WT offset toward {@link #divOffsetRampMinPercentY} as the drawn division angle moves
@@ -251,6 +259,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         divOffsetRampMinPercentY = parameters.getInt("proliferation/DIV_OFFSET_RAMP_MIN_PERCENT_Y");
         growthRefSplitOffsetPercentY =
                 parameters.getDouble("proliferation/GROWTH_REF_SPLIT_OFFSET_PERCENT_Y");
+        lastSplitOffsetPercentY = wtDivisionSplitOffsetPercentY;
 
         setPhase(Phase.UNDEFINED);
     }
@@ -413,11 +422,21 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     protected Plane chooseDivisionPlane(PottsCellFlyStem flyStemCell) {
         double offset = sampleDivisionPlaneOffset();
 
+        if (divOffsetRuleset.equals("linear_ramp")) {
+            lastSplitOffsetPercentY = computeSplitOffsetPercentY(offset);
+            return buildDivisionPlane(
+                    flyStemCell,
+                    getRotationReferenceVector(flyStemCell),
+                    offset,
+                    lastSplitOffsetPercentY);
+        }
+
+        lastSplitOffsetPercentY = wtDivisionSplitOffsetPercentY;
         if (flyStemCell.getStemType() == StemType.WT
                 || (flyStemCell.getStemType() == StemType.MUDMUT
                         && (Math.abs(offset - splitDirectionDistribution.getExpected())
                                 <= MUDMUT_WT_DIVISION_ANGLE_THRESHOLD))) {
-            return getWTDivisionPlaneWithRotationalVariance(flyStemCell, offset);
+            return getWTDivisionPlane(flyStemCell, offset);
         } else {
             return getMUDDivisionPlane(flyStemCell);
         }
@@ -453,32 +472,47 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Gets the division plane for the cell after rotating the plane according to
-     * splitDirectionDistribution. This follows WT division rules. The plane is rotated around the
-     * XY plane.
+     * Gets the vector the division plane rotation is measured from.
      *
-     * <p>The vector the offset is measured from is selected by {@code DIV_ROTATION_REFERENCE}:
-     * under `apical_axis` it is the cell's apical axis, under `previous_division` it is the
-     * previous division plane's normal. The first division of a cell always falls back to the
-     * apical axis because there is no previous plane.
+     * <p>Selected by {@code DIV_ROTATION_REFERENCE}: under `apical_axis` it is the cell's apical
+     * axis, under `previous_division` it is the previous division plane's normal. The first
+     * division of a cell always falls back to the apical axis because there is no previous plane.
      *
-     * @param cell the {@link PottsCellFlyStem} to get the division plane for
-     * @param rotationOffset the angle to rotate the plane
-     * @return the division plane for the cell
+     * @param cell the {@link PottsCellFlyStem} to get the reference vector for
+     * @return the vector the rotation offset is measured from
      */
-    public Plane getWTDivisionPlaneWithRotationalVariance(
-            PottsCellFlyStem cell, double rotationOffset) {
-        Vector referenceVector =
-                (divRotationReference.equals("previous_division") && previousDivisionNormal != null)
-                        ? previousDivisionNormal
-                        : cell.getApicalAxis();
+    Vector getRotationReferenceVector(PottsCellFlyStem cell) {
+        return (divRotationReference.equals("previous_division") && previousDivisionNormal != null)
+                ? previousDivisionNormal
+                : cell.getApicalAxis();
+    }
+
+    /**
+     * Builds a division plane from an explicit reference vector, rotation, and split offset.
+     *
+     * <p>Genotype-neutral: the two canonical divisions are corners of this function, defined by the
+     * {@link StemType} entries. {@code WT(50, 93, 0)} gives rotation 0 and offset 93; {@code
+     * MUDMUT(50, 50, -90)} gives rotation -90 and offset 50. The {@code linear_ramp} ruleset
+     * interpolates between those corners as the drawn angle grows.
+     *
+     * @param cell the {@link PottsCellFlyStem} to build the plane for
+     * @param referenceVector the vector the rotation is measured from
+     * @param rotationOffset the angle to rotate the reference vector by
+     * @param splitOffsetPercentY the Y split offset percentage to divide at
+     * @return the division plane
+     */
+    public Plane buildDivisionPlane(
+            PottsCellFlyStem cell,
+            Vector referenceVector,
+            double rotationOffset,
+            double splitOffsetPercentY) {
         Vector rotatedNormalVector =
                 Vector.rotateVectorAroundAxis(
                         referenceVector, Direction.XY_PLANE.vector, rotationOffset);
         Voxel splitVoxel =
                 getCellSplitVoxel(
                         StemType.WT.splitOffsetPercentX,
-                        wtDivisionSplitOffsetPercentY,
+                        (int) Math.round(splitOffsetPercentY),
                         cell,
                         rotatedNormalVector);
         return new Plane(
@@ -486,20 +520,37 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Gets the division plane for the cell. This follows MUDMUT division rules. The division plane
-     * is not rotated.
+     * Gets the division plane for a WT-rules division: the reference vector rotated by the drawn
+     * angle, split at {@link #wtDivisionSplitOffsetPercentY}. One corner of {@link
+     * #buildDivisionPlane}.
+     *
+     * @param cell the {@link PottsCellFlyStem} to get the division plane for
+     * @param rotationOffset the angle to rotate the plane
+     * @return the division plane for the cell
+     */
+    public Plane getWTDivisionPlane(PottsCellFlyStem cell, double rotationOffset) {
+        return buildDivisionPlane(
+                cell,
+                getRotationReferenceVector(cell),
+                rotationOffset,
+                wtDivisionSplitOffsetPercentY);
+    }
+
+    /**
+     * Gets the division plane for a MUD-rules division: the apical axis rotated by {@link
+     * StemType#splitDirectionRotation}, split symmetrically. The other corner of {@link
+     * #buildDivisionPlane}. Always measured from the apical axis, never from the previous division
+     * normal.
      *
      * @param cell the {@link PottsCellFlyStem} to get the division plane for
      * @return the division plane for the cell
      */
     public Plane getMUDDivisionPlane(PottsCellFlyStem cell) {
-        Vector defaultNormal =
-                Vector.rotateVectorAroundAxis(
-                        cell.getApicalAxis(),
-                        Direction.XY_PLANE.vector,
-                        StemType.MUDMUT.splitDirectionRotation);
-        Voxel splitVoxel = getCellSplitVoxel(StemType.MUDMUT, cell, defaultNormal);
-        return new Plane(new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), defaultNormal);
+        return buildDivisionPlane(
+                cell,
+                cell.getApicalAxis(),
+                StemType.MUDMUT.splitDirectionRotation,
+                StemType.MUDMUT.splitOffsetPercentY);
     }
 
     /**
