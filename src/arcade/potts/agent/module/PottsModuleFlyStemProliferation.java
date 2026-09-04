@@ -712,25 +712,38 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /**
      * Makes a daughter NB cell.
      *
+     * <p>Under {@code VOLUME_BASED_CRITICAL_VOLUME=1} each cell takes its own birth volume as its
+     * critical volume: the parent the volume it retained, the daughter the volume it received. The
+     * two are equal for a symmetric division, so this is inert wherever NB-NB divisions split 50/50
+     * — which is every case under the {@code threshold} ruleset. Under {@code linear_ramp} an NB-NB
+     * division can be asymmetric, and setting both from the daughter's volume would give a parent
+     * that retained the larger share a threshold derived from the smaller daughter.
+     *
      * @param daughterLoc the location of the daughter NB cell
      * @param sim the simulation
      * @param potts the potts instance for this simulation
      * @param random the random number generator
      */
-    private void makeDaughterStemCell(
+    void makeDaughterStemCell(
             PottsLocation daughterLoc, Simulation sim, Potts potts, MersenneTwisterFast random) {
         int newID = sim.getID();
-        double criticalVol;
+        double daughterCriticalVol;
         if (volumeBasedCriticalVolume) {
-            criticalVol = Math.max(daughterLoc.getVolume(), populationCriticalVolume * .20);
-            cell.setCriticalVolume(criticalVol);
+            double floor = populationCriticalVolume * .20;
+            daughterCriticalVol = Math.max(daughterLoc.getVolume(), floor);
+            cell.setCriticalVolume(Math.max(cell.getLocation().getVolume(), floor));
         } else {
-            criticalVol = cell.getCriticalVolume();
+            daughterCriticalVol = cell.getCriticalVolume();
         }
         cell.reset(potts.ids, potts.regions);
         PottsCellContainer container =
                 ((PottsCellFlyStem) cell)
-                        .make(newID, State.PROLIFERATIVE, random, cell.getPop(), criticalVol);
+                        .make(
+                                newID,
+                                State.PROLIFERATIVE,
+                                random,
+                                cell.getPop(),
+                                daughterCriticalVol);
         scheduleNewCell(container, daughterLoc, sim, potts, random);
     }
 
@@ -885,10 +898,16 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             if (gmcCriticalVolumeOverride > 0) {
                 return gmcCriticalVolumeOverride;
             }
+            // The threshold path keeps reading the fixed WT offset verbatim so its behaviour cannot
+            // shift; only linear_ramp uses the offset realised for this particular division.
+            double offsetPercentY =
+                    divOffsetRuleset.equals("linear_ramp")
+                            ? lastSplitOffsetPercentY
+                            : wtDivisionSplitOffsetPercentY;
             criticalVol =
                     ((PottsCellFlyStem) cell).getCriticalVolume()
                             * sizeTarget
-                            * (1.0 - wtDivisionSplitOffsetPercentY / 100.0);
+                            * (1.0 - offsetPercentY / 100.0);
             return criticalVol;
         }
     }

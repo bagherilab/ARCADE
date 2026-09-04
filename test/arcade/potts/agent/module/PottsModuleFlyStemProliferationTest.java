@@ -380,6 +380,72 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
+    public void calculateGMCCriticalVolume_thresholdRuleset_usesWtOffset() {
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        module.lastSplitOffsetPercentY = 57.0; // must be ignored on the threshold path
+
+        double result = module.calculateGMCDaughterCellCriticalVolume(daughterLoc);
+
+        // critVol 100.0 * sizeTarget 1.2 * (1 - 0.93) = 8.4
+        assertEquals(8.4, result, EPSILON);
+    }
+
+    @Test
+    public void calculateGMCCriticalVolume_linearRamp_usesPerDivisionOffset() {
+        when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("linear_ramp");
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        module.lastSplitOffsetPercentY = 57.0;
+
+        double result = module.calculateGMCDaughterCellCriticalVolume(daughterLoc);
+
+        // critVol 100.0 * sizeTarget 1.2 * (1 - 0.57) = 51.6
+        assertEquals(51.6, result, EPSILON);
+    }
+
+    @Test
+    public void makeDaughterStemCell_volumeBased_parentKeepsItsOwnVolume() {
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(1);
+        when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("linear_ramp");
+        when(stemLoc.getVolume()).thenReturn(57.0); // parent retained
+        when(daughterLoc.getVolume()).thenReturn(43.0); // daughter received
+        when(parameters.getDouble("CRITICAL_VOLUME")).thenReturn(100.0);
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCell newCell = mock(PottsCell.class);
+        when(stemCell.make(anyInt(), any(), eq(random), anyInt(), anyDouble()))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        module.makeDaughterStemCell(daughterLoc, sim, potts, random);
+
+        // The parent must take its own retained volume, not the daughter's 43.0.
+        verify(stemCell).setCriticalVolume(57.0);
+        verify(stemCell).make(anyInt(), any(), any(), anyInt(), eq(43.0));
+    }
+
+    @Test
+    public void makeDaughterStemCell_symmetricSplit_parentAndDaughterAgree() {
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(1);
+        when(stemLoc.getVolume()).thenReturn(50.0);
+        when(daughterLoc.getVolume()).thenReturn(50.0);
+        when(parameters.getDouble("CRITICAL_VOLUME")).thenReturn(100.0);
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCell newCell = mock(PottsCell.class);
+        when(stemCell.make(anyInt(), any(), eq(random), anyInt(), anyDouble()))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        module.makeDaughterStemCell(daughterLoc, sim, potts, random);
+
+        // At a 50/50 split the two are equal, which is why every existing sim is unaffected.
+        verify(stemCell).setCriticalVolume(50.0);
+        verify(stemCell).make(anyInt(), any(), any(), anyInt(), eq(50.0));
+    }
+
+    @Test
     public void constructor_basalGmcRuleset_setsExpectedFields() {
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("basal_gmc");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
