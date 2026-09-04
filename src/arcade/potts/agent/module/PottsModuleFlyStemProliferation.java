@@ -4,6 +4,7 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import sim.util.Double3D;
+import sim.util.distribution.Probability;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
@@ -347,12 +348,66 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * well below the population baseline; using it here would move the reference along with the
      * cell and defeat the regulation.
      *
+     * <p>Under the {@code linear_ramp} ruleset {@code f_retain} is no longer a constant: the offset
+     * varies per division with the drawn angle. Two things then change. First, {@code E[V_birth] =
+     * E[f]*V_div} moves down. Second, divisions that start smaller take longer to reach {@code
+     * V_div}, so a population snapshot over-samples them; that length-bias depends on {@code
+     * Var(f)}, which was zero before and is not now, and requires the second moment:
+     *
+     * <pre>
+     *   a      = DIV_OFFSET_RAMP_SATURATION_ANGLE
+     *   E[u]   = (1/a)*sigma*sqrt(2/pi)*(1 - exp(-a^2/2*sigma^2)) + 2*(1 - Phi(a/sigma))
+     *   E[u^2] = [sigma^2*erf(a/(sigma*sqrt2)) - sigma*a*sqrt(2/pi)*exp(-a^2/2*sigma^2)] / a^2
+     *            + 2*(1 - Phi(a/sigma))
+     *   V_ref  = V_div * (1 - E[f^2]) / (2 * (1 - E[f]))
+     * </pre>
+     *
+     * <p>This reduces to the constant-offset form above when the ramp is off, giving the same
+     * {@code 0.965 * V_div}. It assumes the NB retains the {@code f} share, which holds exactly
+     * under {@code smaller_gmc} but not under {@code basal_gmc} or for NB-NB divisions where one
+     * daughter takes {@code 1 - f}. Set {@code GROWTH_REF_SPLIT_OFFSET_PERCENT_Y} above zero to
+     * override the derived value with one measured from simulation.
+     *
      * @return the expected average NB volume
      */
     double computeEquilibriumVolume() {
         double vDiv = sizeTarget * populationCriticalVolume;
-        double fRetain = wtDivisionSplitOffsetPercentY / 100.0;
-        return vDiv * (fRetain + 1.0) / 2.0;
+
+        if (growthRefSplitOffsetPercentY > 0) {
+            return vDiv * (growthRefSplitOffsetPercentY / 100.0 + 1.0) / 2.0;
+        }
+
+        double sigma =
+                divOffsetRuleset.equals("linear_ramp")
+                        ? splitDirectionDistribution.getParameters().getDouble("SIGMA")
+                        : 0.0;
+
+        // With no ramp, or no spread to ramp over, the offset is the fixed WT value every division.
+        if (sigma <= 0) {
+            double fRetain = wtDivisionSplitOffsetPercentY / 100.0;
+            return vDiv * (fRetain + 1.0) / 2.0;
+        }
+
+        double a = divOffsetRampSaturationAngle;
+        double hi = wtDivisionSplitOffsetPercentY;
+        double span = hi - divOffsetRampMinPercentY;
+
+        double tail = 2.0 * (1.0 - Probability.normal(a / sigma));
+        double gauss = Math.exp(-a * a / (2.0 * sigma * sigma));
+        double sqrt2OverPi = Math.sqrt(2.0 / Math.PI);
+
+        double expectedU = (sigma * sqrt2OverPi * (1.0 - gauss)) / a + tail;
+        double expectedUSquared =
+                (sigma * sigma * Probability.errorFunction(a / (sigma * Math.sqrt(2.0)))
+                                        - sigma * a * sqrt2OverPi * gauss)
+                                / (a * a)
+                        + tail;
+
+        double expectedF = (hi - span * expectedU) / 100.0;
+        double expectedFSquared =
+                (hi * hi - 2.0 * hi * span * expectedU + span * span * expectedUSquared) / 1e4;
+
+        return vDiv * (1.0 - expectedFSquared) / (2.0 * (1.0 - expectedF));
     }
 
     /**

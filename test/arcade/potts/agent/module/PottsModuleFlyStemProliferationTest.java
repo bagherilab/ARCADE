@@ -14,6 +14,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
+import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.core.util.Plane;
 import arcade.core.util.Vector;
@@ -443,6 +444,59 @@ public class PottsModuleFlyStemProliferationTest {
         // At a 50/50 split the two are equal, which is why every existing sim is unaffected.
         verify(stemCell).setCriticalVolume(50.0);
         verify(stemCell).make(anyInt(), any(), any(), anyInt(), eq(50.0));
+    }
+
+    @Test
+    public void computeEquilibriumVolume_thresholdRuleset_unchanged() {
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        // sizeTarget 1.2 * critVol 100.0 = 120.0 ; 120.0 * (0.93 + 1) / 2 = 115.8
+        assertEquals(115.8, module.computeEquilibriumVolume(), EPSILON);
+    }
+
+    @Test
+    public void computeEquilibriumVolume_linearRamp_matchesSpecTable() {
+        double[][] expected = {{26.0, 0.8989}, {35.0, 0.8744}, {43.0, 0.8552}, {50.0, 0.8411}};
+
+        for (double[] row : expected) {
+            when(parameters.getString("proliferation/DIV_OFFSET_RULESET"))
+                    .thenReturn("linear_ramp");
+            MiniBox distParams = new MiniBox();
+            distParams.put("MU", 0.0);
+            distParams.put("SIGMA", row[0]);
+            when(dist.getParameters()).thenReturn(distParams);
+            module = new PottsModuleFlyStemProliferation(stemCell);
+
+            assertEquals(120.0 * row[1], module.computeEquilibriumVolume(), 0.02);
+        }
+    }
+
+    @Test
+    public void computeEquilibriumVolume_overrideSet_usesOverride() {
+        when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("linear_ramp");
+        when(parameters.getDouble("proliferation/GROWTH_REF_SPLIT_OFFSET_PERCENT_Y"))
+                .thenReturn(80.0);
+        MiniBox distParams = new MiniBox();
+        distParams.put("MU", 0.0);
+        distParams.put("SIGMA", 50.0);
+        when(dist.getParameters()).thenReturn(distParams);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        // override short-circuits the closed form: 120.0 * (0.80 + 1) / 2 = 108.0
+        assertEquals(108.0, module.computeEquilibriumVolume(), EPSILON);
+    }
+
+    @Test
+    public void computeEquilibriumVolume_linearRampZeroSigma_fallsBackToFixedOffset() {
+        when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("linear_ramp");
+        MiniBox distParams = new MiniBox();
+        distParams.put("MU", 0.0);
+        distParams.put("SIGMA", 0.0);
+        when(dist.getParameters()).thenReturn(distParams);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        // With no spread every division draws the mean, so the offset never ramps off 93.
+        assertEquals(115.8, module.computeEquilibriumVolume(), EPSILON);
     }
 
     @Test
