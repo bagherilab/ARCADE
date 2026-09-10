@@ -426,10 +426,10 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void makeDaughterStemCell_symmetricSplit_parentAndDaughterAgree() {
+    public void makeDaughterStemCell_thresholdRuleset_parentTakesDaughterVolume() {
         when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(1);
-        when(stemLoc.getVolume()).thenReturn(50.0);
-        when(daughterLoc.getVolume()).thenReturn(50.0);
+        when(stemLoc.getVolume()).thenReturn(53.0); // parent retained
+        when(daughterLoc.getVolume()).thenReturn(47.0); // daughter received
         when(parameters.getDouble("CRITICAL_VOLUME")).thenReturn(100.0);
 
         PottsCellContainer container = mock(PottsCellContainer.class);
@@ -441,9 +441,12 @@ public class PottsModuleFlyStemProliferationTest {
         module = new PottsModuleFlyStemProliferation(stemCell);
         module.makeDaughterStemCell(daughterLoc, sim, potts, random);
 
-        // At a 50/50 split the two are equal, which is why every existing sim is unaffected.
-        verify(stemCell).setCriticalVolume(50.0);
-        verify(stemCell).make(anyInt(), any(), any(), anyInt(), eq(50.0));
+        // D6: on the threshold path both cells take the daughter's volume, as they always have.
+        // A nominally 50/50 MUD split is NOT exactly equal in voxel count, so sourcing the parent
+        // from its own retained volume here would change the division timing of every existing
+        // simulation. Verified empirically by the Task 8 regression gate.
+        verify(stemCell).setCriticalVolume(47.0);
+        verify(stemCell).make(anyInt(), any(), any(), anyInt(), eq(47.0));
     }
 
     @Test

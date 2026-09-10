@@ -786,7 +786,15 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         if (volumeBasedCriticalVolume) {
             double floor = populationCriticalVolume * .20;
             daughterCriticalVol = Math.max(daughterLoc.getVolume(), floor);
-            cell.setCriticalVolume(Math.max(cell.getLocation().getVolume(), floor));
+            // The threshold path keeps the historical behaviour, where the parent also takes the
+            // daughter's volume. A nominally symmetric split is only approximately equal in voxel
+            // count -- balanceVoxels tolerates BALANCE_DIFFERENCE and runs only when the plane
+            // passes exactly through the centre -- so sourcing the parent's threshold from its own
+            // retained volume shifts its division timing and diverges the run.
+            cell.setCriticalVolume(
+                    divOffsetRuleset.equals("linear_ramp")
+                            ? Math.max(cell.getLocation().getVolume(), floor)
+                            : daughterCriticalVol);
         } else {
             daughterCriticalVol = cell.getCriticalVolume();
         }
