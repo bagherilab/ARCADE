@@ -500,6 +500,35 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
+    public void linearRamp_atSaturation_matchesMudDivisionPlaneAndOffset() {
+        when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("linear_ramp");
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(dist.getExpected()).thenReturn(0.0);
+        when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(new Voxel(0, 0, 0));
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        // The offset at saturation equals the MUDMUT stem type's own split offset.
+        assertEquals(
+                PottsCellFlyStem.StemType.MUDMUT.splitOffsetPercentY,
+                module.computeSplitOffsetPercentY(-90.0),
+                EPSILON);
+
+        // The plane orientation at saturation equals the MUD plane's orientation.
+        Plane ramped =
+                module.buildDivisionPlane(
+                        stemCell, module.getRotationReferenceVector(stemCell), -90.0, 50.0);
+        Plane mud = module.getMUDDivisionPlane(stemCell);
+
+        assertEquals(
+                mud.getUnitNormalVector().getX(), ramped.getUnitNormalVector().getX(), EPSILON);
+        assertEquals(
+                mud.getUnitNormalVector().getY(), ramped.getUnitNormalVector().getY(), EPSILON);
+        assertEquals(
+                mud.getUnitNormalVector().getZ(), ramped.getUnitNormalVector().getZ(), EPSILON);
+    }
+
+    @Test
     public void constructor_basalGmcRuleset_setsExpectedFields() {
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("basal_gmc");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
