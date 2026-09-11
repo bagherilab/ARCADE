@@ -426,7 +426,7 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void makeDaughterStemCell_thresholdRuleset_parentTakesDaughterVolume() {
+    public void makeDaughterStemCell_thresholdRuleset_parentKeepsItsOwnVolume() {
         when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(1);
         when(stemLoc.getVolume()).thenReturn(53.0); // parent retained
         when(daughterLoc.getVolume()).thenReturn(47.0); // daughter received
@@ -441,11 +441,10 @@ public class PottsModuleFlyStemProliferationTest {
         module = new PottsModuleFlyStemProliferation(stemCell);
         module.makeDaughterStemCell(daughterLoc, sim, potts, random);
 
-        // D6: on the threshold path both cells take the daughter's volume, as they always have.
-        // A nominally 50/50 MUD split is NOT exactly equal in voxel count, so sourcing the parent
-        // from its own retained volume here would change the division timing of every existing
-        // simulation. Verified empirically by the Task 8 regression gate.
-        verify(stemCell).setCriticalVolume(47.0);
+        // Each cell takes its own birth volume on the threshold path too. MUD (NB-NB) divisions
+        // run on this path, and a nominally 50/50 MUD split is not exactly equal in voxel count,
+        // so the parent must not inherit the daughter's threshold.
+        verify(stemCell).setCriticalVolume(53.0);
         verify(stemCell).make(anyInt(), any(), any(), anyInt(), eq(47.0));
     }
 

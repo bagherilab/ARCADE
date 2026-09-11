@@ -768,11 +768,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * Makes a daughter NB cell.
      *
      * <p>Under {@code VOLUME_BASED_CRITICAL_VOLUME=1} each cell takes its own birth volume as its
-     * critical volume: the parent the volume it retained, the daughter the volume it received. The
-     * two are equal for a symmetric division, so this is inert wherever NB-NB divisions split 50/50
-     * — which is every case under the {@code threshold} ruleset. Under {@code linear_ramp} an NB-NB
-     * division can be asymmetric, and setting both from the daughter's volume would give a parent
-     * that retained the larger share a threshold derived from the smaller daughter.
+     * critical volume: the parent the volume it retained, the daughter the volume it received. Both
+     * are floored at 20% of the population critical volume. This holds under either {@code
+     * DIV_OFFSET_RULESET}; a nominally symmetric split is only approximately equal in voxel count,
+     * so the parent must not inherit the daughter's threshold.
      *
      * @param daughterLoc the location of the daughter NB cell
      * @param sim the simulation
@@ -786,15 +785,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         if (volumeBasedCriticalVolume) {
             double floor = populationCriticalVolume * .20;
             daughterCriticalVol = Math.max(daughterLoc.getVolume(), floor);
-            // The threshold path keeps the historical behaviour, where the parent also takes the
-            // daughter's volume. A nominally symmetric split is only approximately equal in voxel
-            // count -- balanceVoxels tolerates BALANCE_DIFFERENCE and runs only when the plane
-            // passes exactly through the centre -- so sourcing the parent's threshold from its own
-            // retained volume shifts its division timing and diverges the run.
-            cell.setCriticalVolume(
-                    divOffsetRuleset.equals("linear_ramp")
-                            ? Math.max(cell.getLocation().getVolume(), floor)
-                            : daughterCriticalVol);
+            cell.setCriticalVolume(Math.max(cell.getLocation().getVolume(), floor));
         } else {
             daughterCriticalVol = cell.getCriticalVolume();
         }
