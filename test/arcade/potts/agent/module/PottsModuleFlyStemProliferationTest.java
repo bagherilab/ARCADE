@@ -1094,6 +1094,38 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
+    public void addCell_nbnbDivision_parentAndDaughterEachTakeOwnVolume() {
+        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(1);
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(dist.nextDouble()).thenReturn(80.0); // triggers MUD plane (abs(offset) > 75)
+
+        // Both are above the floor of populationCriticalVolume * 0.20 = 20.
+        when(stemLoc.getVolume()).thenReturn(53.0); // parent retained
+        when(daughterLoc.getVolume()).thenReturn(47.0); // daughter received
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCellFlyStem newCell = mock(PottsCellFlyStem.class);
+        when(stemCell.make(anyInt(), any(), eq(random), anyInt(), anyDouble()))
+                .thenReturn(container);
+        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
+
+        PottsModuleFlyStemProliferation spyModule =
+                spy(new PottsModuleFlyStemProliferation(stemCell));
+        Plane dummyPlane = mock(Plane.class);
+        doReturn(dummyPlane).when(spyModule).getMUDDivisionPlane(eq(stemCell));
+        when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
+        doReturn(true).when(spyModule).daughterStem(any(), any(), any());
+
+        spyModule.addCell(random, sim);
+
+        // Each cell's division threshold comes from its own birth volume.
+        verify(stemCell).setCriticalVolume(53.0);
+        verify(stemCell).make(anyInt(), any(), any(), anyInt(), eq(47.0));
+    }
+
+    @Test
     public void addCell_MUDMUTOffsetBelowThreshold_createsGMCWithVolumeSwap() {
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
 

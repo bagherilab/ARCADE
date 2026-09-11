@@ -599,6 +599,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /**
      * Makes a daughter NB cell.
      *
+     * <p>Under {@code VOLUME_BASED_CRITICAL_VOLUME=1} each cell takes its own birth volume as its
+     * critical volume: the parent the volume it retained, the daughter the volume it received. Both
+     * are floored at 20% of the population critical volume.
+     *
      * @param daughterLoc the location of the daughter NB cell
      * @param sim the simulation
      * @param potts the potts instance for this simulation
@@ -607,17 +611,23 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     private void makeDaughterStemCell(
             PottsLocation daughterLoc, Simulation sim, Potts potts, MersenneTwisterFast random) {
         int newID = sim.getID();
-        double criticalVol;
+        double daughterCriticalVol;
         if (volumeBasedCriticalVolume) {
-            criticalVol = Math.max(daughterLoc.getVolume(), populationCriticalVolume * .20);
-            cell.setCriticalVolume(criticalVol);
+            double floor = populationCriticalVolume * .20;
+            daughterCriticalVol = Math.max(daughterLoc.getVolume(), floor);
+            cell.setCriticalVolume(Math.max(cell.getLocation().getVolume(), floor));
         } else {
-            criticalVol = cell.getCriticalVolume();
+            daughterCriticalVol = cell.getCriticalVolume();
         }
         cell.reset(potts.ids, potts.regions);
         PottsCellContainer container =
                 ((PottsCellFlyStem) cell)
-                        .make(newID, State.PROLIFERATIVE, random, cell.getPop(), criticalVol);
+                        .make(
+                                newID,
+                                State.PROLIFERATIVE,
+                                random,
+                                cell.getPop(),
+                                daughterCriticalVol);
         scheduleNewCell(container, daughterLoc, sim, potts, random);
     }
 
