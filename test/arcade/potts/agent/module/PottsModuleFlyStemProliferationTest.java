@@ -400,6 +400,43 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
+    public void chooseDivisionPlane_switchRampMudmut_takesRampPathNotMudPath() {
+        when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("switch_ramp");
+        when(parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_CENTER_ANGLE")).thenReturn(75.0);
+        when(parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_WIDTH")).thenReturn(5.0);
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(dist.getExpected()).thenReturn(0.0);
+        when(dist.nextDouble()).thenReturn(120.0); // beyond the 75-degree centre
+        when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(new Voxel(0, 0, 0));
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        module.chooseDivisionPlane(stemCell);
+
+        // 50 + 43/(1 + exp(9)) = 50.005; the logistic has saturated, so the recorded offset must be
+        // the ramped value and not the 93 the threshold path would record.
+        assertEquals(50.005, module.lastSplitOffsetPercentY, 0.01);
+    }
+
+    @Test
+    public void chooseDivisionPlane_switchRampWtSmallAngle_recordsNearWtOffset() {
+        when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("switch_ramp");
+        when(parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_CENTER_ANGLE")).thenReturn(75.0);
+        when(parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_WIDTH")).thenReturn(5.0);
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(dist.getExpected()).thenReturn(0.0);
+        when(dist.nextDouble()).thenReturn(20.0); // a typical WT draw
+        when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(new Voxel(0, 0, 0));
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        module.chooseDivisionPlane(stemCell);
+
+        // Flat region of the logistic: 50 + 43/(1 + exp(-11)) = 92.9993.
+        assertEquals(93.0, module.lastSplitOffsetPercentY, 0.01);
+    }
+
+    @Test
     public void chooseDivisionPlane_thresholdMudmutBeyondThreshold_stillUsesMudPlane() {
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
         when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));

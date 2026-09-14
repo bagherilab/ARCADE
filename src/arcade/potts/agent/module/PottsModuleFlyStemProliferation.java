@@ -435,6 +435,20 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
+     * Whether the configured offset ruleset derives the split offset from the drawn angle.
+     *
+     * <p>Single source of truth for the ramp check. A new ruleset must be added here, so that it
+     * cannot silently fall through to the {@code threshold} path — which is exactly what happened
+     * when {@code switch_ramp} was first introduced and its logistic was never reached during a
+     * simulation.
+     *
+     * @return {@code true} for every ruleset that ramps the offset with the drawn angle
+     */
+    boolean usesRampedOffset() {
+        return divOffsetRuleset.equals("linear_ramp") || divOffsetRuleset.equals("switch_ramp");
+    }
+
+    /**
      * Chooses the division plane according to the type of stem cell this module is attached to.
      *
      * @param flyStemCell the stem cell this module is attached to
@@ -443,7 +457,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     protected Plane chooseDivisionPlane(PottsCellFlyStem flyStemCell) {
         double offset = sampleDivisionPlaneOffset();
 
-        if (divOffsetRuleset.equals("linear_ramp")) {
+        if (usesRampedOffset()) {
             lastSplitOffsetPercentY = computeSplitOffsetPercentY(offset);
             return buildDivisionPlane(
                     flyStemCell,
@@ -930,12 +944,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             if (gmcCriticalVolumeOverride > 0) {
                 return gmcCriticalVolumeOverride;
             }
-            // The threshold path keeps reading the fixed WT offset verbatim so its behaviour cannot
-            // shift; only linear_ramp uses the offset realised for this particular division.
+            // The threshold path keeps reading the fixed WT offset verbatim so its behaviour
+            // cannot shift; a ramped ruleset uses the offset realised for this particular division.
             double offsetPercentY =
-                    divOffsetRuleset.equals("linear_ramp")
-                            ? lastSplitOffsetPercentY
-                            : wtDivisionSplitOffsetPercentY;
+                    usesRampedOffset() ? lastSplitOffsetPercentY : wtDivisionSplitOffsetPercentY;
             criticalVol =
                     ((PottsCellFlyStem) cell).getCriticalVolume()
                             * sizeTarget
