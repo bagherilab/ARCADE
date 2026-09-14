@@ -215,6 +215,83 @@ public class PottsModuleFlyStemProliferationTest {
 
     // Split offset ramp tests
 
+    /** Builds a module using the switch_ramp ruleset with the given logistic shape. */
+    private void useSwitchRamp(double center, double width) {
+        when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("switch_ramp");
+        when(parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_CENTER_ANGLE"))
+                .thenReturn(center);
+        when(parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_WIDTH")).thenReturn(width);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+    }
+
+    @Test
+    public void computeSplitOffsetPercentY_switchRampAtCenterAngle_returnsMidpointOffset() {
+        when(dist.getExpected()).thenReturn(0.0);
+        useSwitchRamp(75.0, 5.0);
+
+        assertEquals(71.5, module.computeSplitOffsetPercentY(75.0), 1e-6);
+        assertEquals(71.5, module.computeSplitOffsetPercentY(-75.0), 1e-6);
+    }
+
+    @Test
+    public void computeSplitOffsetPercentY_switchRampAtMean_returnsMaxOffset() {
+        when(dist.getExpected()).thenReturn(0.0);
+        useSwitchRamp(75.0, 5.0);
+
+        // 50 + 43/(1 + exp(-15)) = 92.99999987
+        assertEquals(93.0, module.computeSplitOffsetPercentY(0.0), 1e-4);
+    }
+
+    @Test
+    public void computeSplitOffsetPercentY_switchRampFarBeyondCenter_approachesMinOffset() {
+        when(dist.getExpected()).thenReturn(0.0);
+        useSwitchRamp(75.0, 5.0);
+
+        assertEquals(50.0, module.computeSplitOffsetPercentY(150.0), 1e-3);
+    }
+
+    @Test
+    public void computeSplitOffsetPercentY_switchRamp_symmetricAboutDistributionMean() {
+        when(dist.getExpected()).thenReturn(20.0);
+        useSwitchRamp(75.0, 5.0);
+
+        assertEquals(
+                module.computeSplitOffsetPercentY(60.0),
+                module.computeSplitOffsetPercentY(-20.0),
+                1e-9);
+    }
+
+    @Test
+    public void computeSplitOffsetPercentY_switchRampNarrowWidth_nearlyReachesMinAtMudAngle() {
+        when(dist.getExpected()).thenReturn(0.0);
+        useSwitchRamp(75.0, 3.0);
+
+        // 50 + 43/(1 + exp(5)) = 50.29; a narrow transition has all but finished by 90 degrees,
+        // where the division plane coincides with the MUD plane.
+        assertEquals(50.29, module.computeSplitOffsetPercentY(90.0), 0.01);
+    }
+
+    @Test
+    public void computeSplitOffsetPercentY_switchRampWideWidth_staysAboveMinAtMudAngle() {
+        when(dist.getExpected()).thenReturn(0.0);
+        useSwitchRamp(75.0, 8.0);
+
+        // 50 + 43/(1 + exp(1.875)) = 55.72; a wide transition is only two thirds complete at 90
+        // degrees, so it does not reproduce the MUD split there.
+        assertEquals(55.72, module.computeSplitOffsetPercentY(90.0), 0.01);
+    }
+
+    @Test
+    public void computeSplitOffsetPercentY_linearRamp_unchangedAfterSwitchRampRefactor() {
+        when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("linear_ramp");
+        when(dist.getExpected()).thenReturn(0.0);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertEquals(93.0, module.computeSplitOffsetPercentY(0.0), EPSILON);
+        assertEquals(71.5, module.computeSplitOffsetPercentY(45.0), EPSILON);
+        assertEquals(50.0, module.computeSplitOffsetPercentY(90.0), EPSILON);
+    }
+
     @Test
     public void computeSplitOffsetPercentY_atMean_returnsMaxOffset() {
         when(dist.getExpected()).thenReturn(0.0);

@@ -534,18 +534,30 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * <p>Under the {@code linear_ramp} ruleset the offset falls linearly from {@link
      * #wtDivisionSplitOffsetPercentY} toward {@link #divOffsetRampMinPercentY} as the drawn angle
      * moves away from the division distribution mean, reaching the minimum at {@link
-     * #divOffsetRampSaturationAngle} and clamping beyond it. The saturation angle defaults to 90
-     * degrees, where the resulting division plane already coincides with the MUD plane, so the ramp
-     * is a continuous generalisation of the threshold behaviour rather than a competing rule.
+     * #divOffsetRampSaturationAngle} and clamping beyond it.
+     *
+     * <p>Under the {@code switch_ramp} ruleset the offset follows a logistic in the same deviation,
+     * centred on {@link #divOffsetSwitchCenterAngle} with width {@link #divOffsetSwitchWidth}. It
+     * is flat near the distribution mean, so typical divisions keep the calibrated asymmetry and
+     * only extreme angles approach a symmetric split; as the width approaches zero it converges on
+     * the {@code threshold} ruleset. A linear ramp is flat nowhere, which shifts the mean split for
+     * every division and breaks the WT calibration — see {@code
+     * docs/superpowers/plans/2026-09-03-graded-division-offset.md}.
      *
      * @param rotationOffset the angle drawn from the division rotation distribution
      * @return the Y split offset percentage for this division
      */
     double computeSplitOffsetPercentY(double rotationOffset) {
         double deviation = Math.abs(rotationOffset - splitDirectionDistribution.getExpected());
+        double span = wtDivisionSplitOffsetPercentY - divOffsetRampMinPercentY;
+
+        if (divOffsetRuleset.equals("switch_ramp")) {
+            double z = (deviation - divOffsetSwitchCenterAngle) / divOffsetSwitchWidth;
+            return divOffsetRampMinPercentY + span / (1.0 + Math.exp(z));
+        }
+
         double fraction = Math.min(deviation / divOffsetRampSaturationAngle, 1.0);
-        return wtDivisionSplitOffsetPercentY
-                - (wtDivisionSplitOffsetPercentY - divOffsetRampMinPercentY) * fraction;
+        return wtDivisionSplitOffsetPercentY - span * fraction;
     }
 
     /**
