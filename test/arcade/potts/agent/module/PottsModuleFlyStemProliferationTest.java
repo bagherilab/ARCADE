@@ -123,6 +123,8 @@ public class PottsModuleFlyStemProliferationTest {
         when(parameters.getDouble("proliferation/DIV_OFFSET_RAMP_SATURATION_ANGLE"))
                 .thenReturn(90.0);
         when(parameters.getInt("proliferation/DIV_OFFSET_RAMP_MIN_PERCENT_Y")).thenReturn(50);
+        when(parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_CENTER_ANGLE")).thenReturn(75.0);
+        when(parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_WIDTH")).thenReturn(5.0);
         when(parameters.getDouble("proliferation/GROWTH_REF_SPLIT_OFFSET_PERCENT_Y"))
                 .thenReturn(0.0);
 
@@ -182,6 +184,29 @@ public class PottsModuleFlyStemProliferationTest {
     @Test
     public void constructor_invalidDivOffsetRuleset_throwsException() {
         when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("nonsense");
+
+        assertThrows(
+                InvalidParameterException.class,
+                () -> new PottsModuleFlyStemProliferation(stemCell));
+    }
+
+    @Test
+    public void constructor_switchRampRuleset_readsLogisticParameters() {
+        when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("switch_ramp");
+        when(parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_CENTER_ANGLE")).thenReturn(75.0);
+        when(parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_WIDTH")).thenReturn(5.0);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertEquals("switch_ramp", module.divOffsetRuleset);
+        assertEquals(75.0, module.divOffsetSwitchCenterAngle, EPSILON);
+        assertEquals(5.0, module.divOffsetSwitchWidth, EPSILON);
+    }
+
+    @Test
+    public void constructor_switchRampZeroWidth_throwsException() {
+        when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("switch_ramp");
+        when(parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_WIDTH")).thenReturn(0.0);
 
         assertThrows(
                 InvalidParameterException.class,

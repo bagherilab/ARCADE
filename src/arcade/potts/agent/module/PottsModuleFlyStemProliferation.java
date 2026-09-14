@@ -175,6 +175,20 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     final int divOffsetRampMinPercentY;
 
     /**
+     * Angle (degrees) from the division distribution mean at which the {@code switch_ramp} offset
+     * sits midway between {@link #wtDivisionSplitOffsetPercentY} and {@link
+     * #divOffsetRampMinPercentY}. Defaults to 75, the angle at which the {@code threshold} ruleset
+     * flips to the MUD plane.
+     */
+    final double divOffsetSwitchCenterAngle;
+
+    /**
+     * Width (degrees) of the {@code switch_ramp} logistic transition. Smaller values are more
+     * switch-like; the limit as this approaches zero is the {@code threshold} ruleset.
+     */
+    final double divOffsetSwitchWidth;
+
+    /**
      * Overrides the split offset (%) used to derive the growth-regulation reference volume. When
      * zero, the reference is derived from the division angle distribution instead.
      */
@@ -251,9 +265,17 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         previousDivisionNormal = null;
 
         divOffsetRuleset = parameters.getString("proliferation/DIV_OFFSET_RULESET");
-        if (!divOffsetRuleset.equals("threshold") && !divOffsetRuleset.equals("linear_ramp")) {
+        if (!divOffsetRuleset.equals("threshold")
+                && !divOffsetRuleset.equals("linear_ramp")
+                && !divOffsetRuleset.equals("switch_ramp")) {
             throw new InvalidParameterException(
-                    "divOffsetRuleset must be either threshold or linear_ramp");
+                    "divOffsetRuleset must be threshold, linear_ramp, or switch_ramp");
+        }
+        divOffsetSwitchCenterAngle =
+                parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_CENTER_ANGLE");
+        divOffsetSwitchWidth = parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_WIDTH");
+        if (divOffsetRuleset.equals("switch_ramp") && divOffsetSwitchWidth <= 0) {
+            throw new InvalidParameterException("divOffsetSwitchWidth must be greater than zero");
         }
         divOffsetRampSaturationAngle =
                 parameters.getDouble("proliferation/DIV_OFFSET_RAMP_SATURATION_ANGLE");
