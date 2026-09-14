@@ -125,8 +125,6 @@ public class PottsModuleFlyStemProliferationTest {
         when(parameters.getInt("proliferation/DIV_OFFSET_RAMP_MIN_PERCENT_Y")).thenReturn(50);
         when(parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_CENTER_ANGLE")).thenReturn(75.0);
         when(parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_WIDTH")).thenReturn(5.0);
-        when(parameters.getDouble("proliferation/GROWTH_REF_SPLIT_OFFSET_PERCENT_Y"))
-                .thenReturn(0.0);
 
         // Link selection
         GrabBag links = mock(GrabBag.class);
@@ -169,7 +167,6 @@ public class PottsModuleFlyStemProliferationTest {
         assertEquals("threshold", module.divOffsetRuleset);
         assertEquals(90.0, module.divOffsetRampSaturationAngle, EPSILON);
         assertEquals(50, module.divOffsetRampMinPercentY);
-        assertEquals(0.0, module.growthRefSplitOffsetPercentY, EPSILON);
     }
 
     @Test
@@ -559,48 +556,20 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void computeEquilibriumVolume_linearRamp_matchesSpecTable() {
-        double[][] expected = {{26.0, 0.8989}, {35.0, 0.8744}, {43.0, 0.8552}, {50.0, 0.8411}};
-
-        for (double[] row : expected) {
-            when(parameters.getString("proliferation/DIV_OFFSET_RULESET"))
-                    .thenReturn("linear_ramp");
+    public void computeEquilibriumVolume_anyRuleset_usesImposedWtOffset() {
+        // Every ruleset must satisfy the same WT calibration, which pins the WT mean offset at the
+        // imposed value. V_ref therefore does not track the ruleset's own offset distribution.
+        for (String ruleset : new String[] {"threshold", "linear_ramp", "switch_ramp"}) {
+            when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn(ruleset);
             MiniBox distParams = new MiniBox();
             distParams.put("MU", 0.0);
-            distParams.put("SIGMA", row[0]);
+            distParams.put("SIGMA", 50.0);
             when(dist.getParameters()).thenReturn(distParams);
             module = new PottsModuleFlyStemProliferation(stemCell);
 
-            assertEquals(120.0 * row[1], module.computeEquilibriumVolume(), 0.02);
+            // sizeTarget 1.2 * critVol 100.0 = 120.0 ; 120.0 * (0.93 + 1) / 2 = 115.8
+            assertEquals(115.8, module.computeEquilibriumVolume(), EPSILON);
         }
-    }
-
-    @Test
-    public void computeEquilibriumVolume_overrideSet_usesOverride() {
-        when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("linear_ramp");
-        when(parameters.getDouble("proliferation/GROWTH_REF_SPLIT_OFFSET_PERCENT_Y"))
-                .thenReturn(80.0);
-        MiniBox distParams = new MiniBox();
-        distParams.put("MU", 0.0);
-        distParams.put("SIGMA", 50.0);
-        when(dist.getParameters()).thenReturn(distParams);
-        module = new PottsModuleFlyStemProliferation(stemCell);
-
-        // override short-circuits the closed form: 120.0 * (0.80 + 1) / 2 = 108.0
-        assertEquals(108.0, module.computeEquilibriumVolume(), EPSILON);
-    }
-
-    @Test
-    public void computeEquilibriumVolume_linearRampZeroSigma_fallsBackToFixedOffset() {
-        when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("linear_ramp");
-        MiniBox distParams = new MiniBox();
-        distParams.put("MU", 0.0);
-        distParams.put("SIGMA", 0.0);
-        when(dist.getParameters()).thenReturn(distParams);
-        module = new PottsModuleFlyStemProliferation(stemCell);
-
-        // With no spread every division draws the mean, so the offset never ramps off 93.
-        assertEquals(115.8, module.computeEquilibriumVolume(), EPSILON);
     }
 
     @Test

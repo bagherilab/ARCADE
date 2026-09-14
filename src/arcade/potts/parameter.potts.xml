@@ -85,7 +85,6 @@
     <population.module module="proliferation" id="DIV_OFFSET_RAMP_MIN_PERCENT_Y" value="50" description="minimum Y split offset (%) the linear_ramp approaches; 50 gives a symmetric split" />
     <population.module module="proliferation" id="DIV_OFFSET_SWITCH_CENTER_ANGLE" value="75" description="angle (degrees) from the distribution mean at which the switch_ramp offset is midway between WT_DIVISION_SPLIT_OFFSET_PERCENT_Y and DIV_OFFSET_RAMP_MIN_PERCENT_Y" />
     <population.module module="proliferation" id="DIV_OFFSET_SWITCH_WIDTH" value="5" description="width (degrees) of the switch_ramp logistic transition; smaller is more switch-like, and the limit of zero reproduces the threshold ruleset" />
-    <population.module module="proliferation" id="GROWTH_REF_SPLIT_OFFSET_PERCENT_Y" value="0" description="overrides the growth-regulation reference split offset (%); 0 uses the value derived from the division angle distribution" />
     <!-- ── NB and GMC critical volume options ────────────────────────── -->
     <population.module module="proliferation" id="VOLUME_BASED_CRITICAL_VOLUME" value="0" description="1 → critical volume scales with daughter volume; 0 → use max (type-based) value" />
     <population.module module="proliferation" id="GMC_CRITICAL_VOLUME_OVERRIDE" value="0" units="um^3" conversion="DS^-3" description="If &gt; 0 and VOLUME_BASED_CRITICAL_VOLUME=0, overrides the formula-derived GMC daughter critical volume with this fixed value (converted to voxels); 0 = disabled (use formula)" />
