@@ -24,6 +24,7 @@ import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.cell.PatchCellFactory;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.lattice.PatchLattice;
@@ -138,6 +139,29 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         }
 
         return cellContainers;
+    }
+
+    /**
+     * Get the CAR surface data (cars, startCars) for all {@link PatchCellCART} agents.
+     *
+     * @return the list of surface data, one entry per CAR T-cell
+     */
+    public final List<Map<String, Object>> getSurfaceData() {
+        List<Map<String, Object>> surfaceData = new ArrayList<>();
+
+        for (Object obj : grid.getAllObjects()) {
+            if (obj instanceof PatchCellCART) {
+                PatchCellCART cell = (PatchCellCART) obj;
+                Map<String, Object> data = new HashMap<>();
+                data.put("id", cell.getID());
+                data.put("pop", cell.getPop());
+                data.put("cars", cell.getCars());
+                data.put("startCars", cell.getStartCars());
+                surfaceData.add(data);
+            }
+        }
+
+        return surfaceData;
     }
 
     @Override

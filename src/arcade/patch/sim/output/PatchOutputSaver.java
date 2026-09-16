@@ -22,6 +22,9 @@ public final class PatchOutputSaver extends OutputSaver {
     /** {@code true} to save events, {@code false} otherwise. */
     public boolean saveEvents;
 
+    /** {@code true} to save surface data, {@code false} otherwise. */
+    public boolean saveSurface;
+
     /**
      * Creates an {@code PatchOutputSaver} for the series.
      *
@@ -42,6 +45,22 @@ public final class PatchOutputSaver extends OutputSaver {
             if (!events.isEmpty()) {
                 String json = gson.toJson(events);
                 String path = prefix + String.format("_%06d.EVENTS.json", tick);
+                write(path, format(json, FORMAT_ELEMENTS));
+            }
+        }
+    }
+
+    /**
+     * Save the collection of CAR surface data to a JSON.
+     *
+     * @param tick the simulation tick
+     */
+    public void saveSurfaceToFile(int tick) {
+        if (saveSurface) {
+            List<Map<String, Object>> surfaceData = ((PatchSimulation) sim).getSurfaceData();
+            if (!surfaceData.isEmpty()) {
+                String json = gson.toJson(surfaceData);
+                String path = prefix + String.format("_%06d.SURFACE.json", tick);
                 write(path, format(json, FORMAT_ELEMENTS));
             }
         }
@@ -93,6 +112,9 @@ public final class PatchOutputSaver extends OutputSaver {
         }
         if (saveEvents) {
             saveEventsToFile(tick);
+        }
+        if (saveSurface) {
+            saveSurfaceToFile(tick);
         }
     }
 }

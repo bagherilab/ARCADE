@@ -458,4 +458,9 @@ public abstract class PatchCellCART extends PatchCell {
     public int getCars() {
         return cars;
     }
+
+    /** Gets the starting car amount. */
+    public int getStartCars() {
+        return startCars;
+    }
 }
