@@ -80,10 +80,29 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     final boolean dynamicGrowthRateNBSelfRepression;
 
     /**
-     * Range of values considered equal when determining daughter cell identity. ex. if ruleset is
-     * location, range determines the distance between centroid y values that is considered equal.
+     * Distance (voxel lengths) within which two centroids count as equal under the {@code
+     * basal_gmc} ruleset. An absolute length, because that ruleset compares a separation.
      */
     final double range;
+
+    /**
+     * Split offset (%) below which a division counts as symmetric under the {@code smaller_gmc}
+     * ruleset: both daughters stay neuroblasts when the larger daughter's share of the parent is
+     * less than this.
+     *
+     * <p>On the same scale as {@link #wtDivisionSplitOffsetPercentY} (93) and {@link
+     * #divOffsetRampMinPercentY} (50), so the three read together — the default 71.5 is their
+     * midpoint, which is where a switch ramp centred on {@code DIV_OFFSET_SWITCH_CENTER_ANGLE} sits
+     * at that angle. Setting it to the midpoint therefore places the fate boundary exactly on the
+     * ramp's centre.
+     *
+     * <p>Relative rather than absolute so that one value serves every condition: the parent's
+     * volume cancels, leaving a test on the split ratio alone. Mean NB volume varies roughly
+     * five-fold across conditions — about 248 voxels unregulated, 424 under volume regulation, and
+     * 1236 in WT — so an absolute tolerance would put the fate boundary at a different angle in
+     * each.
+     */
+    final double equalityOffsetPercentY;
 
     /**
      * Half-max NB neighbor count for repression (K). Only relevant if dynamicGrowthRateNBContact is
@@ -211,6 +230,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                         parameters.getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION");
         differentiationRuleset = parameters.getString("proliferation/DIFFERENTIATION_RULESET");
         range = parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE");
+        equalityOffsetPercentY =
+                parameters.getDouble(
+                        "proliferation/DIFFERENTIATION_RULESET_EQUALITY_OFFSET_PERCENT");
         apicalAxisRuleset = parameters.getString("proliferation/APICAL_AXIS_RULESET");
         apicalAxisRotationDistribution =
                 (Distribution)
@@ -665,10 +687,12 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             if (differentiationRuleset.equals("smaller_gmc")) {
                 double vol1 = loc1.getVolume();
                 double vol2 = loc2.getVolume();
-                if (Math.abs(vol1 - vol2) < range) {
-                    return true;
+                double total = vol1 + vol2;
+                if (total <= 0) {
+                    return false;
                 }
-                return false;
+                double largerSharePercent = 100.0 * Math.max(vol1, vol2) / total;
+                return largerSharePercent < equalityOffsetPercentY;
             } else if (differentiationRuleset.equals("basal_gmc")) {
                 double[] centroid1 = loc1.getCentroid();
                 double[] centroid2 = loc2.getCentroid();

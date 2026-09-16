@@ -112,6 +112,8 @@ public class PottsModuleFlyStemProliferationTest {
                 .thenReturn("smaller_gmc");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
                 .thenReturn(0.5);
+        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_OFFSET_PERCENT"))
+                .thenReturn(60.0);
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("TRUE");
         when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
@@ -2059,13 +2061,43 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
+    void daughterStem_smallerGmc_decisionIsScaleInvariant() {
+        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
+                .thenReturn("FALSE");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
+        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_OFFSET_PERCENT"))
+                .thenReturn(71.5);
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        // The same split ratio at three very different cell sizes must decide the same way.
+        // 70/30 is more even than 71.5 (symmetric); 75/25 is less even (asymmetric). With an
+        // absolute tolerance the 1236-voxel cell would decide differently from the 248-voxel one,
+        // which is exactly why no single value could serve noreg, vol_abm and WT at once.
+        for (double total : new double[] {248.0, 424.0, 1236.0}) {
+            when(stemLoc.getVolume()).thenReturn(0.70 * total);
+            when(daughterLoc.getVolume()).thenReturn(0.30 * total);
+            assertTrue(
+                    module.daughterStem(stemLoc, daughterLoc, mock(Plane.class)),
+                    "70/30 split must be symmetric at total=" + total);
+
+            when(stemLoc.getVolume()).thenReturn(0.75 * total);
+            when(daughterLoc.getVolume()).thenReturn(0.25 * total);
+            assertFalse(
+                    module.daughterStem(stemLoc, daughterLoc, mock(Plane.class)),
+                    "75/25 split must be asymmetric at total=" + total);
+        }
+    }
+
+    @Test
     void daughterStem_volumeRuleBased_true() {
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("FALSE");
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
                 .thenReturn("smaller_gmc");
-        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
-                .thenReturn(10.0); // large enough for |10 - 5| < 10
+        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_OFFSET_PERCENT"))
+                .thenReturn(75.0); // 10/(10+5) = 66.7% split, below 75 -> symmetric
 
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
 
@@ -2073,7 +2105,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class));
 
-        assertTrue(result, "Expected true since |10-5| < range");
+        assertTrue(result, "Expected true since the 66.7/33.3 split is more even than 75");
     }
 
     @Test
@@ -2082,8 +2114,8 @@ public class PottsModuleFlyStemProliferationTest {
                 .thenReturn("FALSE");
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
                 .thenReturn("smaller_gmc");
-        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
-                .thenReturn(1.0); // |10 - 5| = 5 > 1
+        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_OFFSET_PERCENT"))
+                .thenReturn(60.0); // 10/(10+5) = 66.7% split, above 60 -> asymmetric
 
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
 
@@ -2091,19 +2123,36 @@ public class PottsModuleFlyStemProliferationTest {
 
         boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class));
 
-        assertFalse(result, "Expected false since |10-5| > range");
+        assertFalse(result, "Expected false since the 66.7/33.3 split is less even than 60");
     }
 
     @Test
-    public void daughterStem_ruleBasedWT_alwaysReturnsFalse() {
+    public void daughterStem_ruleBasedWT_usesSameGeometricRuleAsMudmut() {
+        // The WT early-return was removed in 953d9f01 so that WT uses the same geometric ruleset
+        // as MUDMUT; whether WT can divide symmetrically is controlled by
+        // HAS_DETERMINISTIC_DIFFERENTIATION, not by a hardcoded genotype check. This test
+        // previously asserted "WT always returns false" and passed only because the default mock
+        // volumes happened to sit outside the tolerance.
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("FALSE");
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
+        when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_OFFSET_PERCENT"))
+                .thenReturn(71.5);
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
-
         module = new PottsModuleFlyStemProliferation(stemCell);
-        boolean result = module.daughterStem(stemLoc, daughterLoc, mock(Plane.class));
 
-        assertFalse(result, "WT rule-based differentiation should always return false");
+        when(stemLoc.getVolume()).thenReturn(70.0);
+        when(daughterLoc.getVolume()).thenReturn(30.0); // 70/30 split, more even than 71.5
+        assertTrue(
+                module.daughterStem(stemLoc, daughterLoc, mock(Plane.class)),
+                "a symmetric enough WT division yields two neuroblasts");
+
+        when(stemLoc.getVolume()).thenReturn(93.0);
+        when(daughterLoc.getVolume()).thenReturn(7.0); // 93/7 split, less even than 71.5
+        assertFalse(
+                module.daughterStem(stemLoc, daughterLoc, mock(Plane.class)),
+                "the calibrated 93/7 WT split yields a GMC");
     }
 
     @Test
