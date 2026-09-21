@@ -18,7 +18,6 @@ import arcade.patch.env.location.PatchLocationContainer;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.sim.PatchSimulation;
 import arcade.patch.util.PatchEnums.Ordering;
-
 import static arcade.patch.util.PatchEnums.Ordering;
 
 /**
@@ -49,7 +48,6 @@ public class PatchActionInsert implements Action {
 
     /** Number of cells placed. */
     private int cellsPlaced;
-    
 
     /**
      * Creates a {@link Action} for removing cell agents.
@@ -115,19 +113,27 @@ public class PatchActionInsert implements Action {
                 Coordinate coord = coordinates.remove(0);
 
                 // Create a new cell and location.
-                // place multiple cells in same location if confluence is true, otherwise place one cell per location
-                if (confluence) {   
+                // place multiple cells in same location if confluence is true, otherwise place one
+                // cell per location
+                if (confluence) {
                     boolean free = true;
                     while (free && cellsPlaced < insertNumber) {
                         // Create a new location and cell.
                         PatchCell cell = generateCell(sim, coord, pop);
                         Location location = cell.getLocation();
-                        free = PatchCell.checkLocation(sim, (PatchLocation) location, cell.getVolume(), cell.getCriticalHeight(), pop, cell.getMaxDensity());
+                        free =
+                                PatchCell.checkLocation(
+                                        sim,
+                                        (PatchLocation) location,
+                                        cell.getVolume(),
+                                        cell.getCriticalHeight(),
+                                        pop,
+                                        cell.getMaxDensity());
                         if (free) {
                             addCellToLocation(sim, grid, cell, location);
-                        }   
+                        }
                     }
-                } else{
+                } else {
                     PatchCell cell = generateCell(sim, coord, pop);
                     Location location = cell.getLocation();
                     addCellToLocation(sim, grid, cell, location);
@@ -136,7 +142,8 @@ public class PatchActionInsert implements Action {
         }
     }
 
-    private void addCellToLocation(PatchSimulation sim, PatchGrid grid, PatchCell cell, Location location) {
+    private void addCellToLocation(
+            PatchSimulation sim, PatchGrid grid, PatchCell cell, Location location) {
         grid.addObject(cell, location);
         cell.schedule(sim.getSchedule());
         cellsPlaced++;
