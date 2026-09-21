@@ -142,6 +142,14 @@ public class PatchActionInsert implements Action {
         }
     }
 
+    /**
+     * Adds a cell to a location in the grid.
+     *
+     * @param sim the simulation series
+     * @param grid the patch grid
+     * @param cell the cell to add
+     * @param location the location to add the cell to
+     */
     private void addCellToLocation(
             PatchSimulation sim, PatchGrid grid, PatchCell cell, Location location) {
         grid.addObject(cell, location);
@@ -149,6 +157,14 @@ public class PatchActionInsert implements Action {
         cellsPlaced++;
     }
 
+    /**
+     * Generates a new cell for the simulation.
+     *
+     * @param sim the simulation series
+     * @param coord the coordinate to generate the cell at
+     * @param pop the population to generate the cell for
+     * @return the generated cell
+     */
     private PatchCell generateCell(PatchSimulation sim, Coordinate coord, int pop) {
         int id = sim.getID();
         PatchLocationContainer locationContainer = new PatchLocationContainer(id, coord);
