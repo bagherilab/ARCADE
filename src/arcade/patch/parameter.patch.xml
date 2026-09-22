@@ -117,6 +117,8 @@
     <action class="insert" id="TIME_DELAY" value="0" units="min" description="time delay before calling the action" />
     <action class="insert" id="INSERT_RADIUS" value="1" description="grid radius that cells are inserted into" />
     <action class="insert" id="INSERT_NUMBER" value="1" description="number of cells to insert from each population" />
+    <action class="insert" id="INSERT_DIRECTION" value="CENTER" description="direction to offset the insertion site along (CENTER; hex: N, NE, SE, S, SW, NW; rect: N, E, S, W)" />
+    <action class="insert" id="INSERT_OFFSET" value="0" description="number of locations to offset the insertion site from the center of the simulation" />
 
     <!-- remove action parameters -->
     <action class="remove" id="TIME_DELAY" value="0" units="min" description="time delay before calling the action" />
