@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
+import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
@@ -13,6 +14,8 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.sim.PatchSeries;
+import arcade.patch.util.PatchEnums.Domain;
+import arcade.patch.util.PatchEnums.State;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.State;
@@ -153,14 +156,27 @@ public final class PatchCellFactory implements CellFactory {
         MiniBox population = popToParameters.get(pop);
         Parameters parameters = new Parameters(population, null, random);
 
-        double compression = parameters.getDouble("COMPRESSION_TOLERANCE");
+        double compression =
+                parameters.getDouble("COMPRESSION_TOLERANCE") >= 0
+                        ? parameters.getDouble("COMPRESSION_TOLERANCE")
+                        : Double.MAX_VALUE;
 
         double volume = parameters.getDouble("CELL_VOLUME");
         double height = parameters.getDouble("CELL_HEIGHT");
         int age = parameters.getInt("CELL_AGE");
-
+        Bag cycles = new Bag();
         return new PatchCellContainer(
-                id, 0, pop, age, 0, State.UNDEFINED, volume, height, volume, height + compression);
+                id,
+                0,
+                pop,
+                age,
+                0,
+                State.UNDEFINED,
+                volume,
+                height,
+                volume,
+                height + compression,
+                cycles);
     }
 
     /**

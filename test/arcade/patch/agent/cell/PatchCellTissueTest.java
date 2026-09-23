@@ -3,6 +3,7 @@ package arcade.patch.agent.cell;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.*;
@@ -58,6 +59,8 @@ public class PatchCellTissueTest {
 
     static double cellCriticalHeight = randomDoubleBetween(10, 100);
 
+    static Bag cycles = new Bag();
+
     static class PatchCellMock extends PatchCellTissue {
         PatchCellMock(PatchCellContainer container, Location location, Parameters parameters) {
             super(container, location, parameters, null);
@@ -75,7 +78,8 @@ public class PatchCellTissueTest {
                     volume,
                     height,
                     criticalVolume,
-                    criticalHeight);
+                    criticalHeight,
+                    cycles);
         }
     }
 
@@ -117,7 +121,8 @@ public class PatchCellTissueTest {
                             cellVolume,
                             cellHeight,
                             cellCriticalVolume,
-                            cellCriticalHeight);
+                            cellCriticalHeight,
+                            cycles);
             PatchCell cell = spy(new PatchCellMock(container, locationMock, parametersMock));
             cell.processes.put(Domain.METABOLISM, metabolismMock);
             cell.processes.put(Domain.SIGNALING, signalingMock);
@@ -160,7 +165,8 @@ public class PatchCellTissueTest {
                             cellVolume,
                             cellHeight,
                             cellCriticalVolume,
-                            cellCriticalHeight);
+                            cellCriticalHeight,
+                            cycles);
             PatchCell cell = spy(new PatchCellMock(container, locationMock, parametersMock));
             cell.processes.put(Domain.METABOLISM, metabolismMock);
             cell.processes.put(Domain.SIGNALING, signalingMock);
@@ -199,7 +205,8 @@ public class PatchCellTissueTest {
                         cellVolume,
                         cellHeight,
                         cellCriticalVolume,
-                        cellCriticalHeight);
+                        cellCriticalHeight,
+                        cycles);
         PatchCell cell = spy(new PatchCellMock(container, locationMock, parametersMock));
         cell.processes.put(Domain.METABOLISM, metabolismMock);
         cell.processes.put(Domain.SIGNALING, signalingMock);
@@ -244,7 +251,8 @@ public class PatchCellTissueTest {
                             cellVolume,
                             cellHeight,
                             cellCriticalVolume,
-                            cellCriticalHeight);
+                            cellCriticalHeight,
+                            cycles);
             PatchCell cell = spy(new PatchCellMock(container, locationMock, parametersMock));
             cell.processes.put(Domain.METABOLISM, metabolismMock);
             cell.processes.put(Domain.SIGNALING, signalingMock);
@@ -291,7 +299,8 @@ public class PatchCellTissueTest {
                             cellVolume,
                             cellHeight,
                             cellCriticalVolume,
-                            cellCriticalHeight);
+                            cellCriticalHeight,
+                            cycles);
             PatchCell cell = spy(new PatchCellMock(container, locationMock, parametersMock));
             cell.processes.put(Domain.METABOLISM, metabolismMock);
             cell.processes.put(Domain.SIGNALING, signalingMock);
@@ -336,7 +345,8 @@ public class PatchCellTissueTest {
                             cellVolume,
                             cellHeight,
                             cellCriticalVolume,
-                            cellCriticalHeight);
+                            cellCriticalHeight,
+                            cycles);
             PatchCell cell = spy(new PatchCellMock(container, locationMock, parametersMock));
             cell.processes.put(Domain.METABOLISM, metabolismMock);
             cell.processes.put(Domain.SIGNALING, signalingMock);
@@ -377,7 +387,8 @@ public class PatchCellTissueTest {
                         cellVolume,
                         cellHeight,
                         cellCriticalVolume,
-                        cellCriticalHeight);
+                        cellCriticalHeight,
+                        cycles);
         PatchCell cell = spy(new PatchCellMock(container, locationMock, parametersMock));
         cell.processes.put(Domain.METABOLISM, metabolismMock);
         cell.processes.put(Domain.SIGNALING, signalingMock);
@@ -417,7 +428,8 @@ public class PatchCellTissueTest {
                         cellVolume,
                         cellHeight,
                         cellCriticalVolume,
-                        cellCriticalHeight);
+                        cellCriticalHeight,
+                        cycles);
         PatchCell cell = spy(new PatchCellMock(container, locationMock, parametersMock));
         cell.processes.put(Domain.METABOLISM, metabolismMock);
         cell.processes.put(Domain.SIGNALING, signalingMock);
@@ -462,7 +474,8 @@ public class PatchCellTissueTest {
                         cellVolume,
                         cellHeight,
                         cellCriticalVolume,
-                        cellCriticalHeight);
+                        cellCriticalHeight,
+                        cycles);
         PatchCell cell = spy(new PatchCellMock(container, locationMock, parametersMock));
         cell.processes.put(Domain.METABOLISM, metabolismMock);
         cell.processes.put(Domain.SIGNALING, signalingMock);
@@ -507,7 +520,8 @@ public class PatchCellTissueTest {
                         cellVolume,
                         cellHeight,
                         cellCriticalVolume,
-                        cellCriticalHeight);
+                        cellCriticalHeight,
+                        cycles);
         PatchCell cell = spy(new PatchCellMock(container, locationMock, parametersMock));
         cell.processes.put(Domain.METABOLISM, metabolismMock);
         cell.processes.put(Domain.SIGNALING, signalingMock);
@@ -556,7 +570,8 @@ public class PatchCellTissueTest {
                         volume,
                         height,
                         criticalVolume,
-                        criticalHeight);
+                        criticalHeight,
+                        cycles);
 
         PatchCellTissue cell =
                 new PatchCellTissue(cellContainer, locationMock, parametersMock, links);
@@ -605,7 +620,8 @@ public class PatchCellTissueTest {
                         volume,
                         height,
                         criticalVolume,
-                        criticalHeight);
+                        criticalHeight,
+                        cycles);
 
         PatchCellTissue cell =
                 new PatchCellTissue(cellContainer, locationMock, parametersMock, links);

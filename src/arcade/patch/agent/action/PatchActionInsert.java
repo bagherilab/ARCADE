@@ -1,6 +1,7 @@
 package arcade.patch.agent.action;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import arcade.core.agent.action.Action;
@@ -13,10 +14,12 @@ import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellContainer;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.Coordinate;
+import arcade.patch.env.location.PatchLocation;
 import arcade.patch.env.location.PatchLocationContainer;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.sim.PatchSimulation;
-import static arcade.patch.util.PatchEnums.Ordering;
+import arcade.patch.util.PatchEnums.Direction;
+import arcade.patch.util.PatchEnums.Ordering;
 
 /**
  * Implementation of {@link Action} for inserting cell agents.
@@ -41,6 +44,18 @@ public class PatchActionInsert implements Action {
     /** List of populations. */
     private final ArrayList<MiniBox> populations;
 
+    /** Whether the insertion is to confluence. */
+    private final boolean confluence;
+
+    /** Number of cells placed. */
+    private int cellsPlaced;
+
+    /** Direction to insert cells in. */
+    private final Direction insertDirection;
+
+    /** Offset from the center to insert cells at. */
+    private final int insertOffset;
+
     /**
      * Creates a {@link Action} for removing cell agents.
      *
@@ -50,6 +65,8 @@ public class PatchActionInsert implements Action {
      *   <li>{@code TIME_DELAY} = time delay before calling the action
      *   <li>{@code INSERT_RADIUS} = grid radius that cells are inserted into
      *   <li>{@code INSERT_NUMBER} = number of cells to insert from each population
+     *   <li>{@code INSERT_DIRECTION} = direction to offset the insertion site along
+     *   <li>{@code INSERT_OFFSET} = number of locations to offset the insertion site by
      * </ul>
      *
      * @param series the simulation series
@@ -63,9 +80,44 @@ public class PatchActionInsert implements Action {
         insertRadius = Math.min(maxRadius, parameters.getInt("INSERT_RADIUS"));
         insertDepth = ((PatchSeries) series).depth;
         insertNumber = parameters.getInt("INSERT_NUMBER");
+        insertDirection = parseDirection(parameters.get("INSERT_DIRECTION"));
+        insertOffset = parameters.getInt("INSERT_OFFSET");
+        confluence = parameters.getInt("CONFLUENCE") > 0;
 
         // Initialize population register.
         populations = new ArrayList<>();
+
+        // Initialize number of cells placed.
+        cellsPlaced = 0;
+    }
+
+    /**
+     * Parses the insertion direction.
+     *
+     * <p>Whether the direction is valid for the geometry of the simulation is checked when the
+     * insertion coordinates are calculated.
+     *
+     * @param value the direction parameter value
+     * @return the parsed direction
+     * @throws IllegalArgumentException if the value is not a valid direction
+     */
+    private static Direction parseDirection(String value) {
+        if (value == null) {
+            throw new IllegalArgumentException(
+                    "INSERT_DIRECTION must be specified, must be one of "
+                            + Arrays.toString(Direction.values()));
+        }
+
+        try {
+            return Direction.valueOf(value.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(
+                    "INSERT_DIRECTION [ "
+                            + value
+                            + " ] is not a valid direction, must be one of "
+                            + Arrays.toString(Direction.values()),
+                    e);
+        }
     }
 
     @Override
@@ -85,31 +137,84 @@ public class PatchActionInsert implements Action {
 
         // Select valid coordinates to insert into and shuffle.
         ArrayList<Coordinate> coordinates =
-                sim.locationFactory.getCoordinates(insertRadius, insertDepth);
+                sim.locationFactory.getCoordinates(
+                        insertRadius, insertDepth, insertDirection, insertOffset);
         Utilities.shuffleList(coordinates, sim.random);
 
         // Add cells from each population into insertion area.
         for (MiniBox population : populations) {
             int pop = population.getInt("CODE");
 
-            for (int i = 0; i < insertNumber; i++) {
-                int id = sim.getID();
+            // count resets per population
+            cellsPlaced = 0;
+
+            while (cellsPlaced < insertNumber) {
 
                 if (coordinates.isEmpty()) {
                     break;
                 }
 
                 Coordinate coord = coordinates.remove(0);
-                PatchLocationContainer locationContainer = new PatchLocationContainer(id, coord);
-                PatchCellContainer cellContainer = sim.cellFactory.createCellForPopulation(id, pop);
 
-                Location location = locationContainer.convert(sim.locationFactory, cellContainer);
-                PatchCell cell =
-                        (PatchCell) cellContainer.convert(sim.cellFactory, location, sim.random);
-
-                grid.addObject(cell, location);
-                cell.schedule(sim.getSchedule());
+                // Create a new cell and location.
+                // place multiple cells in same location if confluence is true, otherwise place one
+                // cell per location
+                if (confluence) {
+                    boolean free = true;
+                    while (free && cellsPlaced < insertNumber) {
+                        // Create a new location and cell.
+                        PatchCell cell = generateCell(sim, coord, pop);
+                        Location location = cell.getLocation();
+                        free =
+                                PatchCell.checkLocation(
+                                        sim,
+                                        (PatchLocation) location,
+                                        cell.getVolume(),
+                                        cell.getCriticalHeight(),
+                                        pop,
+                                        cell.getMaxDensity());
+                        if (free) {
+                            addCellToLocation(sim, grid, cell, location);
+                        }
+                    }
+                } else {
+                    PatchCell cell = generateCell(sim, coord, pop);
+                    Location location = cell.getLocation();
+                    addCellToLocation(sim, grid, cell, location);
+                }
             }
         }
+    }
+
+    /**
+     * Adds a cell to a location in the grid.
+     *
+     * @param sim the simulation series
+     * @param grid the patch grid
+     * @param cell the cell to add
+     * @param location the location to add the cell to
+     */
+    private void addCellToLocation(
+            PatchSimulation sim, PatchGrid grid, PatchCell cell, Location location) {
+        grid.addObject(cell, location);
+        cell.schedule(sim.getSchedule());
+        cellsPlaced++;
+    }
+
+    /**
+     * Generates a new cell for the simulation.
+     *
+     * @param sim the simulation series
+     * @param coord the coordinate to generate the cell at
+     * @param pop the population to generate the cell for
+     * @return the generated cell
+     */
+    private PatchCell generateCell(PatchSimulation sim, Coordinate coord, int pop) {
+        int id = sim.getID();
+        PatchLocationContainer locationContainer = new PatchLocationContainer(id, coord);
+        PatchCellContainer cellContainer = sim.cellFactory.createCellForPopulation(id, pop);
+        Location location = locationContainer.convert(sim.locationFactory, cellContainer);
+        PatchCell cell = (PatchCell) cellContainer.convert(sim.cellFactory, location, sim.random);
+        return cell;
     }
 }

@@ -65,6 +65,7 @@ public class PatchCellCancerStem extends PatchCellCancer {
                 volume,
                 height,
                 criticalVolume,
-                criticalHeight);
+                criticalHeight,
+                cycles);
     }
 }

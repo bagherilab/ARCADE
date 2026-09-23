@@ -17,6 +17,7 @@ import arcade.core.env.operation.OperationCategory;
  *   <li>{@code Flag} defining state change flags
  *   <li>{@code Category} defining operation categories
  *   <li>{@code AntigenFlag} defining cell antigen binding status
+ *   <li>{@code Direction} defining directions to offset a region by
  * </ul>
  */
 public final class PatchEnums {
@@ -104,6 +105,9 @@ public final class PatchEnums {
 
         /** Code for anergic cells. */
         ANERGIC,
+
+        /** Code for inactive cells. */
+        INACTIVE,
 
         /** Code for starved cells. */
         STARVED,
@@ -200,6 +204,71 @@ public final class PatchEnums {
         }
     }
 
+    /** Combinatorial circuit types. */
+    public enum LogicalCARs {
+        /** Code for inducible synNotch. */
+        INDUCIBLE_SYNNOTCH,
+
+        /** Code for inducible inflammation. */
+        INDUCIBLE_INFLAMMATION,
+
+        /** Code for inhibitory receptor. */
+        INHIBITORY_RECEPTOR,
+
+        /** Code for inhibitory inflammation. */
+        INHIBITORY_INFLAMMATION;
+
+        /**
+         * Randomly selects a {@code LogicalCARs}.
+         *
+         * @param rng the random number generator
+         * @return a random {@code LogicalCARs}
+         */
+        public static LogicalCARs random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
+        }
+    }
+
+    /** Cell types for immune cell classification. */
+    public enum Immune {
+        /** Code for cd4 T cell. */
+        CART_CD4,
+
+        /** Code for cd8 T cell. */
+        CART_CD8,
+
+        /** Code for combined cd4/cd8 T cell. */
+        COMBINED,
+
+        /** Code for macrophage cell. */
+        MACROPHAGE,
+
+        /** Code for killer cd8 cell. */
+        KILLER,
+
+        /** Code for inducible synNotch. */
+        INDUCIBLE_SYNNOTCH,
+
+        /** Code for inducible inflammation. */
+        INDUCIBLE_INFLAMMATION,
+
+        /** Code for inhibitory receptor. */
+        INHIBITORY_RECEPTOR,
+
+        /** Code for inhibitory inflammation. */
+        INHIBITORY_INFLAMMATION;
+
+        /**
+         * Randomly selects a {@code Immune} cell type.
+         *
+         * @param rng the random number generator
+         * @return a random {@code Immune} cell type
+         */
+        public static Immune random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
+        }
+    }
+
     /** Operation category codes for patch simulations. */
     public enum Category implements OperationCategory {
         /** Code for undefined category. */
@@ -221,6 +290,54 @@ public final class PatchEnums {
          * @return a random {@code Operation}
          */
         public static Category random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
+        }
+    }
+
+    /**
+     * Directions for offsetting a region from the center of the simulation.
+     *
+     * <p>Directions are shared across geometries, but not all directions are valid in every
+     * geometry. Hexagons are flat-topped, so hexagonal geometry uses the six directions {@code N},
+     * {@code NE}, {@code SE}, {@code S}, {@code SW}, and {@code NW}, and has no east or west
+     * direction. Rectangular geometry uses the four directions {@code N}, {@code E}, {@code S}, and
+     * {@code W}. The {@code CENTER} direction indicates no offset and is valid in all geometries.
+     */
+    public enum Direction {
+        /** Code for no offset from the center. */
+        CENTER,
+
+        /** Code for the east direction. */
+        E,
+
+        /** Code for the north direction. */
+        N,
+
+        /** Code for the northeast direction. */
+        NE,
+
+        /** Code for the northwest direction. */
+        NW,
+
+        /** Code for the west direction. */
+        W,
+
+        /** Code for the south direction. */
+        S,
+
+        /** Code for the southwest direction. */
+        SW,
+
+        /** Code for the southeast direction. */
+        SE;
+
+        /**
+         * Randomly selects a {@code Direction}.
+         *
+         * @param rng the random number generator
+         * @return a random {@code Direction}
+         */
+        public static Direction random(MersenneTwisterFast rng) {
             return values()[rng.nextInt(values().length - 1) + 1];
         }
     }

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import ec.util.MersenneTwisterFast;
+import arcade.core.agent.process.Process;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
@@ -19,7 +20,7 @@ import arcade.patch.env.lattice.PatchLattice;
  *
  * <p>The {@code Inflammation} module represents an 8-component signaling network.
  */
-public abstract class PatchProcessInflammation extends PatchProcess {
+public class PatchProcessInflammation extends PatchProcess {
 
     /** Number of components in signaling network. */
     protected static final int NUM_COMPONENTS = 8;
@@ -117,6 +118,30 @@ public abstract class PatchProcessInflammation extends PatchProcess {
     /** Total 2-complex receptors. */
     protected final double iL2Receptors;
 
+    /** Moles of granzyme produced per moles IL-2 [mol granzyme/mol IL-2]. */
+    private static final double GRANZ_PER_IL2 = 0.005;
+
+    /** Delay in IL-2 synthesis after antigen-induced activation. */
+    private final int granzSynthesisDelay;
+
+    /** Amount of IL-2 bound in past being used for current granzyme production calculation. */
+    private double priorIL2granz;
+
+    /** Rate of IL-2 production due to antigen-induced activation [molecules IL-2/cell/min]. */
+    private final double iL2ProdRateActive = 293.27;
+
+    /** Rate of IL-2 production due to IL-2 feedback [molecules IL-2/cell/min]. */
+    private final double iL2ProdRateMaxFeedback = 16.62;
+
+    /** Delay in IL-2 synthesis after antigen-induced activation. */
+    private final int iL2SynthesisDelay;
+
+    /** Total rate of IL-2 production. */
+    private double iL2ProdRate;
+
+    /** Amount of IL-2 bound in past being used for current IL-2 production calculation. */
+    private double priorIL2prod;
+
     /**
      * Creates an {@code Inflammation} module for the given {@link PatchCellCART}.
      *
@@ -138,6 +163,11 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         Parameters parameters = cell.getParameters();
         this.shellThickness = parameters.getDouble("inflammation/SHELL_THICKNESS");
         this.iL2Receptors = parameters.getDouble("inflammation/IL2_RECEPTORS");
+        this.iL2SynthesisDelay = parameters.getInt("inflammation/IL2_SYNTHESIS_DELAY");
+        this.granzSynthesisDelay = parameters.getInt("inflammation/GRANZ_SYNTHESIS_DELAY");
+
+        priorIL2granz = 0;
+        iL2ProdRate = 0;
         extIL2 = 0;
 
         amts = new double[NUM_COMPONENTS];
@@ -147,6 +177,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         amts[IL2RBGA] = 0;
         amts[IL2_IL2RBG] = 0;
         amts[IL2_IL2RBGA] = 0;
+        amts[GRANZYME] = 1; // [molecules]
 
         names = new ArrayList<String>();
         names.add(IL2_INT_TOTAL, "IL-2");
@@ -156,6 +187,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
         names.add(IL2RBGA, "IL2R_three_chain_complex");
         names.add(IL2_IL2RBG, "IL-2_IL2R_two_chain_complex");
         names.add(IL2_IL2RBGA, "IL-2_IL2R_three_chain_complex");
+        names.add(GRANZYME, "granzyme");
 
         // Initialize prior IL2 array.
         this.boundArray = new double[180];
@@ -252,7 +284,80 @@ public abstract class PatchProcessInflammation extends PatchProcess {
      * @param random the random number generator
      * @param sim the simulation instance
      */
-    abstract void stepProcess(MersenneTwisterFast random, Simulation sim);
+    void stepProcess(MersenneTwisterFast random, Simulation sim) {
+        stepCD4(sim);
+        stepCD8(sim);
+        double iL2Env =
+                (((extIL2 - (extIL2 * fraction - amts[IL2_EXT])) + iL2ProdRate)
+                        * 1E12
+                        / loc.getVolume());
+
+        sim.getLattice("IL-2").setValue(loc, iL2Env);
+    }
+
+    void stepCD4(Simulation sim) {
+
+        // Determine IL-2 production rate as a function of IL-2 bound.
+        int prodIndex = (iL2Ticker % boundArray.length) - iL2SynthesisDelay;
+        if (prodIndex < 0) {
+            prodIndex += boundArray.length;
+        }
+        priorIL2prod = boundArray[prodIndex];
+        iL2ProdRate = iL2ProdRateMaxFeedback * (priorIL2prod / iL2Receptors);
+
+        // Add IL-2 production rate dependent on antigen-induced
+        // cell activation if cell is activated.
+        if (active && activeTicker >= iL2SynthesisDelay) {
+            iL2ProdRate += iL2ProdRateActive;
+        }
+    }
+
+    void stepCD8(Simulation sim) {
+
+        // Determine amount of granzyme production based on if cell is activated
+        // as a function of IL-2 production.
+        int granzIndex = (iL2Ticker % boundArray.length) - granzSynthesisDelay;
+        if (granzIndex < 0) {
+            granzIndex += boundArray.length;
+        }
+        priorIL2granz = boundArray[granzIndex];
+
+        if (active && activeTicker > granzSynthesisDelay) {
+            amts[GRANZYME] += GRANZ_PER_IL2 * (priorIL2granz / iL2Receptors);
+        }
+    }
+
+    @Override
+    public void update(Process process) {
+        PatchProcessInflammation inflammation = (PatchProcessInflammation) process;
+        double split = (this.cell.getVolume() / this.volume);
+
+        // Update daughter cell inflammation as a fraction of parent.
+        this.amts[IL2RBGA] = inflammation.amts[IL2RBGA] * split;
+        this.amts[IL2_IL2RBG] = inflammation.amts[IL2_IL2RBG] * split;
+        this.amts[IL2_IL2RBGA] = inflammation.amts[IL2_IL2RBGA] * split;
+        this.amts[IL2RBG] =
+                iL2Receptors - this.amts[IL2RBGA] - this.amts[IL2_IL2RBG] - this.amts[IL2_IL2RBGA];
+        this.amts[IL2_INT_TOTAL] = this.amts[IL2_IL2RBG] + this.amts[IL2_IL2RBGA];
+        this.amts[IL2R_TOTAL] = this.amts[IL2RBG] + this.amts[IL2RBGA];
+        this.amts[GRANZYME] = inflammation.amts[GRANZYME] * split;
+        this.boundArray = (inflammation.boundArray).clone();
+
+        // Update parent cell with remaining fraction.
+        inflammation.amts[IL2RBGA] *= (1 - split);
+        inflammation.amts[IL2_IL2RBG] *= (1 - split);
+        inflammation.amts[IL2_IL2RBGA] *= (1 - split);
+        inflammation.amts[IL2RBG] =
+                iL2Receptors
+                        - inflammation.amts[IL2RBGA]
+                        - inflammation.amts[IL2_IL2RBG]
+                        - inflammation.amts[IL2_IL2RBGA];
+        inflammation.amts[IL2_INT_TOTAL] =
+                inflammation.amts[IL2_IL2RBG] + inflammation.amts[IL2_IL2RBGA];
+        inflammation.amts[IL2R_TOTAL] = inflammation.amts[IL2RBG] + inflammation.amts[IL2RBGA];
+        inflammation.amts[GRANZYME] *= (1 - split);
+        inflammation.volume *= (1 - split);
+    }
 
     /**
      * Gets the external amounts of IL-2.
@@ -313,7 +418,7 @@ public abstract class PatchProcessInflammation extends PatchProcess {
             case "CD8":
                 return new PatchProcessInflammationCD8((PatchCellCART) cell);
             default:
-                return null;
+                return new PatchProcessInflammation((PatchCellCART) cell);
         }
     }
 }

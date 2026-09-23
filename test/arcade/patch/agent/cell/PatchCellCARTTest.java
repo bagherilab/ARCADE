@@ -44,6 +44,8 @@ public class PatchCellCARTTest {
 
     private static Bag bag;
 
+    static Bag cycles = new Bag();
+
     static class PatchCellMock extends PatchCellCART {
         PatchCellMock(PatchCellContainer container, Location location, Parameters parameters) {
             super(container, location, parameters, null);
@@ -61,7 +63,8 @@ public class PatchCellCARTTest {
                     volume,
                     height,
                     criticalVolume,
-                    criticalHeight);
+                    criticalHeight,
+                    cycles);
         }
 
         @Override
@@ -98,7 +101,8 @@ public class PatchCellCARTTest {
                         volume,
                         height,
                         criticalVolume,
-                        criticalHeight);
+                        criticalHeight,
+                        cycles);
 
         when(parameters.getDouble("ENERGY_THRESHOLD")).thenReturn(1.0);
         when(parameters.getDouble("NECROTIC_FRACTION"))

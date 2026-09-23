@@ -71,7 +71,8 @@ public class PatchCellCancer extends PatchCellTissue {
                 volume,
                 height,
                 criticalVolume,
-                criticalHeight);
+                criticalHeight,
+                cycles);
     }
 
     /**
