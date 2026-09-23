@@ -139,13 +139,11 @@ public class PottsModuleFlyGMCDifferentiationTest {
     public void constructor_setsParameters() {
         when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
         when(parameters.getDouble("proliferation/PROSPERO_RATE")).thenReturn(-1.0);
-        when(parameters.getDouble("proliferation/DEADPAN_RATE")).thenReturn(-2.0);
 
         PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
 
         org.junit.jupiter.api.Assertions.assertFalse(module.pdeLike);
         org.junit.jupiter.api.Assertions.assertEquals(-1.0, module.prosperoRate, EPSILON);
-        org.junit.jupiter.api.Assertions.assertEquals(-2.0, module.deadpanRate, EPSILON);
     }
 
     @Test
@@ -164,24 +162,6 @@ public class PottsModuleFlyGMCDifferentiationTest {
         when(gmcCell.getProspero()).thenReturn(4.0);
         module.step(random, sim);
         verify(gmcCell).setProspero(0.0);
-    }
-
-    @Test
-    public void step_decrementsDeadpan_deadpanIsUpdated() {
-        when(parameters.getDouble("proliferation/DEADPAN_RATE")).thenReturn(-4.0);
-
-        PottsModuleFlyGMCDifferentiation module =
-                spy(new PottsModuleFlyGMCDifferentiation(gmcCell));
-
-        doNothing().when(module).addCell(any(MersenneTwisterFast.class), any(Simulation.class));
-
-        when(gmcCell.getDeadpan()).thenReturn(5.0);
-        module.step(random, sim);
-        verify(gmcCell).setDeadpan(1.0);
-
-        when(gmcCell.getDeadpan()).thenReturn(1.0);
-        module.step(random, sim);
-        verify(gmcCell).setDeadpan(0.0);
     }
 
     @Test

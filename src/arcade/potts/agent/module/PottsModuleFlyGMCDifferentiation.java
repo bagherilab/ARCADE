@@ -44,9 +44,8 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
         //        System.out.println(
         //                "GMC ID "
         //                        + cell.getID()
-        //                        + " prospero: "
-        //                        + ((PottsCellFly) cell).getProspero()
-
+        //                        + " Prospero: "
+        //                        + ((PottsCellFly) cell).getProspero());
     }
 
     /**
