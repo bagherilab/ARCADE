@@ -42,12 +42,6 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /** Rate of Prospero change (ticks^-1). */
     final double prosperoRate;
 
-//    /**
-//     * Percent threshold of apical voxels considered when dividing Deadpan at cell division. The sum
-//     * of apicalThreshold and basalThreshold should not exceed 1.
-//     */
-//    final double apicalThreshold;
-
     /**
      * Percent threshold of basal voxels considered when dividing Prospero at cell division. The sum
      * of apicalThreshold and basalThreshold should not exceed 1.
@@ -158,7 +152,6 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
         prosperoRate = parameters.getDouble("proliferation/PROSPERO_RATE");
-//        apicalThreshold = parameters.getDouble("proliferation/APICAL_THRESHOLD");
         basalThreshold = parameters.getDouble("proliferation/BASAL_THRESHOLD");
         tfRatio = parameters.getDouble("proliferation/TF_RATIO");
         wtLikeX = parameters.getInt("proliferation/WT_LIKE_X");
@@ -240,8 +233,6 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                         + cell.getID()
                         + " prospero: "
                         + ((PottsCellFly) cell).getProspero());
-//                        + ", deadpan: "
-//                        + ((PottsCellFly) cell).getDeadpan());
     }
 
     @Override
@@ -508,11 +499,6 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             } else if (differentiationRuleset.equals("tfRatio")) {
                 double daughterConcentration = prosperoConcentration(daughterProspero, loc2);
                 return daughterConcentration <= tfRatio;
-
-//                if (daughterDeadpan <= 0) {
-//                    return daughterProspero <= 0;
-//                }
-//                return (daughterProspero / daughterDeadpan) <= tfRatio;
             }
         }
         throw new IllegalArgumentException(
@@ -622,8 +608,6 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         System.out.print(
                 "Creating daughter stem cell with prospero "
                         + daughterProspero
-//                        + ", deadpan "
-//                        + daughterDeadpan
                         + ", ");
         scheduleNewCell(
                 container, daughterLoc, sim, potts, random, daughterProspero);
@@ -664,8 +648,6 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         System.out.print(
                 "Creating daughter GMC with prospero "
                         + daughterProspero
-//                        + ", deadpan "
-//                        + daughterDeadpan
                         + ", ");
         scheduleNewCell(
                 container, daughterLoc, sim, potts, random, daughterProspero);

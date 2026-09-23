@@ -46,8 +46,7 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
         //                        + cell.getID()
         //                        + " prospero: "
         //                        + ((PottsCellFly) cell).getProspero()
-        //                        + ", deadpan: "
-        //                        + ((PottsCellFly) cell).getDeadpan());
+
     }
 
     /**
