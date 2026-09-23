@@ -1,5 +1,5 @@
 {
-  "version": "3.3.0-61-g944fa1d6.dirty",
+  "version": "3.3.0-90-gc1991908.dirty",
   "conversions": {
     "DS": 17.320508075688775,
     "DT": 1.0
@@ -90,7 +90,7 @@
       "inflammation/IL2_RECEPTORS": 2000,
       "inflammation/IL2_SYNTHESIS_DELAY": 180,
       "inflammation/GRANZ_SYNTHESIS_DELAY": 15,
-      "sensing/VEGF_SECRETION_RATE": 100,
+      "sensing/VEGF_SECRETION_RATE": 15,
       "(PROCESS)/METABOLISM": "cart",
       "(PROCESS)/INFLAMMATION": "cd4"
     },
@@ -170,7 +170,7 @@
       "inflammation/IL2_RECEPTORS": 2000,
       "inflammation/IL2_SYNTHESIS_DELAY": 180,
       "inflammation/GRANZ_SYNTHESIS_DELAY": 15,
-      "sensing/VEGF_SECRETION_RATE": 100,
+      "sensing/VEGF_SECRETION_RATE": 15,
       "(PROCESS)/METABOLISM": "cart",
       "(PROCESS)/INFLAMMATION": "cd8"
     },
@@ -250,7 +250,7 @@
       "inflammation/IL2_RECEPTORS": 2000,
       "inflammation/IL2_SYNTHESIS_DELAY": 180,
       "inflammation/GRANZ_SYNTHESIS_DELAY": 15,
-      "sensing/VEGF_SECRETION_RATE": 100,
+      "sensing/VEGF_SECRETION_RATE": 15,
       "(PROCESS)/METABOLISM": "complex",
       "(PROCESS)/SIGNALING": "complex"
     }
