@@ -42,14 +42,11 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /** Rate of Prospero change (ticks^-1). */
     final double prosperoRate;
 
-    /** Rate of Deadpan change (ticks^-1). */
-    final double deadpanRate;
-
-    /**
-     * Percent threshold of apical voxels considered when dividing Deadpan at cell division. The sum
-     * of apicalThreshold and basalThreshold should not exceed 1.
-     */
-    final double apicalThreshold;
+//    /**
+//     * Percent threshold of apical voxels considered when dividing Deadpan at cell division. The sum
+//     * of apicalThreshold and basalThreshold should not exceed 1.
+//     */
+//    final double apicalThreshold;
 
     /**
      * Percent threshold of basal voxels considered when dividing Prospero at cell division. The sum
@@ -125,6 +122,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      */
     final double nbContactHillN;
 
+    final double prosperoHalfMax;
+    final double prosperoHillN;
+    final boolean dynamicGrowthRateProsperoRepression;
+
     /*
      * Boolean flag for whether the daughter cell's differentiation is determined deterministically.
      */
@@ -157,8 +158,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
         prosperoRate = parameters.getDouble("proliferation/PROSPERO_RATE");
-        deadpanRate = parameters.getDouble("proliferation/DEADPAN_RATE");
-        apicalThreshold = parameters.getDouble("proliferation/APICAL_THRESHOLD");
+//        apicalThreshold = parameters.getDouble("proliferation/APICAL_THRESHOLD");
         basalThreshold = parameters.getDouble("proliferation/BASAL_THRESHOLD");
         tfRatio = parameters.getDouble("proliferation/TF_RATIO");
         wtLikeX = parameters.getInt("proliferation/WT_LIKE_X");
@@ -194,14 +194,18 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         dynamicGrowthRateNBSelfRepression =
                 (parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_NB_SELF_REPRESSION") != 0);
 
+        dynamicGrowthRateProsperoRepression =
+                (parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_PROSPERO_REPRESSION") != 0);
+
+        // TODO: do this for prospero-based growth rate too?
         if (dynamicGrowthRateVolume && dynamicGrowthRateNBSelfRepression) {
             throw new InvalidParameterException(
                     "Dynamic growth rate can be either volume-based or NB-contact-based, not both.");
         }
 
-        if (apicalThreshold + basalThreshold > 1 || apicalThreshold < 0 || basalThreshold < 0) {
+        if (basalThreshold > 1 || basalThreshold < 0) {
             throw new InvalidParameterException(
-                    "Apical and basal thresholds should be nonnegative and not overlap (check that apicalThreshold + basalThreshold <= 1)");
+                    "Basal threshold should be nonnegative and not greater than 1");
         }
 
         volumeBasedCriticalVolumeMultiplier =
@@ -209,7 +213,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         nbContactHalfMax = parameters.getDouble("proliferation/NB_CONTACT_HALF_MAX");
         nbContactHillN = parameters.getDouble("proliferation/NB_CONTACT_HILL_N");
-
+        prosperoHalfMax = parameters.getDouble("proliferation/PROSPERO_HALF_MAX");
+        prosperoHillN = parameters.getDouble("proliferation/PROSPERO_HILL_N");
         String hasDeterministicDifferentiationString =
                 parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION");
         if (!hasDeterministicDifferentiationString.equals("TRUE")
@@ -230,14 +235,13 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     public void step(MersenneTwisterFast random, Simulation sim) {
         super.step(random, sim);
         ((PottsCellFly) cell).setProspero(((PottsCellFly) cell).getProspero() + prosperoRate);
-        ((PottsCellFly) cell).setDeadpan(((PottsCellFly) cell).getDeadpan() + deadpanRate);
         System.out.println(
                 "Stem ID "
                         + cell.getID()
                         + " prospero: "
-                        + ((PottsCellFly) cell).getProspero()
-                        + ", deadpan: "
-                        + ((PottsCellFly) cell).getDeadpan());
+                        + ((PottsCellFly) cell).getProspero());
+//                        + ", deadpan: "
+//                        + ((PottsCellFly) cell).getDeadpan());
     }
 
     @Override
@@ -252,37 +256,29 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         double[] centroid = ((PottsLocation) cell.getLocation()).getCentroid();
         Vector apicalAxis = flyStemCell.getApicalAxis();
 
-        Bag apicalVoxels =
-                PottsLocation.getDirectionalVoxelSubset(
-                        Side.APICAL, apicalThreshold, voxels, centroid, apicalAxis);
-        Bag basalVoxels =
-                PottsLocation.getDirectionalVoxelSubset(
-                        Side.BASAL, basalThreshold, voxels, centroid, apicalAxis);
+        ArrayList<Voxel> borderVoxels = ((PottsLocation) cell.getLocation()).getBorderVoxels();
+        Bag basalVoxels = PottsLocation.getDirectionalVoxelSubset(
+                Side.BASAL, basalThreshold, borderVoxels, centroid, apicalAxis);
 
-        PottsUtilities.splitBagDupesRandomly(apicalVoxels, basalVoxels, random);
 
         PottsLocation daughterLoc = (PottsLocation) parentLoc.split(random, divisionPlane);
 
         double basalFrac =
                 Utilities.collectionFraction(
                         Utilities.asCollection(basalVoxels, Voxel.class), daughterLoc.getVoxels());
-        double apicalFrac =
-                Utilities.collectionFraction(
-                        Utilities.asCollection(apicalVoxels, Voxel.class), daughterLoc.getVoxels());
+
 
         double parentProspero = ((PottsCellFly) cell).getProspero();
-        double parentDeadpan = ((PottsCellFly) cell).getDeadpan();
 
         double daughterProspero = parentProspero * basalFrac;
-        double daughterDeadpan = parentDeadpan * apicalFrac;
 
         boolean isDaughterStem =
                 daughterStem(
-                        parentLoc, daughterLoc, divisionPlane, daughterProspero, daughterDeadpan);
+                        parentLoc, daughterLoc, divisionPlane, daughterProspero);
 
         if (isDaughterStem) {
             makeDaughterStemCell(
-                    daughterLoc, sim, potts, random, daughterProspero, daughterDeadpan);
+                    daughterLoc, sim, potts, random, daughterProspero);
         } else {
             makeDaughterGMC(
                     parentLoc,
@@ -291,8 +287,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                     potts,
                     random,
                     divisionPlane.getUnitNormalVector(),
-                    daughterProspero,
-                    daughterDeadpan);
+                    daughterProspero);
         }
     }
 
@@ -306,6 +301,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             updateVolumeBasedGrowthRate(sim);
         } else if (dynamicGrowthRateNBSelfRepression == true) {
             updateGrowthRateBasedOnOtherNBs(sim);
+        } else if (dynamicGrowthRateProsperoRepression == true) {
+            updateGrowthRateBasedOnProspero();
         } else {
             cellGrowthRate = cellGrowthRateBase;
         }
@@ -367,17 +364,23 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         }
         double np = Math.max(0.0, (double) nbsInContact);
 
-        double Kn = Math.pow(nbContactHalfMax, nbContactHillN);
-        double Npn = Math.pow(np, nbContactHillN);
+        cellGrowthRate = cellGrowthRateBase * hillRepression(np, nbContactHalfMax, nbContactHillN);
+    }
 
-        double hillRepression;
-        if (Kn == 0.0) {
-            hillRepression = (np == 0.0) ? 1.0 : 0.0;
-        } else {
-            hillRepression = Kn / (Kn + Npn);
+    protected void updateGrowthRateBasedOnProspero() {
+        double concentration = prosperoConcentration(
+                ((PottsCellFly) cell).getProspero(), (PottsLocation) cell.getLocation());
+        cellGrowthRate = cellGrowthRateBase * hillRepression(concentration, prosperoHalfMax, prosperoHillN);
+    }
+
+    // factored this out to use
+    public static double hillRepression(double value, double halfMax, double hillN) {
+        double K = Math.pow(halfMax, hillN);
+        double Vn = Math.pow(value, hillN);
+        if (K == 0.0) {
+            return (value == 0.0) ? 1.0 : 0.0;
         }
-
-        cellGrowthRate = cellGrowthRateBase * hillRepression;
+        return K / (K + Vn);
     }
 
     /**
@@ -485,8 +488,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     private boolean daughterStemRuleBasedDifferentiation(
             PottsLocation loc1,
             PottsLocation loc2,
-            double daughterProspero,
-            double daughterDeadpan) {
+            double daughterProspero) {
         if (((PottsCellFlyStem) cell).getStemType() == StemType.WT) {
             return false;
         } else if (((PottsCellFlyStem) cell).getStemType() == StemType.MUDMUT) {
@@ -504,10 +506,13 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 return (centroidsWithinRangeAlongApicalAxis(
                         centroid1, centroid2, ((PottsCellFlyStem) cell).getApicalAxis(), range));
             } else if (differentiationRuleset.equals("tfRatio")) {
-                if (daughterDeadpan <= 0) {
-                    return daughterProspero <= 0;
-                }
-                return (daughterProspero / daughterDeadpan) <= tfRatio;
+                double daughterConcentration = prosperoConcentration(daughterProspero, loc2);
+                return daughterConcentration <= tfRatio;
+
+//                if (daughterDeadpan <= 0) {
+//                    return daughterProspero <= 0;
+//                }
+//                return (daughterProspero / daughterDeadpan) <= tfRatio;
             }
         }
         throw new IllegalArgumentException(
@@ -553,12 +558,11 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             PottsLocation2D parentsLoc,
             PottsLocation daughterLoc,
             Plane divisionPlane,
-            double daughterProspero,
-            double daughterDeadpan) {
+            double daughterProspero) {
         return hasDeterministicDifferentiation
                 ? daughterStemDeterministic(divisionPlane)
                 : daughterStemRuleBasedDifferentiation(
-                        parentsLoc, daughterLoc, daughterProspero, daughterDeadpan);
+                        parentsLoc, daughterLoc, daughterProspero);
     }
 
     /**
@@ -598,8 +602,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             Simulation sim,
             Potts potts,
             MersenneTwisterFast random,
-            double daughterProspero,
-            double daughterDeadpan) {
+            double daughterProspero) {
         cell.reset(potts.ids, potts.regions);
         int newID = sim.getID();
         double criticalVol;
@@ -619,11 +622,11 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         System.out.print(
                 "Creating daughter stem cell with prospero "
                         + daughterProspero
-                        + ", deadpan "
-                        + daughterDeadpan
+//                        + ", deadpan "
+//                        + daughterDeadpan
                         + ", ");
         scheduleNewCell(
-                container, daughterLoc, sim, potts, random, daughterProspero, daughterDeadpan);
+                container, daughterLoc, sim, potts, random, daughterProspero);
     }
 
     /**
@@ -643,8 +646,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             Potts potts,
             MersenneTwisterFast random,
             Vector divisionPlaneNormal,
-            double daughterProspero,
-            double daughterDeadpan) {
+            double daughterProspero) {
         Location gmcLoc = determineGMCLocation(parentLoc, daughterLoc, divisionPlaneNormal);
 
         if (parentLoc == gmcLoc) {
@@ -662,11 +664,11 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         System.out.print(
                 "Creating daughter GMC with prospero "
                         + daughterProspero
-                        + ", deadpan "
-                        + daughterDeadpan
+//                        + ", deadpan "
+//                        + daughterDeadpan
                         + ", ");
         scheduleNewCell(
-                container, daughterLoc, sim, potts, random, daughterProspero, daughterDeadpan);
+                container, daughterLoc, sim, potts, random, daughterProspero);
     }
 
     /**
@@ -684,8 +686,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             Simulation sim,
             Potts potts,
             MersenneTwisterFast random,
-            double daughterProspero,
-            double daughterDeadpan) {
+            double daughterProspero) {
         PottsCell newCell =
                 (PottsCell) container.convert(sim.getCellFactory(), daughterLoc, random);
         if (newCell.getClass() == PottsCellFlyStem.class) {
@@ -700,9 +701,6 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         ((PottsCellFly) newCell).setProspero(daughterProspero);
         ((PottsCellFly) cell).setProspero(((PottsCellFly) cell).getProspero() - daughterProspero);
-
-        ((PottsCellFly) newCell).setDeadpan(daughterDeadpan);
-        ((PottsCellFly) cell).setDeadpan(((PottsCellFly) cell).getDeadpan() - daughterDeadpan);
     }
 
     /**
@@ -837,5 +835,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             }
         }
         return nbsInSimulation;
+    }
+
+    public static double prosperoConcentration(double prospero, PottsLocation loc) {
+        return prospero / loc.getVolume();
     }
 }

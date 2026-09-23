@@ -1,9 +1,7 @@
 package arcade.potts.env.location;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.*;
+
 import sim.util.Bag;
 import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
@@ -997,5 +995,18 @@ public abstract class PottsLocation implements Location {
         } else {
             return null;
         }
+    }
+
+    public ArrayList<Voxel> getBorderVoxels() {
+        ArrayList<Voxel> borderVoxels = new ArrayList<>();
+        for (Voxel voxel : voxels) {
+            for (Voxel neighbor : getNeighbors(voxel)) {
+                if (!voxels.contains(neighbor)) {
+                    borderVoxels.add(voxel);
+                    break;
+                }
+            }
+        }
+        return borderVoxels;
     }
 }

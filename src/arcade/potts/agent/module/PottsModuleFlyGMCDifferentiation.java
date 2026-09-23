@@ -22,8 +22,7 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
     /* Rate of Prospero change (ticks^-1). */
     final double prosperoRate;
 
-    /* Rate of Deadpan change (ticks^-1). */
-    final double deadpanRate;
+
 
     /**
      * Creates a fly GMC proliferation module.
@@ -34,7 +33,6 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
         super(cell);
         pdeLike = (cell.getParameters().getInt("proliferation/PDELIKE") != 0);
         prosperoRate = cell.getParameters().getDouble("proliferation/PROSPERO_RATE");
-        deadpanRate = cell.getParameters().getDouble("proliferation/DEADPAN_RATE");
     }
 
     @Override
@@ -42,8 +40,7 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
         super.step(random, sim);
         ((PottsCellFly) cell)
                 .setProspero(Math.max(0, ((PottsCellFly) cell).getProspero() + prosperoRate));
-        ((PottsCellFly) cell)
-                .setDeadpan(Math.max(0, ((PottsCellFly) cell).getDeadpan() + deadpanRate));
+
         //        System.out.println(
         //                "GMC ID "
         //                        + cell.getID()

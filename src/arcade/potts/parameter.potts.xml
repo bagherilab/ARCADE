@@ -70,6 +70,10 @@
     <!-- ── Growth rate sensitivity to cell volume dynamics ───────────────────── -->
     <population.module module="proliferation" id="DYNAMIC_GROWTH_RATE_VOLUME" value="0" description="1 → enable volume-sensitive growth rate; 0 → disabled" />
     <population.module module="proliferation" id="GROWTH_RATE_VOLUME_SENSITIVITY" value="3.0" description="exponent in (volume/criticalVolume)^sensitivity when volume rule is enabled" />
+    <!-- ── NB Growth rate sensitivity to Prospero concentration ────── -->
+    <population.module module="proliferation" id="DYNAMIC_GROWTH_RATE_PROSPERO_REPRESSION" value="0" description="1 → enable Prospero-concentration-based growth repression; 0 → disabled (mutually exclusive with volume and NB-contact rules)" />
+    <population.module module="proliferation" id="PROSPERO_HALF_MAX" value="1.0" units="Prospero/um^3" description="K: Prospero concentration giving 50% growth repression" />
+    <population.module module="proliferation" id="PROSPERO_HILL_N" value="3.0" description="Hill exponent controlling Prospero repression steepness" />
     <!-- ── NB Growth rate sensitivity to neighboring NBs, only valid if growth and division is not universal ────── -->
     <population.module module="proliferation" id="DYNAMIC_GROWTH_RATE_NB_SELF_REPRESSION" value="0" description="1 → enable NB-NB repression; 0 → disabled (mutually exclusive with volume rule)" />
     <population.module module="proliferation" id="NB_CONTACT_HALF_MAX" value="1.0" units="neighbors" description="K: NB neighbor count giving 50% repression" />
@@ -88,9 +92,7 @@
     <population.module module="proliferation" id="HAS_DETERMINISTIC_DIFFERENTIATION" value="TRUE" description="if TRUE, differentiation is determined deterministically" />
     <!-- Prospero and Deadpan rates of change -->
     <population.module module="proliferation" id="PROSPERO_RATE" value="1" units="Prospero/hour" conversion="DT" description="rate of change of Prospero" />
-    <population.module module="proliferation" id="DEADPAN_RATE" value="1" units="Deadpan/hour" conversion="DT" description="rate of change of Deadpan" />
     <!-- Transcription factor ratio (Prospero : Deadpan) -->
-    <population.module module="proliferation" id="APICAL_THRESHOLD" value="0.5" description="Percent threshold of apical voxels considered when dividing Deadpan at cell division. APICAL_THRESHOLD + BASAL_THRESHOLD should be less than or equal to 1." />
     <population.module module="proliferation" id="BASAL_THRESHOLD" value="0.5" description="Percent threshold of basal voxels considered when dividing Prospero at cell division. APICAL_THRESHOLD + BASAL_THRESHOLD should be less than or equal to 1." />
     <!-- Transcription factor ratio (Prospero : Deadpan) -->
     <population.module module="proliferation" id="TF_RATIO" value="1" description="Ratio of Prospero to Deadpan driving differentiation" />
