@@ -1,5 +1,6 @@
 package arcade.potts.agent.cell;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -213,8 +214,13 @@ public final class PottsCellFactory implements CellFactory {
             if (linkKeys.size() > 0) {
                 links = new GrabBag();
                 for (String linkKey : linkKeys) {
-                    int popLink = series.populations.get(linkKey).getInt("CODE");
-                    links.add(popLink, linksBox.getDouble(linkKey));
+                    try {
+                        int popLink = series.populations.get(linkKey).getInt("CODE");
+                        links.add(popLink, linksBox.getDouble(linkKey));
+                    } catch (Exception e) {
+                        throw new InvalidParameterException(
+                                "A population link is set that references a population that does not exist.");
+                    }
                 }
             }
 
