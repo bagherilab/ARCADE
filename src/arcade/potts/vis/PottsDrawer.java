@@ -71,9 +71,6 @@ public abstract class PottsDrawer extends Drawer {
 
         /** Code for encoding visualization by height. */
         HEIGHT,
-
-        /** Code for encoding visualization by transcription factors. */
-        PRODPN
     }
 
     /**
@@ -330,8 +327,6 @@ public abstract class PottsDrawer extends Drawer {
                     break;
                 case OVERLAY:
                     drawOverlay(arr, regions[index]);
-                case PRODPN:
-                    drawSlice(arr, ids[index], grid);
                 default:
                     break;
             }
@@ -502,20 +497,6 @@ public abstract class PottsDrawer extends Drawer {
                         case HEIGHT:
                             arr[a][b] = cell.getHeight();
                             break;
-                        case PRODPN:
-                            if (cell instanceof PottsCellFly) {
-                                double pro = ((PottsCellFly) cell).getProspero();
-                                double dpn = ((PottsCellFly) cell).getDeadpan();
-                                if (pro > dpn) {
-                                    arr[a][b] = 2;
-                                } else if (dpn > pro) {
-                                    arr[a][b] = 3;
-                                } else {
-                                    arr[a][b] = 1;
-                                }
-                            } else {
-                                arr[a][b] = 0;
-                            }
                         default:
                             break;
                     }

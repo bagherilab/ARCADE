@@ -119,21 +119,13 @@ public final class PottsVisualization extends Visualization {
                     height,
                     maps.mapVolume,
                     getBox(0, v, h, v)),
-            //            new PottsDrawer.PottsCells(
-            //                    panels[1],
-            //                    "agents:HEIGHT",
-            //                    length,
-            //                    width,
-            //                    height,
-            //                    maps.mapHeight,
-            //                    getBox(h, v, h, v)),
             new PottsDrawer.PottsCells(
                     panels[1],
-                    "agents:PRODPN",
+                    "agents:HEIGHT",
                     length,
                     width,
                     height,
-                    MAP_PRODPN,
+                    maps.mapHeight,
                     getBox(h, v, h, v)),
             new PottsDrawer.PottsCells(
                     panels[1],
