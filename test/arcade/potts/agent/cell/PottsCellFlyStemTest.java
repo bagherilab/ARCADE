@@ -178,6 +178,7 @@ public class PottsCellFlyStemTest {
         doReturn("smaller_gmc")
                 .when(parametersMock)
                 .getString("proliferation/DIFFERENTIATION_RULESET");
+        doReturn("size").when(parametersMock).getString("proliferation/SYMMETRIC_DIVISION_RULESET");
         doReturn("apical_axis")
                 .when(parametersMock)
                 .getString("proliferation/DIV_ROTATION_REFERENCE");

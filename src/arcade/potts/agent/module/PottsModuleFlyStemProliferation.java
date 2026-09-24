@@ -53,10 +53,21 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     final NormalDistribution splitDirectionDistribution;
 
     /**
-     * Ruleset for determining which daughter cell is the GMC. Can be `smaller_gmc`, `basal_gmc`,
-     * `random`, or `apical_gmc`.
+     * Ruleset for determining which daughter cell is the GMC on an asymmetric division. Can be
+     * `smaller_gmc`, `basal_gmc`, `random`, or `apical_gmc`. Whether a division is symmetric is
+     * decided separately, by {@link #symmetricDivisionRuleset}.
      */
     final String differentiationRuleset;
+
+    /**
+     * Ruleset deciding whether a division is symmetric (both daughters stay neuroblasts). Used only
+     * when {@link #hasDeterministicDifferentiation} is false. `size`: the larger daughter's share
+     * of the combined volume is below {@link #equalityOffsetPercentY}. `apical_axis`: the
+     * daughters' centroids are within {@link #range} along the cell's apical axis. Which daughter
+     * becomes the GMC on an asymmetric division is decided separately, by {@link
+     * #differentiationRuleset}.
+     */
+    final String symmetricDivisionRuleset;
 
     /**
      * Ruleset for determining how the cell determines its Apical Axis. Can be 'uniform', 'global',
@@ -80,15 +91,16 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     final boolean dynamicGrowthRateNBSelfRepression;
 
     /**
-     * Distance (voxel lengths) within which two centroids count as equal under the {@code
-     * basal_gmc} ruleset. An absolute length, because that ruleset compares a separation.
+     * Distance (voxel lengths) within which two centroids count as equal under {@code
+     * SYMMETRIC_DIVISION_RULESET=apical_axis}. An absolute length, because that ruleset compares a
+     * separation.
      */
     final double range;
 
     /**
-     * Split offset (%) below which a division counts as symmetric under the {@code smaller_gmc}
-     * ruleset: both daughters stay neuroblasts when the larger daughter's share of the parent is
-     * less than this.
+     * Split offset (%) below which a division counts as symmetric under {@code
+     * SYMMETRIC_DIVISION_RULESET=size}: both daughters stay neuroblasts when the larger daughter's
+     * share of the parent is less than this.
      *
      * <p>On the same scale as {@link #wtDivisionSplitOffsetPercentY} (93) and {@link
      * #divOffsetRampMinPercentY} (50), so the three read together — the default 71.5 is their
@@ -229,6 +241,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 (NormalDistribution)
                         parameters.getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION");
         differentiationRuleset = parameters.getString("proliferation/DIFFERENTIATION_RULESET");
+        symmetricDivisionRuleset = parameters.getString("proliferation/SYMMETRIC_DIVISION_RULESET");
         range = parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE");
         equalityOffsetPercentY =
                 parameters.getDouble(
@@ -667,15 +680,15 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
     /**
      * Determines whether the daughter cell should be a neuroblast or a GMC according to the
-     * differentiation ruleset specified in the parameters and the morphologies of the daughter cell
-     * locations.
+     * symmetric division ruleset specified in the parameters and the morphologies of the daughter
+     * cell locations.
      *
      * <p>Applies to both stem types. Whether a WT cell can produce a symmetric NB-NB division is
      * controlled by {@code HAS_DETERMINISTIC_DIFFERENTIATION}: under {@code TRUE} the deterministic
      * path is used instead and a WT daughter is never a stem cell; under {@code FALSE} a WT cell
-     * uses the same geometric ruleset as MUDMUT, so a sufficiently symmetric division yields two
-     * neuroblasts. Setting {@code DIFFERENTIATION_RULESET_EQUALITY_RANGE} near zero suppresses that
-     * in practice while leaving the mechanism available.
+     * uses the same {@link #symmetricDivisionRuleset} as MUDMUT, so a sufficiently symmetric
+     * division yields two neuroblasts. Setting the relevant threshold near zero suppresses that in
+     * practice while leaving the mechanism available.
      *
      * @param loc1 one cell location post division
      * @param loc2 the other cell location post division
@@ -683,25 +696,42 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      */
     private boolean daughterStemRuleBasedDifferentiation(PottsLocation loc1, PottsLocation loc2) {
         StemType stemType = ((PottsCellFlyStem) cell).getStemType();
-        if (stemType == StemType.WT || stemType == StemType.MUDMUT) {
-            if (differentiationRuleset.equals("smaller_gmc")) {
-                double vol1 = loc1.getVolume();
-                double vol2 = loc2.getVolume();
-                double total = vol1 + vol2;
-                if (total <= 0) {
-                    return false;
-                }
-                double largerSharePercent = 100.0 * Math.max(vol1, vol2) / total;
-                return largerSharePercent < equalityOffsetPercentY;
-            } else if (differentiationRuleset.equals("basal_gmc")) {
-                double[] centroid1 = loc1.getCentroid();
-                double[] centroid2 = loc2.getCentroid();
-                return (centroidsWithinRangeAlongApicalAxis(
-                        centroid1, centroid2, ((PottsCellFlyStem) cell).getApicalAxis(), range));
-            }
+        if (stemType != StemType.WT && stemType != StemType.MUDMUT) {
+            throw new IllegalArgumentException("Invalid stem type: " + stemType);
         }
-        throw new IllegalArgumentException(
-                "Invalid differentiation ruleset: " + differentiationRuleset);
+        switch (symmetricDivisionRuleset) {
+            case "size":
+                return isSizeSymmetric(loc1, loc2);
+            case "apical_axis":
+                return centroidsWithinRangeAlongApicalAxis(
+                        loc1.getCentroid(),
+                        loc2.getCentroid(),
+                        ((PottsCellFlyStem) cell).getApicalAxis(),
+                        range);
+            default:
+                throw new IllegalArgumentException(
+                        "Invalid symmetric division ruleset: " + symmetricDivisionRuleset);
+        }
+    }
+
+    /**
+     * Whether a division is symmetric by size: the larger daughter's share of the combined volume
+     * is below {@link #equalityOffsetPercentY}. Relative, so the parent's volume cancels and one
+     * threshold serves every condition.
+     *
+     * @param loc1 one cell location post division
+     * @param loc2 the other cell location post division
+     * @return {@code true} if both daughters should remain neuroblasts
+     */
+    private boolean isSizeSymmetric(PottsLocation loc1, PottsLocation loc2) {
+        double vol1 = loc1.getVolume();
+        double vol2 = loc2.getVolume();
+        double total = vol1 + vol2;
+        if (total <= 0) {
+            return false;
+        }
+        double largerSharePercent = 100.0 * Math.max(vol1, vol2) / total;
+        return largerSharePercent < equalityOffsetPercentY;
     }
 
     /**
