@@ -6,16 +6,9 @@ import java.util.LinkedHashSet;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.Graph;
-import arcade.core.util.Graph.Edge;
 import arcade.core.util.Graph.Strategy;
 import arcade.core.util.Matrix;
 import arcade.core.util.Solver;
-import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
-import arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
-import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeCategory;
-import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeLevel;
-import arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeType;
-import arcade.patch.env.component.PatchComponentSitesGraphFactory.Root;
 import static arcade.core.util.Graph.Edge;
 import static arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
 import static arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
@@ -1246,6 +1239,28 @@ abstract class PatchComponentSitesGraphUtilities {
     }
 
     /**
+     * Helper function that removes an edge from a graph, sets the corresponding from and to nodes
+     * to NaN, and updates the hemodynamics of the graph. If from or to are root nodes, it will not
+     * NaN pressures.
+     *
+     * @param graph the graph object
+     * @param edge the edge to remove from the graph
+     */
+    private static void removeEdgeAndPressures(Graph graph, SiteEdge edge) {
+        SiteNode from = edge.getFrom();
+        SiteNode to = edge.getTo();
+
+        graph.removeEdge(edge);
+        if (!from.isRoot) {
+            from.pressure = Double.NaN;
+        }
+        if (!to.isRoot) {
+            to.pressure = Double.NaN;
+        }
+        updateGraph(graph);
+    }
+
+    /**
      * Iterates through nodes to eliminate low flow edges preventing graph traversal.
      *
      * @param graph the graph object
@@ -1265,10 +1280,7 @@ abstract class PatchComponentSitesGraphUtilities {
                 for (Object obj : out) {
                     SiteEdge edge = (SiteEdge) obj;
                     if (edge.flow < MINIMUM_FLOW_RATE || Double.isNaN(edge.flow)) {
-                        graph.removeEdge(edge);
-                        edge.getFrom().pressure = Double.NaN;
-                        edge.getTo().pressure = Double.NaN;
-                        updateGraph(graph);
+                        removeEdgeAndPressures(graph, edge);
                     } else if (edge.flow < minFlow) {
                         minFlow = edge.flow;
                         minEdge = edge;
@@ -1280,10 +1292,7 @@ abstract class PatchComponentSitesGraphUtilities {
                 for (Object obj : in) {
                     SiteEdge edge = (SiteEdge) obj;
                     if (edge.flow < MINIMUM_FLOW_RATE || Double.isNaN(edge.flow)) {
-                        graph.removeEdge(edge);
-                        edge.getFrom().pressure = Double.NaN;
-                        edge.getTo().pressure = Double.NaN;
-                        updateGraph(graph);
+                        removeEdgeAndPressures(graph, edge);
                     } else if (edge.flow < minFlow) {
                         minFlow = edge.flow;
                         minEdge = edge;
@@ -1297,25 +1306,16 @@ abstract class PatchComponentSitesGraphUtilities {
                     double totalFlow = edge1.flow + edge2.flow;
 
                     if (edge1.flow / totalFlow < MINIMUM_FLOW_PERCENT) {
-                        graph.removeEdge(edge1);
-                        edge1.getFrom().pressure = Double.NaN;
-                        edge1.getTo().pressure = Double.NaN;
-                        updateGraph(graph);
+                        removeEdgeAndPressures(graph, edge1);
                     } else if (edge2.flow / totalFlow < MINIMUM_FLOW_PERCENT) {
-                        graph.removeEdge(edge2);
-                        edge2.getFrom().pressure = Double.NaN;
-                        edge2.getTo().pressure = Double.NaN;
-                        updateGraph(graph);
+                        removeEdgeAndPressures(graph, edge2);
                     }
                 }
             }
         }
 
         if (removeMin) {
-            graph.removeEdge(minEdge);
-            minEdge.getFrom().pressure = Double.NaN;
-            minEdge.getTo().pressure = Double.NaN;
-            updateGraph(graph);
+            removeEdgeAndPressures(graph, minEdge);
         }
     }
 
