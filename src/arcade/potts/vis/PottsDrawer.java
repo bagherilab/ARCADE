@@ -20,7 +20,6 @@ import sim.util.gui.ColorMap;
 import arcade.core.agent.cell.Cell;
 import arcade.core.env.grid.Grid;
 import arcade.core.vis.*;
-import arcade.potts.agent.cell.PottsCellFly;
 import arcade.potts.agent.module.PottsModule;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;

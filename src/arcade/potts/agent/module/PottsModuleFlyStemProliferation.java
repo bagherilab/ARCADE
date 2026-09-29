@@ -29,7 +29,6 @@ import arcade.potts.util.PottsEnums.Direction;
 import arcade.potts.util.PottsEnums.Phase;
 import arcade.potts.util.PottsEnums.Side;
 import arcade.potts.util.PottsEnums.State;
-import arcade.potts.util.PottsUtilities;
 
 public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVolumeBasedDivision {
 
@@ -229,10 +228,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         super.step(random, sim);
         ((PottsCellFly) cell).setProspero(((PottsCellFly) cell).getProspero() + prosperoRate);
         System.out.println(
-                "Stem ID "
-                        + cell.getID()
-                        + " prospero: "
-                        + ((PottsCellFly) cell).getProspero());
+                "Stem ID " + cell.getID() + " prospero: " + ((PottsCellFly) cell).getProspero());
     }
 
     @Override
@@ -248,9 +244,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         Vector apicalAxis = flyStemCell.getApicalAxis();
 
         ArrayList<Voxel> borderVoxels = ((PottsLocation) cell.getLocation()).getBorderVoxels();
-        Bag basalVoxels = PottsLocation.getDirectionalVoxelSubset(
-                Side.BASAL, basalThreshold, borderVoxels, centroid, apicalAxis);
-
+        Bag basalVoxels =
+                PottsLocation.getDirectionalVoxelSubset(
+                        Side.BASAL, basalThreshold, borderVoxels, centroid, apicalAxis);
 
         PottsLocation daughterLoc = (PottsLocation) parentLoc.split(random, divisionPlane);
 
@@ -258,18 +254,15 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 Utilities.collectionFraction(
                         Utilities.asCollection(basalVoxels, Voxel.class), daughterLoc.getVoxels());
 
-
         double parentProspero = ((PottsCellFly) cell).getProspero();
 
         double daughterProspero = parentProspero * basalFrac;
 
         boolean isDaughterStem =
-                daughterStem(
-                        parentLoc, daughterLoc, divisionPlane, daughterProspero);
+                daughterStem(parentLoc, daughterLoc, divisionPlane, daughterProspero);
 
         if (isDaughterStem) {
-            makeDaughterStemCell(
-                    daughterLoc, sim, potts, random, daughterProspero);
+            makeDaughterStemCell(daughterLoc, sim, potts, random, daughterProspero);
         } else {
             makeDaughterGMC(
                     parentLoc,
@@ -359,9 +352,11 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     protected void updateGrowthRateBasedOnProspero() {
-        double concentration = prosperoConcentration(
-                ((PottsCellFly) cell).getProspero(), (PottsLocation) cell.getLocation());
-        cellGrowthRate = cellGrowthRateBase * hillRepression(concentration, prosperoHalfMax, prosperoHillN);
+        double concentration =
+                prosperoConcentration(
+                        ((PottsCellFly) cell).getProspero(), (PottsLocation) cell.getLocation());
+        cellGrowthRate =
+                cellGrowthRateBase * hillRepression(concentration, prosperoHalfMax, prosperoHillN);
     }
 
     // factored this out to use
@@ -477,9 +472,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * @return whether or not the daughter cell should be a stem cell
      */
     private boolean daughterStemRuleBasedDifferentiation(
-            PottsLocation loc1,
-            PottsLocation loc2,
-            double daughterProspero) {
+            PottsLocation loc1, PottsLocation loc2, double daughterProspero) {
         if (((PottsCellFlyStem) cell).getStemType() == StemType.WT) {
             return false;
         } else if (((PottsCellFlyStem) cell).getStemType() == StemType.MUDMUT) {
@@ -547,8 +540,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             double daughterProspero) {
         return hasDeterministicDifferentiation
                 ? daughterStemDeterministic(divisionPlane)
-                : daughterStemRuleBasedDifferentiation(
-                        parentsLoc, daughterLoc, daughterProspero);
+                : daughterStemRuleBasedDifferentiation(parentsLoc, daughterLoc, daughterProspero);
     }
 
     /**
@@ -605,12 +597,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 ((PottsCellFlyStem) cell)
                         .make(newID, State.PROLIFERATIVE, random, cell.getPop(), criticalVol);
 
-        System.out.print(
-                "Creating daughter stem cell with prospero "
-                        + daughterProspero
-                        + ", ");
-        scheduleNewCell(
-                container, daughterLoc, sim, potts, random, daughterProspero);
+        System.out.print("Creating daughter stem cell with prospero " + daughterProspero + ", ");
+        scheduleNewCell(container, daughterLoc, sim, potts, random, daughterProspero);
     }
 
     /**
@@ -645,12 +633,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                         .make(newID, State.PROLIFERATIVE, random, newPop, criticalVolume);
         PottsCellFlyStem flyStemCell = (PottsCellFlyStem) cell;
 
-        System.out.print(
-                "Creating daughter GMC with prospero "
-                        + daughterProspero
-                        + ", ");
-        scheduleNewCell(
-                container, daughterLoc, sim, potts, random, daughterProspero);
+        System.out.print("Creating daughter GMC with prospero " + daughterProspero + ", ");
+        scheduleNewCell(container, daughterLoc, sim, potts, random, daughterProspero);
     }
 
     /**

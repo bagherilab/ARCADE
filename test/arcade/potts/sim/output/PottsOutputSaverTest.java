@@ -55,9 +55,6 @@ public class PottsOutputSaverTest {
 
         saver.saveTranscriptionFactors(tick);
         verify(gson).toJson(prospero, PROSPERO_TYPE);
-        verify(saver)
-                .write(
-                        saver.prefix + String.format("_%06d.PROSPERO.json", tick),
-                        contents);
+        verify(saver).write(saver.prefix + String.format("_%06d.PROSPERO.json", tick), contents);
     }
 }

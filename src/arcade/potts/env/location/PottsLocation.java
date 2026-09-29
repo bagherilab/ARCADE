@@ -1,7 +1,6 @@
 package arcade.potts.env.location;
 
 import java.util.*;
-
 import sim.util.Bag;
 import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;

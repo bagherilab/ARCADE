@@ -22,8 +22,6 @@ public class PottsModuleFlyGMCDifferentiation extends PottsModuleProliferationVo
     /* Rate of Prospero change (ticks^-1). */
     final double prosperoRate;
 
-
-
     /**
      * Creates a fly GMC proliferation module.
      *

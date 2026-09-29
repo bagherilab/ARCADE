@@ -55,8 +55,7 @@ public final class PottsOutputSerializer {
         gsonBuilder.registerTypeAdapter(
                 PottsLocationContainer.class, new PottsLocationSerializer());
         gsonBuilder.registerTypeAdapter(Voxel.class, new VoxelSerializer());
-        gsonBuilder.registerTypeAdapter(
-                PROSPERO_TYPE, new ProsperoSerializer());
+        gsonBuilder.registerTypeAdapter(PROSPERO_TYPE, new ProsperoSerializer());
         return gsonBuilder.create();
     }
 
@@ -280,8 +279,7 @@ public final class PottsOutputSerializer {
         }
     }
 
-    static class ProsperoSerializer
-            implements JsonSerializer<HashMap<Integer, Double>> {
+    static class ProsperoSerializer implements JsonSerializer<HashMap<Integer, Double>> {
         @Override
         public JsonElement serialize(
                 HashMap<Integer, Double> src, Type typeOfSrc, JsonSerializationContext context) {
