@@ -42,7 +42,9 @@ dependencies {
 }
 
 test {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        excludeTags "fileComparison"
+    }
 }
 
 javadoc {
@@ -173,6 +175,12 @@ task updateVersion (group: "versioning", description: "Syncs gradle version with
         String newVersion = "${versionProperties.major}.${versionProperties.minor}.${versionProperties.patch}"
         buildFile.setText(buildFile.getText().replaceFirst("""version = "$version""", """version = "$newVersion"""))
         println "Bumped version to: ${newVersion}"
+    }
+}
+
+tasks.register('fileComparisonTest', Test) {
+    useJUnitPlatform {
+        includeTags 'fileComparison'
     }
 }
 
