@@ -79,7 +79,7 @@
     <population.module module="proliferation" id="NB_CONTACT_HALF_MAX" value="1.0" units="neighbors" description="K: NB neighbor count giving 50% repression" />
     <population.module module="proliferation" id="NB_CONTACT_HILL_N" value="3.0" description="Hill exponent controlling repression steepness" />
     <!-- ── NB division rules ───────────────────────────── -->
-    <population.module module="proliferation" id="DIFFERENTIATION_RULESET" value="volume" description="GMC/NB identity rule: 'volume', 'location', or 'tfRatio'" />
+    <population.module module="proliferation" id="DIFFERENTIATION_RULESET" value="volume" description="GMC/NB identity rule: 'volume', 'location', or 'tfConcentration'" />
     <population.module module="proliferation" id="DIFFERENTIATION_RULESET_EQUALITY_RANGE" value="0.5" description="tolerance for deciding GMC/NB identity (volume difference or apical axis distance)" />
     <!-- ── NB Apical axis rules ──────────────────────────────────── -->
     <population.module module="proliferation" id="APICAL_AXIS_RULESET" value="global" description="'global', 'rotation' (Normal), or 'uniform' (Uniform)" />
@@ -94,7 +94,7 @@
     <population.module module="proliferation" id="PROSPERO_RATE" value="1" units="Prospero/hour" conversion="DT" description="rate of change of Prospero" />
     <!-- Transcription factor ratio (Prospero) and differentiation ruleset -->
     <population.module module="proliferation" id="BASAL_THRESHOLD" value="0.5" description="Percent threshold of basal voxels considered when dividing Prospero at cell division. Should be between 0 and 1 (inclusive)." />
-    <population.module module="proliferation" id="TF_RATIO" value="1" description="Ratio of Prospero driving differentiation" />
+    <population.module module="proliferation" id="TF_CONCENTRATION" value="1" description="Ratio of Prospero driving differentiation" />
     <!-- Stem type cell offset percentages (0-100) -->
     <population.module module="proliferation" id="WT_LIKE_X" value="50" description="Wild type stem cell split offset percent for x" />
     <population.module module="proliferation" id="WT_LIKE_Y" value="93" description="Wild type stem cell split offset percent for y" />

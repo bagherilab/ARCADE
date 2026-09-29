@@ -48,8 +48,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      */
     final double basalThreshold;
 
-    /** Threshold ratio of Prospero to Deadpan in daughter cell to determine cell identity. */
-    final double tfRatio;
+    /** Threshold concentration of Prospero in daughter cell to determine cell identity. */
+    final double tfConcentration;
 
     /** Wild type stem cell split offset percent for x (0-100). */
     final int wtLikeX;
@@ -153,7 +153,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
         prosperoRate = parameters.getDouble("proliferation/PROSPERO_RATE");
         basalThreshold = parameters.getDouble("proliferation/BASAL_THRESHOLD");
-        tfRatio = parameters.getDouble("proliferation/TF_RATIO");
+        tfConcentration = parameters.getDouble("proliferation/TF_CONCENTRATION");
         wtLikeX = parameters.getInt("proliferation/WT_LIKE_X");
         wtLikeY = parameters.getInt("proliferation/WT_LIKE_Y");
         mmLikeX = parameters.getInt("proliferation/MM_LIKE_X");
@@ -496,9 +496,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 double[] centroid2 = loc2.getCentroid();
                 return (centroidsWithinRangeAlongApicalAxis(
                         centroid1, centroid2, ((PottsCellFlyStem) cell).getApicalAxis(), range));
-            } else if (differentiationRuleset.equals("tfRatio")) {
+            } else if (differentiationRuleset.equals("tfConcentration")) {
                 double daughterConcentration = prosperoConcentration(daughterProspero, loc2);
-                return daughterConcentration <= tfRatio;
+                return daughterConcentration <= tfConcentration;
             }
         }
         throw new IllegalArgumentException(
@@ -740,7 +740,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 return getSmallerLocation(parentLoc, daughterLoc);
             case "location":
                 return getBasalLocation(parentLoc, daughterLoc, divisionPlaneNormal);
-            case "tfRatio":
+            case "tfConcentration":
                 return getSmallerLocation(
                         parentLoc,
                         daughterLoc); // TODO: Ask Sophia which location makes more biological sense
