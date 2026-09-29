@@ -516,16 +516,14 @@ public class PottsOutputSerializerTest {
     }
 
     @Test
-    public void serialize_forTranscriptionFactors_createsJSON() {
-        TranscriptionFactorsSerializer serializer = new TranscriptionFactorsSerializer();
-        HashMap<Integer, double[]> cells = new HashMap<>();
+    public void serialize_forProspero_createsJSON() {
+        ProsperoSerializer serializer = new ProsperoSerializer();
+        HashMap<Integer, Double> cells = new HashMap<>();
         int numCells = randomIntBetween(1, 100);
         int startId = randomIntBetween(1, 100);
 
         for (int i = 0; i < numCells; i++) {
-            cells.put(
-                    startId,
-                    new double[] {randomDoubleBetween(1, 100), randomDoubleBetween(1, 100)});
+            cells.put(startId, randomDoubleBetween(1, 100));
             startId++;
         }
 
@@ -536,9 +534,7 @@ public class PottsOutputSerializerTest {
             expected.append("{\"id\":")
                     .append(id)
                     .append(",\"prospero\":")
-                    .append(cells.get(id)[0])
-                    .append(",\"deadpan\":")
-                    .append(cells.get(id)[1])
+                    .append(cells.get(id))
                     .append("}");
             if (i < cells.size() - 1) {
                 expected.append(","); // to match JSON formatting

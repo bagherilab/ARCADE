@@ -4,7 +4,8 @@ import com.google.gson.Gson;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSaver;
 import arcade.potts.sim.PottsSimulation;
-import static arcade.potts.sim.PottsSimulation.TRANSCRIPTION_FACTORS_TYPE;
+
+import static arcade.potts.sim.PottsSimulation.PROSPERO_TYPE;
 
 /** Custom saver for potts-specific serialization. */
 public final class PottsOutputSaver extends OutputSaver {
@@ -29,9 +30,9 @@ public final class PottsOutputSaver extends OutputSaver {
         if (sim instanceof PottsSimulation) {
             String json =
                     gson.toJson(
-                            ((PottsSimulation) sim).getAllTranscriptionFactors(),
-                            TRANSCRIPTION_FACTORS_TYPE);
-            String patch = prefix + String.format("_%06d.TRANSCRIPTION_FACTORS.json", tick);
+                            ((PottsSimulation) sim).getAllProspero(),
+                            PROSPERO_TYPE);
+            String patch = prefix + String.format("_%06d.PROSPERO.json", tick);
             write(patch, format(json, FORMAT_ELEMENTS));
         }
     }

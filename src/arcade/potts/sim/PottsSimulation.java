@@ -30,8 +30,8 @@ import static arcade.potts.util.PottsEnums.Ordering;
 /** Abstract implementation for potts {@link Simulation} instances. */
 public abstract class PottsSimulation extends SimState implements Simulation {
 
-    public static final Type TRANSCRIPTION_FACTORS_TYPE =
-            new TypeToken<HashMap<Integer, double[]>>() {}.getType();
+    public static final Type PROSPERO_TYPE =
+            new TypeToken<HashMap<Integer, Double>>() {}.getType();
 
     /** {@link arcade.core.sim.Series} object containing this simulation. */
     final PottsSeries series;
@@ -290,13 +290,13 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         }
     }
 
-    public final HashMap<Integer, double[]> getAllTranscriptionFactors() {
-        HashMap<Integer, double[]> transcriptionFactorMap = new HashMap<>();
+    public final HashMap<Integer, Double> getAllProspero() {
+        HashMap<Integer, Double> transcriptionFactorMap = new HashMap<>();
 
         for (Object obj : grid.getAllObjects()) {
             PottsCellFly cell = (PottsCellFly) obj;
             transcriptionFactorMap.put(
-                    cell.getID(), new double[] {cell.getProspero(), cell.getDeadpan()});
+                    cell.getID(), cell.getProspero());
         }
 
         return transcriptionFactorMap;
