@@ -32,7 +32,7 @@ public class PatchComponentSitesGraphUtiltiesTest {
     SiteEdge edge52;
 
     @BeforeEach
-    void setUp() {
+    public final void setUp() {
         graph = new Graph();
         artery = new SiteNode(0, 0, 0);
         node1 = new SiteNode(0, 2, 0);
