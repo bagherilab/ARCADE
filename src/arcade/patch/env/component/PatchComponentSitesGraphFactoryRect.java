@@ -155,6 +155,11 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
         return OFFSETS.get(offset);
     }
 
+    @Override
+    EnumMap<EdgeDirection, int[]> getOffsets() {
+        return OFFSETS;
+    }
+
     /**
      * Checks if there is an edge in the cross diagonal.
      *
@@ -446,7 +451,8 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
             return bag;
         }
 
-        // Add the two leaves of the tripod if line is 0, otherwise add in the root line.
+        // Add the two leaves of the tripod if line is 0, otherwise add in the root
+        // line.
         if (offsets == null) {
             for (EdgeDirection offset : ROOT_OFFSETS.get(dir)) {
                 SiteNode node2 = offsetNode(node1, offset, level);
