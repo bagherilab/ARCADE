@@ -16,23 +16,35 @@ public class PatchComponentSitesGraphUtiltiesTest {
     Graph graph;
 
     SiteNode artery;
+
     SiteNode node1;
+
     SiteNode node2;
+
     SiteNode node3;
+
     SiteNode node4;
+
     SiteNode node5;
+
     SiteNode vein;
 
     SiteEdge edgeA1;
+
     SiteEdge edge12;
+
     SiteEdge edge23;
+
     SiteEdge edge3V;
+
     SiteEdge edgeA4;
+
     SiteEdge edge45;
+
     SiteEdge edge52;
 
     @BeforeEach
-    void setUp() {
+    public final void setUp() {
         graph = new Graph();
         artery = new SiteNode(0, 0, 0);
         node1 = new SiteNode(0, 2, 0);
