@@ -40,7 +40,7 @@ public class PatchComponentSitesGraphUtiltiesTest {
     SiteEdge edgeA4;
 
     SiteEdge edge45;
-    
+
     SiteEdge edge52;
 
     @BeforeEach
