@@ -1179,11 +1179,15 @@ abstract class PatchComponentSitesGraphUtilities {
      */
     static void trimGraph(Graph graph) {
         ArrayList<SiteEdge> list;
+        ArrayList<SiteNode> outLeaves;
+        ArrayList<SiteNode> inLeaves;
         Graph gCurr = graph;
 
         do {
             Graph gNew = new Graph();
             list = new ArrayList<>();
+            outLeaves = new ArrayList<>();
+            inLeaves = new ArrayList<>();
 
             for (Object obj : new Bag(gCurr.getAllEdges())) {
                 SiteEdge edge = (SiteEdge) obj;
@@ -1196,8 +1200,10 @@ abstract class PatchComponentSitesGraphUtilities {
                 // Check for leaves.
                 if (gCurr.getOutDegree(to) == 0 && !to.isRoot) {
                     list.add(edge);
+                    outLeaves.add(to);
                 } else if (gCurr.getInDegree(from) == 0 && !from.isRoot) {
                     list.add(edge);
+                    inLeaves.add(from);
                 } else {
                     gNew.addEdge(edge);
                 }
@@ -1206,8 +1212,12 @@ abstract class PatchComponentSitesGraphUtilities {
             // Update leaves to be ignored.
             for (SiteEdge edge : list) {
                 edge.isIgnored = true;
-                edge.getFrom().pressure = Double.NaN;
-                edge.getTo().pressure = Double.NaN;
+            }
+            for (SiteNode node : outLeaves) {
+                node.pressure = Double.NaN;
+            }
+            for (SiteNode node : inLeaves) {
+                node.pressure = Double.NaN;
             }
 
             gCurr = gNew;
