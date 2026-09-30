@@ -123,11 +123,25 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#copyArray(double%5B%5D%5B%5D%5B%5D,double%5B%5D%5B%5D%5B%5D)" class="member-name-link">copyArray</a><wbr>(double[][][]&nbsp;fromArray,
- double[][][]&nbsp;toArray)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;T&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#convertToCollection(sim.util.Bag,java.lang.Class)" class="member-name-link">convertToCollection</a><wbr>(sim.util.Bag&nbsp;bag,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;type)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Converts the given Bag into a typed Collection, with each element being cast to the given
+ type.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#copyArray(double%5B%5D%5B%5D%5B%5D,double%5B%5D%5B%5D%5B%5D)" class="member-name-link">copyArray</a><wbr>(double[][][]&nbsp;fromArray,
+ double[][][]&nbsp;toArray)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Copies the contents on one 3D array to another 3D array.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;T&gt;&nbsp;double</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getCollectionFraction(java.util.Collection,java.util.Collection)" class="member-name-link">getCollectionFraction</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;T&gt;&nbsp;numeratorCollection,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;T&gt;&nbsp;denominatorCollection)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Calculates the fraction of elements in one collection that are also present in another
+ collection.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#shuffleList(java.util.ArrayList,ec.util.MersenneTwisterFast)" class="member-name-link">shuffleList</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a>&lt;?&gt;&nbsp;list,
@@ -218,6 +232,46 @@ loadScripts(document, 'script');</script>
 <dd><code>arr</code> - the array containing the objects</dd>
 <dd><code>i</code> - the index of the first object</dd>
 <dd><code>j</code> - the index of the second object</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getCollectionFraction(java.util.Collection,java.util.Collection)">
+<h3>getCollectionFraction</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">getCollectionFraction</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;T&gt;&nbsp;numeratorCollection,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;T&gt;&nbsp;denominatorCollection)</span></div>
+<div class="block">Calculates the fraction of elements in one collection that are also present in another
+ collection. Duplicate elements in the numeratorCollection are treated as one occurrence,
+ while duplicates in denominatorCollection are counted individually in both total number of
+ matches and size. Returns 0 if either list is empty.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><code>T</code> - the element type present in the two collections</dd>
+<dt>Parameters:</dt>
+<dd><code>numeratorCollection</code> - the collection to check membership against, items be the same type
+     as denominatorCollection</dd>
+<dd><code>denominatorCollection</code> - the collection whose fraction is being calculated (denominator)</dd>
+<dt>Returns:</dt>
+<dd>fraction of elements in denominatorCollection that are also found in
+     numeratorCollection</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="convertToCollection(sim.util.Bag,java.lang.Class)">
+<h3>convertToCollection</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;T&gt;</span>&nbsp;<span class="element-name">convertToCollection</span><wbr><span class="parameters">(sim.util.Bag&nbsp;bag,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;type)</span></div>
+<div class="block">Converts the given Bag into a typed Collection, with each element being cast to the given
+ type.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><code>T</code> - the target element type</dd>
+<dt>Parameters:</dt>
+<dd><code>bag</code> - the bag to convert</dd>
+<dd><code>type</code> - the class object representing the target element type</dd>
+<dt>Returns:</dt>
+<dd>a new <code>Collection&lt;T&gt;</code> containing the bag's elements, cast to provided type</dd>
 </dl>
 </section>
 </li>
