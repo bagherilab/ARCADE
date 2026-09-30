@@ -7,6 +7,7 @@ import java.util.HashSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import sim.util.Double3D;
@@ -63,6 +64,8 @@ public class PottsModuleFlyStemProliferationTest {
 
     NormalDistribution dist;
 
+    NormalDistribution reorientationDist;
+
     public static final double EPSILON = 1e-6f;
 
     int stemCellPop;
@@ -117,8 +120,10 @@ public class PottsModuleFlyStemProliferationTest {
                 .thenReturn(60.0);
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("TRUE");
-        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
-                .thenReturn("apical_axis");
+        reorientationDist = mock(NormalDistribution.class);
+        when(reorientationDist.nextDouble()).thenReturn(0.0);
+        when(parameters.getDistribution("proliferation/APICAL_AXIS_REORIENTATION_DISTRIBUTION"))
+                .thenReturn(reorientationDist);
         when(parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y")).thenReturn(93);
         when(parameters.getDouble("proliferation/GMC_CRITICAL_VOLUME_OVERRIDE")).thenReturn(0.0);
         when(parameters.getDouble("CRITICAL_VOLUME")).thenReturn(100.0);
@@ -628,9 +633,7 @@ public class PottsModuleFlyStemProliferationTest {
                 EPSILON);
 
         // The plane orientation at saturation equals the MUD plane's orientation.
-        Plane ramped =
-                module.buildDivisionPlane(
-                        stemCell, module.getRotationReferenceVector(stemCell), -90.0, 50.0);
+        Plane ramped = module.buildDivisionPlane(stemCell, stemCell.getApicalAxis(), -90.0, 50.0);
         Plane mud = module.getMUDDivisionPlane(stemCell);
 
         assertEquals(
@@ -1019,8 +1022,9 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void constructor_invalidDivRotationReference_throwsInvalidParameterException() {
-        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE")).thenReturn("sideways");
+    public void constructor_legacyDivRotationReference_throwsInvalidParameterException() {
+        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
+                .thenReturn("previous_division");
 
         assertThrows(
                 InvalidParameterException.class,
@@ -1028,55 +1032,11 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void getWTDivisionPlane_previousDivision_noPreviousNormal_usesApicalAxis() {
-        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
-                .thenReturn("previous_division");
+    public void getWTDivisionPlane_measuresRotationFromApicalAxis() {
         Vector apicalAxis = new Vector(0, 1, 0);
         when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
         when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(new Voxel(0, 0, 0));
-
         module = new PottsModuleFlyStemProliferation(stemCell);
-        assertNull(module.previousDivisionNormal);
-
-        double offset = 30.0;
-        Vector expectedNormal =
-                Vector.rotateVectorAroundAxis(apicalAxis, Direction.XY_PLANE.vector, offset);
-        module.getWTDivisionPlane(stemCell, offset);
-
-        verify(stemLoc).getOffsetInApicalFrame(any(), eq(expectedNormal));
-    }
-
-    @Test
-    public void getWTDivisionPlane_previousDivision_withPreviousNormal_usesPreviousNormal() {
-        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
-                .thenReturn("previous_division");
-        Vector apicalAxis = new Vector(0, 1, 0);
-        when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
-        when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(new Voxel(0, 0, 0));
-
-        module = new PottsModuleFlyStemProliferation(stemCell);
-        Vector previousNormal = new Vector(1, 0, 0);
-        module.previousDivisionNormal = previousNormal;
-
-        double offset = 90.0;
-        Vector expectedNormal =
-                Vector.rotateVectorAroundAxis(previousNormal, Direction.XY_PLANE.vector, offset);
-        module.getWTDivisionPlane(stemCell, offset);
-
-        verify(stemLoc).getOffsetInApicalFrame(any(), eq(expectedNormal));
-    }
-
-    @Test
-    public void getWTDivisionPlane_apicalAxis_withPreviousNormal_usesApicalAxis() {
-        // apical_axis ruleset: previous normal is ignored even if set
-        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
-                .thenReturn("apical_axis");
-        Vector apicalAxis = new Vector(0, 1, 0);
-        when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
-        when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(new Voxel(0, 0, 0));
-
-        module = new PottsModuleFlyStemProliferation(stemCell);
-        module.previousDivisionNormal = new Vector(1, 0, 0); // set but should be ignored
 
         double offset = 45.0;
         Vector expectedNormal =
@@ -1084,6 +1044,83 @@ public class PottsModuleFlyStemProliferationTest {
         module.getWTDivisionPlane(stemCell, offset);
 
         verify(stemLoc).getOffsetInApicalFrame(any(), eq(expectedNormal));
+    }
+
+    @Test
+    public void reorientApicalAxis_zeroAngle_leavesApicalAxisUnchanged() {
+        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
+        when(reorientationDist.nextDouble()).thenReturn(0.0);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        module.reorientApicalAxis(stemCell);
+
+        verify(stemCell, never()).setApicalAxis(any());
+    }
+
+    @Test
+    public void reorientApicalAxis_nonzeroAngle_rotatesAndStoresApicalAxis() {
+        Vector apicalAxis = new Vector(0, 1, 0);
+        when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
+        when(reorientationDist.nextDouble()).thenReturn(30.0);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        module.reorientApicalAxis(stemCell);
+
+        verify(stemCell)
+                .setApicalAxis(
+                        Vector.rotateVectorAroundAxis(apicalAxis, Direction.XY_PLANE.vector, 30.0));
+    }
+
+    @Test
+    public void reorientApicalAxis_repeated_accumulatesAcrossDivisions() {
+        Vector[] stored = {new Vector(0, 1, 0)};
+        when(stemCell.getApicalAxis()).thenAnswer(inv -> stored[0]);
+        doAnswer(
+                        inv -> {
+                            stored[0] = inv.getArgument(0);
+                            return null;
+                        })
+                .when(stemCell)
+                .setApicalAxis(any());
+        when(reorientationDist.nextDouble()).thenReturn(20.0, 25.0);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        module.reorientApicalAxis(stemCell);
+        module.reorientApicalAxis(stemCell);
+
+        Vector expected =
+                Vector.rotateVectorAroundAxis(new Vector(0, 1, 0), Direction.XY_PLANE.vector, 45.0);
+        assertEquals(expected.getX(), stored[0].getX(), EPSILON);
+        assertEquals(expected.getY(), stored[0].getY(), EPSILON);
+    }
+
+    @Test
+    public void chooseDivisionPlane_usesCurrentApicalAxisAndDivisionOrientationDraw() {
+        Vector reoriented =
+                Vector.rotateVectorAroundAxis(new Vector(0, 1, 0), Direction.XY_PLANE.vector, 40.0);
+        when(stemCell.getApicalAxis()).thenReturn(reoriented);
+        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
+        when(dist.nextDouble()).thenReturn(8.0);
+        when(stemLoc.getOffsetInApicalFrame(any(), any())).thenReturn(new Voxel(0, 0, 0));
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        module.chooseDivisionPlane(stemCell);
+
+        Vector expectedNormal =
+                Vector.rotateVectorAroundAxis(reoriented, Direction.XY_PLANE.vector, 8.0);
+        verify(stemLoc).getOffsetInApicalFrame(any(), eq(expectedNormal));
+    }
+
+    @Test
+    public void switchRamp_offsetDependsOnlyOnDivisionOrientationDraw() {
+        when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("switch_ramp");
+        when(dist.getExpected()).thenReturn(0.0);
+        when(reorientationDist.nextDouble()).thenReturn(80.0);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        // a large reorientation of the polarity axis does not enter the offset: only the
+        // division orientation (the angle to the current apical axis) does
+        assertEquals(module.computeSplitOffsetPercentY(0.0), 93.0, 0.5);
     }
 
     @Test
@@ -1606,9 +1643,7 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void addCell_previousDivisionReference_updatesPreviousDivisionNormal() {
-        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
-                .thenReturn("previous_division");
+    public void addCell_reorientsApicalAxisOnceBeforeChoosingDivisionPlane() {
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
         when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
         when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
@@ -1617,9 +1652,8 @@ public class PottsModuleFlyStemProliferationTest {
         when(stemLoc.getVolume()).thenReturn(10.0);
         when(daughterLoc.getVolume()).thenReturn(5.0);
 
-        Vector expectedNormal = new Vector(1, 0, 0);
         Plane dummyPlane = mock(Plane.class);
-        when(dummyPlane.getUnitNormalVector()).thenReturn(expectedNormal);
+        when(dummyPlane.getUnitNormalVector()).thenReturn(new Vector(0, 1, 0));
         when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
 
         PottsCellContainer container = mock(PottsCellContainer.class);
@@ -1633,37 +1667,10 @@ public class PottsModuleFlyStemProliferationTest {
 
         module.addCell(random, sim);
 
-        assertEquals(expectedNormal, module.previousDivisionNormal);
-    }
-
-    @Test
-    public void addCell_apicalAxisReference_doesNotUpdatePreviousDivisionNormal() {
-        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
-                .thenReturn("apical_axis");
-        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
-        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
-        when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
-        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.0);
-        when(parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME")).thenReturn(0);
-        when(stemLoc.getVolume()).thenReturn(10.0);
-        when(daughterLoc.getVolume()).thenReturn(5.0);
-
-        Plane dummyPlane = mock(Plane.class);
-        when(dummyPlane.getUnitNormalVector()).thenReturn(new Vector(1, 0, 0));
-        when(stemLoc.split(eq(random), eq(dummyPlane))).thenReturn(daughterLoc);
-
-        PottsCellContainer container = mock(PottsCellContainer.class);
-        PottsCell newCell = mock(PottsCell.class);
-        when(stemCell.make(anyInt(), any(), eq(random), anyInt(), anyDouble()))
-                .thenReturn(container);
-        when(container.convert(eq(factory), eq(daughterLoc), eq(random))).thenReturn(newCell);
-
-        module = spy(new PottsModuleFlyStemProliferation(stemCell));
-        doReturn(dummyPlane).when(module).chooseDivisionPlane(stemCell);
-
-        module.addCell(random, sim);
-
-        assertNull(module.previousDivisionNormal);
+        InOrder order = inOrder(module);
+        order.verify(module).reorientApicalAxis(stemCell);
+        order.verify(module).chooseDivisionPlane(stemCell);
+        verify(module, times(1)).reorientApicalAxis(stemCell);
     }
 
     @Test

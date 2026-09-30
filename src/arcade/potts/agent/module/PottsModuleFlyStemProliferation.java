@@ -167,17 +167,14 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     final double gmcCriticalVolumeOverride;
 
     /**
-     * Reference vector the division-plane rotation offset is measured from. Can be `apical_axis` or
-     * `previous_division`. Under `previous_division` the division axis drifts across a cell's
-     * successive divisions; the apical axis itself is never modified by this ruleset.
+     * Distribution of the angle (degrees) the NB's apical (polarity) axis is rotated by at the
+     * start of each of its divisions, before the division plane is chosen. The rotated axis is
+     * stored on the cell, so reorientations accumulate across a cell's divisions: a nonzero mean
+     * gives persistent turning, a zero mean a random walk. The division plane is then the updated
+     * apical axis rotated by a draw from {@link #splitDirectionDistribution}, which does not
+     * accumulate.
      */
-    final String divRotationReference;
-
-    /**
-     * Normal vector of the most recent division plane. {@code null} until the first division
-     * completes. Only populated under the `previous_division` rotation reference ruleset.
-     */
-    Vector previousDivisionNormal;
+    final Distribution apicalAxisReorientationDistribution;
 
     /**
      * Y split offset (%) used by the most recent call to {@link #chooseDivisionPlane}. Under the
@@ -284,13 +281,19 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         gmcCriticalVolumeOverride =
                 parameters.getDouble("proliferation/GMC_CRITICAL_VOLUME_OVERRIDE");
 
-        divRotationReference = parameters.getString("proliferation/DIV_ROTATION_REFERENCE");
-        if (!divRotationReference.equals("apical_axis")
-                && !divRotationReference.equals("previous_division")) {
+        apicalAxisReorientationDistribution =
+                parameters.getDistribution("proliferation/APICAL_AXIS_REORIENTATION_DISTRIBUTION");
+        // Kept declared (default apical_axis) only so that old setups asking for the removed
+        // previous_division reference fail loudly instead of being silently dropped by the loader.
+        String rotationReference = parameters.getString("proliferation/DIV_ROTATION_REFERENCE");
+        if (rotationReference != null && !rotationReference.equals("apical_axis")) {
             throw new InvalidParameterException(
-                    "divRotationReference must be either apical_axis or previous_division");
+                    "DIV_ROTATION_REFERENCE="
+                            + rotationReference
+                            + " was removed: the division plane is always measured from the apical"
+                            + " axis. Use APICAL_AXIS_REORIENTATION_DISTRIBUTION for apical-axis"
+                            + " drift across divisions.");
         }
-        previousDivisionNormal = null;
 
         divOffsetRuleset = parameters.getString("proliferation/DIV_OFFSET_RULESET");
         if (!divOffsetRuleset.equals("threshold")
@@ -318,10 +321,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         Potts potts = ((PottsSimulation) sim).getPotts();
         PottsCellFlyStem flyStemCell = (PottsCellFlyStem) cell;
 
+        reorientApicalAxis(flyStemCell);
         Plane divisionPlane = chooseDivisionPlane(flyStemCell);
-        if (divRotationReference.equals("previous_division")) {
-            previousDivisionNormal = divisionPlane.getUnitNormalVector();
-        }
         PottsLocation2D parentLoc = (PottsLocation2D) cell.getLocation();
         PottsLocation daughterLoc = (PottsLocation) parentLoc.split(random, divisionPlane);
 
@@ -495,10 +496,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         if (usesRampedOffset()) {
             lastSplitOffsetPercentY = computeSplitOffsetPercentY(offset);
             return buildDivisionPlane(
-                    flyStemCell,
-                    getRotationReferenceVector(flyStemCell),
-                    offset,
-                    lastSplitOffsetPercentY);
+                    flyStemCell, flyStemCell.getApicalAxis(), offset, lastSplitOffsetPercentY);
         }
 
         lastSplitOffsetPercentY = wtDivisionSplitOffsetPercentY;
@@ -554,19 +552,20 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Gets the vector the division plane rotation is measured from.
+     * Rotates the cell's apical axis by one draw from {@link #apicalAxisReorientationDistribution}
+     * and stores it on the cell. Called once at the start of every NB division, so the rotations
+     * accumulate across the cell's divisions. A zero draw leaves the axis untouched.
      *
-     * <p>Selected by {@code DIV_ROTATION_REFERENCE}: under `apical_axis` it is the cell's apical
-     * axis, under `previous_division` it is the previous division plane's normal. The first
-     * division of a cell always falls back to the apical axis because there is no previous plane.
-     *
-     * @param cell the {@link PottsCellFlyStem} to get the reference vector for
-     * @return the vector the rotation offset is measured from
+     * @param cell the {@link PottsCellFlyStem} whose apical axis is reoriented
      */
-    Vector getRotationReferenceVector(PottsCellFlyStem cell) {
-        return (divRotationReference.equals("previous_division") && previousDivisionNormal != null)
-                ? previousDivisionNormal
-                : cell.getApicalAxis();
+    void reorientApicalAxis(PottsCellFlyStem cell) {
+        double angle = apicalAxisReorientationDistribution.nextDouble();
+        if (angle == 0) {
+            return;
+        }
+        cell.setApicalAxis(
+                Vector.rotateVectorAroundAxis(
+                        cell.getApicalAxis(), Direction.XY_PLANE.vector, angle));
     }
 
     /**
@@ -612,10 +611,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      */
     public Plane getWTDivisionPlane(PottsCellFlyStem cell, double rotationOffset) {
         return buildDivisionPlane(
-                cell,
-                getRotationReferenceVector(cell),
-                rotationOffset,
-                wtDivisionSplitOffsetPercentY);
+                cell, cell.getApicalAxis(), rotationOffset, wtDivisionSplitOffsetPercentY);
     }
 
     /**

@@ -189,6 +189,9 @@ public class PottsCellFlyStemTest {
         doReturn(distMock)
                 .when(parametersMock)
                 .getDistribution("proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION");
+        doReturn(distMock)
+                .when(parametersMock)
+                .getDistribution("proliferation/APICAL_AXIS_REORIENTATION_DISTRIBUTION");
         PottsCellFlyStem cell =
                 new PottsCellFlyStem(baseContainer, locationMock, parametersMock, links);
         cell.setStateModule(State.PROLIFERATIVE);
