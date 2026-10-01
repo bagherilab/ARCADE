@@ -18,6 +18,7 @@ import arcade.patch.env.location.PatchLocation;
 import arcade.patch.env.location.PatchLocationContainer;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.sim.PatchSimulation;
+import arcade.patch.util.PatchEnums.Ordering;
 import static arcade.patch.util.PatchEnums.Ordering;
 
 /**
@@ -29,7 +30,7 @@ import static arcade.patch.util.PatchEnums.Ordering;
  */
 public class PatchActionInsert implements Action {
     /** Logger for {@code PatchActionInsert}. */
-    protected static Logger logger;
+    protected static Logger logger = Logger.getLogger(PatchActionInsert.class.getName());
 
     /** Time delay before calling the action [min]. */
     private final int timeDelay;
