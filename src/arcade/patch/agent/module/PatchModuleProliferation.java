@@ -9,6 +9,7 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellCART;
+import arcade.patch.agent.cell.PatchCellCARTCombinedCombinatorial;
 import arcade.patch.agent.process.PatchProcess;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
@@ -61,7 +62,7 @@ public class PatchModuleProliferation extends PatchModule {
         duration = 0;
         // Load parameters.
         Parameters parameters = cell.getParameters();
-        synthesisDuration = parameters.getInt("proliferation/SYNTHESIS_DURATION");
+        synthesisDuration = parameters.getInt("SYNTHESIS_DURATION");
     }
 
     @Override
@@ -92,7 +93,6 @@ public class PatchModuleProliferation extends PatchModule {
                 }
             } else if (cell.getVolume() >= targetVolume) {
                 if (ticker > synthesisDuration) {
-
                     cell.addCycle(duration);
                     // Reset current cell.
                     cell.setState(State.UNDEFINED);
@@ -108,6 +108,22 @@ public class PatchModuleProliferation extends PatchModule {
                                             newLocation,
                                             random,
                                             newParameters);
+                    if (cell instanceof PatchCellCART) {
+                        ((PatchCellCART) newCell)
+                                .setActivationStatus(((PatchCellCART) cell).getActivationStatus());
+                        ((PatchCellCART) newCell).boundSelfAntigensCount =
+                                ((PatchCellCART) cell).boundSelfAntigensCount;
+                        ((PatchCellCART) newCell).selfReceptors =
+                                ((PatchCellCART) cell).selfReceptors;
+                        ((PatchCellCART) newCell).boundCARAntigensCount =
+                                ((PatchCellCART) cell).boundCARAntigensCount;
+                        if (cell instanceof PatchCellCARTCombinedCombinatorial) {
+                            ((PatchCellCARTCombinedCombinatorial) newCell).boundSynNotch =
+                                    ((PatchCellCARTCombinedCombinatorial) cell).boundSynNotch;
+                            ((PatchCellCARTCombinedCombinatorial) newCell)
+                                    .setCars(((PatchCellCARTCombinedCombinatorial) cell).getCars());
+                        }
+                    }
                     sim.getGrid().addObject(newCell, newLocation);
                     newCell.schedule(sim.getSchedule());
 

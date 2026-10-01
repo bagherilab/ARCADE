@@ -24,6 +24,7 @@ import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.cell.PatchCellFactory;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.lattice.PatchLattice;
@@ -82,11 +83,11 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         super(seed);
         this.series = (PatchSeries) series;
         this.seed = (int) seed - Series.SEED_OFFSET;
+        this.events = new ArrayList<>();
 
         this.locationFactory = makeLocationFactory();
         this.cellFactory = makeCellFactory();
         this.latticeFactory = makeLatticeFactory();
-        this.events = new ArrayList<>();
     }
 
     @Override
@@ -109,6 +110,25 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         return ++id;
     }
 
+    /**
+     * Log an event to the simulation's event list.
+     *
+     * @param eventType the type of event
+     * @param eventData the event data
+     */
+    public void logEvent(Map<String, Object> event) {
+        events.add(event);
+    }
+
+    /**
+     * Get the list of events logged during the simulation.
+     *
+     * @return the list of events
+     */
+    public List<Map<String, Object>> getEvents() {
+        return new ArrayList<>(events);
+    }
+
     @Override
     public final ArrayList<CellContainer> getCells() {
         ArrayList<CellContainer> cellContainers = new ArrayList<>();
@@ -119,6 +139,29 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         }
 
         return cellContainers;
+    }
+
+    /**
+     * Get the CAR surface data (cars, startCars) for all {@link PatchCellCART} agents.
+     *
+     * @return the list of surface data, one entry per CAR T-cell
+     */
+    public final List<Map<String, Object>> getSurfaceData() {
+        List<Map<String, Object>> surfaceData = new ArrayList<>();
+
+        for (Object obj : grid.getAllObjects()) {
+            if (obj instanceof PatchCellCART) {
+                PatchCellCART cell = (PatchCellCART) obj;
+                Map<String, Object> data = new HashMap<>();
+                data.put("id", cell.getID());
+                data.put("pop", cell.getPop());
+                data.put("cars", cell.getCars());
+                data.put("startCars", cell.getStartCars());
+                surfaceData.add(data);
+            }
+        }
+
+        return surfaceData;
     }
 
     @Override
@@ -218,29 +261,6 @@ public abstract class PatchSimulation extends SimState implements Simulation {
             locations.add(container.convert(locationFactory, null));
         }
         return locations;
-    }
-
-    /**
-     * Log an event to the simulation's event list.
-     *
-     * @param event logging information corresponding to the event
-     */
-    public void logEvent(Map<String, Object> event) {
-        events.add(event);
-    }
-
-    /** Clear events queue. */
-    public void clearEvents() {
-        events.clear();
-    }
-
-    /**
-     * Get the list of events logged during the simulation.
-     *
-     * @return the list of events
-     */
-    public List<Map<String, Object>> getEvents() {
-        return new ArrayList<>(events);
     }
 
     /**

@@ -36,8 +36,9 @@ dependencies {
     implementation "com.google.code.gson:gson:2.8.6"
     runtimeOnly group: "javax.media", name: "jmf", version: "2.1.1e"
     testImplementation "org.mockito:mockito-core:5.14.+"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.11.2"
-    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.11.2"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.14.4"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.14.4"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:1.14.4"
     testImplementation "commons-io:commons-io:2.8.0"
 }
 
