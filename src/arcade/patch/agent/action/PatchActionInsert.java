@@ -1,6 +1,7 @@
 package arcade.patch.agent.action;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import arcade.core.agent.action.Action;
@@ -17,7 +18,6 @@ import arcade.patch.env.location.PatchLocation;
 import arcade.patch.env.location.PatchLocationContainer;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.sim.PatchSimulation;
-import arcade.patch.util.PatchEnums.Ordering;
 import static arcade.patch.util.PatchEnums.Ordering;
 
 /**
@@ -28,6 +28,9 @@ import static arcade.patch.util.PatchEnums.Ordering;
  * specified radius {@code INSERT_RADIUS} from the center of the simulation.
  */
 public class PatchActionInsert implements Action {
+    /** Logger for {@code PatchActionInsert}. */
+    protected static Logger logger;
+
     /** Time delay before calling the action [min]. */
     private final int timeDelay;
 
@@ -110,6 +113,11 @@ public class PatchActionInsert implements Action {
             while (cellsPlaced < insertNumber) {
 
                 if (coordinates.isEmpty()) {
+                    logger.warning(
+                            "No more coordinates available for insertion. Cells inserted is less than the desired insert number: "
+                                    + cellsPlaced
+                                    + " < "
+                                    + insertNumber);
                     break;
                 }
 

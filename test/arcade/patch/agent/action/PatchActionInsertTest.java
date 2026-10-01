@@ -312,7 +312,7 @@ public class PatchActionInsertTest {
     }
 
     @Test
-    public void step_fewerCoordinatesThanCells_insertsOnlyAvailableCoordinates() {
+    public void step_noConfluence_fewerCoordinatesThanCells_insertsOnlyAvailableCoordinates() {
         int available = 2;
         PatchActionInsert action = new PatchActionInsert(series, makeParameters(0, 5, 10, false));
         registerPopulation(action, "popA", 1);
