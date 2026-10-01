@@ -114,7 +114,8 @@ public class PatchActionInsert implements Action {
 
                 if (coordinates.isEmpty()) {
                     logger.warning(
-                            "No more coordinates available for insertion. Cells inserted is less than the desired insert number: "
+                            "No more coordinates available for insertion."
+                                    + " Cells inserted is less than the desired insert number: "
                                     + cellsPlaced
                                     + " < "
                                     + insertNumber);
