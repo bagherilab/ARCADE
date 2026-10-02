@@ -159,12 +159,12 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         mmLikeY = parameters.getInt("proliferation/MM_LIKE_Y");
 
         if (parameters.getInt("proliferation/NANO_LIKE_X") == -1) {
-            nanoLikeX = 1 - wtLikeX;
+            nanoLikeX = 100 - wtLikeX;
         } else {
             nanoLikeX = parameters.getInt("proliferation/NANO_LIKE_X");
         }
         if (parameters.getInt("proliferation/NANO_LIKE_Y") == -1) {
-            nanoLikeY = 1 - wtLikeY;
+            nanoLikeY = 100 - wtLikeY;
         } else {
             nanoLikeY = parameters.getInt("proliferation/NANO_LIKE_Y");
         }
