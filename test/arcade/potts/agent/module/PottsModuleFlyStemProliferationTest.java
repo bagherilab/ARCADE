@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -693,8 +692,11 @@ public class PottsModuleFlyStemProliferationTest {
                 .getWTDivisionPlaneWithRotationalVariance(eq(stemCell), anyDouble());
 
         try (MockedStatic<PottsLocation> mocked = mockStatic(PottsLocation.class)) {
-            mocked.when(() -> PottsLocation.getDirectionalVoxelSubset(
-                    any(), anyDouble(), any(), any(), any())).thenReturn(new Bag());
+            mocked.when(
+                            () ->
+                                    PottsLocation.getDirectionalVoxelSubset(
+                                            any(), anyDouble(), any(), any(), any()))
+                    .thenReturn(new Bag());
 
             module.addCell(random, sim);
             mocked.verify(() -> PottsLocation.swapVoxels(stemLoc, daughterLoc));
@@ -744,8 +746,11 @@ public class PottsModuleFlyStemProliferationTest {
                 .getWTDivisionPlaneWithRotationalVariance(eq(stemCell), anyDouble());
 
         try (MockedStatic<PottsLocation> mocked = mockStatic(PottsLocation.class)) {
-            mocked.when(() -> PottsLocation.getDirectionalVoxelSubset(
-                    any(), anyDouble(), any(), any(), any())).thenReturn(new Bag());
+            mocked.when(
+                            () ->
+                                    PottsLocation.getDirectionalVoxelSubset(
+                                            any(), anyDouble(), any(), any(), any()))
+                    .thenReturn(new Bag());
 
             module.addCell(random, sim);
             mocked.verify(() -> PottsLocation.swapVoxels(any(), any()), never());
@@ -832,8 +837,11 @@ public class PottsModuleFlyStemProliferationTest {
         doReturn(false).when(module).daughterStem(any(), any(), any(), anyDouble());
 
         try (MockedStatic<PottsLocation> mocked = mockStatic(PottsLocation.class)) {
-            mocked.when(() -> PottsLocation.getDirectionalVoxelSubset(
-                    any(), anyDouble(), any(), any(), any())).thenReturn(new Bag());
+            mocked.when(
+                            () ->
+                                    PottsLocation.getDirectionalVoxelSubset(
+                                            any(), anyDouble(), any(), any(), any()))
+                    .thenReturn(new Bag());
 
             module.addCell(random, sim);
             mocked.verify(() -> PottsLocation.swapVoxels(stemLoc, daughterLoc));
