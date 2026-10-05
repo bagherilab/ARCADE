@@ -106,7 +106,7 @@ public final class Utilities {
      * @param <T> the target element type
      * @param bag the bag to convert
      * @param type the class object representing the target element type
-     * @return a new Collection<T> containing the bag's elements, cast to provided type
+     * @return a new {@code Collection<T>} containing the bag's elements, cast to provided type
      */
     public static <T> Collection<T> convertToCollection(Bag bag, Class<T> type) {
         List<T> list = new ArrayList<>(bag.numObjs);
