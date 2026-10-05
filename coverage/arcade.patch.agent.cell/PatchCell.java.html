@@ -527,7 +527,7 @@ public abstract class PatchCell implements Cell {
      * @param maxDensity the maximum density of population in the location
      * @return if the location is available for the cell
      */
-    static boolean checkLocation(
+    public static boolean checkLocation(
             Simulation sim,
             PatchLocation loc,
             double addedVolume,
@@ -581,6 +581,15 @@ public abstract class PatchCell implements Cell {
      */
     public PatchEnums.AntigenFlag getBindingFlag() {
 <span class="fc" id="L583">        return this.bindingFlag;</span>
+    }
+
+    /**
+     * Returns the maximum density of the cell's population in a location.
+     *
+     * @return the maximum density
+     */
+    public int getMaxDensity() {
+<span class="nc" id="L592">        return maxDensity;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

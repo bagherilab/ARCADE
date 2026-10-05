@@ -35,13 +35,13 @@ public final class PatchLocationContainer implements LocationContainer {
     public Location convert(LocationFactory factory, CellContainer cell) {
         PatchLocation location;
 
-<span class="nc bnc" id="L38" title="All 2 branches missed.">        if (factory instanceof PatchLocationFactoryRect) {</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">        if (factory instanceof PatchLocationFactoryRect) {</span>
 <span class="nc" id="L39">            location = new PatchLocationRect((CoordinateXYZ) coordinate);</span>
         } else {
-<span class="nc" id="L41">            location = new PatchLocationHex((CoordinateUVWZ) coordinate);</span>
+<span class="fc" id="L41">            location = new PatchLocationHex((CoordinateUVWZ) coordinate);</span>
         }
 
-<span class="nc" id="L44">        return location;</span>
+<span class="fc" id="L44">        return location;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
