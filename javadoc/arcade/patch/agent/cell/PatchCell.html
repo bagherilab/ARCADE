@@ -315,7 +315,7 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Calculates the total volume of <code>Cell</code> objects in a <code>Bag</code>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>(package private) static boolean</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#checkLocation(arcade.core.sim.Simulation,arcade.patch.env.location.PatchLocation,double,double,int,int)" class="member-name-link">checkLocation</a><wbr>(<a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim,
  <a href="../../env/location/PatchLocation.html" title="class in arcade.patch.env.location">PatchLocation</a>&nbsp;loc,
  double&nbsp;addedVolume,
@@ -385,91 +385,96 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets the cell location object.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../core/agent/module/Module.html" title="interface in arcade.core.agent.module">Module</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getModule()" class="member-name-link">getModule</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMaxDensity()" class="member-name-link">getMaxDensity</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the maximum density of the cell's population in a location.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../core/agent/module/Module.html" title="interface in arcade.core.agent.module">Module</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getModule()" class="member-name-link">getModule</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets the cell module object.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../core/util/Parameters.html" title="class in arcade.core.util">Parameters</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getParameters()" class="member-name-link">getParameters</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../core/util/Parameters.html" title="class in arcade.core.util">Parameters</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getParameters()" class="member-name-link">getParameters</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets the cell parameters.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getParent()" class="member-name-link">getParent</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getParent()" class="member-name-link">getParent</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets the cell parent ID.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPop()" class="member-name-link">getPop</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPop()" class="member-name-link">getPop</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets the cell population index.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getProcess(arcade.core.agent.process.ProcessDomain)" class="member-name-link">getProcess</a><wbr>(<a href="../../../core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process">ProcessDomain</a>&nbsp;domain)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getProcess(arcade.core.agent.process.ProcessDomain)" class="member-name-link">getProcess</a><wbr>(<a href="../../../core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process">ProcessDomain</a>&nbsp;domain)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets the cell process object.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getState()" class="member-name-link">getState</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getState()" class="member-name-link">getState</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets the cell state.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getVolume()" class="member-name-link">getVolume</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getVolume()" class="member-name-link">getVolume</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets the cell volume.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isStopped()" class="member-name-link">isStopped</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isStopped()" class="member-name-link">isStopped</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets stopping status of the cell.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#makeProcess(arcade.core.agent.process.ProcessDomain,java.lang.String)" class="member-name-link">makeProcess</a><wbr>(<a href="../../../core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process">ProcessDomain</a>&nbsp;domain,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#makeProcess(arcade.core.agent.process.ProcessDomain,java.lang.String)" class="member-name-link">makeProcess</a><wbr>(<a href="../../../core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process">ProcessDomain</a>&nbsp;domain,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;version)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Makes the specified <a href="../../../core/agent/process/Process.html" title="interface in arcade.core.agent.process"><code>Process</code></a> object.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#schedule(sim.engine.Schedule)" class="member-name-link">schedule</a><wbr>(sim.engine.Schedule&nbsp;schedule)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#schedule(sim.engine.Schedule)" class="member-name-link">schedule</a><wbr>(sim.engine.Schedule&nbsp;schedule)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Schedules the cell in the simulation.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../env/location/PatchLocation.html" title="class in arcade.patch.env.location">PatchLocation</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#selectBestLocation(arcade.core.sim.Simulation,ec.util.MersenneTwisterFast)" class="member-name-link">selectBestLocation</a><wbr>(<a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../env/location/PatchLocation.html" title="class in arcade.patch.env.location">PatchLocation</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#selectBestLocation(arcade.core.sim.Simulation,ec.util.MersenneTwisterFast)" class="member-name-link">selectBestLocation</a><wbr>(<a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim,
  ec.util.MersenneTwisterFast&nbsp;random)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Selects best location for a cell to be added or move into.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBindingFlag(arcade.patch.util.PatchEnums.AntigenFlag)" class="member-name-link">setBindingFlag</a><wbr>(<a href="../../util/PatchEnums.AntigenFlag.html" title="enum class in arcade.patch.util">PatchEnums.AntigenFlag</a>&nbsp;newBindingFlag)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBindingFlag(arcade.patch.util.PatchEnums.AntigenFlag)" class="member-name-link">setBindingFlag</a><wbr>(<a href="../../util/PatchEnums.AntigenFlag.html" title="enum class in arcade.patch.util">PatchEnums.AntigenFlag</a>&nbsp;newBindingFlag)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the cell binding flag.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setEnergy(double)" class="member-name-link">setEnergy</a><wbr>(double&nbsp;energy)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setEnergy(double)" class="member-name-link">setEnergy</a><wbr>(double&nbsp;energy)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the cell energy level.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setFlag(arcade.patch.util.PatchEnums.Flag)" class="member-name-link">setFlag</a><wbr>(<a href="../../util/PatchEnums.Flag.html" title="enum class in arcade.patch.util">PatchEnums.Flag</a>&nbsp;flag)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setFlag(arcade.patch.util.PatchEnums.Flag)" class="member-name-link">setFlag</a><wbr>(<a href="../../util/PatchEnums.Flag.html" title="enum class in arcade.patch.util">PatchEnums.Flag</a>&nbsp;flag)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the cell flag.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setState(arcade.core.agent.cell.CellState)" class="member-name-link">setState</a><wbr>(<a href="../../../core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;state)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setState(arcade.core.agent.cell.CellState)" class="member-name-link">setState</a><wbr>(<a href="../../../core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;state)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the cell state.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setVolume(double)" class="member-name-link">setVolume</a><wbr>(double&nbsp;volume)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setVolume(double)" class="member-name-link">setVolume</a><wbr>(double&nbsp;volume)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the cell volume.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stop()" class="member-name-link">stop</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stop()" class="member-name-link">stop</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Stop the cell from stepping.</div>
 </div>
 </div>
@@ -1130,7 +1135,7 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <li>
 <section class="detail" id="checkLocation(arcade.core.sim.Simulation,arcade.patch.env.location.PatchLocation,double,double,int,int)">
 <h3>checkLocation</h3>
-<div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">checkLocation</span><wbr><span class="parameters">(<a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim,
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">checkLocation</span><wbr><span class="parameters">(<a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim,
  <a href="../../env/location/PatchLocation.html" title="class in arcade.patch.env.location">PatchLocation</a>&nbsp;loc,
  double&nbsp;addedVolume,
  double&nbsp;maxHeight,
@@ -1173,6 +1178,17 @@ implements <a href="../../../core/agent/cell/Cell.html" title="interface in arca
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the cell antigen binding state</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getMaxDensity()">
+<h3>getMaxDensity</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getMaxDensity</span>()</div>
+<div class="block">Returns the maximum density of the cell's population in a location.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the maximum density</dd>
 </dl>
 </section>
 </li>

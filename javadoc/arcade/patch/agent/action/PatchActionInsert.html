@@ -121,6 +121,16 @@ implements <a href="../../../core/agent/action/Action.html" title="interface in 
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>private int</code></div>
+<div class="col-second even-row-color"><code><a href="#cellsPlaced" class="member-name-link">cellsPlaced</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Number of cells placed.</div>
+</div>
+<div class="col-first odd-row-color"><code>private final boolean</code></div>
+<div class="col-second odd-row-color"><code><a href="#confluence" class="member-name-link">confluence</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Whether the insertion is to confluence.</div>
+</div>
 <div class="col-first even-row-color"><code>private final int</code></div>
 <div class="col-second even-row-color"><code><a href="#insertDepth" class="member-name-link">insertDepth</a></code></div>
 <div class="col-last even-row-color">
@@ -136,14 +146,19 @@ implements <a href="../../../core/agent/action/Action.html" title="interface in 
 <div class="col-last even-row-color">
 <div class="block">Grid radius that cells are inserted into.</div>
 </div>
-<div class="col-first odd-row-color"><code>private final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a><wbr>&lt;<a href="../../../core/util/MiniBox.html" title="class in arcade.core.util">MiniBox</a>&gt;</code></div>
-<div class="col-second odd-row-color"><code><a href="#populations" class="member-name-link">populations</a></code></div>
+<div class="col-first odd-row-color"><code>protected static <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.logging/java/util/logging/Logger.html" title="class or interface in java.util.logging" class="external-link">Logger</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#logger" class="member-name-link">logger</a></code></div>
 <div class="col-last odd-row-color">
+<div class="block">Logger for <code>PatchActionInsert</code>.</div>
+</div>
+<div class="col-first even-row-color"><code>private final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a><wbr>&lt;<a href="../../../core/util/MiniBox.html" title="class in arcade.core.util">MiniBox</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="#populations" class="member-name-link">populations</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">List of populations.</div>
 </div>
-<div class="col-first even-row-color"><code>private final int</code></div>
-<div class="col-second even-row-color"><code><a href="#timeDelay" class="member-name-link">timeDelay</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>private final int</code></div>
+<div class="col-second odd-row-color"><code><a href="#timeDelay" class="member-name-link">timeDelay</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">Time delay before calling the action [min].</div>
 </div>
 </div>
@@ -176,6 +191,21 @@ implements <a href="../../../core/agent/action/Action.html" title="interface in 
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>private void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addCellToLocation(arcade.patch.sim.PatchSimulation,arcade.patch.env.grid.PatchGrid,arcade.patch.agent.cell.PatchCell,arcade.core.env.location.Location)" class="member-name-link">addCellToLocation</a><wbr>(<a href="../../sim/PatchSimulation.html" title="class in arcade.patch.sim">PatchSimulation</a>&nbsp;sim,
+ <a href="../../env/grid/PatchGrid.html" title="class in arcade.patch.env.grid">PatchGrid</a>&nbsp;grid,
+ <a href="../cell/PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a>&nbsp;cell,
+ <a href="../../../core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>&nbsp;location)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Adds a cell to a location in the grid.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>private <a href="../cell/PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#generateCell(arcade.patch.sim.PatchSimulation,arcade.patch.env.location.Coordinate,int)" class="member-name-link">generateCell</a><wbr>(<a href="../../sim/PatchSimulation.html" title="class in arcade.patch.sim">PatchSimulation</a>&nbsp;sim,
+ <a href="../../env/location/Coordinate.html" title="class in arcade.patch.env.location">Coordinate</a>&nbsp;coord,
+ int&nbsp;pop)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Generates a new cell for the simulation.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#register(arcade.core.sim.Simulation,java.lang.String)" class="member-name-link">register</a><wbr>(<a href="../../../core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;population)</code></div>
@@ -207,6 +237,13 @@ implements <a href="../../../core/agent/action/Action.html" title="interface in 
 <section class="field-details" id="field-detail">
 <h2>Field Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="logger">
+<h3>logger</h3>
+<div class="member-signature"><span class="modifiers">protected static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.logging/java/util/logging/Logger.html" title="class or interface in java.util.logging" class="external-link">Logger</a></span>&nbsp;<span class="element-name">logger</span></div>
+<div class="block">Logger for <code>PatchActionInsert</code>.</div>
+</section>
+</li>
 <li>
 <section class="detail" id="timeDelay">
 <h3>timeDelay</h3>
@@ -240,6 +277,20 @@ implements <a href="../../../core/agent/action/Action.html" title="interface in 
 <h3>populations</h3>
 <div class="member-signature"><span class="modifiers">private final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a>&lt;<a href="../../../core/util/MiniBox.html" title="class in arcade.core.util">MiniBox</a>&gt;</span>&nbsp;<span class="element-name">populations</span></div>
 <div class="block">List of populations.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="confluence">
+<h3>confluence</h3>
+<div class="member-signature"><span class="modifiers">private final</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">confluence</span></div>
+<div class="block">Whether the insertion is to confluence.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="cellsPlaced">
+<h3>cellsPlaced</h3>
+<div class="member-signature"><span class="modifiers">private</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">cellsPlaced</span></div>
+<div class="block">Number of cells placed.</div>
 </section>
 </li>
 </ul>
@@ -316,6 +367,40 @@ implements <a href="../../../core/agent/action/Action.html" title="interface in 
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code>step</code>&nbsp;in interface&nbsp;<code>sim.engine.Steppable</code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="addCellToLocation(arcade.patch.sim.PatchSimulation,arcade.patch.env.grid.PatchGrid,arcade.patch.agent.cell.PatchCell,arcade.core.env.location.Location)">
+<h3>addCellToLocation</h3>
+<div class="member-signature"><span class="modifiers">private</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addCellToLocation</span><wbr><span class="parameters">(<a href="../../sim/PatchSimulation.html" title="class in arcade.patch.sim">PatchSimulation</a>&nbsp;sim,
+ <a href="../../env/grid/PatchGrid.html" title="class in arcade.patch.env.grid">PatchGrid</a>&nbsp;grid,
+ <a href="../cell/PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a>&nbsp;cell,
+ <a href="../../../core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>&nbsp;location)</span></div>
+<div class="block">Adds a cell to a location in the grid.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>sim</code> - the simulation series</dd>
+<dd><code>grid</code> - the patch grid</dd>
+<dd><code>cell</code> - the cell to add</dd>
+<dd><code>location</code> - the location to add the cell to</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="generateCell(arcade.patch.sim.PatchSimulation,arcade.patch.env.location.Coordinate,int)">
+<h3>generateCell</h3>
+<div class="member-signature"><span class="modifiers">private</span>&nbsp;<span class="return-type"><a href="../cell/PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a></span>&nbsp;<span class="element-name">generateCell</span><wbr><span class="parameters">(<a href="../../sim/PatchSimulation.html" title="class in arcade.patch.sim">PatchSimulation</a>&nbsp;sim,
+ <a href="../../env/location/Coordinate.html" title="class in arcade.patch.env.location">Coordinate</a>&nbsp;coord,
+ int&nbsp;pop)</span></div>
+<div class="block">Generates a new cell for the simulation.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>sim</code> - the simulation series</dd>
+<dd><code>coord</code> - the coordinate to generate the cell at</dd>
+<dd><code>pop</code> - the population to generate the cell for</dd>
+<dt>Returns:</dt>
+<dd>the generated cell</dd>
 </dl>
 </section>
 </li>
