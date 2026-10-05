@@ -18,7 +18,6 @@ import arcade.patch.env.location.PatchLocation;
 import arcade.patch.env.location.PatchLocationContainer;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.sim.PatchSimulation;
-import arcade.patch.util.PatchEnums.Ordering;
 import static arcade.patch.util.PatchEnums.Ordering;
 
 /**
@@ -75,7 +74,7 @@ public class PatchActionInsert implements Action {
         insertRadius = Math.min(maxRadius, parameters.getInt("INSERT_RADIUS"));
         insertDepth = ((PatchSeries) series).depth;
         insertNumber = parameters.getInt("INSERT_NUMBER");
-        confluence = parameters.getInt("CONFLUENCE") > 0;
+        confluence = parameters.getInt("CONFLUENCE") == 1;
 
         // Initialize population register.
         populations = new ArrayList<>();
