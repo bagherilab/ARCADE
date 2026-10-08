@@ -251,8 +251,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         PottsLocation daughterLoc = (PottsLocation) parentLoc.split(random, divisionPlane);
 
         double basalFrac =
-                Utilities.collectionFraction(
-                        Utilities.asCollection(basalVoxels, Voxel.class), daughterLoc.getVoxels());
+                Utilities.getCollectionFraction(
+                        daughterLoc.getVoxels(),
+                        Utilities.convertToCollection(basalVoxels, Voxel.class));
 
         double parentProspero = ((PottsCellFly) cell).getProspero();
 
