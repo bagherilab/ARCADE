@@ -1048,16 +1048,6 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void constructor_legacyDivRotationReference_throwsInvalidParameterException() {
-        when(parameters.getString("proliferation/DIV_ROTATION_REFERENCE"))
-                .thenReturn("previous_division");
-
-        assertThrows(
-                InvalidParameterException.class,
-                () -> new PottsModuleFlyStemProliferation(stemCell));
-    }
-
-    @Test
     public void getWTDivisionPlane_measuresRotationFromApicalAxis() {
         Vector apicalAxis = new Vector(0, 1, 0);
         when(stemCell.getApicalAxis()).thenReturn(apicalAxis);

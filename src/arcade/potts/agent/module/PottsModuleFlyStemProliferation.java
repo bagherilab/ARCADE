@@ -361,17 +361,6 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         apicalAxisReorientationDistribution =
                 parameters.getDistribution("proliferation/APICAL_AXIS_REORIENTATION_DISTRIBUTION");
-        // Kept declared (default apical_axis) only so that old setups asking for the removed
-        // previous_division reference fail loudly instead of being silently dropped by the loader.
-        String rotationReference = parameters.getString("proliferation/DIV_ROTATION_REFERENCE");
-        if (rotationReference != null && !rotationReference.equals("apical_axis")) {
-            throw new InvalidParameterException(
-                    "DIV_ROTATION_REFERENCE="
-                            + rotationReference
-                            + " was removed: the division plane is always measured from the apical"
-                            + " axis. Use APICAL_AXIS_REORIENTATION_DISTRIBUTION for apical-axis"
-                            + " drift across divisions.");
-        }
 
         divOffsetRuleset = parameters.getString("proliferation/DIV_OFFSET_RULESET");
         if (!divOffsetRuleset.equals("threshold")
