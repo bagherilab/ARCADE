@@ -103,6 +103,35 @@
     <population.module module="proliferation" id="NANO_LIKE_X" value="-1" description="Nanobody stem cell split offset percent for x" />
     <population.module module="proliferation" id="NANO_LIKE_Y" value="-1" description="Nanobody stem cell split offset percent for y" />
 
+    <!-- ── Fly cell proliferation module parameters ───────────────────── -->
+    <population.module module="proliferation" id="DYNAMIC_GROWTH_RATE_VOLUME" value="0" description="1 → enable volume-sensitive growth rate; 0 → disabled" />
+    <population.module module="proliferation" id="GROWTH_RATE_VOLUME_SENSITIVITY" value="3.0" description="exponent in (volume/criticalVolume)^sensitivity when volume rule is enabled" />
+    <!-- ── NB Growth rate sensitivity to neighboring NBs, only valid if growth and division is not universal ────── -->
+    <population.module module="proliferation" id="DYNAMIC_GROWTH_RATE_NB_SELF_REPRESSION" value="0" description="1 → enable NB-NB repression; 0 → disabled (mutually exclusive with volume rule)" />
+    <population.module module="proliferation" id="NB_CONTACT_HALF_MAX" value="2.0" units="neighbors" description="K: NB neighbor count giving 50% repression" />
+    <population.module module="proliferation" id="NB_CONTACT_HILL_N" value="3.0" description="Hill exponent controlling repression steepness" />
+    <!-- ── NB division rules ───────────────────────────── -->
+    <population.module module="proliferation" id="DIFFERENTIATION_RULESET" value="smaller_gmc" description="Which daughter becomes the GMC on an asymmetric division: 'smaller_gmc', 'basal_gmc', 'random', or 'apical_gmc'" />
+    <population.module module="proliferation" id="SYMMETRIC_DIVISION_RULESET" value="size" description="Only when HAS_DETERMINISTIC_DIFFERENTIATION=FALSE: decides whether a division is symmetric (both daughters stay NB). 'size': larger daughter's share of the combined volume below DIFFERENTIATION_RULESET_EQUALITY_OFFSET_PERCENT. 'apical_axis': daughter centroids within DIFFERENTIATION_RULESET_EQUALITY_RANGE along the cell's apical axis. Which daughter is the GMC on an asymmetric division is set by DIFFERENTIATION_RULESET." />
+    <population.module module="proliferation" id="DIFFERENTIATION_RULESET_EQUALITY_RANGE" value=".5" description="SYMMETRIC_DIVISION_RULESET=apical_axis only: centroid separation (voxel lengths) within which two daughters count as equal" />
+    <population.module module="proliferation" id="DIFFERENTIATION_RULESET_EQUALITY_OFFSET_PERCENT" value="71.5" description="SYMMETRIC_DIVISION_RULESET=size only: split offset (%) below which a division is symmetric and both daughters stay NB. Same scale as WT_DIVISION_SPLIT_OFFSET_PERCENT_Y (93) and DIV_OFFSET_RAMP_MIN_PERCENT_Y (50); 71.5 is their midpoint, placing the fate boundary on the switch ramp centre. Relative to the parent volume, so one value serves every condition." />
+    <!-- ── NB Apical axis rules ──────────────────────────────────── -->
+    <population.module module="proliferation" id="APICAL_AXIS_RULESET" value="global" description="'global', 'rotation' (Normal), or 'uniform' (Uniform)" />
+    <population.module module="proliferation" id="APICAL_AXIS_ROTATION_DISTRIBUTION" value="NORMAL(MU=0,SIGMA=0)" description="rotation angle for apical axis when APICAL_AXIS_RULESET='rotation'" />
+    <population.module module="proliferation" id="APICAL_AXIS_REORIENTATION_DISTRIBUTION" value="NORMAL(MU=0,SIGMA=0)" description="rotation (degrees) applied to an NB's apical axis at the start of each division; stored, so it accumulates across divisions (mean 0 = random walk, nonzero mean = persistent turning). The division plane is then the updated apical axis rotated by DIV_ROTATION_DISTRIBUTION" />
+    <population.module module="proliferation" id="DIV_ROTATION_DISTRIBUTION" value="NORMAL(MU=0,SIGMA=0)" description="rotational offset of division plane (WT rules)" />
+    <population.module module="proliferation" id="WT_DIVISION_SPLIT_OFFSET_PERCENT_Y" value="93" description="Y-axis split offset (%) for WT-style divisions; default 93 gives 93/7 NB/GMC asymmetry. Set to 50 for a symmetric 50/50 split." />
+    <population.module module="proliferation" id="DIV_OFFSET_RULESET" value="threshold" description="how the Y split offset is chosen: 'threshold' (fixed offset, 75-degree MUDMUT flip), 'linear_ramp' (offset ramps linearly toward DIV_OFFSET_RAMP_MIN_PERCENT_Y as the drawn division angle grows), or 'switch_ramp' (logistic transition centred on DIV_OFFSET_SWITCH_CENTER_ANGLE)" />
+    <population.module module="proliferation" id="DIV_OFFSET_RAMP_SATURATION_ANGLE" value="90" description="angle (degrees) from the distribution mean at which the linear_ramp offset reaches DIV_OFFSET_RAMP_MIN_PERCENT_Y" />
+    <population.module module="proliferation" id="DIV_OFFSET_RAMP_MIN_PERCENT_Y" value="50" description="minimum Y split offset (%) the linear_ramp approaches; 50 gives a symmetric split" />
+    <population.module module="proliferation" id="DIV_OFFSET_SWITCH_CENTER_ANGLE" value="75" description="angle (degrees) from the distribution mean at which the switch_ramp offset is midway between WT_DIVISION_SPLIT_OFFSET_PERCENT_Y and DIV_OFFSET_RAMP_MIN_PERCENT_Y" />
+    <population.module module="proliferation" id="DIV_OFFSET_SWITCH_WIDTH" value="5" description="width (degrees) of the switch_ramp logistic transition; smaller is more switch-like, and the limit of zero reproduces the threshold ruleset" />
+    <!-- ── NB and GMC critical volume options ────────────────────────── -->
+    <population.module module="proliferation" id="VOLUME_BASED_CRITICAL_VOLUME" value="0" description="1 → critical volume scales with daughter volume; 0 → use max (type-based) value" />
+    <population.module module="proliferation" id="GMC_CRITICAL_VOLUME_OVERRIDE" value="0" units="um^3" conversion="DS^-3" description="If &gt; 0 and VOLUME_BASED_CRITICAL_VOLUME=0, overrides the formula-derived GMC daughter critical volume with this fixed value (converted to voxels); 0 = disabled (use formula)" />
+    <!-- Deterministic Differentiation-->
+    <population.module module="proliferation" id="HAS_DETERMINISTIC_DIFFERENTIATION" value="TRUE" description="if TRUE, differentiation is determined deterministically" />
+
     <!-- apoptosis module parameters -->
     <population.module module="apoptosis" id="RATE_EARLY" value="4" units="steps/hour" conversion="DT" description="rate of events in early apoptosis phase" />
     <population.module module="apoptosis" id="RATE_LATE" value="1.8" units="steps/hour" conversion="DT" description="rate of events in late apoptosis phase" />
@@ -112,5 +141,4 @@
     <population.module module="apoptosis" id="CYTOPLASMIC_BLEBBING_RATE" value="175" units="um^3/hour" conversion="DS^-3.DT" description="basal rate of cytoplasmic blebbing" />
     <population.module module="apoptosis" id="NUCLEUS_PYKNOSIS_RATE" value="100" units="um^3/hour" conversion="DS^-3.DT" description="basal rate of nuclear pyknosis" />
     <population.module module="apoptosis" id="NUCLEUS_FRAGMENTATION_RATE" value="75" units="um^3/hour" conversion="DS^-3.DT" description="basal rate of nuclear fragmentation" />
-
 </parameters>
