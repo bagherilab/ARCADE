@@ -34,7 +34,6 @@ public final class PatchARCADE extends ARCADE {
         PatchOutputSaver saver = new PatchOutputSaver(series);
         saver.saveGraph = settings.contains("SAVE_GRAPH");
         saver.saveLattice = settings.contains("SAVE_LAYERS");
-        saver.saveEvents = settings.contains("SAVE_EVENTS");
         return saver;
     }
 }

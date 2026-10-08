@@ -7,11 +7,8 @@ import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.cell.PatchCellTissue;
 import arcade.patch.agent.process.PatchProcessInflammation;
-import arcade.patch.env.location.PatchLocation;
-import arcade.patch.sim.PatchSimulation;
-import arcade.patch.util.LysisEventLog;
-import arcade.patch.util.PatchEnums.Domain;
-import arcade.patch.util.PatchEnums.State;
+import static arcade.patch.util.PatchEnums.Domain;
+import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Implementation of {@link Module} for killing tissue agents.
@@ -71,17 +68,6 @@ public class PatchModuleCytotoxicity extends PatchModule {
                 tissueCell.setState(State.APOPTOTIC);
                 granzyme--;
                 inflammation.setInternal("granzyme", granzyme);
-
-                // Log cytotoxicity event
-                PatchSimulation patchSim = (PatchSimulation) sim;
-                LysisEventLog eventLog =
-                        new LysisEventLog(
-                                (int) sim.getSchedule().getTime(),
-                                cell.getID(),
-                                target.getID(),
-                                target.getPop(),
-                                ((PatchLocation) target.getLocation()).getCoordinate());
-                patchSim.logEvent(eventLog.eventDetails());
             }
         }
 

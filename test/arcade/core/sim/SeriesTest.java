@@ -1,6 +1,5 @@
 package arcade.core.sim;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -916,12 +915,7 @@ public class SeriesTest {
                     spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false));
             doNothing().when(series).runSim(any(SimState.class), any(int.class));
 
-            Constructor<?> mockSimCons = mock(Constructor.class);
-            doReturn(new SimulationMock(0, series))
-                    .when(mockSimCons)
-                    .newInstance(any(Object[].class));
-            series.simCons = mockSimCons;
-
+            series.simCons = spy(series.simCons);
             series.runSims();
 
             verify(series, times(n[i])).runSim(any(SimState.class), any(int.class));

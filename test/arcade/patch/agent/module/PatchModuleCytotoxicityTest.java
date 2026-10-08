@@ -3,14 +3,11 @@ package arcade.patch.agent.module;
 import java.lang.reflect.Field;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import sim.engine.Schedule;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.cell.PatchCellTissue;
 import arcade.patch.agent.process.PatchProcessInflammation;
-import arcade.patch.env.location.Coordinate;
-import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
 import arcade.patch.util.PatchEnums.State;
 import static org.mockito.Mockito.*;
@@ -27,10 +24,6 @@ public class PatchModuleCytotoxicityTest {
 
     private PatchSimulation sim;
 
-    private PatchLocation mockLocation;
-
-    private Schedule mockSchedule;
-
     private MersenneTwisterFast randomMock;
 
     @BeforeEach
@@ -38,9 +31,6 @@ public class PatchModuleCytotoxicityTest {
         mockCell = mock(PatchCellCART.class);
         mockTarget = mock(PatchCellTissue.class);
         mockInflammation = mock(PatchProcessInflammation.class);
-        mockLocation = mock(PatchLocation.class);
-        mockSchedule = mock(Schedule.class);
-
         sim = mock(PatchSimulation.class);
         randomMock = mock(MersenneTwisterFast.class);
         Parameters parameters = mock(Parameters.class);
@@ -51,14 +41,6 @@ public class PatchModuleCytotoxicityTest {
         when(mockCell.getProcess(any())).thenReturn(mockInflammation);
         when(mockInflammation.getInternal("granzyme")).thenReturn(1.0);
         when(mockCell.getBoundTarget()).thenReturn(mockTarget);
-        when(mockCell.getID()).thenReturn(1);
-        when(mockTarget.getID()).thenReturn(1);
-        when(mockTarget.getPop()).thenReturn(1);
-        when(mockTarget.getLocation()).thenReturn(mockLocation);
-
-        when(mockLocation.getCoordinate()).thenReturn(mock(Coordinate.class));
-        when(sim.getSchedule()).thenReturn(mockSchedule);
-        when(mockSchedule.getTime()).thenReturn(0.0);
 
         action = new PatchModuleCytotoxicity(mockCell);
     }

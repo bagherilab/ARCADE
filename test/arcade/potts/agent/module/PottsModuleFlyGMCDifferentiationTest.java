@@ -166,18 +166,10 @@ public class PottsModuleFlyGMCDifferentiationTest {
 
     @Test
     public void addCell_called_callsExpectedMethods() {
-        double newLocVol = 42.0;
-        double locVol = 50.0;
-        when(newLocation.getVolume()).thenReturn(newLocVol);
-        when(location.getVolume()).thenReturn(locVol);
-
-        // When the module calls make() on the cell, return Quiescent PottsCellContainer mock
+        // When the module calls make() on the cell, return Quiescent PottsCellContainer
+        // mock
         container = mock(PottsCellContainer.class);
-        when(gmcCell.make(
-                        eq(123),
-                        eq(State.QUIESCENT),
-                        eq(newLocVol),
-                        any(MersenneTwisterFast.class)))
+        when(gmcCell.make(eq(123), eq(State.QUIESCENT), any(MersenneTwisterFast.class)))
                 .thenReturn(container);
         newCell = mock(PottsCell.class);
         when(container.convert(eq(cellFactory), eq(newLocation), any(MersenneTwisterFast.class)))
@@ -188,11 +180,11 @@ public class PottsModuleFlyGMCDifferentiationTest {
         module.addCell(random, sim);
         verify(location).split(random);
         verify(gmcCell).reset(dummyIDs, dummyRegions);
-        verify(gmcCell).make(123, State.QUIESCENT, newLocVol, random);
+        verify(gmcCell).make(123, State.QUIESCENT, random);
 
         verify(grid).addObject(newCell, null);
         verify(potts).register(newCell);
-        verify(newCell).initialize(dummyIDs, dummyRegions);
+        verify(newCell).reset(dummyIDs, dummyRegions);
         verify(newCell).schedule(schedule);
 
         verify(grid).removeObject(gmcCell, location);
@@ -203,7 +195,7 @@ public class PottsModuleFlyGMCDifferentiationTest {
                 (PottsCellFlyNeuron) constructed.convert(cellFactory, location, random);
         verify(grid).addObject(diffCell, null);
         verify(potts).register(diffCell);
-        verify(diffCell).initialize(dummyIDs, dummyRegions);
+        verify(diffCell).reset(dummyIDs, dummyRegions);
         verify(diffCell).schedule(schedule);
     }
 
@@ -221,12 +213,13 @@ public class PottsModuleFlyGMCDifferentiationTest {
     }
 
     @Test
-    public void updateGrowthRate_dynamicOn_usesSelfVolumeAndEquilibriumRef() {
+    public void updateGrowthRate_dynamicOn_pdeLikeFalse_usesSelfVolumeAndCrit() {
         when(gmcCell.getParameters()).thenReturn(parameters);
         when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(1);
         when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
-        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
-        // vRef = critVol * (1 + sizeTarget) / 2 = 150.0 * 2.2 / 2 = 165.0
+        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(0);
+
+        // Self values
         when(gmcCell.getCriticalVolume()).thenReturn(150.0);
         when(gmcCell.getLocation().getVolume()).thenReturn(30.0);
 
@@ -241,48 +234,75 @@ public class PottsModuleFlyGMCDifferentiationTest {
 
         module.updateGrowthRate(sim);
 
-        double expectedVRef = 150.0 * (1.0 + 1.2) / 2.0; // 165.0
         org.mockito.Mockito.verify(module)
                 .updateCellVolumeBasedGrowthRate(
                         org.mockito.ArgumentMatchers.eq(30.0),
-                        org.mockito.ArgumentMatchers.eq(expectedVRef));
+                        org.mockito.ArgumentMatchers.eq(150.0));
     }
 
-    // computeEquilibriumVolume tests
-
     @Test
-    public void computeEquilibriumVolume_returnsArithmeticMeanOfCritAndDivisionVolumes() {
-        // critVol = 150.0; sizeTarget = 1.2
-        // vRef = critVol * (1 + sizeTarget) / 2 = 150.0 * 2.2 / 2 = 165.0
-        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
+    public void updateGrowthRate_dynamicOnPdeLikeTrue_usesAverageVolumeAndCritAcrossGMCs() {
+        // Flags
+        when(gmcCell.getParameters()).thenReturn(parameters);
+        when(parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_VOLUME")).thenReturn(1);
+        when(parameters.getDouble("proliferation/CELL_GROWTH_RATE")).thenReturn(4.0);
+        when(parameters.getInt("proliferation/PDELIKE")).thenReturn(1);
+
+        // Same population for all GMCs we want included
+        when(gmcCell.getPop()).thenReturn(3);
+
+        // Self (included in average)
+        when(gmcCell.getLocation().getVolume()).thenReturn(30.0);
         when(gmcCell.getCriticalVolume()).thenReturn(150.0);
 
-        PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
-        org.junit.jupiter.api.Assertions.assertEquals(
-                165.0, module.computeEquilibriumVolume(), 1e-9);
-    }
+        // Two more GMCs in same population
+        PottsCellFlyGMC gmcB = mock(PottsCellFlyGMC.class);
+        PottsCellFlyGMC gmcC = mock(PottsCellFlyGMC.class);
+        when(gmcB.getPop()).thenReturn(3);
+        when(gmcC.getPop()).thenReturn(3);
 
-    @Test
-    public void computeEquilibriumVolume_doubleSizeTarget_scalesCorrectly() {
-        // critVol = 100.0; sizeTarget = 2.0
-        // vRef = 100.0 * (1 + 2.0) / 2 = 150.0
-        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(2.0);
-        when(gmcCell.getCriticalVolume()).thenReturn(100.0);
+        PottsLocation locB = mock(PottsLocation.class);
+        PottsLocation locC = mock(PottsLocation.class);
+        when(gmcB.getLocation()).thenReturn(locB);
+        when(gmcC.getLocation()).thenReturn(locC);
+        when(locB.getVolume()).thenReturn(10.0);
+        when(locC.getVolume()).thenReturn(20.0);
+        when(gmcB.getCriticalVolume()).thenReturn(100.0);
+        when(gmcC.getCriticalVolume()).thenReturn(200.0);
 
-        PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
-        org.junit.jupiter.api.Assertions.assertEquals(
-                150.0, module.computeEquilibriumVolume(), 1e-9);
-    }
+        // Noise: different type and/or different pop → must be ignored
+        PottsCell randomOtherPop = mock(PottsCell.class);
+        when(randomOtherPop.getPop()).thenReturn(99);
+        PottsCellFlyNeuron neuronSamePop = mock(PottsCellFlyNeuron.class);
+        when(neuronSamePop.getPop()).thenReturn(3);
 
-    @Test
-    public void computeEquilibriumVolume_differentCritVol_scalesCorrectly() {
-        // critVol = 200.0; sizeTarget = 1.2
-        // vRef = 200.0 * (1 + 1.2) / 2 = 220.0
-        when(parameters.getDouble("proliferation/SIZE_TARGET")).thenReturn(1.2);
-        when(gmcCell.getCriticalVolume()).thenReturn(200.0);
+        // Bag with self + two GMCs + noise
+        sim.util.Bag bag = new sim.util.Bag();
+        bag.add(gmcCell); // self GMC (pop 3)
+        bag.add(gmcB); // GMC (pop 3)
+        bag.add(gmcC); // GMC (pop 3)
+        bag.add(randomOtherPop); // different pop → ignored
+        bag.add(neuronSamePop); // not a GMC → ignored
+        when(sim.getGrid().getAllObjects()).thenReturn(bag);
 
-        PottsModuleFlyGMCDifferentiation module = new PottsModuleFlyGMCDifferentiation(gmcCell);
-        org.junit.jupiter.api.Assertions.assertEquals(
-                220.0, module.computeEquilibriumVolume(), 1e-9);
+        PottsModuleFlyGMCDifferentiation module =
+                org.mockito.Mockito.spy(new PottsModuleFlyGMCDifferentiation(gmcCell));
+
+        // Observe the averaged args
+        org.mockito.Mockito.doNothing()
+                .when(module)
+                .updateCellVolumeBasedGrowthRate(
+                        org.mockito.ArgumentMatchers.anyDouble(),
+                        org.mockito.ArgumentMatchers.anyDouble());
+
+        module.updateGrowthRate(sim);
+
+        double expectedAvgVol = (30.0 + 10.0 + 20.0) / 3.0; // 20.0
+        double expectedAvgCrit = (150.0 + 100.0 + 200.0) / 3.0; // 150.0
+
+        org.mockito.Mockito.verify(module)
+                .updateCellVolumeBasedGrowthRate(
+                        org.mockito.ArgumentMatchers.eq(expectedAvgVol),
+                        org.mockito.ArgumentMatchers.eq(expectedAvgCrit));
     }
 }

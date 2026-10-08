@@ -1,4 +1,4 @@
-FROM amazoncorretto:21
+FROM amazoncorretto:11
 
 # Change working directory
 WORKDIR /home

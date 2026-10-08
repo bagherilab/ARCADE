@@ -47,7 +47,7 @@ public class PatchProcessSensingSimpleTest {
         doReturn(secretionRate).when(parametersMock).getDouble("sensing/VEGF_SECRETION_RATE");
         doReturn(currentVEGF).when(latticeMock).getAverageValue(locationMock);
 
-        PatchProcessSensingHypoxic sensing = new PatchProcessSensingHypoxic(cellMock);
+        PatchProcessSensingSimple sensing = new PatchProcessSensingSimple(cellMock);
         sensing.step(randomMock, simMock);
 
         verify(latticeMock).setValue(locationMock, currentVEGF + secretionRate);
@@ -62,7 +62,7 @@ public class PatchProcessSensingSimpleTest {
         doReturn(secretionRate).when(parametersMock).getDouble("sensing/VEGF_SECRETION_RATE");
         doReturn(currentVEGF).when(latticeMock).getAverageValue(locationMock);
 
-        PatchProcessSensingHypoxic sensing = new PatchProcessSensingHypoxic(cellMock);
+        PatchProcessSensingSimple sensing = new PatchProcessSensingSimple(cellMock);
         sensing.step(randomMock, simMock);
 
         verify(latticeMock, never()).setValue(locationMock, currentVEGF + secretionRate);

@@ -10,7 +10,6 @@
 
     <!-- Checks for size violations -->
     <suppress checks="LineLength" files="test/*" id="LineLength" />
-    <suppress checks="LineLengthTest" files="src/*" id="LineLength" />
 
     <!-- Checks for Javadoc comments -->
     <suppress checks="JavadocVariable" files="test/*" />
@@ -22,14 +21,4 @@
 
     <!-- Checks for class design-->
     <suppress checks="VisibilityModifier" files="/sim/*" />
-
-
-    <!-- Checks for filelengths -->
-    <suppress checks="FileLength"
-              id="FileLengthError"
-              files="test/*" />
-    <!-- Suppress warning-level FileLength in non-test files -->
-    <suppress checks="FileLength"
-              id="FileLengthWarn"
-              files="src/*" />
 </suppressions>

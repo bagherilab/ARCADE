@@ -12,10 +12,8 @@ import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.agent.process.PatchProcess;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
-import arcade.patch.sim.PatchSimulation;
-import arcade.patch.util.PatchEnums.Domain;
-import arcade.patch.util.PatchEnums.State;
-import arcade.patch.util.ProliferationEventLog;
+import static arcade.patch.util.PatchEnums.Domain;
+import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Extension of {@link PatchModule} for proliferation.
@@ -127,14 +125,6 @@ public class PatchModuleProliferation extends PatchModule {
                         PatchProcess process = (PatchProcess) newCell.getProcess(domain);
                         process.update(cell.getProcess(domain));
                     }
-
-                    // Log proliferation event
-                    PatchSimulation patchSim = (PatchSimulation) sim;
-                    ProliferationEventLog eventLog =
-                            new ProliferationEventLog(
-                                    (int) sim.getSchedule().getTime(), cell.getID(), duration);
-                    patchSim.logEvent(eventLog.eventDetails());
-
                     // TODO: Update environment generator sites.
                 } else {
                     ticker++;
