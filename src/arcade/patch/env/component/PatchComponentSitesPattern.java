@@ -4,6 +4,7 @@ import java.util.EnumMap;
 import sim.engine.SimState;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
+import arcade.patch.util.PatchEnums.ComponentType;
 
 /**
  * Extension of {@link PatchComponentSites} for pattern sites.
@@ -308,4 +309,9 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
     //            int zOld = oldLoc.getLatZ();
     //            for (int[] i : oldLoc.getLatLocations()) { damageSingle[zOld][i[0]][i[1]]++; }
     //        }
+
+    @Override
+    public ComponentType getComponentType() {
+        return ComponentType.PATTERN;
+    }
 }
