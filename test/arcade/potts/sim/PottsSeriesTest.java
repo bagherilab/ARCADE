@@ -627,6 +627,35 @@ public class PottsSeriesTest {
     }
 
     @Test
+    public void updatePopulation_distributionWithConversion_convertsDistributionParameters() {
+        Box[] boxes = new Box[] {new Box()};
+        boxes[0].add("id", POPULATION_ID_1);
+
+        MiniBox defaults = new MiniBox();
+        defaults.put("CRITICAL_VOLUME", "TRUNCATED_NORMAL(MU=1300,SIGMA=200)");
+        MiniBox conversion = new MiniBox();
+        conversion.put("CRITICAL_VOLUME", "DS^-3");
+
+        PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
+        try {
+            Field dsField = Series.class.getDeclaredField("ds");
+            dsField.setAccessible(true);
+            dsField.setDouble(series, DS);
+            Field dtField = Series.class.getDeclaredField("dt");
+            dtField.setAccessible(true);
+            dtField.setDouble(series, DT);
+        } catch (Exception ignored) {
+        }
+        series.updatePopulations(new ArrayList<>(Arrays.asList(boxes)), defaults, conversion);
+
+        MiniBox population = series.populations.get(POPULATION_ID_1);
+        double factor = Math.pow(DS, -3);
+        assertEquals(1300 * factor, population.getDouble("CRITICAL_VOLUME_MU"), EPSILON);
+        assertEquals(200 * factor, population.getDouble("CRITICAL_VOLUME_SIGMA"), EPSILON);
+        assertEquals(1300 * factor, population.getDouble("CRITICAL_VOLUME"), EPSILON);
+    }
+
+    @Test
     public void updatePopulation_noPopulations_createsMap() {
         PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
         series.updatePopulations(null, POPULATION, new MiniBox());
