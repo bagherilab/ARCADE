@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.Attributes;
+import org.xml.sax.helpers.AttributesImpl;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 import static org.junit.jupiter.api.Assertions.*;
@@ -372,5 +373,29 @@ public class PottsInputBuilderTest {
         assertEquals(1, builder.setupDicts.size());
         assertEquals(set, builder.setupDicts.get("set"));
         assertEquals(0, builder.setupLists.size());
+    }
+
+    static Attributes atts(String... pairs) {
+        AttributesImpl attributes = new AttributesImpl();
+        for (int i = 0; i < pairs.length; i += 2) {
+            attributes.addAttribute("", pairs[i], pairs[i], "CDATA", pairs[i + 1]);
+        }
+        return attributes;
+    }
+
+    @Test
+    public void startElement_layers_createsLayerBoxes() {
+        PottsInputBuilder builder = mock(PottsInputBuilder.class, CALLS_REAL_METHODS);
+        builder.setupLists = new HashMap<>();
+        builder.startElement("", "", "layers", atts());
+        builder.startElement("", "", "layer", atts("id", "PDGF"));
+        builder.startElement(
+                "", "", "layer.parameter", atts("id", "INITIAL_CONCENTRATION", "value", "2"));
+
+        ArrayList<Box> layers = builder.setupLists.get("layers");
+        assertEquals(1, layers.size());
+        Box layer = layers.get(0);
+        assertEquals("PDGF", layer.getValue("id"));
+        assertTrue(layer.filterTags("PARAMETER").contains("INITIAL_CONCENTRATION"));
     }
 }

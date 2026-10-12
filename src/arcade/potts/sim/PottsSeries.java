@@ -283,7 +283,34 @@ public final class PottsSeries extends Series {
     @Override
     protected void updateLayers(
             ArrayList<Box> layersBox, MiniBox layerDefaults, MiniBox layerConversions) {
-        // TODO
+        this.layers = new HashMap<>();
+        if (layersBox == null) {
+            return;
+        }
+
+        for (Box box : layersBox) {
+            String id = box.getValue("id");
+            MiniBox layer = new MiniBox();
+            this.layers.put(id, layer);
+
+            Box parameters = box.filterBoxByTag("PARAMETER");
+            MiniBox parameterValues = parameters.getIdValForTagAtt("PARAMETER", "value");
+            MiniBox parameterScales = parameters.getIdValForTagAtt("PARAMETER", "scale");
+
+            for (String parameter : layerDefaults.getKeys()) {
+                parseParameter(
+                        layer,
+                        parameter,
+                        layerDefaults.get(parameter),
+                        parameterValues,
+                        parameterScales);
+            }
+
+            for (String convert : layerConversions.getKeys()) {
+                double conversion = parseConversion(layerConversions.get(convert), ds, dt);
+                layer.put(convert, layer.getDouble(convert) * conversion);
+            }
+        }
     }
 
     @Override
