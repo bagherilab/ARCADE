@@ -66,6 +66,9 @@ public final class Potts3D extends Potts {
                 return new SubstrateHamiltonian(series, this);
             case PERSISTENCE:
                 return new PersistenceHamiltonian(series);
+            case CHEMOTAXIS:
+                throw new UnsupportedOperationException(
+                        "chemotaxis term is only implemented for 2D simulations");
             default:
                 return null;
         }

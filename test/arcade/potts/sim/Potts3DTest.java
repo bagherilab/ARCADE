@@ -257,6 +257,15 @@ public class Potts3DTest {
     }
 
     @Test
+    public void getHamiltonian_chemotaxis_throwsException() {
+        PottsSeries series = makeSeries(1, 1, 1, 1, 1);
+        Potts3D potts3D = new Potts3D(series);
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> potts3D.getHamiltonian(Term.CHEMOTAXIS, series));
+    }
+
+    @Test
     public void getHamiltonian_invalidTerm_returnsNull() {
         PottsSeries series = makeSeries(1, 1, 1, 1, 1);
         Potts3D potts3D = new Potts3D(series);
