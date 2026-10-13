@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Series;
 import arcade.core.util.Box;
@@ -1087,5 +1088,152 @@ public class PottsSeriesTest {
 
         MiniBox layer = series.layers.get("PDGF");
         assertTrue(layer.contains("(OPERATION)" + TAG_SEPARATOR + "DIFFUSER"));
+    }
+
+    @Test
+    public void initialize_default_updatesLayersBeforePopulations() {
+        HashMap<String, ArrayList<Box>> setupLists = makeLists();
+        PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
+        series.initialize(setupLists, PARAMETERS);
+
+        InOrder order = inOrder(series);
+        order.verify(series).updateLayers(any(), any(MiniBox.class), any(MiniBox.class));
+        order.verify(series).addLayerDefaults(any(MiniBox.class), any(MiniBox.class));
+        order.verify(series).updatePopulations(any(), any(MiniBox.class), any(MiniBox.class));
+    }
+
+    @Test
+    public void updatePopulation_withProcesses_setsTags() {
+        String[] processes = new String[] {randomString(), randomString()};
+        String[] versions = new String[] {randomString(), randomString()};
+
+        Box[] boxes = new Box[] {new Box()};
+        boxes[0].add("id", POPULATION_ID_1);
+        boxes[0].addTag(processes[0], "PROCESS");
+        boxes[0].addAtt(processes[0], "version", versions[0]);
+        boxes[0].addTag(processes[1], "PROCESS");
+        boxes[0].addAtt(processes[1], "version", versions[1]);
+
+        PottsSeries series = makeSeriesForPopulation(boxes);
+
+        MiniBox box = series.populations.get(POPULATION_ID_1);
+        assertEquals(versions[0], box.get("(PROCESS)" + TAG_SEPARATOR + processes[0]));
+        assertEquals(versions[1], box.get("(PROCESS)" + TAG_SEPARATOR + processes[1]));
+    }
+
+    @Test
+    public void updatePopulation_withProcessNoVersion_setsTag() {
+        String process = randomString();
+
+        Box[] boxes = new Box[] {new Box()};
+        boxes[0].add("id", POPULATION_ID_1);
+        boxes[0].addTag(process, "PROCESS");
+
+        PottsSeries series = makeSeriesForPopulation(boxes);
+
+        MiniBox box = series.populations.get(POPULATION_ID_1);
+        assertEquals("", box.get("(PROCESS)" + TAG_SEPARATOR + process));
+    }
+
+    // Creates a series with the given layers and the ds and dt of the test.
+    private PottsSeries makeSeriesWithLayers(String... layers) throws Exception {
+        PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
+        Field dsField = Series.class.getDeclaredField("ds");
+        dsField.setAccessible(true);
+        dsField.setDouble(series, DS);
+        Field dtField = Series.class.getDeclaredField("dt");
+        dtField.setAccessible(true);
+        dtField.setDouble(series, DT);
+        series.layers = new HashMap<>();
+        for (String layer : layers) {
+            series.layers.put(layer, new MiniBox());
+        }
+        return series;
+    }
+
+    // Creates population defaults with secretion rate and region.
+    private static MiniBox secretionDefaults() {
+        MiniBox defaults = new MiniBox();
+        defaults.put("secretion/RATE", 0.0);
+        defaults.put("secretion/REGION", "BOUNDARY");
+        return defaults;
+    }
+
+    // Creates population conversions with a secretion rate conversion.
+    private static MiniBox secretionConversions() {
+        MiniBox conversions = new MiniBox();
+        conversions.put("secretion/RATE", "DT");
+        return conversions;
+    }
+
+    @Test
+    public void addLayerDefaults_givenLayers_copiesDefaultsAndConversions() throws Exception {
+        PottsSeries series = makeSeriesWithLayers("PDGF", "ECM");
+        MiniBox defaults = secretionDefaults();
+        MiniBox conversions = secretionConversions();
+
+        series.addLayerDefaults(defaults, conversions);
+
+        for (String layer : new String[] {"PDGF", "ECM"}) {
+            assertEquals(0.0, defaults.getDouble("secretion/RATE_" + layer), EPSILON);
+            assertEquals("BOUNDARY", defaults.get("secretion/REGION_" + layer));
+            assertEquals("DT", conversions.get("secretion/RATE_" + layer));
+            assertFalse(conversions.contains("secretion/REGION_" + layer));
+        }
+    }
+
+    @Test
+    public void addLayerDefaults_missingDefault_addsNothing() throws Exception {
+        PottsSeries series = makeSeriesWithLayers("PDGF");
+        MiniBox defaults = new MiniBox();
+        MiniBox conversions = new MiniBox();
+
+        series.addLayerDefaults(defaults, conversions);
+
+        assertEquals(0, defaults.getKeys().size());
+        assertEquals(0, conversions.getKeys().size());
+    }
+
+    @Test
+    public void updatePopulation_withLayerDefaults_convertsLayerRate() throws Exception {
+        PottsSeries series = makeSeriesWithLayers("PDGF", "ECM");
+        MiniBox defaults = secretionDefaults();
+        MiniBox conversions = secretionConversions();
+        series.addLayerDefaults(defaults, conversions);
+
+        Box box = new Box();
+        box.add("id", POPULATION_ID_1);
+        box.addAtt("secretion/RATE_PDGF", "value", "5");
+        box.addAtt("secretion/RATE_PDGF", "scale", "2");
+        box.addTag("secretion/RATE_PDGF", "PARAMETER");
+        box.addAtt("secretion/REGION_ECM", "value", "INSIDE");
+        box.addTag("secretion/REGION_ECM", "PARAMETER");
+        series.updatePopulations(new ArrayList<>(Arrays.asList(box)), defaults, conversions);
+
+        MiniBox population = series.populations.get(POPULATION_ID_1);
+        assertEquals(10 * DT, population.getDouble("secretion/RATE_PDGF"), EPSILON);
+        assertEquals(0.0, population.getDouble("secretion/RATE_ECM"), EPSILON);
+        assertEquals("BOUNDARY", population.get("secretion/REGION_PDGF"));
+        assertEquals("INSIDE", population.get("secretion/REGION_ECM"));
+    }
+
+    @Test
+    public void updatePopulation_unknownLayerParameter_throws() throws Exception {
+        PottsSeries series = makeSeriesWithLayers("PDGF");
+        MiniBox defaults = secretionDefaults();
+        MiniBox conversions = secretionConversions();
+        series.addLayerDefaults(defaults, conversions);
+
+        Box box = new Box();
+        box.add("id", POPULATION_ID_1);
+        box.addAtt("secretion/RATE_PDFG", "value", "5");
+        box.addTag("secretion/RATE_PDFG", "PARAMETER");
+        ArrayList<Box> boxes = new ArrayList<>(Arrays.asList(box));
+
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> series.updatePopulations(boxes, defaults, conversions));
+        assertTrue(exception.getMessage().contains("secretion/RATE_PDFG"));
     }
 }

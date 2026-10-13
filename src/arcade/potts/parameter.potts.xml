@@ -78,6 +78,10 @@
     <population.module module="apoptosis" id="NUCLEUS_PYKNOSIS_RATE" value="100" units="um^3/hour" conversion="DS^-3.DT" description="basal rate of nuclear pyknosis" />
     <population.module module="apoptosis" id="NUCLEUS_FRAGMENTATION_RATE" value="75" units="um^3/hour" conversion="DS^-3.DT" description="basal rate of nuclear fragmentation" />
 
+    <!-- secretion process parameters (copied to RATE_[LAYER] and REGION_[LAYER] for each layer) -->
+    <population.process process="secretion" id="RATE" value="0" units="amount/hour" conversion="DT" description="rate of secretion into each layer" />
+    <population.process process="secretion" id="REGION" value="BOUNDARY" description="voxels secreted into for each layer: BOUNDARY (just outside the cell) or INSIDE" />
+
     <!-- LAYERS ============================================================ -->
 
     <!-- default parameters for layers -->

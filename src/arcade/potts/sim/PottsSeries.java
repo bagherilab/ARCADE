@@ -17,6 +17,9 @@ public final class PottsSeries extends Series {
     /** Default cell class. */
     public static final String DEFAULT_CELL_CLASS = "stem";
 
+    /** Population parameters copied to {@code [KEY]_[LAYER]} for each layer. */
+    static final String[] LAYER_PARAMETERS = {"secretion/RATE", "secretion/REGION"};
+
     /** Map of potts settings. */
     public MiniBox potts;
 
@@ -67,17 +70,18 @@ public final class PottsSeries extends Series {
      */
     @Override
     protected void initialize(HashMap<String, ArrayList<Box>> setupLists, Box parameters) {
-        // Initialize populations.
-        MiniBox populationDefaults = parameters.getIdValForTag("POPULATION");
-        MiniBox populationConversions = parameters.getIdValForTagAtt("POPULATION", "conversion");
-        ArrayList<Box> populationsBox = setupLists.get("populations");
-        updatePopulations(populationsBox, populationDefaults, populationConversions);
-
         // Initialize layers.
         MiniBox layerDefaults = parameters.getIdValForTag("LAYER");
         MiniBox layerConversions = parameters.getIdValForTagAtt("LAYER", "conversion");
         ArrayList<Box> layersBox = setupLists.get("layers");
         updateLayers(layersBox, layerDefaults, layerConversions);
+
+        // Initialize populations.
+        MiniBox populationDefaults = parameters.getIdValForTag("POPULATION");
+        MiniBox populationConversions = parameters.getIdValForTagAtt("POPULATION", "conversion");
+        addLayerDefaults(populationDefaults, populationConversions);
+        ArrayList<Box> populationsBox = setupLists.get("populations");
+        updatePopulations(populationsBox, populationDefaults, populationConversions);
 
         // Add actions.
         MiniBox actionDefaults = parameters.getIdValForTag("ACTION");
@@ -284,6 +288,50 @@ public final class PottsSeries extends Series {
             HashSet<String> regions = box.filterTags("REGION");
             for (String region : regions) {
                 population.put("(REGION)" + TAG_SEPARATOR + region, "");
+            }
+
+            // Extract processes and process versions, if given.
+            HashSet<String> processes = box.filterTags("PROCESS");
+            MiniBox processVersions =
+                    box.filterBoxByTag("PROCESS").getIdValForTagAtt("PROCESS", "version");
+            for (String process : processes) {
+                String version =
+                        processVersions.contains(process) ? processVersions.get(process) : "";
+                population.put("(PROCESS)" + TAG_SEPARATOR + process, version);
+            }
+
+            // Check that per-layer parameters name an existing layer.
+            for (String parameter : parameters.getKeys()) {
+                for (String key : LAYER_PARAMETERS) {
+                    if (parameter.startsWith(key + "_")
+                            && !populationDefaults.contains(parameter)) {
+                        throw new IllegalArgumentException(
+                                "unknown layer in parameter [ " + parameter + " ]");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Adds a copy of each per-layer population default for every layer.
+     *
+     * <p>For each key in {@code LAYER_PARAMETERS} that has a default, a key {@code [KEY]_[LAYER]}
+     * with the same default value and conversion is added for every layer.
+     *
+     * @param defaults the population defaults
+     * @param conversions the population conversions
+     */
+    void addLayerDefaults(MiniBox defaults, MiniBox conversions) {
+        for (String key : LAYER_PARAMETERS) {
+            if (!defaults.contains(key)) {
+                continue;
+            }
+            for (String layer : layers.keySet()) {
+                defaults.put(key + "_" + layer, defaults.get(key));
+                if (conversions.contains(key)) {
+                    conversions.put(key + "_" + layer, conversions.get(key));
+                }
             }
         }
     }
