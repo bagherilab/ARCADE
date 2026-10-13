@@ -122,6 +122,21 @@ public class PottsLatticeTest {
     }
 
     @Test
+    public void constructor_threeDimensionalDiffuser_throws() {
+        MiniBox parameters = operationParameters("DIFFUSER");
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> new PottsLattice(3, 3, 3, 3.0, 1.0 / 60, parameters));
+    }
+
+    @Test
+    public void constructor_threeDimensionalDecayer_createsDecayer() {
+        MiniBox parameters = operationParameters("DECAYER");
+        PottsLattice lattice = new PottsLattice(3, 3, 3, 3.0, 1.0 / 60, parameters);
+        assertTrue(lattice.getOperation(Category.DECAYER) instanceof PottsOperationDecayer);
+    }
+
+    @Test
     public void schedule_called_schedulesAtLattices() {
         PottsLattice lattice = makeLattice(3, 3);
         Schedule schedule = mock(Schedule.class);
