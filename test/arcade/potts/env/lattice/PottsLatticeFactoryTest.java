@@ -64,4 +64,57 @@ public class PottsLatticeFactoryTest {
         assertEquals(1, factory.lattices.get("A").getField()[0][0][0], 1E-12);
         assertEquals(2, factory.lattices.get("B").getField()[0][0][0], 1E-12);
     }
+
+    @Test
+    public void createLattices_loadedField_overridesInitial() throws Exception {
+        HashMap<String, MiniBox> layers = new HashMap<>();
+        layers.put("ECM", layer(0));
+        layers.put("PDGF", layer(2));
+        double[][][] loaded = new double[1][7][5];
+        loaded[0][3][2] = 9.0;
+        HashMap<String, double[][][]> fields = new HashMap<>();
+        fields.put("ECM", loaded);
+        PottsLatticeFactory factory = new PottsLatticeFactory();
+        factory.createLattices(series(layers), fields);
+        assertEquals(9.0, factory.lattices.get("ECM").getField()[0][3][2], 0);
+        assertEquals(2.0, factory.lattices.get("PDGF").getField()[0][3][2], 0);
+    }
+
+    @Test
+    public void createLattices_loadedWrongDimensions_throws() throws Exception {
+        HashMap<String, MiniBox> layers = new HashMap<>();
+        layers.put("ECM", layer(0));
+        HashMap<String, double[][][]> fields = new HashMap<>();
+        fields.put("ECM", new double[1][6][5]);
+        PottsLatticeFactory factory = new PottsLatticeFactory();
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> factory.createLattices(series(layers), fields));
+    }
+
+    @Test
+    public void createLattices_loadedUnknownLayer_throws() throws Exception {
+        HashMap<String, MiniBox> layers = new HashMap<>();
+        layers.put("ECM", layer(0));
+        HashMap<String, double[][][]> fields = new HashMap<>();
+        fields.put("NOPE", new double[1][7][5]);
+        PottsLatticeFactory factory = new PottsLatticeFactory();
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> factory.createLattices(series(layers), fields));
+    }
+
+    @Test
+    public void createLattices_loadedRaggedRow_throws() throws Exception {
+        HashMap<String, MiniBox> layers = new HashMap<>();
+        layers.put("ECM", layer(0));
+        double[][][] ragged = new double[1][7][5];
+        ragged[0][4] = new double[3];
+        HashMap<String, double[][][]> fields = new HashMap<>();
+        fields.put("ECM", ragged);
+        PottsLatticeFactory factory = new PottsLatticeFactory();
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> factory.createLattices(series(layers), fields));
+    }
 }
