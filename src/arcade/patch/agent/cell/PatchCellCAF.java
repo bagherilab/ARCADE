@@ -6,6 +6,7 @@ import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
+import arcade.patch.util.PatchEnums.State;
 import static arcade.patch.util.PatchEnums.State;
 
 /**
@@ -25,6 +26,7 @@ import static arcade.patch.util.PatchEnums.State;
  * ECM.
  */
 public class PatchCellCAF extends PatchCellTissue {
+
     /** Name of the ECM density layer. */
     static final String ECM_LAYER = "ECM_DENSITY";
 
@@ -34,10 +36,25 @@ public class PatchCellCAF extends PatchCellTissue {
     /** Maximum local ECM density that deposition can reach. */
     private final double ecmMaxDensity;
 
+    /**
+     * Creates a CAF {@code PatchCell} agent. *
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     */
     public PatchCellCAF(PatchCellContainer container, Location location, Parameters parameters) {
         this(container, location, parameters, null);
     }
 
+    /**
+     * Creates a CAF {@code PatchCell} agent with population links.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
     public PatchCellCAF(
             PatchCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
@@ -53,7 +70,11 @@ public class PatchCellCAF extends PatchCellTissue {
         super.step(simstate);
     }
 
-    /** Deposits ECM at the cell location, without exceeding the maximum density. */
+    /**
+     * Deposits ECM at the cell location, without exceeding the maximum density.
+     *
+     * @param sim the simulation instance
+     */
     void depositECM(Simulation sim) {
         Lattice ecmLattice = sim.getLattice(ECM_LAYER);
         if (ecmLattice == null) {
