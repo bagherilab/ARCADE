@@ -69,7 +69,7 @@ public class PottsEnvironmentIntegrationTest {
         assertEquals(saved, restored);
     }
 
-    static String operationSetup(String name, String decayRate) {
+    static String operationSetup(String name, String layers) {
         return "<set><series name=\""
                 + name
                 + "\" ticks=\"2\" interval=\"1\" start=\"0\" end=\"0\" length=\""
@@ -77,26 +77,24 @@ public class PottsEnvironmentIntegrationTest {
                 + "\" width=\""
                 + SIZE
                 + "\" height=\"1\" ds=\"3\" dt=\"0.25\">"
-                + "<layers><layer id=\"X\">"
-                + "<layer.operation id=\"DIFFUSER\" />"
-                + "<layer.operation id=\"DECAYER\" />"
-                + "<layer.parameter operation=\"diffuser\" id=\"DIFFUSIVITY\" value=\"1\" />"
-                + "<layer.parameter operation=\"decayer\" id=\"DECAY_RATE\" value=\""
-                + decayRate
-                + "\" />"
-                + "</layer></layers></series></set>";
+                + "<layers>"
+                + layers
+                + "</layers></series></set>";
     }
 
-    // Runs the setup from a center spike and returns the X field at ticks 0 and 1.
-    static double[][][][] runFromSpike(Path dir, String name, String decayRate) throws Exception {
-        double[][][] spike = new double[1][SIZE][SIZE];
-        spike[0][SIZE / 2][SIZE / 2] = 100;
-        HashMap<String, double[][][]> layers = new HashMap<>();
-        layers.put("X", spike);
-        Files.writeString(dir.resolve("spike_0000.LAYERS.json"), new Gson().toJson(layers));
+    // Runs the setup from the given snapshot and returns the layer field at ticks 0 and 1.
+    static double[][][][] runFromSnapshot(
+            Path dir,
+            String name,
+            String layers,
+            HashMap<String, double[][][]> snapshot,
+            String layer)
+            throws Exception {
+        Files.writeString(
+                dir.resolve(name + "_init_0000.LAYERS.json"), new Gson().toJson(snapshot));
 
         Path setup = dir.resolve(name + ".xml");
-        Files.writeString(setup, operationSetup(name, decayRate));
+        Files.writeString(setup, operationSetup(name, layers));
         ARCADE.main(
                 new String[] {
                     "potts",
@@ -104,7 +102,7 @@ public class PottsEnvironmentIntegrationTest {
                     dir.toAbsolutePath() + "/",
                     "--savelayers",
                     "--loadpath",
-                    dir.toAbsolutePath() + "/spike_[#]",
+                    dir.toAbsolutePath() + "/" + name + "_init_[#]",
                     "--loadlayers"
                 });
 
@@ -118,9 +116,53 @@ public class PottsEnvironmentIntegrationTest {
                             .fromJson(
                                     json,
                                     new TypeToken<HashMap<String, double[][][]>>() {}.getType());
-            fields[tick] = read.get("X");
+            fields[tick] = read.get(layer);
         }
         return fields;
+    }
+
+    // Runs a diffusing and decaying layer X from a center spike.
+    static double[][][][] runFromSpike(Path dir, String name, String decayRate) throws Exception {
+        double[][][] spike = new double[1][SIZE][SIZE];
+        spike[0][SIZE / 2][SIZE / 2] = 100;
+        HashMap<String, double[][][]> snapshot = new HashMap<>();
+        snapshot.put("X", spike);
+        String layers =
+                "<layer id=\"X\">"
+                        + "<layer.operation id=\"DIFFUSER\" />"
+                        + "<layer.operation id=\"DECAYER\" />"
+                        + "<layer.parameter operation=\"diffuser\" id=\"DIFFUSIVITY\" value=\"1\" />"
+                        + "<layer.parameter operation=\"decayer\" id=\"DECAY_RATE\" value=\""
+                        + decayRate
+                        + "\" />"
+                        + "</layer>";
+        return runFromSnapshot(dir, name, layers, snapshot, "X");
+    }
+
+    static String degraderLayers(String enzyme) {
+        return "<layer id=\"MMP\" />"
+                + "<layer id=\"ECM\">"
+                + "<layer.operation id=\"DEGRADER\" />"
+                + "<layer.parameter operation=\"degrader\" id=\"ENZYME\" value=\""
+                + enzyme
+                + "\" />"
+                + "<layer.parameter operation=\"degrader\" id=\"RATE\" value=\"2\" />"
+                + "</layer>";
+    }
+
+    static HashMap<String, double[][][]> degraderSnapshot() {
+        double[][][] ecm = new double[1][SIZE][SIZE];
+        double[][][] mmp = new double[1][SIZE][SIZE];
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                ecm[0][i][j] = 1;
+                mmp[0][i][j] = 0.1 * i;
+            }
+        }
+        HashMap<String, double[][][]> snapshot = new HashMap<>();
+        snapshot.put("ECM", ecm);
+        snapshot.put("MMP", mmp);
+        return snapshot;
     }
 
     static double total(double[][][] field) {
@@ -149,5 +191,34 @@ public class PottsEnvironmentIntegrationTest {
         double[][][][] fields = runFromSpike(dir, "decay", "6");
         double ratio = total(fields[1]) / total(fields[0]);
         assertEquals(Math.exp(-6 * 0.25), ratio, 1E-10);
+    }
+
+    @Test
+    public void operations_degrader_degradesByLocalEnzyme(@TempDir Path dir) throws Exception {
+        double[][][][] fields =
+                runFromSnapshot(dir, "degrade", degraderLayers("MMP"), degraderSnapshot(), "ECM");
+        // RATE = 2 per concentration per hour, dt = 0.25 hour, MMP = 0.1 * x.
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                double expected = Math.exp(-2 * 0.25 * 0.1 * i);
+                assertEquals(expected, fields[1][0][i][j] / fields[0][0][i][j], 1E-12);
+            }
+        }
+        assertEquals(1, fields[1][0][0][SIZE / 2], 0);
+    }
+
+    @Test
+    public void operations_degraderUnknownEnzyme_failsAtSetup(@TempDir Path dir) {
+        IllegalArgumentException e =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () ->
+                                runFromSnapshot(
+                                        dir,
+                                        "typo",
+                                        degraderLayers("MPP"),
+                                        degraderSnapshot(),
+                                        "ECM"));
+        assertTrue(e.getMessage().contains("MPP"));
     }
 }

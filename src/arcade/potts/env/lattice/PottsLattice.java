@@ -5,6 +5,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import sim.engine.Schedule;
 import sim.engine.SimState;
+import sim.engine.Steppable;
 import arcade.core.env.lattice.Lattice;
 import arcade.core.env.location.Location;
 import arcade.core.env.operation.Operation;
@@ -14,6 +15,7 @@ import arcade.core.util.MiniBox;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.env.operation.PottsOperationDecayer;
+import arcade.potts.env.operation.PottsOperationDegrader;
 import arcade.potts.env.operation.PottsOperationDiffuser;
 import static arcade.potts.util.PottsEnums.Category;
 import static arcade.potts.util.PottsEnums.Ordering;
@@ -23,7 +25,8 @@ import static arcade.potts.util.PottsEnums.Ordering;
  *
  * <p>The field is a {@code [z][x][y]} array aligned 1:1 with the potts {@code ids} array.
  * Operations listed in the layer parameters are created with the lattice and stepped at {@code
- * LATTICES}: diffuser, then decayer.
+ * LATTICES}: diffuser, then decayer. The degrader, which reads another lattice, is stepped at
+ * {@code LAST_LATTICE}, after all lattices have stepped.
  */
 public class PottsLattice implements Lattice {
     /** Array containing lattice values. */
@@ -93,6 +96,8 @@ public class PottsLattice implements Lattice {
                 return new PottsOperationDiffuser(this);
             case DECAYER:
                 return new PottsOperationDecayer(this);
+            case DEGRADER:
+                return new PottsOperationDegrader(this);
             default:
                 throw new IllegalArgumentException("unsupported operation [ " + category + " ]");
         }
@@ -226,6 +231,13 @@ public class PottsLattice implements Lattice {
     @Override
     public void schedule(Schedule schedule) {
         schedule.scheduleRepeating(this, Ordering.LATTICES.ordinal(), 1);
+
+        // Schedule degrader operation after all lattices have stepped, if it exists.
+        if (operations.containsKey(Category.DEGRADER)) {
+            Operation degrader = operations.get(Category.DEGRADER);
+            Steppable step = state -> degrader.step(state.random, (Simulation) state);
+            schedule.scheduleRepeating(step, Ordering.LAST_LATTICE.ordinal(), 1);
+        }
     }
 
     @Override
