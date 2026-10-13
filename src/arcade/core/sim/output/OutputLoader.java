@@ -6,8 +6,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Logger;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.Series;
@@ -44,11 +46,17 @@ public abstract class OutputLoader {
     /** {@code true} if locations are loaded, {@code false} otherwise. */
     public boolean loadLocations;
 
+    /** {@code true} if layers are loaded, {@code false} otherwise. */
+    public boolean loadLayers;
+
     /** JSON for cells. */
     String cellJson;
 
     /** JSON for locations. */
     String locationJson;
+
+    /** JSON for layers. */
+    String layerJson;
 
     /**
      * Creates an {@code OutputLoader} for the series.
@@ -81,6 +89,9 @@ public abstract class OutputLoader {
         if (loadLocations) {
             this.locationJson = read(path + ".LOCATIONS.json");
         }
+        if (loadLayers) {
+            this.layerJson = read(path + ".LAYERS.json");
+        }
     }
 
     /**
@@ -99,6 +110,16 @@ public abstract class OutputLoader {
      */
     public ArrayList<LocationContainer> loadLocations() {
         return gson.fromJson(locationJson, DEFAULT_LOCATION_TYPE);
+    }
+
+    /**
+     * Loads layer fields from JSON.
+     *
+     * @return the map of layer id to field array
+     */
+    public HashMap<String, double[][][]> loadLayers() {
+        return gson.fromJson(
+                layerJson, new TypeToken<HashMap<String, double[][][]>>() {}.getType());
     }
 
     /**
