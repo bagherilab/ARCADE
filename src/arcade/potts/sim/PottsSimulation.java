@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import arcade.core.agent.action.Action;
@@ -142,6 +143,19 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         return lattices == null ? Collections.emptySet() : lattices.keySet();
     }
 
+    /**
+     * Gets all lattice fields, sorted by layer id.
+     *
+     * @return the map of layer id to field array
+     */
+    public final Map<String, double[][][]> getLayers() {
+        TreeMap<String, double[][][]> layers = new TreeMap<>();
+        if (lattices != null) {
+            lattices.forEach((key, lattice) -> layers.put(key, lattice.getField()));
+        }
+        return layers;
+    }
+
     @Override
     public final Action getAction(String key) {
         return null;
@@ -273,7 +287,18 @@ public abstract class PottsSimulation extends SimState implements Simulation {
     @Override
     public final void setupEnvironment() {
         PottsLatticeFactory factory = new PottsLatticeFactory();
-        factory.createLattices(series);
+        Map<String, double[][][]> loaded = null;
+        if (series.loader != null && series.loader.loadLayers) {
+            loaded = series.loader.loadLayers();
+            if (loaded == null) {
+                throw new IllegalStateException(
+                        "unable to load layers file [ "
+                                + series.loader.prefix.replace(
+                                        "[#]", String.format("%04d", getSeed()))
+                                + ".LAYERS.json ]");
+            }
+        }
+        factory.createLattices(series, loaded);
         lattices = factory.lattices;
         for (PottsLattice lattice : lattices.values()) {
             lattice.schedule(schedule);

@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -429,6 +430,56 @@ public class PottsSimulationTest {
         sim.setupEnvironment();
         assertEquals(Set.of("X"), sim.getLatticeKeys());
         assertTrue(sim.getLattice("X") instanceof PottsLattice);
+    }
+
+    @Test
+    public void setupEnvironment_loadLayersMissingFile_throws() {
+        Series series = createSeries(new int[0], new String[0]);
+        OutputLoader loader = mock(OutputLoader.class);
+        loader.loadLayers = true;
+        loader.prefix = "run_[#]";
+        doReturn(null).when(loader).loadLayers();
+        series.loader = loader;
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        IllegalStateException e = assertThrows(IllegalStateException.class, sim::setupEnvironment);
+        assertTrue(e.getMessage().contains(String.format("run_%04d.LAYERS.json", sim.getSeed())));
+    }
+
+    @Test
+    public void setupEnvironment_loadLayers_usesLoadedField() throws Exception {
+        Series series = createSeries(new int[0], new String[0]);
+        for (String name : new String[] {"length", "width", "height"}) {
+            Field field = Series.class.getDeclaredField(name);
+            field.setAccessible(true);
+            field.setInt(series, 1);
+        }
+        MiniBox layer = new MiniBox();
+        layer.put("INITIAL_CONCENTRATION", 0);
+        series.layers = new HashMap<>();
+        series.layers.put("X", layer);
+        HashMap<String, double[][][]> fields = new HashMap<>();
+        fields.put("X", new double[][][] {{{7.0}}});
+        OutputLoader loader = mock(OutputLoader.class);
+        loader.loadLayers = true;
+        doReturn(fields).when(loader).loadLayers();
+        series.loader = loader;
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.setupEnvironment();
+        assertEquals(7.0, sim.getLattice("X").getField()[0][0][0], 0);
+    }
+
+    @Test
+    public void getLayers_givenLattices_returnsSortedFields() {
+        Series series = createSeries(new int[0], new String[0]);
+        MiniBox layer = new MiniBox();
+        layer.put("INITIAL_CONCENTRATION", 0);
+        series.layers = new HashMap<>();
+        series.layers.put("B", layer);
+        series.layers.put("A", layer);
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.setupEnvironment();
+        assertEquals(List.of("A", "B"), new ArrayList<>(sim.getLayers().keySet()));
+        assertSame(sim.getLattice("A").getField(), sim.getLayers().get("A"));
     }
 
     @Test
