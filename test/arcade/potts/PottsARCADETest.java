@@ -47,6 +47,59 @@ public class PottsARCADETest {
     }
 
     @Test
+    public void main_saveLayers_savesLayerFiles(@TempDir Path path) throws Exception {
+        String name = "main_saveLayers_savesLayerFiles";
+        Path setupFile = Files.createFile(path.resolve("setup.xml"));
+        Files.writeString(
+                setupFile,
+                "<set><series name=\""
+                        + name
+                        + "\" ticks=\"1\" interval=\"1\" start=\"0\" end=\"0\">"
+                        + "<layers><layer id=\"X\" /></layers>"
+                        + "</series></set>");
+
+        String[] args =
+                new String[] {
+                    "potts", setupFile.toString(), path.toAbsolutePath().toString(), "--savelayers"
+                };
+        ARCADE.main(args);
+
+        String[] timepoints = new String[] {"0000_000000", "0000_000001"};
+        for (String tp : timepoints) {
+            File layerOutput =
+                    new File(path.toAbsolutePath() + "/" + name + "_" + tp + ".LAYERS.json");
+            assertTrue(layerOutput.exists());
+        }
+    }
+
+    @Test
+    public void main_seriesOffset_labelsOutputWithOffset(@TempDir Path path) throws Exception {
+        String name = "main_seriesOffset_labelsOutputWithOffset";
+        Path setupFile = Files.createFile(path.resolve("setup.xml"));
+        Files.writeString(
+                setupFile,
+                "<set><series name=\""
+                        + name
+                        + "\" ticks=\"1\" interval=\"1\" start=\"0\" end=\"0\" offset=\"5\">"
+                        + "</series></set>");
+
+        String[] args =
+                new String[] {"potts", setupFile.toString(), path.toAbsolutePath().toString()};
+        ARCADE.main(args);
+
+        for (String tp : new String[] {"0000_000005", "0000_000006"}) {
+            File cellOutput =
+                    new File(path.toAbsolutePath() + "/" + name + "_" + tp + ".CELLS.json");
+            assertTrue(cellOutput.exists());
+        }
+        for (String tp : new String[] {"0000_000000", "0000_000001"}) {
+            File cellOutput =
+                    new File(path.toAbsolutePath() + "/" + name + "_" + tp + ".CELLS.json");
+            assertFalse(cellOutput.exists());
+        }
+    }
+
+    @Test
     public void main_withVis_savesNothing(@TempDir Path path) throws Exception {
         String name = "main_withVis_savesNothing";
         Path setupFile = Files.createFile(path.resolve("setup.xml"));

@@ -23,6 +23,9 @@ public final class PottsSeries extends Series {
     /** List of Hamiltonian terms. */
     public ArrayList<Term> terms;
 
+    /** Tick offset added to output tick labels (for branched runs). */
+    public final int tickOffset;
+
     /**
      * Creates a {@code Series} object given setup information parsed from XML.
      *
@@ -39,6 +42,11 @@ public final class PottsSeries extends Series {
             Box parameters,
             boolean isVis) {
         super(setupDicts, setupLists, path, parameters, isVis);
+        MiniBox seriesBox = setupDicts.get("series");
+        this.tickOffset =
+                (seriesBox != null && seriesBox.contains("offset"))
+                        ? seriesBox.getInt("offset")
+                        : 0;
     }
 
     @Override
