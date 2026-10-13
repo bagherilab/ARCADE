@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sim.engine.Schedule;
@@ -18,6 +19,7 @@ import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.agent.cell.PottsCellFactory;
+import arcade.potts.env.lattice.PottsLattice;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocationContainer;
 import arcade.potts.env.location.PottsLocationFactory;
@@ -401,10 +403,32 @@ public class PottsSimulationTest {
     }
 
     @Test
-    public void getLattice_initialized_returnsNull() {
+    public void getLattice_beforeSetup_returnsNull() {
         Series series = mock(PottsSeries.class);
         PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
         assertNull(sim.getLattice(""));
+    }
+
+    @Test
+    public void setupEnvironment_noLayers_createsNoLattices() {
+        Series series = createSeries(new int[0], new String[0]);
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.setupEnvironment();
+        assertEquals(0, sim.getLatticeKeys().size());
+        assertNull(sim.getLattice("PDGF"));
+    }
+
+    @Test
+    public void setupEnvironment_givenLayers_createsLattices() {
+        Series series = createSeries(new int[0], new String[0]);
+        MiniBox layer = new MiniBox();
+        layer.put("INITIAL_CONCENTRATION", 0);
+        series.layers = new HashMap<>();
+        series.layers.put("X", layer);
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.setupEnvironment();
+        assertEquals(Set.of("X"), sim.getLatticeKeys());
+        assertTrue(sim.getLattice("X") instanceof PottsLattice);
     }
 
     @Test
