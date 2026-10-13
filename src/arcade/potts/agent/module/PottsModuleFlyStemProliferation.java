@@ -529,12 +529,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         Vector rotatedNormalVector =
                 Vector.rotateVectorAroundAxis(
                         referenceVector, Direction.XY_PLANE.vector, rotationOffset);
-        Voxel splitVoxel =
-                getCellSplitVoxel(
-                        StemType.WT.splitOffsetPercentX,
-                        wtDivisionSplitOffsetPercentY,
-                        cell,
-                        rotatedNormalVector);
+        Voxel splitVoxel = getCellSplitVoxel(wtLikeX, wtLikeY, cell, rotatedNormalVector);
         return new Plane(
                 new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), rotatedNormalVector);
     }
@@ -552,29 +547,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                         cell.getApicalAxis(),
                         Direction.XY_PLANE.vector,
                         StemType.MUDMUT.splitDirectionRotation);
-        Voxel splitVoxel = getCellSplitVoxel(StemType.MUDMUT, cell, defaultNormal);
+        Voxel splitVoxel = getCellSplitVoxel(mmLikeX, mmLikeY, cell, defaultNormal);
         return new Plane(new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), defaultNormal);
-    }
-
-    /**
-     * Computes the voxel through which the division plane passes for a given cell.
-     *
-     * <p>The split position is determined from the stem-type-specific offset percentages,
-     * interpreted in the cell's apical frame. The supplied normal vector is assumed to already
-     * reflect any rule-based rotation of the division plane.
-     *
-     * @param stemType the {@link StemType} providing the split offset percentages
-     * @param cell the {@link PottsCellFlyStem} whose division position is being computed
-     * @param rotatedNormalVector the division plane normal after any rule-based rotation
-     * @return the voxel used as the anchor point for the division plane
-     */
-    public static Voxel getCellSplitVoxel(
-            StemType stemType, PottsCellFlyStem cell, Vector rotatedNormalVector) {
-        return getCellSplitVoxel(
-                stemType.splitOffsetPercentX,
-                stemType.splitOffsetPercentY,
-                cell,
-                rotatedNormalVector);
     }
 
     /**

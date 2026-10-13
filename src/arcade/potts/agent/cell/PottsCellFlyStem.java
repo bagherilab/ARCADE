@@ -20,27 +20,13 @@ public class PottsCellFlyStem extends PottsCellFly {
     /** Enum outlining parameters for each cell type. */
     public enum StemType {
         /** Wild type stem cell. */
-        WT(50, 93, 0),
+        WT(0),
 
         /** mud Mutant stem cell. */
-        MUDMUT(50, 50, -90),
+        MUDMUT(-90),
 
         /** Nanobody stem cell */
-        NANOBODY(0, 50, 0);
-
-        /** Percentage x offset from cell edge where division will occur. */
-        public final int splitOffsetPercentX;
-
-        /**
-         * Percentage y offset from cell edge where division will occur. Under the rectangular-cell
-         * approximation used elsewhere in the proliferation module, this is also the fraction of
-         * the pre-division volume retained by the NB, leaving {@code 1 - splitOffsetPercentY / 100}
-         * for the GMC daughter.
-         *
-         * <p>This governs the MUD division plane only. The WT division path uses the {@code
-         * WT_DIVISION_SPLIT_OFFSET_PERCENT_Y} parameter instead, which may differ from this value.
-         */
-        public final int splitOffsetPercentY;
+        NANOBODY(0);
 
         /** Default direction of division is rotated this much off the apical vector. */
         public final double splitDirectionRotation;
@@ -48,13 +34,9 @@ public class PottsCellFlyStem extends PottsCellFly {
         /**
          * Constructor for StemType.
          *
-         * @param splitOffsetPercentX percentage x offset from cell edge where division will occur
-         * @param splitOffsetPercentY percentage y offset from cell edge where division will occur
          * @param splitDirectionRotation the plane of division's rotation off the apical vector
          */
-        StemType(int splitOffsetPercentX, int splitOffsetPercentY, double splitDirectionRotation) {
-            this.splitOffsetPercentX = splitOffsetPercentX;
-            this.splitOffsetPercentY = splitOffsetPercentY;
+        StemType(double splitDirectionRotation) {
             this.splitDirectionRotation = splitDirectionRotation;
         }
     }

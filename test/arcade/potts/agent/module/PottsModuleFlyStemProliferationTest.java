@@ -414,7 +414,7 @@ public class PottsModuleFlyStemProliferationTest {
                 .thenReturn(new Voxel(0, 0, 0));
 
         PottsModuleFlyStemProliferation.getCellSplitVoxel(
-                PottsCellFlyStem.StemType.WT, stemCell, stemCell.getApicalAxis());
+                50, 93, stemCell, stemCell.getApicalAxis());
         verify(stemLoc).getOffsetInApicalFrame(eq(expectedOffset), any(Vector.class));
     }
 
@@ -430,7 +430,7 @@ public class PottsModuleFlyStemProliferationTest {
                 .thenReturn(new Voxel(0, 0, 0));
 
         PottsModuleFlyStemProliferation.getCellSplitVoxel(
-                PottsCellFlyStem.StemType.MUDMUT, stemCell, stemCell.getApicalAxis());
+                50, 50, stemCell, stemCell.getApicalAxis());
         verify(stemLoc).getOffsetInApicalFrame(eq(expectedOffset), any(Vector.class));
     }
 
@@ -439,6 +439,8 @@ public class PottsModuleFlyStemProliferationTest {
     @Test
     public void getWTDivisionPlaneWithRotationalVariance_rotatesCorrectlyAndReturnsPlane() {
         Vector apicalAxis = new Vector(0, 1, 0);
+        when(parameters.getInt("proliferation/WT_LIKE_X")).thenReturn(50);
+        when(parameters.getInt("proliferation/WT_LIKE_Y")).thenReturn(93);
         when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
 
         double baseRotation = PottsCellFlyStem.StemType.WT.splitDirectionRotation; // 90
@@ -477,8 +479,8 @@ public class PottsModuleFlyStemProliferationTest {
     @Test
     public void getWTDivisionPlaneWithRotationalVariance_MUDMUT_withOffset50_uses50PercentY() {
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
-        when(parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y")).thenReturn(50);
-
+        when(parameters.getInt("proliferation/WT_LIKE_X")).thenReturn(50);
+        when(parameters.getInt("proliferation/WT_LIKE_Y")).thenReturn(50);
         Vector apicalAxis = new Vector(0, 1, 0);
         when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
 
@@ -498,7 +500,8 @@ public class PottsModuleFlyStemProliferationTest {
     @Test
     public void getWTDivisionPlaneWithRotationalVariance_WT_withOffset50_uses50PercentY() {
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
-        when(parameters.getInt("proliferation/WT_DIVISION_SPLIT_OFFSET_PERCENT_Y")).thenReturn(50);
+        when(parameters.getInt("proliferation/WT_LIKE_X")).thenReturn(50);
+        when(parameters.getInt("proliferation/WT_LIKE_Y")).thenReturn(50);
 
         Vector apicalAxis = new Vector(0, 1, 0);
         when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
@@ -630,6 +633,8 @@ public class PottsModuleFlyStemProliferationTest {
 
     @Test
     public void getMUDDivisionPlane_returnsRotatedPlaneWithCorrectNormal() {
+        when(parameters.getInt("proliferation/MM_LIKE_X")).thenReturn(50);
+        when(parameters.getInt("proliferation/MM_LIKE_Y")).thenReturn(50);
         Vector apicalAxis = new Vector(0, 1, 0);
         when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
 
