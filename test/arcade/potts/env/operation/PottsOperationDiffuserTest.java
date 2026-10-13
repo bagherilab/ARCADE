@@ -67,6 +67,65 @@ public class PottsOperationDiffuserTest {
         assertThrows(UnsupportedOperationException.class, () -> new PottsOperationDiffuser(l));
     }
 
+    // Max |A x - b| / max |b| for A = tridiag(-r, 1 + 2r, -r) with 1 + r at both ends.
+    static double tridiagonalResidual(double[] x, double[] b, double r) {
+        int n = x.length;
+        double worst = 0;
+        double scale = 0;
+        for (int i = 0; i < n; i++) {
+            double diag = (n == 1) ? 1 : (i == 0 || i == n - 1) ? 1 + r : 1 + 2 * r;
+            double ax = diag * x[i];
+            if (i > 0) {
+                ax -= r * x[i - 1];
+            }
+            if (i < n - 1) {
+                ax -= r * x[i + 1];
+            }
+            worst = Math.max(worst, Math.abs(ax - b[i]));
+            scale = Math.max(scale, Math.abs(b[i]));
+        }
+        return worst / scale;
+    }
+
+    @Test
+    public void diffuseSubstep_singleDirection_solvesTridiagonalSystem() {
+        // A field that varies along one axis only is unchanged by the other axis solve, so one
+        // substep must solve exactly the 1D system along the varying axis.
+        Random rng = new Random(7);
+        for (int n : new int[] {1, 2, 3, 10, 61}) {
+            for (double d : new double[] {0.01, 1, 100, 1000}) {
+                double[] b = new double[n];
+                for (int i = 0; i < n; i++) {
+                    b[i] = rng.nextDouble();
+                }
+
+                PottsLattice alongX = lattice(n, 3, 3, 2.0 / 3600, params(d, 2));
+                PottsOperationDiffuser opX = new PottsOperationDiffuser(alongX);
+                double[][] fx = alongX.getField()[0];
+                for (int i = 0; i < n; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        fx[i][j] = b[i];
+                    }
+                }
+                opX.diffuseSubstep(fx);
+                double[] x = new double[n];
+                for (int i = 0; i < n; i++) {
+                    x[i] = fx[i][1];
+                }
+                assertTrue(tridiagonalResidual(x, b, opX.r) < 1E-12, "x, n=" + n + ", D=" + d);
+
+                PottsLattice alongY = lattice(3, n, 3, 2.0 / 3600, params(d, 2));
+                PottsOperationDiffuser opY = new PottsOperationDiffuser(alongY);
+                double[][] fy = alongY.getField()[0];
+                for (int i = 0; i < 3; i++) {
+                    fy[i] = b.clone();
+                }
+                opY.diffuseSubstep(fy);
+                assertTrue(tridiagonalResidual(fy[1], b, opY.r) < 1E-12, "y, n=" + n + ", D=" + d);
+            }
+        }
+    }
+
     @Test
     public void step_conservesMass() {
         PottsLattice l = lattice(40, 30, 3, 1.0 / 60, params(50, 30));
