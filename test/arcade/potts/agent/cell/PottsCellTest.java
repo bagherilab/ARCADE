@@ -1,8 +1,10 @@
 package arcade.potts.agent.cell;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -19,6 +21,7 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModule;
 import arcade.potts.agent.process.PottsProcessSecretion;
+import arcade.potts.agent.process.PottsProcessWound;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.sim.PottsSimulation;
 import static org.junit.jupiter.api.Assertions.*;
@@ -405,6 +408,19 @@ public class PottsCellTest {
         Parameters parameters = new Parameters(box, null, null);
         PottsCell cell = new PottsCellMock(containerWithoutRegions, locationMock, parameters);
         assertTrue(cell.getProcess(Domain.SECRETION) instanceof PottsProcessSecretion);
+    }
+
+    @Test
+    public void constructor_withWoundProcess_makesProcessBeforeSecretion() {
+        MiniBox box = new MiniBox();
+        box.put("(PROCESS)" + TAG_SEPARATOR + "SECRETION", "");
+        box.put("(PROCESS)" + TAG_SEPARATOR + "WOUND", "");
+        box.put("wound/ROLE", "FIBROBLAST");
+        Parameters parameters = new Parameters(box, null, null);
+        PottsCell cell = new PottsCellMock(containerWithoutRegions, locationMock, parameters);
+        assertTrue(cell.getProcess(Domain.WOUND) instanceof PottsProcessWound);
+        assertEquals(
+                List.of(Domain.WOUND, Domain.SECRETION), new ArrayList<>(cell.processes.keySet()));
     }
 
     @Test
