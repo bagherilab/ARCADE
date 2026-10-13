@@ -12,7 +12,6 @@ import arcade.core.agent.cell.CellState;
 import arcade.core.agent.module.Module;
 import arcade.core.agent.process.Process;
 import arcade.core.agent.process.ProcessDomain;
-import arcade.core.env.lattice.Lattice;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
@@ -33,10 +32,6 @@ import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.util.PatchEnums;
-import arcade.patch.util.PatchEnums.Domain;
-import arcade.patch.util.PatchEnums.Flag;
-import arcade.patch.util.PatchEnums.Ordering;
-import arcade.patch.util.PatchEnums.State;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.Flag;
 import static arcade.patch.util.PatchEnums.Ordering;
@@ -446,8 +441,6 @@ public abstract class PatchCell implements Cell {
         Bag locs = findFreeLocations(sim);
         double maxGlucose =
                 sim.getLattice("GLUCOSE").getParameters().getDouble("generator/CONCENTRATION");
-        // Optional ECM density layer. Without it, no movement penalty is applied.
-        Lattice ecmLattice = sim.getLattice("ECM_DENSITY");
         int currZ = location.getPlanarIndex();
         double currR = location.getPlanarDistance();
         int[] inds = new int[3];
@@ -463,9 +456,7 @@ public abstract class PatchCell implements Cell {
                 double normConc = sim.getLattice("GLUCOSE").getAverageValue(location) / maxGlucose;
                 double gluc = (accuracy * normConc + (1 - accuracy) * random.nextDouble());
                 double dist = ((currR - loc.getPlanarDistance()) + 1) / 2.0;
-                double ecmPenalty =
-                        ecmLattice == null ? 0.0 : Math.min(1.0, ecmLattice.getAverageValue(loc));
-                double score = (affinity * dist + (1 - affinity) * gluc) * (1 - ecmPenalty);
+                double score = affinity * dist + (1 - affinity) * gluc;
 
                 // Determine index for z position of location.
                 // 0: same z, 1: z + 1, 2: z - 1
