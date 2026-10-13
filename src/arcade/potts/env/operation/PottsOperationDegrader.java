@@ -6,7 +6,8 @@ import arcade.core.util.MiniBox;
 import arcade.potts.env.lattice.PottsLattice;
 
 /**
- * Extension of {@link PottsOperation} for enzyme-dependent first-order degradation.
+ * Extension of {@link PottsOperation} for degradation of the associated lattice by an enzyme
+ * lattice.
  *
  * <p>Each voxel is multiplied by exp(-RATE * E), where E is the enzyme lattice value at the same
  * voxel. This is the exact solution of dc/dt = -RATE * E * c over one tick with E held constant, so
