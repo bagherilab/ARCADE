@@ -59,7 +59,7 @@ Valid options include:
 | `degrader/RATE` | 0 | 1/(concentration·hour) | degradation rate per unit enzyme |
 
 The degrader multiplies each voxel by exp(−rate × dt × enzyme).
-The enzyme must be another layer in the setup, or the simulation fails at setup.
+The enzyme must be a layer in the setup, or the simulation fails at setup.
 
 Unlike the patch operations, which are sized for the one-minute patch tick, potts operations support any tick length: diffusion uses an implicit scheme that is stable for any diffusivity, and decay uses the exact factor exp(-rate × dt).
 Smaller `MAX_SUBSTEP` values are more accurate next to secreting cells but slower.
