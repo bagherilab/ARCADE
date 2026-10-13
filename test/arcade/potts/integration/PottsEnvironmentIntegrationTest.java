@@ -68,4 +68,86 @@ public class PottsEnvironmentIntegrationTest {
         assertEquals(3, savedFields.get("X")[0][SIZE / 2][SIZE / 2], 0);
         assertEquals(saved, restored);
     }
+
+    static String operationSetup(String name, String decayRate) {
+        return "<set><series name=\""
+                + name
+                + "\" ticks=\"2\" interval=\"1\" start=\"0\" end=\"0\" length=\""
+                + SIZE
+                + "\" width=\""
+                + SIZE
+                + "\" height=\"1\" ds=\"3\" dt=\"0.25\">"
+                + "<layers><layer id=\"X\">"
+                + "<layer.operation id=\"DIFFUSER\" />"
+                + "<layer.operation id=\"DECAYER\" />"
+                + "<layer.parameter operation=\"diffuser\" id=\"DIFFUSIVITY\" value=\"1\" />"
+                + "<layer.parameter operation=\"decayer\" id=\"DECAY_RATE\" value=\""
+                + decayRate
+                + "\" />"
+                + "</layer></layers></series></set>";
+    }
+
+    // Runs the setup from a center spike and returns the X field at ticks 0 and 1.
+    static double[][][][] runFromSpike(Path dir, String name, String decayRate) throws Exception {
+        double[][][] spike = new double[1][SIZE][SIZE];
+        spike[0][SIZE / 2][SIZE / 2] = 100;
+        HashMap<String, double[][][]> layers = new HashMap<>();
+        layers.put("X", spike);
+        Files.writeString(dir.resolve("spike_0000.LAYERS.json"), new Gson().toJson(layers));
+
+        Path setup = dir.resolve(name + ".xml");
+        Files.writeString(setup, operationSetup(name, decayRate));
+        ARCADE.main(
+                new String[] {
+                    "potts",
+                    setup.toString(),
+                    dir.toAbsolutePath() + "/",
+                    "--savelayers",
+                    "--loadpath",
+                    dir.toAbsolutePath() + "/spike_[#]",
+                    "--loadlayers"
+                });
+
+        double[][][][] fields = new double[2][][][];
+        for (int tick = 0; tick < 2; tick++) {
+            String json =
+                    Files.readString(
+                            dir.resolve(String.format("%s_0000_%06d.LAYERS.json", name, tick)));
+            HashMap<String, double[][][]> read =
+                    new Gson()
+                            .fromJson(
+                                    json,
+                                    new TypeToken<HashMap<String, double[][][]>>() {}.getType());
+            fields[tick] = read.get("X");
+        }
+        return fields;
+    }
+
+    static double total(double[][][] field) {
+        double sum = 0;
+        for (double[] row : field[0]) {
+            for (double v : row) {
+                sum += v;
+            }
+        }
+        return sum;
+    }
+
+    @Test
+    public void operations_diffuserOnly_spreadsAndConservesMass(@TempDir Path dir)
+            throws Exception {
+        double[][][][] fields = runFromSpike(dir, "diffuse", "0");
+        int c = SIZE / 2;
+        assertTrue(fields[1][0][c][c] < fields[0][0][c][c]);
+        assertTrue(fields[1][0][c + 1][c] > fields[0][0][c + 1][c]);
+        assertEquals(total(fields[0]), total(fields[1]), 1E-10 * total(fields[0]));
+    }
+
+    @Test
+    public void operations_diffuserAndDecayer_decaysTotalExactly(@TempDir Path dir)
+            throws Exception {
+        double[][][][] fields = runFromSpike(dir, "decay", "6");
+        double ratio = total(fields[1]) / total(fields[0]);
+        assertEquals(Math.exp(-6 * 0.25), ratio, 1E-10);
+    }
 }
