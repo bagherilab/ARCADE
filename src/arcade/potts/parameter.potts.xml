@@ -85,37 +85,6 @@
     <population.process process="secretion" id="RATE" value="0" units="amount/hour" conversion="DT" description="rate of secretion into each layer" />
     <population.process process="secretion" id="REGION" value="BOUNDARY" description="voxels secreted into for each layer: BOUNDARY (just outside the cell) or INSIDE" />
 
-    <!-- wound process parameters -->
-    <population.process process="wound" id="ROLE" value="FIBROBLAST" />
-    <population.process process="wound" id="MACROPHAGE" value="NONE" />
-    <population.process process="wound" id="PDGF_PROLIFERATION" value="0.1" />
-    <population.process process="wound" id="PDGF_DIFFERENTIATION" value="0.1" />
-    <population.process process="wound" id="ECM_DIFFERENTIATION" value="0.5" />
-    <population.process process="wound" id="ECM_TENSION" value="0.2" />
-    <population.process process="wound" id="INF_APOPTOSIS" value="5" />
-    <population.process process="wound" id="DIFFERENTIATION_RATE" value="0.2" conversion="DT" />
-    <population.process process="wound" id="MATURATION" value="72" units="hours" conversion="DT^-1" />
-    <population.process process="wound" id="SENESCENCE_RATE" value="0.02" conversion="DT" />
-    <population.process process="wound" id="T_NIS" value="72" units="hours" conversion="DT^-1" />
-    <population.process process="wound" id="CLEARANCE" value="0.1" />
-    <population.process process="wound" id="DRUG_START" value="0" units="hours" conversion="DT^-1" />
-    <population.process process="wound" id="DRUG_DURATION" value="0" units="hours" conversion="DT^-1" />
-    <population.process process="wound" id="DRUG_KILL" value="0" conversion="DT" />
-    <population.process process="wound" id="FIB_ECM" value="0" conversion="DT" />
-    <population.process process="wound" id="MYOF_ECM" value="0" conversion="DT" />
-    <population.process process="wound" id="MYOF_PDGF" value="0" conversion="DT" />
-    <population.process process="wound" id="SEN_PDGF" value="0" conversion="DT" />
-    <population.process process="wound" id="SEN_ECM" value="0" conversion="DT" />
-    <population.process process="wound" id="SEN_INF" value="0" conversion="DT" />
-    <population.process process="wound" id="SEN_MMP" value="0" conversion="DT" />
-    <population.process process="wound" id="SPONTANEOUS_SENESCENCE" value="0" conversion="DT" />
-    <population.process process="wound" id="BYSTANDER_CONTACT" value="0" conversion="DT" />
-    <population.process process="wound" id="BYSTANDER_PARACRINE" value="0" conversion="DT" />
-    <population.process process="wound" id="INF_BYSTANDER" value="1000" />
-    <population.process process="wound" id="BASAL_CLEARANCE" value="0" conversion="DT" />
-    <population.process process="wound" id="CONTACT_FREE_FRACTION" value="0" description="minimum fraction of boundary voxels that must be empty to proliferate; 0 disables contact inhibition" />
-    <population.process process="wound" id="ECM_TISSUE_GROWTH" value="0" description="minimum mean ECM over free boundary voxels for a TISSUE cell to proliferate; 0 disables the gate" />
-
     <!-- LAYERS ============================================================ -->
 
     <!-- default parameters for layers -->

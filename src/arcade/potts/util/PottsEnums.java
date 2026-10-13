@@ -79,9 +79,6 @@ public final class PottsEnums {
         /** Code for undefined domain. */
         UNDEFINED,
 
-        /** Code for wound phenotype domain (steps before secretion). */
-        WOUND,
-
         /** Code for secretion domain. */
         SECRETION
     }
