@@ -99,30 +99,30 @@ public class UtilitiesTest {
     }
 
     @Test
-    public void getCollectionFraction_emptyLists_returnsZero() {
+    public void collectionFraction_emptyLists_returnsZero() {
         List<Integer> list1 = new ArrayList<>();
         List<Integer> list2 = new ArrayList<>();
 
-        double fraction = getCollectionFraction(list1, list2);
+        double fraction = collectionFraction(list1, list2);
 
         assertEquals(0, fraction);
     }
 
     @Test
-    public void getCollectionFraction_noOverlapWithList2_returnsZero() {
+    public void collectionFraction_noOverlapWithList2_returnsZero() {
         List<Integer> items = new ArrayList<>();
         items.add(1);
         items.add(2);
 
         ArrayList<Integer> otherItems = new ArrayList<>(List.of(3));
 
-        double fraction = getCollectionFraction(otherItems, items);
+        double fraction = collectionFraction(items, otherItems);
 
         assertEquals(0, fraction);
     }
 
     @Test
-    public void getCollectionFraction_allElementsInList2_returnsOne() {
+    public void collectionFraction_allElementsInList2_returnsOne() {
         List<String> items = new ArrayList<>();
         String a = "a";
         String b = "b";
@@ -131,13 +131,13 @@ public class UtilitiesTest {
 
         ArrayList<String> otherItems = new ArrayList<>(List.of(a, b));
 
-        double fraction = getCollectionFraction(otherItems, items);
+        double fraction = collectionFraction(items, otherItems);
 
         assertEquals(1, fraction);
     }
 
     @Test
-    public void getCollectionFraction_someElementsInList2_returnsPartialFraction() {
+    public void collectionFraction_someElementsInList2_returnsPartialFraction() {
         List<String> items = new ArrayList<>();
         String a = "a";
         String b = "b";
@@ -150,25 +150,25 @@ public class UtilitiesTest {
 
         ArrayList<String> otherItems = new ArrayList<>(List.of(a, c));
 
-        double fraction = getCollectionFraction(otherItems, items);
+        double fraction = collectionFraction(items, otherItems);
 
         assertEquals(0.5, fraction);
     }
 
     @Test
-    public void getCollectionFraction_emptyEitherList_returnsZero() {
+    public void collectionFraction_emptyEitherList_returnsZero() {
         List<String> items = new ArrayList<>();
         items.add("a");
         items.add("b");
 
-        double fraction = getCollectionFraction(new ArrayList<String>(), items);
+        double fraction = collectionFraction(items, new ArrayList<String>());
 
         assertEquals(0, fraction);
-        assertEquals(0, getCollectionFraction(items, new ArrayList<String>()));
+        assertEquals(0, collectionFraction(new ArrayList<String>(), items));
     }
 
     @Test
-    public void getCollectionFraction_differentEqualObjects_countsAsMatch() {
+    public void collectionFraction_differentEqualObjects_countsAsMatch() {
         List<String> items = new ArrayList<>();
         String a = "a";
         String b = "b";
@@ -180,13 +180,13 @@ public class UtilitiesTest {
         items.add(d);
         ArrayList<String> otherItems = new ArrayList<>(List.of(new String("a")));
 
-        double fraction = getCollectionFraction(otherItems, items);
+        double fraction = collectionFraction(items, otherItems);
 
         assertEquals(0.25, fraction);
     }
 
     @Test
-    public void getCollectionFraction_oneOfSevenMatch_returnsPreciseFraction() {
+    public void collectionFraction_oneOfSevenMatch_returnsPreciseFraction() {
         List<Integer> items = new ArrayList<>();
         Integer a = 0;
         for (int i = 1; i <= 6; i++) {
@@ -196,34 +196,34 @@ public class UtilitiesTest {
 
         ArrayList<Integer> otherItems = new ArrayList<>(List.of(a));
 
-        double fraction = getCollectionFraction(otherItems, items);
+        double fraction = collectionFraction(items, otherItems);
 
         assertEquals(1.0 / 7.0, fraction, EPSILON);
     }
 
     @Test
-    public void getCollectionFraction_sameCollectionPassed_returnsOne() {
+    public void collectionFraction_sameCollectionPassed_returnsOne() {
         List<Integer> items = new ArrayList<>();
         for (int i = 1; i <= 6; i++) {
             items.add(i);
         }
 
-        double fraction = getCollectionFraction(items, items);
+        double fraction = collectionFraction(items, items);
 
         assertEquals(1, fraction, EPSILON);
     }
 
     @Test
-    public void convertToCollection_emptyBag_returnsEmptyCollection() {
+    public void asCollection_emptyBag_returnsEmptyCollection() {
         Bag bag = new Bag();
 
-        Collection<String> result = convertToCollection(bag, String.class);
+        Collection<String> result = asCollection(bag, String.class);
 
         assertTrue(result.isEmpty());
     }
 
     @Test
-    public void convertToCollection_populatedBag_returnsAllElementsInOrder() {
+    public void asCollection_populatedBag_returnsAllElementsInOrder() {
         Bag bag = new Bag();
         String a = "a";
         String b = "b";
@@ -232,7 +232,7 @@ public class UtilitiesTest {
         bag.add(b);
         bag.add(c);
 
-        Collection<String> result = convertToCollection(bag, String.class);
+        Collection<String> result = asCollection(bag, String.class);
 
         assertEquals(3, result.size());
         java.util.Iterator<String> it = result.iterator();
@@ -242,60 +242,59 @@ public class UtilitiesTest {
     }
 
     @Test
-    public void convertToCollection_bagWithExcessCapacity_onlyIncludesNumObjsElements() {
+    public void asCollection_bagWithExcessCapacity_onlyIncludesNumObjsElements() {
         Bag bag = new Bag(10);
         String a = "a";
         bag.add(a);
 
-        Collection<String> result = convertToCollection(bag, String.class);
+        Collection<String> result = asCollection(bag, String.class);
 
         assertEquals(1, result.size());
         assertEquals(a, result.iterator().next());
     }
 
     @Test
-    public void convertToCollection_wrongElementType_throwsClassCastException() {
+    public void asCollection_wrongElementType_throwsClassCastException() {
         Bag bag = new Bag();
         bag.add(1);
 
-        assertThrows(ClassCastException.class, () -> convertToCollection(bag, String.class));
+        assertThrows(ClassCastException.class, () -> asCollection(bag, String.class));
     }
 
     @Test
-    public void convertToCollection_mixedElementTypes_throwsOnFirstMismatch() {
+    public void asCollection_mixedElementTypes_throwsOnFirstMismatch() {
         Bag bag = new Bag();
         bag.add("a");
         bag.add(1);
 
-        assertThrows(ClassCastException.class, () -> convertToCollection(bag, String.class));
+        assertThrows(ClassCastException.class, () -> asCollection(bag, String.class));
     }
 
     @Test
-    public void convertToCollection_duplicateElements_preservesDuplicates() {
+    public void asCollection_duplicateElements_preservesDuplicates() {
         Bag bag = new Bag();
         String a = "a";
         bag.add(a);
         bag.add(a);
 
-        Collection<String> result = convertToCollection(bag, String.class);
+        Collection<String> result = asCollection(bag, String.class);
 
         assertEquals(2, result.size());
     }
 
     @Test
-    public void convertToCollection_bagWithNullElement_includesNull() {
+    public void asCollection_bagWithNullElement_includesNull() {
         Bag bag = new Bag();
         bag.add(null);
 
-        Collection<String> result = convertToCollection(bag, String.class);
+        Collection<String> result = asCollection(bag, String.class);
 
         assertEquals(1, result.size());
         assertNull(result.iterator().next());
     }
 
     @Test
-    public void
-            convertToCollection_resultUsableWithGetCollectionFraction_computesCorrectFraction() {
+    public void asCollection_resultUsableWithCollectionFraction_computesCorrectFraction() {
         Bag itemBag = new Bag();
         String a = "a";
         String b = "b";
@@ -304,8 +303,8 @@ public class UtilitiesTest {
 
         List<String> otherItems = new ArrayList<>(List.of(a));
 
-        Collection<String> items = convertToCollection(itemBag, String.class);
-        double fraction = getCollectionFraction(otherItems, new ArrayList<>(items));
+        Collection<String> items = asCollection(itemBag, String.class);
+        double fraction = collectionFraction(new ArrayList<>(items), otherItems);
 
         assertEquals(0.5, fraction);
     }

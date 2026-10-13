@@ -1,7 +1,6 @@
 package arcade.patch.agent.action;
 
 import java.util.ArrayList;
-import java.util.logging.Logger;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import arcade.core.agent.action.Action;
@@ -14,7 +13,6 @@ import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellContainer;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.Coordinate;
-import arcade.patch.env.location.PatchLocation;
 import arcade.patch.env.location.PatchLocationContainer;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.sim.PatchSimulation;
@@ -28,9 +26,6 @@ import static arcade.patch.util.PatchEnums.Ordering;
  * specified radius {@code INSERT_RADIUS} from the center of the simulation.
  */
 public class PatchActionInsert implements Action {
-    /** Logger for {@code PatchActionInsert}. */
-    protected static Logger logger = Logger.getLogger(PatchActionInsert.class.getName());
-
     /** Time delay before calling the action [min]. */
     private final int timeDelay;
 
@@ -45,12 +40,6 @@ public class PatchActionInsert implements Action {
 
     /** List of populations. */
     private final ArrayList<MiniBox> populations;
-
-    /** Whether the insertion is to confluence. */
-    private final boolean confluence;
-
-    /** Number of cells placed. */
-    private int cellsPlaced;
 
     /**
      * Creates a {@link Action} for removing cell agents.
@@ -74,13 +63,9 @@ public class PatchActionInsert implements Action {
         insertRadius = Math.min(maxRadius, parameters.getInt("INSERT_RADIUS"));
         insertDepth = ((PatchSeries) series).depth;
         insertNumber = parameters.getInt("INSERT_NUMBER");
-        confluence = parameters.getInt("CONFLUENCE") == 1;
 
         // Initialize population register.
         populations = new ArrayList<>();
-
-        // Initialize number of cells placed.
-        cellsPlaced = 0;
     }
 
     @Override
@@ -107,82 +92,24 @@ public class PatchActionInsert implements Action {
         for (MiniBox population : populations) {
             int pop = population.getInt("CODE");
 
-            // count resets per population
-            cellsPlaced = 0;
-
-            while (cellsPlaced < insertNumber) {
+            for (int i = 0; i < insertNumber; i++) {
+                int id = sim.getID();
 
                 if (coordinates.isEmpty()) {
-                    logger.warning(
-                            "No more coordinates available for insertion."
-                                    + " Cells inserted is less than the desired insert number: "
-                                    + cellsPlaced
-                                    + " < "
-                                    + insertNumber);
                     break;
                 }
 
                 Coordinate coord = coordinates.remove(0);
+                PatchLocationContainer locationContainer = new PatchLocationContainer(id, coord);
+                PatchCellContainer cellContainer = sim.cellFactory.createCellForPopulation(id, pop);
 
-                // Create a new cell and location.
-                // place multiple cells in same location if confluence is true, otherwise place one
-                // cell per location
-                if (confluence) {
-                    boolean free = true;
-                    while (free && cellsPlaced < insertNumber) {
-                        // Create a new location and cell.
-                        PatchCell cell = generateCell(sim, coord, pop);
-                        Location location = cell.getLocation();
-                        free =
-                                PatchCell.checkLocation(
-                                        sim,
-                                        (PatchLocation) location,
-                                        cell.getVolume(),
-                                        cell.getCriticalHeight(),
-                                        pop,
-                                        cell.getMaxDensity());
-                        if (free) {
-                            addCellToLocation(sim, grid, cell, location);
-                        }
-                    }
-                } else {
-                    PatchCell cell = generateCell(sim, coord, pop);
-                    Location location = cell.getLocation();
-                    addCellToLocation(sim, grid, cell, location);
-                }
+                Location location = locationContainer.convert(sim.locationFactory, cellContainer);
+                PatchCell cell =
+                        (PatchCell) cellContainer.convert(sim.cellFactory, location, sim.random);
+
+                grid.addObject(cell, location);
+                cell.schedule(sim.getSchedule());
             }
         }
-    }
-
-    /**
-     * Adds a cell to a location in the grid.
-     *
-     * @param sim the simulation series
-     * @param grid the patch grid
-     * @param cell the cell to add
-     * @param location the location to add the cell to
-     */
-    private void addCellToLocation(
-            PatchSimulation sim, PatchGrid grid, PatchCell cell, Location location) {
-        grid.addObject(cell, location);
-        cell.schedule(sim.getSchedule());
-        cellsPlaced++;
-    }
-
-    /**
-     * Generates a new cell for the simulation.
-     *
-     * @param sim the simulation series
-     * @param coord the coordinate to generate the cell at
-     * @param pop the population to generate the cell for
-     * @return the generated cell
-     */
-    private PatchCell generateCell(PatchSimulation sim, Coordinate coord, int pop) {
-        int id = sim.getID();
-        PatchLocationContainer locationContainer = new PatchLocationContainer(id, coord);
-        PatchCellContainer cellContainer = sim.cellFactory.createCellForPopulation(id, pop);
-        Location location = locationContainer.convert(sim.locationFactory, cellContainer);
-        PatchCell cell = (PatchCell) cellContainer.convert(sim.cellFactory, location, sim.random);
-        return cell;
     }
 }
