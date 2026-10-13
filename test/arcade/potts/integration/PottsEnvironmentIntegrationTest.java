@@ -7,6 +7,10 @@ import java.util.HashMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import arcade.core.ARCADE;
 import static org.junit.jupiter.api.Assertions.*;
@@ -306,5 +310,140 @@ public class PottsEnvironmentIntegrationTest {
                                                 + "<population.parameter process=\"secretion\""
                                                 + " id=\"RATE_Y\" value=\"100\" />"));
         assertTrue(e.getMessage().contains("RATE_Y"));
+    }
+
+    static final int CHEMOTAXIS_SIZE = 50;
+
+    static final int CHEMOTAXIS_TICKS = 20;
+
+    // Creates a setup with one population in a fixed layer X, with chemotaxis toward X.
+    static String chemotaxisSetup(String name, String lambda, int height) {
+        return "<set><series name=\""
+                + name
+                + "\" ticks=\""
+                + CHEMOTAXIS_TICKS
+                + "\" interval=\""
+                + CHEMOTAXIS_TICKS
+                + "\" start=\"0\" end=\"0\" length=\""
+                + CHEMOTAXIS_SIZE
+                + "\" width=\""
+                + CHEMOTAXIS_SIZE
+                + "\" height=\""
+                + height
+                + "\" ds=\"2\" dt=\"0.25\">"
+                + "<potts>"
+                + "<potts.term id=\"ADHESION\" />"
+                + "<potts.term id=\"VOLUME\" />"
+                + "<potts.term id=\"SURFACE\" />"
+                + "<potts.term id=\"CHEMOTAXIS\" />"
+                + "<potts.parameter term=\"chemotaxis\" id=\"LAMBDA_X\" target=\"A\" value=\""
+                + lambda
+                + "\" />"
+                + "</potts>"
+                + "<populations><population id=\"A\" init=\"6\">"
+                + "<population.parameter id=\"CRITICAL_VOLUME\" value=\"400\" />"
+                + "<population.parameter id=\"CRITICAL_HEIGHT\" value=\"2\" />"
+                + "</population></populations>"
+                + "<layers><layer id=\"X\" /></layers></series></set>";
+    }
+
+    // Gets the mean x position of the voxels of each cell in a locations file.
+    static HashMap<Integer, Double> meanX(Path file) throws Exception {
+        HashMap<Integer, Double> positions = new HashMap<>();
+        JsonArray cells = JsonParser.parseString(Files.readString(file)).getAsJsonArray();
+        for (JsonElement element : cells) {
+            JsonObject cell = element.getAsJsonObject();
+            double sum = 0;
+            int count = 0;
+            for (JsonElement region : cell.getAsJsonArray("location")) {
+                for (JsonElement voxel : region.getAsJsonObject().getAsJsonArray("voxels")) {
+                    sum += voxel.getAsJsonArray().get(0).getAsDouble();
+                    count++;
+                }
+            }
+            positions.put(cell.get("id").getAsInt(), sum / count);
+        }
+        return positions;
+    }
+
+    // Runs cells in a fixed gradient (X = x) and returns the x displacement of each cell.
+    static HashMap<Integer, Double> runChemotaxis(Path dir, String name, String lambda)
+            throws Exception {
+        double[][][] gradient = new double[1][CHEMOTAXIS_SIZE][CHEMOTAXIS_SIZE];
+        for (int i = 0; i < CHEMOTAXIS_SIZE; i++) {
+            for (int j = 0; j < CHEMOTAXIS_SIZE; j++) {
+                gradient[0][i][j] = i;
+            }
+        }
+        HashMap<String, double[][][]> snapshot = new HashMap<>();
+        snapshot.put("X", gradient);
+        Files.writeString(
+                dir.resolve(name + "_init_0000.LAYERS.json"), new Gson().toJson(snapshot));
+
+        Path setup = dir.resolve(name + ".xml");
+        Files.writeString(setup, chemotaxisSetup(name, lambda, 1));
+        ARCADE.main(
+                new String[] {
+                    "potts",
+                    setup.toString(),
+                    dir.toAbsolutePath() + "/",
+                    "--loadpath",
+                    dir.toAbsolutePath() + "/" + name + "_init_[#]",
+                    "--loadlayers"
+                });
+
+        HashMap<Integer, Double> start = meanX(dir.resolve(name + "_0000_000000.LOCATIONS.json"));
+        HashMap<Integer, Double> end =
+                meanX(
+                        dir.resolve(
+                                String.format(
+                                        "%s_0000_%06d.LOCATIONS.json", name, CHEMOTAXIS_TICKS)));
+        HashMap<Integer, Double> displacements = new HashMap<>();
+        for (int id : start.keySet()) {
+            displacements.put(id, end.get(id) - start.get(id));
+        }
+        return displacements;
+    }
+
+    @Test
+    public void chemotaxis_positiveLambda_movesCellsUpGradient(@TempDir Path dir) throws Exception {
+        HashMap<Integer, Double> displacements = runChemotaxis(dir, "up", "100");
+        assertEquals(6, displacements.size());
+        for (double displacement : displacements.values()) {
+            assertTrue(displacement > 2, "displacement " + displacement);
+        }
+    }
+
+    @Test
+    public void chemotaxis_negativeLambda_movesCellsDownGradient(@TempDir Path dir)
+            throws Exception {
+        HashMap<Integer, Double> displacements = runChemotaxis(dir, "down", "-100");
+        assertEquals(6, displacements.size());
+        for (double displacement : displacements.values()) {
+            assertTrue(displacement < -2, "displacement " + displacement);
+        }
+    }
+
+    @Test
+    public void chemotaxis_zeroLambda_doesNotDrift(@TempDir Path dir) throws Exception {
+        HashMap<Integer, Double> displacements = runChemotaxis(dir, "none", "0");
+        double mean = 0;
+        for (double displacement : displacements.values()) {
+            mean += displacement / displacements.size();
+        }
+        assertTrue(Math.abs(mean) < 1, "mean displacement " + mean);
+    }
+
+    @Test
+    public void chemotaxis_threeDimensional_failsAtSetup(@TempDir Path dir) throws Exception {
+        Path setup = dir.resolve("chemo3d.xml");
+        Files.writeString(setup, chemotaxisSetup("chemo3d", "100", 5));
+        assertThrows(
+                UnsupportedOperationException.class,
+                () ->
+                        ARCADE.main(
+                                new String[] {
+                                    "potts", setup.toString(), dir.toAbsolutePath() + "/"
+                                }));
     }
 }
