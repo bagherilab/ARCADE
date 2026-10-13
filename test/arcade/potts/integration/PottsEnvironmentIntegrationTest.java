@@ -367,12 +367,14 @@ public class PottsEnvironmentIntegrationTest {
     }
 
     // Runs cells in a fixed gradient (X = x) and returns the x displacement of each cell.
-    static HashMap<Integer, Double> runChemotaxis(Path dir, String name, String lambda)
+    static HashMap<Integer, Double> runChemotaxis(Path dir, String name, String lambda, int height)
             throws Exception {
-        double[][][] gradient = new double[1][CHEMOTAXIS_SIZE][CHEMOTAXIS_SIZE];
-        for (int i = 0; i < CHEMOTAXIS_SIZE; i++) {
-            for (int j = 0; j < CHEMOTAXIS_SIZE; j++) {
-                gradient[0][i][j] = i;
+        double[][][] gradient = new double[height][CHEMOTAXIS_SIZE][CHEMOTAXIS_SIZE];
+        for (int k = 0; k < height; k++) {
+            for (int i = 0; i < CHEMOTAXIS_SIZE; i++) {
+                for (int j = 0; j < CHEMOTAXIS_SIZE; j++) {
+                    gradient[k][i][j] = i;
+                }
             }
         }
         HashMap<String, double[][][]> snapshot = new HashMap<>();
@@ -381,7 +383,7 @@ public class PottsEnvironmentIntegrationTest {
                 dir.resolve(name + "_init_0000.LAYERS.json"), new Gson().toJson(snapshot));
 
         Path setup = dir.resolve(name + ".xml");
-        Files.writeString(setup, chemotaxisSetup(name, lambda, 1));
+        Files.writeString(setup, chemotaxisSetup(name, lambda, height));
         ARCADE.main(
                 new String[] {
                     "potts",
@@ -407,7 +409,7 @@ public class PottsEnvironmentIntegrationTest {
 
     @Test
     public void chemotaxis_positiveLambda_movesCellsUpGradient(@TempDir Path dir) throws Exception {
-        HashMap<Integer, Double> displacements = runChemotaxis(dir, "up", "100");
+        HashMap<Integer, Double> displacements = runChemotaxis(dir, "up", "20", 1);
         assertEquals(6, displacements.size());
         for (double displacement : displacements.values()) {
             assertTrue(displacement > 2, "displacement " + displacement);
@@ -417,7 +419,7 @@ public class PottsEnvironmentIntegrationTest {
     @Test
     public void chemotaxis_negativeLambda_movesCellsDownGradient(@TempDir Path dir)
             throws Exception {
-        HashMap<Integer, Double> displacements = runChemotaxis(dir, "down", "-100");
+        HashMap<Integer, Double> displacements = runChemotaxis(dir, "down", "-20", 1);
         assertEquals(6, displacements.size());
         for (double displacement : displacements.values()) {
             assertTrue(displacement < -2, "displacement " + displacement);
@@ -426,7 +428,7 @@ public class PottsEnvironmentIntegrationTest {
 
     @Test
     public void chemotaxis_zeroLambda_doesNotDrift(@TempDir Path dir) throws Exception {
-        HashMap<Integer, Double> displacements = runChemotaxis(dir, "none", "0");
+        HashMap<Integer, Double> displacements = runChemotaxis(dir, "none", "0", 1);
         double mean = 0;
         for (double displacement : displacements.values()) {
             mean += displacement / displacements.size();
@@ -435,15 +437,12 @@ public class PottsEnvironmentIntegrationTest {
     }
 
     @Test
-    public void chemotaxis_threeDimensional_failsAtSetup(@TempDir Path dir) throws Exception {
-        Path setup = dir.resolve("chemo3d.xml");
-        Files.writeString(setup, chemotaxisSetup("chemo3d", "100", 5));
-        assertThrows(
-                UnsupportedOperationException.class,
-                () ->
-                        ARCADE.main(
-                                new String[] {
-                                    "potts", setup.toString(), dir.toAbsolutePath() + "/"
-                                }));
+    public void chemotaxis_threeDimensional_movesCellsUpGradient(@TempDir Path dir)
+            throws Exception {
+        HashMap<Integer, Double> displacements = runChemotaxis(dir, "up3d", "20", 5);
+        assertEquals(6, displacements.size());
+        for (double displacement : displacements.values()) {
+            assertTrue(displacement > 2, "displacement " + displacement);
+        }
     }
 }

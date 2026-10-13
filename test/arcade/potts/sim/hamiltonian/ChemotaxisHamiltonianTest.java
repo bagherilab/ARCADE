@@ -6,7 +6,7 @@ import arcade.core.env.lattice.Lattice;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.lattice.PottsLattice;
-import arcade.potts.env.location.PottsLocation;
+import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSeries;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -36,34 +36,41 @@ public class ChemotaxisHamiltonianTest {
         return series;
     }
 
-    // Creates a mock cell with the given id, population, volume, and centroid.
-    static PottsCell makeCell(int id, int pop, double volume, double[] centroid) {
+    // Creates a mock potts with the given ids array.
+    static Potts makePotts(int[][][] ids) {
+        Potts potts = mock(Potts.class);
+        potts.ids = ids;
+        return potts;
+    }
+
+    // Creates a mock cell with the given id and population.
+    static PottsCell makeCell(int id, int pop) {
         PottsCell cell = mock(PottsCell.class);
-        PottsLocation location = mock(PottsLocation.class);
-        doReturn(volume).when(location).getVolume();
-        doReturn(centroid).when(location).getCentroid();
         doReturn(id).when(cell).getID();
         doReturn(pop).when(cell).getPop();
-        doReturn(location).when(cell).getLocation();
         return cell;
     }
 
-    // Creates a 2D lattice with values a + bx * x + by * y.
-    static PottsLattice makeLattice(double a, double bx, double by) {
-        PottsLattice lattice = new PottsLattice(10, 10, 1, 1, 1, new MiniBox());
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                lattice.getField()[0][i][j] = a + bx * i + by * j;
+    // Creates a lattice with values a + bx * x + by * y + bz * z.
+    static PottsLattice makeLattice(int height, double a, double bx, double by, double bz) {
+        PottsLattice lattice = new PottsLattice(7, 7, height, 1, 1, new MiniBox());
+        for (int k = 0; k < height; k++) {
+            for (int i = 0; i < 7; i++) {
+                for (int j = 0; j < 7; j++) {
+                    lattice.getField()[k][i][j] = a + bx * i + by * j + bz * k;
+                }
             }
         }
         return lattice;
     }
 
-    // Creates a term with cell 1 (population A) registered and lattices X and Y set.
+    // Creates a term for the ids array, with cells 1 (population A) and 2 (population B).
     static ChemotaxisHamiltonian makeTerm(
-            double lambdaAX, double lambdaAY, PottsLattice x, PottsLattice y) {
-        ChemotaxisHamiltonian ch = new ChemotaxisHamiltonian(makeSeries(lambdaAX, lambdaAY, 0));
-        ch.register(makeCell(1, 1, 9, new double[] {4, 5, 0}));
+            int[][][] ids, double lambdaAX, double lambdaAY, PottsLattice x, PottsLattice y) {
+        ChemotaxisHamiltonian ch =
+                new ChemotaxisHamiltonian(makeSeries(lambdaAX, lambdaAY, 0), makePotts(ids));
+        ch.register(makeCell(1, 1));
+        ch.register(makeCell(2, 2));
         HashMap<String, Lattice> lattices = new HashMap<>();
         lattices.put("X", x);
         lattices.put("Y", y);
@@ -71,128 +78,150 @@ public class ChemotaxisHamiltonianTest {
         return ch;
     }
 
+    // Creates a 2D ids array with cell 1 at (2, 3) and (3, 3).
+    static int[][][] makeIds() {
+        int[][][] ids = new int[1][7][7];
+        ids[0][2][3] = 1;
+        ids[0][3][3] = 1;
+        return ids;
+    }
+
     @Test
     public void constructor_noPopulations_createsEmptyMaps() {
-        ChemotaxisHamiltonian ch = new ChemotaxisHamiltonian(mock(PottsSeries.class));
+        ChemotaxisHamiltonian ch =
+                new ChemotaxisHamiltonian(mock(PottsSeries.class), makePotts(new int[1][1][1]));
         assertNotNull(ch.configs);
         assertTrue(ch.popToLambdas.isEmpty());
     }
 
     @Test
-    public void constructor_givenSeries_setsLambdas() {
-        ChemotaxisHamiltonian ch = new ChemotaxisHamiltonian(makeSeries(3, -2, 5));
+    public void constructor_givenSeries_setsLambdasAndIds() {
+        int[][][] ids = makeIds();
+        ChemotaxisHamiltonian ch = new ChemotaxisHamiltonian(makeSeries(3, -2, 5), makePotts(ids));
         assertEquals(3, ch.popToLambdas.get(1).get("X"), EPSILON);
         assertEquals(-2, ch.popToLambdas.get(1).get("Y"), EPSILON);
         assertEquals(5, ch.popToLambdas.get(2).get("X"), EPSILON);
         assertEquals(0, ch.popToLambdas.get(2).get("Y"), EPSILON);
+        assertSame(ids, ch.ids);
     }
 
     @Test
     public void register_givenCell_addsConfig() {
-        ChemotaxisHamiltonian ch = new ChemotaxisHamiltonian(makeSeries(3, -2, 5));
-        PottsCell cell = makeCell(7, 2, 9, new double[] {0, 0, 0});
-        ch.register(cell);
-        assertSame(cell.getLocation(), ch.configs.get(7).location);
-        assertSame(ch.popToLambdas.get(2), ch.configs.get(7).lambdas);
+        ChemotaxisHamiltonian ch =
+                new ChemotaxisHamiltonian(makeSeries(3, -2, 5), makePotts(makeIds()));
+        ch.register(makeCell(7, 2));
+        assertSame(ch.popToLambdas.get(2), ch.configs.get(7));
     }
 
     @Test
     public void deregister_givenCell_removesConfig() {
-        ChemotaxisHamiltonian ch = new ChemotaxisHamiltonian(makeSeries(3, -2, 5));
-        PottsCell cell = makeCell(7, 2, 9, new double[] {0, 0, 0});
+        ChemotaxisHamiltonian ch =
+                new ChemotaxisHamiltonian(makeSeries(3, -2, 5), makePotts(makeIds()));
+        PottsCell cell = makeCell(7, 2);
         ch.register(cell);
         ch.deregister(cell);
         assertFalse(ch.configs.containsKey(7));
     }
 
     @Test
-    public void getGradient_linearField_returnsSlopeEverywhere() {
-        double[][] field = makeLattice(1, 2, -3).getField()[0];
-        for (double[] position : new double[][] {{4, 5}, {4.3, 5.8}, {0, 0}, {9, 9}, {0.5, 8.5}}) {
-            double[] gradient = ChemotaxisHamiltonian.getGradient(field, position[0], position[1]);
-            assertEquals(2, gradient[0], EPSILON);
-            assertEquals(-3, gradient[1], EPSILON);
-        }
-    }
-
-    @Test
-    public void getGradient_quadraticField_interpolatesCentralDifferences() {
-        double[][] field = new double[10][10];
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                field[i][j] = i * i;
-            }
-        }
-        // Central difference at x = i is 2i, so the value at x = 4.25 is 8.5.
-        double[] gradient = ChemotaxisHamiltonian.getGradient(field, 4.25, 3);
-        assertEquals(8.5, gradient[0], EPSILON);
-        assertEquals(0, gradient[1], EPSILON);
-        // One-sided difference at the edge x = 0 is 1.
-        assertEquals(1, ChemotaxisHamiltonian.getGradient(field, 0, 3)[0], EPSILON);
-    }
-
-    @Test
-    public void getGradient_outsideArray_usesNearestEdge() {
-        double[][] field = makeLattice(0, 2, 1).getField()[0];
-        double[] gradient = ChemotaxisHamiltonian.getGradient(field, -3, 12);
-        assertEquals(2, gradient[0], EPSILON);
-        assertEquals(1, gradient[1], EPSILON);
-    }
-
-    @Test
     public void getDelta_gainVoxelUpGradient_returnsNegative() {
-        ChemotaxisHamiltonian ch = makeTerm(3, 0, makeLattice(0, 2, 0), makeLattice(0, 0, 0));
-        // Gaining voxel (6, 5) moves the centroid by (6 - 4) / (9 + 1) = 0.2 in x.
-        assertEquals(-3 * 2 * 0.2, ch.getDelta(0, 1, 6, 5, 0), EPSILON);
+        ChemotaxisHamiltonian ch =
+                makeTerm(makeIds(), 3, 0, makeLattice(1, 0, 2, 0, 0), makeLattice(1, 0, 0, 0, 0));
+        // Cell 1 gains (4, 3) from (3, 3): c = 8, c' = 6.
+        assertEquals(-3 * (8 - 6), ch.getDelta(0, 1, 4, 3, 0), EPSILON);
     }
 
     @Test
-    public void getDelta_loseVoxelDownGradient_returnsNegative() {
-        ChemotaxisHamiltonian ch = makeTerm(3, 0, makeLattice(0, 2, 0), makeLattice(0, 0, 0));
-        // Losing voxel (2, 5) moves the centroid by -(2 - 4) / (9 - 1) = 0.25 in x.
-        assertEquals(-3 * 2 * 0.25, ch.getDelta(1, 0, 2, 5, 0), EPSILON);
+    public void getDelta_gainVoxelDownGradient_returnsPositive() {
+        ChemotaxisHamiltonian ch =
+                makeTerm(makeIds(), 3, 0, makeLattice(1, 0, 2, 0, 0), makeLattice(1, 0, 0, 0, 0));
+        // Cell 1 gains (1, 3) from (2, 3): c = 2, c' = 4.
+        assertEquals(-3 * (2 - 4), ch.getDelta(0, 1, 1, 3, 0), EPSILON);
+    }
+
+    @Test
+    public void getDelta_gainVoxelWithSeveralNeighbors_usesMeanOfNeighbors() {
+        int[][][] ids = makeIds();
+        ids[0][3][4] = 1;
+        ChemotaxisHamiltonian ch =
+                makeTerm(ids, 3, 0, makeLattice(1, 0, 2, 1, 0), makeLattice(1, 0, 0, 0, 0));
+        // Cell 1 gains (2, 4) from (2, 3) and (3, 4): c = 8, c' = (7 + 10) / 2.
+        assertEquals(-3 * (8 - 8.5), ch.getDelta(0, 1, 2, 4, 0), EPSILON);
+    }
+
+    @Test
+    public void getDelta_loseVoxelUpGradient_returnsPositive() {
+        ChemotaxisHamiltonian ch =
+                makeTerm(makeIds(), 3, 0, makeLattice(1, 0, 2, 0, 0), makeLattice(1, 0, 0, 0, 0));
+        // Cell 1 loses (3, 3) and retracts to (2, 3): c = 6, c' = 4.
+        assertEquals(-3 * (4 - 6), ch.getDelta(1, 0, 3, 3, 0), EPSILON);
+    }
+
+    @Test
+    public void getDelta_loseIsolatedVoxel_returnsZero() {
+        int[][][] ids = new int[1][7][7];
+        ids[0][3][3] = 1;
+        ChemotaxisHamiltonian ch =
+                makeTerm(ids, 3, 0, makeLattice(1, 0, 2, 0, 0), makeLattice(1, 0, 0, 0, 0));
+        assertEquals(0, ch.getDelta(1, 0, 3, 3, 0), EPSILON);
     }
 
     @Test
     public void getDelta_negativeLambda_returnsPositiveUpGradient() {
-        ChemotaxisHamiltonian ch = makeTerm(-3, 0, makeLattice(0, 2, 0), makeLattice(0, 0, 0));
-        assertEquals(3 * 2 * 0.2, ch.getDelta(0, 1, 6, 5, 0), EPSILON);
+        ChemotaxisHamiltonian ch =
+                makeTerm(makeIds(), -3, 0, makeLattice(1, 0, 2, 0, 0), makeLattice(1, 0, 0, 0, 0));
+        assertEquals(3 * (8 - 6), ch.getDelta(0, 1, 4, 3, 0), EPSILON);
     }
 
     @Test
     public void getDelta_multipleLayers_sumsLayers() {
-        ChemotaxisHamiltonian ch = makeTerm(3, 4, makeLattice(0, 2, 0), makeLattice(0, 0, 1));
-        // Gaining voxel (6, 7) moves the centroid by (0.2, 0.2).
-        double expected = -3 * 2 * 0.2 - 4 * 1 * 0.2;
-        assertEquals(expected, ch.getDelta(0, 1, 6, 7, 0), EPSILON);
+        ChemotaxisHamiltonian ch =
+                makeTerm(makeIds(), 3, 4, makeLattice(1, 0, 2, 0, 0), makeLattice(1, 5, 0, 0, 0));
+        // Layer Y is uniform, so only layer X contributes.
+        assertEquals(-3 * (8 - 6), ch.getDelta(0, 1, 4, 3, 0), EPSILON);
+        ch = makeTerm(makeIds(), 3, 4, makeLattice(1, 0, 2, 0, 0), makeLattice(1, 0, 1, 0, 0));
+        assertEquals(-3 * (8 - 6) - 4 * (4 - 3), ch.getDelta(0, 1, 4, 3, 0), EPSILON);
     }
 
     @Test
     public void getDelta_betweenCells_sumsSourceAndTarget() {
-        ChemotaxisHamiltonian ch = makeTerm(3, 0, makeLattice(0, 2, 0), makeLattice(0, 0, 0));
-        ch.register(makeCell(2, 1, 4, new double[] {7, 5, 0}));
-        // Cell 1 gains (6, 5): -3 * 2 * 0.2. Cell 2 loses (6, 5): -(6 - 7) / 3 in x.
-        double expected = -3 * 2 * 0.2 - 3 * 2 * (1.0 / 3);
-        assertEquals(expected, ch.getDelta(2, 1, 6, 5, 0), EPSILON);
+        int[][][] ids = makeIds();
+        ids[0][4][3] = 2;
+        ids[0][5][3] = 2;
+        ChemotaxisHamiltonian ch =
+                makeTerm(ids, 3, 0, makeLattice(1, 0, 2, 0, 0), makeLattice(1, 0, 0, 0, 0));
+        // Cell 1 (lambda 3) gains (4, 3) from (3, 3): -3 * (8 - 6).
+        // Cell 2 (lambda 0) loses (4, 3): 0.
+        assertEquals(-3 * (8 - 6), ch.getDelta(2, 1, 4, 3, 0), EPSILON);
+        // Cell 2 (lambda 0) gains (3, 3): 0. Cell 1 loses (3, 3) to (2, 3): -3 * (4 - 6).
+        assertEquals(-3 * (4 - 6), ch.getDelta(1, 2, 3, 3, 0), EPSILON);
     }
 
     @Test
     public void getDelta_zeroLambda_returnsZero() {
-        ChemotaxisHamiltonian ch = makeTerm(0, 0, makeLattice(0, 2, 0), makeLattice(0, 0, 1));
-        assertEquals(0, ch.getDelta(0, 1, 6, 7, 0), EPSILON);
+        ChemotaxisHamiltonian ch =
+                makeTerm(makeIds(), 0, 0, makeLattice(1, 0, 2, 0, 0), makeLattice(1, 0, 1, 0, 0));
+        assertEquals(0, ch.getDelta(0, 1, 4, 3, 0), EPSILON);
     }
 
     @Test
-    public void getDelta_lastVoxel_returnsZero() {
-        ChemotaxisHamiltonian ch = new ChemotaxisHamiltonian(makeSeries(3, 0, 0));
-        ch.register(makeCell(1, 1, 1, new double[] {4, 5, 0}));
-        ch.setLattices(new HashMap<>());
-        assertEquals(0, ch.getDelta(1, 0, 4, 5, 0), EPSILON);
+    public void getDelta_threeDimensional_usesNeighborsAboveAndBelow() {
+        int[][][] ids = new int[3][7][7];
+        ids[0][3][3] = 1;
+        ids[2][3][3] = 1;
+        ChemotaxisHamiltonian ch =
+                makeTerm(ids, 3, 0, makeLattice(3, 0, 0, 0, 2), makeLattice(3, 0, 0, 0, 0));
+        // Cell 1 gains (3, 3, 1) from (3, 3, 0) and (3, 3, 2): c = 2, c' = (0 + 4) / 2.
+        assertEquals(0, ch.getDelta(0, 1, 3, 3, 1), EPSILON);
+        ids[2][3][3] = 0;
+        // Cell 1 gains (3, 3, 1) from (3, 3, 0): c = 2, c' = 0.
+        assertEquals(-3 * 2, ch.getDelta(0, 1, 3, 3, 1), EPSILON);
     }
 
     @Test
     public void getDelta_regions_returnsZero() {
-        ChemotaxisHamiltonian ch = makeTerm(3, 0, makeLattice(0, 2, 0), makeLattice(0, 0, 0));
-        assertEquals(0, ch.getDelta(1, 1, 2, 6, 5, 0), EPSILON);
+        ChemotaxisHamiltonian ch =
+                makeTerm(makeIds(), 3, 0, makeLattice(1, 0, 2, 0, 0), makeLattice(1, 0, 0, 0, 0));
+        assertEquals(0, ch.getDelta(1, 1, 2, 3, 3, 0), EPSILON);
     }
 }

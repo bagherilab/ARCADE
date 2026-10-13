@@ -7,28 +7,33 @@ import java.util.TreeMap;
 import arcade.core.env.lattice.Lattice;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.env.location.PottsLocation;
+import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSeries;
 import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
 
 /**
  * Implementation of {@link Hamiltonian} for chemotaxis energy.
  *
- * <p>The chemotaxis energy of a cell is {@code -LAMBDA_[LAYER] * c} summed over layers, where
- * {@code c} is the layer value at the cell centroid. The change in energy when a cell gains or
- * loses a voxel is approximated as {@code -LAMBDA_[LAYER] * grad(c) . dr}, where {@code dr} is the
- * shift in the centroid and {@code grad(c)} is the layer gradient at the centroid. Positive lambda
- * moves cells up the gradient and negative lambda moves cells down the gradient.
- *
- * <p>Gradients use central differences (one-sided at the edges of the array), interpolated
- * bilinearly to the centroid. The term is implemented for 2D simulations only.
+ * <p>When a cell gains a voxel, the chemotaxis energy is {@code -LAMBDA_[LAYER] * (c - c')} summed
+ * over layers, where {@code c} is the layer value at the voxel and {@code c'} is the mean layer
+ * value over the voxels of the cell adjacent to the voxel. When a cell loses a voxel, the energy is
+ * {@code -LAMBDA_[LAYER] * (c' - c)}. Positive lambda moves cells up the gradient and negative
+ * lambda moves cells down the gradient.
  */
 public class ChemotaxisHamiltonian implements Hamiltonian {
-    /** Map of hamiltonian config objects. */
-    final HashMap<Integer, ChemotaxisHamiltonianConfig> configs;
+    /** Offsets to adjacent voxels in x, y, and z. */
+    private static final int[][] OFFSETS = {
+        {1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1},
+    };
+
+    /** Map of cell id to lambda values for each layer. */
+    final HashMap<Integer, TreeMap<String, Double>> configs;
 
     /** Map of population to lambda values for each layer. */
     final HashMap<Integer, TreeMap<String, Double>> popToLambdas;
+
+    /** Potts array for ids. */
+    final int[][][] ids;
 
     /** Map of layer id to lattice. */
     Map<String, ? extends Lattice> lattices;
@@ -37,15 +42,18 @@ public class ChemotaxisHamiltonian implements Hamiltonian {
      * Creates the chemotaxis energy term for the {@code Potts} Hamiltonian.
      *
      * @param series the associated Series instance
+     * @param potts the associated Potts instance
      */
-    public ChemotaxisHamiltonian(PottsSeries series) {
+    public ChemotaxisHamiltonian(PottsSeries series, Potts potts) {
         configs = new HashMap<>();
         popToLambdas = new HashMap<>();
         initialize(series);
+
+        this.ids = potts.ids;
     }
 
     /**
-     * Sets the lattices used to calculate gradients.
+     * Sets the lattices used to calculate chemotaxis energy.
      *
      * @param lattices the map of layer id to lattice
      */
@@ -55,9 +63,7 @@ public class ChemotaxisHamiltonian implements Hamiltonian {
 
     @Override
     public void register(PottsCell cell) {
-        TreeMap<String, Double> lambdas = popToLambdas.get(cell.getPop());
-        PottsLocation location = (PottsLocation) cell.getLocation();
-        configs.put(cell.getID(), new ChemotaxisHamiltonianConfig(location, lambdas));
+        configs.put(cell.getID(), popToLambdas.get(cell.getPop()));
     }
 
     @Override
@@ -69,13 +75,13 @@ public class ChemotaxisHamiltonian implements Hamiltonian {
      * {@inheritDoc}
      *
      * <p>Chemotaxis energy is calculated by taking the sum of source and target chemotaxis
-     * energies. Source energy is calculated from the centroid shift when the voxel is removed.
-     * Target energy is calculated from the centroid shift when the voxel is added.
+     * energies. Source energy is calculated for the cell losing the voxel. Target energy is
+     * calculated for the cell gaining the voxel.
      */
     @Override
     public double getDelta(int sourceID, int targetID, int x, int y, int z) {
-        double source = getChemotaxis(sourceID, x, y, -1);
-        double target = getChemotaxis(targetID, x, y, 1);
+        double source = getChemotaxis(sourceID, x, y, z, -1);
+        double target = getChemotaxis(targetID, x, y, z, 1);
         return source + target;
     }
 
@@ -92,85 +98,55 @@ public class ChemotaxisHamiltonian implements Hamiltonian {
     /**
      * Gets chemotaxis energy for voxel added or removed.
      *
-     * <p>Chemotaxis for non-cell voxels is zero.
+     * <p>Chemotaxis for non-cell voxels, and for cells with no voxels adjacent to the voxel, is
+     * zero.
      *
      * @param id the voxel id
      * @param x the x coordinate
      * @param y the y coordinate
+     * @param z the z coordinate
      * @param change the direction of change (add = +1, remove = -1)
      * @return the energy
      */
-    double getChemotaxis(int id, int x, int y, int change) {
+    double getChemotaxis(int id, int x, int y, int z, int change) {
         if (id <= 0) {
             return 0;
         }
 
-        ChemotaxisHamiltonianConfig config = configs.get(id);
-        double volume = config.location.getVolume() + change;
-        if (volume <= 0) {
-            return 0;
-        }
-
-        double[] centroid = config.location.getCentroid();
-        double dx = change * (x - centroid[0]) / volume;
-        double dy = change * (y - centroid[1]) / volume;
-
         double energy = 0;
-        for (Map.Entry<String, Double> entry : config.lambdas.entrySet()) {
+        for (Map.Entry<String, Double> entry : configs.get(id).entrySet()) {
             double lambda = entry.getValue();
             if (lambda == 0) {
                 continue;
             }
-            double[][] field = lattices.get(entry.getKey()).getField()[0];
-            double[] gradient = getGradient(field, centroid[0], centroid[1]);
-            energy -= lambda * (gradient[0] * dx + gradient[1] * dy);
+
+            double[][][] field = lattices.get(entry.getKey()).getField();
+            double sum = 0;
+            int count = 0;
+            for (int[] offset : OFFSETS) {
+                int k = z + offset[2];
+                int i = x + offset[0];
+                int j = y + offset[1];
+                if (k < 0
+                        || k >= ids.length
+                        || i < 0
+                        || i >= ids[k].length
+                        || j < 0
+                        || j >= ids[k][i].length
+                        || ids[k][i][j] != id) {
+                    continue;
+                }
+                sum += field[k][i][j];
+                count++;
+            }
+            if (count == 0) {
+                continue;
+            }
+
+            energy -= lambda * change * (field[z][x][y] - sum / count);
         }
 
         return energy;
-    }
-
-    /**
-     * Gets the gradient of a field at a position between voxels.
-     *
-     * <p>Gradients at voxels use central differences, or one-sided differences at the edges of the
-     * array, and are interpolated bilinearly to the position. Positions outside the array are moved
-     * to the nearest edge.
-     *
-     * @param field the 2D field
-     * @param x the x position
-     * @param y the y position
-     * @return the gradient in x and y [value/voxel]
-     */
-    static double[] getGradient(double[][] field, double x, double y) {
-        int length = field.length;
-        int width = field[0].length;
-        double px = Math.max(0, Math.min(length - 1, x));
-        double py = Math.max(0, Math.min(width - 1, y));
-        int i0 = (int) Math.floor(px);
-        int j0 = (int) Math.floor(py);
-        int i1 = Math.min(i0 + 1, length - 1);
-        int j1 = Math.min(j0 + 1, width - 1);
-        double tx = px - i0;
-        double ty = py - j0;
-
-        int[][] corners = {{i0, j0}, {i1, j0}, {i0, j1}, {i1, j1}};
-        double[] weights = {(1 - tx) * (1 - ty), tx * (1 - ty), (1 - tx) * ty, tx * ty};
-        double[] gradient = new double[2];
-
-        for (int c = 0; c < corners.length; c++) {
-            int i = corners[c][0];
-            int j = corners[c][1];
-            int im = Math.max(i - 1, 0);
-            int ip = Math.min(i + 1, length - 1);
-            int jm = Math.max(j - 1, 0);
-            int jp = Math.min(j + 1, width - 1);
-            double gx = (ip == im) ? 0 : (field[ip][j] - field[im][j]) / (ip - im);
-            double gy = (jp == jm) ? 0 : (field[i][jp] - field[i][jm]) / (jp - jm);
-            gradient[0] += weights[c] * gx;
-            gradient[1] += weights[c] * gy;
-        }
-
-        return gradient;
     }
 
     /**

@@ -47,7 +47,7 @@ public final class Potts2D extends Potts {
             case PERSISTENCE:
                 return new PersistenceHamiltonian(series);
             case CHEMOTAXIS:
-                return new ChemotaxisHamiltonian(series);
+                return new ChemotaxisHamiltonian(series, this);
             default:
                 return null;
         }

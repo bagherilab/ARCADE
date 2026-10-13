@@ -50,7 +50,7 @@ Valid options include:
 : Persistence energy (2D and 3D)
 
 `chemotaxis`
-: Chemotaxis energy up or down the gradients of [lattice layers]({{site.baseurl}}/setup/lattice_layers_potts) (2D only)
+: Chemotaxis energy up or down the gradients of [lattice layers]({{site.baseurl}}/setup/lattice_layers_potts) (2D and 3D)
 
 To modify Hamiltonian term parameters, use the [`potts.parameter`](#implementation-parameters) tag with the corresponding `term` attribute.
 
@@ -66,8 +66,8 @@ _Specifies a Hamiltonian with the volume and adhesion terms._
 ### Chemotaxis term
 
 The chemotaxis term moves cells up (positive lambda) or down (negative lambda) the gradient of each layer.
-When a cell gains or loses a voxel, the change in energy is -`LAMBDA_[LAYER]` × ∇c · Δr, where ∇c is the layer gradient at the cell centroid (per voxel) and Δr is the shift in the cell centroid (in voxels).
-The centroid shift from a single voxel is about the distance of the voxel from the centroid divided by the cell volume, so the same lambda moves larger cells more slowly.
+When a cell gains a voxel, the change in energy is -`LAMBDA_[LAYER]` × (c - c'), where c is the layer value at the voxel and c' is the mean layer value over the voxels of the cell adjacent to it.
+When a cell loses a voxel, the change in energy is -`LAMBDA_[LAYER]` × (c' - c).
 
 | PARAMETER | DEFAULT | UNITS | DESCRIPTION |
 | --------- | ------- | ----- | ----------- |
@@ -81,8 +81,8 @@ _Specifies chemotaxis of population A up the PDGF gradient and population B down
 
 ```xml
 <potts.term id="chemotaxis" />
-<potts.parameter term="chemotaxis" id="LAMBDA_PDGF" value="2000" target="A" />
-<potts.parameter term="chemotaxis" id="LAMBDA_PDGF" value="-2000" target="B" />
+<potts.parameter term="chemotaxis" id="LAMBDA_PDGF" value="20" target="A" />
+<potts.parameter term="chemotaxis" id="LAMBDA_PDGF" value="-20" target="B" />
 ```
 
 ## Implementation parameters
