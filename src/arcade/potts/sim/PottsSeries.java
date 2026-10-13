@@ -290,11 +290,13 @@ public final class PottsSeries extends Series {
                 population.put("(REGION)" + TAG_SEPARATOR + region, "");
             }
 
-            // Extract process versions.
-            Box processes = box.filterBoxByTag("PROCESS");
-            MiniBox processVersions = processes.getIdValForTagAtt("PROCESS", "version");
-            for (String process : processes.getKeys()) {
-                String version = processVersions.get(process);
+            // Extract processes and process versions, if given.
+            HashSet<String> processes = box.filterTags("PROCESS");
+            MiniBox processVersions =
+                    box.filterBoxByTag("PROCESS").getIdValForTagAtt("PROCESS", "version");
+            for (String process : processes) {
+                String version =
+                        processVersions.contains(process) ? processVersions.get(process) : "";
                 population.put("(PROCESS)" + TAG_SEPARATOR + process, version);
             }
 

@@ -1121,6 +1121,20 @@ public class PottsSeriesTest {
         assertEquals(versions[1], box.get("(PROCESS)" + TAG_SEPARATOR + processes[1]));
     }
 
+    @Test
+    public void updatePopulation_withProcessNoVersion_setsTag() {
+        String process = randomString();
+
+        Box[] boxes = new Box[] {new Box()};
+        boxes[0].add("id", POPULATION_ID_1);
+        boxes[0].addTag(process, "PROCESS");
+
+        PottsSeries series = makeSeriesForPopulation(boxes);
+
+        MiniBox box = series.populations.get(POPULATION_ID_1);
+        assertEquals("", box.get("(PROCESS)" + TAG_SEPARATOR + process));
+    }
+
     // Creates a series with the given layers and the ds and dt of the test.
     private PottsSeries makeSeriesWithLayers(String... layers) throws Exception {
         PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);

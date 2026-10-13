@@ -2,6 +2,7 @@ package arcade.potts.integration;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -220,5 +221,90 @@ public class PottsEnvironmentIntegrationTest {
                                         degraderSnapshot(),
                                         "ECM"));
         assertTrue(e.getMessage().contains("MPP"));
+    }
+
+    // Creates a setup with one population secreting into a diffusing layer X.
+    static String secretionSetup(String name, String population) {
+        return "<set><series name=\""
+                + name
+                + "\" ticks=\"2\" interval=\"1\" start=\"0\" end=\"0\""
+                + " length=\"40\" width=\"40\" height=\"1\" ds=\"2\" dt=\"0.25\">"
+                + "<populations><population id=\"A\" init=\"4\">"
+                + "<population.parameter id=\"CRITICAL_VOLUME\" value=\"400\" />"
+                + "<population.parameter id=\"CRITICAL_HEIGHT\" value=\"2\" />"
+                + population
+                + "</population></populations>"
+                + "<layers><layer id=\"X\">"
+                + "<layer.operation id=\"DIFFUSER\" />"
+                + "<layer.parameter operation=\"diffuser\" id=\"DIFFUSIVITY\" value=\"1\" />"
+                + "</layer></layers></series></set>";
+    }
+
+    // Runs the secretion setup and returns {number of cells, total amount of X} at ticks 0 to 2.
+    static double[][] runSecretion(Path dir, String name, String population) throws Exception {
+        Path setup = dir.resolve(name + ".xml");
+        Files.writeString(setup, secretionSetup(name, population));
+        ARCADE.main(
+                new String[] {
+                    "potts", setup.toString(), dir.toAbsolutePath() + "/", "--savelayers"
+                });
+
+        double[][] results = new double[3][2];
+        for (int tick = 0; tick < 3; tick++) {
+            String prefix = String.format("%s_0000_%06d", name, tick);
+            String cells = Files.readString(dir.resolve(prefix + ".CELLS.json"));
+            String layers = Files.readString(dir.resolve(prefix + ".LAYERS.json"));
+            HashMap<String, double[][][]> fields =
+                    new Gson()
+                            .fromJson(
+                                    layers,
+                                    new TypeToken<HashMap<String, double[][][]>>() {}.getType());
+            results[tick][0] = new Gson().fromJson(cells, ArrayList.class).size();
+            results[tick][1] = total(fields.get("X")) * 2 * 2 * 2;
+        }
+        return results;
+    }
+
+    @Test
+    public void secretion_withProcess_addsRatePerCellEachTick(@TempDir Path dir) throws Exception {
+        double[][] results =
+                runSecretion(
+                        dir,
+                        "secrete",
+                        "<population.process id=\"SECRETION\" />"
+                                + "<population.parameter process=\"secretion\" id=\"RATE_X\""
+                                + " value=\"100\" />");
+        // RATE = 100 per hour, dt = 0.25 hour, so each cell adds 25 per tick.
+        assertTrue(results[0][0] > 0);
+        assertEquals(0, results[0][1], 0);
+        assertEquals(25 * results[0][0], results[1][1], 1E-9);
+        assertEquals(25 * (results[0][0] + results[1][0]), results[2][1], 1E-9);
+    }
+
+    @Test
+    public void secretion_noProcess_addsNothing(@TempDir Path dir) throws Exception {
+        double[][] results =
+                runSecretion(
+                        dir,
+                        "noprocess",
+                        "<population.parameter process=\"secretion\" id=\"RATE_X\""
+                                + " value=\"100\" />");
+        assertTrue(results[0][0] > 0);
+        assertEquals(0, results[2][1], 0);
+    }
+
+    @Test
+    public void secretion_unknownLayer_failsAtSetup(@TempDir Path dir) {
+        IllegalArgumentException e =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () ->
+                                runSecretion(
+                                        dir,
+                                        "typo",
+                                        "<population.process id=\"SECRETION\" />"
+                                                + "<population.parameter process=\"secretion\""
+                                                + " id=\"RATE_Y\" value=\"100\" />"));
+        assertTrue(e.getMessage().contains("RATE_Y"));
     }
 }
