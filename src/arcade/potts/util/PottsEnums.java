@@ -77,7 +77,10 @@ public final class PottsEnums {
     /** Process domain codes for potts simulations. */
     public enum Domain implements ProcessDomain {
         /** Code for undefined domain. */
-        UNDEFINED
+        UNDEFINED,
+
+        /** Code for secretion domain. */
+        SECRETION
     }
 
     /** Cell region codes for potts simulations. */
