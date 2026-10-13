@@ -233,8 +233,11 @@ public final class PottsEnums {
         /** Code for undefined category. */
         UNDEFINED,
 
-        /** Code for diffusion (with decay) operation. */
-        DIFFUSER;
+        /** Code for diffusion operation. */
+        DIFFUSER,
+
+        /** Code for decay operation. */
+        DECAYER;
 
         /**
          * Randomly selects a {@code Category}, excluding {@code UNDEFINED}.
