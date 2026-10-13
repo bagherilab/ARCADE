@@ -129,7 +129,10 @@ public final class PottsEnums {
         SUBSTRATE,
 
         /** Code for persistence term. */
-        PERSISTENCE;
+        PERSISTENCE,
+
+        /** Code for chemotaxis term. */
+        CHEMOTAXIS;
 
         /**
          * Randomly selects a {@code Term}.

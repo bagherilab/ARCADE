@@ -25,12 +25,14 @@ import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocationContainer;
 import arcade.potts.env.location.PottsLocationFactory;
 import arcade.potts.env.location.Voxel;
+import arcade.potts.sim.hamiltonian.ChemotaxisHamiltonian;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.Series.SEED_OFFSET;
 import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
 import static arcade.potts.util.PottsEnums.Ordering;
+import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsSimulationTest {
     static final long RANDOM_SEED = randomSeed();
@@ -414,6 +416,7 @@ public class PottsSimulationTest {
     public void setupEnvironment_noLayers_createsNoLattices() {
         Series series = createSeries(new int[0], new String[0]);
         PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.potts = mock(Potts.class);
         sim.setupEnvironment();
         assertEquals(0, sim.getLatticeKeys().size());
         assertNull(sim.getLattice("PDGF"));
@@ -427,9 +430,27 @@ public class PottsSimulationTest {
         series.layers = new HashMap<>();
         series.layers.put("X", layer);
         PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.potts = mock(Potts.class);
         sim.setupEnvironment();
         assertEquals(Set.of("X"), sim.getLatticeKeys());
         assertTrue(sim.getLattice("X") instanceof PottsLattice);
+    }
+
+    @Test
+    public void setupEnvironment_withChemotaxis_setsLattices() {
+        Series series = createSeries(new int[0], new String[0]);
+        MiniBox layer = new MiniBox();
+        layer.put("INITIAL_CONCENTRATION", 0);
+        series.layers = new HashMap<>();
+        series.layers.put("X", layer);
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.potts = mock(Potts.class);
+        ChemotaxisHamiltonian chemotaxis = mock(ChemotaxisHamiltonian.class);
+        doReturn(chemotaxis).when(sim.potts).getHamiltonian(Term.CHEMOTAXIS);
+
+        sim.setupEnvironment();
+
+        verify(chemotaxis).setLattices(sim.lattices);
     }
 
     @Test
@@ -464,6 +485,7 @@ public class PottsSimulationTest {
         doReturn(fields).when(loader).loadLayers();
         series.loader = loader;
         PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.potts = mock(Potts.class);
         sim.setupEnvironment();
         assertEquals(7.0, sim.getLattice("X").getField()[0][0][0], 0);
     }
@@ -477,6 +499,7 @@ public class PottsSimulationTest {
         series.layers.put("B", layer);
         series.layers.put("A", layer);
         PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.potts = mock(Potts.class);
         sim.setupEnvironment();
         assertEquals(List.of("A", "B"), new ArrayList<>(sim.getLayers().keySet()));
         assertSame(sim.getLattice("A").getField(), sim.getLayers().get("A"));
