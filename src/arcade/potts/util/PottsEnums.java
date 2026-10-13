@@ -36,7 +36,7 @@ public final class PottsEnums {
         /** Stepping order for cells. */
         CELLS,
 
-        /** Stepping order for lattices. */
+        /** Stepping order for lattices (add pending amounts, diffuse, decay). */
         LATTICES,
 
         /** Stepping order for lattice operations that read other lattices. */
