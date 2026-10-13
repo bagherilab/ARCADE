@@ -16,11 +16,12 @@ import arcade.potts.sim.PottsSimulation;
 /**
  * Extension of {@link PottsProcess} for secretion into lattice layers.
  *
- * <p>Each tick, the cell secretes {@code RATE_[LAYER]} (amount per tick) into each layer. The
- * amount is spread evenly over the cell's own voxels ({@code INSIDE}) or the voxels adjacent to the
- * cell that the cell does not own ({@code BOUNDARY}), as set by {@code REGION_[LAYER]}. Amounts are
- * added to the lattice with {@link PottsLattice#addDelta(List, double)}, so they are added to the
- * field at the next lattice step.
+ * <p>Each tick, the cell secretes {@code RATE_[LAYER]} (amount per tick) into each layer. The rate
+ * can be changed during the simulation with {@link #setRate(String, double)}. The amount is spread
+ * evenly over the cell's own voxels ({@code INSIDE}) or the voxels adjacent to the cell that the
+ * cell does not own ({@code BOUNDARY}), as set by {@code REGION_[LAYER]}. Amounts are added to the
+ * lattice with {@link PottsLattice#addDelta(List, double)}, so they are added to the field at the
+ * next lattice step.
  */
 public class PottsProcessSecretion extends PottsProcess {
     /** Voxels that secreted amounts are added to. */
@@ -85,6 +86,23 @@ public class PottsProcessSecretion extends PottsProcess {
      */
     public Double getRate(String layer) {
         return rates.get(layer);
+    }
+
+    /**
+     * Sets the secretion rate for a layer.
+     *
+     * @param layer the layer id
+     * @param rate the secretion rate [amount/tick]
+     */
+    public void setRate(String layer, double rate) {
+        if (!rates.containsKey(layer)) {
+            throw new IllegalArgumentException("layer [ " + layer + " ] is not secreted");
+        }
+        if (!(rate >= 0)) {
+            throw new IllegalArgumentException(
+                    "secretion rate for layer [ " + layer + " ] must be >= 0");
+        }
+        rates.put(layer, rate);
     }
 
     /**

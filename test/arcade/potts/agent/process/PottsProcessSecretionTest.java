@@ -105,6 +105,30 @@ public class PottsProcessSecretionTest {
     }
 
     @Test
+    public void setRate_givenLayer_updatesRate() {
+        PottsProcessSecretion process =
+                new PottsProcessSecretion(makeCell(secretion("PDGF", 4, "BOUNDARY")));
+        process.setRate("PDGF", 7);
+        assertEquals(7, process.getRate("PDGF"), EPSILON);
+        assertEquals(Placement.BOUNDARY, process.getPlacement("PDGF"));
+    }
+
+    @Test
+    public void setRate_unknownLayer_throws() {
+        PottsProcessSecretion process =
+                new PottsProcessSecretion(makeCell(secretion("PDGF", 4, "BOUNDARY")));
+        assertThrows(IllegalArgumentException.class, () -> process.setRate("ECM", 1));
+    }
+
+    @Test
+    public void setRate_negativeRate_throws() {
+        PottsProcessSecretion process =
+                new PottsProcessSecretion(makeCell(secretion("PDGF", 4, "BOUNDARY")));
+        assertThrows(IllegalArgumentException.class, () -> process.setRate("PDGF", -1));
+        assertEquals(4, process.getRate("PDGF"), EPSILON);
+    }
+
+    @Test
     public void getBoundaryVoxels_twoDimensional_returnsUniqueAdjacentVoxels() {
         Voxel[] voxels = {new Voxel(2, 2, 0), new Voxel(2, 3, 0)};
         PottsProcessSecretion process = new PottsProcessSecretion(makeCell(new MiniBox(), voxels));
