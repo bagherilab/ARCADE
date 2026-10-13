@@ -2,12 +2,20 @@ package arcade.potts.env.lattice;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import org.junit.jupiter.api.Test;
+import sim.engine.Schedule;
 import arcade.core.util.MiniBox;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.Voxel;
+import arcade.potts.env.operation.PottsOperationDecayer;
+import arcade.potts.env.operation.PottsOperationDiffuser;
+import arcade.potts.sim.PottsSimulation;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static arcade.potts.util.PottsEnums.Category;
+import static arcade.potts.util.PottsEnums.Ordering;
 
 public class PottsLatticeTest {
     private static final double EPSILON = 1E-12;
@@ -73,5 +81,78 @@ public class PottsLatticeTest {
         lattice.setField(2.0);
         lattice.updateValue(mockLocation(new Voxel(1, 1, 0)), Double.NaN);
         assertEquals(2.0, lattice.getField()[0][1][1], EPSILON);
+    }
+
+    static MiniBox operationParameters(String... operations) {
+        MiniBox parameters = new MiniBox();
+        for (String operation : operations) {
+            parameters.put("(OPERATION)" + TAG_SEPARATOR + operation, "");
+        }
+        parameters.put("diffuser/DIFFUSIVITY", 10.0);
+        parameters.put("diffuser/MAX_SUBSTEP", 2.0);
+        parameters.put("decayer/DECAY_RATE", 0.3);
+        return parameters;
+    }
+
+    @Test
+    public void constructor_noOperations_hasNoOperations() {
+        PottsLattice lattice = makeLattice(3, 3);
+        assertNull(lattice.getOperation(Category.DIFFUSER));
+        assertNull(lattice.getOperation(Category.DECAYER));
+    }
+
+    @Test
+    public void constructor_diffuserAndDecayer_createsOperations() {
+        MiniBox parameters = operationParameters("DIFFUSER", "DECAYER");
+        PottsLattice lattice = new PottsLattice(3, 3, 1, 3.0, 1.0 / 60, parameters);
+        assertTrue(lattice.getOperation(Category.DIFFUSER) instanceof PottsOperationDiffuser);
+        assertTrue(lattice.getOperation(Category.DECAYER) instanceof PottsOperationDecayer);
+    }
+
+    @Test
+    public void constructor_unsupportedOperation_throws() {
+        MiniBox undefined = operationParameters("UNDEFINED");
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new PottsLattice(3, 3, 1, 3.0, 1.0 / 60, undefined));
+        MiniBox unknown = operationParameters("FOO");
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new PottsLattice(3, 3, 1, 3.0, 1.0 / 60, unknown));
+    }
+
+    @Test
+    public void schedule_called_schedulesAtLattices() {
+        PottsLattice lattice = makeLattice(3, 3);
+        Schedule schedule = mock(Schedule.class);
+        lattice.schedule(schedule);
+        verify(schedule).scheduleRepeating(lattice, Ordering.LATTICES.ordinal(), 1);
+    }
+
+    @Test
+    public void step_diffuserAndDecayer_diffusesThenDecays() {
+        PottsLattice lattice =
+                new PottsLattice(
+                        8, 6, 1, 3.0, 1.0 / 60, operationParameters("DIFFUSER", "DECAYER"));
+        PottsLattice expected =
+                new PottsLattice(8, 6, 1, 3.0, 1.0 / 60, operationParameters("DIFFUSER"));
+        Random rng = new Random(4);
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 6; j++) {
+                double v = rng.nextDouble();
+                lattice.getField()[0][i][j] = v;
+                expected.getField()[0][i][j] = v;
+            }
+        }
+
+        lattice.step(mock(PottsSimulation.class));
+        expected.getOperation(Category.DIFFUSER).step(null, null);
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 6; j++) {
+                double value = expected.getField()[0][i][j] * Math.exp(-0.3);
+                assertEquals(value, lattice.getField()[0][i][j], EPSILON * value);
+            }
+        }
     }
 }
