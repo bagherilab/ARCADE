@@ -1076,4 +1076,16 @@ public class PottsSeriesTest {
         assertEquals(6, layer.getDouble("B"), EPSILON);
         assertEquals(4 * DT, layer.getDouble("C"), EPSILON);
     }
+
+    @Test
+    public void updateLayers_givenOperation_addsOperationTag() {
+        Box box = new Box();
+        box.add("id", "PDGF");
+        box.addTag("DIFFUSER", "OPERATION");
+
+        PottsSeries series = makeSeriesForLayers(new Box[] {box}, new MiniBox(), new MiniBox());
+
+        MiniBox layer = series.layers.get("PDGF");
+        assertTrue(layer.contains("(OPERATION)" + TAG_SEPARATOR + "DIFFUSER"));
+    }
 }

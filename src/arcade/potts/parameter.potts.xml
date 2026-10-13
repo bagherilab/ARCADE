@@ -82,4 +82,11 @@
 
     <!-- default parameters for layers -->
     <layer id="INITIAL_CONCENTRATION" value="0" units="amount/um^3" description="initial layer concentration" />
+
+    <!-- diffuser operation parameters -->
+    <layer.operation operation="diffuser" id="DIFFUSIVITY" value="0" units="um^2/s" description="diffusivity of molecule" />
+    <layer.operation operation="diffuser" id="MAX_SUBSTEP" value="2" units="s" description="maximum diffusion substep" />
+
+    <!-- decayer operation parameters -->
+    <layer.operation operation="decayer" id="DECAY_RATE" value="0" units="1/hour" conversion="DT" description="decay rate of molecule" />
 </parameters>
