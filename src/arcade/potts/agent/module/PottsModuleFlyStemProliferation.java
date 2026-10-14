@@ -520,28 +520,32 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     /**
      * Updates the neuroblast (NB) contact-dependent growth rate.
      *
-     * <p>Growth is repressed as a function of NB contact using a Hill function. The number of
-     * interacting NBs is this cell's neighboring NBs (local coupling)
+     * <p>Growth is repressed by contact with neighboring NBs (local coupling) using a Hill
+     * function:
      *
-     * <p>The resulting repression factor scales the base growth rate, reducing growth as NB contact
-     * increases.
+     * <pre>
+     *     growthRate = baseGrowthRate * K^n / (K^n + N^n)
+     * </pre>
+     *
+     * <p>Here {@code N} is the number of distinct NBs adjacent to this cell (see {@link
+     * #countNBNeighbors}), {@code K} is {@link #nbContactHalfMax}, the neighbor count giving 50%
+     * repression, and {@code n} is {@link #nbContactHillN}, the Hill exponent controlling how
+     * steeply growth falls off. When {@code K = 0}, growth is unrepressed if {@code N = 0} and
+     * fully repressed otherwise.
      *
      * @param sim the simulation
      */
     protected void updateGrowthRateBasedOnOtherNBs(Simulation sim) {
-        int nbsInContact;
-        nbsInContact = countNBNeighbors(sim);
-
-        double neighborSignal = Math.max(0.0, (double) nbsInContact);
+        int nbsInContact = countNBNeighbors(sim);
 
         double kHalfMaxPowN = Math.pow(nbContactHalfMax, nbContactHillN);
-        double neighborSignalPowN = Math.pow(neighborSignal, nbContactHillN);
+        double nbsInContactPowN = Math.pow(nbsInContact, nbContactHillN);
 
         double hillRepression;
         if (kHalfMaxPowN == 0.0) {
-            hillRepression = (neighborSignal == 0.0) ? 1.0 : 0.0;
+            hillRepression = (nbsInContact == 0) ? 1.0 : 0.0;
         } else {
-            hillRepression = kHalfMaxPowN / (kHalfMaxPowN + neighborSignalPowN);
+            hillRepression = kHalfMaxPowN / (kHalfMaxPowN + nbsInContactPowN);
         }
 
         cellGrowthRate = cellGrowthRateBase * hillRepression;
