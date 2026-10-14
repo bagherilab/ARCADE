@@ -14,7 +14,7 @@ import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModuleApoptosis;
 import arcade.potts.agent.module.PottsModuleAutosis;
 import arcade.potts.agent.module.PottsModuleNecrosis;
-import arcade.potts.agent.module.PottsModuleProliferationWound;
+import arcade.potts.agent.module.PottsModuleProliferationWoundHealing;
 import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.agent.module.PottsModuleSenescence;
 import arcade.potts.env.location.Voxel;
@@ -23,20 +23,20 @@ import static org.mockito.Mockito.*;
 import static arcade.potts.util.PottsEnums.Domain;
 import static arcade.potts.util.PottsEnums.State;
 
-public class PottsCellWoundTest {
+public class PottsCellWoundHealingTest {
     private static final double EPSILON = 1E-10;
 
-    private PottsCellWoundFixture f;
+    private PottsCellWoundHealingFixture f;
 
-    // Minimal wound cell with configurable rules.
-    static final class WoundCell extends PottsCellWound {
+    // Minimal wound healing cell with configurable rules.
+    static final class WoundHealingCell extends PottsCellWoundHealing {
         boolean proliferate;
 
         boolean keep = true;
 
         int rulesCalls;
 
-        WoundCell(
+        WoundHealingCell(
                 PottsCellContainer container,
                 Location location,
                 Parameters parameters,
@@ -58,12 +58,12 @@ public class PottsCellWoundTest {
 
     @BeforeEach
     public final void setUp() {
-        f = new PottsCellWoundFixture();
+        f = new PottsCellWoundHealingFixture();
     }
 
-    // Creates a wound cell in the given state.
-    private WoundCell make(State state) {
-        return new WoundCell(f.container(state), f.location, f.parameters(), null);
+    // Creates a wound healing cell in the given state.
+    private WoundHealingCell make(State state) {
+        return new WoundHealingCell(f.container(state), f.location, f.parameters(), null);
     }
 
     // Creates a simulation state for stepping.
@@ -75,7 +75,7 @@ public class PottsCellWoundTest {
 
     @Test
     public void step_quiescent_appliesRulesThenProcessesThenModule() {
-        WoundCell cell = make(State.QUIESCENT);
+        WoundHealingCell cell = make(State.QUIESCENT);
         Process process = mock(Process.class);
         Module module = mock(Module.class);
         cell.processes.put(Domain.SECRETION, process);
@@ -92,7 +92,7 @@ public class PottsCellWoundTest {
 
     @Test
     public void step_proliferative_appliesRules() {
-        WoundCell cell = make(State.PROLIFERATIVE);
+        WoundHealingCell cell = make(State.PROLIFERATIVE);
         cell.module = mock(Module.class);
         cell.step(simstate());
         assertEquals(1, cell.rulesCalls);
@@ -100,7 +100,7 @@ public class PottsCellWoundTest {
 
     @Test
     public void step_senescent_skipsRules() {
-        WoundCell cell = make(State.SENESCENT);
+        WoundHealingCell cell = make(State.SENESCENT);
         Module module = mock(Module.class);
         cell.module = module;
         cell.step(simstate());
@@ -110,7 +110,7 @@ public class PottsCellWoundTest {
 
     @Test
     public void step_apoptotic_skipsRules() {
-        WoundCell cell = make(State.APOPTOTIC);
+        WoundHealingCell cell = make(State.APOPTOTIC);
         cell.module = mock(Module.class);
         cell.step(simstate());
         assertEquals(0, cell.rulesCalls);
@@ -118,7 +118,7 @@ public class PottsCellWoundTest {
 
     @Test
     public void step_rulesRemoveCell_skipsProcessesAndModule() {
-        WoundCell cell = make(State.QUIESCENT);
+        WoundHealingCell cell = make(State.QUIESCENT);
         cell.keep = false;
         Process process = mock(Process.class);
         Module module = mock(Module.class);
@@ -133,11 +133,11 @@ public class PottsCellWoundTest {
 
     @Test
     public void setState_givenState_updatesModule() {
-        WoundCell cell = make(State.QUIESCENT);
+        WoundHealingCell cell = make(State.QUIESCENT);
         assertTrue(cell.getModule() instanceof PottsModuleQuiescence);
 
         cell.setState(State.PROLIFERATIVE);
-        assertTrue(cell.getModule() instanceof PottsModuleProliferationWound);
+        assertTrue(cell.getModule() instanceof PottsModuleProliferationWoundHealing);
 
         cell.setState(State.SENESCENT);
         assertTrue(cell.getModule() instanceof PottsModuleSenescence);
@@ -157,10 +157,10 @@ public class PottsCellWoundTest {
 
     @Test
     public void make_noLinks_createsSamePopulationContainer() {
-        WoundCell cell = make(State.PROLIFERATIVE);
+        WoundHealingCell cell = make(State.PROLIFERATIVE);
         PottsCellContainer container = cell.make(20, State.QUIESCENT, f.random);
         assertEquals(20, container.id);
-        assertEquals(PottsCellWoundFixture.ID, container.parent);
+        assertEquals(PottsCellWoundHealingFixture.ID, container.parent);
         assertEquals(1, container.pop);
         assertEquals(3, container.divisions);
         assertEquals(3, cell.getDivisions());
@@ -249,7 +249,7 @@ public class PottsCellWoundTest {
 
     @Test
     public void checkSpontaneousSenescence_zeroRate_doesNotDraw() {
-        WoundCell cell = make(State.QUIESCENT);
+        WoundHealingCell cell = make(State.QUIESCENT);
         assertFalse(cell.checkSpontaneousSenescence(f.random));
         verify(f.random, never()).nextDouble();
         assertEquals(State.QUIESCENT, cell.getState());
@@ -258,7 +258,7 @@ public class PottsCellWoundTest {
     @Test
     public void checkSpontaneousSenescence_drawBelowRate_becomesSenescent() {
         f.box.put("SPONTANEOUS_SENESCENCE", 0.5);
-        WoundCell cell = make(State.QUIESCENT);
+        WoundHealingCell cell = make(State.QUIESCENT);
         assertTrue(cell.checkSpontaneousSenescence(f.random));
         assertEquals(State.SENESCENT, cell.getState());
     }
@@ -269,7 +269,7 @@ public class PottsCellWoundTest {
         PottsCell neighbor = mock(PottsCell.class);
         doReturn(State.SENESCENT).when(neighbor).getState();
         f.addNeighbor(8, 1, 2, neighbor);
-        WoundCell cell = make(State.QUIESCENT);
+        WoundHealingCell cell = make(State.QUIESCENT);
         assertTrue(cell.checkBystanderSenescence(f.random, f.sim));
         assertEquals(State.SENESCENT, cell.getState());
     }
@@ -277,7 +277,7 @@ public class PottsCellWoundTest {
     @Test
     public void checkBystanderSenescence_noSenescentNeighbor_doesNotDraw() {
         f.box.put("BYSTANDER_CONTACT", 0.5);
-        WoundCell cell = make(State.QUIESCENT);
+        WoundHealingCell cell = make(State.QUIESCENT);
         assertFalse(cell.checkBystanderSenescence(f.random, f.sim));
         verify(f.random, never()).nextDouble();
     }
@@ -287,7 +287,7 @@ public class PottsCellWoundTest {
         f.box.put("BYSTANDER_PARACRINE", 0.5);
         f.box.put("INF_BYSTANDER", 2);
         f.means.put("INF", 3.0);
-        WoundCell cell = make(State.QUIESCENT);
+        WoundHealingCell cell = make(State.QUIESCENT);
         assertTrue(cell.checkBystanderSenescence(f.random, f.sim));
         assertEquals(State.SENESCENT, cell.getState());
     }
@@ -297,7 +297,7 @@ public class PottsCellWoundTest {
         f.box.put("BYSTANDER_PARACRINE", 0.5);
         f.box.put("INF_BYSTANDER", 2);
         f.means.put("INF", 1.0);
-        WoundCell cell = make(State.QUIESCENT);
+        WoundHealingCell cell = make(State.QUIESCENT);
         assertFalse(cell.checkBystanderSenescence(f.random, f.sim));
         assertEquals(State.QUIESCENT, cell.getState());
     }
@@ -305,7 +305,7 @@ public class PottsCellWoundTest {
     @Test
     public void isContactInhibited_givenThreshold_comparesFreeFraction() {
         f.box.put("CONTACT_FREE_FRACTION", 0.5);
-        WoundCell cell = make(State.QUIESCENT);
+        WoundHealingCell cell = make(State.QUIESCENT);
         assertTrue(cell.isContactInhibited(0.25));
         assertFalse(cell.isContactInhibited(0.5));
     }

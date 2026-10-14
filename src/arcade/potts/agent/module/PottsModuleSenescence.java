@@ -5,7 +5,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameters;
 import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.agent.cell.PottsCellWound;
+import arcade.potts.agent.cell.PottsCellWoundHealing;
 import arcade.potts.agent.process.PottsProcessSecretion;
 import arcade.potts.sim.PottsSeries;
 import static arcade.potts.util.PottsEnums.Domain;
@@ -144,8 +144,8 @@ public class PottsModuleSenescence extends PottsModule {
 
         double clearance = phase == Phase.SENESCENT_LATE ? clearanceLate : clearanceEarly;
         if (clearance > 0
-                && cell instanceof PottsCellWound
-                && ((PottsCellWound) cell).touchesMacrophage(sim)
+                && cell instanceof PottsCellWoundHealing
+                && ((PottsCellWoundHealing) cell).touchesMacrophage(sim)
                 && random.nextDouble() < clearance) {
             return true;
         }

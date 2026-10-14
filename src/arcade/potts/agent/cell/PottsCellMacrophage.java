@@ -7,12 +7,12 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 
 /**
- * Extension of {@link PottsCellWound} for macrophages.
+ * Extension of {@link PottsCellWoundHealing} for macrophages.
  *
  * <p>Macrophages do not proliferate. Senescent cells that touch a macrophage may be cleared (see
  * {@link arcade.potts.agent.module.PottsModuleSenescence}).
  */
-public final class PottsCellMacrophage extends PottsCellWound {
+public final class PottsCellMacrophage extends PottsCellWoundHealing {
     /**
      * Creates a macrophage {@code PottsCell} agent.
      *

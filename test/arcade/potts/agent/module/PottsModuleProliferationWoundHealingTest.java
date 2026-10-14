@@ -6,7 +6,7 @@ import sim.util.distribution.Poisson;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
-import arcade.potts.agent.cell.PottsCellWound;
+import arcade.potts.agent.cell.PottsCellWoundHealing;
 import arcade.potts.sim.PottsSimulation;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -14,8 +14,8 @@ import static arcade.potts.agent.module.PottsModule.PoissonFactory;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
 
-public class PottsModuleProliferationWoundTest {
-    private PottsCellWound cell;
+public class PottsModuleProliferationWoundHealingTest {
+    private PottsCellWoundHealing cell;
 
     private PottsSimulation sim;
 
@@ -34,7 +34,7 @@ public class PottsModuleProliferationWoundTest {
         box.put("proliferation/BASAL_APOPTOSIS_RATE", 0);
         box.put("proliferation/NUCLEUS_CONDENSATION_FRACTION", 0);
 
-        cell = mock(PottsCellWound.class);
+        cell = mock(PottsCellWoundHealing.class);
         doReturn(new Parameters(box, null, null)).when(cell).getParameters();
         sim = mock(PottsSimulation.class);
         random = mock(MersenneTwisterFast.class);
@@ -42,8 +42,9 @@ public class PottsModuleProliferationWoundTest {
     }
 
     // Creates a module whose Poisson draws return the given number of steps.
-    private PottsModuleProliferationWound make(int steps) {
-        PottsModuleProliferationWound module = new PottsModuleProliferationWound(cell);
+    private PottsModuleProliferationWoundHealing make(int steps) {
+        PottsModuleProliferationWoundHealing module =
+                new PottsModuleProliferationWoundHealing(cell);
         Poisson poisson = mock(Poisson.class);
         doReturn(steps).when(poisson).nextInt();
         PoissonFactory factory = mock(PoissonFactory.class);
@@ -60,7 +61,7 @@ public class PottsModuleProliferationWoundTest {
     @Test
     public void step_g1CannotProliferate_becomesQuiescent() {
         doReturn(false).when(cell).canProliferate(sim);
-        PottsModuleProliferationWound module = make(1);
+        PottsModuleProliferationWoundHealing module = make(1);
         module.step(random, sim);
         verify(cell).setState(State.QUIESCENT);
         assertEquals(Phase.PROLIFERATIVE_G1, module.getPhase());
@@ -69,7 +70,7 @@ public class PottsModuleProliferationWoundTest {
     @Test
     public void step_g1CanProliferate_advancesCycle() {
         doReturn(true).when(cell).canProliferate(sim);
-        PottsModuleProliferationWound module = make(1);
+        PottsModuleProliferationWoundHealing module = make(1);
         module.step(random, sim);
         verify(cell, never()).setState(any());
         assertEquals(Phase.PROLIFERATIVE_S, module.getPhase());
@@ -78,7 +79,7 @@ public class PottsModuleProliferationWoundTest {
     @Test
     public void step_sCannotProliferate_continuesCycle() {
         doReturn(false).when(cell).canProliferate(sim);
-        PottsModuleProliferationWound module = make(1);
+        PottsModuleProliferationWoundHealing module = make(1);
         module.setPhase(Phase.PROLIFERATIVE_S);
         module.step(random, sim);
         verify(cell, never()).setState(any());

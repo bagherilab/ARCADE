@@ -16,7 +16,7 @@ import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModuleApoptosisSimple;
 import arcade.potts.agent.module.PottsModuleAutosis;
 import arcade.potts.agent.module.PottsModuleNecrosis;
-import arcade.potts.agent.module.PottsModuleProliferationWound;
+import arcade.potts.agent.module.PottsModuleProliferationWoundHealing;
 import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.agent.module.PottsModuleSenescence;
 import arcade.potts.env.location.PottsLocation;
@@ -29,19 +29,19 @@ import static arcade.potts.util.PottsEnums.State;
 /**
  * Abstract extension of {@link PottsCell} for wound healing cells.
  *
- * <p>Each tick, a wound cell increases its age, applies the rules for its cell type (which may
- * change its state), steps its processes, and then steps the module for its state. Rules are only
- * applied to quiescent and proliferative cells.
+ * <p>Each tick, a wound healing cell increases its age, applies the rules for its cell type (which
+ * may change its state), steps its processes, and then steps the module for its state. Rules are
+ * only applied to quiescent and proliferative cells.
  *
- * <p>Wound cells enter the proliferative state when {@link #canProliferate(Simulation)} is true.
- * Proliferative cells return to the quiescent state if it becomes false during G1 (see {@link
- * PottsModuleProliferationWound}). Senescent cells use {@link PottsModuleSenescence}.
+ * <p>Wound healing cells enter the proliferative state when {@link #canProliferate(Simulation)} is
+ * true. Proliferative cells return to the quiescent state if it becomes false during G1 (see {@link
+ * PottsModuleProliferationWoundHealing}). Senescent cells use {@link PottsModuleSenescence}.
  *
- * <p>Wound cells can become senescent through bystander routes: on contact with a senescent cell
- * ({@code BYSTANDER_CONTACT}) or when the mean INF over the cell is above {@code INF_BYSTANDER}
- * ({@code BYSTANDER_PARACRINE}).
+ * <p>Wound healing cells can become senescent through bystander routes: on contact with a senescent
+ * cell ({@code BYSTANDER_CONTACT}) or when the mean INF over the cell is above {@code
+ * INF_BYSTANDER} ({@code BYSTANDER_PARACRINE}).
  */
-public abstract class PottsCellWound extends PottsCell {
+public abstract class PottsCellWoundHealing extends PottsCell {
     /** Offsets to adjacent voxels in x, y, and z. */
     private static final int[][] OFFSETS = {
         {1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1},
@@ -63,7 +63,7 @@ public abstract class PottsCellWound extends PottsCell {
     final double infBystander;
 
     /**
-     * Creates a wound {@code PottsCell} agent.
+     * Creates a wound healing {@code PottsCell} agent.
      *
      * <p>Loaded parameters include:
      *
@@ -80,7 +80,7 @@ public abstract class PottsCellWound extends PottsCell {
      * @param parameters the dictionary of parameters
      * @param links the map of population links
      */
-    public PottsCellWound(
+    public PottsCellWoundHealing(
             PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
         contactFreeFraction = parameters.getDouble("CONTACT_FREE_FRACTION");
@@ -160,7 +160,7 @@ public abstract class PottsCellWound extends PottsCell {
                 module = new PottsModuleQuiescence(this);
                 break;
             case PROLIFERATIVE:
-                module = new PottsModuleProliferationWound(this);
+                module = new PottsModuleProliferationWoundHealing(this);
                 break;
             case SENESCENT:
                 module = new PottsModuleSenescence(this);

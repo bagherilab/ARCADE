@@ -18,8 +18,8 @@ import static org.mockito.Mockito.*;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
 
-/** Shared setup for wound cell tests: a 3 x 3 domain with the cell at the center. */
-public final class PottsCellWoundFixture {
+/** Shared setup for wound healing cell tests: a 3 x 3 domain with the cell at the center. */
+public final class PottsCellWoundHealingFixture {
     /** Id of the cell under test. */
     public static final int ID = 7;
 
@@ -57,7 +57,7 @@ public final class PottsCellWoundFixture {
     public final MersenneTwisterFast random = mock(MersenneTwisterFast.class);
 
     /** Creates the fixture with the cell at voxel (2, 2, 0). */
-    public PottsCellWoundFixture() {
+    public PottsCellWoundHealingFixture() {
         setVoxels(new Voxel(2, 2, 0));
 
         potts.ids = ids;
@@ -81,7 +81,7 @@ public final class PottsCellWoundFixture {
     }
 
     /**
-     * Gets default population parameters for wound cells.
+     * Gets default population parameters for wound healing cells.
      *
      * @return the parameters
      */

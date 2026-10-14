@@ -8,7 +8,7 @@ import sim.util.distribution.Poisson;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
-import arcade.potts.agent.cell.PottsCellWound;
+import arcade.potts.agent.cell.PottsCellWoundHealing;
 import arcade.potts.agent.process.PottsProcessSecretion;
 import arcade.potts.sim.PottsSeries;
 import arcade.potts.sim.PottsSimulation;
@@ -22,7 +22,7 @@ import static arcade.potts.util.PottsEnums.State;
 public class PottsModuleSenescenceTest {
     private MiniBox box;
 
-    private PottsCellWound cell;
+    private PottsCellWoundHealing cell;
 
     private PottsProcessSecretion secretion;
 
@@ -48,7 +48,7 @@ public class PottsModuleSenescenceTest {
         box.put("senescence/LATE_RATE_PDGF", 0);
         box.put("senescence/LATE_RATE_INF", 6);
 
-        cell = mock(PottsCellWound.class);
+        cell = mock(PottsCellWoundHealing.class);
         doAnswer(i -> new Parameters(box, null, null)).when(cell).getParameters();
         secretion = mock(PottsProcessSecretion.class);
         doReturn(Set.of("PDGF", "INF")).when(secretion).getLayers();

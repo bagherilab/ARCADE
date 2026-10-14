@@ -6,11 +6,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static arcade.potts.util.PottsEnums.State;
 
 public class PottsCellMacrophageTest {
-    private PottsCellWoundFixture f;
+    private PottsCellWoundHealingFixture f;
 
     @BeforeEach
     public final void setUp() {
-        f = new PottsCellWoundFixture();
+        f = new PottsCellWoundHealingFixture();
     }
 
     @Test
