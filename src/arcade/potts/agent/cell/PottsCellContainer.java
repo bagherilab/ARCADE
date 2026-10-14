@@ -176,6 +176,14 @@ public final class PottsCellContainer implements CellContainer {
                 return new PottsCellFlyNeuron(this, location, parameters, links);
             case "fly-gmc":
                 return new PottsCellFlyGMC(this, location, parameters, links);
+            case "fibroblast":
+                return new PottsCellFibroblast(this, location, parameters, links);
+            case "myofibroblast":
+                return new PottsCellMyofibroblast(this, location, parameters, links);
+            case "macrophage":
+                return new PottsCellMacrophage(this, location, parameters, links);
+            case "tissue":
+                return new PottsCellTissue(this, location, parameters, links);
             default:
             case "stem":
                 return new PottsCellStem(this, location, parameters, links);

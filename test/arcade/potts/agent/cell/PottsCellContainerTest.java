@@ -169,6 +169,32 @@ public class PottsCellContainerTest {
     }
 
     @Test
+    public void convert_woundClasses_createsWoundCells() {
+        Location location = mock(PottsLocation.class);
+        PottsCellFactory factory = new PottsCellFactory();
+        String[] classes = {"fibroblast", "myofibroblast", "macrophage", "tissue"};
+        Class<?>[] types = {
+            PottsCellFibroblast.class,
+            PottsCellMyofibroblast.class,
+            PottsCellMacrophage.class,
+            PottsCellTissue.class,
+        };
+
+        for (int i = 0; i < classes.length; i++) {
+            MiniBox parameters = PottsCellWoundHealingFixture.defaults();
+            parameters.put("CLASS", classes[i]);
+            factory.popToParameters.put(i + 1, parameters);
+            factory.popToRegions.put(i + 1, false);
+
+            PottsCellContainer container =
+                    new PottsCellContainer(1, 0, i + 1, 0, 0, State.QUIESCENT, null, 0, 10, 5);
+            PottsCell cell = (PottsCell) container.convert(factory, location, RANDOM);
+
+            assertEquals(types[i], cell.getClass());
+        }
+    }
+
+    @Test
     public void convert_noRegionsWithParent_createsObject() {
         Location location = mock(PottsLocation.class);
         PottsCellFactory factory = new PottsCellFactory();

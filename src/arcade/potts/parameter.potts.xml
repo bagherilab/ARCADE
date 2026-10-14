@@ -52,6 +52,23 @@
     <population id="CRITICAL_VOLUME_NUCLEUS" value="TRUNCATED_NORMAL(MU=400,SIGMA=50)" units="um^3" conversion="DS^-3" />
     <population id="CRITICAL_HEIGHT_NUCLEUS" value="TRUNCATED_NORMAL(MU=6.5,SIGMA=1.5)" units="um" conversion="DS^-1" />
 
+    <!-- wound healing cell parameters (fibroblast, myofibroblast, macrophage, and tissue classes) -->
+    <population id="CONTACT_FREE_FRACTION" value="0" description="minimum fraction of boundary voxels that must be free to proliferate; 0 disables contact inhibition" />
+    <population id="SPONTANEOUS_SENESCENCE" value="0" units="1/hour" conversion="DT" description="probability of spontaneous senescence" />
+    <population id="BYSTANDER_CONTACT" value="0" units="1/hour" conversion="DT" description="probability of senescence on contact with a senescent cell" />
+    <population id="BYSTANDER_PARACRINE" value="0" units="1/hour" conversion="DT" description="probability of senescence when mean INF is above INF_BYSTANDER" />
+    <population id="INF_BYSTANDER" value="1000" units="concentration" description="threshold on mean INF for paracrine senescence" />
+    <population id="PDGF_PROLIFERATION" value="0.1" units="concentration" description="threshold on mean PDGF for fibroblast and myofibroblast proliferation" />
+    <population id="PDGF_DIFFERENTIATION" value="0.1" units="concentration" description="threshold on mean PDGF for fibroblast differentiation" />
+    <population id="ECM_DIFFERENTIATION" value="0.5" units="concentration" description="threshold on mean ECM for fibroblast differentiation" />
+    <population id="DIFFERENTIATION_RATE" value="0.2" units="1/hour" conversion="DT" description="probability of fibroblast differentiation above thresholds" />
+    <population id="DIFFERENTIATION_TARGET" value="NONE" description="population id fibroblasts differentiate into, or NONE" />
+    <population id="INF_APOPTOSIS" value="5" units="concentration" description="threshold on mean INF for myofibroblast apoptosis" />
+    <population id="MATURATION" value="72" units="hours" conversion="DT^-1" description="mean time to myofibroblast maturation" />
+    <population id="ECM_TENSION" value="0.2" units="concentration" description="threshold on mean ECM below which mature myofibroblasts become apoptotic" />
+    <population id="SENESCENCE_RATE" value="0.02" units="1/hour" conversion="DT" description="probability of senescence for mature myofibroblasts" />
+    <population id="ECM_PROLIFERATION" value="0" units="concentration" description="minimum mean ECM over free boundary voxels for tissue proliferation; 0 disables the gate" />
+
     <!-- proliferation module parameters -->
     <population.module module="proliferation" id="SIZE_TARGET" value="2" description="target ratio of critical volume cell must reach before dividing (cell must reach 95% of CRITICAL_VOLUME * SIZE_TARGET to divide)" />
     <population.module module="proliferation" id="RATE_G1" value="8.33" units="steps/hour" conversion="DT" description="rate of events in proliferative G1 phase" />

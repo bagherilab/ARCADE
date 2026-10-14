@@ -1257,6 +1257,56 @@ public class PottsSeriesTest {
         }
     }
 
+    // Creates a population box with the given class and differentiation target.
+    private static Box makeWoundPopulation(String id, String populationClass, String target) {
+        Box box = new Box();
+        box.add("id", id);
+        box.add("class", populationClass);
+        if (target != null) {
+            box.addAtt("DIFFERENTIATION_TARGET", "value", target);
+            box.addTag("DIFFERENTIATION_TARGET", "PARAMETER");
+        }
+        return box;
+    }
+
+    // Updates populations with a differentiation target default of NONE.
+    private static void updateWoundPopulations(PottsSeries series, Box... boxes) {
+        MiniBox defaults = new MiniBox();
+        defaults.put("DIFFERENTIATION_TARGET", "NONE");
+        series.updatePopulations(new ArrayList<>(Arrays.asList(boxes)), defaults, new MiniBox());
+    }
+
+    @Test
+    public void updatePopulation_differentiationTargetMyofibroblast_setsTarget() throws Exception {
+        PottsSeries series = makeSeriesWithLayers();
+        updateWoundPopulations(
+                series,
+                makeWoundPopulation("FIB", "fibroblast", "MYO"),
+                makeWoundPopulation("MYO", "myofibroblast", null));
+        assertEquals("MYO", series.populations.get("FIB").get("DIFFERENTIATION_TARGET"));
+        assertEquals("NONE", series.populations.get("MYO").get("DIFFERENTIATION_TARGET"));
+    }
+
+    @Test
+    public void updatePopulation_differentiationTargetMissing_throws() throws Exception {
+        PottsSeries series = makeSeriesWithLayers();
+        Box box = makeWoundPopulation("FIB", "fibroblast", "MYO");
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class, () -> updateWoundPopulations(series, box));
+        assertTrue(exception.getMessage().contains("MYO"));
+    }
+
+    @Test
+    public void updatePopulation_differentiationTargetWrongClass_throws() throws Exception {
+        PottsSeries series = makeSeriesWithLayers();
+        Box fibroblasts = makeWoundPopulation("FIB", "fibroblast", "TIS");
+        Box tissue = makeWoundPopulation("TIS", "tissue", null);
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> updateWoundPopulations(series, fibroblasts, tissue));
+    }
+
     // Creates a series with populations and the given layers, then updates potts.
     private PottsSeries makeSeriesForPottsWithLayers(Box box, String... layers) throws Exception {
         PottsSeries series = makeSeriesWithLayers(layers);

@@ -313,6 +313,34 @@ public final class PottsSeries extends Series {
             // Check that per-layer parameters name an existing layer.
             checkLayerParameters(parameters, populationDefaults);
         }
+
+        // Check that differentiation targets name a myofibroblast population.
+        checkDifferentiationTargets();
+    }
+
+    /**
+     * Checks that each differentiation target names a myofibroblast population.
+     *
+     * <p>Populations without a {@code DIFFERENTIATION_TARGET} parameter, or with the value {@code
+     * NONE}, are skipped.
+     */
+    void checkDifferentiationTargets() {
+        for (String id : populations.keySet()) {
+            String target = populations.get(id).get("DIFFERENTIATION_TARGET");
+            if (target == null || target.equals("NONE")) {
+                continue;
+            }
+            MiniBox targetPopulation = populations.get(target);
+            if (targetPopulation == null
+                    || !targetPopulation.get("CLASS").equals("myofibroblast")) {
+                throw new IllegalArgumentException(
+                        "differentiation target [ "
+                                + target
+                                + " ] for population [ "
+                                + id
+                                + " ] is not a myofibroblast population");
+            }
+        }
     }
 
     /**
