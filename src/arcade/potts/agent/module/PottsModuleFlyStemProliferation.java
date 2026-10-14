@@ -162,17 +162,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * SYMMETRIC_DIVISION_RULESET=size}: both daughters stay neuroblasts when the larger daughter's
      * share of the parent is less than this.
      *
-     * <p>On the same scale as {@link #wtDivisionSplitOffsetPercentY} (93) and {@link
-     * #divOffsetRampMinPercentY} (50), so the three read together — the default 71.5 is their
-     * midpoint, which is where a switch ramp centred on {@code DIV_OFFSET_SWITCH_CENTER_ANGLE} sits
-     * at that angle. Setting it to the midpoint therefore places the fate boundary exactly on the
-     * ramp's centre.
-     *
-     * <p>Relative rather than absolute so that one value serves every condition: the parent's
-     * volume cancels, leaving a test on the split ratio alone. Mean NB volume varies roughly
-     * five-fold across conditions — about 248 voxels unregulated, 424 under volume regulation, and
-     * 1236 in WT — so an absolute tolerance would put the fate boundary at a different angle in
-     * each.
+     * <p>Same scale as {@link #wtDivisionSplitOffsetPercentY} and {@link
+     * #divOffsetRampMinPercentY}. Because it is a ratio, the threshold doesn't depend on NB volume,
+     * which varies several-fold across conditions.
      */
     final double equalityOffsetPercentY;
 
