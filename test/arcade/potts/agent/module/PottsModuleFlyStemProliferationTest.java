@@ -25,6 +25,9 @@ import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.agent.cell.PottsCellFlyStem;
+import arcade.potts.agent.module.PottsModuleFlyStemProliferation.DifferentiationRuleset;
+import arcade.potts.agent.module.PottsModuleFlyStemProliferation.DivOffsetRuleset;
+import arcade.potts.agent.module.PottsModuleFlyStemProliferation.SymmetricDivisionRuleset;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
@@ -114,6 +117,7 @@ public class PottsModuleFlyStemProliferationTest {
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
                 .thenReturn("smaller_gmc");
         when(parameters.getString("proliferation/SYMMETRIC_DIVISION_RULESET")).thenReturn("size");
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("global");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
                 .thenReturn(0.5);
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_OFFSET_PERCENT"))
@@ -163,7 +167,7 @@ public class PottsModuleFlyStemProliferationTest {
         module = new PottsModuleFlyStemProliferation(stemCell);
 
         assertNotNull(module.splitDirectionDistribution);
-        assertEquals("smaller_gmc", module.differentiationRuleset);
+        assertEquals(DifferentiationRuleset.SMALLER_GMC, module.differentiationRuleset);
         assertEquals(0.42, module.range, EPSILON);
         assertEquals(arcade.potts.util.PottsEnums.Phase.UNDEFINED, module.phase);
     }
@@ -172,7 +176,7 @@ public class PottsModuleFlyStemProliferationTest {
     public void constructor_defaultRuleset_setsThreshold() {
         module = new PottsModuleFlyStemProliferation(stemCell);
 
-        assertEquals("threshold", module.divOffsetRuleset);
+        assertEquals(DivOffsetRuleset.THRESHOLD, module.divOffsetRuleset);
         assertEquals(90.0, module.divOffsetRampSaturationAngle, EPSILON);
         assertEquals(50, module.divOffsetRampMinPercentY);
     }
@@ -183,12 +187,42 @@ public class PottsModuleFlyStemProliferationTest {
 
         module = new PottsModuleFlyStemProliferation(stemCell);
 
-        assertEquals("linear_ramp", module.divOffsetRuleset);
+        assertEquals(DivOffsetRuleset.LINEAR_RAMP, module.divOffsetRuleset);
     }
 
     @Test
     public void constructor_invalidDivOffsetRuleset_throwsException() {
         when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("nonsense");
+
+        assertThrows(
+                InvalidParameterException.class,
+                () -> new PottsModuleFlyStemProliferation(stemCell));
+    }
+
+    @Test
+    public void constructor_invalidDifferentiationRuleset_throwsException() {
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("biggest_gmc");
+
+        InvalidParameterException e =
+                assertThrows(
+                        InvalidParameterException.class,
+                        () -> new PottsModuleFlyStemProliferation(stemCell));
+        assertTrue(e.getMessage().contains("DIFFERENTIATION_RULESET"));
+    }
+
+    @Test
+    public void constructor_missingRuleset_throwsInvalidParameterException() {
+        when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn(null);
+
+        assertThrows(
+                InvalidParameterException.class,
+                () -> new PottsModuleFlyStemProliferation(stemCell));
+    }
+
+    @Test
+    public void constructor_upperCaseRulesetValue_throwsException() {
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("BASAL_GMC");
 
         assertThrows(
                 InvalidParameterException.class,
@@ -203,7 +237,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         module = new PottsModuleFlyStemProliferation(stemCell);
 
-        assertEquals("switch_ramp", module.divOffsetRuleset);
+        assertEquals(DivOffsetRuleset.SWITCH_RAMP, module.divOffsetRuleset);
         assertEquals(75.0, module.divOffsetSwitchCenterAngle, EPSILON);
         assertEquals(5.0, module.divOffsetSwitchWidth, EPSILON);
     }
@@ -652,7 +686,7 @@ public class PottsModuleFlyStemProliferationTest {
         module = new PottsModuleFlyStemProliferation(stemCell);
 
         assertNotNull(module.splitDirectionDistribution);
-        assertEquals("basal_gmc", module.differentiationRuleset);
+        assertEquals(DifferentiationRuleset.BASAL_GMC, module.differentiationRuleset);
         assertEquals(0.99, module.range, EPSILON);
         assertEquals(arcade.potts.util.PottsEnums.Phase.UNDEFINED, module.phase);
     }
@@ -1304,27 +1338,25 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void getDaughterCellApicalAxis_rotationwithInvalidDistribution_throwsException() {
+    public void constructor_unknownApicalAxisRuleset_throwsException() {
         when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("rotation");
         when(parameters.getDistribution("proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION"))
                 .thenReturn(mock(UniformDistribution.class));
 
-        module = new PottsModuleFlyStemProliferation(stemCell);
         assertThrows(
-                IllegalArgumentException.class, () -> module.getDaughterCellApicalAxis(random));
+                InvalidParameterException.class,
+                () -> new PottsModuleFlyStemProliferation(stemCell));
     }
 
     @Test
-    public void getDaughterCellApicalAxis_normalRulesetWithUniformDistribution_throwsException() {
-        // "rotation" hits the default case; this test exercises the instanceof guard inside
-        // "normal"
+    public void constructor_normalApicalAxisRulesetWithUniformDistribution_throwsException() {
         when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("normal");
         when(parameters.getDistribution("proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION"))
                 .thenReturn(mock(UniformDistribution.class));
 
-        module = new PottsModuleFlyStemProliferation(stemCell);
         assertThrows(
-                IllegalArgumentException.class, () -> module.getDaughterCellApicalAxis(random));
+                InvalidParameterException.class,
+                () -> new PottsModuleFlyStemProliferation(stemCell));
     }
 
     @Test
@@ -1349,14 +1381,14 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void getDaughterCellApicalAxis_uniformwithInvalidDistribution_throwsException() {
+    public void constructor_uniformApicalAxisRulesetWithNormalDistribution_throwsException() {
         when(parameters.getString("proliferation/APICAL_AXIS_RULESET")).thenReturn("uniform");
         when(parameters.getDistribution("proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION"))
                 .thenReturn(mock(NormalDistribution.class));
 
-        module = new PottsModuleFlyStemProliferation(stemCell);
         assertThrows(
-                IllegalArgumentException.class, () -> module.getDaughterCellApicalAxis(random));
+                InvalidParameterException.class,
+                () -> new PottsModuleFlyStemProliferation(stemCell));
     }
 
     // Critical volume calculation tests
@@ -2186,14 +2218,14 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void daughterStem_ruleBasedMUDMUTApicalAxis_withinRange_returnsTrue() {
+    public void daughterStem_ruleBasedMUDMUTRelativePosition_withinRange_returnsTrue() {
         // @BeforeEach sets: stemLoc centroid=(0,1.0,0), daughterLoc centroid=(0,1.6,0)
         // With apical axis (0,1,0), distance along axis = |1.6 - 1.0| = 0.6
         // range=1.0 > 0.6 → within range → true
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("FALSE");
         when(parameters.getString("proliferation/SYMMETRIC_DIVISION_RULESET"))
-                .thenReturn("apical_axis");
+                .thenReturn("relative_position");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
                 .thenReturn(1.0);
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
@@ -2208,14 +2240,14 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void daughterStem_ruleBasedMUDMUTApicalAxis_outsideRange_returnsFalse() {
+    public void daughterStem_ruleBasedMUDMUTRelativePosition_outsideRange_returnsFalse() {
         // @BeforeEach sets: stemLoc centroid=(0,1.0,0), daughterLoc centroid=(0,1.6,0)
         // With apical axis (0,1,0), distance along axis = |1.6 - 1.0| = 0.6
         // range=0.5 < 0.6 → outside range → false
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("FALSE");
         when(parameters.getString("proliferation/SYMMETRIC_DIVISION_RULESET"))
-                .thenReturn("apical_axis");
+                .thenReturn("relative_position");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
                 .thenReturn(0.5);
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
@@ -2230,34 +2262,29 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void daughterStem_ruleBasedMUDMUTInvalidSymmetricRuleset_throwsException() {
-        when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
-                .thenReturn("FALSE");
+    public void constructor_invalidSymmetricDivisionRuleset_throwsException() {
         when(parameters.getString("proliferation/SYMMETRIC_DIVISION_RULESET"))
                 .thenReturn("invalid");
-        when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
 
-        module = new PottsModuleFlyStemProliferation(stemCell);
-
-        IllegalArgumentException e =
+        InvalidParameterException e =
                 assertThrows(
-                        IllegalArgumentException.class,
-                        () -> module.daughterStem(stemLoc, daughterLoc, mock(Plane.class)));
-        assertTrue(e.getMessage().contains("symmetric division ruleset"));
+                        InvalidParameterException.class,
+                        () -> new PottsModuleFlyStemProliferation(stemCell));
+        assertTrue(e.getMessage().contains("SYMMETRIC_DIVISION_RULESET"));
     }
 
     @Test
     public void constructor_readsSymmetricDivisionRuleset() {
         when(parameters.getString("proliferation/SYMMETRIC_DIVISION_RULESET"))
-                .thenReturn("apical_axis");
+                .thenReturn("relative_position");
         module = new PottsModuleFlyStemProliferation(stemCell);
 
-        assertEquals("apical_axis", module.symmetricDivisionRuleset);
+        assertEquals(SymmetricDivisionRuleset.RELATIVE_POSITION, module.symmetricDivisionRuleset);
     }
 
     @Test
     public void daughterStem_sizeRulesetWithBasalGmc_usesVolumesNotCentroids() {
-        // Default centroids are 0.6 apart and range 0.5, so the apical_axis test would say
+        // Default centroids are 0.6 apart and range 0.5, so the relative_position test would say
         // "asymmetric" for both splits below. The size test must decide instead.
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("FALSE");
@@ -2278,13 +2305,13 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
-    public void daughterStem_apicalAxisRulesetWithSmallerGmc_usesCentroidsNotVolumes() {
+    public void daughterStem_relativePositionRulesetWithSmallerGmc_usesCentroidsNotVolumes() {
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("FALSE");
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
                 .thenReturn("smaller_gmc");
         when(parameters.getString("proliferation/SYMMETRIC_DIVISION_RULESET"))
-                .thenReturn("apical_axis");
+                .thenReturn("relative_position");
         when(parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE"))
                 .thenReturn(1.0);
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.MUDMUT);
@@ -2313,8 +2340,8 @@ public class PottsModuleFlyStemProliferationTest {
     public void daughterStem_imposedWT_ignoresSymmetricDivisionRuleset() {
         when(parameters.getString("proliferation/HAS_DETERMINISTIC_DIFFERENTIATION"))
                 .thenReturn("TRUE");
-        when(parameters.getString("proliferation/SYMMETRIC_DIVISION_RULESET"))
-                .thenReturn("invalid"); // must never be read on the imposed path
+        // 50/95 = 52.6% < 60%, so the size rule would call this symmetric; the imposed path must
+        // ignore it and still return false
         when(stemCell.getStemType()).thenReturn(PottsCellFlyStem.StemType.WT);
         when(stemCell.getApicalAxis()).thenReturn(new Vector(0, 1, 0));
         when(stemLoc.getVolume()).thenReturn(50.0);

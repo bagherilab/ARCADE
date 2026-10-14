@@ -43,6 +43,57 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      */
     static final double MUDMUT_WT_DIVISION_ANGLE_THRESHOLD = 75;
 
+    /** Rulesets for determining which daughter cell is the GMC on an asymmetric division. */
+    public enum DifferentiationRuleset {
+        /** The smaller daughter becomes the GMC. */
+        SMALLER_GMC,
+
+        /** The daughter on the basal side of the division plane becomes the GMC. */
+        BASAL_GMC,
+
+        /** The GMC daughter is chosen at random. */
+        RANDOM,
+
+        /** The daughter on the apical side of the division plane becomes the GMC. */
+        APICAL_GMC
+    }
+
+    /** Rulesets for deciding whether a division is symmetric (both daughters stay neuroblasts). */
+    public enum SymmetricDivisionRuleset {
+        /** Symmetric if the larger daughter's share of the combined volume is below a threshold. */
+        SIZE,
+
+        /**
+         * Symmetric if the daughters' centroids are within a range of each other along the cell's
+         * apical axis.
+         */
+        RELATIVE_POSITION
+    }
+
+    /** Rulesets for determining a daughter cell's apical axis. */
+    public enum ApicalAxisRuleset {
+        /** Daughter inherits the parent's apical axis. */
+        GLOBAL,
+
+        /** Parent's apical axis rotated by an angle drawn from a normal distribution. */
+        NORMAL,
+
+        /** Parent's apical axis rotated by an angle drawn from a uniform distribution. */
+        UNIFORM
+    }
+
+    /** Rulesets for determining the Y split offset of a division. */
+    public enum DivOffsetRuleset {
+        /** Fixed offset, with the MUDMUT flip to the MUD plane beyond the angle threshold. */
+        THRESHOLD,
+
+        /** Offset ramps linearly with the drawn division angle's deviation from the mean. */
+        LINEAR_RAMP,
+
+        /** Offset follows a logistic transition centered on a switch angle. */
+        SWITCH_RAMP
+    }
+
     /** Basal rate of apoptosis (ticks^-1). */
     final double basalApoptosisRate;
 
@@ -54,27 +105,27 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * `smaller_gmc`, `basal_gmc`, `random`, or `apical_gmc`. Whether a division is symmetric is
      * decided separately, by {@link #symmetricDivisionRuleset}.
      */
-    final String differentiationRuleset;
+    final DifferentiationRuleset differentiationRuleset;
 
     /**
      * Ruleset deciding whether a division is symmetric (both daughters stay neuroblasts). Used only
      * when {@link #hasDeterministicDifferentiation} is false. `size`: the larger daughter's share
-     * of the combined volume is below {@link #equalityOffsetPercentY}. `apical_axis`: the
+     * of the combined volume is below {@link #equalityOffsetPercentY}. `relative_position`: the
      * daughters' centroids are within {@link #range} along the cell's apical axis. Which daughter
      * becomes the GMC on an asymmetric division is decided separately, by {@link
      * #differentiationRuleset}.
      */
-    final String symmetricDivisionRuleset;
+    final SymmetricDivisionRuleset symmetricDivisionRuleset;
 
     /**
-     * Ruleset for determining how the cell determines its Apical Axis. Can be 'uniform', 'global',
-     * or 'rotation'
+     * Ruleset for determining how the cell determines its Apical Axis. Can be `global`, `normal`,
+     * or `uniform`.
      */
-    final String apicalAxisRuleset;
+    final ApicalAxisRuleset apicalAxisRuleset;
 
     /**
      * The distribution used to determine how apical axis should be rotated. Relevant when
-     * apicalAxisRuleset is set to 'uniform' or 'rotation'.
+     * apicalAxisRuleset is set to `normal` or `uniform`.
      */
     final Distribution apicalAxisRotationDistribution;
 
@@ -183,11 +234,12 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
     /**
      * Ruleset determining the Y split offset for a division. Either {@code threshold} (fixed
-     * offset, with the 75-degree MUDMUT flip to the MUD plane) or {@code linear_ramp} (offset ramps
+     * offset, with the 75-degree MUDMUT flip to the MUD plane), {@code linear_ramp} (offset ramps
      * from the WT offset toward {@link #divOffsetRampMinPercentY} as the drawn division angle moves
-     * away from the distribution mean).
+     * away from the distribution mean), or {@code switch_ramp} (logistic transition centered on
+     * {@link #divOffsetSwitchCenterAngle}).
      */
-    final String divOffsetRuleset;
+    final DivOffsetRuleset divOffsetRuleset;
 
     /**
      * Angle (degrees) from the division distribution mean at which the {@code linear_ramp} offset
@@ -216,6 +268,32 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     public static final double EPSILON = 1e-8;
 
     /**
+     * Reads a lowercase ruleset parameter value (e.g. {@code basal_gmc}) and parses it into its
+     * enum constant.
+     *
+     * @param <E> the enum type
+     * @param enumClass the enum class to parse into
+     * @param parameters the parameters to read the value from
+     * @param key the parameter key
+     * @return the matching enum constant
+     * @throws InvalidParameterException if the value does not match any constant
+     */
+    static <E extends Enum<E>> E parseRuleset(
+            Class<E> enumClass, Parameters parameters, String key) {
+        String value = parameters.getString(key);
+        ArrayList<String> validValues = new ArrayList<>();
+        for (E constant : enumClass.getEnumConstants()) {
+            String name = constant.name().toLowerCase();
+            if (name.equals(value)) {
+                return constant;
+            }
+            validValues.add(name);
+        }
+        throw new InvalidParameterException(
+                key + " must be one of " + validValues + " but was " + value);
+    }
+
+    /**
      * Creates a proliferation {@code Module} for the given {@link PottsCellFlyStem}.
      *
      * @param cell the {@link PottsCellFlyStem} the module is associated with
@@ -234,17 +312,39 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         splitDirectionDistribution =
                 (NormalDistribution)
                         parameters.getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION");
-        differentiationRuleset = parameters.getString("proliferation/DIFFERENTIATION_RULESET");
-        symmetricDivisionRuleset = parameters.getString("proliferation/SYMMETRIC_DIVISION_RULESET");
+        differentiationRuleset =
+                parseRuleset(
+                        DifferentiationRuleset.class,
+                        parameters,
+                        "proliferation/DIFFERENTIATION_RULESET");
+        symmetricDivisionRuleset =
+                parseRuleset(
+                        SymmetricDivisionRuleset.class,
+                        parameters,
+                        "proliferation/SYMMETRIC_DIVISION_RULESET");
         range = parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE");
         equalityOffsetPercentY =
                 parameters.getDouble(
                         "proliferation/DIFFERENTIATION_RULESET_EQUALITY_OFFSET_PERCENT");
-        apicalAxisRuleset = parameters.getString("proliferation/APICAL_AXIS_RULESET");
+        apicalAxisRuleset =
+                parseRuleset(
+                        ApicalAxisRuleset.class, parameters, "proliferation/APICAL_AXIS_RULESET");
         apicalAxisRotationDistribution =
                 (Distribution)
                         parameters.getDistribution(
                                 "proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION");
+        if (apicalAxisRuleset == ApicalAxisRuleset.NORMAL
+                && !(apicalAxisRotationDistribution instanceof NormalDistribution)) {
+            throw new InvalidParameterException(
+                    "APICAL_AXIS_ROTATION_DISTRIBUTION must be a NormalDistribution "
+                            + "under the normal apical axis ruleset");
+        }
+        if (apicalAxisRuleset == ApicalAxisRuleset.UNIFORM
+                && !(apicalAxisRotationDistribution instanceof UniformDistribution)) {
+            throw new InvalidParameterException(
+                    "APICAL_AXIS_ROTATION_DISTRIBUTION must be a UniformDistribution "
+                            + "under the uniform apical axis ruleset");
+        }
 
         volumeBasedCriticalVolume =
                 (parameters.getInt("proliferation/VOLUME_BASED_CRITICAL_VOLUME") != 0);
@@ -281,17 +381,13 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         apicalAxisReorientationDistribution =
                 parameters.getDistribution("proliferation/APICAL_AXIS_REORIENTATION_DISTRIBUTION");
 
-        divOffsetRuleset = parameters.getString("proliferation/DIV_OFFSET_RULESET");
-        if (!divOffsetRuleset.equals("threshold")
-                && !divOffsetRuleset.equals("linear_ramp")
-                && !divOffsetRuleset.equals("switch_ramp")) {
-            throw new InvalidParameterException(
-                    "divOffsetRuleset must be threshold, linear_ramp, or switch_ramp");
-        }
+        divOffsetRuleset =
+                parseRuleset(
+                        DivOffsetRuleset.class, parameters, "proliferation/DIV_OFFSET_RULESET");
         divOffsetSwitchCenterAngle =
                 parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_CENTER_ANGLE");
         divOffsetSwitchWidth = parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_WIDTH");
-        if (divOffsetRuleset.equals("switch_ramp") && divOffsetSwitchWidth <= 0) {
+        if (divOffsetRuleset == DivOffsetRuleset.SWITCH_RAMP && divOffsetSwitchWidth <= 0) {
             throw new InvalidParameterException("divOffsetSwitchWidth must be greater than zero");
         }
         divOffsetRampSaturationAngle =
@@ -467,7 +563,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * @return {@code true} for every ruleset that ramps the offset with the drawn angle
      */
     boolean usesRampedOffset() {
-        return divOffsetRuleset.equals("linear_ramp") || divOffsetRuleset.equals("switch_ramp");
+        return divOffsetRuleset == DivOffsetRuleset.LINEAR_RAMP
+                || divOffsetRuleset == DivOffsetRuleset.SWITCH_RAMP;
     }
 
     /**
@@ -528,7 +625,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         double deviation = Math.abs(rotationOffset - splitDirectionDistribution.getExpected());
         double span = wtDivisionSplitOffsetPercentY - divOffsetRampMinPercentY;
 
-        if (divOffsetRuleset.equals("switch_ramp")) {
+        if (divOffsetRuleset == DivOffsetRuleset.SWITCH_RAMP) {
             double z = (deviation - divOffsetSwitchCenterAngle) / divOffsetSwitchWidth;
             return divOffsetRampMinPercentY + span / (1.0 + Math.exp(z));
         }
@@ -682,9 +779,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             throw new IllegalArgumentException("Invalid stem type: " + stemType);
         }
         switch (symmetricDivisionRuleset) {
-            case "size":
+            case SIZE:
                 return isSizeSymmetric(loc1, loc2);
-            case "apical_axis":
+            case RELATIVE_POSITION:
                 return centroidsWithinRangeAlongApicalAxis(
                         loc1.getCentroid(),
                         loc2.getCentroid(),
@@ -896,32 +993,14 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      */
     public Vector getDaughterCellApicalAxis(MersenneTwisterFast random) {
         switch (apicalAxisRuleset) {
-            case "uniform":
-                if (!(apicalAxisRotationDistribution instanceof UniformDistribution)) {
-                    throw new IllegalArgumentException(
-                            "apicalAxisRotationDistribution must be a UniformDistribution"
-                                    + "under the uniform apical axis ruleset.");
-                }
-                Vector newRandomApicalAxis =
-                        Vector.rotateVectorAroundAxis(
-                                ((PottsCellFlyStem) cell).getApicalAxis(),
-                                Direction.XY_PLANE.vector,
-                                apicalAxisRotationDistribution.nextDouble());
-                return newRandomApicalAxis;
-            case "global":
+            case GLOBAL:
                 return ((PottsCellFlyStem) cell).getApicalAxis();
-            case "normal":
-                if (!(apicalAxisRotationDistribution instanceof NormalDistribution)) {
-                    throw new IllegalArgumentException(
-                            "apicalAxisRotationDistribution must be a NormalDistribution"
-                                    + "under the rotation apical axis ruleset.");
-                }
-                Vector newRotatedApicalAxis =
-                        Vector.rotateVectorAroundAxis(
-                                ((PottsCellFlyStem) cell).getApicalAxis(),
-                                Direction.XY_PLANE.vector,
-                                apicalAxisRotationDistribution.nextDouble());
-                return newRotatedApicalAxis;
+            case NORMAL:
+            case UNIFORM:
+                return Vector.rotateVectorAroundAxis(
+                        ((PottsCellFlyStem) cell).getApicalAxis(),
+                        Direction.XY_PLANE.vector,
+                        apicalAxisRotationDistribution.nextDouble());
             default:
                 throw new IllegalArgumentException(
                         "Invalid apical axis ruleset: " + apicalAxisRuleset);
@@ -944,13 +1023,13 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             Vector divisionPlaneNormal,
             MersenneTwisterFast random) {
         switch (differentiationRuleset) {
-            case "smaller_gmc":
+            case SMALLER_GMC:
                 return getSmallerLocation(parentLoc, daughterLoc);
-            case "basal_gmc":
+            case BASAL_GMC:
                 return getBasalLocation(parentLoc, daughterLoc, divisionPlaneNormal);
-            case "random":
+            case RANDOM:
                 return random.nextBoolean() ? parentLoc : daughterLoc;
-            case "apical_gmc":
+            case APICAL_GMC:
                 return getApicalLocation(parentLoc, daughterLoc, divisionPlaneNormal);
             default:
                 throw new IllegalArgumentException(
