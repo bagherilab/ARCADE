@@ -828,7 +828,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
     /**
      * Determines whether the daughter cell should be a neuroblast or a GMC according to the
-     * orientation. This is deterministic.
+     * orientation of the apical axis. This is deterministic.
      *
      * @param divisionPlane the plane the cell will divide along
      * @return {@code true} if the daughter should be a stem cell; {@code false} if the daughter
