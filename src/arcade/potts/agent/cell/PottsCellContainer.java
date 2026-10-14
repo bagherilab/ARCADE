@@ -10,8 +10,8 @@ import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
-import static arcade.potts.util.PottsEnums.Phase;
-import static arcade.potts.util.PottsEnums.Region;
+import arcade.potts.util.PottsEnums.Phase;
+import arcade.potts.util.PottsEnums.Region;
 
 /**
  * Implementation of {@link CellContainer} for {@link PottsCell} agents.
@@ -177,8 +177,8 @@ public final class PottsCellContainer implements CellContainer {
             case "fly-gmc":
                 return new PottsCellFlyGMC(this, location, parameters, links);
             case "fly-stem-wt":
-                return new PottsCellFlyStem(this, location, parameters, links);
             case "fly-stem-mudmut":
+                // Genotype (StemType) is resolved from CLASS in the PottsCellFlyStem constructor.
                 return new PottsCellFlyStem(this, location, parameters, links);
             default:
             case "stem":
