@@ -567,7 +567,16 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Chooses the division plane according to the type of stem cell this module is attached to.
+     * Chooses the division plane for this fly stem cell based on the offset ruleset and whether the
+     * cell is WT or MUDMUT.
+     *
+     * <p>A rotation offset is drawn from {@link #splitDirectionDistribution}. Under the ramped
+     * offset rulesets ({@code linear_ramp}, {@code switch_ramp}), the plane is built from that
+     * offset for both WT and MUDMUT cells, with the split offset from {@link
+     * #computeSplitOffsetPercentY}. Under {@code threshold}, a WT cell always divides along the WT
+     * plane, and a MUDMUT cell divides along the WT plane if the drawn offset is within {@link
+     * #MUDMUT_WT_DIVISION_ANGLE_THRESHOLD} degrees of the distribution mean, and along the MUD
+     * plane otherwise.
      *
      * @param flyStemCell the stem cell this module is attached to
      * @return the plane along which this cell should divide
@@ -582,13 +591,18 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         }
 
         lastSplitOffsetPercentY = wtDivisionSplitOffsetPercentY;
-        if (flyStemCell.getStemType() == StemType.WT
-                || (flyStemCell.getStemType() == StemType.MUDMUT
-                        && (Math.abs(offset - splitDirectionDistribution.getExpected())
-                                <= MUDMUT_WT_DIVISION_ANGLE_THRESHOLD))) {
-            return getWTDivisionPlane(flyStemCell, offset);
-        } else {
-            return getMUDDivisionPlane(flyStemCell);
+        switch (flyStemCell.getStemType()) {
+            case WT:
+                return getWTDivisionPlane(flyStemCell, offset);
+            case MUDMUT:
+                if (Math.abs(offset - splitDirectionDistribution.getExpected())
+                        <= MUDMUT_WT_DIVISION_ANGLE_THRESHOLD) {
+                    return getWTDivisionPlane(flyStemCell, offset);
+                }
+                return getMUDDivisionPlane(flyStemCell);
+            default:
+                throw new IllegalArgumentException(
+                        "Invalid stem type: " + flyStemCell.getStemType());
         }
     }
 
