@@ -114,6 +114,14 @@ public class PottsProcessSecretionTest {
     }
 
     @Test
+    public void getLayers_modified_throws() {
+        PottsProcessSecretion process =
+                new PottsProcessSecretion(makeCell(secretion("PDGF", 4, "BOUNDARY")));
+        assertThrows(UnsupportedOperationException.class, () -> process.getLayers().clear());
+        assertEquals(4, process.getRate("PDGF"), EPSILON);
+    }
+
+    @Test
     public void setRate_givenLayer_updatesRate() {
         PottsProcessSecretion process =
                 new PottsProcessSecretion(makeCell(secretion("PDGF", 4, "BOUNDARY")));

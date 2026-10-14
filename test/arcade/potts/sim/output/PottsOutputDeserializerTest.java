@@ -152,6 +152,22 @@ public class PottsOutputDeserializerTest {
     }
 
     @Test
+    public void deserializer_forSenescentCell_createObject() {
+        PottsCellDeserializer deserializer = new PottsCellDeserializer();
+        String string =
+                "{\"id\": 1, \"parent\": 0, \"pop\": 1, \"age\": 0, \"divisions\": 0,"
+                        + " \"state\": \"SENESCENT\", \"phase\": \"SENESCENT_LATE\","
+                        + " \"voxels\": 10, \"criticals\": [10, 2]}";
+
+        JsonObject json = JsonParser.parseString(string).getAsJsonObject();
+        PottsCellContainer object =
+                deserializer.deserialize(json, PottsCellContainer.class, CELL_CONTEXT);
+
+        assertEquals(State.SENESCENT, object.state);
+        assertEquals(Phase.SENESCENT_LATE, object.phase);
+    }
+
+    @Test
     public void deserializer_forCellWithRegions_createObject() {
         PottsCellDeserializer deserializer = new PottsCellDeserializer();
 

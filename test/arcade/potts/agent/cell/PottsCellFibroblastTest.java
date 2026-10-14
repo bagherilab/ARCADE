@@ -7,8 +7,11 @@ import sim.engine.Schedule;
 import sim.engine.Stoppable;
 import arcade.core.agent.cell.CellFactory;
 import arcade.core.util.MiniBox;
+import arcade.potts.agent.module.PottsModule;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static arcade.potts.util.PottsEnums.Ordering;
+import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
 
 public class PottsCellFibroblastTest {
@@ -146,6 +149,8 @@ public class PottsCellFibroblastTest {
         assertEquals(State.PROLIFERATIVE, newCell.getState());
         assertSame(f.location, newCell.getLocation());
         verify(f.potts).register(newCell);
+        verify(f.sim.getSchedule()).scheduleRepeating(newCell, Ordering.CELLS.ordinal(), 1);
+        assertEquals(Phase.PROLIFERATIVE_G1, ((PottsModule) newCell.getModule()).getPhase());
         verify(f.location).update(PottsCellWoundHealingFixture.ID, f.potts.ids, f.potts.regions);
     }
 

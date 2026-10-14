@@ -1,5 +1,6 @@
 package arcade.potts.agent.cell;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -36,6 +37,8 @@ public class PottsCellWoundHealingTest {
 
         int rulesCalls;
 
+        int freeFractionCalls;
+
         WoundHealingCell(
                 PottsCellContainer container,
                 Location location,
@@ -52,6 +55,9 @@ public class PottsCellWoundHealingTest {
         @Override
         boolean stepRules(MersenneTwisterFast random, Simulation sim) {
             rulesCalls++;
+            for (int i = 0; i < freeFractionCalls; i++) {
+                getFreeFraction(sim);
+            }
             return keep;
         }
     }
@@ -200,6 +206,42 @@ public class PottsCellWoundHealingTest {
     public void getFreeFraction_noBoundary_returnsZero() {
         f.setVoxels();
         assertEquals(0, make(State.QUIESCENT).getFreeFraction(f.sim), EPSILON);
+    }
+
+    @Test
+    public void getFreeVoxels_threeDimensionalAtBorder_countsTopAndBottomAsOccupied() {
+        int[][][] ids = new int[3][5][5];
+        List<Voxel> boundary =
+                List.of(
+                        new Voxel(1, 2, 1),
+                        new Voxel(3, 2, 1),
+                        new Voxel(2, 1, 1),
+                        new Voxel(2, 3, 1),
+                        new Voxel(2, 2, 0),
+                        new Voxel(2, 2, 2));
+        assertEquals(4, PottsCellWoundHealing.getFreeVoxels(ids, boundary).size());
+    }
+
+    @Test
+    public void getFreeVoxels_threeDimensionalInside_countsAboveAndBelowAsFree() {
+        int[][][] ids = new int[5][5][5];
+        ids[1][2][2] = 8;
+        List<Voxel> boundary = List.of(new Voxel(2, 2, 1), new Voxel(2, 2, 3), new Voxel(1, 2, 2));
+        List<Voxel> free = PottsCellWoundHealing.getFreeVoxels(ids, boundary);
+        assertEquals(List.of(new Voxel(2, 2, 3), new Voxel(1, 2, 2)), free);
+    }
+
+    @Test
+    public void step_helpersCalledTwice_computesBoundaryOncePerStep() {
+        WoundHealingCell cell = make(State.QUIESCENT);
+        cell.module = mock(Module.class);
+        cell.freeFractionCalls = 2;
+
+        cell.step(simstate());
+        verify(f.location, times(1)).getVoxels();
+
+        cell.step(simstate());
+        verify(f.location, times(2)).getVoxels();
     }
 
     @Test

@@ -4,6 +4,10 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -1305,6 +1309,72 @@ public class PottsSeriesTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> updateWoundPopulations(series, fibroblasts, tissue));
+    }
+
+    @Test
+    public void updatePopulation_negativeSenescenceRate_throws() throws Exception {
+        PottsSeries series = makeSeriesWithLayers("INF");
+        MiniBox defaults = new MiniBox();
+        defaults.put("senescence/LATE_RATE", 0.0);
+        MiniBox conversions = new MiniBox();
+        series.addLayerDefaults(defaults, conversions);
+
+        Box box = new Box();
+        box.add("id", POPULATION_ID_1);
+        box.addAtt("senescence/LATE_RATE_INF", "value", "-5");
+        box.addTag("senescence/LATE_RATE_INF", "PARAMETER");
+        ArrayList<Box> boxes = new ArrayList<>(Arrays.asList(box));
+
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> series.updatePopulations(boxes, defaults, conversions));
+        assertTrue(exception.getMessage().contains("senescence/LATE_RATE_INF"));
+    }
+
+    @Test
+    public void updatePopulation_woundHealingClassWithRegions_throws() throws Exception {
+        PottsSeries series = makeSeriesWithLayers();
+        Box box = makeWoundPopulation("FIB", "fibroblast", null);
+        box.addTag("NUCLEUS", "REGION");
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class, () -> updateWoundPopulations(series, box));
+        assertTrue(exception.getMessage().contains("regions"));
+        assertTrue(exception.getMessage().contains("FIB"));
+    }
+
+    @Test
+    public void updatePopulation_differentiationTargetOnNonFibroblast_logsWarning()
+            throws Exception {
+        PottsSeries series = makeSeriesWithLayers();
+        Logger logger = Logger.getLogger(PottsSeries.class.getName());
+        ArrayList<LogRecord> records = new ArrayList<>();
+        Handler handler =
+                new Handler() {
+                    @Override
+                    public void publish(LogRecord record) {
+                        records.add(record);
+                    }
+
+                    @Override
+                    public void flush() {}
+
+                    @Override
+                    public void close() {}
+                };
+        logger.addHandler(handler);
+        try {
+            updateWoundPopulations(
+                    series,
+                    makeWoundPopulation("TIS", "tissue", "MYO"),
+                    makeWoundPopulation("MYO", "myofibroblast", null));
+        } finally {
+            logger.removeHandler(handler);
+        }
+        assertEquals(1, records.size());
+        assertEquals(Level.WARNING, records.get(0).getLevel());
+        assertTrue(records.get(0).getMessage().contains("TIS"));
     }
 
     // Creates a series with populations and the given layers, then updates potts.

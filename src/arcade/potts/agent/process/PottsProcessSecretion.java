@@ -82,10 +82,10 @@ public class PottsProcessSecretion extends PottsProcess {
     /**
      * Gets the layers secreted by the process.
      *
-     * @return the set of layer ids
+     * @return a read-only copy of the set of layer ids
      */
     public Set<String> getLayers() {
-        return rates.keySet();
+        return Set.copyOf(rates.keySet());
     }
 
     /**

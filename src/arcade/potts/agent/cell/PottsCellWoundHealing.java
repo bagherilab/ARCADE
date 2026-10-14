@@ -1,6 +1,7 @@
 package arcade.potts.agent.cell;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -62,6 +63,9 @@ public abstract class PottsCellWoundHealing extends PottsCell {
     /** Threshold on mean INF for paracrine senescence. */
     final double infBystander;
 
+    /** Boundary voxels for the current step, or {@code null} if not yet computed. */
+    private List<Voxel> boundaryVoxels;
+
     /**
      * Creates a wound healing {@code PottsCell} agent.
      *
@@ -110,6 +114,9 @@ public abstract class PottsCellWoundHealing extends PottsCell {
     @Override
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
+
+        // Clear boundary voxels from the previous step.
+        boundaryVoxels = null;
 
         // Increase age of cell.
         age++;
@@ -247,10 +254,26 @@ public abstract class PottsCellWoundHealing extends PottsCell {
     /**
      * Gets voxels adjacent to the cell that the cell does not own.
      *
+     * <p>The voxels are computed once per step. Potts updates happen before cells step, so the
+     * cell's voxels do not change between the rules and the module in the same step.
+     *
+     * @param ids the potts array of cell ids
+     * @return the read-only list of unique boundary voxels within the array
+     */
+    List<Voxel> getBoundaryVoxels(int[][][] ids) {
+        if (boundaryVoxels == null) {
+            boundaryVoxels = Collections.unmodifiableList(computeBoundaryVoxels(ids));
+        }
+        return boundaryVoxels;
+    }
+
+    /**
+     * Computes voxels adjacent to the cell that the cell does not own.
+     *
      * @param ids the potts array of cell ids
      * @return the list of unique boundary voxels within the array
      */
-    List<Voxel> getBoundaryVoxels(int[][][] ids) {
+    private List<Voxel> computeBoundaryVoxels(int[][][] ids) {
         LinkedHashSet<Voxel> boundary = new LinkedHashSet<>();
         for (Voxel voxel : ((PottsLocation) getLocation()).getVoxels()) {
             for (int[] offset : OFFSETS) {
