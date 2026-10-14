@@ -495,31 +495,26 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Gets the neighbors of this cell that are unique neuroblasts.
+     * Counts the distinct neuroblasts adjacent to this cell.
      *
      * @param sim the simulation
-     * @return the number of unique neuroblast neighbors
+     * @return the number of distinct neuroblasts adjacent to this cell
      */
-    protected HashSet<PottsCellFlyStem> getNBNeighbors(Simulation sim) {
+    protected int countNBNeighbors(Simulation sim) {
         Potts potts = ((PottsSimulation) sim).getPotts();
-        ArrayList<Voxel> voxels = ((PottsLocation) cell.getLocation()).getVoxels();
-        HashSet<PottsCellFlyStem> stemNeighbors = new HashSet<PottsCellFlyStem>();
+        HashSet<Integer> neighborIDs = new HashSet<>();
+        for (Voxel v : ((PottsLocation) cell.getLocation()).getVoxels()) {
+            neighborIDs.addAll(potts.getUniqueIDs(v.x, v.y, v.z));
+        }
+        neighborIDs.remove(cell.getID());
 
-        for (Voxel v : voxels) {
-            HashSet<Integer> uniqueIDs = potts.getUniqueIDs(v.x, v.y, v.z);
-            for (Integer id : uniqueIDs) {
-                PottsCell neighbor = (PottsCell) sim.getGrid().getObjectAt(id);
-                if (neighbor == null) {
-                    continue;
-                }
-                if (cell.getPop() == neighbor.getPop()) {
-                    if (neighbor.getID() != cell.getID()) {
-                        stemNeighbors.add((PottsCellFlyStem) sim.getGrid().getObjectAt(id));
-                    }
-                }
+        int nbCount = 0;
+        for (int id : neighborIDs) {
+            if (sim.getGrid().getObjectAt(id) instanceof PottsCellFlyStem) {
+                nbCount++;
             }
         }
-        return stemNeighbors;
+        return nbCount;
     }
 
     /**
@@ -535,7 +530,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      */
     protected void updateGrowthRateBasedOnOtherNBs(Simulation sim) {
         int nbsInContact;
-        nbsInContact = getNBNeighbors(sim).size();
+        nbsInContact = countNBNeighbors(sim);
 
         double neighborSignal = Math.max(0.0, (double) nbsInContact);
 
