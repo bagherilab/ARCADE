@@ -43,6 +43,18 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      */
     static final double MUDMUT_WT_DIVISION_ANGLE_THRESHOLD = 75;
 
+    /**
+     * Minimum NB critical volume under {@code VOLUME_BASED_CRITICAL_VOLUME=1}, as a fraction of the
+     * population critical volume.
+     */
+    static final double NB_CRITICAL_VOLUME_FLOOR_FRACTION = 0.20;
+
+    /**
+     * Minimum GMC critical volume under {@code VOLUME_BASED_CRITICAL_VOLUME=1}, as a fraction of
+     * the parent NB's initial size.
+     */
+    static final double GMC_CRITICAL_VOLUME_FLOOR_FRACTION = 0.1;
+
     /** Rulesets for determining which daughter cell is the GMC on an asymmetric division. */
     public enum DifferentiationRuleset {
         /** The smaller daughter becomes the GMC. */
@@ -795,7 +807,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             case SIZE:
                 return isSizeSymmetric(loc1, loc2);
             case RELATIVE_POSITION:
-                return centroidsWithinRangeAlongApicalAxis(
+                return centroidsAreWithinRangeAlongApicalAxis(
                         loc1.getCentroid(),
                         loc2.getCentroid(),
                         ((PottsCellFlyStem) cell).getApicalAxis(),
@@ -890,7 +902,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * @param range Maximum allowed distance along the apical axis.
      * @return true if the centroids are within the given range along the apical axis.
      */
-    static boolean centroidsWithinRangeAlongApicalAxis(
+    static boolean centroidsAreWithinRangeAlongApicalAxis(
             double[] centroid1, double[] centroid2, Vector apicalAxis, double range) {
 
         Vector c1 = new Vector(centroid1[0], centroid1[1], centroid1.length > 2 ? centroid1[2] : 0);
@@ -909,9 +921,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      *
      * <p>Under {@code VOLUME_BASED_CRITICAL_VOLUME=1} each cell takes its own birth volume as its
      * critical volume: the parent the volume it retained, the daughter the volume it received. Both
-     * are floored at 20% of the population critical volume. This holds under either {@code
-     * DIV_OFFSET_RULESET}; a nominally symmetric split is only approximately equal in voxel count,
-     * so the parent must not inherit the daughter's threshold.
+     * are floored at {@link #NB_CRITICAL_VOLUME_FLOOR_FRACTION} of the population critical volume.
      *
      * @param daughterLoc the location of the daughter NB cell
      * @param sim the simulation
@@ -923,7 +933,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         int newID = sim.getID();
         double daughterCriticalVol;
         if (volumeBasedCriticalVolume) {
-            double floor = populationCriticalVolume * .20;
+            double floor = populationCriticalVolume * NB_CRITICAL_VOLUME_FLOOR_FRACTION;
             daughterCriticalVol = Math.max(daughterLoc.getVolume(), floor);
             cell.setCriticalVolume(Math.max(cell.getLocation().getVolume(), floor));
         } else {
@@ -1056,11 +1066,11 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * Calculates the critical volume of a GMC daughter cell.
      *
      * <p>Under {@code VOLUME_BASED_CRITICAL_VOLUME=1} the value comes from the daughter's birth
-     * volume, floored at a fraction of the parent's initial size. Otherwise it is derived from the
-     * parent's critical volume and the WT split offset unless {@code GMC_CRITICAL_VOLUME_OVERRIDE}
-     * is greater than zero, in which case that fixed value is used instead. The override lets GMC
-     * (and therefore neuron) size be set independently of the division offset, and is ignored when
-     * {@code VOLUME_BASED_CRITICAL_VOLUME=1}.
+     * volume, floored at {@link #GMC_CRITICAL_VOLUME_FLOOR_FRACTION} of the parent's initial size.
+     * Otherwise it is derived from the parent's critical volume and the WT split offset unless
+     * {@code GMC_CRITICAL_VOLUME_OVERRIDE} is greater than zero, in which case that fixed value is
+     * used instead. The override lets GMC (and therefore neuron) size be set independently of the
+     * division offset, and is ignored when {@code VOLUME_BASED_CRITICAL_VOLUME=1}.
      *
      * @param gmcLoc the location of the GMC daughter cell
      * @return the critical volume of the GMC daughter cell
@@ -1068,7 +1078,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     protected double calculateGMCDaughterCellCriticalVolume(PottsLocation gmcLoc) {
         double criticalVol;
         if (volumeBasedCriticalVolume) {
-            criticalVol = Math.max(gmcLoc.getVolume(), initialSize * .1);
+            criticalVol =
+                    Math.max(gmcLoc.getVolume(), initialSize * GMC_CRITICAL_VOLUME_FLOOR_FRACTION);
             return criticalVol;
         } else {
             if (gmcCriticalVolumeOverride > 0) {

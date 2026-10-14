@@ -847,7 +847,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         module = new PottsModuleFlyStemProliferation(stemCell);
         boolean result =
-                PottsModuleFlyStemProliferation.centroidsWithinRangeAlongApicalAxis(
+                PottsModuleFlyStemProliferation.centroidsAreWithinRangeAlongApicalAxis(
                         centroid1, centroid2, apicalAxis, range);
 
         assertTrue(result);
@@ -862,7 +862,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         module = new PottsModuleFlyStemProliferation(stemCell);
         boolean result =
-                PottsModuleFlyStemProliferation.centroidsWithinRangeAlongApicalAxis(
+                PottsModuleFlyStemProliferation.centroidsAreWithinRangeAlongApicalAxis(
                         centroid1, centroid2, apicalAxis, range);
 
         assertTrue(result);
@@ -877,7 +877,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         module = new PottsModuleFlyStemProliferation(stemCell);
         boolean result =
-                PottsModuleFlyStemProliferation.centroidsWithinRangeAlongApicalAxis(
+                PottsModuleFlyStemProliferation.centroidsAreWithinRangeAlongApicalAxis(
                         centroid1, centroid2, apicalAxis, range);
 
         assertFalse(result);
@@ -892,7 +892,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         module = new PottsModuleFlyStemProliferation(stemCell);
         boolean result =
-                PottsModuleFlyStemProliferation.centroidsWithinRangeAlongApicalAxis(
+                PottsModuleFlyStemProliferation.centroidsAreWithinRangeAlongApicalAxis(
                         centroid1, centroid2, apicalAxis, range);
 
         assertTrue(result);
