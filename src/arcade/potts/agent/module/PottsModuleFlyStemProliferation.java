@@ -50,10 +50,21 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     final NormalDistribution splitDirectionDistribution;
 
     /**
-     * Ruleset for determining which daughter cell is the GMC. Can be `smaller_gmc`, `basal_gmc`,
-     * `random`, or `apical_gmc`.
+     * Ruleset for determining which daughter cell is the GMC on an asymmetric division. Can be
+     * `smaller_gmc`, `basal_gmc`, `random`, or `apical_gmc`. Whether a division is symmetric is
+     * decided separately, by {@link #symmetricDivisionRuleset}.
      */
     final String differentiationRuleset;
+
+    /**
+     * Ruleset deciding whether a division is symmetric (both daughters stay neuroblasts). Used only
+     * when {@link #hasDeterministicDifferentiation} is false. `size`: the larger daughter's share
+     * of the combined volume is below {@link #equalityOffsetPercentY}. `apical_axis`: the
+     * daughters' centroids are within {@link #range} along the cell's apical axis. Which daughter
+     * becomes the GMC on an asymmetric division is decided separately, by {@link
+     * #differentiationRuleset}.
+     */
+    final String symmetricDivisionRuleset;
 
     /**
      * Ruleset for determining how the cell determines its Apical Axis. Can be 'uniform', 'global',
@@ -77,10 +88,30 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     final boolean dynamicGrowthRateNBSelfRepression;
 
     /**
-     * Range of values considered equal when determining daughter cell identity. ex. if ruleset is
-     * location, range determines the distance between centroid y values that is considered equal.
+     * Distance (voxel lengths) within which two centroids count as equal under {@code
+     * SYMMETRIC_DIVISION_RULESET=apical_axis}. An absolute length, because that ruleset compares a
+     * separation.
      */
     final double range;
+
+    /**
+     * Split offset (%) below which a division counts as symmetric under {@code
+     * SYMMETRIC_DIVISION_RULESET=size}: both daughters stay neuroblasts when the larger daughter's
+     * share of the parent is less than this.
+     *
+     * <p>On the same scale as {@link #wtDivisionSplitOffsetPercentY} (93) and {@link
+     * #divOffsetRampMinPercentY} (50), so the three read together — the default 71.5 is their
+     * midpoint, which is where a switch ramp centred on {@code DIV_OFFSET_SWITCH_CENTER_ANGLE} sits
+     * at that angle. Setting it to the midpoint therefore places the fate boundary exactly on the
+     * ramp's centre.
+     *
+     * <p>Relative rather than absolute so that one value serves every condition: the parent's
+     * volume cancels, leaving a test on the split ratio alone. Mean NB volume varies roughly
+     * five-fold across conditions — about 248 voxels unregulated, 424 under volume regulation, and
+     * 1236 in WT — so an absolute tolerance would put the fate boundary at a different angle in
+     * each.
+     */
+    final double equalityOffsetPercentY;
 
     /**
      * Half-max NB neighbor count for repression (K). Only relevant if dynamicGrowthRateNBContact is
@@ -133,17 +164,53 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     final double gmcCriticalVolumeOverride;
 
     /**
-     * Reference vector the division-plane rotation offset is measured from. Can be `apical_axis` or
-     * `previous_division`. Under `previous_division` the division axis drifts across a cell's
-     * successive divisions; the apical axis itself is never modified by this ruleset.
+     * Distribution of the angle (degrees) the NB's apical (polarity) axis is rotated by at the
+     * start of each of its divisions, before the division plane is chosen. The rotated axis is
+     * stored on the cell, so reorientations accumulate across a cell's divisions: a nonzero mean
+     * gives persistent turning, a zero mean a random walk. The division plane is then the updated
+     * apical axis rotated by a draw from {@link #splitDirectionDistribution}, which does not
+     * accumulate.
      */
-    final String divRotationReference;
+    final Distribution apicalAxisReorientationDistribution;
 
     /**
-     * Normal vector of the most recent division plane. {@code null} until the first division
-     * completes. Only populated under the `previous_division` rotation reference ruleset.
+     * Y split offset (%) used by the most recent call to {@link #chooseDivisionPlane}. Under the
+     * {@code threshold} ruleset this is always {@link #wtDivisionSplitOffsetPercentY}; under {@code
+     * linear_ramp} it is the ramped value for that division. Read by the critical volume
+     * calculations so the split geometry and the resulting thresholds agree within one division.
      */
-    Vector previousDivisionNormal;
+    double lastSplitOffsetPercentY;
+
+    /**
+     * Ruleset determining the Y split offset for a division. Either {@code threshold} (fixed
+     * offset, with the 75-degree MUDMUT flip to the MUD plane) or {@code linear_ramp} (offset ramps
+     * from the WT offset toward {@link #divOffsetRampMinPercentY} as the drawn division angle moves
+     * away from the distribution mean).
+     */
+    final String divOffsetRuleset;
+
+    /**
+     * Angle (degrees) from the division distribution mean at which the {@code linear_ramp} offset
+     * reaches {@link #divOffsetRampMinPercentY}. Beyond this the offset is clamped.
+     */
+    final double divOffsetRampSaturationAngle;
+
+    /** Minimum Y split offset (%) approached by the {@code linear_ramp} ruleset. */
+    final int divOffsetRampMinPercentY;
+
+    /**
+     * Angle (degrees) from the division distribution mean at which the {@code switch_ramp} offset
+     * sits midway between {@link #wtDivisionSplitOffsetPercentY} and {@link
+     * #divOffsetRampMinPercentY}. Defaults to 75, the angle at which the {@code threshold} ruleset
+     * flips to the MUD plane.
+     */
+    final double divOffsetSwitchCenterAngle;
+
+    /**
+     * Width (degrees) of the {@code switch_ramp} logistic transition. Smaller values are more
+     * switch-like; the limit as this approaches zero is the {@code threshold} ruleset.
+     */
+    final double divOffsetSwitchWidth;
 
     /** Epsilon. */
     public static final double EPSILON = 1e-8;
@@ -168,7 +235,11 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 (NormalDistribution)
                         parameters.getDistribution("proliferation/DIV_ROTATION_DISTRIBUTION");
         differentiationRuleset = parameters.getString("proliferation/DIFFERENTIATION_RULESET");
+        symmetricDivisionRuleset = parameters.getString("proliferation/SYMMETRIC_DIVISION_RULESET");
         range = parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE");
+        equalityOffsetPercentY =
+                parameters.getDouble(
+                        "proliferation/DIFFERENTIATION_RULESET_EQUALITY_OFFSET_PERCENT");
         apicalAxisRuleset = parameters.getString("proliferation/APICAL_AXIS_RULESET");
         apicalAxisRotationDistribution =
                 (Distribution)
@@ -207,13 +278,26 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         gmcCriticalVolumeOverride =
                 parameters.getDouble("proliferation/GMC_CRITICAL_VOLUME_OVERRIDE");
 
-        divRotationReference = parameters.getString("proliferation/DIV_ROTATION_REFERENCE");
-        if (!divRotationReference.equals("apical_axis")
-                && !divRotationReference.equals("previous_division")) {
+        apicalAxisReorientationDistribution =
+                parameters.getDistribution("proliferation/APICAL_AXIS_REORIENTATION_DISTRIBUTION");
+
+        divOffsetRuleset = parameters.getString("proliferation/DIV_OFFSET_RULESET");
+        if (!divOffsetRuleset.equals("threshold")
+                && !divOffsetRuleset.equals("linear_ramp")
+                && !divOffsetRuleset.equals("switch_ramp")) {
             throw new InvalidParameterException(
-                    "divRotationReference must be either apical_axis or previous_division");
+                    "divOffsetRuleset must be threshold, linear_ramp, or switch_ramp");
         }
-        previousDivisionNormal = null;
+        divOffsetSwitchCenterAngle =
+                parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_CENTER_ANGLE");
+        divOffsetSwitchWidth = parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_WIDTH");
+        if (divOffsetRuleset.equals("switch_ramp") && divOffsetSwitchWidth <= 0) {
+            throw new InvalidParameterException("divOffsetSwitchWidth must be greater than zero");
+        }
+        divOffsetRampSaturationAngle =
+                parameters.getDouble("proliferation/DIV_OFFSET_RAMP_SATURATION_ANGLE");
+        divOffsetRampMinPercentY = parameters.getInt("proliferation/DIV_OFFSET_RAMP_MIN_PERCENT_Y");
+        lastSplitOffsetPercentY = wtDivisionSplitOffsetPercentY;
 
         setPhase(Phase.UNDEFINED);
     }
@@ -223,10 +307,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         Potts potts = ((PottsSimulation) sim).getPotts();
         PottsCellFlyStem flyStemCell = (PottsCellFlyStem) cell;
 
+        reorientApicalAxis(flyStemCell);
         Plane divisionPlane = chooseDivisionPlane(flyStemCell);
-        if (divRotationReference.equals("previous_division")) {
-            previousDivisionNormal = divisionPlane.getUnitNormalVector();
-        }
         PottsLocation2D parentLoc = (PottsLocation2D) cell.getLocation();
         PottsLocation daughterLoc = (PottsLocation) parentLoc.split(random, divisionPlane);
 
@@ -301,6 +383,13 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * well below the population baseline; using it here would move the reference along with the
      * cell and defeat the regulation.
      *
+     * <p>{@code f_retain} is {@link #wtDivisionSplitOffsetPercentY} for every offset ruleset, not
+     * just {@code threshold}. Under a ramp the per-division offset varies, but every ruleset is
+     * required to satisfy the same WT calibration, which pins the WT mean offset at the imposed
+     * value — a switch ramp that passes the calibration gate has a WT mean within 0.3% of 93. A
+     * V_ref that tracked the ruleset's own offset distribution would let the growth setpoint drift
+     * with the very quantity the calibration fixes, which defeats the purpose of a reference.
+     *
      * @return the expected average NB volume
      */
     double computeEquilibriumVolume() {
@@ -368,6 +457,20 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
+     * Whether the configured offset ruleset derives the split offset from the drawn angle.
+     *
+     * <p>Single source of truth for the ramp check. A new ruleset must be added here, so that it
+     * cannot silently fall through to the {@code threshold} path — which is exactly what happened
+     * when {@code switch_ramp} was first introduced and its logistic was never reached during a
+     * simulation.
+     *
+     * @return {@code true} for every ruleset that ramps the offset with the drawn angle
+     */
+    boolean usesRampedOffset() {
+        return divOffsetRuleset.equals("linear_ramp") || divOffsetRuleset.equals("switch_ramp");
+    }
+
+    /**
      * Chooses the division plane according to the type of stem cell this module is attached to.
      *
      * @param flyStemCell the stem cell this module is attached to
@@ -376,11 +479,18 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     protected Plane chooseDivisionPlane(PottsCellFlyStem flyStemCell) {
         double offset = sampleDivisionPlaneOffset();
 
+        if (usesRampedOffset()) {
+            lastSplitOffsetPercentY = computeSplitOffsetPercentY(offset);
+            return buildDivisionPlane(
+                    flyStemCell, flyStemCell.getApicalAxis(), offset, lastSplitOffsetPercentY);
+        }
+
+        lastSplitOffsetPercentY = wtDivisionSplitOffsetPercentY;
         if (flyStemCell.getStemType() == StemType.WT
                 || (flyStemCell.getStemType() == StemType.MUDMUT
                         && (Math.abs(offset - splitDirectionDistribution.getExpected())
                                 <= MUDMUT_WT_DIVISION_ANGLE_THRESHOLD))) {
-            return getWTDivisionPlaneWithRotationalVariance(flyStemCell, offset);
+            return getWTDivisionPlane(flyStemCell, offset);
         } else {
             return getMUDDivisionPlane(flyStemCell);
         }
@@ -396,32 +506,80 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Gets the division plane for the cell after rotating the plane according to
-     * splitDirectionDistribution. This follows WT division rules. The plane is rotated around the
-     * XY plane.
+     * Computes the Y split offset for a division from the drawn rotation offset.
      *
-     * <p>The vector the offset is measured from is selected by {@code DIV_ROTATION_REFERENCE}:
-     * under `apical_axis` it is the cell's apical axis, under `previous_division` it is the
-     * previous division plane's normal. The first division of a cell always falls back to the
-     * apical axis because there is no previous plane.
+     * <p>Under the {@code linear_ramp} ruleset the offset falls linearly from {@link
+     * #wtDivisionSplitOffsetPercentY} toward {@link #divOffsetRampMinPercentY} as the drawn angle
+     * moves away from the division distribution mean, reaching the minimum at {@link
+     * #divOffsetRampSaturationAngle} and clamping beyond it.
      *
-     * @param cell the {@link PottsCellFlyStem} to get the division plane for
-     * @param rotationOffset the angle to rotate the plane
-     * @return the division plane for the cell
+     * <p>Under the {@code switch_ramp} ruleset the offset follows a logistic in the same deviation,
+     * centred on {@link #divOffsetSwitchCenterAngle} with width {@link #divOffsetSwitchWidth}. It
+     * is flat near the distribution mean, so typical divisions keep the calibrated asymmetry and
+     * only extreme angles approach a symmetric split; as the width approaches zero it converges on
+     * the {@code threshold} ruleset. A linear ramp is flat nowhere, which shifts the mean split for
+     * every division and breaks the WT calibration — see {@code
+     * docs/superpowers/plans/2026-09-03-graded-division-offset.md}.
+     *
+     * @param rotationOffset the angle drawn from the division rotation distribution
+     * @return the Y split offset percentage for this division
      */
-    public Plane getWTDivisionPlaneWithRotationalVariance(
-            PottsCellFlyStem cell, double rotationOffset) {
-        Vector referenceVector =
-                (divRotationReference.equals("previous_division") && previousDivisionNormal != null)
-                        ? previousDivisionNormal
-                        : cell.getApicalAxis();
+    double computeSplitOffsetPercentY(double rotationOffset) {
+        double deviation = Math.abs(rotationOffset - splitDirectionDistribution.getExpected());
+        double span = wtDivisionSplitOffsetPercentY - divOffsetRampMinPercentY;
+
+        if (divOffsetRuleset.equals("switch_ramp")) {
+            double z = (deviation - divOffsetSwitchCenterAngle) / divOffsetSwitchWidth;
+            return divOffsetRampMinPercentY + span / (1.0 + Math.exp(z));
+        }
+
+        double fraction = Math.min(deviation / divOffsetRampSaturationAngle, 1.0);
+        return wtDivisionSplitOffsetPercentY - span * fraction;
+    }
+
+    /**
+     * Rotates the cell's apical axis by one draw from {@link #apicalAxisReorientationDistribution}
+     * and stores it on the cell. Called once at the start of every NB division, so the rotations
+     * accumulate across the cell's divisions. A zero draw leaves the axis untouched.
+     *
+     * @param cell the {@link PottsCellFlyStem} whose apical axis is reoriented
+     */
+    void reorientApicalAxis(PottsCellFlyStem cell) {
+        double angle = apicalAxisReorientationDistribution.nextDouble();
+        if (angle == 0) {
+            return;
+        }
+        cell.setApicalAxis(
+                Vector.rotateVectorAroundAxis(
+                        cell.getApicalAxis(), Direction.XY_PLANE.vector, angle));
+    }
+
+    /**
+     * Builds a division plane from an explicit reference vector, rotation, and split offset.
+     *
+     * <p>Genotype-neutral: the two canonical divisions are corners of this function, defined by the
+     * {@link StemType} entries. {@code WT(50, 93, 0)} gives rotation 0 and offset 93; {@code
+     * MUDMUT(50, 50, -90)} gives rotation -90 and offset 50. The {@code linear_ramp} ruleset
+     * interpolates between those corners as the drawn angle grows.
+     *
+     * @param cell the {@link PottsCellFlyStem} to build the plane for
+     * @param referenceVector the vector the rotation is measured from
+     * @param rotationOffset the angle to rotate the reference vector by
+     * @param splitOffsetPercentY the Y split offset percentage to divide at
+     * @return the division plane
+     */
+    public Plane buildDivisionPlane(
+            PottsCellFlyStem cell,
+            Vector referenceVector,
+            double rotationOffset,
+            double splitOffsetPercentY) {
         Vector rotatedNormalVector =
                 Vector.rotateVectorAroundAxis(
                         referenceVector, Direction.XY_PLANE.vector, rotationOffset);
         Voxel splitVoxel =
                 getCellSplitVoxel(
                         StemType.WT.splitOffsetPercentX,
-                        wtDivisionSplitOffsetPercentY,
+                        (int) Math.round(splitOffsetPercentY),
                         cell,
                         rotatedNormalVector);
         return new Plane(
@@ -429,20 +587,34 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Gets the division plane for the cell. This follows MUDMUT division rules. The division plane
-     * is not rotated.
+     * Gets the division plane for a WT-rules division: the reference vector rotated by the drawn
+     * angle, split at {@link #wtDivisionSplitOffsetPercentY}. One corner of {@link
+     * #buildDivisionPlane}.
+     *
+     * @param cell the {@link PottsCellFlyStem} to get the division plane for
+     * @param rotationOffset the angle to rotate the plane
+     * @return the division plane for the cell
+     */
+    public Plane getWTDivisionPlane(PottsCellFlyStem cell, double rotationOffset) {
+        return buildDivisionPlane(
+                cell, cell.getApicalAxis(), rotationOffset, wtDivisionSplitOffsetPercentY);
+    }
+
+    /**
+     * Gets the division plane for a MUD-rules division: the apical axis rotated by {@link
+     * StemType#splitDirectionRotation}, split symmetrically. The other corner of {@link
+     * #buildDivisionPlane}. Always measured from the apical axis, never from the previous division
+     * normal.
      *
      * @param cell the {@link PottsCellFlyStem} to get the division plane for
      * @return the division plane for the cell
      */
     public Plane getMUDDivisionPlane(PottsCellFlyStem cell) {
-        Vector defaultNormal =
-                Vector.rotateVectorAroundAxis(
-                        cell.getApicalAxis(),
-                        Direction.XY_PLANE.vector,
-                        StemType.MUDMUT.splitDirectionRotation);
-        Voxel splitVoxel = getCellSplitVoxel(StemType.MUDMUT, cell, defaultNormal);
-        return new Plane(new Double3D(splitVoxel.x, splitVoxel.y, splitVoxel.z), defaultNormal);
+        return buildDivisionPlane(
+                cell,
+                cell.getApicalAxis(),
+                StemType.MUDMUT.splitDirectionRotation,
+                StemType.MUDMUT.splitOffsetPercentY);
     }
 
     /**
@@ -489,34 +661,59 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Determines whether the daughter cell should be a neuroblast or a GMC according to the type of
-     * cell this module is attached to, the differentiation ruleset specified in the parameters, and
-     * the morphologies of the daughter cell locations.
+     * Determines whether the daughter cell should be a neuroblast or a GMC according to the
+     * symmetric division ruleset specified in the parameters and the morphologies of the daughter
+     * cell locations.
+     *
+     * <p>Applies to both stem types. Whether a WT cell can produce a symmetric NB-NB division is
+     * controlled by {@code HAS_DETERMINISTIC_DIFFERENTIATION}: under {@code TRUE} the deterministic
+     * path is used instead and a WT daughter is never a stem cell; under {@code FALSE} a WT cell
+     * uses the same {@link #symmetricDivisionRuleset} as MUDMUT, so a sufficiently symmetric
+     * division yields two neuroblasts. Setting the relevant threshold near zero suppresses that in
+     * practice while leaving the mechanism available.
      *
      * @param loc1 one cell location post division
      * @param loc2 the other cell location post division
      * @return whether or not the daughter cell should be a stem cell
      */
     private boolean daughterStemRuleBasedDifferentiation(PottsLocation loc1, PottsLocation loc2) {
-        if (((PottsCellFlyStem) cell).getStemType() == StemType.WT) {
-            return false;
-        } else if (((PottsCellFlyStem) cell).getStemType() == StemType.MUDMUT) {
-            if (differentiationRuleset.equals("smaller_gmc")) {
-                double vol1 = loc1.getVolume();
-                double vol2 = loc2.getVolume();
-                if (Math.abs(vol1 - vol2) < range) {
-                    return true;
-                }
-                return false;
-            } else if (differentiationRuleset.equals("basal_gmc")) {
-                double[] centroid1 = loc1.getCentroid();
-                double[] centroid2 = loc2.getCentroid();
-                return (centroidsWithinRangeAlongApicalAxis(
-                        centroid1, centroid2, ((PottsCellFlyStem) cell).getApicalAxis(), range));
-            }
+        StemType stemType = ((PottsCellFlyStem) cell).getStemType();
+        if (stemType != StemType.WT && stemType != StemType.MUDMUT) {
+            throw new IllegalArgumentException("Invalid stem type: " + stemType);
         }
-        throw new IllegalArgumentException(
-                "Invalid differentiation ruleset: " + differentiationRuleset);
+        switch (symmetricDivisionRuleset) {
+            case "size":
+                return isSizeSymmetric(loc1, loc2);
+            case "apical_axis":
+                return centroidsWithinRangeAlongApicalAxis(
+                        loc1.getCentroid(),
+                        loc2.getCentroid(),
+                        ((PottsCellFlyStem) cell).getApicalAxis(),
+                        range);
+            default:
+                throw new IllegalArgumentException(
+                        "Invalid symmetric division ruleset: " + symmetricDivisionRuleset);
+        }
+    }
+
+    /**
+     * Whether a division is symmetric by size: the larger daughter's share of the combined volume
+     * is below {@link #equalityOffsetPercentY}. Relative, so the parent's volume cancels and one
+     * threshold serves every condition.
+     *
+     * @param loc1 one cell location post division
+     * @param loc2 the other cell location post division
+     * @return {@code true} if both daughters should remain neuroblasts
+     */
+    private boolean isSizeSymmetric(PottsLocation loc1, PottsLocation loc2) {
+        double vol1 = loc1.getVolume();
+        double vol2 = loc2.getVolume();
+        double total = vol1 + vol2;
+        if (total <= 0) {
+            return false;
+        }
+        double largerSharePercent = 100.0 * Math.max(vol1, vol2) / total;
+        return largerSharePercent < equalityOffsetPercentY;
     }
 
     /**
@@ -530,8 +727,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     private boolean daughterStemDeterministic(Plane divisionPlane) {
         // A WT division always produces one NB and one GMC, so the daughter is never a stem cell.
         // Without this, a WT division plane that happened to align with the expected MUD normal
-        // would be misread as a symmetric NB-NB division. Mirrors the WT case in
-        // daughterStemRuleBasedDifferentiation.
+        // would be misread as a symmetric NB-NB division. This guard is what makes
+        // HAS_DETERMINISTIC_DIFFERENTIATION the on/off switch for WT symmetric divisions: the
+        // rule-based path applies the geometric ruleset to both stem types, this path never does
+        // for WT.
         if (((PottsCellFlyStem) cell).getStemType() == StemType.WT) {
             return false;
         }
@@ -598,14 +797,16 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      *
      * <p>Under {@code VOLUME_BASED_CRITICAL_VOLUME=1} each cell takes its own birth volume as its
      * critical volume: the parent the volume it retained, the daughter the volume it received. Both
-     * are floored at 20% of the population critical volume.
+     * are floored at 20% of the population critical volume. This holds under either {@code
+     * DIV_OFFSET_RULESET}; a nominally symmetric split is only approximately equal in voxel count,
+     * so the parent must not inherit the daughter's threshold.
      *
      * @param daughterLoc the location of the daughter NB cell
      * @param sim the simulation
      * @param potts the potts instance for this simulation
      * @param random the random number generator
      */
-    private void makeDaughterStemCell(
+    void makeDaughterStemCell(
             PottsLocation daughterLoc, Simulation sim, Potts potts, MersenneTwisterFast random) {
         int newID = sim.getID();
         double daughterCriticalVol;
@@ -779,10 +980,14 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             if (gmcCriticalVolumeOverride > 0) {
                 return gmcCriticalVolumeOverride;
             }
+            // The threshold path keeps reading the fixed WT offset verbatim so its behaviour
+            // cannot shift; a ramped ruleset uses the offset realised for this particular division.
+            double offsetPercentY =
+                    usesRampedOffset() ? lastSplitOffsetPercentY : wtDivisionSplitOffsetPercentY;
             criticalVol =
                     ((PottsCellFlyStem) cell).getCriticalVolume()
                             * sizeTarget
-                            * (1.0 - wtDivisionSplitOffsetPercentY / 100.0);
+                            * (1.0 - offsetPercentY / 100.0);
             return criticalVol;
         }
     }

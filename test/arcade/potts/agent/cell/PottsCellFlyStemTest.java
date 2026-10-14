@@ -55,6 +55,7 @@ public class PottsCellFlyStemTest {
 
         doReturn(0.0).when(parametersMock).getDouble(any());
         doReturn(0).when(parametersMock).getInt(any());
+        doReturn("threshold").when(parametersMock).getString("proliferation/DIV_OFFSET_RULESET");
 
         baseContainer =
                 new PottsCellContainer(
@@ -177,9 +178,7 @@ public class PottsCellFlyStemTest {
         doReturn("smaller_gmc")
                 .when(parametersMock)
                 .getString("proliferation/DIFFERENTIATION_RULESET");
-        doReturn("apical_axis")
-                .when(parametersMock)
-                .getString("proliferation/DIV_ROTATION_REFERENCE");
+        doReturn("size").when(parametersMock).getString("proliferation/SYMMETRIC_DIVISION_RULESET");
         doReturn("global").when(parametersMock).getString("proliferation/APICAL_AXIS_RULESET");
         doReturn(distMock)
                 .when(parametersMock)
@@ -187,6 +186,9 @@ public class PottsCellFlyStemTest {
         doReturn(distMock)
                 .when(parametersMock)
                 .getDistribution("proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION");
+        doReturn(distMock)
+                .when(parametersMock)
+                .getDistribution("proliferation/APICAL_AXIS_REORIENTATION_DISTRIBUTION");
         PottsCellFlyStem cell =
                 new PottsCellFlyStem(baseContainer, locationMock, parametersMock, links);
         cell.setStateModule(State.PROLIFERATIVE);
