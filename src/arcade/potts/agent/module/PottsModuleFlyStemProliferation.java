@@ -853,7 +853,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                         apicalAxis,
                         Direction.XY_PLANE.vector,
                         StemType.MUDMUT.splitDirectionRotation);
-        // If TRUE, the daughter should be stem. Otherwise, should be GMC
+        // The daughter is a stem cell only if the cell divided along the MUD plane, i.e. this
+        // plane's normal matches the expected MUD normal. Compare per component within EPSILON,
+        // since Vector.equals is exact and the rotations introduce floating-point error.
         return Math.abs(normalVector.getX() - expectedMUDNormalVector.getX()) <= EPSILON
                 && Math.abs(normalVector.getY() - expectedMUDNormalVector.getY()) <= EPSILON
                 && Math.abs(normalVector.getZ() - expectedMUDNormalVector.getZ()) <= EPSILON;
