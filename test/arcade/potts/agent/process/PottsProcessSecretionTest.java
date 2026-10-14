@@ -105,6 +105,15 @@ public class PottsProcessSecretionTest {
     }
 
     @Test
+    public void getLayers_givenLayers_returnsLayers() {
+        MiniBox box = secretion("PDGF", 4, "BOUNDARY");
+        box.put("secretion/RATE_ECM", 2.0);
+        box.put("secretion/REGION_ECM", "INSIDE");
+        PottsProcessSecretion process = new PottsProcessSecretion(makeCell(box));
+        assertEquals(new HashSet<>(List.of("ECM", "PDGF")), new HashSet<>(process.getLayers()));
+    }
+
+    @Test
     public void setRate_givenLayer_updatesRate() {
         PottsProcessSecretion process =
                 new PottsProcessSecretion(makeCell(secretion("PDGF", 4, "BOUNDARY")));

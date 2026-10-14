@@ -3,6 +3,7 @@ package arcade.potts.agent.process;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
@@ -76,6 +77,15 @@ public class PottsProcessSecretion extends PottsProcess {
             rates.put(layer, rate);
             placements.put(layer, Placement.valueOf(box.get(key)));
         }
+    }
+
+    /**
+     * Gets the layers secreted by the process.
+     *
+     * @return the set of layer ids
+     */
+    public Set<String> getLayers() {
+        return rates.keySet();
     }
 
     /**

@@ -19,7 +19,11 @@ public final class PottsSeries extends Series {
 
     /** Parameters copied to {@code [KEY]_[LAYER]} for each layer. */
     static final String[] LAYER_PARAMETERS = {
-        "secretion/RATE", "secretion/REGION", "chemotaxis/LAMBDA",
+        "secretion/RATE",
+        "secretion/REGION",
+        "senescence/EARLY_RATE",
+        "senescence/LATE_RATE",
+        "chemotaxis/LAMBDA",
     };
 
     /** Map of potts settings. */

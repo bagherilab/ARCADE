@@ -1237,6 +1237,26 @@ public class PottsSeriesTest {
         assertTrue(exception.getMessage().contains("secretion/RATE_PDFG"));
     }
 
+    @Test
+    public void addLayerDefaults_senescenceRates_copiesDefaultsAndConversions() throws Exception {
+        PottsSeries series = makeSeriesWithLayers("PDGF", "INF");
+        MiniBox defaults = new MiniBox();
+        defaults.put("senescence/EARLY_RATE", 0.0);
+        defaults.put("senescence/LATE_RATE", 0.0);
+        MiniBox conversions = new MiniBox();
+        conversions.put("senescence/EARLY_RATE", "DT");
+        conversions.put("senescence/LATE_RATE", "DT");
+
+        series.addLayerDefaults(defaults, conversions);
+
+        for (String layer : new String[] {"PDGF", "INF"}) {
+            assertEquals(0.0, defaults.getDouble("senescence/EARLY_RATE_" + layer), EPSILON);
+            assertEquals(0.0, defaults.getDouble("senescence/LATE_RATE_" + layer), EPSILON);
+            assertEquals("DT", conversions.get("senescence/EARLY_RATE_" + layer));
+            assertEquals("DT", conversions.get("senescence/LATE_RATE_" + layer));
+        }
+    }
+
     // Creates a series with populations and the given layers, then updates potts.
     private PottsSeries makeSeriesForPottsWithLayers(Box box, String... layers) throws Exception {
         PottsSeries series = makeSeriesWithLayers(layers);

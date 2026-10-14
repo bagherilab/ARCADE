@@ -81,6 +81,18 @@
     <population.module module="apoptosis" id="NUCLEUS_PYKNOSIS_RATE" value="100" units="um^3/hour" conversion="DS^-3.DT" description="basal rate of nuclear pyknosis" />
     <population.module module="apoptosis" id="NUCLEUS_FRAGMENTATION_RATE" value="75" units="um^3/hour" conversion="DS^-3.DT" description="basal rate of nuclear fragmentation" />
 
+    <!-- senescence module parameters (EARLY_RATE and LATE_RATE copied to [KEY]_[LAYER] for each layer) -->
+    <population.module module="senescence" id="RATE_EARLY" value="0.139" units="steps/hour" conversion="DT" description="rate of events in early senescence phase" />
+    <population.module module="senescence" id="STEPS_EARLY" value="10" units="steps" description="characteristic steps in early senescence phase" />
+    <population.module module="senescence" id="EARLY_RATE" value="0" units="amount/hour" conversion="DT" description="rate of secretion into each layer in early senescence" />
+    <population.module module="senescence" id="LATE_RATE" value="0" units="amount/hour" conversion="DT" description="rate of secretion into each layer in late senescence" />
+    <population.module module="senescence" id="CLEARANCE_EARLY" value="0" units="1/hour" conversion="DT" description="probability of clearance by a touching macrophage in early senescence" />
+    <population.module module="senescence" id="CLEARANCE_LATE" value="0.1" units="1/hour" conversion="DT" description="probability of clearance by a touching macrophage in late senescence" />
+    <population.module module="senescence" id="BASAL_CLEARANCE" value="0" units="1/hour" conversion="DT" description="probability of clearance without macrophage contact" />
+    <population.module module="senescence" id="DRUG_START" value="0" units="hours" conversion="DT^-1" description="start of senolytic drug window" />
+    <population.module module="senescence" id="DRUG_DURATION" value="0" units="hours" conversion="DT^-1" description="duration of senolytic drug window" />
+    <population.module module="senescence" id="DRUG_KILL" value="0" units="1/hour" conversion="DT" description="probability of clearance by senolytic drug during the window" />
+
     <!-- secretion process parameters (copied to RATE_[LAYER] and REGION_[LAYER] for each layer) -->
     <population.process process="secretion" id="RATE" value="0" units="amount/hour" conversion="DT" description="rate of secretion into each layer" />
     <population.process process="secretion" id="REGION" value="BOUNDARY" description="voxels secreted into for each layer: BOUNDARY (just outside the cell) or INSIDE" />
