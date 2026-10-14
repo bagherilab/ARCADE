@@ -984,7 +984,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Adds a new cell to the simulation grid and schedule. Resets the parent cell.
+     * Converts the daughter container into a cell, assigns its apical axis if it is a neuroblast,
+     * and adds it to the grid, Potts lattice, and schedule.
      *
      * @param container the daughter cell's container
      * @param daughterLoc the daughter cell's location
