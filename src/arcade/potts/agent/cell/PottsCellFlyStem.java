@@ -74,6 +74,8 @@ public class PottsCellFlyStem extends PottsCell {
             PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
 
+        // Override the factory default phase (PROLIFERATIVE_G1); NB division is volume-based and
+        // has no cell-cycle phases. Module is null for non-proliferative states.
         if (module != null) {
             ((PottsModule) module).setPhase(Phase.UNDEFINED);
         }
