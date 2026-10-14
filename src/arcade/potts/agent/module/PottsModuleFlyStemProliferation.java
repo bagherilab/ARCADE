@@ -1077,25 +1077,18 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      * @return the critical volume of the GMC daughter cell
      */
     protected double calculateGMCDaughterCellCriticalVolume(PottsLocation gmcLoc) {
-        double criticalVol;
         if (volumeBasedCriticalVolume) {
-            criticalVol =
-                    Math.max(gmcLoc.getVolume(), initialSize * GMC_CRITICAL_VOLUME_FLOOR_FRACTION);
-            return criticalVol;
-        } else {
-            if (gmcCriticalVolumeOverride > 0) {
-                return gmcCriticalVolumeOverride;
-            }
-            // The threshold path keeps reading the fixed WT offset verbatim so its behaviour
-            // cannot shift; a ramped ruleset uses the offset realised for this particular division.
-            double offsetPercentY =
-                    usesRampedOffset() ? lastSplitOffsetPercentY : wtDivisionSplitOffsetPercentY;
-            criticalVol =
-                    ((PottsCellFlyStem) cell).getCriticalVolume()
-                            * sizeTarget
-                            * (1.0 - offsetPercentY / 100.0);
-            return criticalVol;
+            return Math.max(gmcLoc.getVolume(), initialSize * GMC_CRITICAL_VOLUME_FLOOR_FRACTION);
         }
+        if (gmcCriticalVolumeOverride > 0) {
+            return gmcCriticalVolumeOverride;
+        }
+        // Ramped rulesets use this division's drawn offset; threshold uses the fixed WT offset.
+        double offsetPercentY =
+                usesRampedOffset() ? lastSplitOffsetPercentY : wtDivisionSplitOffsetPercentY;
+        return ((PottsCellFlyStem) cell).getCriticalVolume()
+                * sizeTarget
+                * (1.0 - offsetPercentY / 100.0);
     }
 
     /**
