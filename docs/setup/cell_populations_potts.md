@@ -94,6 +94,8 @@ All classes except macrophages are blocked from proliferating when the free frac
 Differentiation replaces the fibroblast with a cell of the target population that has the same id, age, divisions, state, and location.
 The target must be a `myofibroblast` population, or the simulation fails at setup.
 Population links are used for daughter cells on division, not for differentiation.
+A target set for a population that is not a `fibroblast` population is ignored with a warning.
+Wound healing populations do not support regions; a `population.region` tag causes an error.
 
 | PARAMETER | DEFAULT | UNITS | DESCRIPTION |
 | --------- | ------- | ----- | ----------- |
