@@ -169,14 +169,14 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     final double equalityOffsetPercentY;
 
     /**
-     * Half-max NB neighbor count for repression (K). Only relevant if dynamicGrowthRateNBContact is
-     * true.
+     * Half-max NB neighbor count for repression (K). Only relevant if {@link
+     * #dynamicGrowthRateNBSelfRepression} is true.
      */
     final double nbContactHalfMax;
 
     /**
-     * Hill coefficient for NB-contact repression (n). Only relevant if dynamicGrowthRateNBContact
-     * is true.
+     * Hill coefficient for NB-contact repression (n). Only relevant if {@link
+     * #dynamicGrowthRateNBSelfRepression} is true.
      */
     final double nbContactHillN;
 
