@@ -1415,6 +1415,48 @@ public class PottsLocationTest {
     }
 
     @Test
+    public void getSmallerLocation_locationsDifferentSizes_returnsSmallerLocation() {
+        PottsLocation loc1 = mock(PottsLocation.class);
+        PottsLocation loc2 = mock(PottsLocation.class);
+        when(loc1.getVolume()).thenReturn(5.0);
+        when(loc2.getVolume()).thenReturn(10.0);
+
+        assertEquals(loc1, PottsLocation.getSmallerLocation(loc1, loc2));
+    }
+
+    @Test
+    public void getSmallerLocation_locationsSameSize_returnsSecondLocation() {
+        PottsLocation loc1 = mock(PottsLocation.class);
+        PottsLocation loc2 = mock(PottsLocation.class);
+        when(loc1.getVolume()).thenReturn(10.0);
+        when(loc2.getVolume()).thenReturn(10.0);
+
+        assertEquals(loc2, PottsLocation.getSmallerLocation(loc1, loc2));
+    }
+
+    @Test
+    public void getLocationFurtherAlongAxis_centroidsDifferent_returnsFurtherLocation() {
+        PottsLocation loc1 = mock(PottsLocation.class);
+        PottsLocation loc2 = mock(PottsLocation.class);
+        when(loc1.getCentroid()).thenReturn(new double[] {0, 1, 0});
+        when(loc2.getCentroid()).thenReturn(new double[] {0, 2, 0});
+
+        assertEquals(
+                loc2, PottsLocation.getLocationFurtherAlongAxis(loc1, loc2, new Vector(0, 1, 0)));
+    }
+
+    @Test
+    public void getLocationFurtherAlongAxis_centroidsSame_returnsFirstLocation() {
+        PottsLocation loc1 = mock(PottsLocation.class);
+        PottsLocation loc2 = mock(PottsLocation.class);
+        when(loc1.getCentroid()).thenReturn(new double[] {0, 2, 0});
+        when(loc2.getCentroid()).thenReturn(new double[] {0, 2, 0});
+
+        assertEquals(
+                loc1, PottsLocation.getLocationFurtherAlongAxis(loc1, loc2, new Vector(0, 1, 0)));
+    }
+
+    @Test
     public void split_noOffsetsNoDirection_splitsVoxelsCorrectly() {
         ArrayList<Voxel> voxels = new ArrayList<>();
 

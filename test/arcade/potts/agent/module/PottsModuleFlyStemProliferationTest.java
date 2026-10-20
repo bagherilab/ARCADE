@@ -254,7 +254,12 @@ public class PottsModuleFlyStemProliferationTest {
 
     // Split offset ramp tests
 
-    /** Builds a module using the switch_ramp ruleset with the given logistic shape. */
+    /**
+     * Builds a module using the switch_ramp ruleset with the given logistic shape.
+     *
+     * @param center the switch center angle (degrees)
+     * @param width the switch width (degrees)
+     */
     private void useSwitchRamp(double center, double width) {
         when(parameters.getString("proliferation/DIV_OFFSET_RULESET")).thenReturn("switch_ramp");
         when(parameters.getDouble("proliferation/DIV_OFFSET_SWITCH_CENTER_ANGLE"))
@@ -725,80 +730,6 @@ public class PottsModuleFlyStemProliferationTest {
     // Static method tests
 
     @Test
-    public void getSmallerLocation_locationsDifferentSizes_returnsSmallerLocation() {
-        PottsLocation loc1 = mock(PottsLocation.class);
-        PottsLocation loc2 = mock(PottsLocation.class);
-        when(loc1.getVolume()).thenReturn(5.0);
-        when(loc2.getVolume()).thenReturn(10.0);
-
-        PottsLocation result = PottsModuleFlyStemProliferation.getSmallerLocation(loc1, loc2);
-        assertEquals(loc1, result);
-    }
-
-    @Test
-    public void getSmallerLocation_locationsSameSize_returnsSecondLocation() {
-        PottsLocation loc1 = mock(PottsLocation.class);
-        PottsLocation loc2 = mock(PottsLocation.class);
-        when(loc1.getVolume()).thenReturn(10.0);
-        when(loc2.getVolume()).thenReturn(10.0);
-
-        PottsLocation result = PottsModuleFlyStemProliferation.getSmallerLocation(loc1, loc2);
-        assertEquals(loc2, result);
-    }
-
-    @Test
-    public void getBasalLocation_centroidsDifferent_returnsBasalCentroid() {
-        PottsLocation loc1 = mock(PottsLocation.class);
-        PottsLocation loc2 = mock(PottsLocation.class);
-        when(loc1.getCentroid()).thenReturn(new double[] {0, 2, 0});
-        when(loc2.getCentroid()).thenReturn(new double[] {0, 1, 0});
-        Vector apicalAxis = new Vector(0, 1, 0);
-
-        PottsLocation result =
-                PottsModuleFlyStemProliferation.getBasalLocation(loc1, loc2, apicalAxis);
-        assertEquals(loc1, result);
-    }
-
-    @Test
-    public void getBasalLocation_centroidsSame_returnsFirstLocation() {
-        PottsLocation loc1 = mock(PottsLocation.class);
-        PottsLocation loc2 = mock(PottsLocation.class);
-        when(loc1.getCentroid()).thenReturn(new double[] {0, 2, 0});
-        when(loc2.getCentroid()).thenReturn(new double[] {0, 2, 0});
-        Vector apicalAxis = new Vector(0, 1, 0);
-
-        PottsLocation result =
-                PottsModuleFlyStemProliferation.getBasalLocation(loc1, loc2, apicalAxis);
-        assertEquals(loc1, result);
-    }
-
-    @Test
-    public void getApicalLocation_centroidsDifferent_returnsApicalCentroid() {
-        PottsLocation loc1 = mock(PottsLocation.class);
-        PottsLocation loc2 = mock(PottsLocation.class);
-        when(loc1.getCentroid()).thenReturn(new double[] {0, 2, 0});
-        when(loc2.getCentroid()).thenReturn(new double[] {0, 1, 0});
-        Vector apicalAxis = new Vector(0, 1, 0);
-
-        PottsLocation result =
-                PottsModuleFlyStemProliferation.getApicalLocation(loc1, loc2, apicalAxis);
-        assertEquals(loc2, result);
-    }
-
-    @Test
-    public void getApicalLocation_centroidsSame_returnsSecondLocation() {
-        PottsLocation loc1 = mock(PottsLocation.class);
-        PottsLocation loc2 = mock(PottsLocation.class);
-        when(loc1.getCentroid()).thenReturn(new double[] {0, 2, 0});
-        when(loc2.getCentroid()).thenReturn(new double[] {0, 2, 0});
-        Vector apicalAxis = new Vector(0, 1, 0);
-
-        PottsLocation result =
-                PottsModuleFlyStemProliferation.getApicalLocation(loc1, loc2, apicalAxis);
-        assertEquals(loc2, result);
-    }
-
-    @Test
     public void determineGMCLocation_random_nextBooleanTrue_returnsParent() {
         when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("random");
         module = new PottsModuleFlyStemProliferation(stemCell);
@@ -836,6 +767,50 @@ public class PottsModuleFlyStemProliferationTest {
 
         Location result = module.determineGMCLocation(loc1, loc2, apicalAxis, random);
         assertEquals(loc2, result);
+    }
+
+    @Test
+    public void determineGMCLocation_apicalGmcCentroidsSame_returnsDaughter() {
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("apical_gmc");
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        PottsLocation loc1 = mock(PottsLocation.class);
+        PottsLocation loc2 = mock(PottsLocation.class);
+        when(loc1.getCentroid()).thenReturn(new double[] {0, 2, 0});
+        when(loc2.getCentroid()).thenReturn(new double[] {0, 2, 0});
+
+        Location result = module.determineGMCLocation(loc1, loc2, new Vector(0, 1, 0), random);
+        assertEquals(loc2, result);
+    }
+
+    @Test
+    public void determineGMCLocation_basalGmc_returnsBasalLocation() {
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET")).thenReturn("basal_gmc");
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        PottsLocation loc1 = mock(PottsLocation.class);
+        PottsLocation loc2 = mock(PottsLocation.class);
+        when(loc1.getCentroid()).thenReturn(new double[] {0, 2, 0});
+        when(loc2.getCentroid()).thenReturn(new double[] {0, 1, 0});
+
+        Location result = module.determineGMCLocation(loc1, loc2, new Vector(0, 1, 0), random);
+        assertEquals(loc1, result);
+    }
+
+    @Test
+    public void determineGMCLocation_smallerGmc_returnsSmallerLocation() {
+        when(parameters.getString("proliferation/DIFFERENTIATION_RULESET"))
+                .thenReturn("smaller_gmc");
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        PottsLocation loc1 = mock(PottsLocation.class);
+        PottsLocation loc2 = mock(PottsLocation.class);
+        when(loc1.getVolume()).thenReturn(5.0);
+        when(loc2.getVolume()).thenReturn(10.0);
+
+        Location result = module.determineGMCLocation(loc1, loc2, new Vector(0, 1, 0), random);
+        assertEquals(loc1, result);
     }
 
     @Test
@@ -1542,6 +1517,7 @@ public class PottsModuleFlyStemProliferationTest {
         doReturn(dummyPlane).when(spyModule).getWTDivisionPlane(eq(stemCell), anyDouble());
 
         try (MockedStatic<PottsLocation> mocked = mockStatic(PottsLocation.class)) {
+            mocked.when(() -> PottsLocation.getSmallerLocation(any(), any())).thenCallRealMethod();
             spyModule.addCell(random, sim);
             mocked.verify(() -> PottsLocation.swapVoxels(stemLoc, daughterLoc));
         }
@@ -1581,6 +1557,7 @@ public class PottsModuleFlyStemProliferationTest {
         doReturn(dummyPlane).when(spyModule).getWTDivisionPlane(eq(stemCell), anyDouble());
 
         try (MockedStatic<PottsLocation> mocked = mockStatic(PottsLocation.class)) {
+            mocked.when(() -> PottsLocation.getSmallerLocation(any(), any())).thenCallRealMethod();
             spyModule.addCell(random, sim);
             mocked.verify(() -> PottsLocation.swapVoxels(any(), any()), never());
         }
@@ -1689,6 +1666,7 @@ public class PottsModuleFlyStemProliferationTest {
         doReturn(false).when(module).daughterStem(any(), any(), any());
 
         try (MockedStatic<PottsLocation> mocked = mockStatic(PottsLocation.class)) {
+            mocked.when(() -> PottsLocation.getSmallerLocation(any(), any())).thenCallRealMethod();
             module.addCell(random, sim);
             mocked.verify(() -> PottsLocation.swapVoxels(stemLoc, daughterLoc));
         }

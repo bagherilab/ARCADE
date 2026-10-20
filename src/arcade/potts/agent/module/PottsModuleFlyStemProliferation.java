@@ -1042,13 +1042,17 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             MersenneTwisterFast random) {
         switch (differentiationRuleset) {
             case SMALLER_GMC:
-                return getSmallerLocation(parentLoc, daughterLoc);
-            case BASAL_GMC:
-                return getBasalLocation(parentLoc, daughterLoc, divisionPlaneNormal);
+                return PottsLocation.getSmallerLocation(parentLoc, daughterLoc);
+            case BASAL_GMC: // basal = further along the division plane normal
+                return PottsLocation.getLocationFurtherAlongAxis(
+                        parentLoc, daughterLoc, divisionPlaneNormal);
             case RANDOM:
                 return random.nextBoolean() ? parentLoc : daughterLoc;
             case APICAL_GMC:
-                return getApicalLocation(parentLoc, daughterLoc, divisionPlaneNormal);
+                PottsLocation basalLoc =
+                        PottsLocation.getLocationFurtherAlongAxis(
+                                parentLoc, daughterLoc, divisionPlaneNormal);
+                return (basalLoc == parentLoc) ? daughterLoc : parentLoc;
             default:
                 throw new IllegalArgumentException(
                         "Invalid differentiation ruleset: " + differentiationRuleset);
@@ -1081,53 +1085,5 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         return ((PottsCellFlyStem) cell).getCriticalVolume()
                 * sizeTarget
                 * (1.0 - offsetPercentY / 100.0);
-    }
-
-    /**
-     * Gets the smaller location with fewer voxels and returns it.
-     *
-     * @param loc1 the {@link PottsLocation} to compare to location2.
-     * @param loc2 {@link PottsLocation} to compare to location1.
-     * @return the smaller location.
-     */
-    public static PottsLocation getSmallerLocation(PottsLocation loc1, PottsLocation loc2) {
-        return (loc1.getVolume() < loc2.getVolume()) ? loc1 : loc2;
-    }
-
-    /**
-     * Gets the basal location: the one whose centroid lies further in the direction {@code axis}
-     * points.
-     *
-     * @param loc1 {@link PottsLocation} to compare.
-     * @param loc2 {@link PottsLocation} to compare.
-     * @param axis unit {@link Vector} to project onto; callers pass the division plane normal.
-     * @return the location with the larger centroid projection onto {@code axis}.
-     */
-    public static PottsLocation getBasalLocation(
-            PottsLocation loc1, PottsLocation loc2, Vector axis) {
-        double[] centroid1 = loc1.getCentroid();
-        double[] centroid2 = loc2.getCentroid();
-        Vector c1 = new Vector(centroid1[0], centroid1[1], centroid1.length > 2 ? centroid1[2] : 0);
-        Vector c2 = new Vector(centroid2[0], centroid2[1], centroid2.length > 2 ? centroid2[2] : 0);
-
-        double proj1 = Vector.dotProduct(c1, axis);
-        double proj2 = Vector.dotProduct(c2, axis);
-
-        return (proj1 < proj2) ? loc2 : loc1; // higher projection = more basal
-    }
-
-    /**
-     * Gets the apical location: the one whose centroid lies less far in the direction {@code axis}
-     * points (opposite of {@link #getBasalLocation}).
-     *
-     * @param loc1 {@link PottsLocation} to compare.
-     * @param loc2 {@link PottsLocation} to compare.
-     * @param axis unit {@link Vector} to project onto; callers pass the division plane normal.
-     * @return the location with the smaller centroid projection onto {@code axis}.
-     */
-    public static PottsLocation getApicalLocation(
-            PottsLocation loc1, PottsLocation loc2, Vector axis) {
-        PottsLocation basalLoc = getBasalLocation(loc1, loc2, axis);
-        return (basalLoc == loc1) ? loc2 : loc1;
     }
 }
