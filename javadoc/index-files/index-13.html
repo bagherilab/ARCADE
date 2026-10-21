@@ -86,8 +86,15 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="../arcade/potts/agent/cell/PottsCellFlyNeuron.html#make(int,arcade.core.agent.cell.CellState,ec.util.MersenneTwisterFast)" class="member-name-link">make(int, CellState, MersenneTwisterFast)</a> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCellFlyNeuron.html" title="class in arcade.potts.agent.cell">PottsCellFlyNeuron</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="../arcade/potts/agent/cell/PottsCellFlyStem.html#make(int,arcade.core.agent.cell.CellState,ec.util.MersenneTwisterFast)" class="member-name-link">make(int, CellState, MersenneTwisterFast)</a> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCellFlyStem.html" title="class in arcade.potts.agent.cell">PottsCellFlyStem</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="../arcade/potts/agent/cell/PottsCellStem.html#make(int,arcade.core.agent.cell.CellState,ec.util.MersenneTwisterFast)" class="member-name-link">make(int, CellState, MersenneTwisterFast)</a> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCellStem.html" title="class in arcade.potts.agent.cell">PottsCellStem</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="../arcade/potts/agent/cell/PottsCellFlyStem.html#make(int,arcade.core.agent.cell.CellState,ec.util.MersenneTwisterFast,int,double)" class="member-name-link">make(int, CellState, MersenneTwisterFast, int, double)</a> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCellFlyStem.html" title="class in arcade.potts.agent.cell">PottsCellFlyStem</a></dt>
+<dd>
+<div class="block">Makes a potts cell container with information about the daughter cell's population and
+ critical volume calculated by the proliferation module.</div>
+</dd>
 <dt><a href="../arcade/patch/agent/process/PatchProcessInflammation.html#make(arcade.patch.agent.cell.PatchCell,java.lang.String)" class="member-name-link">make(PatchCell, String)</a> - Static method in class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessInflammation.html" title="class in arcade.patch.agent.process">PatchProcessInflammation</a></dt>
 <dd>
 <div class="block">Creates a <code>PatchProcessInflammation</code> for given version.</div>
@@ -147,6 +154,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="../arcade/core/sim/Series.html#makeConstructors()" class="member-name-link">makeConstructors()</a> - Method in class arcade.core.sim.<a href="../arcade/core/sim/Series.html" title="class in arcade.core.sim">Series</a></dt>
 <dd>
 <div class="block">Uses reflections to build constructors for simulation and visualization.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#makeDaughterGMC(arcade.potts.env.location.PottsLocation,arcade.potts.env.location.PottsLocation,arcade.core.sim.Simulation,arcade.potts.sim.Potts,ec.util.MersenneTwisterFast,arcade.core.util.Vector)" class="member-name-link">makeDaughterGMC(PottsLocation, PottsLocation, Simulation, Potts, MersenneTwisterFast, Vector)</a> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Makes a daughter GMC cell.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#makeDaughterStemCell(arcade.potts.env.location.PottsLocation,arcade.core.sim.Simulation,arcade.potts.sim.Potts,ec.util.MersenneTwisterFast)" class="member-name-link">makeDaughterStemCell(PottsLocation, Simulation, Potts, MersenneTwisterFast)</a> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Makes a daughter NB cell.</div>
 </dd>
 <dt><a href="../arcade/patch/env/component/PatchComponentSitesGraph.html#makeGraphFactory(arcade.core.sim.Series)" class="member-name-link">makeGraphFactory(Series)</a> - Method in class arcade.patch.env.component.<a href="../arcade/patch/env/component/PatchComponentSitesGraph.html" title="class in arcade.patch.env.component">PatchComponentSitesGraph</a></dt>
 <dd>
@@ -675,6 +690,15 @@ loadScripts(document, 'script');</script>
 <dt><a href="../arcade/core/util/distributions/NormalDistribution.html#mu" class="member-name-link">mu</a> - Variable in class arcade.core.util.distributions.<a href="../arcade/core/util/distributions/NormalDistribution.html" title="class in arcade.core.util.distributions">NormalDistribution</a></dt>
 <dd>
 <div class="block">Mean of the distribution.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/cell/PottsCellFlyStem.StemType.html#MUDMUT" class="member-name-link">MUDMUT</a> - Enum constant in enum class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCellFlyStem.StemType.html" title="enum class in arcade.potts.agent.cell">PottsCellFlyStem.StemType</a></dt>
+<dd>
+<div class="block">mud Mutant stem cell.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#MUDMUT_WT_DIVISION_ANGLE_THRESHOLD" class="member-name-link">MUDMUT_WT_DIVISION_ANGLE_THRESHOLD</a> - Static variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Maximum angular deviation (degrees) from the expected split direction within which a MUDMUT
+ cell still divides by WT rules.</div>
 </dd>
 <dt><a href="../arcade/core/util/Matrix.html#multiply(double%5B%5D%5B%5D,double%5B%5D)" class="member-name-link">multiply(double[][], double[])</a> - Static method in class arcade.core.util.<a href="../arcade/core/util/Matrix.html" title="class in arcade.core.util">Matrix</a></dt>
 <dd>

@@ -56,6 +56,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Safety value for Cash-Karp.</div>
 </dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#sampleDivisionPlaneOffset()" class="member-name-link">sampleDivisionPlaneOffset()</a> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Gets the rotation offset for the division plane according to splitDirectionDistribution.</div>
+</dd>
 <dt><a href="../arcade/core/sim/output/OutputSaver.html#save(int)" class="member-name-link">save(int)</a> - Method in class arcade.core.sim.output.<a href="../arcade/core/sim/output/OutputSaver.html" title="class in arcade.core.sim.output">OutputSaver</a></dt>
 <dd>
 <div class="block">Saves the relevant data.</div>
@@ -200,6 +204,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="../arcade/potts/sim/PottsSimulation.html#scheduleComponents()" class="member-name-link">scheduleComponents()</a> - Method in class arcade.potts.sim.<a href="../arcade/potts/sim/PottsSimulation.html" title="class in arcade.potts.sim">PottsSimulation</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#scheduleNewCell(arcade.potts.agent.cell.PottsCellContainer,arcade.potts.env.location.PottsLocation,arcade.core.sim.Simulation,arcade.potts.sim.Potts,ec.util.MersenneTwisterFast)" class="member-name-link">scheduleNewCell(PottsCellContainer, PottsLocation, Simulation, Potts, MersenneTwisterFast)</a> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Converts the daughter container into a cell, assigns its apical axis if it is a neuroblast,
+ and adds it to the grid, Potts lattice, and schedule.</div>
+</dd>
 <dt><a href="../arcade/patch/agent/cell/PatchCellCART.html#searchAbility" class="member-name-link">searchAbility</a> - Variable in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell">PatchCellCART</a></dt>
 <dd>
 <div class="block">number of neighbors that T cell is able to search through.</div>
@@ -346,6 +355,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="../arcade/core/sim/output/OutputSerializer.SeriesSerializer.html#%3Cinit%3E()" class="member-name-link">SeriesSerializer()</a> - Constructor for class arcade.core.sim.output.<a href="../arcade/core/sim/output/OutputSerializer.SeriesSerializer.html" title="class in arcade.core.sim.output">OutputSerializer.SeriesSerializer</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="../arcade/potts/agent/cell/PottsCellFlyStem.html#setApicalAxis(arcade.core.util.Vector)" class="member-name-link">setApicalAxis(Vector)</a> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCellFlyStem.html" title="class in arcade.potts.agent.cell">PottsCellFlyStem</a></dt>
+<dd>
+<div class="block">Sets the apical axis.</div>
+</dd>
 <dt><a href="../arcade/potts/env/location/PottsLocation.html#setAttributes()" class="member-name-link">setAttributes()</a> - Method in class arcade.potts.env.location.<a href="../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></dt>
 <dd>
 <div class="block">Sets the <code>PottsLocation</code> attributes.</div>
@@ -433,6 +446,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="../arcade/potts/agent/cell/PottsCellFlyGMC.html#setStateModule(arcade.core.agent.cell.CellState)" class="member-name-link">setStateModule(CellState)</a> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCellFlyGMC.html" title="class in arcade.potts.agent.cell">PottsCellFlyGMC</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="../arcade/potts/agent/cell/PottsCellFlyNeuron.html#setStateModule(arcade.core.agent.cell.CellState)" class="member-name-link">setStateModule(CellState)</a> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCellFlyNeuron.html" title="class in arcade.potts.agent.cell">PottsCellFlyNeuron</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="../arcade/potts/agent/cell/PottsCellFlyStem.html#setStateModule(arcade.core.agent.cell.CellState)" class="member-name-link">setStateModule(CellState)</a> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCellFlyStem.html" title="class in arcade.potts.agent.cell">PottsCellFlyStem</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="../arcade/potts/agent/cell/PottsCellStem.html#setStateModule(arcade.core.agent.cell.CellState)" class="member-name-link">setStateModule(CellState)</a> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCellStem.html" title="class in arcade.potts.agent.cell">PottsCellStem</a></dt>
 <dd>&nbsp;</dd>
@@ -628,6 +643,14 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="../arcade/patch/sim/output/PatchOutputSerializer.SitesGraphSerializer.html#%3Cinit%3E()" class="member-name-link">SitesGraphSerializer()</a> - Constructor for class arcade.patch.sim.output.<a href="../arcade/patch/sim/output/PatchOutputSerializer.SitesGraphSerializer.html" title="class in arcade.patch.sim.output">PatchOutputSerializer.SitesGraphSerializer</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.SymmetricDivisionRuleset.html#SIZE" class="member-name-link">SIZE</a> - Enum constant in enum class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.SymmetricDivisionRuleset.html" title="enum class in arcade.potts.agent.module">PottsModuleFlyStemProliferation.SymmetricDivisionRuleset</a></dt>
+<dd>
+<div class="block">Symmetric if the larger daughter's share of the combined volume is below a threshold.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#SIZE_CHECKPOINT" class="member-name-link">SIZE_CHECKPOINT</a> - Static variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Threshold for critical volume size checkpoint.</div>
+</dd>
 <dt><a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html#SIZE_CHECKPOINT" class="member-name-link">SIZE_CHECKPOINT</a> - Static variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheckSimple</a></dt>
 <dd>
 <div class="block">Threshold for critical volume size checkpoint.</div>
@@ -647,6 +670,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="../arcade/potts/vis/PottsDrawer.html#slice(int%5B%5D%5B%5D%5B%5D,arcade.potts.vis.PottsDrawer.Plane)" class="member-name-link">slice(int[][][], PottsDrawer.Plane)</a> - Static method in class arcade.potts.vis.<a href="../arcade/potts/vis/PottsDrawer.html" title="class in arcade.potts.vis">PottsDrawer</a></dt>
 <dd>
 <div class="block">Gets slice of a array for the given plane.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.DifferentiationRuleset.html#SMALLER_GMC" class="member-name-link">SMALLER_GMC</a> - Enum constant in enum class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.DifferentiationRuleset.html" title="enum class in arcade.potts.agent.module">PottsModuleFlyStemProliferation.DifferentiationRuleset</a></dt>
+<dd>
+<div class="block">The smaller daughter becomes the GMC.</div>
 </dd>
 <dt><a href="../arcade/patch/env/component/PatchComponentCycle.html#SMOOTHING_FACTOR" class="member-name-link">SMOOTHING_FACTOR</a> - Static variable in class arcade.patch.env.component.<a href="../arcade/patch/env/component/PatchComponentCycle.html" title="class in arcade.patch.env.component">PatchComponentCycle</a></dt>
 <dd>
@@ -712,6 +739,22 @@ loadScripts(document, 'script');</script>
 <dt><a href="../arcade/potts/env/location/PottsLocation.html#split(ec.util.MersenneTwisterFast,java.util.ArrayList,arcade.potts.util.PottsEnums.Direction,java.lang.Double)" class="member-name-link">split(MersenneTwisterFast, ArrayList&lt;Integer&gt;, PottsEnums.Direction, Double)</a> - Method in class arcade.potts.env.location.<a href="../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></dt>
 <dd>
 <div class="block">Splits location voxels into two lists with given offset, direction, and probability.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#splitDirectionDistribution" class="member-name-link">splitDirectionDistribution</a> - Variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Distribution that determines rotational offset of cell's division plane.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/cell/PottsCellFlyStem.StemType.html#splitDirectionRotation" class="member-name-link">splitDirectionRotation</a> - Variable in enum class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCellFlyStem.StemType.html" title="enum class in arcade.potts.agent.cell">PottsCellFlyStem.StemType</a></dt>
+<dd>
+<div class="block">Default direction of division is rotated this much off the apical vector.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/cell/PottsCellFlyStem.StemType.html#splitOffsetPercentX" class="member-name-link">splitOffsetPercentX</a> - Variable in enum class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCellFlyStem.StemType.html" title="enum class in arcade.potts.agent.cell">PottsCellFlyStem.StemType</a></dt>
+<dd>
+<div class="block">Percentage x offset from cell edge where division will occur.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/cell/PottsCellFlyStem.StemType.html#splitOffsetPercentY" class="member-name-link">splitOffsetPercentY</a> - Variable in enum class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCellFlyStem.StemType.html" title="enum class in arcade.potts.agent.cell">PottsCellFlyStem.StemType</a></dt>
+<dd>
+<div class="block">Percentage y offset from cell edge where division will occur.</div>
 </dd>
 <dt><a href="../arcade/potts/env/location/PottsLocation.html#splitVoxels(arcade.core.util.Plane,java.util.ArrayList,java.util.ArrayList,java.util.ArrayList,ec.util.MersenneTwisterFast)" class="member-name-link">splitVoxels(Plane, ArrayList&lt;Voxel&gt;, ArrayList&lt;Voxel&gt;, ArrayList&lt;Voxel&gt;, MersenneTwisterFast)</a> - Static method in class arcade.potts.env.location.<a href="../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></dt>
 <dd>
@@ -780,6 +823,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="../arcade/potts/vis/PottsDrawer.View.html#STATE" class="member-name-link">STATE</a> - Enum constant in enum class arcade.potts.vis.<a href="../arcade/potts/vis/PottsDrawer.View.html" title="enum class in arcade.potts.vis">PottsDrawer.View</a></dt>
 <dd>
 <div class="block">Code for encoding visualization by state.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/cell/PottsCellFlyStem.html#stemType" class="member-name-link">stemType</a> - Variable in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCellFlyStem.html" title="class in arcade.potts.agent.cell">PottsCellFlyStem</a></dt>
+<dd>
+<div class="block">The type of stem cell.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/cell/PottsCellFlyStem.StemType.html#%3Cinit%3E(int,int,double)" class="member-name-link">StemType(int, int, double)</a> - Constructor for enum class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCellFlyStem.StemType.html" title="enum class in arcade.potts.agent.cell">PottsCellFlyStem.StemType</a></dt>
+<dd>
+<div class="block">Constructor for StemType.</div>
 </dd>
 <dt><a href="../arcade/core/agent/module/Module.html#step(ec.util.MersenneTwisterFast,arcade.core.sim.Simulation)" class="member-name-link">step(MersenneTwisterFast, Simulation)</a> - Method in interface arcade.core.agent.module.<a href="../arcade/core/agent/module/Module.html" title="interface in arcade.core.agent.module">Module</a></dt>
 <dd>
@@ -1159,6 +1210,16 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">ID for switch commands.</div>
 </dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.DivOffsetRuleset.html#SWITCH_RAMP" class="member-name-link">SWITCH_RAMP</a> - Enum constant in enum class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.DivOffsetRuleset.html" title="enum class in arcade.potts.agent.module">PottsModuleFlyStemProliferation.DivOffsetRuleset</a></dt>
+<dd>
+<div class="block">Offset follows a logistic transition centered on a switch angle.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#symmetricDivisionRuleset" class="member-name-link">symmetricDivisionRuleset</a> - Variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Ruleset deciding whether a division is symmetric (both daughters stay neuroblasts).</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.SymmetricDivisionRuleset.html#%3Cinit%3E()" class="member-name-link">SymmetricDivisionRuleset()</a> - Constructor for enum class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.SymmetricDivisionRuleset.html" title="enum class in arcade.potts.agent.module">PottsModuleFlyStemProliferation.SymmetricDivisionRuleset</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="../arcade/patch/agent/module/PatchModuleProliferation.html#synthesisDuration" class="member-name-link">synthesisDuration</a> - Variable in class arcade.patch.agent.module.<a href="../arcade/patch/agent/module/PatchModuleProliferation.html" title="class in arcade.patch.agent.module">PatchModuleProliferation</a></dt>
 <dd>
 <div class="block">Time required for DNA synthesis [min].</div>

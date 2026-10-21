@@ -189,6 +189,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Calculates flow rate (in um<sup>3</sup>/min) and area (in um<sup>2</sup>) for all edges.</div>
 </dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#calculateGMCDaughterCellCriticalVolume(arcade.potts.env.location.PottsLocation)" class="member-name-link">calculateGMCDaughterCellCriticalVolume(PottsLocation)</a> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Calculates the critical volume of a GMC daughter cell.</div>
+</dd>
 <dt><a href="../arcade/potts/env/location/PottsLocation.html#calculateHeight()" class="member-name-link">calculateHeight()</a> - Method in class arcade.potts.env.location.<a href="../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></dt>
 <dd>
 <div class="block">Calculates height of location.</div>
@@ -457,6 +461,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Voxel at center of available voxels.</div>
 </dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#centroidsAreWithinRangeAlongApicalAxis(double%5B%5D,double%5B%5D,arcade.core.util.Vector,double)" class="member-name-link">centroidsAreWithinRangeAlongApicalAxis(double[], double[], Vector, double)</a> - Static method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Determines if the distance between two centroids, projected along the apical axis, is less
+ than or equal to the given range.</div>
+</dd>
 <dt><a href="../arcade/potts/sim/Potts.html#change(int,int,int,int,int,double)" class="member-name-link">change(int, int, int, int, int, double)</a> - Method in class arcade.potts.sim.<a href="../arcade/potts/sim/Potts.html" title="class in arcade.potts.sim">Potts</a></dt>
 <dd>
 <div class="block">Calculates energy change to decide if a voxel is flipped.</div>
@@ -518,6 +527,11 @@ loadScripts(document, 'script');</script>
 <dt><a href="../arcade/potts/env/location/PottsLocation.html#checkVoxels(java.util.ArrayList,arcade.potts.env.location.PottsLocation,ec.util.MersenneTwisterFast,boolean)" class="member-name-link">checkVoxels(ArrayList&lt;Voxel&gt;, PottsLocation, MersenneTwisterFast, boolean)</a> - Static method in class arcade.potts.env.location.<a href="../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></dt>
 <dd>
 <div class="block">Checks voxels in the list for connectedness.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#chooseDivisionPlane(arcade.potts.agent.cell.PottsCellFlyStem)" class="member-name-link">chooseDivisionPlane(PottsCellFlyStem)</a> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Chooses the division plane for this fly stem cell based on the offset ruleset and whether the
+ cell is WT or MUDMUT.</div>
 </dd>
 <dt><a href="../arcade/core/gui/GUI.html#chooserDir" class="member-name-link">chooserDir</a> - Static variable in class arcade.core.gui.<a href="../arcade/core/gui/GUI.html" title="class in arcade.core.gui">GUI</a></dt>
 <dd>
@@ -639,9 +653,18 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Computes the expected equilibrium average GMC volume over one cell cycle.</div>
 </dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#computeEquilibriumVolume()" class="member-name-link">computeEquilibriumVolume()</a> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Computes the expected average NB volume from structural parameters, using a rectangular
+ approximation for the post-division volume retained by the NB.</div>
+</dd>
 <dt><a href="../arcade/patch/agent/cell/PatchCellCART.html#computeProbability(double,double,int,int,double,double)" class="member-name-link">computeProbability(double, double, int, int, double, double)</a> - Method in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell">PatchCellCART</a></dt>
 <dd>
 <div class="block">Computes the binding probability for the receptor with the given parameters.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#computeSplitOffsetPercentY(double)" class="member-name-link">computeSplitOffsetPercentY(double)</a> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Computes the Y split offset for a division from the drawn rotation offset.</div>
 </dd>
 <dt><a href="../arcade/patch/env/component/PatchComponentSites.SiteLayer.html#concentration" class="member-name-link">concentration</a> - Variable in class arcade.patch.env.component.<a href="../arcade/patch/env/component/PatchComponentSites.SiteLayer.html" title="class in arcade.patch.env.component">PatchComponentSites.SiteLayer</a></dt>
 <dd>
@@ -881,6 +904,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="../arcade/potts/vis/PottsDrawer.PottsCells.html#count(int%5B%5D%5B%5D,int,int,int)" class="member-name-link">count(int[][], int, int, int)</a> - Method in class arcade.potts.vis.<a href="../arcade/potts/vis/PottsDrawer.PottsCells.html" title="class in arcade.potts.vis">PottsDrawer.PottsCells</a></dt>
 <dd>
 <div class="block">Counts the number of non-target values in the 3x3 neighborhood.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#countNBNeighbors(arcade.core.sim.Simulation)" class="member-name-link">countNBNeighbors(Simulation)</a> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Counts the distinct neuroblasts adjacent to this cell.</div>
 </dd>
 <dt><a href="../arcade/patch/vis/PatchDrawer.CellView.html#COUNTS" class="member-name-link">COUNTS</a> - Enum constant in enum class arcade.patch.vis.<a href="../arcade/patch/vis/PatchDrawer.CellView.html" title="enum class in arcade.patch.vis">PatchDrawer.CellView</a></dt>
 <dd>

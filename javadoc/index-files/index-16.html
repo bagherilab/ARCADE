@@ -168,6 +168,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Parses the layout specification to create root objects.</div>
 </dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#parseRuleset(java.lang.Class,arcade.core.util.Parameters,java.lang.String)" class="member-name-link">parseRuleset(Class&lt;E&gt;, Parameters, String)</a> - Static method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Reads a lowercase ruleset parameter value (e.g.</div>
+</dd>
 <dt><a href="../arcade/patch/env/component/PatchComponentSitesGraphUtilities.html#parseType(java.lang.String)" class="member-name-link">parseType(String)</a> - Static method in class arcade.patch.env.component.<a href="../arcade/patch/env/component/PatchComponentSitesGraphUtilities.html" title="class in arcade.patch.env.component">PatchComponentSitesGraphUtilities</a></dt>
 <dd>
 <div class="block">Parses type letter into code.</div>
@@ -1431,6 +1435,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Code for encoding visualization by population.</div>
 </dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#populationCriticalVolume" class="member-name-link">populationCriticalVolume</a> - Variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Population-level baseline critical volume in voxels, read from the population <code>
+ CRITICAL_VOLUME</code> parameter.</div>
+</dd>
 <dt><a href="../arcade/core/sim/Series.html#populations" class="member-name-link">populations</a> - Variable in class arcade.core.sim.<a href="../arcade/core/sim/Series.html" title="class in arcade.core.sim">Series</a></dt>
 <dd>
 <div class="block">Map of population settings.</div>
@@ -1564,6 +1573,18 @@ loadScripts(document, 'script');</script>
 <dt><a href="../arcade/potts/agent/cell/PottsCellFlyNeuron.html#%3Cinit%3E(arcade.potts.agent.cell.PottsCellContainer,arcade.core.env.location.Location,arcade.core.util.Parameters,arcade.core.util.GrabBag)" class="member-name-link">PottsCellFlyNeuron(PottsCellContainer, Location, Parameters, GrabBag)</a> - Constructor for class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCellFlyNeuron.html" title="class in arcade.potts.agent.cell">PottsCellFlyNeuron</a></dt>
 <dd>
 <div class="block">Creates a <code>PottsCellFlyNeuron</code> <code>PottsCell</code> agent.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/cell/PottsCellFlyStem.html" class="type-name-link" title="class in arcade.potts.agent.cell">PottsCellFlyStem</a> - Class in <a href="../arcade/potts/agent/cell/package-summary.html">arcade.potts.agent.cell</a></dt>
+<dd>
+<div class="block">Implementation of <a href="../arcade/potts/agent/cell/PottsCell.html" title="class in arcade.potts.agent.cell"><code>PottsCell</code></a> for fly stem agents.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/cell/PottsCellFlyStem.html#%3Cinit%3E(arcade.potts.agent.cell.PottsCellContainer,arcade.core.env.location.Location,arcade.core.util.Parameters,arcade.core.util.GrabBag)" class="member-name-link">PottsCellFlyStem(PottsCellContainer, Location, Parameters, GrabBag)</a> - Constructor for class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCellFlyStem.html" title="class in arcade.potts.agent.cell">PottsCellFlyStem</a></dt>
+<dd>
+<div class="block">Constructor for PottsCellFlyStem.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/cell/PottsCellFlyStem.StemType.html" class="type-name-link" title="enum class in arcade.potts.agent.cell">PottsCellFlyStem.StemType</a> - Enum Class in <a href="../arcade/potts/agent/cell/package-summary.html">arcade.potts.agent.cell</a></dt>
+<dd>
+<div class="block">Enum outlining parameters for each cell type.</div>
 </dd>
 <dt><a href="../arcade/potts/vis/PottsDrawer.PottsCells.html#%3Cinit%3E(arcade.core.vis.Panel,java.lang.String,int,int,int,sim.util.gui.ColorMap,java.awt.geom.Rectangle2D.Double)" class="member-name-link">PottsCells(Panel, String, int, int, int, ColorMap, Rectangle2D.Double)</a> - Constructor for class arcade.potts.vis.<a href="../arcade/potts/vis/PottsDrawer.PottsCells.html" title="class in arcade.potts.vis">PottsDrawer.PottsCells</a></dt>
 <dd>
@@ -1810,6 +1831,30 @@ loadScripts(document, 'script');</script>
 <dt><a href="../arcade/potts/agent/module/PottsModuleFlyGMCDifferentiation.html#%3Cinit%3E(arcade.potts.agent.cell.PottsCellFlyGMC)" class="member-name-link">PottsModuleFlyGMCDifferentiation(PottsCellFlyGMC)</a> - Constructor for class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyGMCDifferentiation.html" title="class in arcade.potts.agent.module">PottsModuleFlyGMCDifferentiation</a></dt>
 <dd>
 <div class="block">Creates a fly GMC proliferation module.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" class="type-name-link" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a> - Class in <a href="../arcade/potts/agent/module/package-summary.html">arcade.potts.agent.module</a></dt>
+<dd>
+<div class="block">Implementation of <a href="../arcade/potts/agent/module/PottsModuleProliferationVolumeBasedDivision.html" title="class in arcade.potts.agent.module"><code>PottsModuleProliferationVolumeBasedDivision</code></a> for fly stem agents.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#%3Cinit%3E(arcade.potts.agent.cell.PottsCellFlyStem)" class="member-name-link">PottsModuleFlyStemProliferation(PottsCellFlyStem)</a> - Constructor for class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Creates a proliferation <code>Module</code> for the given <a href="../arcade/potts/agent/cell/PottsCellFlyStem.html" title="class in arcade.potts.agent.cell"><code>PottsCellFlyStem</code></a>.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.ApicalAxisRuleset.html" class="type-name-link" title="enum class in arcade.potts.agent.module">PottsModuleFlyStemProliferation.ApicalAxisRuleset</a> - Enum Class in <a href="../arcade/potts/agent/module/package-summary.html">arcade.potts.agent.module</a></dt>
+<dd>
+<div class="block">Rulesets for determining a daughter cell's apical axis.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.DifferentiationRuleset.html" class="type-name-link" title="enum class in arcade.potts.agent.module">PottsModuleFlyStemProliferation.DifferentiationRuleset</a> - Enum Class in <a href="../arcade/potts/agent/module/package-summary.html">arcade.potts.agent.module</a></dt>
+<dd>
+<div class="block">Rulesets for determining which daughter cell is the GMC on an asymmetric division.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.DivOffsetRuleset.html" class="type-name-link" title="enum class in arcade.potts.agent.module">PottsModuleFlyStemProliferation.DivOffsetRuleset</a> - Enum Class in <a href="../arcade/potts/agent/module/package-summary.html">arcade.potts.agent.module</a></dt>
+<dd>
+<div class="block">Rulesets for determining the Y split offset of a division.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.SymmetricDivisionRuleset.html" class="type-name-link" title="enum class in arcade.potts.agent.module">PottsModuleFlyStemProliferation.SymmetricDivisionRuleset</a> - Enum Class in <a href="../arcade/potts/agent/module/package-summary.html">arcade.potts.agent.module</a></dt>
+<dd>
+<div class="block">Rulesets for deciding whether a division is symmetric (both daughters stay neuroblasts).</div>
 </dd>
 <dt><a href="../arcade/potts/agent/module/PottsModuleNecrosis.html" class="type-name-link" title="class in arcade.potts.agent.module">PottsModuleNecrosis</a> - Class in <a href="../arcade/potts/agent/module/package-summary.html">arcade.potts.agent.module</a></dt>
 <dd>

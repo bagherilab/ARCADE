@@ -332,39 +332,52 @@ implements <a href="../../../core/env/location/Location.html" title="interface i
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets the height of the location for a given region.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>(package private) abstract <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a><wbr>&lt;<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getNeighbors(arcade.potts.env.location.Voxel)" class="member-name-link">getNeighbors</a><wbr>(<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&nbsp;focus)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getLocationFurtherAlongAxis(arcade.potts.env.location.PottsLocation,arcade.potts.env.location.PottsLocation,arcade.core.util.Vector)" class="member-name-link">getLocationFurtherAlongAxis</a><wbr>(<a href="PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a>&nbsp;loc1,
+ <a href="PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a>&nbsp;loc2,
+ <a href="../../../core/util/Vector.html" title="class in arcade.core.util">Vector</a>&nbsp;axis)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Gets the location whose centroid projects further along the given axis.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>(package private) abstract <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a><wbr>&lt;<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getNeighbors(arcade.potts.env.location.Voxel)" class="member-name-link">getNeighbors</a><wbr>(<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&nbsp;focus)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Gets list of neighbors of a given voxel.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOffset(java.util.ArrayList)" class="member-name-link">getOffset</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;offsets)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOffset(java.util.ArrayList)" class="member-name-link">getOffset</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;offsets)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Calculates the voxel at specified offsets from location bounds.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>(package private) abstract <a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getOffsetInApicalFrame(java.util.ArrayList,arcade.core.util.Vector)" class="member-name-link">getOffsetInApicalFrame</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;offsets,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>(package private) abstract <a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getOffsetInApicalFrame(java.util.ArrayList,arcade.core.util.Vector)" class="member-name-link">getOffsetInApicalFrame</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;offsets,
  <a href="../../../core/util/Vector.html" title="class in arcade.core.util">Vector</a>&nbsp;apicalAxis)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Gets the voxel at specified percentage offsets along the location's axes with the provided
  ApicalAxis considered to be pointing up the Y axis.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/EnumSet.html" title="class or interface in java.util" class="external-link">EnumSet</a><wbr>&lt;<a href="../../util/PottsEnums.Region.html" title="enum class in arcade.potts.util">PottsEnums.Region</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRegions()" class="member-name-link">getRegions</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/EnumSet.html" title="class or interface in java.util" class="external-link">EnumSet</a><wbr>&lt;<a href="../../util/PottsEnums.Region.html" title="enum class in arcade.potts.util">PottsEnums.Region</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRegions()" class="member-name-link">getRegions</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets a set of regions.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>(package private) abstract <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a><wbr>&lt;<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getSelected(arcade.potts.env.location.Voxel,double)" class="member-name-link">getSelected</a><wbr>(<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&nbsp;focus,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>(package private) abstract <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html" title="class or interface in java.util" class="external-link">ArrayList</a><wbr>&lt;<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getSelected(arcade.potts.env.location.Voxel,double)" class="member-name-link">getSelected</a><wbr>(<a href="Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&nbsp;focus,
  double&nbsp;n)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Selects specified number of voxels from a focus voxel.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>(package private) abstract <a href="../../util/PottsEnums.Direction.html" title="enum class in arcade.potts.util">PottsEnums.Direction</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getSlice(arcade.potts.util.PottsEnums.Direction,java.util.HashMap)" class="member-name-link">getSlice</a><wbr>(<a href="../../util/PottsEnums.Direction.html" title="enum class in arcade.potts.util">PottsEnums.Direction</a>&nbsp;direction,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>(package private) abstract <a href="../../util/PottsEnums.Direction.html" title="enum class in arcade.potts.util">PottsEnums.Direction</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getSlice(arcade.potts.util.PottsEnums.Direction,java.util.HashMap)" class="member-name-link">getSlice</a><wbr>(<a href="../../util/PottsEnums.Direction.html" title="enum class in arcade.potts.util">PottsEnums.Direction</a>&nbsp;direction,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashMap.html" title="class or interface in java.util" class="external-link">HashMap</a>&lt;<a href="../../util/PottsEnums.Direction.html" title="enum class in arcade.potts.util">PottsEnums.Direction</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;diameters)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Selects the slice direction for a given maximum diameter direction.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getSmallerLocation(arcade.potts.env.location.PottsLocation,arcade.potts.env.location.PottsLocation)" class="member-name-link">getSmallerLocation</a><wbr>(<a href="PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a>&nbsp;loc1,
+ <a href="PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a>&nbsp;loc2)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Gets the location with fewer voxels.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final double</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSurface()" class="member-name-link">getSurface</a>()</code></div>
@@ -1295,6 +1308,38 @@ implements <a href="../../../core/env/location/Location.html" title="interface i
 <dt>Parameters:</dt>
 <dd><code>location1</code> - one location to swap</dd>
 <dd><code>location2</code> - the other location to swap</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getSmallerLocation(arcade.potts.env.location.PottsLocation,arcade.potts.env.location.PottsLocation)">
+<h3>getSmallerLocation</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></span>&nbsp;<span class="element-name">getSmallerLocation</span><wbr><span class="parameters">(<a href="PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a>&nbsp;loc1,
+ <a href="PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a>&nbsp;loc2)</span></div>
+<div class="block">Gets the location with fewer voxels.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>loc1</code> - the first location</dd>
+<dd><code>loc2</code> - the second location</dd>
+<dt>Returns:</dt>
+<dd>the smaller location, or <code>loc2</code> if they are the same size</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getLocationFurtherAlongAxis(arcade.potts.env.location.PottsLocation,arcade.potts.env.location.PottsLocation,arcade.core.util.Vector)">
+<h3>getLocationFurtherAlongAxis</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></span>&nbsp;<span class="element-name">getLocationFurtherAlongAxis</span><wbr><span class="parameters">(<a href="PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a>&nbsp;loc1,
+ <a href="PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a>&nbsp;loc2,
+ <a href="../../../core/util/Vector.html" title="class in arcade.core.util">Vector</a>&nbsp;axis)</span></div>
+<div class="block">Gets the location whose centroid projects further along the given axis.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>loc1</code> - the first location</dd>
+<dd><code>loc2</code> - the second location</dd>
+<dd><code>axis</code> - the <a href="../../../core/util/Vector.html" title="class in arcade.core.util"><code>Vector</code></a> to project onto</dd>
+<dt>Returns:</dt>
+<dd>the location with the larger projection, or <code>loc1</code> if the projections are equal</dd>
 </dl>
 </section>
 </li>

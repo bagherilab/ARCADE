@@ -148,6 +148,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Gets the underlying pattern anchors array.</div>
 </dd>
+<dt><a href="../arcade/potts/agent/cell/PottsCellFlyStem.html#getApicalAxis()" class="member-name-link">getApicalAxis()</a> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCellFlyStem.html" title="class in arcade.potts.agent.cell">PottsCellFlyStem</a></dt>
+<dd>
+<div class="block">Gets the apical axis of the cell.</div>
+</dd>
 <dt><a href="../arcade/patch/env/location/PatchLocation.html#getArea()" class="member-name-link">getArea()</a> - Method in class arcade.patch.env.location.<a href="../arcade/patch/env/location/PatchLocation.html" title="class in arcade.patch.env.location">PatchLocation</a></dt>
 <dd>
 <div class="block">Gets the area of the location.</div>
@@ -218,6 +222,15 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="../arcade/potts/sim/PottsSimulation.html#getCells()" class="member-name-link">getCells()</a> - Method in class arcade.potts.sim.<a href="../arcade/potts/sim/PottsSimulation.html" title="class in arcade.potts.sim">PottsSimulation</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#getCellSplitVoxel(int,int,arcade.potts.agent.cell.PottsCellFlyStem,arcade.core.util.Vector)" class="member-name-link">getCellSplitVoxel(int, int, PottsCellFlyStem, Vector)</a> - Static method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Gets the voxel location the cell's plane of division will pass through, using explicit x and
+ y offsets rather than a <a href="../arcade/potts/agent/cell/PottsCellFlyStem.StemType.html" title="enum class in arcade.potts.agent.cell"><code>PottsCellFlyStem.StemType</code></a>.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#getCellSplitVoxel(arcade.potts.agent.cell.PottsCellFlyStem.StemType,arcade.potts.agent.cell.PottsCellFlyStem,arcade.core.util.Vector)" class="member-name-link">getCellSplitVoxel(PottsCellFlyStem.StemType, PottsCellFlyStem, Vector)</a> - Static method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Computes the voxel through which the division plane passes for a given cell.</div>
+</dd>
 <dt><a href="../arcade/potts/env/location/PottsLocation.html#getCenter()" class="member-name-link">getCenter()</a> - Method in class arcade.potts.env.location.<a href="../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></dt>
 <dd>
 <div class="block">Gets the voxel at the center of the location.</div>
@@ -394,6 +407,11 @@ loadScripts(document, 'script');</script>
 <dt><a href="../arcade/patch/env/component/PatchComponentSitesSource.html#getDamage()" class="member-name-link">getDamage()</a> - Method in class arcade.patch.env.component.<a href="../arcade/patch/env/component/PatchComponentSitesSource.html" title="class in arcade.patch.env.component">PatchComponentSitesSource</a></dt>
 <dd>
 <div class="block">Gets the underlying source damage array.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#getDaughterCellApicalAxis(ec.util.MersenneTwisterFast)" class="member-name-link">getDaughterCellApicalAxis(MersenneTwisterFast)</a> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Gets the apical axis of the daughter cell according to the apicalAxisRuleset specified in the
+ parameters.</div>
 </dd>
 <dt><a href="../arcade/potts/sim/hamiltonian/PersistenceHamiltonianConfig.html#getDecay()" class="member-name-link">getDecay()</a> - Method in class arcade.potts.sim.hamiltonian.<a href="../arcade/potts/sim/hamiltonian/PersistenceHamiltonianConfig.html" title="class in arcade.potts.sim.hamiltonian">PersistenceHamiltonianConfig</a></dt>
 <dd>
@@ -911,6 +929,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="../arcade/potts/sim/PottsSimulation.html#getLocationFactory()" class="member-name-link">getLocationFactory()</a> - Method in class arcade.potts.sim.<a href="../arcade/potts/sim/PottsSimulation.html" title="class in arcade.potts.sim">PottsSimulation</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="../arcade/potts/env/location/PottsLocation.html#getLocationFurtherAlongAxis(arcade.potts.env.location.PottsLocation,arcade.potts.env.location.PottsLocation,arcade.core.util.Vector)" class="member-name-link">getLocationFurtherAlongAxis(PottsLocation, PottsLocation, Vector)</a> - Static method in class arcade.potts.env.location.<a href="../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></dt>
+<dd>
+<div class="block">Gets the location whose centroid projects further along the given axis.</div>
+</dd>
 <dt><a href="../arcade/core/sim/Simulation.html#getLocations()" class="member-name-link">getLocations()</a> - Method in interface arcade.core.sim.<a href="../arcade/core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a></dt>
 <dd>
 <div class="block">Gets the list of <a href="../arcade/core/env/location/LocationContainer.html" title="interface in arcade.core.env.location"><code>LocationContainer</code></a> objects.</div>
@@ -939,6 +961,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="../arcade/potts/agent/cell/PottsCell.html#getModule()" class="member-name-link">getModule()</a> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCell.html" title="class in arcade.potts.agent.cell">PottsCell</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#getMUDDivisionPlane(arcade.potts.agent.cell.PottsCellFlyStem)" class="member-name-link">getMUDDivisionPlane(PottsCellFlyStem)</a> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Gets the division plane for a MUD-rules division: the apical axis rotated by <a href="../arcade/potts/agent/cell/PottsCellFlyStem.StemType.html#splitDirectionRotation"><code>PottsCellFlyStem.StemType.splitDirectionRotation</code></a>, split symmetrically.</div>
+</dd>
 <dt><a href="../arcade/core/sim/Series.html#getName()" class="member-name-link">getName()</a> - Method in class arcade.core.sim.<a href="../arcade/core/sim/Series.html" title="class in arcade.core.sim">Series</a></dt>
 <dd>
 <div class="block">Gets the name of the series.</div>
@@ -1344,6 +1370,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="../arcade/potts/env/location/PottsLocations3D.html#getSlice(arcade.potts.util.PottsEnums.Direction,java.util.HashMap)" class="member-name-link">getSlice(PottsEnums.Direction, HashMap&lt;PottsEnums.Direction, Integer&gt;)</a> - Method in class arcade.potts.env.location.<a href="../arcade/potts/env/location/PottsLocations3D.html" title="class in arcade.potts.env.location">PottsLocations3D</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="../arcade/potts/env/location/PottsLocation.html#getSmallerLocation(arcade.potts.env.location.PottsLocation,arcade.potts.env.location.PottsLocation)" class="member-name-link">getSmallerLocation(PottsLocation, PottsLocation)</a> - Static method in class arcade.potts.env.location.<a href="../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></dt>
+<dd>
+<div class="block">Gets the location with fewer voxels.</div>
+</dd>
 <dt><a href="../arcade/patch/env/component/PatchComponentSitesSource.html#getSources()" class="member-name-link">getSources()</a> - Method in class arcade.patch.env.component.<a href="../arcade/patch/env/component/PatchComponentSitesSource.html" title="class in arcade.patch.env.component">PatchComponentSitesSource</a></dt>
 <dd>
 <div class="block">Gets the underlying source sites array.</div>
@@ -1368,6 +1398,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="../arcade/potts/agent/cell/PottsCell.html#getState()" class="member-name-link">getState()</a> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCell.html" title="class in arcade.potts.agent.cell">PottsCell</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="../arcade/potts/agent/cell/PottsCellFlyStem.html#getStemType()" class="member-name-link">getStemType()</a> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCellFlyStem.html" title="class in arcade.potts.agent.cell">PottsCellFlyStem</a></dt>
+<dd>
+<div class="block">Gets the stem type of the cell.</div>
+</dd>
 <dt><a href="../arcade/core/util/Parameters.html#getString(java.lang.String)" class="member-name-link">getString(String)</a> - Method in class arcade.core.util.<a href="../arcade/core/util/Parameters.html" title="class in arcade.core.util">Parameters</a></dt>
 <dd>
 <div class="block">Gets the parameter value as a string.</div>
@@ -1593,6 +1627,11 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="../arcade/patch/env/lattice/PatchLattice.html#getWidth()" class="member-name-link">getWidth()</a> - Method in class arcade.patch.env.lattice.<a href="../arcade/patch/env/lattice/PatchLattice.html" title="class in arcade.patch.env.lattice">PatchLattice</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#getWTDivisionPlane(arcade.potts.agent.cell.PottsCellFlyStem,double)" class="member-name-link">getWTDivisionPlane(PottsCellFlyStem, double)</a> - Method in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Gets the division plane for a WT-rules division: the reference vector rotated by the drawn
+ angle, split at <a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#wtDivisionSplitOffsetPercentY"><code>PottsModuleFlyStemProliferation.wtDivisionSplitOffsetPercentY</code></a>.</div>
+</dd>
 <dt><a href="../arcade/core/util/Graph.Node.html#getX()" class="member-name-link">getX()</a> - Method in class arcade.core.util.<a href="../arcade/core/util/Graph.Node.html" title="class in arcade.core.util">Graph.Node</a></dt>
 <dd>
 <div class="block">Gets the x coordinate of the node.</div>
@@ -1616,6 +1655,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="../arcade/core/util/Vector.html#getZ()" class="member-name-link">getZ()</a> - Method in class arcade.core.util.<a href="../arcade/core/util/Vector.html" title="class in arcade.core.util">Vector</a></dt>
 <dd>
 <div class="block">Gets the z component of the vector.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.ApicalAxisRuleset.html#GLOBAL" class="member-name-link">GLOBAL</a> - Enum constant in enum class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.ApicalAxisRuleset.html" title="enum class in arcade.potts.agent.module">PottsModuleFlyStemProliferation.ApicalAxisRuleset</a></dt>
+<dd>
+<div class="block">Daughter inherits the parent's apical axis.</div>
 </dd>
 <dt><a href="../arcade/patch/agent/process/PatchProcessMetabolismRandom.html#GLUC_FRAC_DELTA" class="member-name-link">GLUC_FRAC_DELTA</a> - Static variable in class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessMetabolismRandom.html" title="class in arcade.patch.agent.process">PatchProcessMetabolismRandom</a></dt>
 <dd>
@@ -1664,6 +1707,15 @@ loadScripts(document, 'script');</script>
 <dt><a href="../arcade/patch/agent/process/PatchProcessMetabolismCART.html#glucUptakeRate" class="member-name-link">glucUptakeRate</a> - Variable in class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessMetabolismCART.html" title="class in arcade.patch.agent.process">PatchProcessMetabolismCART</a></dt>
 <dd>
 <div class="block">Rate of glucose uptake.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#GMC_CRITICAL_VOLUME_FLOOR_FRACTION" class="member-name-link">GMC_CRITICAL_VOLUME_FLOOR_FRACTION</a> - Static variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Minimum GMC critical volume under <code>VOLUME_BASED_CRITICAL_VOLUME=1</code>, as a fraction of
+ the parent NB's initial size.</div>
+</dd>
+<dt><a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html#gmcCriticalVolumeOverride" class="member-name-link">gmcCriticalVolumeOverride</a> - Variable in class arcade.potts.agent.module.<a href="../arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></dt>
+<dd>
+<div class="block">Fixed GMC daughter critical volume override (voxels, after <code>DS^-3</code> conversion).</div>
 </dd>
 <dt><a href="../arcade/patch/agent/cell/PatchCellCART.html#grabAllTissueNeighbors(arcade.patch.env.grid.PatchGrid,arcade.patch.env.location.PatchLocation)" class="member-name-link">grabAllTissueNeighbors(PatchGrid, PatchLocation)</a> - Method in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCART.html" title="class in arcade.patch.agent.cell">PatchCellCART</a></dt>
 <dd>

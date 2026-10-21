@@ -962,6 +962,14 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Represents a fly neuron cell in the Potts model.</div>
 </div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/agent/cell/PottsCellFlyStem.html" title="class in arcade.potts.agent.cell">PottsCellFlyStem</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Implementation of <a href="arcade/potts/agent/cell/PottsCell.html" title="class in arcade.potts.agent.cell"><code>PottsCell</code></a> for fly stem agents.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab3"><a href="arcade/potts/agent/cell/PottsCellFlyStem.StemType.html" title="enum class in arcade.potts.agent.cell">PottsCellFlyStem.StemType</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab3">
+<div class="block">Enum outlining parameters for each cell type.</div>
+</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/agent/cell/PottsCellStem.html" title="class in arcade.potts.agent.cell">PottsCellStem</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Extension of <a href="arcade/potts/agent/cell/PottsCell.html" title="class in arcade.potts.agent.cell"><code>PottsCell</code></a> for stem cells.</div>
@@ -1098,185 +1106,205 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Implementation of <a href="arcade/potts/agent/module/PottsModuleProliferationVolumeBasedDivision.html" title="class in arcade.potts.agent.module"><code>PottsModuleProliferationVolumeBasedDivision</code></a> for fly GMC agents.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/agent/module/PottsModuleNecrosis.html" title="class in arcade.potts.agent.module">PottsModuleNecrosis</a></div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/agent/module/PottsModuleFlyStemProliferation.html" title="class in arcade.potts.agent.module">PottsModuleFlyStemProliferation</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Implementation of <a href="arcade/potts/agent/module/PottsModuleProliferationVolumeBasedDivision.html" title="class in arcade.potts.agent.module"><code>PottsModuleProliferationVolumeBasedDivision</code></a> for fly stem agents.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab3"><a href="arcade/potts/agent/module/PottsModuleFlyStemProliferation.ApicalAxisRuleset.html" title="enum class in arcade.potts.agent.module">PottsModuleFlyStemProliferation.ApicalAxisRuleset</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab3">
+<div class="block">Rulesets for determining a daughter cell's apical axis.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab3"><a href="arcade/potts/agent/module/PottsModuleFlyStemProliferation.DifferentiationRuleset.html" title="enum class in arcade.potts.agent.module">PottsModuleFlyStemProliferation.DifferentiationRuleset</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab3">
+<div class="block">Rulesets for determining which daughter cell is the GMC on an asymmetric division.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab3"><a href="arcade/potts/agent/module/PottsModuleFlyStemProliferation.DivOffsetRuleset.html" title="enum class in arcade.potts.agent.module">PottsModuleFlyStemProliferation.DivOffsetRuleset</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab3">
+<div class="block">Rulesets for determining the Y split offset of a division.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab3"><a href="arcade/potts/agent/module/PottsModuleFlyStemProliferation.SymmetricDivisionRuleset.html" title="enum class in arcade.potts.agent.module">PottsModuleFlyStemProliferation.SymmetricDivisionRuleset</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab3">
+<div class="block">Rulesets for deciding whether a division is symmetric (both daughters stay neuroblasts).</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/agent/module/PottsModuleNecrosis.html" title="class in arcade.potts.agent.module">PottsModuleNecrosis</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Extension of <a href="arcade/potts/agent/module/PottsModule.html" title="class in arcade.potts.agent.module"><code>PottsModule</code></a> for necrosis.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/agent/module/PottsModuleProliferation.html" title="class in arcade.potts.agent.module">PottsModuleProliferation</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/agent/module/PottsModuleProliferation.html" title="class in arcade.potts.agent.module">PottsModuleProliferation</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Abstract extention of <a href="arcade/potts/agent/module/PottsModule.html" title="class in arcade.potts.agent.module"><code>PottsModule</code></a> for proliferation modules.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/agent/module/PottsModuleProliferationVolumeBasedDivision.html" title="class in arcade.potts.agent.module">PottsModuleProliferationVolumeBasedDivision</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/agent/module/PottsModuleProliferationVolumeBasedDivision.html" title="class in arcade.potts.agent.module">PottsModuleProliferationVolumeBasedDivision</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Implementation of <a href="arcade/potts/agent/module/PottsModule.html" title="class in arcade.potts.agent.module"><code>PottsModule</code></a> for agents that divide upon reaching a volume threshold
  without any cell-cycle duration requirements.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheck.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheck</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheck.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheck</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Extension of <a href="arcade/potts/agent/module/PottsModule.html" title="class in arcade.potts.agent.module"><code>PottsModule</code></a> for proliferation.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheckSimple</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheckSimple.html" title="class in arcade.potts.agent.module">PottsModuleProliferationWithCellCycleCheckSimple</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Extension of <a href="arcade/potts/agent/module/PottsModuleProliferationWithCellCycleCheck.html" title="class in arcade.potts.agent.module"><code>PottsModuleProliferationWithCellCycleCheck</code></a> with Poisson transitions.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/agent/module/PottsModuleQuiescence.html" title="class in arcade.potts.agent.module">PottsModuleQuiescence</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/agent/module/PottsModuleQuiescence.html" title="class in arcade.potts.agent.module">PottsModuleQuiescence</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Extension of <a href="arcade/potts/agent/module/PottsModule.html" title="class in arcade.potts.agent.module"><code>PottsModule</code></a> for quiescence.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputDeserializer.html" title="class in arcade.potts.sim.output">PottsOutputDeserializer</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputDeserializer.html" title="class in arcade.potts.sim.output">PottsOutputDeserializer</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Container class for potts-specific object deserializers.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputDeserializer.PottsCellDeserializer.html" title="class in arcade.potts.sim.output">PottsOutputDeserializer.PottsCellDeserializer</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputDeserializer.PottsCellDeserializer.html" title="class in arcade.potts.sim.output">PottsOutputDeserializer.PottsCellDeserializer</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Deserializer for <a href="arcade/potts/agent/cell/PottsCellContainer.html" title="class in arcade.potts.agent.cell"><code>PottsCellContainer</code></a> objects.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputDeserializer.PottsLocationDeserializer.html" title="class in arcade.potts.sim.output">PottsOutputDeserializer.PottsLocationDeserializer</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputDeserializer.PottsLocationDeserializer.html" title="class in arcade.potts.sim.output">PottsOutputDeserializer.PottsLocationDeserializer</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Deserializer for <a href="arcade/potts/env/location/PottsLocationContainer.html" title="class in arcade.potts.env.location"><code>PottsLocationContainer</code></a> objects.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputDeserializer.VoxelDeserializer.html" title="class in arcade.potts.sim.output">PottsOutputDeserializer.VoxelDeserializer</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputDeserializer.VoxelDeserializer.html" title="class in arcade.potts.sim.output">PottsOutputDeserializer.VoxelDeserializer</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Deserializer for <a href="arcade/potts/env/location/Voxel.html" title="class in arcade.potts.env.location"><code>Voxel</code></a> objects.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputLoader.html" title="class in arcade.potts.sim.output">PottsOutputLoader</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputLoader.html" title="class in arcade.potts.sim.output">PottsOutputLoader</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Custom loader for potts-specific deserialization.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputSaver.html" title="class in arcade.potts.sim.output">PottsOutputSaver</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputSaver.html" title="class in arcade.potts.sim.output">PottsOutputSaver</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Custom saver for potts-specific serialization.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputSerializer.html" title="class in arcade.potts.sim.output">PottsOutputSerializer</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputSerializer.html" title="class in arcade.potts.sim.output">PottsOutputSerializer</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Container class for potts-specific object serializers.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputSerializer.CellSerializer.html" title="class in arcade.potts.sim.output">PottsOutputSerializer.CellSerializer</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputSerializer.CellSerializer.html" title="class in arcade.potts.sim.output">PottsOutputSerializer.CellSerializer</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Serializer for <a href="arcade/core/agent/cell/CellContainer.html" title="interface in arcade.core.agent.cell"><code>CellContainer</code></a> objects.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputSerializer.LocationSerializer.html" title="class in arcade.potts.sim.output">PottsOutputSerializer.LocationSerializer</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputSerializer.LocationSerializer.html" title="class in arcade.potts.sim.output">PottsOutputSerializer.LocationSerializer</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Serializer for <a href="arcade/core/env/location/LocationContainer.html" title="interface in arcade.core.env.location"><code>LocationContainer</code></a> objects.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputSerializer.PottsCellSerializer.html" title="class in arcade.potts.sim.output">PottsOutputSerializer.PottsCellSerializer</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputSerializer.PottsCellSerializer.html" title="class in arcade.potts.sim.output">PottsOutputSerializer.PottsCellSerializer</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Serializer for <a href="arcade/potts/agent/cell/PottsCellContainer.html" title="class in arcade.potts.agent.cell"><code>PottsCellContainer</code></a> objects.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputSerializer.PottsLocationSerializer.html" title="class in arcade.potts.sim.output">PottsOutputSerializer.PottsLocationSerializer</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputSerializer.PottsLocationSerializer.html" title="class in arcade.potts.sim.output">PottsOutputSerializer.PottsLocationSerializer</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Serializer for <a href="arcade/potts/env/location/PottsLocationContainer.html" title="class in arcade.potts.env.location"><code>PottsLocationContainer</code></a> objects.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputSerializer.PottsSeriesSerializer.html" title="class in arcade.potts.sim.output">PottsOutputSerializer.PottsSeriesSerializer</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputSerializer.PottsSeriesSerializer.html" title="class in arcade.potts.sim.output">PottsOutputSerializer.PottsSeriesSerializer</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Serializer for <a href="arcade/potts/sim/PottsSeries.html" title="class in arcade.potts.sim"><code>PottsSeries</code></a> objects.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputSerializer.VoxelSerializer.html" title="class in arcade.potts.sim.output">PottsOutputSerializer.VoxelSerializer</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/output/PottsOutputSerializer.VoxelSerializer.html" title="class in arcade.potts.sim.output">PottsOutputSerializer.VoxelSerializer</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Serializer for <a href="arcade/potts/env/location/Voxel.html" title="class in arcade.potts.env.location"><code>Voxel</code></a> objects.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/PottsSeries.html" title="class in arcade.potts.sim">PottsSeries</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/PottsSeries.html" title="class in arcade.potts.sim">PottsSeries</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Simulation manager for <a href="arcade/potts/sim/PottsSimulation.html" title="class in arcade.potts.sim"><code>PottsSimulation</code></a> instances.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/PottsSimulation.html" title="class in arcade.potts.sim">PottsSimulation</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/PottsSimulation.html" title="class in arcade.potts.sim">PottsSimulation</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Abstract implementation for potts <a href="arcade/core/sim/Simulation.html" title="interface in arcade.core.sim"><code>Simulation</code></a> instances.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/PottsSimulation2D.html" title="class in arcade.potts.sim">PottsSimulation2D</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/PottsSimulation2D.html" title="class in arcade.potts.sim">PottsSimulation2D</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Extension of <a href="arcade/potts/sim/PottsSimulation.html" title="class in arcade.potts.sim"><code>PottsSimulation</code></a> for 2D.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/PottsSimulation3D.html" title="class in arcade.potts.sim">PottsSimulation3D</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/PottsSimulation3D.html" title="class in arcade.potts.sim">PottsSimulation3D</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Extension of <a href="arcade/potts/sim/PottsSimulation.html" title="class in arcade.potts.sim"><code>PottsSimulation</code></a> for 3D.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/vis/PottsVisualization.html" title="class in arcade.potts.vis">PottsVisualization</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/vis/PottsVisualization.html" title="class in arcade.potts.vis">PottsVisualization</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Extension of <a href="arcade/core/vis/Visualization.html" title="class in arcade.core.vis"><code>Visualization</code></a> for potts models.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A <code>Process</code> object is a non-exclusive subcellular steppable.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="arcade/core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process">ProcessDomain</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="arcade/core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process">ProcessDomain</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A <code>ProcessDomain</code> enum represents an agent process domain.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/patch/util/ProliferationEventLog.html" title="class in arcade.patch.util">ProliferationEventLog</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/patch/util/ProliferationEventLog.html" title="class in arcade.patch.util">ProliferationEventLog</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Concrete implementation of <a href="arcade/core/util/EventLog.html" title="class in arcade.core.util"><code>EventLog</code></a> for proliferation events.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/core/sim/Series.html" title="class in arcade.core.sim">Series</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/core/sim/Series.html" title="class in arcade.core.sim">Series</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Abstract simulation manager for <a href="arcade/core/sim/Simulation.html" title="interface in arcade.core.sim"><code>Simulation</code></a> objects, differing only in random seed.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="arcade/core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="arcade/core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A <code>Simulation</code> sets up agents and environments for a simulation.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/core/util/Solver.html" title="class in arcade.core.util">Solver</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/core/util/Solver.html" title="class in arcade.core.util">Solver</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Static utility class implementing various numerical solvers.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="arcade/core/util/Solver.Equations.html" title="interface in arcade.core.util">Solver.Equations</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="arcade/core/util/Solver.Equations.html" title="interface in arcade.core.util">Solver.Equations</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Defines ODE equations for numerical solvers.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="arcade/core/util/Solver.Function.html" title="interface in arcade.core.util">Solver.Function</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="arcade/core/util/Solver.Function.html" title="interface in arcade.core.util">Solver.Function</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Defines a continuous function.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/hamiltonian/SubstrateHamiltonian.html" title="class in arcade.potts.sim.hamiltonian">SubstrateHamiltonian</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/hamiltonian/SubstrateHamiltonian.html" title="class in arcade.potts.sim.hamiltonian">SubstrateHamiltonian</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Implementation of <a href="arcade/potts/sim/hamiltonian/Hamiltonian.html" title="interface in arcade.potts.sim.hamiltonian"><code>Hamiltonian</code></a> for substrate energy.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/hamiltonian/SubstrateHamiltonianConfig.html" title="class in arcade.potts.sim.hamiltonian">SubstrateHamiltonianConfig</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/hamiltonian/SubstrateHamiltonianConfig.html" title="class in arcade.potts.sim.hamiltonian">SubstrateHamiltonianConfig</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Configuration for <a href="arcade/potts/sim/hamiltonian/SubstrateHamiltonian.html" title="class in arcade.potts.sim.hamiltonian"><code>SubstrateHamiltonian</code></a> parameters.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/hamiltonian/SurfaceHamiltonian.html" title="class in arcade.potts.sim.hamiltonian">SurfaceHamiltonian</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/hamiltonian/SurfaceHamiltonian.html" title="class in arcade.potts.sim.hamiltonian">SurfaceHamiltonian</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Implementation of <a href="arcade/potts/sim/hamiltonian/Hamiltonian.html" title="interface in arcade.potts.sim.hamiltonian"><code>Hamiltonian</code></a> for surface energy.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/hamiltonian/SurfaceHamiltonian2D.html" title="class in arcade.potts.sim.hamiltonian">SurfaceHamiltonian2D</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/hamiltonian/SurfaceHamiltonian2D.html" title="class in arcade.potts.sim.hamiltonian">SurfaceHamiltonian2D</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Extension of <a href="arcade/potts/sim/hamiltonian/SurfaceHamiltonian.html" title="class in arcade.potts.sim.hamiltonian"><code>SurfaceHamiltonian</code></a> for 2D.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/hamiltonian/SurfaceHamiltonian3D.html" title="class in arcade.potts.sim.hamiltonian">SurfaceHamiltonian3D</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/hamiltonian/SurfaceHamiltonian3D.html" title="class in arcade.potts.sim.hamiltonian">SurfaceHamiltonian3D</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Extension of <a href="arcade/potts/sim/hamiltonian/SurfaceHamiltonian.html" title="class in arcade.potts.sim.hamiltonian"><code>SurfaceHamiltonian</code></a> for 3D.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/hamiltonian/SurfaceHamiltonianConfig.html" title="class in arcade.potts.sim.hamiltonian">SurfaceHamiltonianConfig</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/hamiltonian/SurfaceHamiltonianConfig.html" title="class in arcade.potts.sim.hamiltonian">SurfaceHamiltonianConfig</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Configuration for <a href="arcade/potts/sim/hamiltonian/SurfaceHamiltonian.html" title="class in arcade.potts.sim.hamiltonian"><code>SurfaceHamiltonian</code></a> parameters.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/core/util/distributions/UniformDistribution.html" title="class in arcade.core.util.distributions">UniformDistribution</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/core/util/distributions/UniformDistribution.html" title="class in arcade.core.util.distributions">UniformDistribution</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Container class for uniform distribution.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/core/util/Utilities.html" title="class in arcade.core.util">Utilities</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/core/util/Utilities.html" title="class in arcade.core.util">Utilities</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Container class for utility methods.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/core/util/Vector.html" title="class in arcade.core.util">Vector</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/core/util/Vector.html" title="class in arcade.core.util">Vector</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A 3D vector.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/core/vis/Visualization.html" title="class in arcade.core.vis">Visualization</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/core/vis/Visualization.html" title="class in arcade.core.vis">Visualization</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Extension of <code>GUIState</code> wrapper of simulations for visualization.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/hamiltonian/VolumeHamiltonian.html" title="class in arcade.potts.sim.hamiltonian">VolumeHamiltonian</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/hamiltonian/VolumeHamiltonian.html" title="class in arcade.potts.sim.hamiltonian">VolumeHamiltonian</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Implementation of <a href="arcade/potts/sim/hamiltonian/Hamiltonian.html" title="interface in arcade.potts.sim.hamiltonian"><code>Hamiltonian</code></a> for volume energy.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/hamiltonian/VolumeHamiltonianConfig.html" title="class in arcade.potts.sim.hamiltonian">VolumeHamiltonianConfig</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/sim/hamiltonian/VolumeHamiltonianConfig.html" title="class in arcade.potts.sim.hamiltonian">VolumeHamiltonianConfig</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Configuration for <a href="arcade/potts/sim/hamiltonian/VolumeHamiltonian.html" title="class in arcade.potts.sim.hamiltonian"><code>VolumeHamiltonian</code></a> parameters.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/env/location/Voxel.html" title="class in arcade.potts.env.location">Voxel</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="arcade/potts/env/location/Voxel.html" title="class in arcade.potts.env.location">Voxel</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Representation of a voxel for locations.</div>
 </div>
 </div>
