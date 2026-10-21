@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PottsCellFlyStem.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.agent.cell</a> &gt; <span class="el_source">PottsCellFlyStem.java</span></div><h1>PottsCellFlyStem.java</h1><pre class="source lang-java linenums">package arcade.potts.agent.cell;
+
+import ec.util.MersenneTwisterFast;
+import arcade.core.agent.cell.CellState;
+import arcade.core.env.location.Location;
+import arcade.core.util.GrabBag;
+import arcade.core.util.Parameters;
+import arcade.core.util.Vector;
+import arcade.potts.agent.module.PottsModule;
+import arcade.potts.agent.module.PottsModuleFlyStemProliferation;
+import arcade.potts.util.PottsEnums.Phase;
+import static arcade.potts.util.PottsEnums.State;
+
+/**
+ * Implementation of {@link PottsCell} for fly stem agents. Genotype is specified by the StemType
+ * enum.
+ */
+public class PottsCellFlyStem extends PottsCell {
+    /** Enum outlining parameters for each cell type. */
+<span class="fc" id="L20">    public enum StemType {</span>
+        /** Wild type stem cell. */
+<span class="fc" id="L22">        WT(50, 93, 0),</span>
+
+        /** mud Mutant stem cell. */
+<span class="fc" id="L25">        MUDMUT(50, 50, -90);</span>
+
+        /** Percentage x offset from cell edge where division will occur. */
+        public final int splitOffsetPercentX;
+
+        /**
+         * Percentage y offset from cell edge where division will occur. Under the rectangular-cell
+         * approximation used elsewhere in the proliferation module, this is also the fraction of
+         * the pre-division volume retained by the NB, leaving {@code 1 - splitOffsetPercentY / 100}
+         * for the GMC daughter.
+         *
+         * &lt;p&gt;This governs the MUD division plane only. The WT division path uses the {@code
+         * WT_DIVISION_SPLIT_OFFSET_PERCENT_Y} parameter instead, which may differ from this value.
+         */
+        public final int splitOffsetPercentY;
+
+        /** Default direction of division is rotated this much off the apical vector. */
+        public final double splitDirectionRotation;
+
+        /**
+         * Constructor for StemType.
+         *
+         * @param splitOffsetPercentX percentage x offset from cell edge where division will occur
+         * @param splitOffsetPercentY percentage y offset from cell edge where division will occur
+         * @param splitDirectionRotation the plane of division's rotation off the apical vector
+         */
+<span class="fc" id="L51">        StemType(int splitOffsetPercentX, int splitOffsetPercentY, double splitDirectionRotation) {</span>
+<span class="fc" id="L52">            this.splitOffsetPercentX = splitOffsetPercentX;</span>
+<span class="fc" id="L53">            this.splitOffsetPercentY = splitOffsetPercentY;</span>
+<span class="fc" id="L54">            this.splitDirectionRotation = splitDirectionRotation;</span>
+<span class="fc" id="L55">        }</span>
+    }
+
+    /** The type of stem cell. */
+    public final StemType stemType;
+
+    /** The cell's apical axis. The vector points towards the apical membrane. */
+    private Vector apicalAxis;
+
+    /**
+     * Constructor for PottsCellFlyStem.
+     *
+     * @param container the container for the cell
+     * @param location the location of the cell
+     * @param parameters the parameters for the cell
+     * @param links the links for the cell
+     * @throws IllegalArgumentException if the stem type is not recognized
+     */
+    public PottsCellFlyStem(
+            PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
+<span class="fc" id="L75">        super(container, location, parameters, links);</span>
+
+        // Override the factory default phase (PROLIFERATIVE_G1); NB division is volume-based and
+        // has no cell-cycle phases. Module is null for non-proliferative states.
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        if (module != null) {</span>
+<span class="nc" id="L80">            ((PottsModule) module).setPhase(Phase.UNDEFINED);</span>
+        }
+
+<span class="fc" id="L83">        String stemTypeString = parameters.getString(&quot;CLASS&quot;);</span>
+<span class="fc bfc" id="L84" title="All 3 branches covered.">        switch (stemTypeString) {</span>
+            case &quot;fly-stem-wt&quot;:
+<span class="fc" id="L86">                stemType = StemType.WT;</span>
+<span class="fc" id="L87">                break;</span>
+            case &quot;fly-stem-mudmut&quot;:
+<span class="fc" id="L89">                stemType = StemType.MUDMUT;</span>
+<span class="fc" id="L90">                break;</span>
+            default:
+<span class="fc" id="L92">                throw new IllegalArgumentException(&quot;Unknown StemType: &quot; + stemTypeString);</span>
+        }
+<span class="fc" id="L94">    }</span>
+
+    /**
+     * Sets the apical axis.
+     *
+     * @param apicalAxis the new apical axis
+     */
+    public void setApicalAxis(Vector apicalAxis) {
+<span class="fc" id="L102">        this.apicalAxis = apicalAxis;</span>
+<span class="fc" id="L103">    }</span>
+
+    /**
+     * Gets the apical axis of the cell. If no apical axis is set, it returns a vector along the y
+     * axis as a default vector
+     *
+     * @return the apical axis of the cell
+     */
+    public Vector getApicalAxis() {
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        if (apicalAxis != null) {</span>
+<span class="fc" id="L113">            return apicalAxis;</span>
+        } else {
+<span class="fc" id="L115">            return new Vector(0, 1, 0);</span>
+        }
+    }
+
+    @Override
+    public PottsCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
+<span class="fc" id="L121">        throw new UnsupportedOperationException(</span>
+                &quot;make(int, CellState, MersenneTwisterFast) not supported.&quot;
+                        + &quot;Please use make(int, CellState, MersenneTwisterFast, int, double) instead.&quot;);
+    }
+
+    /**
+     * Makes a potts cell container with information about the daughter cell's population and
+     * critical volume calculated by the proliferation module.
+     *
+     * @param newID the new cell ID
+     * @param newState the new cell state
+     * @param random the random number generator
+     * @param newPop the new cell population
+     * @param daughterCellCriticalVolume the new cell's critical volume
+     * @return a {@link PottsCellContainer} with the information needed to make the daughter cell
+     */
+    public PottsCellContainer make(
+            int newID,
+            CellState newState,
+            MersenneTwisterFast random,
+            int newPop,
+            double daughterCellCriticalVolume) {
+
+<span class="fc" id="L144">        divisions++;</span>
+
+<span class="fc" id="L146">        return new PottsCellContainer(</span>
+                newID,
+                id,
+                newPop,
+                age,
+                divisions,
+                newState,
+                Phase.UNDEFINED,
+                0,
+                null,
+                daughterCellCriticalVolume,
+                criticalHeight,
+                criticalRegionVolumes,
+                criticalRegionHeights);
+    }
+
+    @Override
+    void setStateModule(CellState newState) {
+<span class="fc bfc" id="L164" title="All 2 branches covered.">        switch ((State) newState) {</span>
+            case PROLIFERATIVE:
+<span class="fc" id="L166">                module = new PottsModuleFlyStemProliferation(this);</span>
+<span class="fc" id="L167">                break;</span>
+            default:
+<span class="fc" id="L169">                module = null;</span>
+                break;
+        }
+<span class="fc" id="L172">    }</span>
+
+    /**
+     * Gets the stem type of the cell.
+     *
+     * @return the stem type of the cell
+     */
+    public final StemType getStemType() {
+<span class="fc" id="L180">        return stemType;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
