@@ -716,6 +716,28 @@ public class SeriesTest {
     }
 
     @Test
+    public void parseParameter_twoParameterDistributionWithScale_usesScaledParameters() {
+        MiniBox box = new MiniBox();
+        String parameter = randomString();
+
+        double defaultMu = randomDoubleBetween(10, 100);
+        double defaultSigma = randomDoubleBetween(1, 10);
+        String defaultCode =
+                String.format("TRUNCATED_NORMAL(MU=%f,SIGMA=%f)", defaultMu, defaultSigma);
+
+        MiniBox values = new MiniBox();
+        MiniBox scales = new MiniBox();
+        double scale = randomDoubleBetween(0, 1);
+        scales.put(parameter, scale);
+
+        Series.parseParameter(box, parameter, defaultCode, values, scales);
+
+        assertEquals("TRUNCATED_NORMAL", box.get("(DISTRIBUTION)" + TAG_SEPARATOR + parameter));
+        assertEquals(defaultMu * scale, box.getDouble(parameter + "_MU"), EPSILON);
+        assertEquals(defaultSigma * scale, box.getDouble(parameter + "_SIGMA"), EPSILON);
+    }
+
+    @Test
     public void parseConversion_invalidConversion_returnsOne() {
         assertEquals(1, Series.parseConversion(randomString(), DS, DZ, DT), EPSILON);
     }
