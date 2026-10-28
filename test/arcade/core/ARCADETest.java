@@ -375,4 +375,20 @@ public class ARCADETest {
         assertTrue(series.get(0).loader.loadCells);
         assertTrue(series.get(0).loader.loadLocations);
     }
+
+    @Test
+    public void runSeries_loadLayers_setsBooleans() throws Exception {
+        ArrayList<Series> series = new ArrayList<>();
+        series.add(mock(Series.class));
+
+        MiniBox settings = new MiniBox();
+        settings.put("LOAD_LAYERS", "");
+
+        ARCADE arcade = new MockARCADE(settings);
+        arcade.runSeries(series);
+
+        assertFalse(series.get(0).loader.loadCells);
+        assertFalse(series.get(0).loader.loadLocations);
+        assertTrue(series.get(0).loader.loadLayers);
+    }
 }
