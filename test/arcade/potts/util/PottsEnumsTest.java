@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
+import arcade.core.env.operation.OperationCategory;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static arcade.potts.util.PottsEnums.Category;
 import static arcade.potts.util.PottsEnums.Direction;
+import static arcade.potts.util.PottsEnums.Ordering;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Term;
 
@@ -76,6 +79,40 @@ public class PottsEnumsTest {
 
         // Compare resulting sets.
         EnumSet<Direction> enumSetRandom = EnumSet.copyOf(enumRandom);
+        assertEquals(enumSet, enumSetRandom);
+    }
+
+    @Test
+    public void Ordering_values_inSteppingOrder() {
+        assertEquals(0, Ordering.POTTS.ordinal());
+        assertEquals(1, Ordering.CELLS.ordinal());
+        assertEquals(2, Ordering.LATTICES.ordinal());
+    }
+
+    @Test
+    public void Category_values_areOperationCategories() {
+        assertTrue(Category.DIFFUSER instanceof OperationCategory);
+        assertEquals(Category.DIFFUSER, Category.valueOf("DIFFUSER"));
+    }
+
+    @Test
+    public void Category_random_returnsCategory() {
+        // Create set of all values.
+        EnumSet<Category> enumSet = EnumSet.allOf(Category.class);
+        enumSet.remove(Category.UNDEFINED);
+
+        // Create set of all random values.
+        ArrayList<Category> enumRandom = new ArrayList<>();
+
+        int n = Category.values().length - 1;
+        for (int i = 0; i < n; i++) {
+            MersenneTwisterFast rng = mock(MersenneTwisterFast.class);
+            doReturn(i).when(rng).nextInt(n);
+            enumRandom.add(Category.random(rng));
+        }
+
+        // Compare resulting sets.
+        EnumSet<Category> enumSetRandom = EnumSet.copyOf(enumRandom);
         assertEquals(enumSet, enumSetRandom);
     }
 }

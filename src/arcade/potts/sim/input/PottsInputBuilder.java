@@ -36,18 +36,20 @@ public final class PottsInputBuilder extends InputBuilder {
         int numAtts = atts.getLength();
         String id;
         String module;
+        String operation;
         String target;
         String term;
 
         if (numAtts > 0) {
-            // Entry can have at most one of the following tags: module, term.
+            // Entry can have at most one of the following tags: module, term, operation.
             boolean hasModule = atts.getValue("module") != null;
             boolean hasTerm = atts.getValue("term") != null;
-            if (hasModule & hasTerm) {
+            boolean hasOperation = atts.getValue("operation") != null;
+            if (hasModule ^ hasTerm ? hasOperation : hasModule) {
                 return;
             }
 
-            // Get any tags (module or term) or target.
+            // Get any tags (module, term, or operation) or target.
             term =
                     (atts.getValue("term") == null
                             ? ""
@@ -56,13 +58,17 @@ public final class PottsInputBuilder extends InputBuilder {
                     (atts.getValue("module") == null
                             ? ""
                             : atts.getValue("module").toLowerCase() + TAG_SEPARATOR);
+            operation =
+                    (atts.getValue("operation") == null
+                            ? ""
+                            : atts.getValue("operation").toLowerCase() + TAG_SEPARATOR);
             target =
                     (atts.getValue("target") == null
                             ? ""
                             : TARGET_SEPARATOR + atts.getValue("target"));
 
             // Create id by combining tags, id, and target.
-            id = module + term + atts.getValue("id") + target;
+            id = operation + module + term + atts.getValue("id") + target;
             box.addTag(id, tag.toUpperCase());
 
             for (int i = 0; i < numAtts; i++) {
@@ -70,6 +76,7 @@ public final class PottsInputBuilder extends InputBuilder {
                 switch (name) {
                     case "id":
                     case "module":
+                    case "operation":
                     case "target":
                     case "term":
                         break;
