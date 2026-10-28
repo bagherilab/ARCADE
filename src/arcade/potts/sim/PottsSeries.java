@@ -17,8 +17,10 @@ public final class PottsSeries extends Series {
     /** Default cell class. */
     public static final String DEFAULT_CELL_CLASS = "stem";
 
-    /** Population parameters copied to {@code [KEY]_[LAYER]} for each layer. */
-    static final String[] LAYER_PARAMETERS = {"secretion/RATE", "secretion/REGION"};
+    /** Parameters copied to {@code [KEY]_[LAYER]} for each layer. */
+    static final String[] LAYER_PARAMETERS = {
+        "secretion/RATE", "secretion/REGION", "chemotaxis/LAMBDA",
+    };
 
     /** Map of potts settings. */
     public MiniBox potts;
@@ -96,6 +98,7 @@ public final class PottsSeries extends Series {
         // Initialize potts.
         MiniBox pottsDefaults = parameters.getIdValForTag("POTTS");
         MiniBox pottsConversions = parameters.getIdValForTagAtt("POTTS", "conversion");
+        addLayerDefaults(pottsDefaults, pottsConversions);
         ArrayList<Box> pottsBox = setupLists.get("potts");
         updatePotts(pottsBox, pottsDefaults, pottsConversions);
     }
@@ -119,6 +122,9 @@ public final class PottsSeries extends Series {
         Box parameters = box.filterBoxByTag("PARAMETER");
         MiniBox parameterValues = parameters.getIdValForTagAtt("PARAMETER", "value");
         MiniBox parameterScales = parameters.getIdValForTagAtt("PARAMETER", "scale");
+
+        // Check that per-layer parameters name an existing layer.
+        checkLayerParameters(parameters, pottsDefaults);
 
         // Add in parameters. Start with value (if given) or default (if not
         // given). Then apply any scaling.
@@ -301,13 +307,25 @@ public final class PottsSeries extends Series {
             }
 
             // Check that per-layer parameters name an existing layer.
-            for (String parameter : parameters.getKeys()) {
-                for (String key : LAYER_PARAMETERS) {
-                    if (parameter.startsWith(key + "_")
-                            && !populationDefaults.contains(parameter)) {
-                        throw new IllegalArgumentException(
-                                "unknown layer in parameter [ " + parameter + " ]");
-                    }
+            checkLayerParameters(parameters, populationDefaults);
+        }
+    }
+
+    /**
+     * Checks that per-layer parameters name an existing layer.
+     *
+     * <p>Any target is removed from the parameter name before checking.
+     *
+     * @param parameters the setup parameters
+     * @param defaults the defaults, including the copies for each layer
+     */
+    void checkLayerParameters(Box parameters, MiniBox defaults) {
+        for (String parameter : parameters.getKeys()) {
+            String key = parameter.split(TARGET_SEPARATOR)[0];
+            for (String layerParameter : LAYER_PARAMETERS) {
+                if (key.startsWith(layerParameter + "_") && !defaults.contains(key)) {
+                    throw new IllegalArgumentException(
+                            "unknown layer in parameter [ " + parameter + " ]");
                 }
             }
         }

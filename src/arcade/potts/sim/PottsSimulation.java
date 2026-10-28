@@ -27,7 +27,10 @@ import arcade.potts.env.grid.PottsGrid;
 import arcade.potts.env.lattice.PottsLattice;
 import arcade.potts.env.lattice.PottsLatticeFactory;
 import arcade.potts.env.location.PottsLocationFactory;
+import arcade.potts.sim.hamiltonian.ChemotaxisHamiltonian;
+import arcade.potts.sim.hamiltonian.Hamiltonian;
 import static arcade.potts.util.PottsEnums.Ordering;
+import static arcade.potts.util.PottsEnums.Term;
 
 /** Abstract implementation for potts {@link Simulation} instances. */
 public abstract class PottsSimulation extends SimState implements Simulation {
@@ -302,6 +305,12 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         lattices = factory.lattices;
         for (PottsLattice lattice : lattices.values()) {
             lattice.schedule(schedule);
+        }
+
+        // Pass lattices to the chemotaxis term, if it is used.
+        Hamiltonian chemotaxis = potts.getHamiltonian(Term.CHEMOTAXIS);
+        if (chemotaxis != null) {
+            ((ChemotaxisHamiltonian) chemotaxis).setLattices(lattices);
         }
     }
 

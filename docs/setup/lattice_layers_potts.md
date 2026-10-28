@@ -95,10 +95,13 @@ _Specifies a matrix layer (ECM) degraded by a diffusing enzyme layer (MMP) at 0.
 </layer>
 ```
 
-## Secretion into layers
+## Cells and layers
 
 Cells add to layers through the [secretion process]({{site.baseurl}}/setup/cell_populations_potts#secretion-process).
 Secreted amounts are held until the start of the lattice step, so every cell senses the same layer values regardless of the order in which cells step.
+
+Cells move up or down layer gradients through the [chemotaxis term]({{site.baseurl}}/setup/implementation_setup_potts#chemotaxis-term).
+The chemotaxis term uses the layer values from the end of the previous tick.
 
 ## Saving and loading layers
 
