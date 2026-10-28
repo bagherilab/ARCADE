@@ -696,6 +696,38 @@ public abstract class PottsLocation implements Location {
     }
 
     /**
+     * Gets the location with fewer voxels.
+     *
+     * @param loc1 the first location
+     * @param loc2 the second location
+     * @return the smaller location, or {@code loc2} if they are the same size
+     */
+    public static PottsLocation getSmallerLocation(PottsLocation loc1, PottsLocation loc2) {
+        return (loc1.getVolume() < loc2.getVolume()) ? loc1 : loc2;
+    }
+
+    /**
+     * Gets the location whose centroid projects further along the given axis.
+     *
+     * @param loc1 the first location
+     * @param loc2 the second location
+     * @param axis the {@link Vector} to project onto
+     * @return the location with the larger projection, or {@code loc1} if the projections are equal
+     */
+    public static PottsLocation getLocationFurtherAlongAxis(
+            PottsLocation loc1, PottsLocation loc2, Vector axis) {
+        double[] centroid1 = loc1.getCentroid();
+        double[] centroid2 = loc2.getCentroid();
+        Vector c1 = new Vector(centroid1[0], centroid1[1], centroid1.length > 2 ? centroid1[2] : 0);
+        Vector c2 = new Vector(centroid2[0], centroid2[1], centroid2.length > 2 ? centroid2[2] : 0);
+
+        double proj1 = Vector.dotProduct(c1, axis);
+        double proj2 = Vector.dotProduct(c2, axis);
+
+        return (proj1 < proj2) ? loc2 : loc1;
+    }
+
+    /**
      * Splits the voxels in the location into two lists along a given plane.
      *
      * <p>The voxels are split into two lists based on their position relative to the plane. Voxels
