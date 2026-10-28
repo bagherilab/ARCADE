@@ -234,4 +234,45 @@ public class PottsLatticeTest {
         lattice.step(mock(PottsSimulation.class));
         assertEquals(4.0, lattice.getField()[0][1][1], EPSILON);
     }
+
+    @Test
+    public void addDelta_called_doesNotChangeField() {
+        PottsLattice lattice = makeLattice(3, 3);
+        lattice.setField(1.0);
+        lattice.addDelta(List.of(new Voxel(1, 1, 0)), 2.0);
+        assertEquals(1.0, lattice.getField()[0][1][1], EPSILON);
+    }
+
+    @Test
+    public void applyDelta_repeatedVoxels_addsEachOccurrenceAndClears() {
+        PottsLattice lattice = makeLattice(3, 3);
+        lattice.setField(1.0);
+        lattice.addDelta(List.of(new Voxel(1, 1, 0), new Voxel(1, 1, 0), new Voxel(0, 2, 0)), 2.0);
+        lattice.addDelta(List.of(new Voxel(0, 2, 0)), 0.5);
+        lattice.applyDelta();
+        assertEquals(5.0, lattice.getField()[0][1][1], EPSILON);
+        assertEquals(3.5, lattice.getField()[0][0][2], EPSILON);
+        assertEquals(1.0, lattice.getField()[0][2][2], EPSILON);
+        lattice.applyDelta();
+        assertEquals(5.0, lattice.getField()[0][1][1], EPSILON);
+    }
+
+    @Test
+    public void step_withDelta_addsDeltaBeforeDiffusing() {
+        PottsLattice lattice =
+                new PottsLattice(5, 5, 1, 3.0, 1.0 / 60, operationParameters("DIFFUSER"));
+        PottsLattice expected =
+                new PottsLattice(5, 5, 1, 3.0, 1.0 / 60, operationParameters("DIFFUSER"));
+        lattice.addDelta(List.of(new Voxel(2, 2, 0)), 9.0);
+        expected.getField()[0][2][2] = 9.0;
+
+        lattice.step(mock(PottsSimulation.class));
+        expected.getOperation(Category.DIFFUSER).step(null, null);
+
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                assertEquals(expected.getField()[0][i][j], lattice.getField()[0][i][j], EPSILON);
+            }
+        }
+    }
 }

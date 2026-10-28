@@ -36,7 +36,7 @@ public final class PottsEnums {
         /** Stepping order for cells. */
         CELLS,
 
-        /** Stepping order for lattices. */
+        /** Stepping order for lattices (add pending amounts, diffuse, decay). */
         LATTICES,
 
         /** Stepping order for lattice operations that read other lattices. */
@@ -77,7 +77,10 @@ public final class PottsEnums {
     /** Process domain codes for potts simulations. */
     public enum Domain implements ProcessDomain {
         /** Code for undefined domain. */
-        UNDEFINED
+        UNDEFINED,
+
+        /** Code for secretion domain. */
+        SECRETION
     }
 
     /** Cell region codes for potts simulations. */

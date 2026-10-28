@@ -37,19 +37,23 @@ public final class PottsInputBuilder extends InputBuilder {
         String id;
         String module;
         String operation;
+        String process;
         String target;
         String term;
 
         if (numAtts > 0) {
-            // Entry can have at most one of the following tags: module, term, operation.
-            boolean hasModule = atts.getValue("module") != null;
-            boolean hasTerm = atts.getValue("term") != null;
-            boolean hasOperation = atts.getValue("operation") != null;
-            if (hasModule ^ hasTerm ? hasOperation : hasModule) {
+            // Entry can have at most one of the following tags: module, term, process, operation.
+            int numTags = 0;
+            for (String name : new String[] {"module", "term", "process", "operation"}) {
+                if (atts.getValue(name) != null) {
+                    numTags++;
+                }
+            }
+            if (numTags > 1) {
                 return;
             }
 
-            // Get any tags (module, term, or operation) or target.
+            // Get any tags (module, term, process, or operation) or target.
             term =
                     (atts.getValue("term") == null
                             ? ""
@@ -62,13 +66,17 @@ public final class PottsInputBuilder extends InputBuilder {
                     (atts.getValue("operation") == null
                             ? ""
                             : atts.getValue("operation").toLowerCase() + TAG_SEPARATOR);
+            process =
+                    (atts.getValue("process") == null
+                            ? ""
+                            : atts.getValue("process").toLowerCase() + TAG_SEPARATOR);
             target =
                     (atts.getValue("target") == null
                             ? ""
                             : TARGET_SEPARATOR + atts.getValue("target"));
 
             // Create id by combining tags, id, and target.
-            id = operation + module + term + atts.getValue("id") + target;
+            id = operation + module + process + term + atts.getValue("id") + target;
             box.addTag(id, tag.toUpperCase());
 
             for (int i = 0; i < numAtts; i++) {
@@ -77,6 +85,7 @@ public final class PottsInputBuilder extends InputBuilder {
                     case "id":
                     case "module":
                     case "operation":
+                    case "process":
                     case "target":
                     case "term":
                         break;
