@@ -38,6 +38,7 @@ Values are concentrations (amount/µm³) and are shared by cells and empty space
 ## Layer operations
 
 The `layer.operation` tag lists operations on the layer, stepped each tick after cells: diffuser, then decayer.
+The degrader is stepped after all other lattice operations, so it uses the enzyme's end-of-tick value.
 Valid options include:
 
 `DIFFUSER`
@@ -46,11 +47,19 @@ Valid options include:
 `DECAYER`
 : Decays the quantity at a first-order rate
 
+`DEGRADER`
+: Degrades this layer at a rate proportional to the value of the `ENZYME` layer in the same voxel; the enzyme layer is not consumed
+
 | PARAMETER | DEFAULT | UNITS | DESCRIPTION |
 | --------- | ------- | ----- | ----------- |
 | `diffuser/DIFFUSIVITY` | 0 | µm²/s | diffusivity of the quantity |
 | `diffuser/MAX_SUBSTEP` | 2 | s | maximum diffusion substep |
 | `decayer/DECAY_RATE` | 0 | 1/hour | first-order decay rate |
+| `degrader/ENZYME` | `NONE` | | layer id of the enzyme that degrades this layer |
+| `degrader/RATE` | 0 | 1/(concentration·hour) | degradation rate per unit enzyme |
+
+The degrader multiplies each voxel by exp(−rate × dt × enzyme).
+The enzyme must be a layer in the setup, or the simulation fails at setup.
 
 Unlike the patch operations, which are sized for the one-minute patch tick, potts operations support any tick length: diffusion uses an implicit scheme that is stable for any diffusivity, and decay uses the exact factor exp(-rate × dt).
 Smaller `MAX_SUBSTEP` values are more accurate next to secreting cells but slower.
@@ -65,6 +74,24 @@ _Specifies a layer that diffuses at 1.33 µm²/s and decays at 1.33/hour._
     <layer.operation id="DECAYER" />
     <layer.parameter operation="diffuser" id="DIFFUSIVITY" value="1.33" />
     <layer.parameter operation="decayer" id="DECAY_RATE" value="1.33" />
+</layer>
+```
+
+### Example: Enzyme-degraded layer
+
+_Specifies a matrix layer (ECM) degraded by a diffusing enzyme layer (MMP) at 0.05 per unit enzyme per hour._
+
+```xml
+<layer id="MMP">
+    <layer.operation id="DIFFUSER" />
+    <layer.operation id="DECAYER" />
+    <layer.parameter operation="diffuser" id="DIFFUSIVITY" value="0.6" />
+    <layer.parameter operation="decayer" id="DECAY_RATE" value="6" />
+</layer>
+<layer id="ECM">
+    <layer.operation id="DEGRADER" />
+    <layer.parameter operation="degrader" id="ENZYME" value="MMP" />
+    <layer.parameter operation="degrader" id="RATE" value="0.05" />
 </layer>
 ```
 

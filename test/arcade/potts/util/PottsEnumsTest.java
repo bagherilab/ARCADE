@@ -87,6 +87,7 @@ public class PottsEnumsTest {
         assertEquals(0, Ordering.POTTS.ordinal());
         assertEquals(1, Ordering.CELLS.ordinal());
         assertEquals(2, Ordering.LATTICES.ordinal());
+        assertEquals(3, Ordering.LAST_LATTICE.ordinal());
     }
 
     @Test
