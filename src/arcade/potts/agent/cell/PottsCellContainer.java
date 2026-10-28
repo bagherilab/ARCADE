@@ -179,8 +179,8 @@ public final class PottsCellContainer implements CellContainer {
             case "fly-gmc":
                 return new PottsCellFlyGMC(this, location, parameters, links);
             case "fly-stem-wt":
-                return new PottsCellFlyStem(this, location, parameters, links);
             case "fly-stem-mudmut":
+                // Genotype (StemType) is resolved from CLASS in the PottsCellFlyStem constructor.
                 return new PottsCellFlyStem(this, location, parameters, links);
             default:
             case "stem":

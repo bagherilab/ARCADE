@@ -12,10 +12,18 @@ import arcade.potts.agent.module.PottsModuleFlyStemProliferation;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.util.PottsEnums.Phase;
 import arcade.potts.util.PottsEnums.State;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static arcade.core.ARCADETestUtilities.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static arcade.core.ARCADETestUtilities.randomDoubleBetween;
+import static arcade.core.ARCADETestUtilities.randomIntBetween;
 
 public class PottsCellFlyStemTest {
     static final double EPSILON = 1e-6;
@@ -55,6 +63,7 @@ public class PottsCellFlyStemTest {
 
         doReturn(0.0).when(parametersMock).getDouble(any());
         doReturn(0).when(parametersMock).getInt(any());
+        doReturn("threshold").when(parametersMock).getString("proliferation/DIV_OFFSET_RULESET");
 
         baseContainer =
                 new PottsCellContainer(
@@ -177,9 +186,7 @@ public class PottsCellFlyStemTest {
         doReturn("smaller_gmc")
                 .when(parametersMock)
                 .getString("proliferation/DIFFERENTIATION_RULESET");
-        doReturn("apical_axis")
-                .when(parametersMock)
-                .getString("proliferation/DIV_ROTATION_REFERENCE");
+        doReturn("size").when(parametersMock).getString("proliferation/SYMMETRIC_DIVISION_RULESET");
         doReturn("global").when(parametersMock).getString("proliferation/APICAL_AXIS_RULESET");
         doReturn(distMock)
                 .when(parametersMock)
@@ -187,6 +194,9 @@ public class PottsCellFlyStemTest {
         doReturn(distMock)
                 .when(parametersMock)
                 .getDistribution("proliferation/APICAL_AXIS_ROTATION_DISTRIBUTION");
+        doReturn(distMock)
+                .when(parametersMock)
+                .getDistribution("proliferation/APICAL_AXIS_REORIENTATION_DISTRIBUTION");
         PottsCellFlyStem cell =
                 new PottsCellFlyStem(baseContainer, locationMock, parametersMock, links);
         cell.setStateModule(State.PROLIFERATIVE);
