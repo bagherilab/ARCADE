@@ -236,4 +236,21 @@ public class SolverTest {
 
         assertEquals(1.41421, result, 0.0001);
     }
+
+    @Test
+    public void testBisection_exceedsMaxIterations_returnsNaN() {
+        Function f = (x) -> x * x - 2;
+        double result = Solver.bisection(f, 2, 0, 2);
+
+        assertEquals(Double.NaN, result, 0.001);
+    }
+
+    @Test
+    public void testBisection_givenPrecision_returnsAnswersWithinPrecision() {
+        Function f = (x) -> x * x - 2;
+        double result = Solver.bisection(f, 2, 0, 1E-3);
+
+        assertEquals(1.41421, result, 1E-3);
+        assertNotEquals(1.41421, result, 1E-4);
+    }
 }

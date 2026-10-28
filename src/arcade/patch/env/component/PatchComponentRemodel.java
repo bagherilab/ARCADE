@@ -13,6 +13,8 @@ import static arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MAXIMUM_WALL_RADIUS_FRACTION;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MINIMUM_CAPILLARY_RADIUS;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MINIMUM_WALL_THICKNESS;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.calculateCurrentState;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.updateGraph;
 import static arcade.patch.util.PatchEnums.Ordering;
 
 /**
@@ -175,15 +177,9 @@ public class PatchComponentRemodel implements Component {
         // If any edges are removed, update the graph edges that are ignored.
         // Otherwise, recalculate pressure, flow, and stresses.
         if (removed) {
-            PatchComponentSitesGraphUtilities.updateGraph(graph);
+            updateGraph(graph);
         } else {
-            PatchComponentSitesGraphUtilities.calculatePressures(graph);
-            boolean reversed = PatchComponentSitesGraphUtilities.reversePressures(graph);
-            if (reversed) {
-                PatchComponentSitesGraphUtilities.calculatePressures(graph);
-            }
-            PatchComponentSitesGraphUtilities.calculateFlows(graph);
-            PatchComponentSitesGraphUtilities.calculateStresses(graph);
+            calculateCurrentState(graph);
         }
     }
 
