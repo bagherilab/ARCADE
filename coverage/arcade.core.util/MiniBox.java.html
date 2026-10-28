@@ -107,8 +107,8 @@ public class MiniBox {
             double denominator =
 <span class="fc bfc" id="L108" title="All 2 branches covered.">                    (!split[1].matches(NUMBER_REGEX) ? Double.NaN : Double.parseDouble(split[1]));</span>
 <span class="fc bfc" id="L109" title="All 2 branches covered.">            return (denominator == 0 ? Double.NaN : numerator / denominator);</span>
-<span class="pc bpc" id="L110" title="1 of 2 branches missed.">        } else if (contents.containsKey(&quot;(DISTRIBUTION)&quot; + TAG_SEPARATOR + id)) {</span>
-<span class="nc" id="L111">            return getDistribution(id, new MersenneTwisterFast()).getExpected();</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        } else if (contents.containsKey(&quot;(DISTRIBUTION)&quot; + TAG_SEPARATOR + id)) {</span>
+<span class="fc" id="L111">            return getDistribution(id, new MersenneTwisterFast()).getExpected();</span>
         }
 
 <span class="fc bfc" id="L114" title="All 4 branches covered.">        return (s == null || !s.matches(NUMBER_REGEX) ? Double.NaN : Double.parseDouble(s));</span>
