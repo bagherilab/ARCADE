@@ -62,7 +62,6 @@ public final class Graph {
 
     /** Updates nodes from graph. */
     private void updateNodes() {
-        nodes.clear();
         for (Object obj : allEdges) {
             Edge edge = (Edge) obj;
             Node from = edge.getFrom();
@@ -439,8 +438,8 @@ public final class Graph {
     }
 
     /**
-     * Adds the edge to the bag for the mapping of OUT node to edge. Used in cases new node object
-     * is not needed.
+     * Adds the edge to the bag for the mapping of IN node to edge. Used in cases new node object is
+     * not needed.
      *
      * @param node the node hash
      * @param edge the edge

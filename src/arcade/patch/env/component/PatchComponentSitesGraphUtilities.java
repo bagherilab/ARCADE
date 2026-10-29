@@ -545,7 +545,7 @@ abstract class PatchComponentSitesGraphUtilities {
     }
 
     /**
-     * Calculate the the flow rate for a given set of edges without any branches.
+     * Calculate the flow rate for a given set of edges without any branches.
      *
      * @param radius the radius of the edges
      * @param edges the list of edges
@@ -563,7 +563,7 @@ abstract class PatchComponentSitesGraphUtilities {
     }
 
     /**
-     * Calculate the the flow rate for a given edge without any branches.
+     * Calculate the flow rate for a given edge without any branches.
      *
      * @param radius the radius of the edge
      * @param length the length of the edge
@@ -982,7 +982,7 @@ abstract class PatchComponentSitesGraphUtilities {
     }
 
     /**
-     * Get the path between two nodes in the graph.
+     * Get the path between two nodes in the graph. Returns null if there is no path.
      *
      * @param graph the graph object
      * @param start the start node

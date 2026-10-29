@@ -12,7 +12,7 @@ import static arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
 import static arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeLevel;
 import static arcade.patch.env.component.PatchComponentSitesGraphFactory.EdgeType;
 
-public class PatchComponentSitesGraphUtiltiesTest {
+public class PatchComponentSitesGraphUtilitiesTest {
     Graph graph;
 
     SiteNode artery;

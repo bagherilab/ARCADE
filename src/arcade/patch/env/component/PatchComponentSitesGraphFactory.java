@@ -12,6 +12,9 @@ import arcade.core.sim.Series;
 import arcade.core.util.Graph;
 import arcade.core.util.Graph.Node;
 import arcade.core.util.Utilities;
+import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
+import arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
+import arcade.patch.env.component.PatchComponentSitesGraphUtilities.CalculationType;
 import static arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
 import static arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
 import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.*;
@@ -189,10 +192,16 @@ public abstract class PatchComponentSitesGraphFactory {
     /** Width of the array (y direction). */
     final int latticeWidth;
 
-    /** List of pointers to artery node and edge objects. */
+    /**
+     * List of pointers to artery node and edge objects set by {@link #initializeRootGraph}. Entries
+     * are null for pattern graphs.
+     */
     ArrayList<Root> arteries;
 
-    /** List of pointers to vein node and edge objects. */
+    /**
+     * List of pointers to vein node and edge objects set by {@link #initializeRootGraph}. Entries
+     * are null for pattern graphs..
+     */
     ArrayList<Root> veins;
 
     /**
