@@ -39,6 +39,8 @@
     <population id="CAR_ALPHA" value="3" description="fitting factor in CAR binding function" />
     <population id="CAR_BETA" value="0.01" description="fitting factor in CAR binding function" />
     <population id="SELF_RECEPTOR_AFFINITY" value="7.8E-6" unit="M" descrption="affinity of self receptor for self" />
+    <population id="ECM_DEPOSITION_RATE" value="0.001" units="density/tick" description="rate at which a CAF increases local ECM density per tick" />
+    <population id="ECM_MAX_DENSITY" value="1.0" units="density" description="maximum local ECM density that CAF deposition can reach" />
     <population id="SELF_ALPHA" value="3" description="fitting factor in PD1 binding function" />
     <population id="SELF_BETA" value="0.02" description="fitting factor in PD1 binding function" />
     <population id="CONTACT_FRAC" value="0.2" description="fraction of cell surface contacting a bound cell during a binding event" />
