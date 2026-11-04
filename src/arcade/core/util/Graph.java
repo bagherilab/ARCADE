@@ -359,11 +359,11 @@ public final class Graph {
      *     otherwise
      */
     public void addEdge(Edge edge, boolean duplicate) {
+        addNodes(edge);
         allEdges.add(edge);
         setOutMap(edge.getFrom(), edge, duplicate);
         setInMap(edge.getTo(), edge, duplicate);
         setLinks(edge);
-        addNodes(edge);
     }
 
     /**
