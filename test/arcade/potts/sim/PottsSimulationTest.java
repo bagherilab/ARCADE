@@ -6,38 +6,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import sim.engine.Schedule;
-import sim.util.Bag;
-import ec.util.MersenneTwisterFast;
-import arcade.core.agent.cell.Cell;
-import arcade.core.agent.cell.CellContainer;
-import arcade.core.env.component.Component;
-import arcade.core.env.grid.Grid;
-import arcade.core.env.location.Location;
-import arcade.core.env.location.LocationContainer;
-import arcade.core.sim.Series;
-import arcade.core.sim.output.OutputLoader;
-import arcade.core.sim.output.OutputSaver;
-import arcade.core.util.MiniBox;
-import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.agent.cell.PottsCellContainer;
-import arcade.potts.agent.cell.PottsCellFactory;
-import arcade.potts.env.lattice.PottsLattice;
-import arcade.potts.env.location.PottsLocation;
-import arcade.potts.env.location.PottsLocationContainer;
-import arcade.potts.env.location.PottsLocationFactory;
-import arcade.potts.env.location.Voxel;
-import arcade.potts.sim.hamiltonian.ChemotaxisHamiltonian;
-import arcade.potts.util.PottsEnums.Ordering;
-import arcade.potts.util.PottsEnums.Term;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -49,11 +26,40 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+
 import static arcade.core.ARCADETestUtilities.randomDoubleBetween;
 import static arcade.core.ARCADETestUtilities.randomIntBetween;
 import static arcade.core.ARCADETestUtilities.randomSeed;
+import arcade.core.agent.cell.Cell;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.component.Component;
+import arcade.core.env.grid.Grid;
+import arcade.core.env.location.Location;
+import arcade.core.env.location.LocationContainer;
+import arcade.core.sim.Series;
 import static arcade.core.sim.Series.SEED_OFFSET;
+import arcade.core.sim.Simulation;
+import arcade.core.sim.output.OutputLoader;
+import arcade.core.sim.output.OutputSaver;
+import arcade.core.util.MiniBox;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.agent.cell.PottsCellContainer;
+import arcade.potts.agent.cell.PottsCellFactory;
+import arcade.potts.env.lattice.PottsLattice;
+import arcade.potts.env.location.PottsLocation;
+import arcade.potts.env.location.PottsLocationContainer;
+import arcade.potts.env.location.PottsLocationFactory;
+import arcade.potts.env.location.Voxel;
 import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
+import arcade.potts.sim.PottsSimulationTest.PottsSimulationMock.DummyComponent;
+import arcade.potts.sim.hamiltonian.ChemotaxisHamiltonian;
+import arcade.potts.util.PottsEnums.Ordering;
+import arcade.potts.util.PottsEnums.Term;
+import ec.util.MersenneTwisterFast;
+import sim.engine.Schedule;
+import sim.engine.SimState;
+import sim.util.Bag;
 
 public class PottsSimulationTest {
     static final long RANDOM_SEED = randomSeed();
@@ -98,35 +104,32 @@ public class PottsSimulationTest {
         seriesZeroPop = createSeries(new int[0], new String[0]);
 
         // One population.
-        seriesOnePop = createSeries(new int[] {1}, new String[] {"A"});
+        seriesOnePop = createSeries(new int[] { 1 }, new String[] { "A" });
         seriesOnePop.populations.get("A").put("INIT", 5.);
 
         // Multiple populations.
-        seriesMultiPop = createSeries(new int[] {1, 2, 3}, new String[] {"B", "C", "D"});
+        seriesMultiPop = createSeries(new int[] { 1, 2, 3 }, new String[] { "B", "C", "D" });
         seriesMultiPop.populations.get("B").put("INIT", 3);
         seriesMultiPop.populations.get("C").put("INIT", 1);
         seriesMultiPop.populations.get("D").put("INIT", 2);
 
         // Invalid populations.
-        seriesNullCell = createSeries(new int[] {1}, new String[] {"A"});
+        seriesNullCell = createSeries(new int[] { 1 }, new String[] { "A" });
         seriesNullCell.populations.get("A").put("INIT", 2);
 
-        seriesNullLocation = createSeries(new int[] {1}, new String[] {"A"});
+        seriesNullLocation = createSeries(new int[] { 1 }, new String[] { "A" });
         seriesNullLocation.populations.get("A").put("INIT", 2);
 
-        seriesNullBoth = createSeries(new int[] {1}, new String[] {"A"});
+        seriesNullBoth = createSeries(new int[] { 1 }, new String[] { "A" });
         seriesNullBoth.populations.get("A").put("INIT", 2);
     }
 
     static class PottsSimulationMock extends PottsSimulation {
-        private final HashMap<MiniBox, HashMap<Integer, PottsLocation>> locationMap =
-                new HashMap<>();
+        private final HashMap<MiniBox, HashMap<Integer, PottsLocation>> locationMap = new HashMap<>();
 
-        private final HashMap<MiniBox, HashMap<Integer, CellContainer>> cellContainerMap =
-                new HashMap<>();
+        private final HashMap<MiniBox, HashMap<Integer, CellContainer>> cellContainerMap = new HashMap<>();
 
-        private final HashMap<MiniBox, HashMap<Integer, LocationContainer>> locationContainerMap =
-                new HashMap<>();
+        private final HashMap<MiniBox, HashMap<Integer, LocationContainer>> locationContainerMap = new HashMap<>();
 
         PottsSimulationMock(long seed, Series series) {
             super(seed, series);
@@ -180,57 +183,57 @@ public class PottsSimulationTest {
             }
 
             doAnswer(
-                            invocation -> {
-                                mockLocations(
-                                        factory, seriesOnePop.populations.get("A"), 5, 0, random);
-                                return null;
-                            })
+                    invocation -> {
+                        mockLocations(
+                                factory, seriesOnePop.populations.get("A"), 5, 0, random);
+                        return null;
+                    })
                     .when(factory)
                     .initialize(seriesOnePop, random);
 
             doAnswer(
-                            invocation -> {
-                                mockLocations(
-                                        factory, seriesMultiPop.populations.get("B"), 3, 0, random);
-                                mockLocations(
-                                        factory, seriesMultiPop.populations.get("C"), 1, 3, random);
-                                mockLocations(
-                                        factory, seriesMultiPop.populations.get("D"), 2, 4, random);
-                                return null;
-                            })
+                    invocation -> {
+                        mockLocations(
+                                factory, seriesMultiPop.populations.get("B"), 3, 0, random);
+                        mockLocations(
+                                factory, seriesMultiPop.populations.get("C"), 1, 3, random);
+                        mockLocations(
+                                factory, seriesMultiPop.populations.get("D"), 2, 4, random);
+                        return null;
+                    })
                     .when(factory)
                     .initialize(seriesMultiPop, random);
 
             doAnswer(
-                            invocation -> {
-                                mockLocations(
-                                        factory, seriesNullCell.populations.get("A"), 2, 0, random);
-                                return null;
-                            })
+                    invocation -> {
+                        mockLocations(
+                                factory, seriesNullCell.populations.get("A"), 2, 0, random);
+                        return null;
+                    })
                     .when(factory)
                     .initialize(seriesNullCell, random);
 
             doAnswer(
-                            invocation -> {
-                                mockLocations(
-                                        factory,
-                                        seriesNullLocation.populations.get("A"),
-                                        2,
-                                        0,
-                                        random);
-                                factory.locations.remove(2);
-                                return null;
-                            })
+                    invocation -> {
+                        mockLocations(
+                                factory,
+                                seriesNullLocation.populations.get("A"),
+                                2,
+                                0,
+                                random);
+                        factory.locations.remove(2);
+                        return null;
+                    })
                     .when(factory)
                     .initialize(seriesNullLocation, random);
 
             doAnswer(
-                            invocation -> {
-                                mockLocations(
-                                        factory, seriesNullBoth.populations.get("A"), 2, 0, random);
-                                factory.locations.remove(2);
-                                return null;
-                            })
+                    invocation -> {
+                        mockLocations(
+                                factory, seriesNullBoth.populations.get("A"), 2, 0, random);
+                        factory.locations.remove(2);
+                        return null;
+                    })
                     .when(factory)
                     .initialize(seriesNullBoth, random);
 
@@ -274,50 +277,83 @@ public class PottsSimulationTest {
             }
 
             doAnswer(
-                            invocation -> {
-                                mockCells(factory, seriesOnePop, "A", 5, 0);
-                                return null;
-                            })
+                    invocation -> {
+                        mockCells(factory, seriesOnePop, "A", 5, 0);
+                        return null;
+                    })
                     .when(factory)
                     .initialize(seriesOnePop, random);
 
             doAnswer(
-                            invocation -> {
-                                mockCells(factory, seriesMultiPop, "B", 3, 0);
-                                mockCells(factory, seriesMultiPop, "C", 1, 3);
-                                mockCells(factory, seriesMultiPop, "D", 2, 4);
-                                return null;
-                            })
+                    invocation -> {
+                        mockCells(factory, seriesMultiPop, "B", 3, 0);
+                        mockCells(factory, seriesMultiPop, "C", 1, 3);
+                        mockCells(factory, seriesMultiPop, "D", 2, 4);
+                        return null;
+                    })
                     .when(factory)
                     .initialize(seriesMultiPop, random);
 
             doAnswer(
-                            invocation -> {
-                                mockCells(factory, seriesNullCell, "A", 2, 0);
-                                factory.cells.remove(2);
-                                return null;
-                            })
+                    invocation -> {
+                        mockCells(factory, seriesNullCell, "A", 2, 0);
+                        factory.cells.remove(2);
+                        return null;
+                    })
                     .when(factory)
                     .initialize(seriesNullCell, random);
 
             doAnswer(
-                            invocation -> {
-                                mockCells(factory, seriesNullLocation, "A", 2, 0);
-                                return null;
-                            })
+                    invocation -> {
+                        mockCells(factory, seriesNullLocation, "A", 2, 0);
+                        return null;
+                    })
                     .when(factory)
                     .initialize(seriesNullLocation, random);
 
             doAnswer(
-                            invocation -> {
-                                mockCells(factory, seriesNullBoth, "A", 2, 0);
-                                factory.cells.remove(2);
-                                return null;
-                            })
+                    invocation -> {
+                        mockCells(factory, seriesNullBoth, "A", 2, 0);
+                        factory.cells.remove(2);
+                        return null;
+                    })
                     .when(factory)
                     .initialize(seriesNullBoth, random);
 
             return factory;
+        }
+
+        static class DummyComponent implements Component {
+            static final double INCREMENT = 2.0;
+
+            PottsLattice lattice;
+
+            List<Voxel> voxels = new ArrayList<>();
+
+            int steps = 0;
+
+            @Override
+            public void schedule(Schedule schedule) {
+                schedule.scheduleRepeating(this, Ordering.COMPONENTS.ordinal(), 1);
+            }
+
+            @Override
+            public void register(Simulation sim, String layer) {
+                lattice = (PottsLattice) sim.getLattice(layer);
+                for (int k = 0; k < lattice.getHeight(); k++) {
+                    for (int i = 0; i < lattice.getLength(); i++) {
+                        for (int j = 0; j < lattice.getWidth(); j++) {
+                            voxels.add(new Voxel(i, j, k));
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void step(SimState simstate) {
+                steps++;
+                lattice.addDelta(voxels, INCREMENT);
+            }
         }
     }
 
@@ -484,6 +520,30 @@ public class PottsSimulationTest {
         series.components.put("C", settings);
 
         Component component = mock(Component.class);
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series) {
+            @Override
+            public Component makeComponent(String componentClass, MiniBox parameters) {
+                return component;
+            }
+        };
+
+        sim.scheduleComponents();
+        assertSame(component, sim.getComponent("C"));
+        verify(component).schedule(sim.getSchedule());
+    }
+
+    @Test
+    public void scheduleComponents_dummyComponent_addsToLatticeEachTick() {
+        // Settings: one component "C" of class "dummy", registered to layer "X".
+        Series series = createSeries(new int[0], new String[0]);
+        series.components = new HashMap<>();
+        MiniBox settings = new MiniBox();
+        settings.put("CLASS", "dummy");
+        settings.put("(REGISTER)" + TAG_SEPARATOR + "X", "");
+        series.components.put("C", settings);
+
+        // Simulation that builds our dummy for any class name.
+        DummyComponent component = new DummyComponent();
         PottsSimulationMock sim =
                 new PottsSimulationMock(RANDOM_SEED, series) {
                     @Override
@@ -492,9 +552,30 @@ public class PottsSimulationTest {
                     }
                 };
 
+        // A real 4 x 5 x 1 lattice "X", no diffusion or decay, on the schedule.
+        PottsLattice lattice = new PottsLattice(4, 5, 1, 1, 1, new MiniBox());
+        sim.lattices = new HashMap<>();
+        sim.lattices.put("X", lattice);
+        lattice.schedule(sim.getSchedule());
+
         sim.scheduleComponents();
-        assertSame(component, sim.getComponent("C"));
-        verify(component).schedule(sim.getSchedule());
+
+        int ticks = 3;
+        for (int t = 0; t < ticks; t++) {
+            sim.getSchedule().step(sim);
+        }
+
+        double total = 0;
+        for (double[][] plane : lattice.getField()) {
+            for (double[] row : plane) {
+                for (double value : row) {
+                    total += value;
+                }
+            }
+        }
+
+        assertEquals(ticks, component.steps);
+        assertEquals(ticks * DummyComponent.INCREMENT * 4 * 5, total, 1E-10);
     }
 
     @Test
@@ -513,7 +594,7 @@ public class PottsSimulationTest {
     @Test
     public void setupEnvironment_loadLayers_usesLoadedField() throws Exception {
         Series series = createSeries(new int[0], new String[0]);
-        for (String name : new String[] {"length", "width", "height"}) {
+        for (String name : new String[] { "length", "width", "height" }) {
             Field field = Series.class.getDeclaredField(name);
             field.setAccessible(true);
             field.setInt(series, 1);
@@ -523,7 +604,7 @@ public class PottsSimulationTest {
         series.layers = new HashMap<>();
         series.layers.put("X", layer);
         HashMap<String, double[][][]> fields = new HashMap<>();
-        fields.put("X", new double[][][] {{{7.0}}});
+        fields.put("X", new double[][][] { { { 7.0 } } });
         OutputLoader loader = mock(OutputLoader.class);
         loader.loadLayers = true;
         doReturn(fields).when(loader).loadLayers();
@@ -678,7 +759,7 @@ public class PottsSimulationTest {
         sim.setupAgents();
         assertEquals(TOTAL_LOCATIONS - 1, sim.grid.getAllObjects().numObjs);
 
-        int[] pops = new int[] {1, 1, 1, 1, 1};
+        int[] pops = new int[] { 1, 1, 1, 1, 1 };
         for (int i = 0; i < TOTAL_LOCATIONS - 1; i++) {
             int id = i + 1;
             Cell cell = (Cell) sim.grid.getObjectAt(id);
@@ -711,7 +792,7 @@ public class PottsSimulationTest {
         sim.setupAgents();
         assertEquals(TOTAL_LOCATIONS, sim.grid.getAllObjects().numObjs);
 
-        int[] pops = new int[] {1, 1, 1, 2, 3, 3};
+        int[] pops = new int[] { 1, 1, 1, 2, 3, 3 };
         for (int i = 0; i < TOTAL_LOCATIONS; i++) {
             int id = i + 1;
             Cell cell = (Cell) sim.grid.getObjectAt(id);
