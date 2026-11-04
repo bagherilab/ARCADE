@@ -407,7 +407,10 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      * <p>Node tracks additional hemodynamic properties including pressure and oxygen.
      */
     public static class SiteNode extends Node {
-        /** Node ID. */
+        /**
+         * Node index used to track node in {@link
+         * PatchComponentSitesGraphUtilities#calculatePressures} matrix.
+         */
         int id;
 
         /** {@code true} if the node is a root, {@code false} otherwise. */
