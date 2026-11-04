@@ -15,14 +15,25 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Series;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
+import arcade.potts.util.PottsEnums.Term;
 import arcade.potts.vis.PottsVisualization;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static arcade.core.ARCADETestUtilities.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static arcade.core.ARCADETestUtilities.randomDoubleBetween;
+import static arcade.core.ARCADETestUtilities.randomIntBetween;
+import static arcade.core.ARCADETestUtilities.randomString;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.potts.sim.PottsSeries.DEFAULT_CELL_CLASS;
 import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
-import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsSeriesTest {
     private static final double EPSILON = 1E-10;
@@ -1425,5 +1436,53 @@ public class PottsSeriesTest {
                         IllegalArgumentException.class,
                         () -> makeSeriesForPottsWithLayers(box, "PDGF"));
         assertTrue(exception.getMessage().contains("chemotaxis/LAMBDA_PDFG"));
+    }
+
+    @Test
+    public void updateComponents_noComponents_createsEmptyMap() {
+        PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
+        series.updateComponents(null, new MiniBox());
+        assertNotNull(series.components);
+        assertEquals(0, series.components.size());
+    }
+
+    @Test
+    public void updateComponents_givenComponent_setsClassAndParameters() {
+        Box box = new Box();
+        box.add("id", "C");
+        box.add("class", "DUMMY");
+        box.addAtt("A", "value", "50");
+        box.addTag("A", "PARAMETER");
+        box.addAtt("B", "scale", "3");
+        box.addTag("B", "PARAMETER");
+
+        MiniBox defaults = new MiniBox();
+        defaults.put("dummy" + TAG_SEPARATOR + "A", 1.0);
+        defaults.put("dummy" + TAG_SEPARATOR + "B", 2.0);
+        defaults.put("dummy" + TAG_SEPARATOR + "D", 4.0);
+        defaults.put("other" + TAG_SEPARATOR + "E", 8.0);
+
+        PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
+        series.updateComponents(new ArrayList<>(Arrays.asList(box)), defaults);
+
+        MiniBox component = series.components.get("C");
+        assertEquals("dummy", component.get("CLASS"));
+        assertEquals(50, component.getDouble("A"), EPSILON);
+        assertEquals(6, component.getDouble("B"), EPSILON);
+        assertEquals(4, component.getDouble("D"), EPSILON);
+        assertFalse(component.contains("E"));
+    }
+
+    @Test
+    public void updateComponents_givenRegister_addsRegisterTag() {
+        Box box = new Box();
+        box.add("id", "C");
+        box.add("class", "dummy");
+        box.addTag("X", "REGISTER");
+
+        PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
+        series.updateComponents(new ArrayList<>(Arrays.asList(box)), new MiniBox());
+
+        assertTrue(series.components.get("C").contains("(REGISTER)" + TAG_SEPARATOR + "X"));
     }
 }

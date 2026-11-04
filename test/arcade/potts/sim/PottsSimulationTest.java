@@ -11,11 +11,15 @@ import org.junit.jupiter.api.Test;
 import sim.engine.Schedule;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
-import arcade.core.agent.cell.*;
+import arcade.core.agent.cell.Cell;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.component.Component;
 import arcade.core.env.grid.Grid;
-import arcade.core.env.location.*;
+import arcade.core.env.location.Location;
+import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.Series;
-import arcade.core.sim.output.*;
+import arcade.core.sim.output.OutputLoader;
+import arcade.core.sim.output.OutputSaver;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellContainer;
@@ -26,13 +30,30 @@ import arcade.potts.env.location.PottsLocationContainer;
 import arcade.potts.env.location.PottsLocationFactory;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.hamiltonian.ChemotaxisHamiltonian;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static arcade.core.ARCADETestUtilities.*;
+import arcade.potts.util.PottsEnums.Ordering;
+import arcade.potts.util.PottsEnums.Term;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static arcade.core.ARCADETestUtilities.randomDoubleBetween;
+import static arcade.core.ARCADETestUtilities.randomIntBetween;
+import static arcade.core.ARCADETestUtilities.randomSeed;
 import static arcade.core.sim.Series.SEED_OFFSET;
 import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
-import static arcade.potts.util.PottsEnums.Ordering;
-import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsSimulationTest {
     static final long RANDOM_SEED = randomSeed();
@@ -335,6 +356,7 @@ public class PottsSimulationTest {
         PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, seriesZeroPop);
         sim.getSeries().isVis = true;
         sim.getSeries().saver = mock(OutputSaver.class);
+        sim.getSeries().components = new HashMap();
         sim.start();
         assertEquals(1, sim.getID());
         sim.start();
@@ -454,6 +476,28 @@ public class PottsSimulationTest {
     }
 
     @Test
+    public void scheduleComponents_givenComponent_createsAndSchedules() {
+        Series series = createSeries(new int[0], new String[0]);
+        series.components = new HashMap<>();
+        MiniBox settings = new MiniBox();
+        settings.put("CLASS", "dummy");
+        series.components.put("C", settings);
+
+        Component component = mock(Component.class);
+        PottsSimulationMock sim =
+                new PottsSimulationMock(RANDOM_SEED, series) {
+                    @Override
+                    public Component makeComponent(String componentClass, MiniBox parameters) {
+                        return component;
+                    }
+                };
+
+        sim.scheduleComponents();
+        assertSame(component, sim.getComponent("C"));
+        verify(component).schedule(sim.getSchedule());
+    }
+
+    @Test
     public void setupEnvironment_loadLayersMissingFile_throws() {
         Series series = createSeries(new int[0], new String[0]);
         OutputLoader loader = mock(OutputLoader.class);
@@ -508,6 +552,7 @@ public class PottsSimulationTest {
     @Test
     public void start_called_callsMethods() {
         Series series = createSeries(new int[0], new String[0]);
+        series.components = new HashMap<>();
         PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, series));
         doNothing().when(sim).doOutput(anyBoolean());
         sim.start();
@@ -522,6 +567,7 @@ public class PottsSimulationTest {
     @Test
     public void start_isVis_skipsSaver() {
         Series series = createSeries(new int[0], new String[0]);
+        series.components = new HashMap<>();
         series.saver = mock(OutputSaver.class);
         series.isVis = true;
 
@@ -536,6 +582,7 @@ public class PottsSimulationTest {
     @Test
     public void start_notVis_setsSaver() {
         Series series = createSeries(new int[0], new String[0]);
+        series.components = new HashMap<>();
         series.saver = mock(OutputSaver.class);
         series.isVis = false;
 
@@ -550,6 +597,7 @@ public class PottsSimulationTest {
     @Test
     public void start_notNull_setsLoader() {
         Series series = createSeries(new int[0], new String[0]);
+        series.components = new HashMap<>();
         series.loader = mock(OutputLoader.class);
 
         PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, series));

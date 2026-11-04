@@ -5,13 +5,16 @@ import java.util.EnumSet;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.operation.OperationCategory;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static arcade.potts.util.PottsEnums.Category;
-import static arcade.potts.util.PottsEnums.Direction;
-import static arcade.potts.util.PottsEnums.Ordering;
-import static arcade.potts.util.PottsEnums.Phase;
-import static arcade.potts.util.PottsEnums.Term;
+import arcade.potts.util.PottsEnums.Category;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Ordering;
+import arcade.potts.util.PottsEnums.Phase;
+import arcade.potts.util.PottsEnums.Term;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 public class PottsEnumsTest {
     @Test
@@ -86,8 +89,9 @@ public class PottsEnumsTest {
     public void Ordering_values_inSteppingOrder() {
         assertEquals(0, Ordering.POTTS.ordinal());
         assertEquals(1, Ordering.CELLS.ordinal());
-        assertEquals(2, Ordering.LATTICES.ordinal());
-        assertEquals(3, Ordering.LAST_LATTICE.ordinal());
+        assertEquals(2, Ordering.COMPONENTS.ordinal());
+        assertEquals(3, Ordering.LATTICES.ordinal());
+        assertEquals(4, Ordering.LAST_LATTICE.ordinal());
     }
 
     @Test

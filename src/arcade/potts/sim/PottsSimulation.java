@@ -2,6 +2,7 @@ package arcade.potts.sim;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -29,8 +30,8 @@ import arcade.potts.env.lattice.PottsLatticeFactory;
 import arcade.potts.env.location.PottsLocationFactory;
 import arcade.potts.sim.hamiltonian.ChemotaxisHamiltonian;
 import arcade.potts.sim.hamiltonian.Hamiltonian;
-import static arcade.potts.util.PottsEnums.Ordering;
-import static arcade.potts.util.PottsEnums.Term;
+import arcade.potts.util.PottsEnums.Ordering;
+import arcade.potts.util.PottsEnums.Term;
 
 /** Abstract implementation for potts {@link Simulation} instances. */
 public abstract class PottsSimulation extends SimState implements Simulation {
@@ -48,6 +49,9 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 
     /** Map of layer id to lattice. */
     Map<String, PottsLattice> lattices;
+
+    /** Map of component id to {@link Component} instance. */
+    HashMap<String, Component> components;
 
     /** Cell ID tracker. */
     int id;
@@ -166,7 +170,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 
     @Override
     public final Component getComponent(String key) {
-        return null;
+        return components == null ? null : components.get(key);
     }
 
     /**
@@ -239,6 +243,20 @@ public abstract class PottsSimulation extends SimState implements Simulation {
      * @return a {@link arcade.core.agent.cell.Cell} factory
      */
     public abstract PottsCellFactory makeCellFactory();
+
+    /**
+     * Creates an instance of the given component.
+     *
+     * @param componentClass the name of the component class
+     * @param parameters the dictionary of component parameters
+     * @return a {@link Component} instance, or {@code null} if the class is not recognized
+     */
+    public Component makeComponent(String componentClass, MiniBox parameters) {
+        switch (componentClass) {
+            default:
+                return null;
+        }
+    }
 
     /** Sets up the potts layer for the simulation. */
     public final void setupPotts() {
@@ -321,7 +339,35 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 
     @Override
     public final void scheduleComponents() {
-        // TODO add component scheduling
+        // TODO: Consider whether to move scheduleComponents to the Simulation level as I think this
+        // is the same as PatchSimulation's scheduleComponents
+        components = new HashMap<>();
+
+        // Create all component instances.
+        for (String componentKey : series.components.keySet()) {
+            MiniBox componentParameters = series.components.get(componentKey);
+            String componentClass = componentParameters.get("CLASS");
+            Component component = makeComponent(componentClass, componentParameters);
+
+            if (component == null) {
+                continue;
+            }
+
+            components.put(componentKey, component);
+        }
+
+        // Register and schedule components.
+        for (String componentKey : components.keySet()) {
+            MiniBox componentParameters = series.components.get(componentKey);
+            Component component = components.get(componentKey);
+
+            MiniBox registerBox = componentParameters.filter("(REGISTER)");
+            for (String registerKey : registerBox.getKeys()) {
+                component.register(this, registerKey);
+            }
+
+            component.schedule(schedule);
+        }
     }
 
     /**

@@ -8,9 +8,13 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static arcade.core.ARCADETestUtilities.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static arcade.core.ARCADETestUtilities.randomIntBetween;
+import static arcade.core.ARCADETestUtilities.randomString;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
 
@@ -541,5 +545,23 @@ public class PottsInputBuilderTest {
         assertTrue(layer.filterTags("PARAMETER").contains("INITIAL_CONCENTRATION"));
         assertTrue(layer.filterTags("PARAMETER").contains("diffuser/DIFFUSIVITY"));
         assertTrue(layer.filterTags("OPERATION").contains("DIFFUSER"));
+    }
+
+    @Test
+    public void startElement_components_createsComponentBoxes() {
+        PottsInputBuilder builder = mock(PottsInputBuilder.class, CALLS_REAL_METHODS);
+        builder.setupLists = new HashMap<>();
+        builder.startElement("", "", "components", atts());
+        builder.startElement("", "", "component", atts("id", "C", "class", "dummy"));
+        builder.startElement("", "", "component.parameter", atts("id", "A", "value", "5"));
+        builder.startElement("", "", "component.register", atts("id", "X"));
+
+        ArrayList<Box> components = builder.setupLists.get("components");
+        assertEquals(1, components.size());
+        Box component = components.get(0);
+        assertEquals("C", component.getValue("id"));
+        assertEquals("dummy", component.getValue("class"));
+        assertTrue(component.filterTags("PARAMETER").contains("A"));
+        assertTrue(component.filterTags("REGISTER").contains("X"));
     }
 }
