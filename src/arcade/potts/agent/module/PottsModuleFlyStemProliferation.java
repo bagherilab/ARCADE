@@ -119,8 +119,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
          */
         RELATIVE_POSITION,
 
-        /** Cell retains stem identity according to Prospero concentration */
-        // TODO: add detail
+        /** Symmetric if the daughter's Prospero concentration is less than or equal to the tfConcentration threshold */
         TF_CONCENTRATION
     }
 
