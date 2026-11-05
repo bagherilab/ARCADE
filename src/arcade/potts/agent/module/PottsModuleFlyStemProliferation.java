@@ -424,7 +424,6 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         dynamicGrowthRateProsperoRepression =
                 (parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_PROSPERO_REPRESSION") != 0);
 
-        // TODO: do this for prospero-based growth rate too?
         int numGrowthRateModes =
                 (dynamicGrowthRateVolume ? 1 : 0)
                         + (dynamicGrowthRateNBSelfRepression ? 1 : 0)
