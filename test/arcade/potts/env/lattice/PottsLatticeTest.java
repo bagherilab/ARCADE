@@ -311,4 +311,28 @@ public class PottsLatticeTest {
         assertEquals(5.0, lattice.getField()[0][1][1], EPSILON);
         assertEquals(0, lattice.getSink()[0][1][1], EPSILON);
     }
+
+    @Test
+    public void addExchange_givenVoxels_sumsRateAndRateTimesTarget() {
+        PottsLattice lattice = makeLattice(3, 3);
+        lattice.addExchange(List.of(new Voxel(1, 1, 0), new Voxel(1, 1, 0)), 0.5, 60);
+        lattice.addExchange(List.of(new Voxel(1, 1, 0)), 1.0, 30);
+
+        assertEquals(2.0, lattice.getExchange()[0][1][1], EPSILON);
+        assertEquals(0.5 * 60 * 2 + 1.0 * 30, lattice.getExchangeTarget()[0][1][1], EPSILON);
+        assertEquals(0, lattice.getExchange()[0][0][0], EPSILON);
+        assertEquals(0, lattice.getField()[0][1][1], EPSILON);
+    }
+
+    @Test
+    public void step_withExchange_clearsExchangeAfterStep() {
+        PottsLattice lattice =
+                new PottsLattice(3, 3, 1, 3.0, 1.0 / 60, operationParameters("DIFFUSER"));
+        lattice.addExchange(List.of(new Voxel(1, 1, 0)), 0.5, 60);
+
+        lattice.step(mock(PottsSimulation.class));
+
+        assertEquals(0, lattice.getExchange()[0][1][1], EPSILON);
+        assertEquals(0, lattice.getExchangeTarget()[0][1][1], EPSILON);
+    }
 }

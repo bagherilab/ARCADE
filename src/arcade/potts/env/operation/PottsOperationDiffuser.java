@@ -22,10 +22,12 @@ import arcade.potts.env.lattice.PottsLattice;
  * secreting cells. This is why the default {@code MAX_SUBSTEP} is small (2 s).
  *
  * <p>If the lattice has a sink (maximum uptake rates V per voxel, from {@link
- * PottsLattice#addSink}), uptake V c / (K + c) is solved inside each substep. The rate k = V / (K +
- * c) is taken from the field at the start of the substep and added to the diagonal, half in each
- * sweep, so the system stays linear. Uptake is much faster than a substep for oxygen, and applying
- * it as a separate step after diffusion is badly wrong, so it must be part of the implicit solve.
+ * PottsLattice#addSink}) or an exchange (rates P toward targets T per voxel, from {@link
+ * PottsLattice#addExchange}), the reaction P (T - c) - V c / (K + c) is solved inside each substep.
+ * The uptake rate k = V / (K + c) is taken from the field at the start of the substep, and k + P is
+ * added to the diagonal and P T to the right-hand side, half in each sweep, so the system stays
+ * linear. For oxygen, uptake and exchange are much faster than a substep, and applying them as a
+ * separate step after diffusion is badly wrong, so they must be part of the implicit solve.
  *
  * <p>Loaded parameters include:
  *
@@ -49,8 +51,11 @@ public class PottsOperationDiffuser extends PottsOperation {
     /** Half-saturation constant for uptake [layer units]. */
     final double halfSaturation;
 
-    /** Per-voxel uptake rates k * substep / 2 for the current substep. */
-    private final double[][] uptake;
+    /** Per-voxel diagonal terms (k + P) * substep / 2 for the current substep. */
+    private final double[][] reaction;
+
+    /** Per-voxel right-hand side terms P * T * substep / 2 for the current substep. */
+    private final double[][] supply;
 
     /** Second scratch array for variable-diagonal sweeps. */
     private final double[] scratchPivot;
@@ -106,7 +111,8 @@ public class PottsOperationDiffuser extends PottsOperation {
         factor(r, cpY, invY);
         scratch = new double[Math.max(latticeLength, latticeWidth)];
         scratchPivot = new double[Math.max(latticeLength, latticeWidth)];
-        uptake = new double[latticeLength][latticeWidth];
+        reaction = new double[latticeLength][latticeWidth];
+        supply = new double[latticeLength][latticeWidth];
     }
 
     /**
@@ -184,25 +190,25 @@ public class PottsOperationDiffuser extends PottsOperation {
     }
 
     /**
-     * Solves the implicit system along x for column {@code j}, in place, with extra diagonal terms
-     * from uptake.
+     * Solves the implicit system along x for column {@code j}, in place, with extra diagonal and
+     * right-hand side terms from reactions.
      *
      * @param f the 2D field
      * @param j the y index
      */
-    private void solveUptakeX(double[][] f, int j) {
+    private void solveReactionX(double[][] f, int j) {
         int m = latticeLength;
         if (m == 1) {
-            f[0][j] /= 1 + uptake[0][j];
+            f[0][j] = (f[0][j] + supply[0][j]) / (1 + reaction[0][j]);
             return;
         }
-        double b = 1 + r + uptake[0][j];
+        double b = 1 + r + reaction[0][j];
         scratchPivot[0] = -r / b;
-        scratch[0] = f[0][j] / b;
+        scratch[0] = (f[0][j] + supply[0][j]) / b;
         for (int i = 1; i < m; i++) {
-            b = (i == m - 1 ? 1 + r : 1 + 2 * r) + uptake[i][j] + r * scratchPivot[i - 1];
+            b = (i == m - 1 ? 1 + r : 1 + 2 * r) + reaction[i][j] + r * scratchPivot[i - 1];
             scratchPivot[i] = -r / b;
-            scratch[i] = (f[i][j] + r * scratch[i - 1]) / b;
+            scratch[i] = (f[i][j] + supply[i][j] + r * scratch[i - 1]) / b;
         }
         f[m - 1][j] = scratch[m - 1];
         for (int i = m - 2; i >= 0; i--) {
@@ -211,26 +217,27 @@ public class PottsOperationDiffuser extends PottsOperation {
     }
 
     /**
-     * Solves the implicit system along y for row {@code i}, in place, with extra diagonal terms
-     * from uptake.
+     * Solves the implicit system along y for row {@code i}, in place, with extra diagonal and
+     * right-hand side terms from reactions.
      *
      * @param row the row {@code f[i]}
      * @param i the x index
      */
-    private void solveUptakeY(double[] row, int i) {
+    private void solveReactionY(double[] row, int i) {
         int m = latticeWidth;
-        double[] u = uptake[i];
+        double[] d = reaction[i];
+        double[] q = supply[i];
         if (m == 1) {
-            row[0] /= 1 + u[0];
+            row[0] = (row[0] + q[0]) / (1 + d[0]);
             return;
         }
-        double b = 1 + r + u[0];
+        double b = 1 + r + d[0];
         scratchPivot[0] = -r / b;
-        scratch[0] = row[0] / b;
+        scratch[0] = (row[0] + q[0]) / b;
         for (int j = 1; j < m; j++) {
-            b = (j == m - 1 ? 1 + r : 1 + 2 * r) + u[j] + r * scratchPivot[j - 1];
+            b = (j == m - 1 ? 1 + r : 1 + 2 * r) + d[j] + r * scratchPivot[j - 1];
             scratchPivot[j] = -r / b;
-            scratch[j] = (row[j] + r * scratch[j - 1]) / b;
+            scratch[j] = (row[j] + q[j] + r * scratch[j - 1]) / b;
         }
         row[m - 1] = scratch[m - 1];
         for (int j = m - 2; j >= 0; j--) {
@@ -239,36 +246,42 @@ public class PottsOperationDiffuser extends PottsOperation {
     }
 
     /**
-     * Advances the field by one substep with uptake.
+     * Advances the field by one substep with uptake and exchange.
      *
-     * <p>The uptake rate k = V / (K + c) is computed from the field at the start of the substep and
-     * half of k * substep is added to the diagonal in each sweep.
+     * <p>The uptake rate k = V / (K + c) is computed from the field at the start of the substep.
+     * Half of (k + P) * substep is added to the diagonal and half of P * T * substep to the
+     * right-hand side in each sweep.
      *
      * @param f the 2D field
      * @param sink the 2D maximum uptake rates V [layer units/s]
+     * @param exchange the 2D exchange rates P [1/s]
+     * @param target the 2D products P * T [layer units/s]
      */
-    void uptakeSubstep(double[][] f, double[][] sink) {
+    void reactionSubstep(double[][] f, double[][] sink, double[][] exchange, double[][] target) {
+        double half = substep / 2;
         for (int i = 0; i < latticeLength; i++) {
             for (int j = 0; j < latticeWidth; j++) {
-                uptake[i][j] = sink[i][j] * substep / (2 * (halfSaturation + f[i][j]));
+                double k = sink[i][j] > 0 ? sink[i][j] / (halfSaturation + f[i][j]) : 0;
+                reaction[i][j] = (k + exchange[i][j]) * half;
+                supply[i][j] = target[i][j] * half;
             }
         }
         for (int j = 0; j < latticeWidth; j++) {
-            solveUptakeX(f, j);
+            solveReactionX(f, j);
         }
         for (int i = 0; i < latticeLength; i++) {
-            solveUptakeY(f[i], i);
+            solveReactionY(f[i], i);
         }
     }
 
     /**
-     * Checks if any voxel has a positive uptake rate.
+     * Checks if any voxel has a positive rate.
      *
-     * @param sink the 2D maximum uptake rates
+     * @param rates the 2D rates
      * @return {@code true} if any rate is positive, {@code false} otherwise
      */
-    static boolean anyPositive(double[][] sink) {
-        for (double[] row : sink) {
+    static boolean anyPositive(double[][] rates) {
+        for (double[] row : rates) {
             for (double v : row) {
                 if (v > 0) {
                     return true;
@@ -282,19 +295,22 @@ public class PottsOperationDiffuser extends PottsOperation {
     public void step(MersenneTwisterFast random, Simulation sim) {
         double[][] f = lattice.getField()[0];
         double[][] sink = lattice.getSink()[0];
+        double[][] exchange = lattice.getExchange()[0];
+        double[][] target = lattice.getExchangeTarget()[0];
         boolean hasSink = anyPositive(sink);
+        boolean hasReaction = hasSink || anyPositive(exchange);
 
         if (hasSink && !(halfSaturation > 0)) {
             throw new IllegalArgumentException("uptake requires diffuser HALF_SATURATION > 0");
         }
 
-        if (!hasSink && r == 0) {
+        if (!hasReaction && r == 0) {
             return;
         }
 
         for (int s = 0; s < substeps; s++) {
-            if (hasSink) {
-                uptakeSubstep(f, sink);
+            if (hasReaction) {
+                reactionSubstep(f, sink, exchange, target);
             } else {
                 diffuseSubstep(f);
             }

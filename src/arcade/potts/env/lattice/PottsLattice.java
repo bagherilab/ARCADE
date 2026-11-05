@@ -30,8 +30,9 @@ import static arcade.potts.util.PottsEnums.Ordering;
  * of the order in which they step.
  *
  * <p>Uptake capacities are added to a separate {@code sink} array with {@link #addSink(List,
- * double)}. The diffuser uses them inside its implicit solve, and they are cleared at the end of
- * the lattice step. Without a diffuser, the sink has no effect.
+ * double)}, and supply from vasculature is added as an exchange P (T - c) with {@link
+ * #addExchange(List, double, double)}. The diffuser uses both inside its implicit solve, and they
+ * are cleared at the end of the lattice step. Without a diffuser, they have no effect.
  *
  * <p>Operations listed in the layer parameters are created with the lattice and stepped at {@code
  * LATTICES}: diffuser, then decayer. The degrader, which reads another lattice, is stepped at
@@ -48,6 +49,14 @@ public class PottsLattice implements Lattice {
      * Array of maximum uptake rates [layer units/s], used by the diffuser and cleared each step.
      */
     final double[][][] sink;
+
+    /** Array of summed exchange rates P [1/s], used by the diffuser and cleared each step. */
+    final double[][][] exchange;
+
+    /**
+     * Array of summed products P * T [layer units/s], used by the diffuser and cleared each step.
+     */
+    final double[][][] exchangeTarget;
 
     /** Length of the array (x direction). */
     private final int length;
@@ -91,6 +100,8 @@ public class PottsLattice implements Lattice {
         field = new double[height][length][width];
         delta = new double[height][length][width];
         sink = new double[height][length][width];
+        exchange = new double[height][length][width];
+        exchangeTarget = new double[height][length][width];
 
         // Add lattice operations.
         operations = new EnumMap<>(Category.class);
@@ -282,12 +293,50 @@ public class PottsLattice implements Lattice {
         return sink;
     }
 
-    /** Clears all uptake rates. */
-    void clearSink() {
+    /**
+     * Adds an exchange P (T - c) to each voxel for the current tick.
+     *
+     * <p>Rates and rate-weighted targets are summed, so a voxel with several exchanges relaxes
+     * toward their rate-weighted mean target. The exchange is used by the diffuser and cleared at
+     * the end of the lattice step.
+     *
+     * @param voxels the voxels (repeated voxels receive the exchange once per occurrence)
+     * @param rate the exchange rate P per voxel [1/s]
+     * @param target the target value T [layer units]
+     */
+    public void addExchange(List<Voxel> voxels, double rate, double target) {
+        for (Voxel v : voxels) {
+            exchange[v.z][v.x][v.y] += rate;
+            exchangeTarget[v.z][v.x][v.y] += rate * target;
+        }
+    }
+
+    /**
+     * Gets the array of summed exchange rates.
+     *
+     * @return the exchange array [1/s]
+     */
+    public double[][][] getExchange() {
+        return exchange;
+    }
+
+    /**
+     * Gets the array of summed products of exchange rate and target.
+     *
+     * @return the exchange target array [layer units/s]
+     */
+    public double[][][] getExchangeTarget() {
+        return exchangeTarget;
+    }
+
+    /** Clears all uptake rates and exchanges. */
+    void clearReactions() {
         for (int k = 0; k < height; k++) {
             for (int i = 0; i < length; i++) {
                 for (int j = 0; j < width; j++) {
                     sink[k][i][j] = 0;
+                    exchange[k][i][j] = 0;
+                    exchangeTarget[k][i][j] = 0;
                 }
             }
         }
@@ -334,7 +383,7 @@ public class PottsLattice implements Lattice {
             operations.get(Category.DECAYER).step(simstate.random, sim);
         }
 
-        // Clear uptake rates from cells, which were used by the diffuser.
-        clearSink();
+        // Clear uptake rates and exchanges, which were used by the diffuser.
+        clearReactions();
     }
 }
