@@ -493,25 +493,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         PottsLocation2D parentLoc = (PottsLocation2D) cell.getLocation();
 
-        // TODO: All of the prospero logic here should be moved to a helper.
-        ArrayList<Voxel> voxels = ((PottsLocation) cell.getLocation()).getVoxels();
-        double[] centroid = ((PottsLocation) cell.getLocation()).getCentroid();
-        Vector apicalAxis = flyStemCell.getApicalAxis();
-
-        ArrayList<Voxel> borderVoxels = ((PottsLocation) cell.getLocation()).getBorderVoxels();
-        Bag basalVoxels =
-                PottsLocation.getDirectionalVoxelSubset(
-                        Side.BASAL, basalThreshold, borderVoxels, centroid, apicalAxis);
-
         PottsLocation daughterLoc = (PottsLocation) parentLoc.split(random, divisionPlane);
 
-        double basalFrac =
-                Utilities.collectionFraction(
-                        Utilities.asCollection(basalVoxels, Voxel.class), daughterLoc.getVoxels());
-
-        double parentProspero = ((PottsCellFly) cell).getProspero();
-
-        double daughterProspero = parentProspero * basalFrac;
+        double daughterProspero =
+                calculateDaughterProspero(random, divisionPlane, parentLoc, daughterLoc);
 
         boolean isDaughterStem =
                 daughterStem(parentLoc, daughterLoc, divisionPlane, daughterProspero);
@@ -529,6 +514,40 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                     divisionPlane.getUnitNormalVector(),
                     daughterProspero);
         }
+    }
+
+    /**
+     * Calculates daughter Prospero based on parent and daughter locations and division plane.
+     * Splits
+     *
+     * @param random the random number generator
+     * @param divisionPlane plane of division for the parent cell's division
+     * @param parentLoc location of the parent cell
+     * @param daughterLoc location of the daughter cell
+     * @return the daughter cell Prospero
+     */
+    protected double calculateDaughterProspero(
+            MersenneTwisterFast random,
+            Plane divisionPlane,
+            PottsLocation parentLoc,
+            PottsLocation daughterLoc) {
+        PottsCellFlyStem flyStemCell = (PottsCellFlyStem) cell;
+
+        double[] centroid = ((PottsLocation) cell.getLocation()).getCentroid();
+        Vector apicalAxis = flyStemCell.getApicalAxis();
+
+        ArrayList<Voxel> borderVoxels = ((PottsLocation) cell.getLocation()).getBorderVoxels();
+        Bag basalVoxels =
+                PottsLocation.getDirectionalVoxelSubset(
+                        Side.BASAL, basalThreshold, borderVoxels, centroid, apicalAxis);
+
+        double basalFrac =
+                Utilities.collectionFraction(
+                        Utilities.asCollection(basalVoxels, Voxel.class), daughterLoc.getVoxels());
+
+        double parentProspero = ((PottsCellFly) cell).getProspero();
+
+        return parentProspero * basalFrac;
     }
 
     /**
