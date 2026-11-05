@@ -829,7 +829,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         Location result =
                 module.determineGMCLocation(
-                        stemLoc, (PottsLocation) daughterLoc, new Vector(0, 1, 0), random);
+                        stemLoc, (PottsLocation) daughterLoc, new Vector(0, 1, 0), random, 0, 0);
         assertEquals(stemLoc, result);
     }
 
@@ -841,7 +841,7 @@ public class PottsModuleFlyStemProliferationTest {
 
         Location result =
                 module.determineGMCLocation(
-                        stemLoc, (PottsLocation) daughterLoc, new Vector(0, 1, 0), random);
+                        stemLoc, (PottsLocation) daughterLoc, new Vector(0, 1, 0), random, 0, 0);
         assertEquals(daughterLoc, result);
     }
 
@@ -857,7 +857,7 @@ public class PottsModuleFlyStemProliferationTest {
         when(loc2.getCentroid()).thenReturn(new double[] {0, 1, 0});
         Vector apicalAxis = new Vector(0, 1, 0);
 
-        Location result = module.determineGMCLocation(loc1, loc2, apicalAxis, random);
+        Location result = module.determineGMCLocation(loc1, loc2, apicalAxis, random, 0, 0);
         assertEquals(loc2, result);
     }
 
@@ -872,7 +872,8 @@ public class PottsModuleFlyStemProliferationTest {
         when(loc1.getCentroid()).thenReturn(new double[] {0, 2, 0});
         when(loc2.getCentroid()).thenReturn(new double[] {0, 2, 0});
 
-        Location result = module.determineGMCLocation(loc1, loc2, new Vector(0, 1, 0), random);
+        Location result =
+                module.determineGMCLocation(loc1, loc2, new Vector(0, 1, 0), random, 0, 0);
         assertEquals(loc2, result);
     }
 
@@ -886,7 +887,8 @@ public class PottsModuleFlyStemProliferationTest {
         when(loc1.getCentroid()).thenReturn(new double[] {0, 2, 0});
         when(loc2.getCentroid()).thenReturn(new double[] {0, 1, 0});
 
-        Location result = module.determineGMCLocation(loc1, loc2, new Vector(0, 1, 0), random);
+        Location result =
+                module.determineGMCLocation(loc1, loc2, new Vector(0, 1, 0), random, 0, 0);
         assertEquals(loc1, result);
     }
 
@@ -901,7 +903,8 @@ public class PottsModuleFlyStemProliferationTest {
         when(loc1.getVolume()).thenReturn(5.0);
         when(loc2.getVolume()).thenReturn(10.0);
 
-        Location result = module.determineGMCLocation(loc1, loc2, new Vector(0, 1, 0), random);
+        Location result =
+                module.determineGMCLocation(loc1, loc2, new Vector(0, 1, 0), random, 0, 0);
         assertEquals(loc1, result);
     }
 

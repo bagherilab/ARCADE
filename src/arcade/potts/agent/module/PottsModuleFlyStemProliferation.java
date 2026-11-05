@@ -105,7 +105,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         RANDOM,
 
         /** The daughter on the apical side of the division plane becomes the GMC. */
-        APICAL_GMC
+        APICAL_GMC,
+
+        /** The daughter with more Prospero becomes the GMC. */
+        HIGHER_PROSPERO_GMC
     }
 
     /** Rulesets for deciding whether a division is symmetric (both daughters stay neuroblasts). */
@@ -155,7 +158,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
     /**
      * Ruleset for determining which daughter cell is the GMC on an asymmetric division. Can be
-     * `smaller_gmc`, `basal_gmc`, `random`, or `apical_gmc`. Whether a division is symmetric is
+     * `smaller_gmc`, `basal_gmc`, `random`, `apical_gmc`, or `higher_prospero_gmc`. Whether a division is symmetric is
      * decided separately, by {@link #symmetricDivisionRuleset}.
      */
     final DifferentiationRuleset differentiationRuleset;
@@ -222,19 +225,20 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     final double nbContactHillN;
 
     /**
-     * Half-max Prospero concentration for repression (K). Only relevant if {@link #dynamicGrowthRateProsperoRepression}
-     * is true.
+     * Half-max Prospero concentration for repression (K). Only relevant if {@link
+     * #dynamicGrowthRateProsperoRepression} is true.
      */
     final double prosperoHalfMax;
 
     /**
-     *  Hill coefficient for Prospero repression (n). Only relevant if {@link #dynamicGrowthRateProsperoRepression}
-     * is true.
+     * Hill coefficient for Prospero repression (n). Only relevant if {@link
+     * #dynamicGrowthRateProsperoRepression} is true.
      */
     final double prosperoHillN;
 
     /**
-     * Boolean flag for whether growth rate should be repressed by cell Prospero concentration through a Hill function
+     * Boolean flag for whether growth rate should be repressed by cell Prospero concentration
+     * through a Hill function
      */
     final boolean dynamicGrowthRateProsperoRepression;
 
@@ -497,8 +501,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     public void step(MersenneTwisterFast random, Simulation sim) {
         super.step(random, sim);
         ((PottsCellFly) cell).setProspero(((PottsCellFly) cell).getProspero() + prosperoRate);
-        System.out.println(
-                "Stem ID " + cell.getID() + " prospero: " + ((PottsCellFly) cell).getProspero());
+        //        System.out.println(
+        //                "Stem ID " + cell.getID() + " prospero: " + ((PottsCellFly)
+        // cell).getProspero());
     }
 
     @Override
@@ -511,10 +516,11 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
         PottsLocation2D parentLoc = (PottsLocation2D) cell.getLocation();
 
+        Bag basalVoxels = getBasalVoxels(flyStemCell, parentLoc);
+
         PottsLocation daughterLoc = (PottsLocation) parentLoc.split(random, divisionPlane);
 
-        double daughterProspero =
-                calculateDaughterProspero(random, divisionPlane, parentLoc, daughterLoc);
+        double daughterProspero = calculateDaughterProspero(basalVoxels, daughterLoc);
 
         boolean isDaughterStem =
                 daughterStem(parentLoc, daughterLoc, divisionPlane, daughterProspero);
@@ -535,37 +541,32 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Calculates daughter Prospero based on parent and daughter locations and division plane.
-     * Splits
+     * Gets the basal border voxels of a location as of the moment of the call.
      *
-     * @param random the random number generator
-     * @param divisionPlane plane of division for the parent cell's division
-     * @param parentLoc location of the parent cell
+     * @param flyStemCell the stem cell whose apical axis defines "basal"
+     * @param loc the location to take the subset from (call before the cell divides)
+     * @return the basal voxel subset
+     */
+    Bag getBasalVoxels(PottsCellFlyStem flyStemCell, PottsLocation loc) {
+        double[] centroid = loc.getCentroid().clone();
+        ArrayList<Voxel> borderVoxels = new ArrayList<>(loc.getBorderVoxels());
+        return PottsLocation.getDirectionalVoxelSubset(
+                Side.BASAL, basalThreshold, borderVoxels, centroid, flyStemCell.getApicalAxis());
+    }
+
+    /**
+     * Calculates the daughter's share of the parent's Prospero: the fraction of the parent's basal
+     * voxels (captured before division) that ended up in the daughter, times the parent's Prospero.
+     *
+     * @param basalVoxels the parent's basal voxel subset, captured before the split
      * @param daughterLoc location of the daughter cell
      * @return the daughter cell Prospero
      */
-    protected double calculateDaughterProspero(
-            MersenneTwisterFast random,
-            Plane divisionPlane,
-            PottsLocation parentLoc,
-            PottsLocation daughterLoc) {
-        PottsCellFlyStem flyStemCell = (PottsCellFlyStem) cell;
-
-        double[] centroid = ((PottsLocation) cell.getLocation()).getCentroid();
-        Vector apicalAxis = flyStemCell.getApicalAxis();
-
-        ArrayList<Voxel> borderVoxels = ((PottsLocation) cell.getLocation()).getBorderVoxels();
-        Bag basalVoxels =
-                PottsLocation.getDirectionalVoxelSubset(
-                        Side.BASAL, basalThreshold, borderVoxels, centroid, apicalAxis);
-
+    protected double calculateDaughterProspero(Bag basalVoxels, PottsLocation daughterLoc) {
         double basalFrac =
                 Utilities.collectionFraction(
                         Utilities.asCollection(basalVoxels, Voxel.class), daughterLoc.getVoxels());
-
-        double parentProspero = ((PottsCellFly) cell).getProspero();
-
-        return parentProspero * basalFrac;
+        return ((PottsCellFly) cell).getProspero() * basalFrac;
     }
 
     /**
@@ -690,9 +691,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         cellGrowthRate = cellGrowthRateBase * hillRepression(np, nbContactHalfMax, nbContactHillN);
     }
 
-    /**
-     * Updates cell growth rate based on Prospero concentration using a Hill function
-     */
+    /** Updates cell growth rate based on Prospero concentration using a Hill function */
     protected void updateGrowthRateBasedOnProspero() {
         double concentration =
                 prosperoConcentration(
@@ -1154,10 +1153,19 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             MersenneTwisterFast random,
             Vector divisionPlaneNormal,
             double daughterProspero) {
-        Location gmcLoc = determineGMCLocation(parentLoc, daughterLoc, divisionPlaneNormal, random);
+        Location gmcLoc =
+                determineGMCLocation(
+                        parentLoc,
+                        daughterLoc,
+                        divisionPlaneNormal,
+                        random,
+                        daughterProspero,
+                        ((PottsCellFly) cell).getProspero());
 
+        double gmcProspero = daughterProspero;
         if (parentLoc == gmcLoc) {
             PottsLocation.swapVoxels(parentLoc, daughterLoc);
+            gmcProspero = ((PottsCellFly) cell).getProspero() - daughterProspero;
         }
         cell.reset(potts.ids, potts.regions);
         int newID = sim.getID();
@@ -1168,8 +1176,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                         .make(newID, State.PROLIFERATIVE, random, newPop, criticalVolume);
         PottsCellFlyStem flyStemCell = (PottsCellFlyStem) cell;
 
-        System.out.print("Creating daughter GMC with prospero " + daughterProspero + ", ");
-        scheduleNewCell(container, daughterLoc, sim, potts, random, daughterProspero);
+        System.out.print("Creating daughter GMC with prospero " + gmcProspero + ", ");
+        scheduleNewCell(container, daughterLoc, sim, potts, random, gmcProspero);
     }
 
     /**
@@ -1241,7 +1249,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
             PottsLocation parentLoc,
             PottsLocation daughterLoc,
             Vector divisionPlaneNormal,
-            MersenneTwisterFast random) {
+            MersenneTwisterFast random,
+            double daughterProspero,
+            double parentProspero) {
         switch (differentiationRuleset) {
             case SMALLER_GMC:
                 return PottsLocation.getSmallerLocation(parentLoc, daughterLoc);
@@ -1255,6 +1265,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                         PottsLocation.getLocationFurtherAlongAxis(
                                 parentLoc, daughterLoc, divisionPlaneNormal);
                 return (basalLoc == parentLoc) ? daughterLoc : parentLoc;
+            case HIGHER_PROSPERO_GMC:
+                double dConc = prosperoConcentration(daughterProspero, daughterLoc);
+                double pConc = prosperoConcentration(parentProspero - daughterProspero, parentLoc);
+                return dConc >= pConc ? daughterLoc : parentLoc;
             default:
                 throw new IllegalArgumentException(
                         "Invalid differentiation ruleset: " + differentiationRuleset);
