@@ -690,6 +690,9 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
         cellGrowthRate = cellGrowthRateBase * hillRepression(np, nbContactHalfMax, nbContactHillN);
     }
 
+    /**
+     * Updates cell growth rate based on Prospero concentration using a Hill function
+     */
     protected void updateGrowthRateBasedOnProspero() {
         double concentration =
                 prosperoConcentration(
@@ -698,7 +701,14 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 cellGrowthRateBase * hillRepression(concentration, prosperoHalfMax, prosperoHillN);
     }
 
-    // factored this out to use
+    /**
+     * Calculates Hill repression fraction from a given value, half-max, and Hill coefficient
+     *
+     * @param value quantity doing the repressing (ex. NB neighbor count, Prospero concentration)
+     * @param halfMax value at which repression is 50% (K)
+     * @param hillN Hill coefficient (n), determining repression steepness
+     * @return the fraction of the base rate remaining, between 0 and 1
+     */
     public static double hillRepression(double value, double halfMax, double hillN) {
         double K = Math.pow(halfMax, hillN);
         double Vn = Math.pow(value, hillN);
