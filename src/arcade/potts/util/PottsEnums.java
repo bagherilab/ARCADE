@@ -89,7 +89,10 @@ public final class PottsEnums {
         UNDEFINED,
 
         /** Code for secretion domain. */
-        SECRETION
+        SECRETION,
+
+        /** Code for uptake domain. */
+        UPTAKE
     }
 
     /** Cell region codes for potts simulations. */

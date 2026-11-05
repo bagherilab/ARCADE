@@ -18,6 +18,7 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModule;
 import arcade.potts.agent.process.PottsProcessSecretion;
+import arcade.potts.agent.process.PottsProcessUptake;
 import arcade.potts.env.location.PottsLocation;
 import static arcade.potts.util.PottsEnums.Domain;
 import static arcade.potts.util.PottsEnums.Ordering;
@@ -475,6 +476,8 @@ public abstract class PottsCell implements Cell {
         switch (domain) {
             case SECRETION:
                 return new PottsProcessSecretion(this);
+            case UPTAKE:
+                return new PottsProcessUptake(this);
             case UNDEFINED:
             default:
                 return null;

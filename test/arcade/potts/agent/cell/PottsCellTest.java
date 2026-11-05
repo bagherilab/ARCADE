@@ -19,6 +19,7 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModule;
 import arcade.potts.agent.process.PottsProcessSecretion;
+import arcade.potts.agent.process.PottsProcessUptake;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.sim.PottsSimulation;
 import static org.junit.jupiter.api.Assertions.*;
@@ -405,6 +406,15 @@ public class PottsCellTest {
         Parameters parameters = new Parameters(box, null, null);
         PottsCell cell = new PottsCellMock(containerWithoutRegions, locationMock, parameters);
         assertTrue(cell.getProcess(Domain.SECRETION) instanceof PottsProcessSecretion);
+    }
+
+    @Test
+    public void constructor_withUptakeProcess_makesProcess() {
+        MiniBox box = new MiniBox();
+        box.put("(PROCESS)" + TAG_SEPARATOR + "UPTAKE", "");
+        Parameters parameters = new Parameters(box, null, null);
+        PottsCell cell = new PottsCellMock(containerWithoutRegions, locationMock, parameters);
+        assertTrue(cell.getProcess(Domain.UPTAKE) instanceof PottsProcessUptake);
     }
 
     @Test

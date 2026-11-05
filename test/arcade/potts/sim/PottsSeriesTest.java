@@ -1253,6 +1253,21 @@ public class PottsSeriesTest {
     }
 
     @Test
+    public void addLayerDefaults_uptakeRate_copiesDefaultWithoutConversion() throws Exception {
+        PottsSeries series = makeSeriesWithLayers("O2", "PDGF");
+        MiniBox defaults = new MiniBox();
+        defaults.put("uptake/RATE", 0.0);
+        MiniBox conversions = new MiniBox();
+
+        series.addLayerDefaults(defaults, conversions);
+
+        for (String layer : new String[] {"O2", "PDGF"}) {
+            assertEquals(0.0, defaults.getDouble("uptake/RATE_" + layer), EPSILON);
+            assertFalse(conversions.contains("uptake/RATE_" + layer));
+        }
+    }
+
+    @Test
     public void addLayerDefaults_senescenceRates_copiesDefaultsAndConversions() throws Exception {
         PottsSeries series = makeSeriesWithLayers("PDGF", "INF");
         MiniBox defaults = new MiniBox();

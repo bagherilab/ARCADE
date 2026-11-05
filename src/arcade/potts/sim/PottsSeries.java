@@ -30,6 +30,7 @@ public final class PottsSeries extends Series {
     static final String[] LAYER_PARAMETERS = {
         "secretion/RATE",
         "secretion/REGION",
+        "uptake/RATE",
         "senescence/EARLY_RATE",
         "senescence/LATE_RATE",
         "chemotaxis/LAMBDA",

@@ -114,6 +114,9 @@
     <population.process process="secretion" id="RATE" value="0" units="amount/hour" conversion="DT" description="rate of secretion into each layer" />
     <population.process process="secretion" id="REGION" value="BOUNDARY" description="voxels secreted into for each layer: BOUNDARY (just outside the cell) or INSIDE" />
 
+    <!-- uptake process parameters (copied to RATE_[LAYER] for each layer) -->
+    <population.process process="uptake" id="RATE" value="0" units="amount/s" description="maximum rate of uptake from each layer (amount = layer units x um^3); for O2 in mmHg, 20 amol/s / 1.31e-3 = 15270; requires a diffuser on the layer" />
+
     <!-- LAYERS ============================================================ -->
 
     <!-- default parameters for layers -->
