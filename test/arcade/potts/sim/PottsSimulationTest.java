@@ -28,6 +28,7 @@ import arcade.potts.agent.action.PottsActionInsert;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.agent.cell.PottsCellFactory;
+import arcade.potts.env.component.PottsComponentOxygenSource;
 import arcade.potts.env.lattice.PottsLattice;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocationContainer;
@@ -1060,5 +1061,18 @@ public class PottsSimulationTest {
 
         PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, seriesOnePop);
         assertTrue(sim.makeAction("insert", parameters) instanceof PottsActionInsert);
+    }
+
+    @Test
+    public void makeComponent_oxygenSourceClass_createsOxygenSource() {
+        MiniBox parameters = new MiniBox();
+        parameters.put("PERMEABILITY", 0.5);
+        parameters.put("BLOOD_O2", 60);
+        parameters.put("MASK", "SUPPLY");
+
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, seriesOnePop);
+        assertTrue(
+                sim.makeComponent("oxygen_source", parameters)
+                        instanceof PottsComponentOxygenSource);
     }
 }

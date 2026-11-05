@@ -94,6 +94,7 @@ public class PottsLatticeTest {
         parameters.put("diffuser/DIFFUSIVITY", 10.0);
         parameters.put("diffuser/MAX_SUBSTEP", 2.0);
         parameters.put("diffuser/HALF_SATURATION", 1.0);
+        parameters.put("diffuser/STEADY", 1);
         parameters.put("decayer/DECAY_RATE", 0.3);
         parameters.put("degrader/ENZYME", "MMP");
         parameters.put("degrader/RATE", 0.5);

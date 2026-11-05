@@ -126,6 +126,9 @@
     <layer.operation operation="diffuser" id="DIFFUSIVITY" value="0" units="um^2/s" description="diffusivity of molecule" />
     <layer.operation operation="diffuser" id="MAX_SUBSTEP" value="2" units="s" description="maximum diffusion substep" />
     <layer.operation operation="diffuser" id="HALF_SATURATION" value="1" units="(layer units)" description="half-saturation constant for uptake by cells, used only if cells take up the layer" />
+    <layer.operation operation="diffuser" id="STEADY" value="0" description="1 to solve the layer to steady state each tick (for fast layers such as O2 with uptake or supply), 0 to step in time" />
+    <layer.operation operation="diffuser" id="STEADY_TOLERANCE" value="0.001" units="(layer units)" description="a steady solve stops when the largest change over a cycle of 8 iterations is below this" />
+    <layer.operation operation="diffuser" id="STEADY_MAX_ITERATIONS" value="500" description="iterations allowed in a steady solve before an exception is thrown" />
 
     <!-- decayer operation parameters -->
     <layer.operation operation="decayer" id="DECAY_RATE" value="0" units="1/hour" conversion="DT" description="decay rate of molecule" />
@@ -133,6 +136,13 @@
     <!-- degrader operation parameters -->
     <layer.operation operation="degrader" id="ENZYME" value="NONE" description="layer id of degrading enzyme" />
     <layer.operation operation="degrader" id="RATE" value="0" units="1/(concentration.hour)" conversion="DT" description="enzyme-dependent degradation rate" />
+
+    <!-- COMPONENTS ======================================================== -->
+
+    <!-- oxygen source component parameters -->
+    <component class="oxygen_source" id="PERMEABILITY" value="0" units="1/s" description="exchange rate toward the blood value at full supply (mask = 1); 0 disables the source" />
+    <component class="oxygen_source" id="BLOOD_O2" value="60" units="mmHg" description="blood value the exchange relaxes toward" />
+    <component class="oxygen_source" id="MASK" value="SUPPLY" description="id of the mask layer (0 = no supply, 1 = full supply; no operations)" />
 
     <!-- ACTIONS =========================================================== -->
 

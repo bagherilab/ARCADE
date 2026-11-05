@@ -6,22 +6,30 @@ import java.util.HashMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import static org.junit.jupiter.api.Assertions.*;
 import static arcade.potts.integration.PottsWoundIntegrationTest.cells;
 import static arcade.potts.integration.PottsWoundIntegrationTest.population;
 import static arcade.potts.integration.PottsWoundIntegrationTest.run;
-import static arcade.potts.integration.PottsWoundIntegrationTest.total;
 
 public class PottsUptakeIntegrationTest {
     // Maximum uptake per cell [mmHg um^3/s], from 20 amol/s and 1.31e-3 amol/(um^3 mmHg).
     private static final double RATE = 15270;
 
-    // Tick length [s] for dt = 0.25 hours.
-    private static final double TICK = 0.25 * 3600;
+    // Voxel size [um].
+    private static final double DS = 2;
 
-    // Creates a setup with tissue cells that take up an O2 layer starting at the given level.
-    static String setup(String name, double initial) {
+    // Exchange rate [1/s], blood O2 [mmHg], and half-saturation [mmHg].
+    private static final double P = 0.5;
+
+    private static final double BLOOD = 60;
+
+    private static final double K = 0.76;
+
+    // Creates a setup with uptake cells and O2 supplied everywhere, solved to steady state.
+    static String setup(String name) {
         String tissue =
                 population(
                         "TIS",
@@ -32,71 +40,93 @@ public class PottsUptakeIntegrationTest {
                                 + " value=\""
                                 + RATE
                                 + "\" />");
-        String layer =
+        String layers =
                 "<layer id=\"O2\"><layer.operation id=\"DIFFUSER\" />"
-                        + "<layer.parameter id=\"INITIAL_CONCENTRATION\" value=\""
-                        + initial
-                        + "\" />"
                         + "<layer.parameter operation=\"diffuser\" id=\"DIFFUSIVITY\""
                         + " value=\"2000\" />"
-                        + "<layer.parameter operation=\"diffuser\" id=\"MAX_SUBSTEP\""
-                        + " value=\"30\" />"
                         + "<layer.parameter operation=\"diffuser\" id=\"HALF_SATURATION\""
-                        + " value=\"0.76\" /></layer>";
+                        + " value=\""
+                        + K
+                        + "\" />"
+                        + "<layer.parameter operation=\"diffuser\" id=\"STEADY\" value=\"1\" />"
+                        + "<layer.parameter operation=\"diffuser\" id=\"STEADY_TOLERANCE\""
+                        + " value=\"1E-8\" /></layer>"
+                        + "<layer id=\"SUPPLY\">"
+                        + "<layer.parameter id=\"INITIAL_CONCENTRATION\" value=\"1\" /></layer>";
+        String component =
+                "<component id=\"VASC\" class=\"oxygen_source\">"
+                        + "<component.parameter id=\"PERMEABILITY\" value=\""
+                        + P
+                        + "\" />"
+                        + "<component.parameter id=\"BLOOD_O2\" value=\""
+                        + BLOOD
+                        + "\" />"
+                        + "<component.register id=\"O2\" /></component>";
         return "<set><series name=\""
                 + name
                 + "\" ticks=\"1\" interval=\"1\" start=\"0\" end=\"0\""
-                + " length=\"40\" width=\"40\" height=\"1\" ds=\"2\" dt=\"0.25\">"
+                + " length=\"40\" width=\"40\" height=\"1\" ds=\""
+                + DS
+                + "\" dt=\"0.25\">"
                 + "<populations>"
                 + tissue
                 + "</populations><layers>"
-                + layer
-                + "</layers></series></set>";
+                + layers
+                + "</layers><components>"
+                + component
+                + "</components></series></set>";
     }
 
-    // Reads the smallest value in a layer at a tick.
-    static double min(String prefix, int tick, String layer) throws Exception {
+    // Reads a layer field at a tick.
+    static double[][] field(String prefix, int tick, String layer) throws Exception {
         String json = Files.readString(Path.of(prefix + String.format("%06d.LAYERS.json", tick)));
         HashMap<String, double[][][]> fields =
                 new Gson()
                         .fromJson(
                                 json, new TypeToken<HashMap<String, double[][][]>>() {}.getType());
-        double min = Double.POSITIVE_INFINITY;
-        for (double[][] plane : fields.get(layer)) {
-            for (double[] row : plane) {
-                for (double value : row) {
-                    min = Math.min(min, value);
-                }
+        return fields.get(layer)[0];
+    }
+
+    // At steady state with no-flux edges, total supply equals total uptake. Cells are read from
+    // the start of the tick, which is where they were when they added their uptake (potts first
+    // steps at tick 1, so voxels do not change during tick 0).
+    @Test
+    public void uptake_steadyWithSupply_totalUptakeEqualsTotalSupply(@TempDir Path dir)
+            throws Exception {
+        String prefix = run(dir, "balance", setup("balance"));
+        double[][] o2 = field(prefix, 1, "O2");
+        double voxel = DS * DS * DS;
+
+        double supply = 0;
+        for (double[] row : o2) {
+            for (double c : row) {
+                assertTrue(c >= 0 && c <= BLOOD + 1E-9);
+                supply += P * (BLOOD - c) * voxel;
             }
         }
-        return min;
-    }
 
-    @Test
-    public void uptake_saturatingOxygen_removesRateTimesCellsTimesTick(@TempDir Path dir)
-            throws Exception {
-        // O2 far above HALF_SATURATION, so every cell takes up at its maximum rate all tick. The
-        // level is high enough that it barely drops during the tick, which keeps the first-order
-        // time error of the implicit scheme (relative size about rate * substep / O2) negligible.
-        String prefix = run(dir, "sat", setup("sat", 1E8));
+        String json = Files.readString(Path.of(prefix + "000000.LOCATIONS.json"));
+        double uptake = 0;
+        int n = 0;
+        for (JsonElement element : new Gson().fromJson(json, com.google.gson.JsonArray.class)) {
+            JsonObject location = element.getAsJsonObject();
+            com.google.gson.JsonArray voxels =
+                    location.getAsJsonArray("location")
+                            .get(0)
+                            .getAsJsonObject()
+                            .getAsJsonArray("voxels");
+            double perVoxel = RATE / (voxels.size() * voxel);
+            for (JsonElement v : voxels) {
+                int x = v.getAsJsonArray().get(0).getAsInt();
+                int y = v.getAsJsonArray().get(1).getAsInt();
+                double c = o2[x][y];
+                uptake += perVoxel * c / (K + c) * voxel;
+            }
+            n++;
+        }
 
-        int n = cells(prefix, 0).size();
-        assertTrue(n > 0);
-        double removed = total(prefix, 0, "O2") - total(prefix, 1, "O2");
-        double expected = n * RATE * TICK;
-        assertEquals(expected, removed, expected * 1E-4);
-    }
-
-    @Test
-    public void uptake_lowOxygen_isLimitedByWhatIsAvailable(@TempDir Path dir) throws Exception {
-        // Cells could take up far more than the 35 mmHg present, so O2 is used up but never
-        // goes negative.
-        String prefix = run(dir, "low", setup("low", 35));
-
-        int n = cells(prefix, 0).size();
-        double before = total(prefix, 0, "O2");
-        assertTrue(n * RATE * TICK > 10 * before);
-        assertTrue(total(prefix, 1, "O2") < 1E-3 * before);
-        assertTrue(min(prefix, 1, "O2") >= 0);
+        assertEquals(cells(prefix, 0).size(), n);
+        assertTrue(uptake > 0);
+        assertEquals(supply, uptake, 1E-6 * supply);
     }
 }

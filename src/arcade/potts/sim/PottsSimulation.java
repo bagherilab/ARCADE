@@ -26,6 +26,7 @@ import arcade.core.util.MiniBox;
 import arcade.potts.agent.action.PottsActionInsert;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellFactory;
+import arcade.potts.env.component.PottsComponentOxygenSource;
 import arcade.potts.env.grid.PottsGrid;
 import arcade.potts.env.lattice.PottsLattice;
 import arcade.potts.env.lattice.PottsLatticeFactory;
@@ -282,6 +283,8 @@ public abstract class PottsSimulation extends SimState implements Simulation {
      */
     public Component makeComponent(String componentClass, MiniBox parameters) {
         switch (componentClass) {
+            case "oxygen_source":
+                return new PottsComponentOxygenSource(parameters);
             default:
                 return null;
         }

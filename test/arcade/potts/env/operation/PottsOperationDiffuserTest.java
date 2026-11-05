@@ -362,90 +362,6 @@ public class PottsOperationDiffuserTest {
     }
 
     @Test
-    public void step_uniformFieldUniformSink_matchesImplicitFormula() {
-        double c0 = 3.0;
-        double rate = 0.2;
-        double k = 0.5;
-        PottsLattice l = lattice(6, 4, 3, 1.0 / 60, uptakeParams(10, 2, k));
-        l.setField(c0);
-        List<Voxel> all = new ArrayList<>();
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 4; j++) {
-                all.add(new Voxel(i, j, 0));
-            }
-        }
-        l.addSink(all, rate);
-        PottsOperationDiffuser d = new PottsOperationDiffuser(l);
-
-        d.step(null, null);
-
-        double expected = c0;
-        for (int s = 0; s < d.substeps; s++) {
-            double u = rate * d.substep / (2 * (k + expected));
-            expected = expected / ((1 + u) * (1 + u));
-        }
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 4; j++) {
-                assertEquals(expected, l.getField()[0][i][j], 1E-12);
-            }
-        }
-    }
-
-    @Test
-    public void step_saturatingField_removesRateTimesTick() {
-        double c0 = 1E6;
-        PottsLattice l = lattice(3, 3, 3, 1.0 / 60, uptakeParams(10, 2, 1));
-        l.setField(c0);
-        List<Voxel> all = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                all.add(new Voxel(i, j, 0));
-            }
-        }
-        l.addSink(all, 1.0);
-
-        new PottsOperationDiffuser(l).step(null, null);
-
-        // 1 per second for a 60 s tick.
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                assertEquals(60, c0 - l.getField()[0][i][j], 60 * 1E-4);
-            }
-        }
-    }
-
-    @Test
-    public void step_sinkWithZeroDiffusivity_stillTakesUp() {
-        PottsLattice l = lattice(3, 3, 3, 1.0 / 60, uptakeParams(0, 2, 1));
-        l.setField(2.0);
-        l.addSink(List.of(new Voxel(1, 1, 0)), 0.1);
-
-        new PottsOperationDiffuser(l).step(null, null);
-
-        assertTrue(l.getField()[0][1][1] < 2.0);
-        assertEquals(2.0, l.getField()[0][0][0], 0);
-    }
-
-    @Test
-    public void step_sinkOnSomeVoxels_staysNonNegativeAndRemovesAmount() {
-        PottsLattice l = randomLattice(9, 7, uptakeParams(2000, 30, 0.76), 5);
-        PottsLattice noSink = randomLattice(9, 7, uptakeParams(2000, 30, 0.76), 5);
-        double before = total(l.getField()[0]);
-        l.addSink(List.of(new Voxel(4, 3, 0), new Voxel(4, 4, 0), new Voxel(5, 3, 0)), 12.7);
-
-        new PottsOperationDiffuser(l).step(null, null);
-        new PottsOperationDiffuser(noSink).step(null, null);
-
-        for (double[] row : l.getField()[0]) {
-            for (double v : row) {
-                assertTrue(v >= 0);
-            }
-        }
-        assertTrue(total(l.getField()[0]) < before);
-        assertEquals(before, total(noSink.getField()[0]), 1E-9);
-    }
-
-    @Test
     public void step_sinkWithNonPositiveHalfSaturation_throws() {
         PottsLattice zero = lattice(3, 3, 3, 1.0 / 60, uptakeParams(10, 2, 0));
         zero.addSink(List.of(new Voxel(1, 1, 0)), 1.0);
@@ -470,72 +386,221 @@ public class PottsOperationDiffuserTest {
         return all;
     }
 
-    @Test
-    public void step_uniformExchange_relaxesToTarget() {
-        double c0 = 5.0;
-        double rate = 0.01;
-        double target = 60;
-        PottsLattice l = lattice(6, 4, 3, 1.0 / 60, params(10, 2));
-        l.setField(c0);
-        l.addExchange(allVoxels(6, 4), rate, target);
-        PottsOperationDiffuser d = new PottsOperationDiffuser(l);
+    // Steady diffuser parameters at the O2 settings.
+    static MiniBox steadyParams(double maxSubstep, double tolerance, int maxIterations) {
+        MiniBox p = uptakeParams(2000, maxSubstep, 0.76);
+        p.put("diffuser/STEADY", 1);
+        p.put("diffuser/STEADY_TOLERANCE", tolerance);
+        p.put("diffuser/STEADY_MAX_ITERATIONS", maxIterations);
+        return p;
+    }
 
-        d.step(null, null);
-
-        double expected = c0;
-        double half = rate * d.substep / 2;
-        for (int s = 0; s < d.substeps; s++) {
-            expected = (expected + half * target) / (1 + half);
-            expected = (expected + half * target) / (1 + half);
+    // A 2D test case: supply on the left half, uptake in about half of all voxels.
+    static PottsLattice steadyCase(MiniBox p) {
+        int length = 60;
+        int width = 16;
+        PottsLattice l = lattice(length, width, 3, 0.25, p);
+        Random rng = new Random(2);
+        for (int i = 0; i < length; i++) {
+            for (int j = 0; j < width; j++) {
+                if (i < length / 2) {
+                    l.addExchange(List.of(new Voxel(i, j, 0)), 0.5, 60);
+                }
+                if (rng.nextDouble() < 0.45) {
+                    l.addSink(List.of(new Voxel(i, j, 0)), 37.7);
+                }
+            }
         }
-        assertTrue(expected > c0 && expected < target);
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 4; j++) {
-                assertEquals(expected, l.getField()[0][i][j], 1E-12);
+        return l;
+    }
+
+    // Largest residual of D lap(c) + P (T - c) - V c / (K + c) = 0 [layer units/s].
+    static double steadyResidual(PottsLattice l, double d, double k) {
+        double[][] f = l.getField()[0];
+        double[][] v = l.getSink()[0];
+        double[][] p = l.getExchange()[0];
+        double[][] pt = l.getExchangeTarget()[0];
+        int length = f.length;
+        int width = f[0].length;
+        double max = 0;
+        for (int i = 0; i < length; i++) {
+            for (int j = 0; j < width; j++) {
+                double c = f[i][j];
+                double lap =
+                        (i > 0 ? f[i - 1][j] : c)
+                                + (i < length - 1 ? f[i + 1][j] : c)
+                                + (j > 0 ? f[i][j - 1] : c)
+                                + (j < width - 1 ? f[i][j + 1] : c)
+                                - 4 * c;
+                double residual = d * lap + pt[i][j] - p[i][j] * c - v[i][j] * c / (k + c);
+                max = Math.max(max, Math.abs(residual));
+            }
+        }
+        return max;
+    }
+
+    @Test
+    public void step_steady_satisfiesSteadyEquation() {
+        PottsLattice l = steadyCase(steadyParams(30, 1E-6, 2000));
+        new PottsOperationDiffuser(l).step(null, null);
+
+        // Terms are up to ~30 mmHg/s; the residual is a tiny fraction of that.
+        assertTrue(steadyResidual(l, 2000 / 9.0, 0.76) < 1E-3);
+        double[][] f = l.getField()[0];
+        assertTrue(f[0][0] > f[59][0]);
+    }
+
+    @Test
+    public void step_steady_doesNotDependOnSubstep() {
+        PottsLattice coarse = steadyCase(steadyParams(30, 1E-6, 2000));
+        PottsLattice fine = steadyCase(steadyParams(0.5, 1E-6, 2000));
+        new PottsOperationDiffuser(coarse).step(null, null);
+        new PottsOperationDiffuser(fine).step(null, null);
+        for (int i = 0; i < 60; i++) {
+            for (int j = 0; j < 16; j++) {
+                assertEquals(fine.getField()[0][i][j], coarse.getField()[0][i][j], 1E-4);
             }
         }
     }
 
     @Test
-    public void step_exchangeAndUptake_reachesSteadyBalance() {
-        // Steady state of P (T - c) = V c / (K + c), solved as a quadratic.
+    public void step_steadyFromPreviousSolution_needsFewerIterations() {
+        PottsLattice l = steadyCase(steadyParams(30, 1E-3, 2000));
+        PottsOperationDiffuser d = new PottsOperationDiffuser(l);
+        d.step(null, null);
+        int cold = d.lastIterations;
+        d.step(null, null);
+        int warm = d.lastIterations;
+        assertTrue(warm < cold, "warm " + warm + " cold " + cold);
+    }
+
+    @Test
+    public void step_steadyNotConverged_throws() {
+        PottsLattice l = steadyCase(steadyParams(30, 1E-9, 2));
+        PottsOperationDiffuser d = new PottsOperationDiffuser(l);
+        assertThrows(IllegalStateException.class, () -> d.step(null, null));
+    }
+
+    @Test
+    public void step_steadyWithoutReactions_stepsInTime() {
+        PottsLattice steady = randomLattice(7, 5, steadyParams(2, 1E-3, 100), 3);
+        PottsLattice timed = randomLattice(7, 5, uptakeParams(2000, 2, 0.76), 3);
+        new PottsOperationDiffuser(steady).step(null, null);
+        new PottsOperationDiffuser(timed).step(null, null);
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 5; j++) {
+                assertEquals(timed.getField()[0][i][j], steady.getField()[0][i][j], 0);
+            }
+        }
+    }
+
+    @Test
+    public void constructor_steadyInvalidTolerance_throws() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new PottsOperationDiffuser(lattice(3, 3, 3, 1, steadyParams(30, 0, 100))));
+    }
+
+    // Steady parameters with the given diffusivity.
+    static MiniBox steadyParams(double d) {
+        MiniBox p = uptakeParams(d, 30, 0.76);
+        p.put("diffuser/STEADY", 1);
+        p.put("diffuser/STEADY_TOLERANCE", 1E-8);
+        p.put("diffuser/STEADY_MAX_ITERATIONS", 2000);
+        return p;
+    }
+
+    // Steady state of P (T - c) = V c / (K + c), solved as a quadratic.
+    static double localSteady(double rate, double target, double vmax, double k) {
+        double b = rate * target - rate * k - vmax;
+        return (b + Math.sqrt(b * b + 4 * rate * rate * target * k)) / (2 * rate);
+    }
+
+    @Test
+    public void step_reactionWithoutSteady_throws() {
+        PottsLattice sink = lattice(3, 3, 3, 1.0 / 60, uptakeParams(10, 2, 1));
+        sink.addSink(List.of(new Voxel(1, 1, 0)), 1.0);
+        PottsLattice exchange = lattice(3, 3, 3, 1.0 / 60, params(10, 2));
+        exchange.addExchange(List.of(new Voxel(1, 1, 0)), 0.5, 60);
+
+        Exception e =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> new PottsOperationDiffuser(sink).step(null, null));
+        assertTrue(e.getMessage().contains("STEADY"));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new PottsOperationDiffuser(exchange).step(null, null));
+    }
+
+    @Test
+    public void step_steadyUniformExchangeAndUptake_matchesLocalBalance() {
         double rate = 0.5;
         double target = 60;
         double vmax = 12.7;
-        double k = 0.76;
-        double b = rate * target - rate * k - vmax;
-        double steady = (b + Math.sqrt(b * b + 4 * rate * rate * target * k)) / (2 * rate);
-
-        PottsLattice l = lattice(6, 4, 3, 0.25, uptakeParams(2000, 30, k));
+        double steady = localSteady(rate, target, vmax, 0.76);
+        PottsLattice l = lattice(6, 4, 3, 0.25, steadyParams(2000));
         l.setField(35.0);
-        for (int tick = 0; tick < 3; tick++) {
-            l.addExchange(allVoxels(6, 4), rate, target);
-            l.addSink(allVoxels(6, 4), vmax);
-            new PottsOperationDiffuser(l).step(null, null);
-            l.getExchange()[0] = new double[6][4];
-            l.getExchangeTarget()[0] = new double[6][4];
-            l.getSink()[0] = new double[6][4];
-        }
+        l.addExchange(allVoxels(6, 4), rate, target);
+        l.addSink(allVoxels(6, 4), vmax);
 
-        assertEquals(rate * (target - steady), vmax * steady / (k + steady), 1E-9);
+        new PottsOperationDiffuser(l).step(null, null);
+
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 4; j++) {
-                assertEquals(steady, l.getField()[0][i][j], 1E-9);
+                assertEquals(steady, l.getField()[0][i][j], 1E-6);
             }
         }
     }
 
     @Test
-    public void step_exchangeOnly_doesNotNeedHalfSaturation() {
-        PottsLattice l = lattice(3, 3, 3, 1.0 / 60, params(10, 2));
+    public void step_steadyZeroDiffusivity_solvesEachVoxelAlone() {
+        PottsLattice l = lattice(3, 3, 3, 0.25, steadyParams(0));
+        l.addExchange(List.of(new Voxel(0, 0, 0), new Voxel(1, 1, 0)), 0.5, 60);
+        l.addSink(List.of(new Voxel(1, 1, 0)), 12.7);
+
+        new PottsOperationDiffuser(l).step(null, null);
+
+        assertEquals(60, l.getField()[0][0][0], 1E-6);
+        assertEquals(localSteady(0.5, 60, 12.7, 0.76), l.getField()[0][1][1], 1E-6);
+        assertEquals(0, l.getField()[0][2][2], 1E-9);
+    }
+
+    @Test
+    public void step_steadySupplyAndUptake_balancesAndStaysNonNegative() {
+        PottsLattice l = lattice(9, 7, 3, 0.25, steadyParams(2000));
+        l.addExchange(List.of(new Voxel(0, 0, 0), new Voxel(0, 1, 0)), 0.5, 60);
+        l.addSink(List.of(new Voxel(4, 3, 0), new Voxel(4, 4, 0), new Voxel(8, 6, 0)), 12.7);
+
+        new PottsOperationDiffuser(l).step(null, null);
+
+        // With no-flux edges, total supply equals total uptake at steady state.
+        double[][] f = l.getField()[0];
+        double supply = 0;
+        double uptake = 0;
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 7; j++) {
+                assertTrue(f[i][j] >= 0);
+                supply += l.getExchangeTarget()[0][i][j] - l.getExchange()[0][i][j] * f[i][j];
+                uptake += l.getSink()[0][i][j] * f[i][j] / (0.76 + f[i][j]);
+            }
+        }
+        assertTrue(uptake > 0);
+        assertEquals(supply, uptake, 1E-6 * supply);
+    }
+
+    @Test
+    public void step_steadyExchangeOnly_doesNotNeedHalfSaturation() {
+        MiniBox p = params(2000, 30);
+        p.put("diffuser/STEADY", 1);
+        PottsLattice l = lattice(3, 3, 3, 0.25, p);
         l.addExchange(List.of(new Voxel(1, 1, 0)), 0.5, 60);
 
         new PottsOperationDiffuser(l).step(null, null);
 
-        assertTrue(total(l.getField()[0]) > 0);
         for (double[] row : l.getField()[0]) {
             for (double v : row) {
-                assertTrue(v >= 0 && v <= 60);
+                assertEquals(60, v, 0.1);
             }
         }
     }
