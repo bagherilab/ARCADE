@@ -20,6 +20,11 @@ public class PottsWoundIntegrationTest {
 
     // Creates a setup with the given populations and diffusing layers X and Y.
     static String setup(String name, int ticks, String populations) {
+        return setup(name, ticks, populations, "");
+    }
+
+    // Creates a setup with the given populations, actions, and diffusing layers X and Y.
+    static String setup(String name, int ticks, String populations, String actions) {
         String layers = "";
         for (String layer : new String[] {"X", "Y"}) {
             layers +=
@@ -39,7 +44,9 @@ public class PottsWoundIntegrationTest {
                 + populations
                 + "</populations><layers>"
                 + layers
-                + "</layers></series></set>";
+                + "</layers><actions>"
+                + actions
+                + "</actions></series></set>";
     }
 
     // Creates a population with small cells and the given class and parameters.
