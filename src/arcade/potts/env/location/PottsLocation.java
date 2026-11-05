@@ -678,6 +678,16 @@ public abstract class PottsLocation implements Location {
     }
 
     /**
+     * Checks if the voxels of the location are connected.
+     *
+     * @param random the seeded random number generator
+     * @return {@code true} if the location is connected, {@code false} otherwise
+     */
+    public boolean isConnected(MersenneTwisterFast random) {
+        return checkVoxels(voxels, this, random, false) == null;
+    }
+
+    /**
      * Swaps the voxels in two locations and updates each location's size, surface, height, and
      * center attributes.
      *

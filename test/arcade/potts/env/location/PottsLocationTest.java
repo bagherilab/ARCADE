@@ -11,12 +11,21 @@ import arcade.core.util.Plane;
 import arcade.core.util.Vector;
 import arcade.potts.util.PottsEnums.Direction;
 import arcade.potts.util.PottsEnums.Region;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static arcade.core.ARCADETestUtilities.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static arcade.core.ARCADETestUtilities.randomIntBetween;
 import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;
-import static arcade.potts.util.PottsEnums.Direction;
-import static arcade.potts.util.PottsEnums.Region;
 
 public class PottsLocationTest {
     private static final double EPSILON = 1E-10;
@@ -1662,5 +1671,42 @@ public class PottsLocationTest {
         PottsLocationMock spyLocation = spy(loc);
         spyLocation.split(randomDoubleZero, mockPlane);
         verify(spyLocation).split(randomDoubleZero, mockPlane, .5);
+    }
+
+    @Test
+    public void isConnected_connectedVoxels_returnsTrue() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 0, 0));
+        voxels.add(new Voxel(1, 0, 0));
+        voxels.add(new Voxel(1, 1, 0));
+        PottsLocationMock loc = new PottsLocationMock(voxels);
+        assertTrue(loc.isConnected(randomDoubleZero));
+    }
+
+    @Test
+    public void isConnected_unconnectedVoxels_returnsFalse() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 0, 0));
+        voxels.add(new Voxel(1, 1, 0));
+        PottsLocationMock loc = new PottsLocationMock(voxels);
+        assertFalse(loc.isConnected(randomDoubleZero));
+    }
+
+    @Test
+    public void isConnected_unconnectedVoxels_doesNotChangeLocation() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 0, 0));
+        voxels.add(new Voxel(1, 1, 0));
+        voxels.add(new Voxel(2, 1, 0));
+        PottsLocationMock loc = new PottsLocationMock(voxels);
+        loc.isConnected(randomDoubleZero);
+        assertEquals(3, loc.voxels.size());
+        assertTrue(loc.voxels.containsAll(voxels));
+    }
+
+    @Test
+    public void isConnected_noVoxels_returnsTrue() {
+        PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
+        assertTrue(loc.isConnected(randomDoubleZero));
     }
 }

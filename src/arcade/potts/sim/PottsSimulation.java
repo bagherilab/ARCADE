@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import arcade.core.agent.action.Action;
@@ -27,7 +28,12 @@ import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.env.grid.PottsGrid;
 import arcade.potts.env.lattice.PottsLattice;
 import arcade.potts.env.lattice.PottsLatticeFactory;
+import arcade.potts.env.location.PottsLocation;
+import arcade.potts.env.location.PottsLocation2D;
+import arcade.potts.env.location.PottsLocation3D;
 import arcade.potts.env.location.PottsLocationFactory;
+import arcade.potts.env.location.PottsLocationFactory3D;
+import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.hamiltonian.ChemotaxisHamiltonian;
 import arcade.potts.sim.hamiltonian.Hamiltonian;
 import arcade.potts.util.PottsEnums.Ordering;
@@ -61,6 +67,9 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 
     /** Location factory instance for the simulation. */
     public final PottsLocationFactory locationFactory;
+
+    /** Logger for {@code PottsSeries}. */
+    private static final Logger LOGGER = Logger.getLogger(PottsSimulation.class.getName());
 
     /**
      * Simulation instance for a {@link Series} for given random seed.
@@ -339,7 +348,8 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 
     @Override
     public final void scheduleComponents() {
-        // TODO: Consider whether to move scheduleComponents to the Simulation level as I think this
+        // TODO: Consider whether to move scheduleComponents to the Simulation level as
+        // I think this
         // is the same as PatchSimulation's scheduleComponents
         components = new HashMap<>();
 
@@ -368,6 +378,58 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 
             component.schedule(schedule);
         }
+    }
+
+    /**
+     * Inserts a new cell of the given population on the given voxels.
+     *
+     * @param pop the population code
+     * @param voxels the voxels for the new cell, which must be empty and connected
+     * @return the new cell, or {@code null} if the cell could not be inserted
+     */
+    public PottsCell insertCell(int pop, ArrayList<Voxel> voxels) {
+        // 0. There must be at least one voxel.
+        if (voxels.isEmpty()) {
+            LOGGER.info("unable to insert cell, no voxels given");
+            return null;
+        }
+
+        // 0. The population must not use regions.
+        if (cellFactory.hasRegions(pop)) {
+            LOGGER.info("unable to insert cell, population [ " + pop + " ] has regions");
+            return null;
+        }
+
+        // 1. All voxels must be empty.
+        for (Voxel v : voxels) {
+            if (potts.ids[v.z][v.x][v.y] != 0) {
+                LOGGER.info("unable to insert cell, voxel [ " + v + " ] is not empty");
+                return null;
+            }
+        }
+
+        // 2. Build the location.
+        boolean is3D = locationFactory instanceof PottsLocationFactory3D;
+        PottsLocation location = is3D ? new PottsLocation3D(voxels) : new PottsLocation2D(voxels);
+
+        // 3. The voxels must be connected.
+        if (!location.isConnected(random)) {
+            LOGGER.info("unable to insert cell, voxels are not connected");
+            return null;
+        }
+
+        // 4. Take an id. 5. Make the container. 6. Convert to a cell.
+        int newID = getID();
+        CellContainer container = cellFactory.createCellForPopulation(newID, pop);
+        PottsCell cell = (PottsCell) container.convert(cellFactory, location, random);
+
+        // 7. Wire the cell in.
+        grid.addObject(cell, null);
+        potts.register(cell);
+        cell.reset(potts.ids, potts.regions);
+        cell.schedule(schedule);
+
+        return cell;
     }
 
     /**

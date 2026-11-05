@@ -13,6 +13,7 @@ import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputLoader;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
+import arcade.potts.util.PottsEnums.Region;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
@@ -586,5 +587,21 @@ public class PottsCellFactoryTest {
             assertEquals(heights[2], pottsCellContainer.criticalHeight, EPSILON);
             assertEquals(voxels[2], pottsCellContainer.voxels);
         }
+    }
+
+    @Test
+    public void hasRegions_givenPopulations_returnsValue() {
+        PottsCellFactory factory = new PottsCellFactory();
+        factory.popToRegions.put(1, true);
+        factory.popToRegions.put(2, false);
+
+        assertTrue(factory.hasRegions(1));
+        assertFalse(factory.hasRegions(2));
+    }
+
+    @Test
+    public void hasRegions_unknownPopulation_returnsFalse() {
+        PottsCellFactory factory = new PottsCellFactory();
+        assertFalse(factory.hasRegions(1));
     }
 }

@@ -6,14 +6,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import ec.util.MersenneTwisterFast;
-import arcade.core.agent.cell.*;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.cell.CellFactory;
 import arcade.core.sim.Series;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
-import static arcade.potts.util.PottsEnums.Phase;
-import static arcade.potts.util.PottsEnums.Region;
-import static arcade.potts.util.PottsEnums.State;
+import arcade.potts.util.PottsEnums.Phase;
+import arcade.potts.util.PottsEnums.Region;
+import arcade.potts.util.PottsEnums.State;
 
 /**
  * Implementation of {@link CellFactory} for {@link PottsCell} agents.
@@ -229,5 +230,15 @@ public final class PottsCellFactory implements CellFactory {
                 popToRegions.put(pop, true);
             }
         }
+    }
+
+    /**
+     * Checks if the given population has regions.
+     *
+     * @param pop the cell population
+     * @return {@code true} if the population has regions, {@code false} otherwise
+     */
+    public boolean hasRegions(int pop) {
+        return Boolean.TRUE.equals(popToRegions.get(pop));
     }
 }

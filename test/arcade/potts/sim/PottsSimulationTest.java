@@ -41,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -880,5 +881,143 @@ public class PottsSimulationTest {
         sim.doOutput(false);
         verify(saver, never()).schedule(eq(schedule));
         verify(saver).save((int) time + 1);
+    }
+
+    @Test
+    public void insertCell_occupiedVoxel_returnsNullAndChangesNothing() {
+        Series series = createSeries(new int[] {1}, new String[] {"A"});
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.potts = mock(Potts.class);
+        sim.potts.ids = new int[1][5][5];
+        sim.potts.ids[0][2][2] = 7;
+        sim.grid = mock(Grid.class);
+
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(2, 2, 0));
+        voxels.add(new Voxel(2, 3, 0));
+
+        PottsCell cell = sim.insertCell(1, voxels);
+
+        assertNull(cell);
+        assertEquals(7, sim.potts.ids[0][2][2]);
+        assertEquals(0, sim.potts.ids[0][2][3]);
+        verify(sim.grid, never()).addObject(any(), any());
+        assertEquals(1, sim.getID());
+    }
+
+    @Test
+    public void insertCell_emptyVoxels_createsAndSchedulesCell() {
+        Series series = createSeries(new int[] {1}, new String[] {"A"});
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.potts = mock(Potts.class);
+        sim.potts.ids = new int[1][5][5];
+        sim.grid = mock(Grid.class);
+
+        // The factory hands out a fake container, which converts to a fake cell.
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(container).when(sim.cellFactory).createCellForPopulation(1, 1);
+        doReturn(cell).when(container).convert(eq(sim.cellFactory), any(), eq(sim.random));
+
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(2, 2, 0));
+        voxels.add(new Voxel(2, 3, 0));
+
+        PottsCell inserted = sim.insertCell(1, voxels);
+
+        assertSame(cell, inserted);
+        verify(sim.grid).addObject(cell, null);
+        verify(sim.potts).register(cell);
+        verify(cell).reset(sim.potts.ids, sim.potts.regions);
+        verify(cell).schedule(sim.getSchedule());
+    }
+
+    @Test
+    public void insertCell_disconnectedVoxels_returnsNull() {
+        Series series = createSeries(new int[] {1}, new String[] {"A"});
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.potts = mock(Potts.class);
+        sim.potts.ids = new int[1][5][5];
+        sim.grid = mock(Grid.class);
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(container).when(sim.cellFactory).createCellForPopulation(1, 1);
+        doReturn(cell).when(container).convert(eq(sim.cellFactory), any(), eq(sim.random));
+
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(2, 2, 0));
+        voxels.add(new Voxel(3, 3, 0));
+
+        assertNull(sim.insertCell(1, voxels));
+        verify(sim.grid, never()).addObject(any(), any());
+        assertEquals(1, sim.getID());
+    }
+
+    @Test
+    public void insertCell_noVoxels_returnsNull() {
+        Series series = createSeries(new int[] {1}, new String[] {"A"});
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.potts = mock(Potts.class);
+        sim.potts.ids = new int[1][5][5];
+        sim.grid = mock(Grid.class);
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(container).when(sim.cellFactory).createCellForPopulation(1, 1);
+        doReturn(cell).when(container).convert(eq(sim.cellFactory), any(), eq(sim.random));
+
+        assertNull(sim.insertCell(1, new ArrayList<>()));
+        verify(sim.grid, never()).addObject(any(), any());
+        assertEquals(1, sim.getID());
+    }
+
+    @Test
+    public void insertCell_populationWithRegions_returnsNull() {
+        Series series = createSeries(new int[] {1}, new String[] {"A"});
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.potts = mock(Potts.class);
+        sim.potts.ids = new int[1][5][5];
+        sim.grid = mock(Grid.class);
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(container).when(sim.cellFactory).createCellForPopulation(1, 1);
+        doReturn(cell).when(container).convert(eq(sim.cellFactory), any(), eq(sim.random));
+        doReturn(true).when(sim.cellFactory).hasRegions(1);
+
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(2, 2, 0));
+
+        assertNull(sim.insertCell(1, voxels));
+        verify(sim.grid, never()).addObject(any(), any());
+        assertEquals(1, sim.getID());
+    }
+
+    @Test
+    public void insertCell_afterExistingIds_usesNextUniqueIds() {
+        Series series = createSeries(new int[] {1}, new String[] {"A"});
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.potts = mock(Potts.class);
+        sim.potts.ids = new int[1][5][5];
+        sim.grid = mock(Grid.class);
+        sim.id = 5;
+
+        PottsCellContainer container = mock(PottsCellContainer.class);
+        doReturn(container).when(sim.cellFactory).createCellForPopulation(anyInt(), eq(1));
+        doReturn(mock(PottsCell.class))
+                .when(container)
+                .convert(eq(sim.cellFactory), any(), eq(sim.random));
+
+        ArrayList<Voxel> first = new ArrayList<>();
+        first.add(new Voxel(1, 1, 0));
+        ArrayList<Voxel> second = new ArrayList<>();
+        second.add(new Voxel(3, 3, 0));
+
+        sim.insertCell(1, first);
+        sim.insertCell(1, second);
+
+        verify(sim.cellFactory).createCellForPopulation(6, 1);
+        verify(sim.cellFactory).createCellForPopulation(7, 1);
     }
 }
