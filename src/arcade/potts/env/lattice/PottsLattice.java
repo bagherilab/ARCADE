@@ -29,6 +29,10 @@ import static arcade.potts.util.PottsEnums.Ordering;
  * added to the field at the start of the lattice step, so all cells sense the same field regardless
  * of the order in which they step.
  *
+ * <p>Uptake capacities are added to a separate {@code sink} array with {@link #addSink(List,
+ * double)}. The diffuser uses them inside its implicit solve, and they are cleared at the end of
+ * the lattice step. Without a diffuser, the sink has no effect.
+ *
  * <p>Operations listed in the layer parameters are created with the lattice and stepped at {@code
  * LATTICES}: diffuser, then decayer. The degrader, which reads another lattice, is stepped at
  * {@code LAST_LATTICE}, after all lattices have stepped.
@@ -39,6 +43,11 @@ public class PottsLattice implements Lattice {
 
     /** Array containing pending amounts, added to the field at the next lattice step. */
     final double[][][] delta;
+
+    /**
+     * Array of maximum uptake rates [layer units/s], used by the diffuser and cleared each step.
+     */
+    final double[][][] sink;
 
     /** Length of the array (x direction). */
     private final int length;
@@ -81,6 +90,7 @@ public class PottsLattice implements Lattice {
         this.parameters = parameters;
         field = new double[height][length][width];
         delta = new double[height][length][width];
+        sink = new double[height][length][width];
 
         // Add lattice operations.
         operations = new EnumMap<>(Category.class);
@@ -249,6 +259,40 @@ public class PottsLattice implements Lattice {
         }
     }
 
+    /**
+     * Adds a maximum uptake rate to each voxel for the current tick.
+     *
+     * <p>The rate is used by the diffuser and cleared at the end of the lattice step.
+     *
+     * @param voxels the voxels (repeated voxels receive the rate once per occurrence)
+     * @param rate the maximum uptake rate per voxel [layer units/s]
+     */
+    public void addSink(List<Voxel> voxels, double rate) {
+        for (Voxel v : voxels) {
+            sink[v.z][v.x][v.y] += rate;
+        }
+    }
+
+    /**
+     * Gets the array of maximum uptake rates.
+     *
+     * @return the sink array [layer units/s]
+     */
+    public double[][][] getSink() {
+        return sink;
+    }
+
+    /** Clears all uptake rates. */
+    void clearSink() {
+        for (int k = 0; k < height; k++) {
+            for (int i = 0; i < length; i++) {
+                for (int j = 0; j < width; j++) {
+                    sink[k][i][j] = 0;
+                }
+            }
+        }
+    }
+
     /** Adds pending amounts to the field and clears them. */
     void applyDelta() {
         for (int k = 0; k < height; k++) {
@@ -289,5 +333,8 @@ public class PottsLattice implements Lattice {
         if (operations.containsKey(Category.DECAYER)) {
             operations.get(Category.DECAYER).step(simstate.random, sim);
         }
+
+        // Clear uptake rates from cells, which were used by the diffuser.
+        clearSink();
     }
 }

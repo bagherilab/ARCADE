@@ -122,6 +122,7 @@
     <!-- diffuser operation parameters -->
     <layer.operation operation="diffuser" id="DIFFUSIVITY" value="0" units="um^2/s" description="diffusivity of molecule" />
     <layer.operation operation="diffuser" id="MAX_SUBSTEP" value="2" units="s" description="maximum diffusion substep" />
+    <layer.operation operation="diffuser" id="HALF_SATURATION" value="1" units="(layer units)" description="half-saturation constant for uptake by cells, used only if cells take up the layer" />
 
     <!-- decayer operation parameters -->
     <layer.operation operation="decayer" id="DECAY_RATE" value="0" units="1/hour" conversion="DT" description="decay rate of molecule" />

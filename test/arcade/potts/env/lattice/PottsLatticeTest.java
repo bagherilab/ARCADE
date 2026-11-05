@@ -93,6 +93,7 @@ public class PottsLatticeTest {
         }
         parameters.put("diffuser/DIFFUSIVITY", 10.0);
         parameters.put("diffuser/MAX_SUBSTEP", 2.0);
+        parameters.put("diffuser/HALF_SATURATION", 1.0);
         parameters.put("decayer/DECAY_RATE", 0.3);
         parameters.put("degrader/ENZYME", "MMP");
         parameters.put("degrader/RATE", 0.5);
@@ -274,5 +275,40 @@ public class PottsLatticeTest {
                 assertEquals(expected.getField()[0][i][j], lattice.getField()[0][i][j], EPSILON);
             }
         }
+    }
+
+    @Test
+    public void addSink_givenVoxels_addsRateEachOccurrence() {
+        PottsLattice lattice = makeLattice(3, 3);
+        lattice.addSink(List.of(new Voxel(1, 1, 0), new Voxel(1, 1, 0), new Voxel(0, 2, 0)), 2.0);
+        lattice.addSink(List.of(new Voxel(0, 2, 0)), 0.5);
+
+        assertEquals(4.0, lattice.getSink()[0][1][1], EPSILON);
+        assertEquals(2.5, lattice.getSink()[0][0][2], EPSILON);
+        assertEquals(0, lattice.getSink()[0][2][2], EPSILON);
+        assertEquals(0, lattice.getField()[0][1][1], EPSILON);
+    }
+
+    @Test
+    public void step_withSink_clearsSinkAfterStep() {
+        PottsLattice lattice =
+                new PottsLattice(3, 3, 1, 3.0, 1.0 / 60, operationParameters("DIFFUSER"));
+        lattice.addSink(List.of(new Voxel(1, 1, 0)), 2.0);
+
+        lattice.step(mock(PottsSimulation.class));
+
+        assertEquals(0, lattice.getSink()[0][1][1], EPSILON);
+    }
+
+    @Test
+    public void step_noDiffuser_sinkIsClearedAndFieldUnchanged() {
+        PottsLattice lattice = makeLattice(3, 3);
+        lattice.setField(5.0);
+        lattice.addSink(List.of(new Voxel(1, 1, 0)), 2.0);
+
+        lattice.step(mock(PottsSimulation.class));
+
+        assertEquals(5.0, lattice.getField()[0][1][1], EPSILON);
+        assertEquals(0, lattice.getSink()[0][1][1], EPSILON);
     }
 }

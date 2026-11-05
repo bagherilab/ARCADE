@@ -323,4 +323,140 @@ public class PottsOperationDiffuserTest {
         assertTrue(fine < 0.03, "2 s error " + fine);
         assertTrue(coarse > fine, "30 s error " + coarse + " should exceed 2 s error " + fine);
     }
+
+    // Diffuser parameters plus a half-saturation constant for uptake.
+    static MiniBox uptakeParams(double d, double maxSubstep, double halfSaturation) {
+        MiniBox p = params(d, maxSubstep);
+        p.put("diffuser/HALF_SATURATION", halfSaturation);
+        return p;
+    }
+
+    static PottsLattice randomLattice(int length, int width, MiniBox p, long seed) {
+        PottsLattice l = lattice(length, width, 3, 1.0 / 60, p);
+        Random rng = new Random(seed);
+        for (int i = 0; i < length; i++) {
+            for (int j = 0; j < width; j++) {
+                l.getField()[0][i][j] = rng.nextDouble();
+            }
+        }
+        return l;
+    }
+
+    @Test
+    public void step_noSink_matchesPrecomputedPath() {
+        PottsLattice withK = randomLattice(7, 5, uptakeParams(10, 2, 0.5), 3);
+        PottsLattice withoutK = randomLattice(7, 5, params(10, 2), 3);
+        PottsOperationDiffuser a = new PottsOperationDiffuser(withK);
+        PottsOperationDiffuser b = new PottsOperationDiffuser(withoutK);
+
+        a.step(null, null);
+        for (int s = 0; s < b.substeps; s++) {
+            b.diffuseSubstep(withoutK.getField()[0]);
+        }
+
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 5; j++) {
+                assertEquals(withoutK.getField()[0][i][j], withK.getField()[0][i][j], 0);
+            }
+        }
+    }
+
+    @Test
+    public void step_uniformFieldUniformSink_matchesImplicitFormula() {
+        double c0 = 3.0;
+        double rate = 0.2;
+        double k = 0.5;
+        PottsLattice l = lattice(6, 4, 3, 1.0 / 60, uptakeParams(10, 2, k));
+        l.setField(c0);
+        List<Voxel> all = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 4; j++) {
+                all.add(new Voxel(i, j, 0));
+            }
+        }
+        l.addSink(all, rate);
+        PottsOperationDiffuser d = new PottsOperationDiffuser(l);
+
+        d.step(null, null);
+
+        double expected = c0;
+        for (int s = 0; s < d.substeps; s++) {
+            double u = rate * d.substep / (2 * (k + expected));
+            expected = expected / ((1 + u) * (1 + u));
+        }
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 4; j++) {
+                assertEquals(expected, l.getField()[0][i][j], 1E-12);
+            }
+        }
+    }
+
+    @Test
+    public void step_saturatingField_removesRateTimesTick() {
+        double c0 = 1E6;
+        PottsLattice l = lattice(3, 3, 3, 1.0 / 60, uptakeParams(10, 2, 1));
+        l.setField(c0);
+        List<Voxel> all = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                all.add(new Voxel(i, j, 0));
+            }
+        }
+        l.addSink(all, 1.0);
+
+        new PottsOperationDiffuser(l).step(null, null);
+
+        // 1 per second for a 60 s tick.
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                assertEquals(60, c0 - l.getField()[0][i][j], 60 * 1E-4);
+            }
+        }
+    }
+
+    @Test
+    public void step_sinkWithZeroDiffusivity_stillTakesUp() {
+        PottsLattice l = lattice(3, 3, 3, 1.0 / 60, uptakeParams(0, 2, 1));
+        l.setField(2.0);
+        l.addSink(List.of(new Voxel(1, 1, 0)), 0.1);
+
+        new PottsOperationDiffuser(l).step(null, null);
+
+        assertTrue(l.getField()[0][1][1] < 2.0);
+        assertEquals(2.0, l.getField()[0][0][0], 0);
+    }
+
+    @Test
+    public void step_sinkOnSomeVoxels_staysNonNegativeAndRemovesAmount() {
+        PottsLattice l = randomLattice(9, 7, uptakeParams(2000, 30, 0.76), 5);
+        PottsLattice noSink = randomLattice(9, 7, uptakeParams(2000, 30, 0.76), 5);
+        double before = total(l.getField()[0]);
+        l.addSink(List.of(new Voxel(4, 3, 0), new Voxel(4, 4, 0), new Voxel(5, 3, 0)), 12.7);
+
+        new PottsOperationDiffuser(l).step(null, null);
+        new PottsOperationDiffuser(noSink).step(null, null);
+
+        for (double[] row : l.getField()[0]) {
+            for (double v : row) {
+                assertTrue(v >= 0);
+            }
+        }
+        assertTrue(total(l.getField()[0]) < before);
+        assertEquals(before, total(noSink.getField()[0]), 1E-9);
+    }
+
+    @Test
+    public void step_sinkWithNonPositiveHalfSaturation_throws() {
+        PottsLattice zero = lattice(3, 3, 3, 1.0 / 60, uptakeParams(10, 2, 0));
+        zero.addSink(List.of(new Voxel(1, 1, 0)), 1.0);
+        PottsLattice missing = lattice(3, 3, 3, 1.0 / 60, params(10, 2));
+        missing.addSink(List.of(new Voxel(1, 1, 0)), 1.0);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new PottsOperationDiffuser(zero).step(null, null));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new PottsOperationDiffuser(missing).step(null, null));
+    }
 }
