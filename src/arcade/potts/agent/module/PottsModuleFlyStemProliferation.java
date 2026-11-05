@@ -119,7 +119,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
          */
         RELATIVE_POSITION,
 
-        /** Symmetric if the daughter's Prospero concentration is less than or equal to the tfConcentration threshold */
+        /**
+         * Symmetric if the daughter's Prospero concentration is less than or equal to the
+         * tfConcentration threshold
+         */
         TF_CONCENTRATION
     }
 
@@ -422,9 +425,13 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 (parameters.getInt("proliferation/DYNAMIC_GROWTH_RATE_PROSPERO_REPRESSION") != 0);
 
         // TODO: do this for prospero-based growth rate too?
-        if (dynamicGrowthRateVolume && dynamicGrowthRateNBSelfRepression) {
+        int numGrowthRateModes =
+                (dynamicGrowthRateVolume ? 1 : 0)
+                        + (dynamicGrowthRateNBSelfRepression ? 1 : 0)
+                        + (dynamicGrowthRateProsperoRepression ? 1 : 0);
+        if (numGrowthRateModes > 1) {
             throw new InvalidParameterException(
-                    "Dynamic growth rate can be either volume-based or NB-contact-based, not both.");
+                    "Dynamic growth rate can be either volume-based, NB-contact-based, or Prospero based, not multiple.");
         }
 
         if (basalThreshold > 1 || basalThreshold < 0) {
