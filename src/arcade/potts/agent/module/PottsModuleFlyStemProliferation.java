@@ -221,8 +221,21 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
      */
     final double nbContactHillN;
 
+    /**
+     * Half-max Prospero concentration for repression (K). Only relevant if {@link #dynamicGrowthRateProsperoRepression}
+     * is true.
+     */
     final double prosperoHalfMax;
+
+    /**
+     *  Hill coefficient for Prospero repression (n). Only relevant if {@link #dynamicGrowthRateProsperoRepression}
+     * is true.
+     */
     final double prosperoHillN;
+
+    /**
+     * Boolean flag for whether growth rate should be repressed by cell Prospero concentration through a Hill function
+     */
     final boolean dynamicGrowthRateProsperoRepression;
 
     /**
@@ -1267,6 +1280,13 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                 * (1.0 - offsetPercentY / 100.0);
     }
 
+    /**
+     * Calculates the Prospero concentration for a given Prospero amount in a given location
+     *
+     * @param prospero the Prospero of the cell
+     * @param loc the location of the cell
+     * @return the Prospero concentration of the cell
+     */
     public static double prosperoConcentration(double prospero, PottsLocation loc) {
         return prospero / loc.getVolume();
     }
