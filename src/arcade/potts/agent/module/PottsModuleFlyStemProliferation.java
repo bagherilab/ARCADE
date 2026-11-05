@@ -158,8 +158,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
     /**
      * Ruleset for determining which daughter cell is the GMC on an asymmetric division. Can be
-     * `smaller_gmc`, `basal_gmc`, `random`, `apical_gmc`, or `higher_prospero_gmc`. Whether a division is symmetric is
-     * decided separately, by {@link #symmetricDivisionRuleset}.
+     * `smaller_gmc`, `basal_gmc`, `random`, `apical_gmc`, or `higher_prospero_gmc`. Whether a
+     * division is symmetric is decided separately, by {@link #symmetricDivisionRuleset}.
      */
     final DifferentiationRuleset differentiationRuleset;
 
