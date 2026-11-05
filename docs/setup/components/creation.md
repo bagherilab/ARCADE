@@ -35,6 +35,8 @@ Valid options for classes include:
 `remodel`
 : Component for remodeling graph sites
 : _Requires `graph_sites_simple` or `graph_sites_complex` component_
+{% elsif include.implementation == "potts" %}
+_None yet._
 {% endif %}
 
 | ATTRIBUTE | DESCRIPTION                   | TYPE    | REQUIRED |

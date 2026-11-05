@@ -16,6 +16,9 @@ Valid options for classes include:
 
 `convert`
 : Converts cell agents to a different population
+{% elsif include.implementation == "potts" %}
+`insert`
+: Inserts cell agents into the simulation
 {% endif %}
 
 | ATTRIBUTE | DESCRIPTION                | TYPE    | REQUIRED |
