@@ -25,6 +25,7 @@ import arcade.core.sim.output.OutputLoader;
 import arcade.core.sim.output.OutputSaver;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.action.PottsActionInsert;
+import arcade.potts.agent.action.PottsActionRecruit;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.agent.cell.PottsCellFactory;
@@ -1074,5 +1075,18 @@ public class PottsSimulationTest {
         assertTrue(
                 sim.makeComponent("oxygen_source", parameters)
                         instanceof PottsComponentOxygenSource);
+    }
+
+    @Test
+    public void makeAction_recruitClass_createsRecruitAction() {
+        MiniBox parameters = new MiniBox();
+        parameters.put("R_BASE", 1);
+        parameters.put("SIGNALS", "NONE");
+        parameters.put("K_RECRUIT", 1);
+        parameters.put("D_RECRUIT", 10);
+        parameters.put("MASK", "SUPPLY");
+
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, seriesOnePop);
+        assertTrue(sim.makeAction("recruit", parameters) instanceof PottsActionRecruit);
     }
 }

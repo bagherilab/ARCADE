@@ -24,6 +24,7 @@ import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.action.PottsActionInsert;
+import arcade.potts.agent.action.PottsActionRecruit;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.env.component.PottsComponentOxygenSource;
@@ -269,6 +270,8 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         switch (actionClass) {
             case "insert":
                 return new PottsActionInsert(parameters);
+            case "recruit":
+                return new PottsActionRecruit(parameters);
             default:
                 return null;
         }
