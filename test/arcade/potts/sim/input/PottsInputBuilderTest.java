@@ -564,4 +564,22 @@ public class PottsInputBuilderTest {
         assertTrue(component.filterTags("PARAMETER").contains("A"));
         assertTrue(component.filterTags("REGISTER").contains("X"));
     }
+
+    @Test
+    public void startElement_actions_createsActionBoxes() {
+        PottsInputBuilder builder = mock(PottsInputBuilder.class, CALLS_REAL_METHODS);
+        builder.setupLists = new HashMap<>();
+        builder.startElement("", "", "actions", atts());
+        builder.startElement("", "", "action", atts("id", "I", "class", "insert"));
+        builder.startElement("", "", "action.parameter", atts("id", "A", "value", "5"));
+        builder.startElement("", "", "action.register", atts("id", "MAC"));
+
+        ArrayList<Box> actions = builder.setupLists.get("actions");
+        assertEquals(1, actions.size());
+        Box action = actions.get(0);
+        assertEquals("I", action.getValue("id"));
+        assertEquals("insert", action.getValue("class"));
+        assertTrue(action.filterTags("PARAMETER").contains("A"));
+        assertTrue(action.filterTags("REGISTER").contains("MAC"));
+    }
 }

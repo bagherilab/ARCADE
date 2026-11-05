@@ -111,6 +111,7 @@ public final class PottsInputBuilder extends InputBuilder {
                 setupLists.get(name).add(new Box());
                 break;
             case "populations":
+            case "actions":
             case "components":
             case "layers":
                 setupLists.put(name, new ArrayList<>());
@@ -122,6 +123,10 @@ public final class PottsInputBuilder extends InputBuilder {
             case "layer":
                 Box layerBox = makeBox(atts);
                 setupLists.get(name + "s").add(layerBox);
+                break;
+            case "action":
+                Box actionBox = makeBox(atts);
+                setupLists.get(name + "s").add(actionBox);
                 break;
             case "component":
                 Box componentBox = makeBox(atts);

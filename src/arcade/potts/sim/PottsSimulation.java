@@ -23,6 +23,7 @@ import arcade.core.env.location.LocationFactory;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
+import arcade.potts.agent.action.PottsActionInsert;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.env.grid.PottsGrid;
@@ -55,6 +56,9 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 
     /** Map of layer id to lattice. */
     Map<String, PottsLattice> lattices;
+
+    /** Map of action id to {@link Action} instance. */
+    HashMap<String, Action> actions;
 
     /** Map of component id to {@link Component} instance. */
     HashMap<String, Component> components;
@@ -174,7 +178,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 
     @Override
     public final Action getAction(String key) {
-        return null;
+        return actions == null ? null : actions.get(key);
     }
 
     @Override
@@ -252,6 +256,22 @@ public abstract class PottsSimulation extends SimState implements Simulation {
      * @return a {@link arcade.core.agent.cell.Cell} factory
      */
     public abstract PottsCellFactory makeCellFactory();
+
+    /**
+     * Creates an instance of the given action.
+     *
+     * @param actionClass the name of the action class
+     * @param parameters the dictionary of action parameters
+     * @return an {@link Action} instance, or {@code null} if the class is not recognized
+     */
+    public Action makeAction(String actionClass, MiniBox parameters) {
+        switch (actionClass) {
+            case "insert":
+                return new PottsActionInsert(parameters);
+            default:
+                return null;
+        }
+    }
 
     /**
      * Creates an instance of the given component.
@@ -343,7 +363,34 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 
     @Override
     public final void scheduleActions() {
-        // TODO add action scheduling
+        // TODO: same as PatchSimulation.scheduleActions; consider moving to the Simulation level
+        actions = new HashMap<>();
+
+        // Create all action instances.
+        for (String actionKey : series.actions.keySet()) {
+            MiniBox actionParameters = series.actions.get(actionKey);
+            String actionClass = actionParameters.get("CLASS");
+            Action action = makeAction(actionClass, actionParameters);
+
+            if (action == null) {
+                continue;
+            }
+
+            actions.put(actionKey, action);
+        }
+
+        // Register and schedule actions.
+        for (String actionKey : actions.keySet()) {
+            MiniBox actionParameters = series.actions.get(actionKey);
+            Action action = actions.get(actionKey);
+
+            MiniBox registerBox = actionParameters.filter("(REGISTER)");
+            for (String registerKey : registerBox.getKeys()) {
+                action.register(this, registerKey);
+            }
+
+            action.schedule(schedule);
+        }
     }
 
     @Override

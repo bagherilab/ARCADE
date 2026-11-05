@@ -488,7 +488,47 @@ public final class PottsSeries extends Series {
 
     @Override
     protected void updateActions(ArrayList<Box> actionsBox, MiniBox actionDefaults) {
-        // TODO
+        // TODO: PottsSeries.updateActions duplicates PatchSeries; revisit pulling it up to Series
+        this.actions = new HashMap<>();
+        if (actionsBox == null) {
+            return;
+        }
+
+        // Iterate through each setup dictionary to build action settings.
+        for (Box box : actionsBox) {
+            String id = box.getValue("id");
+            String actionClass = box.getValue("class").toLowerCase();
+
+            // Create new action and update class.
+            MiniBox action = new MiniBox();
+            this.actions.put(id, action);
+
+            // Filter defaults for parameters specific to action class.
+            action.put("CLASS", actionClass);
+            MiniBox actionClassDefaults = actionDefaults.filter(actionClass);
+
+            // Get default parameters and any parameter adjustments.
+            Box parameters = box.filterBoxByTag("PARAMETER");
+            MiniBox parameterValues = parameters.getIdValForTagAtt("PARAMETER", "value");
+            MiniBox parameterScales = parameters.getIdValForTagAtt("PARAMETER", "scale");
+
+            // Add in parameters. Start with value (if given) or default (if not
+            // given). Then apply any scaling.
+            for (String parameter : actionClassDefaults.getKeys()) {
+                parseParameter(
+                        action,
+                        parameter,
+                        actionClassDefaults.get(parameter),
+                        parameterValues,
+                        parameterScales);
+            }
+
+            // Add list of registered populations.
+            HashSet<String> registers = box.filterTags("REGISTER");
+            for (String register : registers) {
+                action.put("(REGISTER)" + TAG_SEPARATOR + register, "");
+            }
+        }
     }
 
     @Override

@@ -33,6 +33,9 @@ public final class PottsEnums {
         /** Stepping order for potts. */
         POTTS,
 
+        /** Stepping order for actions. */
+        ACTIONS,
+
         /** Stepping order for cells. */
         CELLS,
 

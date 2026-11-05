@@ -129,4 +129,10 @@
     <!-- degrader operation parameters -->
     <layer.operation operation="degrader" id="ENZYME" value="NONE" description="layer id of degrading enzyme" />
     <layer.operation operation="degrader" id="RATE" value="0" units="1/(concentration.hour)" conversion="DT" description="enzyme-dependent degradation rate" />
+
+    <!-- ACTIONS =========================================================== -->
+
+    <!-- insert action parameters -->
+    <action class="insert" id="TIME_DELAY" value="0" units="ticks" description="tick at which cells are inserted" />
+    <action class="insert" id="INSERT_NUMBER" value="1" description="number of cells to insert for each registered population" />
 </parameters>

@@ -12,6 +12,7 @@ import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
+import arcade.core.agent.action.Action;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.component.Component;
@@ -23,6 +24,7 @@ import arcade.core.sim.Simulation;
 import arcade.core.sim.output.OutputLoader;
 import arcade.core.sim.output.OutputSaver;
 import arcade.core.util.MiniBox;
+import arcade.potts.agent.action.PottsActionInsert;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.agent.cell.PottsCellFactory;
@@ -395,6 +397,7 @@ public class PottsSimulationTest {
         sim.getSeries().isVis = true;
         sim.getSeries().saver = mock(OutputSaver.class);
         sim.getSeries().components = new HashMap();
+        sim.getSeries().actions = new HashMap<>();
         sim.start();
         assertEquals(1, sim.getID());
         sim.start();
@@ -637,6 +640,7 @@ public class PottsSimulationTest {
     public void start_called_callsMethods() {
         Series series = createSeries(new int[0], new String[0]);
         series.components = new HashMap<>();
+        series.actions = new HashMap<>();
         PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, series));
         doNothing().when(sim).doOutput(anyBoolean());
         sim.start();
@@ -652,6 +656,7 @@ public class PottsSimulationTest {
     public void start_isVis_skipsSaver() {
         Series series = createSeries(new int[0], new String[0]);
         series.components = new HashMap<>();
+        series.actions = new HashMap<>();
         series.saver = mock(OutputSaver.class);
         series.isVis = true;
 
@@ -667,6 +672,7 @@ public class PottsSimulationTest {
     public void start_notVis_setsSaver() {
         Series series = createSeries(new int[0], new String[0]);
         series.components = new HashMap<>();
+        series.actions = new HashMap<>();
         series.saver = mock(OutputSaver.class);
         series.isVis = false;
 
@@ -682,6 +688,7 @@ public class PottsSimulationTest {
     public void start_notNull_setsLoader() {
         Series series = createSeries(new int[0], new String[0]);
         series.components = new HashMap<>();
+        series.actions = new HashMap<>();
         series.loader = mock(OutputLoader.class);
 
         PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, series));
@@ -1019,5 +1026,39 @@ public class PottsSimulationTest {
 
         verify(sim.cellFactory).createCellForPopulation(6, 1);
         verify(sim.cellFactory).createCellForPopulation(7, 1);
+    }
+
+    @Test
+    public void scheduleActions_givenAction_createsRegistersAndSchedules() {
+        Series series = createSeries(new int[0], new String[0]);
+        series.actions = new HashMap<>();
+        MiniBox settings = new MiniBox();
+        settings.put("CLASS", "dummy");
+        settings.put("(REGISTER)" + TAG_SEPARATOR + "MAC", "");
+        series.actions.put("I", settings);
+
+        Action action = mock(Action.class);
+        PottsSimulationMock sim =
+                new PottsSimulationMock(RANDOM_SEED, series) {
+                    @Override
+                    public Action makeAction(String actionClass, MiniBox parameters) {
+                        return action;
+                    }
+                };
+
+        sim.scheduleActions();
+        assertSame(action, sim.getAction("I"));
+        verify(action).register(sim, "MAC");
+        verify(action).schedule(sim.getSchedule());
+    }
+
+    @Test
+    public void makeAction_insertClass_createsInsertAction() {
+        MiniBox parameters = new MiniBox();
+        parameters.put("TIME_DELAY", 3);
+        parameters.put("INSERT_NUMBER", 2);
+
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, seriesOnePop);
+        assertTrue(sim.makeAction("insert", parameters) instanceof PottsActionInsert);
     }
 }

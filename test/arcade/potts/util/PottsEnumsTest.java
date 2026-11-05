@@ -88,10 +88,11 @@ public class PottsEnumsTest {
     @Test
     public void Ordering_values_inSteppingOrder() {
         assertEquals(0, Ordering.POTTS.ordinal());
-        assertEquals(1, Ordering.CELLS.ordinal());
-        assertEquals(2, Ordering.COMPONENTS.ordinal());
-        assertEquals(3, Ordering.LATTICES.ordinal());
-        assertEquals(4, Ordering.LAST_LATTICE.ordinal());
+        assertEquals(1, Ordering.ACTIONS.ordinal());
+        assertEquals(2, Ordering.CELLS.ordinal());
+        assertEquals(3, Ordering.COMPONENTS.ordinal());
+        assertEquals(4, Ordering.LATTICES.ordinal());
+        assertEquals(5, Ordering.LAST_LATTICE.ordinal());
     }
 
     @Test

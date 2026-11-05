@@ -1485,4 +1485,52 @@ public class PottsSeriesTest {
 
         assertTrue(series.components.get("C").contains("(REGISTER)" + TAG_SEPARATOR + "X"));
     }
+
+    @Test
+    public void updateActions_noActions_createsEmptyMap() {
+        PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
+        series.updateActions(null, new MiniBox());
+        assertNotNull(series.actions);
+        assertEquals(0, series.actions.size());
+    }
+
+    @Test
+    public void updateActions_givenAction_setsClassAndParameters() {
+        Box box = new Box();
+        box.add("id", "I");
+        box.add("class", "DUMMY");
+        box.addAtt("A", "value", "50");
+        box.addTag("A", "PARAMETER");
+        box.addAtt("B", "scale", "3");
+        box.addTag("B", "PARAMETER");
+
+        MiniBox defaults = new MiniBox();
+        defaults.put("dummy" + TAG_SEPARATOR + "A", 1.0);
+        defaults.put("dummy" + TAG_SEPARATOR + "B", 2.0);
+        defaults.put("dummy" + TAG_SEPARATOR + "D", 4.0);
+        defaults.put("other" + TAG_SEPARATOR + "E", 8.0);
+
+        PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
+        series.updateActions(new ArrayList<>(Arrays.asList(box)), defaults);
+
+        MiniBox action = series.actions.get("I");
+        assertEquals("dummy", action.get("CLASS"));
+        assertEquals(50, action.getDouble("A"), EPSILON);
+        assertEquals(6, action.getDouble("B"), EPSILON);
+        assertEquals(4, action.getDouble("D"), EPSILON);
+        assertFalse(action.contains("E"));
+    }
+
+    @Test
+    public void updateActions_givenRegister_addsRegisterTag() {
+        Box box = new Box();
+        box.add("id", "I");
+        box.add("class", "dummy");
+        box.addTag("MAC", "REGISTER");
+
+        PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
+        series.updateActions(new ArrayList<>(Arrays.asList(box)), new MiniBox());
+
+        assertTrue(series.actions.get("I").contains("(REGISTER)" + TAG_SEPARATOR + "MAC"));
+    }
 }
