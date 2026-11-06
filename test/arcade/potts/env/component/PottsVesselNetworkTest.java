@@ -133,4 +133,15 @@ public class PottsVesselNetworkTest {
     public void constructor_nonPositiveThickness_throws() {
         assertThrows(IllegalArgumentException.class, () -> new PottsVesselNetwork(0));
     }
+
+    @Test
+    public void addSegment_reversedAlongZ_throws() {
+        // Nodes that differ only in z: the duplicate check must use z.
+        PottsVesselNetwork network = new PottsVesselNetwork(T);
+        PottsVesselNode a = network.addNode(5, 5, -10, Root.NONE);
+        PottsVesselNode b = network.addNode(5, 5, 10, Root.NONE);
+        network.addSegment(b, a, 1);
+        assertThrows(IllegalArgumentException.class, () -> network.addSegment(a, b, 1));
+        assertThrows(IllegalArgumentException.class, () -> network.addSegment(b, a, 1));
+    }
 }

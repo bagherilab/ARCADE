@@ -1,9 +1,11 @@
 package arcade.potts.env.component;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import sim.util.Bag;
 import arcade.core.util.Graph;
 import static arcade.potts.env.component.PottsVesselNode.Root;
@@ -32,6 +34,9 @@ public class PottsVesselNetwork {
     /** Segments in the order they were added. */
     private final List<PottsVesselEdge> segments;
 
+    /** Unordered pairs of node positions joined by a segment, for duplicate checks. */
+    private final Set<List<Graph.Node>> pairs;
+
     /**
      * Creates an empty {@code PottsVesselNetwork}.
      *
@@ -45,6 +50,7 @@ public class PottsVesselNetwork {
         graph = new Graph();
         nodes = new LinkedHashMap<>();
         segments = new ArrayList<>();
+        pairs = new HashSet<>();
     }
 
     /**
@@ -100,7 +106,8 @@ public class PottsVesselNetwork {
         if (from.equals(to)) {
             throw new IllegalArgumentException("segment must join two different nodes");
         }
-        if (graph.hasEdge(from, to) || graph.hasEdge(to, from)) {
+        List<Graph.Node> pair = before(from, to) ? List.of(from, to) : List.of(to, from);
+        if (pairs.contains(pair)) {
             throw new IllegalArgumentException(
                     "segment between " + from + " and " + to + " already exists");
         }
@@ -109,7 +116,28 @@ public class PottsVesselNetwork {
         PottsVesselEdge segment = new PottsVesselEdge(from, to, integrity);
         graph.addEdge(segment);
         segments.add(segment);
+        pairs.add(pair);
         return segment;
+    }
+
+    /**
+     * Checks if one node comes before another in x, then y, then z order.
+     *
+     * <p>{@link Graph.Node#compareTo} ignores z, so nodes along a segment parallel to z would
+     * compare as equal.
+     *
+     * @param a the first node
+     * @param b the second node
+     * @return {@code true} if {@code a} comes before {@code b}, {@code false} otherwise
+     */
+    static boolean before(Graph.Node a, Graph.Node b) {
+        if (a.getX() != b.getX()) {
+            return a.getX() < b.getX();
+        }
+        if (a.getY() != b.getY()) {
+            return a.getY() < b.getY();
+        }
+        return a.getZ() < b.getZ();
     }
 
     /**
