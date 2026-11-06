@@ -30,6 +30,7 @@ import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.env.component.PottsComponentOxygenSource;
+import arcade.potts.env.component.PottsComponentVessels;
 import arcade.potts.env.lattice.PottsLattice;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocationContainer;
@@ -1088,5 +1089,17 @@ public class PottsSimulationTest {
 
         PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, seriesOnePop);
         assertTrue(sim.makeAction("recruit", parameters) instanceof PottsActionRecruit);
+    }
+
+    @Test
+    public void makeComponent_vesselsClass_createsVessels() {
+        MiniBox parameters = new MiniBox();
+        parameters.put("P_O2", 0.5);
+        parameters.put("BLOOD_O2", 60);
+        parameters.put("LAMBDA", 100);
+        parameters.put("D_RECRUIT", 10);
+
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, seriesOnePop);
+        assertTrue(sim.makeComponent("vessels", parameters) instanceof PottsComponentVessels);
     }
 }
