@@ -1,5 +1,8 @@
 package arcade.potts.env.component;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import sim.engine.Schedule;
@@ -25,6 +28,11 @@ import static arcade.potts.util.PottsEnums.Ordering;
  * <p>Perfusion, exchange weights, and sites are computed on first use and cached, because the
  * network does not change in V1. Call {@link #refresh()} after the network changes. The lattice
  * size and voxel size are taken from the first registered layer. The slice is 2D.
+ *
+ * <p>If no network is set, it is loaded from {@code [load path].VESSELS.json} when the component is
+ * registered, the same prefix as the other loaded files (for example, {@code --loadpath} with
+ * {@code --loadlayers}). The network version increases whenever the network is set or refreshed, so
+ * the saver can write it only when it changed.
  */
 public class PottsComponentVessels implements Component {
     /** Exchange rate per unit weight [1/s]. */
@@ -47,6 +55,9 @@ public class PottsComponentVessels implements Component {
 
     /** {@code true} if the caches are up to date, {@code false} otherwise. */
     private boolean prepared;
+
+    /** Network version, increased when the network is set or refreshed. */
+    private int version;
 
     /** Cached voxels with a positive exchange weight, each as a one-voxel list. */
     private final ArrayList<List<Voxel>> exchangeVoxels = new ArrayList<>();
@@ -90,11 +101,16 @@ public class PottsComponentVessels implements Component {
     /**
      * {@inheritDoc}
      *
-     * <p>The registered layer receives the supply and must have a diffuser.
+     * <p>The registered layer receives the supply and must have a diffuser. If no network is set
+     * and the simulation has loaded files, the network is loaded here, during setup, so that it is
+     * available to the first save.
      */
     @Override
     public void register(Simulation sim, String layer) {
         layers.add(layer);
+        if (network == null && sim.getSeries() != null && sim.getSeries().loader != null) {
+            loadNetwork(sim);
+        }
     }
 
     /**
@@ -105,6 +121,7 @@ public class PottsComponentVessels implements Component {
     public void setNetwork(PottsVesselNetwork network) {
         this.network = network;
         prepared = false;
+        version++;
     }
 
     /**
@@ -119,6 +136,37 @@ public class PottsComponentVessels implements Component {
     /** Marks the caches as out of date, so they are recomputed on next use. */
     public void refresh() {
         prepared = false;
+        version++;
+    }
+
+    /**
+     * Gets the network version.
+     *
+     * @return the version, which increases whenever the network is set or refreshed
+     */
+    public int getVersion() {
+        return version;
+    }
+
+    /**
+     * Loads the network from the loaded files of the simulation.
+     *
+     * @param sim the simulation instance
+     */
+    void loadNetwork(Simulation sim) {
+        if (sim.getSeries() == null || sim.getSeries().loader == null) {
+            throw new IllegalStateException(
+                    "vessel component has no network; give a load path with a load switch"
+                            + " (for example --loadpath and --loadlayers)");
+        }
+        String prefix = sim.getSeries().loader.prefix;
+        String path = prefix.replace("[#]", String.format("%04d", sim.getSeed()));
+        Path file = Path.of(path + ".VESSELS.json");
+        try {
+            setNetwork(PottsVesselNetwork.fromJson(Files.readString(file)));
+        } catch (IOException e) {
+            throw new IllegalStateException("unable to read vessel network [ " + file + " ]", e);
+        }
     }
 
     /**
@@ -147,7 +195,7 @@ public class PottsComponentVessels implements Component {
             return;
         }
         if (network == null) {
-            throw new IllegalStateException("vessel component has no network");
+            loadNetwork(sim);
         }
         if (layers.isEmpty()) {
             throw new IllegalStateException("vessel component has no registered layer");

@@ -11,6 +11,10 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSerializerTest;
+import arcade.core.util.MiniBox;
+import arcade.potts.env.component.PottsComponentVessels;
+import arcade.potts.env.component.PottsVesselNetwork;
+import arcade.potts.env.component.PottsVesselNode;
 import arcade.potts.sim.PottsSeries;
 import arcade.potts.sim.PottsSimulation;
 import static org.junit.jupiter.api.Assertions.*;
@@ -69,5 +73,51 @@ public class PottsOutputSaverTest {
         saver.save(5);
         assertTrue(Files.exists(path.resolve("run_0000_000005.CELLS.json")));
         assertFalse(Files.exists(path.resolve("run_0000_000005.LAYERS.json")));
+    }
+
+    @Test
+    public void save_vesselComponent_writesNetworkOnlyWhenChanged(@TempDir Path path)
+            throws Exception {
+        PottsSeries series = mock(PottsSeries.class);
+        doReturn(path.toString() + "/run").when(series).getPrefix();
+        doReturn(1).when(series).getInterval();
+        series.components = new HashMap<>();
+        series.components.put("VESSELS", new MiniBox());
+
+        PottsComponentVessels vessels = mock(PottsComponentVessels.class);
+        PottsVesselNetwork network = new PottsVesselNetwork(100);
+        network.addNode(1, 2, 3, PottsVesselNode.Root.ARTERIAL);
+        doReturn(network).when(vessels).getNetwork();
+        doReturn(1).when(vessels).getVersion();
+
+        PottsSimulation sim = mockSimulation(new TreeMap<>());
+        doReturn(series).when(sim).getSeries();
+        doReturn(vessels).when(sim).getComponent("VESSELS");
+        PottsOutputSaver saver = new PottsOutputSaver(series);
+        saver.equip(sim);
+
+        saver.save(0);
+        saver.save(1);
+        Path first = path.resolve("run_0000_000000.VESSELS.json");
+        assertTrue(Files.exists(first));
+        assertEquals(network.toJson(), Files.readString(first));
+        assertFalse(Files.exists(path.resolve("run_0000_000001.VESSELS.json")));
+
+        doReturn(2).when(vessels).getVersion();
+        saver.save(2);
+        assertTrue(Files.exists(path.resolve("run_0000_000002.VESSELS.json")));
+    }
+
+    @Test
+    public void save_noComponents_writesNoVesselFile(@TempDir Path path) throws Exception {
+        PottsSeries series = mock(PottsSeries.class);
+        doReturn(path.toString() + "/run").when(series).getPrefix();
+        doReturn(1).when(series).getInterval();
+        PottsSimulation sim = mockSimulation(new TreeMap<>());
+        doReturn(series).when(sim).getSeries();
+        PottsOutputSaver saver = new PottsOutputSaver(series);
+        saver.equip(sim);
+        saver.save(0);
+        assertFalse(Files.exists(path.resolve("run_0000_000000.VESSELS.json")));
     }
 }

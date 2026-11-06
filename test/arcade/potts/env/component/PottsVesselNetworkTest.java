@@ -144,4 +144,79 @@ public class PottsVesselNetworkTest {
         assertThrows(IllegalArgumentException.class, () -> network.addSegment(a, b, 1));
         assertThrows(IllegalArgumentException.class, () -> network.addSegment(b, a, 1));
     }
+
+    // A network with roots, a node near the z boundary, and segments of different integrity.
+    static PottsVesselNetwork sample() {
+        PottsVesselNetwork network = new PottsVesselNetwork(T);
+        PottsVesselNode a = network.addNode(0, 0, 49.9, Root.ARTERIAL);
+        PottsVesselNode b = network.addNode(10, 0, -49.9, Root.NONE);
+        PottsVesselNode c = network.addNode(20, 5.5, -40, Root.VENOUS);
+        network.addSegment(a, b, 1);
+        network.addSegment(c, b, 0.25);
+        return network;
+    }
+
+    @Test
+    public void toJsonFromJson_roundTrip_keepsNodesRootsAndSegments() {
+        PottsVesselNetwork network = sample();
+        PottsVesselNetwork copy = PottsVesselNetwork.fromJson(network.toJson());
+
+        assertEquals(T, copy.getThickness(), EPSILON);
+        assertEquals(network.getNodes(), copy.getNodes());
+        for (int i = 0; i < network.getNodes().size(); i++) {
+            assertEquals(network.getNodes().get(i).getRoot(), copy.getNodes().get(i).getRoot());
+        }
+        assertEquals(network.getSegments().size(), copy.getSegments().size());
+        for (int i = 0; i < network.getSegments().size(); i++) {
+            PottsVesselEdge original = network.getSegments().get(i);
+            PottsVesselEdge loaded = copy.getSegments().get(i);
+            assertEquals(original.getFrom(), loaded.getFrom());
+            assertEquals(original.getTo(), loaded.getTo());
+            assertEquals(original.getIntegrity(), loaded.getIntegrity(), EPSILON);
+        }
+        assertEquals(network.toJson(), copy.toJson());
+    }
+
+    @Test
+    public void fromJson_invalidFile_throws() {
+        assertThrows(IllegalArgumentException.class, () -> PottsVesselNetwork.fromJson("[1, 2]"));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> PottsVesselNetwork.fromJson("{\"thickness\": 100, \"nodes\": []}"));
+        String node = "{\"x\": 0, \"y\": 0, \"z\": 0, \"root\": \"NONE\"}";
+        String other = "{\"x\": 10, \"y\": 0, \"z\": 0, \"root\": \"NONE\"}";
+        String nodes = "\"nodes\": [" + node + ", " + other + "]";
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        PottsVesselNetwork.fromJson(
+                                "{\"thickness\": 100, "
+                                        + nodes
+                                        + ", \"segments\": [{\"from\": 0, \"to\": 5,"
+                                        + " \"integrity\": 1}]}"));
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        PottsVesselNetwork.fromJson(
+                                "{\"thickness\": 100, "
+                                        + nodes
+                                        + ", \"segments\": [{\"from\": 0, \"to\": 1,"
+                                        + " \"integrity\": 2}]}"));
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        PottsVesselNetwork.fromJson(
+                                "{\"thickness\": 100, "
+                                        + nodes
+                                        + ", \"segments\": [{\"from\": 0, \"to\": 1,"
+                                        + " \"integrity\": 1}, {\"from\": 1, \"to\": 0,"
+                                        + " \"integrity\": 1}]}"));
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        PottsVesselNetwork.fromJson(
+                                "{\"thickness\": 100, \"nodes\": [{\"x\": 0, \"y\": 0,"
+                                        + " \"z\": 0, \"root\": \"PORTAL\"}],"
+                                        + " \"segments\": []}"));
+    }
 }

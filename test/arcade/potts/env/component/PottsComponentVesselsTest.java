@@ -1,7 +1,12 @@
 package arcade.potts.env.component;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import sim.engine.Schedule;
+import arcade.core.sim.Series;
+import arcade.core.sim.output.OutputLoader;
 import arcade.core.util.MiniBox;
 import arcade.potts.env.lattice.PottsLattice;
 import arcade.potts.sim.PottsSimulation;
@@ -184,5 +189,56 @@ public class PottsComponentVesselsTest {
         MiniBox noLambda = parameters(1);
         noLambda.put("LAMBDA", 0);
         assertThrows(IllegalArgumentException.class, () -> new PottsComponentVessels(noLambda));
+    }
+
+    // Creates a fake simulation whose loader prefix points at a vessel file in the directory.
+    static PottsSimulation makeLoadingSim(Path dir, PottsLattice oxygen) {
+        Series series = mock(Series.class);
+        series.loader = mock(OutputLoader.class);
+        series.loader.prefix = dir.toAbsolutePath() + "/init_[#]_000000";
+        PottsSimulation sim = makeSim(oxygen);
+        doReturn(series).when(sim).getSeries();
+        doReturn(0).when(sim).getSeed();
+        return sim;
+    }
+
+    @Test
+    public void register_withLoader_loadsNetworkFromLoadPath(@TempDir Path dir) throws Exception {
+        Files.writeString(dir.resolve("init_0000_000000.VESSELS.json"), network().toJson());
+        PottsSimulation sim = makeLoadingSim(dir, makeLattice(true));
+        PottsComponentVessels vessels = new PottsComponentVessels(parameters(0.4));
+
+        vessels.register(sim, "O2");
+
+        assertNotNull(vessels.getNetwork());
+        assertEquals(network().toJson(), vessels.getNetwork().toJson());
+        assertEquals(1, vessels.getVersion());
+    }
+
+    @Test
+    public void register_withLoaderMissingFile_throws(@TempDir Path dir) {
+        PottsSimulation sim = makeLoadingSim(dir, makeLattice(true));
+        PottsComponentVessels vessels = new PottsComponentVessels(parameters(0.4));
+        Exception e = assertThrows(IllegalStateException.class, () -> vessels.register(sim, "O2"));
+        assertTrue(e.getMessage().contains("VESSELS.json"));
+    }
+
+    @Test
+    public void step_noNetworkNoLoader_throwsAskingForLoadPath() {
+        PottsSimulation sim = makeSim(makeLattice(true));
+        PottsComponentVessels vessels = new PottsComponentVessels(parameters(0.4));
+        vessels.register(sim, "O2");
+        Exception e = assertThrows(IllegalStateException.class, () -> vessels.step(sim));
+        assertTrue(e.getMessage().contains("load path"));
+    }
+
+    @Test
+    public void getVersion_setAndRefresh_increases() {
+        PottsComponentVessels vessels = new PottsComponentVessels(parameters(0.4));
+        assertEquals(0, vessels.getVersion());
+        vessels.setNetwork(network());
+        assertEquals(1, vessels.getVersion());
+        vessels.refresh();
+        assertEquals(2, vessels.getVersion());
     }
 }
