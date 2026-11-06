@@ -58,6 +58,9 @@
     <population id="BYSTANDER_CONTACT" value="0" units="1/hour" conversion="DT" description="probability of senescence on contact with a senescent cell" />
     <population id="BYSTANDER_PARACRINE" value="0" units="1/hour" conversion="DT" description="probability of senescence when mean INF is above INF_BYSTANDER" />
     <population id="INF_BYSTANDER" value="1000" units="concentration" description="threshold on mean INF for paracrine senescence" />
+    <population id="INF_POLARIZATION" value="0" units="concentration" description="threshold on mean INF above which a macrophage is M1 (secretes M1_RATE_[LAYER]), otherwise M2 (M2_RATE_[LAYER]); 0 disables the switch" />
+    <population id="M1_RATE" value="0" units="amount/hour" conversion="DT" description="macrophage secretion rate into each layer in the M1 phenotype (copied to M1_RATE_[LAYER])" />
+    <population id="M2_RATE" value="0" units="amount/hour" conversion="DT" description="macrophage secretion rate into each layer in the M2 phenotype (copied to M2_RATE_[LAYER])" />
     <population id="O2_PROLIF_MIN" value="0" units="mmHg" description="minimum mean O2 over the cell for wound healing cells to enter or remain proliferative; 0 disables the O2 gate" />
     <population id="PDGF_PROLIFERATION" value="0.1" units="concentration" description="threshold on mean PDGF for fibroblast and myofibroblast proliferation" />
     <population id="PDGF_DIFFERENTIATION" value="0.1" units="concentration" description="threshold on mean PDGF for fibroblast differentiation" />

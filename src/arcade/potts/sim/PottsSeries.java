@@ -33,6 +33,8 @@ public final class PottsSeries extends Series {
         "uptake/RATE",
         "senescence/EARLY_RATE",
         "senescence/LATE_RATE",
+        "M1_RATE",
+        "M2_RATE",
         "chemotaxis/LAMBDA",
     };
 
@@ -333,10 +335,10 @@ public final class PottsSeries extends Series {
     }
 
     /**
-     * Checks that senescence secretion rates are not negative.
+     * Checks that senescence and macrophage phenotype secretion rates are not negative.
      *
-     * <p>Rates are set when cells enter a senescence phase, so a negative rate is checked here to
-     * fail at setup instead of during the simulation.
+     * <p>Rates are set when cells enter a senescence phase or switch macrophage phenotype, so a
+     * negative rate is checked here to fail at setup instead of during the simulation.
      *
      * @param population the population parameters
      */
@@ -344,7 +346,9 @@ public final class PottsSeries extends Series {
         for (String key : population.getKeys()) {
             boolean rate =
                     key.startsWith("senescence/EARLY_RATE_")
-                            || key.startsWith("senescence/LATE_RATE_");
+                            || key.startsWith("senescence/LATE_RATE_")
+                            || key.startsWith("M1_RATE_")
+                            || key.startsWith("M2_RATE_");
             if (rate && !(population.getDouble(key) >= 0)) {
                 throw new IllegalArgumentException(
                         "senescence secretion rate [ " + key + " ] must be >= 0");

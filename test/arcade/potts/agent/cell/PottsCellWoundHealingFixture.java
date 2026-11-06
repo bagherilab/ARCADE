@@ -93,6 +93,7 @@ public final class PottsCellWoundHealingFixture {
         box.put("BYSTANDER_PARACRINE", 0);
         box.put("INF_BYSTANDER", 1000);
         box.put("O2_PROLIF_MIN", 0);
+        box.put("INF_POLARIZATION", 0);
         box.put("PDGF_PROLIFERATION", 0.2);
         box.put("PDGF_DIFFERENTIATION", 0.3);
         box.put("ECM_DIFFERENTIATION", 0.3);

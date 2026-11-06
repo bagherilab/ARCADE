@@ -1338,6 +1338,47 @@ public class PottsSeriesTest {
     }
 
     @Test
+    public void addLayerDefaults_macrophageRates_copiesDefaultsAndConversions() throws Exception {
+        PottsSeries series = makeSeriesWithLayers("MMP", "PDGF");
+        MiniBox defaults = new MiniBox();
+        defaults.put("M1_RATE", 0.0);
+        defaults.put("M2_RATE", 0.0);
+        MiniBox conversions = new MiniBox();
+        conversions.put("M1_RATE", "DT");
+        conversions.put("M2_RATE", "DT");
+
+        series.addLayerDefaults(defaults, conversions);
+
+        for (String layer : new String[] {"MMP", "PDGF"}) {
+            assertEquals(0.0, defaults.getDouble("M1_RATE_" + layer), EPSILON);
+            assertEquals(0.0, defaults.getDouble("M2_RATE_" + layer), EPSILON);
+            assertEquals("DT", conversions.get("M1_RATE_" + layer));
+            assertEquals("DT", conversions.get("M2_RATE_" + layer));
+        }
+    }
+
+    @Test
+    public void updatePopulation_negativeMacrophageRate_throws() throws Exception {
+        PottsSeries series = makeSeriesWithLayers("MMP");
+        MiniBox defaults = new MiniBox();
+        defaults.put("M1_RATE", 0.0);
+        MiniBox conversions = new MiniBox();
+        series.addLayerDefaults(defaults, conversions);
+
+        Box box = new Box();
+        box.add("id", POPULATION_ID_1);
+        box.addAtt("M1_RATE_MMP", "value", "-5");
+        box.addTag("M1_RATE_MMP", "PARAMETER");
+        ArrayList<Box> boxes = new ArrayList<>(Arrays.asList(box));
+
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> series.updatePopulations(boxes, defaults, conversions));
+        assertTrue(exception.getMessage().contains("M1_RATE_MMP"));
+    }
+
+    @Test
     public void updatePopulation_negativeSenescenceRate_throws() throws Exception {
         PottsSeries series = makeSeriesWithLayers("INF");
         MiniBox defaults = new MiniBox();

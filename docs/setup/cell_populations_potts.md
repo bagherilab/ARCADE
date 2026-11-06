@@ -135,7 +135,7 @@ The rules read the mean `PDGF`, `ECM`, and `INF` layer values over the cell; a l
 | ----- | ----- |
 | `fibroblast` | Proliferates when PDGF is above `PDGF_PROLIFERATION`. Differentiates into the `DIFFERENTIATION_TARGET` population when PDGF and ECM are above their thresholds. Becomes senescent spontaneously or through the bystander routes. |
 | `myofibroblast` | Proliferates under the same conditions as fibroblasts. Becomes apoptotic when INF is above `INF_APOPTOSIS`. Matures after a mean of `MATURATION`; mature cells become apoptotic when ECM is below `ECM_TENSION`, or senescent with probability `SENESCENCE_RATE`. Becomes senescent through the bystander routes. |
-| `macrophage` | Does not proliferate. Senescent cells that touch a macrophage may be cleared. |
+| `macrophage` | Does not proliferate. Senescent cells that touch a macrophage may be cleared. If `INF_POLARIZATION` is above 0, switches each tick between M1 (INF above the threshold) and M2 secretion rates. |
 | `tissue` | Proliferates into free space next to the cell when the mean ECM over that space is at least `ECM_PROLIFERATION`. Becomes senescent spontaneously or through the bystander routes. |
 
 A quiescent cell becomes proliferative when it can proliferate.
@@ -158,6 +158,9 @@ Wound healing populations do not support regions; a `population.region` tag caus
 | `BYSTANDER_PARACRINE` | 0 | 1/hour | probability of senescence when INF is above `INF_BYSTANDER` |
 | `INF_BYSTANDER` | 1000 | concentration | threshold on INF for paracrine senescence |
 | `O2_PROLIF_MIN` | 0 | mmHg | minimum mean O2 over the cell to proliferate; 0 disables the O2 gate |
+| `INF_POLARIZATION` | 0 | concentration | macrophages only: threshold on mean INF for the M1 phenotype; 0 disables the switch |
+| `M1_RATE_[LAYER]` | 0 | amount/hour | macrophages only: secretion rate into the layer in the M1 phenotype |
+| `M2_RATE_[LAYER]` | 0 | amount/hour | macrophages only: secretion rate into the layer in the M2 phenotype |
 | `PDGF_PROLIFERATION` | 0.1 | concentration | threshold on PDGF for proliferation |
 | `PDGF_DIFFERENTIATION` | 0.1 | concentration | threshold on PDGF for differentiation |
 | `ECM_DIFFERENTIATION` | 0.5 | concentration | threshold on ECM for differentiation |
@@ -190,6 +193,28 @@ To start a cell in late senescence, load it from a `.CELLS` file with `"state": 
 | `senescence/DRUG_START` | 0 | hours | start of the drug window |
 | `senescence/DRUG_DURATION` | 0 | hours | duration of the drug window |
 | `senescence/DRUG_KILL` | 0 | 1/hour | probability of clearance by the drug during the window |
+
+### Macrophage phenotype
+
+If `INF_POLARIZATION` is above 0, a macrophage switches phenotype each tick, following Chandrasegaran et al. (2025).
+When the mean INF over the cell is above `INF_POLARIZATION`, it is M1 and its secretion rate into each layer is set to `M1_RATE_[LAYER]`; otherwise it is M2 and the rates are set to `M2_RATE_[LAYER]`.
+The switch has no memory, and a layer missing from the setup reads as 0 INF (M2).
+The switch needs the `SECRETION` process, or the simulation fails when the cell is created.
+If `INF_POLARIZATION` is 0, the macrophage uses its `secretion/RATE_[LAYER]` rates.
+The phenotype is not saved; it can be recomputed from the saved INF layer at the macrophage locations.
+
+### Example: Macrophages that switch between MMP and PDGF
+
+_Specifies macrophages that secrete MMP at 100 per hour when mean INF is above 1 (M1), and PDGF at 100 per hour otherwise (M2)._
+
+```xml
+<population id="MAC" class="macrophage" init="20">
+    <population.process id="SECRETION" />
+    <population.parameter id="INF_POLARIZATION" value="1" />
+    <population.parameter id="M1_RATE_MMP" value="100" />
+    <population.parameter id="M2_RATE_PDGF" value="100" />
+</population>
+```
 
 ### Example: Fibroblasts that differentiate into myofibroblasts
 
