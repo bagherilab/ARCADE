@@ -12,9 +12,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static arcade.potts.integration.PottsWoundIntegrationTest.population;
 
 public class PottsOxygenSourceIntegrationTest {
-    // Domain size in voxels (ds = 3 um, so 300 x 60 um).
+    // Domain length in x [voxels] (300 um at ds = 3 um).
     private static final int LENGTH = 100;
 
+    // Domain width in y [voxels] (60 um at ds = 3 um).
     private static final int WIDTH = 20;
 
     // Blood O2 the source relaxes toward [mmHg].

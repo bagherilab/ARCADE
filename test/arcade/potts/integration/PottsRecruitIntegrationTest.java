@@ -14,14 +14,17 @@ import static arcade.potts.integration.PottsWoundIntegrationTest.cells;
 import static arcade.potts.integration.PottsWoundIntegrationTest.population;
 
 public class PottsRecruitIntegrationTest {
-    // Domain matches the half mask: 100 x 20 voxels at ds = 3 um, left half supplied.
+    // Domain length in x [voxels], matching the half mask (100 x 20 voxels at ds = 3 um, left
+    // half supplied).
     private static final int LENGTH = 100;
 
+    // Number of ticks run.
     private static final int TICKS = 4;
 
-    // Recruitment rate [cells/hour/mm^2] over 0.009 mm^2 supplied, 0.25 hour ticks.
+    // Recruitment rate [cells/hour/mm^2].
     private static final double RATE = 2000;
 
+    // Expected cells recruited: 0.009 mm^2 supplied, 0.25 hour ticks.
     private static final double EXPECTED = RATE * 0.009 * 0.25 * TICKS;
 
     static String setup(String name) {

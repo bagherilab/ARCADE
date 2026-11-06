@@ -21,11 +21,13 @@ public class PottsUptakeIntegrationTest {
     // Voxel size [um].
     private static final double DS = 2;
 
-    // Exchange rate [1/s], blood O2 [mmHg], and half-saturation [mmHg].
+    // Exchange rate toward blood O2 [1/s].
     private static final double P = 0.5;
 
+    // Blood O2 [mmHg].
     private static final double BLOOD = 60;
 
+    // Half-saturation of uptake [mmHg].
     private static final double K = 0.76;
 
     // Creates a setup with uptake cells and O2 supplied everywhere, solved to steady state.

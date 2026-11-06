@@ -19,11 +19,13 @@ import static arcade.potts.integration.PottsWoundIntegrationTest.run;
 import static arcade.potts.integration.PottsWoundIntegrationTest.setup;
 
 public class PottsInsertIntegrationTest {
-    // Population codes follow population order: TIS = 1, MAC = 2, MYO = 3.
+    // Population code of TIS (codes follow the order of populations in the setup).
     private static final int TIS = 1;
 
+    // Population code of MAC.
     private static final int MAC = 2;
 
+    // Population code of MYO.
     private static final int MYO = 3;
 
     // Number of ticks run.

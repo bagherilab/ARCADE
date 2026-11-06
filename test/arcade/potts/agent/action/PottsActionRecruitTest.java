@@ -24,11 +24,13 @@ import static arcade.potts.util.PottsEnums.Ordering;
 public class PottsActionRecruitTest {
     private static final double EPSILON = 1E-12;
 
-    // Grid size, voxel size [um], and tick length [hours].
+    // Lattice size in x and y [voxels].
     private static final int SIZE = 12;
 
+    // Voxel size [um].
     private static final double DS = 10;
 
+    // Tick length [hours].
     private static final double DT = 1;
 
     static MiniBox parameters(double rate, String signals, double k, double distance) {
