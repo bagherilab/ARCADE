@@ -6,12 +6,16 @@ import java.util.HashMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import arcade.core.ARCADE;
 import arcade.potts.env.component.PottsVesselNetwork;
 import arcade.potts.env.component.PottsVesselNode;
 import static org.junit.jupiter.api.Assertions.*;
 import static arcade.potts.env.component.PottsVesselNode.Root;
+import static arcade.potts.integration.PottsWoundIntegrationTest.cells;
 import static arcade.potts.integration.PottsWoundIntegrationTest.population;
 
 public class PottsVesselsIntegrationTest {
@@ -152,5 +156,94 @@ public class PottsVesselsIntegrationTest {
         double stub = rowMean(o2, 70, 90, 10);
         assertTrue(perfused > 10);
         assertTrue(stub < 0.2 * perfused);
+    }
+
+    // Recruitment rate from vessels [cells/hour/mm of vessel].
+    private static final double R_VESSEL = 150;
+
+    // Ticks run in the recruitment test.
+    private static final int RECRUIT_TICKS = 4;
+
+    // Expected cells recruited: 120 um of perfused vessel, 0.25 hour ticks.
+    private static final double EXPECTED = R_VESSEL * 0.120 * 0.25 * RECRUIT_TICKS;
+
+    // A setup with no initial cells, the vessel component, and recruitment from vessels.
+    static String recruitSetup(String name) {
+        String macrophages = population("MAC", "macrophage", 0, "");
+        String layer =
+                "<layer id=\"O2\"><layer.operation id=\"DIFFUSER\" />"
+                        + "<layer.parameter operation=\"diffuser\" id=\"DIFFUSIVITY\""
+                        + " value=\"2000\" />"
+                        + "<layer.parameter operation=\"diffuser\" id=\"STEADY\" value=\"1\" />"
+                        + "</layer>";
+        String component =
+                "<component id=\"VESSELS\" class=\"vessels\">"
+                        + "<component.register id=\"O2\" /></component>";
+        String action =
+                "<action id=\"RECRUIT\" class=\"recruit\">"
+                        + "<action.parameter id=\"SOURCE\" value=\"VESSELS\" />"
+                        + "<action.parameter id=\"R_VESSEL\" value=\""
+                        + R_VESSEL
+                        + "\" />"
+                        + "<action.register id=\"MAC\" /></action>";
+        return "<set><series name=\""
+                + name
+                + "\" ticks=\""
+                + RECRUIT_TICKS
+                + "\" interval=\"1\" start=\"0\" end=\"0\""
+                + " length=\""
+                + LENGTH
+                + "\" width=\""
+                + WIDTH
+                + "\" height=\"1\" ds=\"3\" dt=\"0.25\">"
+                + "<populations>"
+                + macrophages
+                + "</populations><layers>"
+                + layer
+                + "</layers><components>"
+                + component
+                + "</components><actions>"
+                + action
+                + "</actions></series></set>";
+    }
+
+    @Test
+    public void vessels_recruitFromVessels_recruitsOnlyNextToPerfusedVessel(@TempDir Path dir)
+            throws Exception {
+        Files.writeString(dir.resolve("init_0000_000000.VESSELS.json"), network().toJson());
+        HashMap<String, double[][][]> layers = new HashMap<>();
+        layers.put("O2", new double[1][LENGTH][WIDTH]);
+        Files.writeString(dir.resolve("init_0000_000000.LAYERS.json"), new Gson().toJson(layers));
+
+        Path file = dir.resolve("recruit.xml");
+        Files.writeString(file, recruitSetup("recruit"));
+        ARCADE.main(
+                new String[] {
+                    "potts",
+                    file.toString(),
+                    dir.toAbsolutePath() + "/",
+                    "--loadpath",
+                    dir.toAbsolutePath() + "/init_[#]_000000",
+                    "--loadlayers"
+                });
+        String prefix = dir.toAbsolutePath() + "/recruit_0000_";
+
+        int n = cells(prefix, RECRUIT_TICKS).size();
+        assertTrue(n > 0);
+        assertEquals(EXPECTED, n, 4 * Math.sqrt(EXPECTED));
+
+        // Cells start within D_RECRUIT (10 um, 3 voxels) of the perfused vessel (voxels 10-49 in
+        // x, row 10) and have grown only a few voxels since. None start by the stub (x >= 70).
+        String json =
+                Files.readString(
+                        Path.of(prefix + String.format("%06d.LOCATIONS.json", RECRUIT_TICKS)));
+        JsonArray locations = JsonParser.parseString(json).getAsJsonArray();
+        for (JsonElement element : locations) {
+            JsonArray center = element.getAsJsonObject().getAsJsonArray("center");
+            int x = center.get(0).getAsInt();
+            int y = center.get(1).getAsInt();
+            assertTrue(x >= 10 - 8 && x < 50 + 8, "center x = " + x);
+            assertTrue(Math.abs(y - 10) <= 8, "center y = " + y);
+        }
     }
 }
