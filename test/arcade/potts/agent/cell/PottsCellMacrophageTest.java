@@ -138,4 +138,14 @@ public class PottsCellMacrophageTest {
         f.box.put("M1_RATE_MMP", 5.0);
         assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
     }
+
+    @Test
+    public void step_quiescentBasalDeath_becomesApoptotic() {
+        f.box.put("BASAL_DEATH", 0.5);
+        PottsCellMacrophage cell = make(State.QUIESCENT);
+        sim.engine.SimState simstate = f.sim;
+        simstate.random = f.random;
+        cell.step(simstate);
+        assertEquals(State.APOPTOTIC, cell.getState());
+    }
 }

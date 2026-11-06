@@ -138,6 +138,8 @@ The rules read the mean `PDGF`, `ECM`, and `INF` layer values over the cell; a l
 | `macrophage` | Does not proliferate. Senescent cells that touch a macrophage may be cleared. If `INF_POLARIZATION` is above 0, switches each tick between M1 (INF above the threshold) and M2 secretion rates. |
 | `tissue` | Proliferates into free space next to the cell when the mean ECM over that space is at least `ECM_PROLIFERATION`. Becomes senescent spontaneously or through the bystander routes. |
 
+Wound healing cells are quiescent, proliferative, senescent, or apoptotic; any other state (for example, in a loaded cells file) causes an error.
+A quiescent cell becomes apoptotic with probability `BASAL_DEATH` each tick, before the class rules apply. Proliferative cells die through `proliferation/BASAL_APOPTOSIS_RATE`, and senescent cells only through clearance.
 A quiescent cell becomes proliferative when it can proliferate.
 A proliferative cell returns to quiescent if it can no longer proliferate during G1; after G1, it is committed to dividing.
 Fibroblasts and myofibroblasts need PDGF above `PDGF_PROLIFERATION` to start proliferating, and at least half of it to continue.
@@ -158,6 +160,7 @@ Wound healing populations do not support regions; a `population.region` tag caus
 | `BYSTANDER_PARACRINE` | 0 | 1/hour | probability of senescence when INF is above `INF_BYSTANDER` |
 | `INF_BYSTANDER` | 1000 | concentration | threshold on INF for paracrine senescence |
 | `O2_PROLIF_MIN` | 0 | mmHg | minimum mean O2 over the cell to proliferate; 0 disables the O2 gate |
+| `BASAL_DEATH` | 0 | 1/hour | probability that a quiescent cell becomes apoptotic (fibroblast and macrophage turnover) |
 | `INF_POLARIZATION` | 0 | concentration | macrophages only: threshold on mean INF for the M1 phenotype; 0 disables the switch |
 | `M1_RATE_[LAYER]` | 0 | amount/hour | macrophages only: secretion rate into the layer in the M1 phenotype |
 | `M2_RATE_[LAYER]` | 0 | amount/hour | macrophages only: secretion rate into the layer in the M2 phenotype |

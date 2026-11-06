@@ -13,8 +13,6 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModuleApoptosis;
-import arcade.potts.agent.module.PottsModuleAutosis;
-import arcade.potts.agent.module.PottsModuleNecrosis;
 import arcade.potts.agent.module.PottsModuleProliferationWoundHealing;
 import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.agent.module.PottsModuleSenescence;
@@ -150,15 +148,14 @@ public class PottsCellWoundHealingTest {
 
         cell.setState(State.APOPTOTIC);
         assertTrue(cell.getModule() instanceof PottsModuleApoptosis);
+    }
 
-        cell.setState(State.NECROTIC);
-        assertTrue(cell.getModule() instanceof PottsModuleNecrosis);
-
-        cell.setState(State.AUTOTIC);
-        assertTrue(cell.getModule() instanceof PottsModuleAutosis);
-
-        cell.setState(State.UNDEFINED);
-        assertNull(cell.getModule());
+    @Test
+    public void setState_unsupportedState_throws() {
+        WoundHealingCell cell = make(State.QUIESCENT);
+        for (State state : new State[] {State.NECROTIC, State.AUTOTIC, State.UNDEFINED}) {
+            assertThrows(IllegalArgumentException.class, () -> cell.setState(state));
+        }
     }
 
     @Test
@@ -388,6 +385,78 @@ public class PottsCellWoundHealingTest {
     @Test
     public void constructor_negativeOxygenMinimum_throws() {
         f.box.put("O2_PROLIF_MIN", -1.0);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
+
+    @Test
+    public void step_quiescentBasalDeath_becomesApoptoticAndSkipsRules() {
+        f.box.put("BASAL_DEATH", 0.5);
+        WoundHealingCell cell = make(State.QUIESCENT);
+        cell.step(simstate());
+        assertEquals(State.APOPTOTIC, cell.getState());
+        assertTrue(cell.module instanceof PottsModuleApoptosis);
+        assertEquals(0, cell.rulesCalls);
+    }
+
+    @Test
+    public void step_quiescentDrawAboveBasalDeath_appliesRules() {
+        f.box.put("BASAL_DEATH", 0.5);
+        doReturn(0.6).when(f.random).nextDouble();
+        WoundHealingCell cell = make(State.QUIESCENT);
+        cell.module = mock(Module.class);
+        cell.step(simstate());
+        assertEquals(State.QUIESCENT, cell.getState());
+        assertEquals(1, cell.rulesCalls);
+    }
+
+    @Test
+    public void step_zeroBasalDeath_makesNoDraw() {
+        WoundHealingCell cell = make(State.QUIESCENT);
+        cell.module = mock(Module.class);
+        cell.step(simstate());
+        assertEquals(State.QUIESCENT, cell.getState());
+        verify(f.random, never()).nextDouble();
+    }
+
+    @Test
+    public void step_proliferativeBasalDeath_doesNotDie() {
+        f.box.put("BASAL_DEATH", 1.0);
+        WoundHealingCell cell = make(State.PROLIFERATIVE);
+        cell.module = mock(Module.class);
+        cell.step(simstate());
+        assertEquals(State.PROLIFERATIVE, cell.getState());
+        assertEquals(1, cell.rulesCalls);
+    }
+
+    @Test
+    public void step_senescentBasalDeath_doesNotDie() {
+        f.box.put("BASAL_DEATH", 1.0);
+        WoundHealingCell cell = make(State.SENESCENT);
+        cell.module = mock(Module.class);
+        cell.step(simstate());
+        assertEquals(State.SENESCENT, cell.getState());
+    }
+
+    @Test
+    public void checkBasalDeath_manyDraws_matchesProbability() {
+        // Binomial check: 10000 draws at p = 0.1 has sd = 30, so allow 4 sd = 120.
+        double p = 0.1;
+        int draws = 10000;
+        f.box.put("BASAL_DEATH", p);
+        WoundHealingCell cell = make(State.QUIESCENT);
+        MersenneTwisterFast random = new MersenneTwisterFast(1234);
+        int deaths = 0;
+        for (int i = 0; i < draws; i++) {
+            if (cell.checkBasalDeath(random)) {
+                deaths++;
+            }
+        }
+        assertEquals(p * draws, deaths, 4 * Math.sqrt(draws * p * (1 - p)));
+    }
+
+    @Test
+    public void constructor_negativeBasalDeath_throws() {
+        f.box.put("BASAL_DEATH", -0.1);
         assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
     }
 }

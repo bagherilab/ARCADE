@@ -25,11 +25,11 @@ public class PottsInsertIntegrationTest {
     // Population code of MAC.
     private static final int MAC = 2;
 
-    // Population code of MYO.
-    private static final int MYO = 3;
+    // Population code of DYING (macrophages with certain basal death).
+    private static final int DYING = 3;
 
     // Number of ticks run.
-    private static final int TICKS = 4;
+    private static final int TICKS = 5;
 
     // Creates an insert action for a population at a tick.
     static String insert(String id, String pop, int tick, int number) {
@@ -47,18 +47,18 @@ public class PottsInsertIntegrationTest {
                 + "\" /></action>";
     }
 
-    // Runs 2 initial tissue cells, inserting 3 MAC at tick 1 and 1 MYO at tick 2.
-    // The MYO has INF_APOPTOSIS below zero, so it becomes apoptotic on its first step.
+    // Runs 2 initial tissue cells, inserting 3 MAC at tick 1 and 1 DYING macrophage at tick 2.
+    // DYING has BASAL_DEATH 400 per hour (100 per tick), so it becomes apoptotic on its first step.
     static String runInsert(Path dir) throws Exception {
         String populations =
                 population("TIS", "tissue", 2, "")
                         + population("MAC", "macrophage", 0, "")
                         + population(
-                                "MYO",
-                                "myofibroblast",
+                                "DYING",
+                                "macrophage",
                                 0,
-                                "<population.parameter id=\"INF_APOPTOSIS\" value=\"-1\" />");
-        String actions = insert("INSERT_MAC", "MAC", 1, 3) + insert("INSERT_MYO", "MYO", 2, 1);
+                                "<population.parameter id=\"BASAL_DEATH\" value=\"400\" />");
+        String actions = insert("INSERT_MAC", "MAC", 1, 3) + insert("INSERT_DYING", "DYING", 2, 1);
         return run(dir, "insert", setup("insert", TICKS, populations, actions));
     }
 
@@ -90,8 +90,8 @@ public class PottsInsertIntegrationTest {
 
         assertEquals(0, ofPop(prefix, 1, MAC).size());
         assertEquals(3, ofPop(prefix, 2, MAC).size());
-        assertEquals(0, ofPop(prefix, 2, MYO).size());
-        assertEquals(1, ofPop(prefix, 3, MYO).size());
+        assertEquals(0, ofPop(prefix, 2, DYING).size());
+        assertEquals(1, ofPop(prefix, 3, DYING).size());
 
         int maxTissueId = 0;
         for (JsonObject cell : ofPop(prefix, 0, TIS)) {
@@ -151,17 +151,22 @@ public class PottsInsertIntegrationTest {
         }
     }
 
-    // TODO (M4.7): switch to an inserted macrophage once MACROPHAGE_DEATH exists.
     @Test
-    public void insert_myofibroblastBelowInfThreshold_becomesApoptotic(@TempDir Path dir)
+    public void insert_macrophageWithBasalDeath_becomesApoptotic(@TempDir Path dir)
             throws Exception {
         String prefix = runInsert(dir);
 
-        List<JsonObject> inserted = ofPop(prefix, 3, MYO);
+        // New cells start PROLIFERATIVE (G1). On its first step (tick 3) the macrophage cannot
+        // proliferate and becomes QUIESCENT; on its second step (tick 4) basal death applies.
+        List<JsonObject> inserted = ofPop(prefix, 3, DYING);
         assertEquals(1, inserted.size());
-        assertNotEquals("APOPTOTIC", inserted.get(0).get("state").getAsString());
+        assertEquals("PROLIFERATIVE", inserted.get(0).get("state").getAsString());
 
-        List<JsonObject> stepped = ofPop(prefix, 4, MYO);
+        List<JsonObject> quiescent = ofPop(prefix, 4, DYING);
+        assertEquals(1, quiescent.size());
+        assertEquals("QUIESCENT", quiescent.get(0).get("state").getAsString());
+
+        List<JsonObject> stepped = ofPop(prefix, 5, DYING);
         assertEquals(1, stepped.size());
         assertEquals("APOPTOTIC", stepped.get(0).get("state").getAsString());
     }

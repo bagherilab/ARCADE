@@ -15,8 +15,6 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModuleApoptosisSimple;
-import arcade.potts.agent.module.PottsModuleAutosis;
-import arcade.potts.agent.module.PottsModuleNecrosis;
 import arcade.potts.agent.module.PottsModuleProliferationWoundHealing;
 import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.agent.module.PottsModuleSenescence;
@@ -37,6 +35,10 @@ import static arcade.potts.util.PottsEnums.State;
  * <p>Wound healing cells enter the proliferative state when {@link #canProliferate(Simulation)} is
  * true. Proliferative cells return to the quiescent state if it becomes false during G1 (see {@link
  * PottsModuleProliferationWoundHealing}). Senescent cells use {@link PottsModuleSenescence}.
+ *
+ * <p>Quiescent cells die (become apoptotic) with probability {@code BASAL_DEATH} each tick, before
+ * the rules are applied. Proliferative cells die through the basal apoptosis of the proliferation
+ * module, and senescent cells through clearance.
  *
  * <p>If {@code O2_PROLIF_MIN} is above 0, cells cannot enter or remain in the proliferative state
  * when the mean O2 over the cell is below it.
@@ -69,6 +71,9 @@ public abstract class PottsCellWoundHealing extends PottsCell {
     /** Minimum mean O2 for proliferation [mmHg], or 0 for no O2 gate. */
     final double o2ProlifMin;
 
+    /** Probability of basal death for quiescent cells (per tick). */
+    final double basalDeath;
+
     /** Boundary voxels for the current step, or {@code null} if not yet computed. */
     private List<Voxel> boundaryVoxels;
 
@@ -84,6 +89,7 @@ public abstract class PottsCellWoundHealing extends PottsCell {
      *   <li>{@code BYSTANDER_PARACRINE} = probability of senescence when INF is above threshold
      *   <li>{@code INF_BYSTANDER} = threshold on mean INF for paracrine senescence
      *   <li>{@code O2_PROLIF_MIN} = minimum mean O2 for proliferation (0 for no O2 gate)
+     *   <li>{@code BASAL_DEATH} = probability of basal death for quiescent cells
      * </ul>
      *
      * @param container the cell container
@@ -103,6 +109,10 @@ public abstract class PottsCellWoundHealing extends PottsCell {
         if (!(o2ProlifMin >= 0)) {
             throw new IllegalArgumentException("O2_PROLIF_MIN must be >= 0");
         }
+        basalDeath = parameters.getDouble("BASAL_DEATH");
+        if (!(basalDeath >= 0)) {
+            throw new IllegalArgumentException("BASAL_DEATH must be >= 0");
+        }
     }
 
     /**
@@ -112,6 +122,22 @@ public abstract class PottsCellWoundHealing extends PottsCell {
      * @return {@code true} if the cell can proliferate, {@code false} otherwise
      */
     public abstract boolean canProliferate(Simulation sim);
+
+    /**
+     * Checks for basal death, and makes the cell apoptotic if it dies.
+     *
+     * <p>A random draw is only made if {@code BASAL_DEATH} is above 0.
+     *
+     * @param random the random number generator
+     * @return {@code true} if the cell dies, {@code false} otherwise
+     */
+    boolean checkBasalDeath(MersenneTwisterFast random) {
+        if (basalDeath > 0 && random.nextDouble() < basalDeath) {
+            setState(State.APOPTOTIC);
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Checks if the mean O2 over the cell is high enough for proliferation.
@@ -152,8 +178,14 @@ public abstract class PottsCellWoundHealing extends PottsCell {
         // Increase age of cell.
         age++;
 
-        // Apply rules for the cell type to quiescent and proliferative cells.
+        // Check basal death for quiescent cells. Proliferative cells die through the proliferation
+        // module's basal apoptosis, and senescent cells through clearance.
         State state = (State) getState();
+        if (state == State.QUIESCENT && checkBasalDeath(simstate.random)) {
+            state = State.APOPTOTIC;
+        }
+
+        // Apply rules for the cell type to quiescent and proliferative cells.
         if (state == State.QUIESCENT || state == State.PROLIFERATIVE) {
             if (!stepRules(simstate.random, sim)) {
                 return;
@@ -206,16 +238,9 @@ public abstract class PottsCellWoundHealing extends PottsCell {
             case APOPTOTIC:
                 module = new PottsModuleApoptosisSimple(this);
                 break;
-            case NECROTIC:
-                module = new PottsModuleNecrosis(this);
-                break;
-            case AUTOTIC:
-                module = new PottsModuleAutosis(this);
-                break;
             default:
-                // State must be one of the above cases.
-                module = null;
-                break;
+                throw new IllegalArgumentException(
+                        "wound healing cells do not support state [ " + newState + " ]");
         }
     }
 
