@@ -178,6 +178,19 @@ public class PottsComponentVessels implements Component {
     }
 
     /**
+     * Gets the first registered layer, which sets the lattice size, voxel size, and tick length.
+     *
+     * @param sim the simulation instance
+     * @return the lattice
+     */
+    public PottsLattice getReferenceLattice(Simulation sim) {
+        if (layers.isEmpty()) {
+            throw new IllegalStateException("vessel component has no registered layer");
+        }
+        return getLayer(sim, layers.get(0));
+    }
+
+    /**
      * Gets the recruitment site weights.
      *
      * @param sim the simulation instance

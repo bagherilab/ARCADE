@@ -7,9 +7,11 @@ import sim.engine.SimState;
 import sim.util.distribution.Poisson;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.action.Action;
+import arcade.core.env.component.Component;
 import arcade.core.env.lattice.Lattice;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
+import arcade.potts.env.component.PottsComponentVessels;
 import arcade.potts.env.lattice.PottsLattice;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.PottsSimulation;
@@ -17,22 +19,47 @@ import static arcade.potts.util.PottsEnums.Category;
 import static arcade.potts.util.PottsEnums.Ordering;
 
 /**
- * Implementation of {@link Action} for recruiting cell agents from implicit vasculature.
+ * Implementation of {@link Action} for recruiting cell agents from vasculature.
  *
- * <p>Each tick, cells of each registered population are recruited from supplied sites, the voxels
- * with a positive value m in the supply mask layer (the same mask as the oxygen source). The
- * expected number per tick is the sum over sites of {@code R_BASE} m f dA dt, where dA is the voxel
- * area and f = S / ({@code K_RECRUIT} + S) for the summed value S of the {@code SIGNALS} layers at
- * the site (f = 1 if there are no signal layers). The number is drawn from a Poisson distribution,
- * and sites are chosen in proportion to their rates. Each new cell is inserted on one free voxel
- * within {@code D_RECRUIT} of its site, chosen at random. If there is no free voxel, or the
- * insertion is rejected, the attempt is counted as a failure.
+ * <p>Each tick, cells of each registered population are recruited from sites, which come from one
+ * of two sources set by {@code SOURCE}:
  *
- * <p>The mask is read once, on the first step, and must have no operations.
+ * <ul>
+ *   <li>{@code MASK} (implicit vasculature, V0): the voxels with a positive value m in the supply
+ *       mask layer (the same mask as the oxygen source), each with rate {@code R_BASE} m dA, where
+ *       dA is the voxel area. The mask is read once, on the first step, and must have no
+ *       operations.
+ *   <li>{@code VESSELS} (vessel network, V1): the recruitment sites of the vessel component named
+ *       by {@code VESSELS}, each with rate {@code R_VESSEL} w, where w is the integrity times the
+ *       perfused vessel length near the slice. Sites are re-read when the component recomputes
+ *       them.
+ * </ul>
+ *
+ * <p>Each site rate is multiplied by f = S / ({@code K_RECRUIT} + S) for the summed value S of the
+ * {@code SIGNALS} layers at the site (f = 1 if there are no signal layers) and by the tick length.
+ * The number recruited per tick is drawn from a Poisson distribution with the summed rate, and
+ * sites are chosen in proportion to their rates. Each new cell is inserted on one free voxel within
+ * {@code D_RECRUIT} of its site, chosen at random. If there is no free voxel, or the insertion is
+ * rejected, the attempt is counted as a failure.
  */
 public class PottsActionRecruit implements Action {
-    /** Recruitment rate at full supply and signal [cells/hour/mm^2]. */
+    /** Sources of recruitment sites. */
+    public enum Source {
+        /** Sites from the supply mask layer (implicit vasculature). */
+        MASK,
+
+        /** Sites from a vessel component. */
+        VESSELS
+    }
+
+    /** Source of recruitment sites. */
+    private final Source source;
+
+    /** Recruitment rate at full signal [cells/hour/mm^2 for MASK, cells/hour/mm for VESSELS]. */
     private final double rate;
+
+    /** Id of the vessel component. */
+    private final String vessels;
 
     /** Ids of the signal layers. */
     private final List<String> signals;
@@ -49,14 +76,17 @@ public class PottsActionRecruit implements Action {
     /** Codes of the registered populations. */
     private final ArrayList<Integer> pops = new ArrayList<>();
 
-    /** Supplied sites, read on the first step. */
+    /** Recruitment sites. */
     private List<Voxel> sites;
 
-    /** Mask values of the supplied sites. */
-    private double[] siteMask;
+    /** Weight of each site [mm^2 of supplied tissue for MASK, mm of vessel for VESSELS]. */
+    private double[] siteWeight;
 
-    /** Voxel area [mm^2]. */
-    private double area;
+    /** Vessel site weights the sites were read from, to detect when they change. */
+    private double[][] vesselSource;
+
+    /** Voxel size [um]. */
+    private double ds;
 
     /** Tick length [hours]. */
     private double tick;
@@ -73,7 +103,12 @@ public class PottsActionRecruit implements Action {
      * <p>Loaded parameters include:
      *
      * <ul>
-     *   <li>{@code R_BASE} = recruitment rate at full supply and signal [cells/hour/mm^2]
+     *   <li>{@code SOURCE} = source of sites, {@code MASK} or {@code VESSELS}
+     *   <li>{@code R_BASE} = recruitment rate from the mask at full supply and signal
+     *       [cells/hour/mm^2]
+     *   <li>{@code R_VESSEL} = recruitment rate from vessels at full integrity and signal
+     *       [cells/hour/mm of vessel]
+     *   <li>{@code VESSELS} = id of the vessel component
      *   <li>{@code SIGNALS} = comma-separated ids of signal layers, or {@code NONE}
      *   <li>{@code K_RECRUIT} = half-saturation of the summed signal [layer units]
      *   <li>{@code D_RECRUIT} = distance from a site that cells are inserted within [um]
@@ -83,7 +118,13 @@ public class PottsActionRecruit implements Action {
      * @param parameters the action parameters dictionary
      */
     public PottsActionRecruit(MiniBox parameters) {
-        rate = parameters.getDouble("R_BASE");
+        String sourceName = parameters.get("SOURCE");
+        source = sourceName == null ? Source.MASK : Source.valueOf(sourceName.toUpperCase());
+        rate =
+                source == Source.MASK
+                        ? parameters.getDouble("R_BASE")
+                        : parameters.getDouble("R_VESSEL");
+        vessels = parameters.get("VESSELS");
         halfSaturation = parameters.getDouble("K_RECRUIT");
         distance = parameters.getDouble("D_RECRUIT");
         mask = parameters.get("MASK");
@@ -99,7 +140,8 @@ public class PottsActionRecruit implements Action {
         }
 
         if (!(rate >= 0) || !(distance >= 0)) {
-            throw new IllegalArgumentException("recruit requires R_BASE >= 0 and D_RECRUIT >= 0");
+            throw new IllegalArgumentException(
+                    "recruit requires a rate (R_BASE or R_VESSEL) >= 0 and D_RECRUIT >= 0");
         }
         if (!signals.isEmpty() && !(halfSaturation > 0)) {
             throw new IllegalArgumentException("recruit with signals requires K_RECRUIT > 0");
@@ -122,7 +164,7 @@ public class PottsActionRecruit implements Action {
     }
 
     /**
-     * Reads the supplied sites from the mask layer.
+     * Reads the sites from the mask layer.
      *
      * @param sim the simulation instance
      */
@@ -139,12 +181,12 @@ public class PottsActionRecruit implements Action {
             }
         }
 
-        double ds = lattice.getDs();
-        area = ds * ds * 1E-6;
+        ds = lattice.getDs();
         tick = lattice.getDt();
+        double area = ds * ds * 1E-6;
 
         sites = new ArrayList<>();
-        ArrayList<Double> values = new ArrayList<>();
+        ArrayList<Double> weights = new ArrayList<>();
         double[][][] field = lattice.getField();
         for (int k = 0; k < field.length; k++) {
             for (int i = 0; i < field[k].length; i++) {
@@ -156,12 +198,56 @@ public class PottsActionRecruit implements Action {
                     }
                     if (value > 0) {
                         sites.add(new Voxel(i, j, k));
-                        values.add(value);
+                        weights.add(value * area);
                     }
                 }
             }
         }
-        siteMask = values.stream().mapToDouble(Double::doubleValue).toArray();
+        siteWeight = weights.stream().mapToDouble(Double::doubleValue).toArray();
+    }
+
+    /**
+     * Gets the vessel component.
+     *
+     * @param sim the simulation instance
+     * @return the vessel component
+     */
+    PottsComponentVessels getVessels(Simulation sim) {
+        Component component = sim.getComponent(vessels);
+        if (!(component instanceof PottsComponentVessels)) {
+            throw new IllegalStateException(
+                    "recruit vessel component [ " + vessels + " ] not found");
+        }
+        return (PottsComponentVessels) component;
+    }
+
+    /**
+     * Reads the sites from the vessel component, if they changed since last read.
+     *
+     * @param sim the simulation instance
+     */
+    void readVessels(Simulation sim) {
+        PottsComponentVessels component = getVessels(sim);
+        double[][] weights = component.getSiteWeights(sim);
+        if (weights == vesselSource) {
+            return;
+        }
+        PottsLattice lattice = component.getReferenceLattice(sim);
+        ds = lattice.getDs();
+        tick = lattice.getDt();
+
+        sites = new ArrayList<>();
+        ArrayList<Double> values = new ArrayList<>();
+        for (int i = 0; i < weights.length; i++) {
+            for (int j = 0; j < weights[i].length; j++) {
+                if (weights[i][j] > 0) {
+                    sites.add(new Voxel(i, j, 0));
+                    values.add(weights[i][j] * 1E-3);
+                }
+            }
+        }
+        siteWeight = values.stream().mapToDouble(Double::doubleValue).toArray();
+        vesselSource = weights;
     }
 
     /**
@@ -171,8 +257,12 @@ public class PottsActionRecruit implements Action {
      * @return the expected number of cells recruited from each site this tick
      */
     double[] siteRates(Simulation sim) {
-        if (sites == null) {
-            readMask(sim);
+        if (source == Source.MASK) {
+            if (sites == null) {
+                readMask(sim);
+            }
+        } else {
+            readVessels(sim);
         }
 
         double[][][][] signalFields = new double[signals.size()][][][];
@@ -197,7 +287,7 @@ public class PottsActionRecruit implements Action {
                 signal = Math.max(signal, 0);
                 f = signal / (halfSaturation + signal);
             }
-            rates[n] = rate * siteMask[n] * f * area * tick;
+            rates[n] = rate * siteWeight[n] * f * tick;
         }
         return rates;
     }
@@ -293,7 +383,6 @@ public class PottsActionRecruit implements Action {
             return;
         }
 
-        double ds = Math.sqrt(area * 1E6);
         int[][][] ids = sim.getPotts().ids;
         for (int pop : pops) {
             int number = new Poisson(total, sim.random).nextInt();

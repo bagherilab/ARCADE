@@ -157,7 +157,10 @@
     <action class="insert" id="INSERT_NUMBER" value="1" description="number of cells to insert for each registered population" />
 
     <!-- recruit action parameters -->
-    <action class="recruit" id="R_BASE" value="0" units="cells/hour/mm^2" description="recruitment rate at full supply (mask = 1) and saturating signal; 0 disables recruitment" />
+    <action class="recruit" id="SOURCE" value="MASK" description="source of recruitment sites: MASK (supply mask, V0) or VESSELS (vessel component, V1)" />
+    <action class="recruit" id="R_VESSEL" value="0" units="cells/hour/mm" description="recruitment rate per mm of perfused vessel near the slice at full integrity and saturating signal (SOURCE = VESSELS)" />
+    <action class="recruit" id="VESSELS" value="VESSELS" description="id of the vessel component (SOURCE = VESSELS)" />
+    <action class="recruit" id="R_BASE" value="0" units="cells/hour/mm^2" description="recruitment rate at full supply (mask = 1) and saturating signal (SOURCE = MASK); 0 disables recruitment" />
     <action class="recruit" id="SIGNALS" value="NONE" description="comma-separated ids of layers whose summed value drives recruitment, or NONE for a constant rate" />
     <action class="recruit" id="K_RECRUIT" value="1" units="(layer units)" description="half-saturation of the summed signal" />
     <action class="recruit" id="D_RECRUIT" value="10" units="um" description="distance from a supplied site that recruited cells are inserted within" />
