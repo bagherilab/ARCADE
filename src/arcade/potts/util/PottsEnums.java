@@ -92,7 +92,10 @@ public final class PottsEnums {
         SECRETION,
 
         /** Code for uptake domain. */
-        UPTAKE
+        UPTAKE,
+
+        /** Code for sensing domain. */
+        SENSING
     }
 
     /** Cell region codes for potts simulations. */

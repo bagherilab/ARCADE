@@ -73,6 +73,30 @@ _Specifies a population that secretes PDGF at 1000 per hour into the voxels arou
 <population.parameter process="secretion" id="REGION_ECM" value="INSIDE" />
 ```
 
+### Sensing process
+
+The `SENSING` process adds molecules to the environment based on the conditions the cell senses.
+The `HYPOXIC` version secretes VEGF when the cell is hypoxic.
+Each tick, a cell adds `VEGF_SECRETION_RATE` × dt × h(O2) to the `VEGF` layer, where O2 is the mean of the `O2` layer over the cell and h(O2) = K<sup>n</sup> / (K<sup>n</sup> + O2<sup>n</sup>) with K = `O2_HYPOXIA` and n = `HYPOXIA_HILL`.
+The amount is spread evenly over the voxels of the cell, and is added to the layer at the next lattice step.
+A positive rate requires both the `O2` and `VEGF` layers in the setup.
+Secretion that does not depend on O2 (for example, basal or SASP secretion of VEGF) uses the secretion process.
+
+| PARAMETER | DEFAULT | UNITS | DESCRIPTION |
+| --------- | ------- | ----- | ----------- |
+| `sensing/VEGF_SECRETION_RATE` | 0 | amount/hour | maximum rate of VEGF secretion |
+| `sensing/O2_HYPOXIA` | 12 | mmHg | O2 at which secretion is half maximal |
+| `sensing/HYPOXIA_HILL` | 4 | | Hill exponent (steepness) of the switch |
+
+### Example: Secreting VEGF when hypoxic
+
+_Specifies a population that secretes up to 100 VEGF per hour, half maximal at 12 mmHg O2._
+
+```xml
+<population.process id="SENSING" version="HYPOXIC" />
+<population.parameter process="sensing" id="VEGF_SECRETION_RATE" value="100" />
+```
+
 ## Wound healing cells
 
 The `fibroblast`, `myofibroblast`, `macrophage`, and `tissue` classes model wound healing.

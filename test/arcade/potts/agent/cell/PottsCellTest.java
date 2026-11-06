@@ -19,6 +19,7 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModule;
 import arcade.potts.agent.process.PottsProcessSecretion;
+import arcade.potts.agent.process.PottsProcessSensingHypoxic;
 import arcade.potts.agent.process.PottsProcessUptake;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.sim.PottsSimulation;
@@ -415,6 +416,27 @@ public class PottsCellTest {
         Parameters parameters = new Parameters(box, null, null);
         PottsCell cell = new PottsCellMock(containerWithoutRegions, locationMock, parameters);
         assertTrue(cell.getProcess(Domain.UPTAKE) instanceof PottsProcessUptake);
+    }
+
+    @Test
+    public void constructor_withHypoxicSensingProcess_makesProcess() {
+        MiniBox box = new MiniBox();
+        box.put("(PROCESS)" + TAG_SEPARATOR + "SENSING", "HYPOXIC");
+        box.put("sensing/VEGF_SECRETION_RATE", 1.0);
+        box.put("sensing/O2_HYPOXIA", 12.0);
+        box.put("sensing/HYPOXIA_HILL", 4.0);
+        Parameters parameters = new Parameters(box, null, null);
+        PottsCell cell = new PottsCellMock(containerWithoutRegions, locationMock, parameters);
+        assertTrue(cell.getProcess(Domain.SENSING) instanceof PottsProcessSensingHypoxic);
+    }
+
+    @Test
+    public void constructor_withUnknownSensingVersion_addsNoProcess() {
+        MiniBox box = new MiniBox();
+        box.put("(PROCESS)" + TAG_SEPARATOR + "SENSING", "OTHER");
+        Parameters parameters = new Parameters(box, null, null);
+        PottsCell cell = new PottsCellMock(containerWithoutRegions, locationMock, parameters);
+        assertNull(cell.getProcess(Domain.SENSING));
     }
 
     @Test

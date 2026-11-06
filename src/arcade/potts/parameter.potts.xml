@@ -117,6 +117,11 @@
     <!-- uptake process parameters (copied to RATE_[LAYER] for each layer) -->
     <population.process process="uptake" id="RATE" value="0" units="amount/s" description="maximum rate of uptake from each layer (amount = layer units x um^3); for O2 in mmHg, 20 amol/s / 1.31e-3 = 15270; requires a diffuser on the layer" />
 
+    <!-- sensing process parameters -->
+    <population.process process="sensing" id="VEGF_SECRETION_RATE" value="0" units="amount/hour" conversion="DT" description="maximum rate of VEGF secretion by hypoxic cells (version HYPOXIC)" />
+    <population.process process="sensing" id="O2_HYPOXIA" value="12" units="mmHg" description="mean O2 over the cell at which hypoxic VEGF secretion is half maximal; HIF-1 is half maximal at 1.5-2% O2 (11-15 mmHg) in HeLa cells (Jiang 1996)" />
+    <population.process process="sensing" id="HYPOXIA_HILL" value="4" units="unitless" description="Hill exponent (steepness) of hypoxic VEGF secretion; a calibration choice, not measured" />
+
     <!-- LAYERS ============================================================ -->
 
     <!-- default parameters for layers -->
