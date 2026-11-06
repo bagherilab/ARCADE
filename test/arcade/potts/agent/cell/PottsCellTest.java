@@ -18,6 +18,7 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModule;
+import arcade.potts.agent.process.PottsProcessDepositionECM;
 import arcade.potts.agent.process.PottsProcessSecretion;
 import arcade.potts.agent.process.PottsProcessSensingHypoxic;
 import arcade.potts.agent.process.PottsProcessUptake;
@@ -428,6 +429,18 @@ public class PottsCellTest {
         Parameters parameters = new Parameters(box, null, null);
         PottsCell cell = new PottsCellMock(containerWithoutRegions, locationMock, parameters);
         assertTrue(cell.getProcess(Domain.SENSING) instanceof PottsProcessSensingHypoxic);
+    }
+
+    @Test
+    public void constructor_withEcmDepositionProcess_makesProcess() {
+        MiniBox box = new MiniBox();
+        box.put("(PROCESS)" + TAG_SEPARATOR + "DEPOSITION", "ECM");
+        box.put("deposition/RATE", 1.0);
+        box.put("deposition/PDGF_THRESHOLD", 0.1);
+        box.put("deposition/K_O2", 0.0);
+        Parameters parameters = new Parameters(box, null, null);
+        PottsCell cell = new PottsCellMock(containerWithoutRegions, locationMock, parameters);
+        assertTrue(cell.getProcess(Domain.DEPOSITION) instanceof PottsProcessDepositionECM);
     }
 
     @Test

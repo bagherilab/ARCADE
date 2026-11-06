@@ -65,7 +65,7 @@ public final class PottsCellWoundHealingFixture {
         doReturn(potts).when(sim).getPotts();
         doReturn(grid).when(sim).getGrid();
 
-        for (String layer : new String[] {"PDGF", "ECM", "INF"}) {
+        for (String layer : new String[] {"PDGF", "ECM", "INF", "O2"}) {
             PottsLattice lattice = mock(PottsLattice.class);
             doAnswer(i -> means.getOrDefault(layer, 0.0)).when(lattice).getAverageValue(any());
             doReturn(ecm).when(lattice).getField();
@@ -92,6 +92,7 @@ public final class PottsCellWoundHealingFixture {
         box.put("BYSTANDER_CONTACT", 0);
         box.put("BYSTANDER_PARACRINE", 0);
         box.put("INF_BYSTANDER", 1000);
+        box.put("O2_PROLIF_MIN", 0);
         box.put("PDGF_PROLIFERATION", 0.2);
         box.put("PDGF_DIFFERENTIATION", 0.3);
         box.put("ECM_DIFFERENTIATION", 0.3);

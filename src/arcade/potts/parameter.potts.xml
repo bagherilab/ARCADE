@@ -58,6 +58,7 @@
     <population id="BYSTANDER_CONTACT" value="0" units="1/hour" conversion="DT" description="probability of senescence on contact with a senescent cell" />
     <population id="BYSTANDER_PARACRINE" value="0" units="1/hour" conversion="DT" description="probability of senescence when mean INF is above INF_BYSTANDER" />
     <population id="INF_BYSTANDER" value="1000" units="concentration" description="threshold on mean INF for paracrine senescence" />
+    <population id="O2_PROLIF_MIN" value="0" units="mmHg" description="minimum mean O2 over the cell for wound healing cells to enter or remain proliferative; 0 disables the O2 gate" />
     <population id="PDGF_PROLIFERATION" value="0.1" units="concentration" description="threshold on mean PDGF for fibroblast and myofibroblast proliferation" />
     <population id="PDGF_DIFFERENTIATION" value="0.1" units="concentration" description="threshold on mean PDGF for fibroblast differentiation" />
     <population id="ECM_DIFFERENTIATION" value="0.5" units="concentration" description="threshold on mean ECM for fibroblast differentiation" />
@@ -122,10 +123,16 @@
     <population.process process="sensing" id="O2_HYPOXIA" value="12" units="mmHg" description="mean O2 over the cell at which hypoxic VEGF secretion is half maximal; HIF-1 is half maximal at 1.5-2% O2 (11-15 mmHg) in HeLa cells (Jiang 1996)" />
     <population.process process="sensing" id="HYPOXIA_HILL" value="4" units="unitless" description="Hill exponent (steepness) of hypoxic VEGF secretion; a calibration choice, not measured" />
 
+    <!-- deposition process parameters (version ECM) -->
+    <population.process process="deposition" id="RATE" value="0" units="amount/hour" conversion="DT" description="rate of ECM deposition by quiescent and proliferative cells with mean PDGF above PDGF_THRESHOLD" />
+    <population.process process="deposition" id="PDGF_THRESHOLD" value="0" units="concentration" description="threshold on mean PDGF for ECM deposition (Chandrasegaran et al. 2025)" />
+    <population.process process="deposition" id="K_O2" value="0" units="mmHg" description="O2 at which ECM deposition is half maximal (collagen prolyl hydroxylation needs O2; ~25 mmHg inferred, to calibrate); 0 disables the O2 limit" />
+
     <!-- LAYERS ============================================================ -->
 
     <!-- default parameters for layers -->
     <layer id="INITIAL_CONCENTRATION" value="0" units="amount/um^3" description="initial layer concentration" />
+    <layer id="MAXIMUM" value="0" units="amount/um^3" description="physical ceiling on layer values, applied at the end of each lattice step (set well above healthy tissue for ECM); 0 disables the ceiling" />
 
     <!-- diffuser operation parameters -->
     <layer.operation operation="diffuser" id="DIFFUSIVITY" value="0" units="um^2/s" description="diffusivity of molecule" />

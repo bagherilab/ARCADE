@@ -94,4 +94,18 @@ public class PottsCellTissueTest {
         assertTrue(cell.stepRules(f.random, f.sim));
         assertEquals(State.SENESCENT, cell.getState());
     }
+
+    @Test
+    public void canProliferate_hypoxic_returnsFalse() {
+        f.box.put("O2_PROLIF_MIN", 2.0);
+        f.means.put("O2", 1.0);
+        assertFalse(make(State.QUIESCENT).canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_enoughOxygen_returnsTrue() {
+        f.box.put("O2_PROLIF_MIN", 2.0);
+        f.means.put("O2", 2.0);
+        assertTrue(make(State.QUIESCENT).canProliferate(f.sim));
+    }
 }

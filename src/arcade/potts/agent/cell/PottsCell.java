@@ -17,6 +17,7 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModule;
+import arcade.potts.agent.process.PottsProcessDeposition;
 import arcade.potts.agent.process.PottsProcessSecretion;
 import arcade.potts.agent.process.PottsProcessSensing;
 import arcade.potts.agent.process.PottsProcessUptake;
@@ -481,6 +482,8 @@ public abstract class PottsCell implements Cell {
                 return new PottsProcessUptake(this);
             case SENSING:
                 return PottsProcessSensing.make(this, version);
+            case DEPOSITION:
+                return PottsProcessDeposition.make(this, version);
             case UNDEFINED:
             default:
                 return null;

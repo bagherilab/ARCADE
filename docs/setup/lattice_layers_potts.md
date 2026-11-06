@@ -35,6 +35,21 @@ Values are concentrations (amount/µm³) and are shared by cells and empty space
 {% include_relative layers/initialization.md implementation=implementation %}
 {% include_relative layers/parameter.md implementation=implementation %}
 
+### Layer ceiling
+
+If the layer parameter `MAXIMUM` is above 0, every value above it is set to it at the end of each lattice step, after the diffuser and decayer.
+It is a physical ceiling (for example, how densely ECM can pack), not a setpoint: set it well above the values expected in healthy tissue, so it only acts in extreme cases such as fibrosis.
+
+| PARAMETER | DEFAULT | UNITS | DESCRIPTION |
+| --------- | ------- | ----- | ----------- |
+| `MAXIMUM` | 0 | amount/µm³ | ceiling on layer values; 0 disables the ceiling |
+
+```xml
+<layer id="ECM">
+    <layer.parameter id="MAXIMUM" value="10" />
+</layer>
+```
+
 ## Layer operations
 
 The `layer.operation` tag lists operations on the layer, stepped each tick after cells: diffuser, then decayer.

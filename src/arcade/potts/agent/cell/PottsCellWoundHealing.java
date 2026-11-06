@@ -38,6 +38,9 @@ import static arcade.potts.util.PottsEnums.State;
  * true. Proliferative cells return to the quiescent state if it becomes false during G1 (see {@link
  * PottsModuleProliferationWoundHealing}). Senescent cells use {@link PottsModuleSenescence}.
  *
+ * <p>If {@code O2_PROLIF_MIN} is above 0, cells cannot enter or remain in the proliferative state
+ * when the mean O2 over the cell is below it.
+ *
  * <p>Wound healing cells can become senescent through bystander routes: on contact with a senescent
  * cell ({@code BYSTANDER_CONTACT}) or when the mean INF over the cell is above {@code
  * INF_BYSTANDER} ({@code BYSTANDER_PARACRINE}).
@@ -63,6 +66,9 @@ public abstract class PottsCellWoundHealing extends PottsCell {
     /** Threshold on mean INF for paracrine senescence. */
     final double infBystander;
 
+    /** Minimum mean O2 for proliferation [mmHg], or 0 for no O2 gate. */
+    final double o2ProlifMin;
+
     /** Boundary voxels for the current step, or {@code null} if not yet computed. */
     private List<Voxel> boundaryVoxels;
 
@@ -77,6 +83,7 @@ public abstract class PottsCellWoundHealing extends PottsCell {
      *   <li>{@code BYSTANDER_CONTACT} = probability of senescence on contact with a senescent cell
      *   <li>{@code BYSTANDER_PARACRINE} = probability of senescence when INF is above threshold
      *   <li>{@code INF_BYSTANDER} = threshold on mean INF for paracrine senescence
+     *   <li>{@code O2_PROLIF_MIN} = minimum mean O2 for proliferation (0 for no O2 gate)
      * </ul>
      *
      * @param container the cell container
@@ -92,6 +99,10 @@ public abstract class PottsCellWoundHealing extends PottsCell {
         bystanderContact = parameters.getDouble("BYSTANDER_CONTACT");
         bystanderParacrine = parameters.getDouble("BYSTANDER_PARACRINE");
         infBystander = parameters.getDouble("INF_BYSTANDER");
+        o2ProlifMin = parameters.getDouble("O2_PROLIF_MIN");
+        if (!(o2ProlifMin >= 0)) {
+            throw new IllegalArgumentException("O2_PROLIF_MIN must be >= 0");
+        }
     }
 
     /**
@@ -101,6 +112,26 @@ public abstract class PottsCellWoundHealing extends PottsCell {
      * @return {@code true} if the cell can proliferate, {@code false} otherwise
      */
     public abstract boolean canProliferate(Simulation sim);
+
+    /**
+     * Checks if the mean O2 over the cell is high enough for proliferation.
+     *
+     * <p>Severe hypoxia blocks proliferation; there is no O2 multiplier on the cell cycle, since
+     * low O2 can stimulate dermal fibroblast proliferation (Falanga et al. 1993).
+     *
+     * @param sim the simulation instance
+     * @return {@code true} if there is no O2 gate or mean O2 is at least {@code O2_PROLIF_MIN}
+     */
+    boolean hasOxygenToProliferate(Simulation sim) {
+        if (o2ProlifMin <= 0) {
+            return true;
+        }
+        Lattice o2 = sim.getLattice("O2");
+        if (o2 == null) {
+            throw new IllegalStateException("O2_PROLIF_MIN requires layer [ O2 ]");
+        }
+        return o2.getAverageValue(getLocation()) >= o2ProlifMin;
+    }
 
     /**
      * Applies the rules for the cell type.

@@ -356,4 +356,38 @@ public class PottsCellWoundHealingTest {
     public void isContactInhibited_zeroThreshold_returnsFalse() {
         assertFalse(make(State.QUIESCENT).isContactInhibited(0));
     }
+
+    @Test
+    public void hasOxygenToProliferate_noGate_returnsTrueWithoutOxygenLayer() {
+        doReturn(null).when(f.sim).getLattice("O2");
+        assertTrue(make(State.QUIESCENT).hasOxygenToProliferate(f.sim));
+    }
+
+    @Test
+    public void hasOxygenToProliferate_oxygenAtMinimum_returnsTrue() {
+        f.box.put("O2_PROLIF_MIN", 2.0);
+        f.means.put("O2", 2.0);
+        assertTrue(make(State.QUIESCENT).hasOxygenToProliferate(f.sim));
+    }
+
+    @Test
+    public void hasOxygenToProliferate_oxygenBelowMinimum_returnsFalse() {
+        f.box.put("O2_PROLIF_MIN", 2.0);
+        f.means.put("O2", 1.9);
+        assertFalse(make(State.QUIESCENT).hasOxygenToProliferate(f.sim));
+    }
+
+    @Test
+    public void hasOxygenToProliferate_gateWithoutOxygenLayer_throws() {
+        f.box.put("O2_PROLIF_MIN", 2.0);
+        doReturn(null).when(f.sim).getLattice("O2");
+        WoundHealingCell cell = make(State.QUIESCENT);
+        assertThrows(IllegalStateException.class, () -> cell.hasOxygenToProliferate(f.sim));
+    }
+
+    @Test
+    public void constructor_negativeOxygenMinimum_throws() {
+        f.box.put("O2_PROLIF_MIN", -1.0);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
 }

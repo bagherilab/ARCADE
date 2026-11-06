@@ -88,6 +88,34 @@ Secretion that does not depend on O2 (for example, basal or SASP secretion of VE
 | `sensing/O2_HYPOXIA` | 12 | mmHg | O2 at which secretion is half maximal |
 | `sensing/HYPOXIA_HILL` | 4 | | Hill exponent (steepness) of the switch |
 
+### Deposition process
+
+The `DEPOSITION` process deposits matrix into the layer named by its version.
+The `ECM` version deposits into the `ECM` layer when the cell is activated by PDGF, following Chandrasegaran et al. (2025).
+Each tick, a quiescent or proliferative cell whose mean `PDGF` is above `PDGF_THRESHOLD` adds `RATE` × dt × f(O2) to the `ECM` layer, where f(O2) = O2 / (`K_O2` + O2) is the O2 limit on collagen maturation, using the mean of the `O2` layer over the cell.
+If `K_O2` is 0, deposition is not limited by O2 and no `O2` layer is needed.
+The amount is spread evenly over the voxels of the cell, and is added to the layer at the next lattice step.
+Senescent, apoptotic, necrotic, and autotic cells do not deposit through this process; ECM in the SASP uses the senescence secretion rates.
+The `PDGF` and `ECM` layers are required when `RATE` is above 0.
+Do not also set `secretion/RATE_ECM` for the same population unless both are intended, since both deposit.
+
+| PARAMETER | DEFAULT | UNITS | DESCRIPTION |
+| --------- | ------- | ----- | ----------- |
+| `deposition/RATE` | 0 | amount/hour | rate of ECM deposition |
+| `deposition/PDGF_THRESHOLD` | 0 | concentration | threshold on mean PDGF for deposition |
+| `deposition/K_O2` | 0 | mmHg | O2 at which deposition is half maximal; 0 disables the O2 limit |
+
+### Example: Depositing ECM when activated
+
+_Specifies a population that deposits 50 ECM per hour when PDGF is above 0.1, half maximal at 25 mmHg O2._
+
+```xml
+<population.process id="DEPOSITION" version="ECM" />
+<population.parameter process="deposition" id="RATE" value="50" />
+<population.parameter process="deposition" id="PDGF_THRESHOLD" value="0.1" />
+<population.parameter process="deposition" id="K_O2" value="25" />
+```
+
 ### Example: Secreting VEGF when hypoxic
 
 _Specifies a population that secretes up to 100 VEGF per hour, half maximal at 12 mmHg O2._
@@ -114,6 +142,7 @@ A quiescent cell becomes proliferative when it can proliferate.
 A proliferative cell returns to quiescent if it can no longer proliferate during G1; after G1, it is committed to dividing.
 Fibroblasts and myofibroblasts need PDGF above `PDGF_PROLIFERATION` to start proliferating, and at least half of it to continue.
 All classes except macrophages are blocked from proliferating when the free fraction of voxels around the cell is below `CONTACT_FREE_FRACTION`.
+If `O2_PROLIF_MIN` is above 0, they are also blocked when the mean of the `O2` layer over the cell is below it; the `O2` layer is then required.
 
 Differentiation replaces the fibroblast with a cell of the target population that has the same id, age, divisions, state, and location.
 The target must be a `myofibroblast` population, or the simulation fails at setup.
@@ -128,6 +157,7 @@ Wound healing populations do not support regions; a `population.region` tag caus
 | `BYSTANDER_CONTACT` | 0 | 1/hour | probability of senescence on contact with a senescent cell |
 | `BYSTANDER_PARACRINE` | 0 | 1/hour | probability of senescence when INF is above `INF_BYSTANDER` |
 | `INF_BYSTANDER` | 1000 | concentration | threshold on INF for paracrine senescence |
+| `O2_PROLIF_MIN` | 0 | mmHg | minimum mean O2 over the cell to proliferate; 0 disables the O2 gate |
 | `PDGF_PROLIFERATION` | 0.1 | concentration | threshold on PDGF for proliferation |
 | `PDGF_DIFFERENTIATION` | 0.1 | concentration | threshold on PDGF for differentiation |
 | `ECM_DIFFERENTIATION` | 0.5 | concentration | threshold on ECM for differentiation |

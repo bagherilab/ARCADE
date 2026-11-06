@@ -95,7 +95,10 @@ public final class PottsEnums {
         UPTAKE,
 
         /** Code for sensing domain. */
-        SENSING
+        SENSING,
+
+        /** Code for deposition domain. */
+        DEPOSITION
     }
 
     /** Cell region codes for potts simulations. */

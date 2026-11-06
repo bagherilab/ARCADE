@@ -42,7 +42,7 @@ public final class PottsCellTissue extends PottsCellWoundHealing {
     @Override
     public boolean canProliferate(Simulation sim) {
         double freeFraction = getFreeFraction(sim);
-        if (freeFraction == 0 || isContactInhibited(freeFraction)) {
+        if (freeFraction == 0 || isContactInhibited(freeFraction) || !hasOxygenToProliferate(sim)) {
             return false;
         }
         return ecmProliferation <= 0 || getFreeMean(sim, "ECM") >= ecmProliferation;

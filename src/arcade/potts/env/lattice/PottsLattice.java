@@ -37,6 +37,10 @@ import static arcade.potts.util.PottsEnums.Ordering;
  * <p>Operations listed in the layer parameters are created with the lattice and stepped at {@code
  * LATTICES}: diffuser, then decayer. The degrader, which reads another lattice, is stepped at
  * {@code LAST_LATTICE}, after all lattices have stepped.
+ *
+ * <p>If the layer parameter {@code MAXIMUM} is above 0, every value above it is set to it at the
+ * end of the lattice step, after the diffuser and decayer. This is a physical ceiling (for example,
+ * packing of ECM), not a setpoint; 0 means no ceiling.
  */
 public class PottsLattice implements Lattice {
     /** Array containing lattice values. */
@@ -76,6 +80,9 @@ public class PottsLattice implements Lattice {
     /** Lattice parameters. */
     final MiniBox parameters;
 
+    /** Ceiling on lattice values, or 0 for no ceiling. */
+    final double maximum;
+
     /** Map of operation categories and {@link Operation} instances. */
     final Map<Category, Operation> operations;
 
@@ -97,6 +104,10 @@ public class PottsLattice implements Lattice {
         this.ds = ds;
         this.dt = dt;
         this.parameters = parameters;
+        maximum = parameters.contains("MAXIMUM") ? parameters.getDouble("MAXIMUM") : 0;
+        if (!(maximum >= 0)) {
+            throw new IllegalArgumentException("layer MAXIMUM must be >= 0");
+        }
         field = new double[height][length][width];
         delta = new double[height][length][width];
         sink = new double[height][length][width];
@@ -383,7 +394,25 @@ public class PottsLattice implements Lattice {
             operations.get(Category.DECAYER).step(simstate.random, sim);
         }
 
+        // Cap values at the ceiling, if there is one.
+        if (maximum > 0) {
+            applyMaximum();
+        }
+
         // Clear uptake rates and exchanges, which were used by the diffuser.
         clearReactions();
+    }
+
+    /** Sets every field value above {@code MAXIMUM} to {@code MAXIMUM}. */
+    void applyMaximum() {
+        for (double[][] plane : field) {
+            for (double[] row : plane) {
+                for (int j = 0; j < row.length; j++) {
+                    if (row[j] > maximum) {
+                        row[j] = maximum;
+                    }
+                }
+            }
+        }
     }
 }

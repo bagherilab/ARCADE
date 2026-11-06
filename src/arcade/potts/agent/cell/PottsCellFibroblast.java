@@ -78,7 +78,7 @@ public final class PottsCellFibroblast extends PottsCellWoundHealing {
      * Checks if a fibroblast or myofibroblast can enter or remain in the proliferative state.
      *
      * <p>A quiescent cell needs mean PDGF above the threshold. A proliferative cell needs mean PDGF
-     * at least half of the threshold. Both need to not be contact inhibited.
+     * at least half of the threshold. Both need enough O2 and to not be contact inhibited.
      *
      * @param sim the simulation instance
      * @param cell the cell
@@ -89,7 +89,9 @@ public final class PottsCellFibroblast extends PottsCellWoundHealing {
         double pdgf = cell.getMean(sim, "PDGF");
         boolean enoughPdgf =
                 cell.getState() == State.PROLIFERATIVE ? pdgf >= threshold / 2 : pdgf > threshold;
-        return enoughPdgf && !cell.isContactInhibited(cell.getFreeFraction(sim));
+        return enoughPdgf
+                && cell.hasOxygenToProliferate(sim)
+                && !cell.isContactInhibited(cell.getFreeFraction(sim));
     }
 
     @Override

@@ -336,4 +336,53 @@ public class PottsLatticeTest {
         assertEquals(0, lattice.getExchange()[0][1][1], EPSILON);
         assertEquals(0, lattice.getExchangeTarget()[0][1][1], EPSILON);
     }
+
+    // Creates a lattice with no operations and the given ceiling.
+    static PottsLattice makeLatticeWithMaximum(double maximum) {
+        MiniBox parameters = new MiniBox();
+        parameters.put("MAXIMUM", maximum);
+        return new PottsLattice(3, 3, 1, 3.0, 1.0 / 60, parameters);
+    }
+
+    @Test
+    public void constructor_negativeMaximum_throws() {
+        assertThrows(IllegalArgumentException.class, () -> makeLatticeWithMaximum(-1));
+    }
+
+    @Test
+    public void step_withMaximum_capsValuesAboveMaximum() {
+        PottsLattice lattice = makeLatticeWithMaximum(5);
+        lattice.getField()[0][0][0] = 7;
+        lattice.addDelta(List.of(new Voxel(1, 1, 0)), 4.0);
+        lattice.getField()[0][1][1] = 3;
+
+        lattice.step(mock(PottsSimulation.class));
+
+        // 7 is capped; 3 + 4 = 7 from the delta is capped; untouched voxels stay at 0.
+        assertEquals(5, lattice.getField()[0][0][0], EPSILON);
+        assertEquals(5, lattice.getField()[0][1][1], EPSILON);
+        assertEquals(0, lattice.getField()[0][2][2], EPSILON);
+    }
+
+    @Test
+    public void step_withMaximum_leavesValuesBelowMaximum() {
+        PottsLattice lattice = makeLatticeWithMaximum(5);
+        lattice.getField()[0][0][0] = 4.5;
+        lattice.getField()[0][1][1] = 5;
+
+        lattice.step(mock(PottsSimulation.class));
+
+        assertEquals(4.5, lattice.getField()[0][0][0], EPSILON);
+        assertEquals(5, lattice.getField()[0][1][1], EPSILON);
+    }
+
+    @Test
+    public void step_zeroMaximum_doesNotCap() {
+        PottsLattice lattice = makeLatticeWithMaximum(0);
+        lattice.getField()[0][0][0] = 1E9;
+
+        lattice.step(mock(PottsSimulation.class));
+
+        assertEquals(1E9, lattice.getField()[0][0][0], EPSILON);
+    }
 }
