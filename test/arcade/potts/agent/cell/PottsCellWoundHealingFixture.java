@@ -39,6 +39,9 @@ public final class PottsCellWoundHealingFixture {
     /** ECM field. */
     public final double[][][] ecm = new double[1][5][5];
 
+    /** WOUND_MATRIX field (every other layer returns the ECM field). */
+    public final double[][][] woundMatrix = new double[1][5][5];
+
     /** Mocked location of the cell. */
     public final PottsLocation location = mock(PottsLocation.class);
 
@@ -70,7 +73,7 @@ public final class PottsCellWoundHealingFixture {
                 new String[] {"GF", "ECM", "INF", "O2", "INJURY_SIGNAL", "WOUND_MATRIX"}) {
             PottsLattice lattice = mock(PottsLattice.class);
             doAnswer(i -> means.getOrDefault(layer, 0.0)).when(lattice).getAverageValue(any());
-            doReturn(ecm).when(lattice).getField();
+            doReturn(layer.equals("WOUND_MATRIX") ? woundMatrix : ecm).when(lattice).getField();
             doReturn(lattice).when(sim).getLattice(layer);
         }
 
@@ -90,6 +93,8 @@ public final class PottsCellWoundHealingFixture {
     public static MiniBox defaults() {
         MiniBox box = new MiniBox();
         box.put("CONTACT_FREE_FRACTION", 0);
+        box.put("CONTACT_ECM_MAX", 0);
+        box.put("CONTACT_MATRIX_MIN", 0);
         box.put("SPONTANEOUS_SENESCENCE", 0);
         box.put("BYSTANDER_CONTACT", 0);
         box.put("BYSTANDER_PARACRINE", 0);

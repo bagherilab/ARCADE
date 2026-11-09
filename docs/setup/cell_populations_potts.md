@@ -146,6 +146,7 @@ A quiescent cell becomes proliferative when it can proliferate.
 A proliferative cell returns to quiescent if it can no longer proliferate during G1; after G1, it is committed to dividing.
 Fibroblasts and myofibroblasts need GF above `GF_PROLIFERATION` to start proliferating, and at least half of it to continue.
 All classes except macrophages are blocked from proliferating when the free fraction of voxels around the cell is below `CONTACT_FREE_FRACTION`.
+An empty voxel counts as free only if its matrix is in range: ECM below `CONTACT_ECM_MAX` (dense collagen leaves no room to grow) and ECM + `WOUND_MATRIX` at least `CONTACT_MATRIX_MIN` (the cell needs matrix to attach to). Each limit is off at 0. Missing layers read 0.
 If `O2_PROLIF_MIN` is above 0, they are also blocked when the mean of the `O2` layer over the cell is below it; the `O2` layer is then required.
 
 Differentiation replaces the fibroblast with a cell of the target population that has the same id, age, divisions, state, and location.
@@ -157,6 +158,8 @@ Wound healing populations do not support regions; a `population.region` tag caus
 | PARAMETER | DEFAULT | UNITS | DESCRIPTION |
 | --------- | ------- | ----- | ----------- |
 | `CONTACT_FREE_FRACTION` | 0 | | minimum free fraction of voxels around the cell to proliferate; 0 disables contact inhibition |
+| `CONTACT_ECM_MAX` | 0 | concentration | ECM at or above which an empty voxel is not free; 0 for no limit |
+| `CONTACT_MATRIX_MIN` | 0 | concentration | ECM + WOUND_MATRIX below which an empty voxel is not free; 0 for no limit; must be below `CONTACT_ECM_MAX` when both are set |
 | `SPONTANEOUS_SENESCENCE` | 0 | 1/hour | probability of spontaneous senescence |
 | `BYSTANDER_CONTACT` | 0 | 1/hour | probability of senescence on contact with an early-phase senescent cell (late-phase cells induce only through the paracrine route) |
 | `BYSTANDER_PARACRINE` | 0 | 1/hour | probability of senescence when INF is above `INF_BYSTANDER` |

@@ -57,6 +57,8 @@
 
     <!-- wound healing cell parameters (fibroblast, myofibroblast, macrophage, and tissue classes) -->
     <population id="CONTACT_FREE_FRACTION" value="0" description="minimum fraction of boundary voxels that must be free to proliferate; 0 disables contact inhibition" />
+    <population id="CONTACT_ECM_MAX" value="0" units="concentration" description="ECM at or above which an empty boundary voxel does not count as free for contact inhibition (dense collagen); 0 for no limit" />
+    <population id="CONTACT_MATRIX_MIN" value="0" units="concentration" description="ECM + WOUND_MATRIX below which an empty boundary voxel does not count as free for contact inhibition (nothing to attach to); 0 for no limit" />
     <population id="SPONTANEOUS_SENESCENCE" value="0" units="1/hour" conversion="DT" description="probability of spontaneous senescence" />
     <population id="BYSTANDER_CONTACT" value="0" units="1/hour" conversion="DT" description="probability of senescence on contact with an early-phase senescent cell" />
     <population id="BYSTANDER_PARACRINE" value="0" units="1/hour" conversion="DT" description="probability of senescence when mean INF is above INF_BYSTANDER" />

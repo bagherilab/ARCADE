@@ -236,6 +236,87 @@ public class PottsCellWoundHealingTest {
     }
 
     @Test
+    public void getFreeFraction_noMatrixLimits_ignoresMatrix() {
+        f.ecm[0][1][2] = 100;
+        assertEquals(1, make(State.QUIESCENT).getFreeFraction(f.sim), EPSILON);
+    }
+
+    @Test
+    public void getFreeFraction_denseECM_countsVoxelAsOccupied() {
+        f.box.put("CONTACT_ECM_MAX", 1.5);
+        f.ecm[0][1][2] = 2;
+        f.ecm[0][3][2] = 1.5;
+        f.ecm[0][2][1] = 1.4;
+        assertEquals(0.5, make(State.QUIESCENT).getFreeFraction(f.sim), EPSILON);
+    }
+
+    @Test
+    public void getFreeFraction_tooLittleMatrix_countsVoxelAsOccupied() {
+        f.box.put("CONTACT_MATRIX_MIN", 0.5);
+        f.woundMatrix[0][1][2] = 1;
+        f.ecm[0][3][2] = 0.5;
+        f.ecm[0][2][1] = 0.3;
+        f.woundMatrix[0][2][1] = 0.3;
+        f.ecm[0][2][3] = 0.4;
+        assertEquals(0.75, make(State.QUIESCENT).getFreeFraction(f.sim), EPSILON);
+    }
+
+    @Test
+    public void getFreeFraction_bothLimits_countsOnlyVoxelsInRange() {
+        f.box.put("CONTACT_ECM_MAX", 1.5);
+        f.box.put("CONTACT_MATRIX_MIN", 0.5);
+        f.ecm[0][1][2] = 2;
+        f.woundMatrix[0][3][2] = 1;
+        f.ecm[0][2][1] = 0.1;
+        f.ecm[0][2][3] = 1;
+        assertEquals(0.5, make(State.QUIESCENT).getFreeFraction(f.sim), EPSILON);
+    }
+
+    @Test
+    public void getFreeFraction_occupiedVoxelInRange_staysOccupied() {
+        f.box.put("CONTACT_MATRIX_MIN", 0.5);
+        f.addNeighbor(8, 1, 2, mock(PottsCell.class));
+        f.woundMatrix[0][1][2] = 1;
+        f.woundMatrix[0][3][2] = 1;
+        assertEquals(0.25, make(State.QUIESCENT).getFreeFraction(f.sim), EPSILON);
+    }
+
+    @Test
+    public void getFreeFraction_missingLayersWithMinimum_countsNothingFree() {
+        f.box.put("CONTACT_MATRIX_MIN", 0.5);
+        WoundHealingCell cell = make(State.QUIESCENT);
+        doReturn(null).when(f.sim).getLattice(any());
+        assertEquals(0, cell.getFreeFraction(f.sim), EPSILON);
+    }
+
+    @Test
+    public void getFreeFraction_missingLayersWithMaximum_countsAllFree() {
+        f.box.put("CONTACT_ECM_MAX", 0.5);
+        WoundHealingCell cell = make(State.QUIESCENT);
+        doReturn(null).when(f.sim).getLattice(any());
+        assertEquals(1, cell.getFreeFraction(f.sim), EPSILON);
+    }
+
+    @Test
+    public void constructor_negativeContactECMMax_throwsException() {
+        f.box.put("CONTACT_ECM_MAX", -1);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
+
+    @Test
+    public void constructor_negativeContactMatrixMin_throwsException() {
+        f.box.put("CONTACT_MATRIX_MIN", -1);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
+
+    @Test
+    public void constructor_contactMatrixMinNotBelowMax_throwsException() {
+        f.box.put("CONTACT_ECM_MAX", 1);
+        f.box.put("CONTACT_MATRIX_MIN", 1);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
+
+    @Test
     public void getFreeVoxels_threeDimensionalAtBorder_countsTopAndBottomAsOccupied() {
         int[][][] ids = new int[3][5][5];
         List<Voxel> boundary =

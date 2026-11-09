@@ -75,6 +75,12 @@ public abstract class PottsCellWoundHealing extends PottsCell {
     /** Minimum free fraction of the boundary for proliferation. */
     final double contactFreeFraction;
 
+    /** ECM at or above which an empty boundary voxel is not free, or 0 for no limit. */
+    final double contactEcmMax;
+
+    /** ECM + wound matrix below which an empty boundary voxel is not free, or 0 for no limit. */
+    final double contactMatrixMin;
+
     /** Probability of spontaneous senescence (per tick). */
     final double spontaneousSenescence;
 
@@ -103,6 +109,10 @@ public abstract class PottsCellWoundHealing extends PottsCell {
      *
      * <ul>
      *   <li>{@code CONTACT_FREE_FRACTION} = minimum free fraction of the boundary for proliferation
+     *   <li>{@code CONTACT_ECM_MAX} = ECM at or above which an empty voxel is not free (0 for no
+     *       limit)
+     *   <li>{@code CONTACT_MATRIX_MIN} = ECM + wound matrix below which an empty voxel is not free
+     *       (0 for no limit)
      *   <li>{@code SPONTANEOUS_SENESCENCE} = probability of spontaneous senescence
      *   <li>{@code BYSTANDER_CONTACT} = probability of senescence on contact with a senescent cell
      *   <li>{@code BYSTANDER_PARACRINE} = probability of senescence when INF is above threshold
@@ -120,6 +130,17 @@ public abstract class PottsCellWoundHealing extends PottsCell {
             PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
         contactFreeFraction = parameters.getDouble("CONTACT_FREE_FRACTION");
+        contactEcmMax = parameters.getDouble("CONTACT_ECM_MAX");
+        contactMatrixMin = parameters.getDouble("CONTACT_MATRIX_MIN");
+        if (!(contactEcmMax >= 0)) {
+            throw new IllegalArgumentException("CONTACT_ECM_MAX must be >= 0");
+        }
+        if (!(contactMatrixMin >= 0)) {
+            throw new IllegalArgumentException("CONTACT_MATRIX_MIN must be >= 0");
+        }
+        if (contactEcmMax > 0 && contactMatrixMin >= contactEcmMax) {
+            throw new IllegalArgumentException("CONTACT_MATRIX_MIN must be below CONTACT_ECM_MAX");
+        }
         spontaneousSenescence = parameters.getDouble("SPONTANEOUS_SENESCENCE");
         bystanderContact = parameters.getDouble("BYSTANDER_CONTACT");
         bystanderParacrine = parameters.getDouble("BYSTANDER_PARACRINE");
@@ -413,7 +434,13 @@ public abstract class PottsCellWoundHealing extends PottsCell {
     }
 
     /**
-     * Gets the fraction of boundary voxels that are empty and inside the domain.
+     * Gets the fraction of boundary voxels that are free: empty, inside the domain, and with matrix
+     * in range.
+     *
+     * <p>If {@code CONTACT_ECM_MAX} is above 0, an empty voxel with ECM at or above it is not free
+     * (dense collagen leaves no room to grow). If {@code CONTACT_MATRIX_MIN} is above 0, an empty
+     * voxel with ECM + wound matrix below it is not free (nothing to attach to). Missing layers
+     * read 0.
      *
      * @param sim the simulation instance
      * @return the free fraction, or 0 if the cell has no boundary voxels
@@ -424,7 +451,31 @@ public abstract class PottsCellWoundHealing extends PottsCell {
         if (boundary.isEmpty()) {
             return 0;
         }
-        return (double) getFreeVoxels(ids, boundary).size() / boundary.size();
+        List<Voxel> free = getFreeVoxels(ids, boundary);
+        if (contactEcmMax > 0 || contactMatrixMin > 0) {
+            double[][][] ecm = getField(sim, "ECM");
+            double[][][] matrix = getField(sim, WOUND_MATRIX_LAYER);
+            free.removeIf(
+                    v -> {
+                        double e = ecm == null ? 0 : ecm[v.z][v.x][v.y];
+                        double m = matrix == null ? 0 : matrix[v.z][v.x][v.y];
+                        return (contactEcmMax > 0 && e >= contactEcmMax)
+                                || (contactMatrixMin > 0 && e + m < contactMatrixMin);
+                    });
+        }
+        return (double) free.size() / boundary.size();
+    }
+
+    /**
+     * Gets the field of a layer.
+     *
+     * @param sim the simulation instance
+     * @param layer the layer id
+     * @return the field, or {@code null} if the layer does not exist
+     */
+    static double[][][] getField(Simulation sim, String layer) {
+        Lattice lattice = sim.getLattice(layer);
+        return lattice == null ? null : lattice.getField();
     }
 
     /**
