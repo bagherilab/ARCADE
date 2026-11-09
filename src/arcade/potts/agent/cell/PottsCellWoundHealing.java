@@ -55,6 +55,18 @@ import static arcade.potts.util.PottsEnums.State;
  * 2019), so late-phase senescent cells act only through the paracrine route.
  */
 public abstract class PottsCellWoundHealing extends PottsCell {
+    /**
+     * Layer of signals from injured tissue (the wound and its cut edge). Its decay is clearance of
+     * the signal, not repair of the tissue.
+     */
+    static final String INJURY_SIGNAL_LAYER = "INJURY_SIGNAL";
+
+    /**
+     * Layer of provisional wound matrix (fibrin clot and fibronectin) that fills a wound before
+     * collagen ({@code ECM}) replaces it.
+     */
+    static final String WOUND_MATRIX_LAYER = "WOUND_MATRIX";
+
     /** Offsets to adjacent voxels in x, y, and z. */
     private static final int[][] OFFSETS = {
         {1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1},

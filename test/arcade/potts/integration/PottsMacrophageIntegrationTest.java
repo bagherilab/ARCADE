@@ -79,4 +79,37 @@ public class PottsMacrophageIntegrationTest {
         assertEquals(0, total(prefix, 1, "MMP"), 1E-12);
         assertEquals(PER_TICK * n, total(prefix, 1, "GF"), 1E-9);
     }
+
+    // Macrophages with the switch and an injury gate of 0.5, on a fixed INJURY_SIGNAL layer.
+    static String gatedSetup(String name, double injury) {
+        String macrophages =
+                population(
+                        "MAC",
+                        "macrophage",
+                        4,
+                        SWITCH + "<population.parameter id=\"INJURY_ACTIVATION\" value=\"0.5\" />");
+        String injuryLayer =
+                "<layer id=\"INJURY_SIGNAL\"><layer.parameter id=\"INITIAL_CONCENTRATION\""
+                        + " value=\""
+                        + injury
+                        + "\" /></layer>";
+        return setup(name, 0, macrophages).replace("</layers>", injuryLayer + "</layers>");
+    }
+
+    @Test
+    public void activation_injuryBelowGate_secretesNothing(@TempDir Path dir) throws Exception {
+        String prefix = run(dir, "rest", gatedSetup("rest", 0.2));
+        assertTrue(cells(prefix, 0).size() > 0);
+        assertEquals(0, total(prefix, 1, "MMP"), 1E-12);
+        assertEquals(0, total(prefix, 1, "GF"), 1E-12);
+    }
+
+    @Test
+    public void activation_injuryAboveGate_secretesM2Rates(@TempDir Path dir) throws Exception {
+        String prefix = run(dir, "active", gatedSetup("active", 1));
+        int n = cells(prefix, 0).size();
+        assertTrue(n > 0);
+        assertEquals(0, total(prefix, 1, "MMP"), 1E-12);
+        assertEquals(PER_TICK * n, total(prefix, 1, "GF"), 1E-9);
+    }
 }

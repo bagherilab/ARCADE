@@ -59,6 +59,7 @@
     <population id="BYSTANDER_PARACRINE" value="0" units="1/hour" conversion="DT" description="probability of senescence when mean INF is above INF_BYSTANDER" />
     <population id="INF_BYSTANDER" value="1000" units="concentration" description="threshold on mean INF for paracrine senescence" />
     <population id="INF_POLARIZATION" value="0" units="concentration" description="threshold on mean INF above which a macrophage is M1 (secretes M1_RATE_[LAYER]), otherwise M2 (M2_RATE_[LAYER]); 0 disables the switch" />
+    <population id="INJURY_ACTIVATION" value="0" units="concentration" description="threshold on mean INJURY_SIGNAL (signals from injured tissue; its decay is signal clearance, not tissue repair) for macrophages to take the M2 phenotype; below it (and not M1) they rest and secrete nothing; 0 means no gate; needs INF_POLARIZATION above 0" />
     <population id="M1_RATE" value="0" units="amount/hour" conversion="DT" description="macrophage secretion rate into each layer in the M1 phenotype (copied to M1_RATE_[LAYER])" />
     <population id="M2_RATE" value="0" units="amount/hour" conversion="DT" description="macrophage secretion rate into each layer in the M2 phenotype (copied to M2_RATE_[LAYER])" />
     <population id="BASAL_DEATH" value="0" units="1/hour" conversion="DT" description="probability that a quiescent wound healing cell becomes apoptotic (fibroblast and macrophage turnover); proliferative cells use proliferation/BASAL_APOPTOSIS_RATE" />
@@ -66,6 +67,7 @@
     <population id="GF_PROLIFERATION" value="0.1" units="concentration" description="threshold on mean GF (growth factor) for fibroblast and myofibroblast proliferation" />
     <population id="GF_DIFFERENTIATION" value="0.1" units="concentration" description="threshold on mean GF for fibroblast differentiation" />
     <population id="ECM_DIFFERENTIATION" value="0.5" units="concentration" description="threshold on mean ECM for fibroblast differentiation" />
+    <population id="WOUND_MATRIX_DIFFERENTIATION" value="0" units="concentration" description="threshold on mean WOUND_MATRIX (provisional fibrin/fibronectin matrix) for fibroblast differentiation, so myofibroblasts form only where there is wound matrix; 0 means no gate" />
     <population id="DIFFERENTIATION_RATE" value="0.2" units="1/hour" conversion="DT" description="probability of fibroblast differentiation above thresholds" />
     <population id="DIFFERENTIATION_TARGET" value="NONE" description="population id fibroblasts differentiate into, or NONE" />
     <population id="INF_APOPTOSIS" value="5" units="concentration" description="threshold on mean INF for myofibroblast apoptosis" />

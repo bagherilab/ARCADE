@@ -24,8 +24,11 @@ import static arcade.potts.util.PottsEnums.State;
  * <p>When GF is above {@code GF_DIFFERENTIATION} and ECM is above {@code ECM_DIFFERENTIATION},
  * fibroblasts differentiate with probability {@code DIFFERENTIATION_RATE} into a cell of the {@code
  * DIFFERENTIATION_TARGET} population, which replaces the fibroblast with the same id and location.
- * Fibroblasts can become senescent spontaneously ({@code SPONTANEOUS_SENESCENCE}) or through the
- * bystander routes.
+ * If {@code WOUND_MATRIX_DIFFERENTIATION} is above 0, differentiation also needs the mean {@code
+ * WOUND_MATRIX} over the cell to be above it, so myofibroblasts form only where there is wound
+ * matrix: the provisional matrix (fibrin clot and fibronectin, including the ED-A fibronectin
+ * myofibroblasts need) that fills a wound before collagen replaces it. Fibroblasts can become
+ * senescent spontaneously ({@code SPONTANEOUS_SENESCENCE}) or through the bystander routes.
  */
 public final class PottsCellFibroblast extends PottsCellWoundHealing {
     /** Threshold on mean GF for proliferation. */
@@ -36,6 +39,9 @@ public final class PottsCellFibroblast extends PottsCellWoundHealing {
 
     /** Threshold on mean ECM for differentiation. */
     final double ecmDifferentiation;
+
+    /** Threshold on mean wound matrix for differentiation, or 0 for no gate. */
+    final double woundMatrixDifferentiation;
 
     /** Probability of differentiation when above thresholds (per tick). */
     final double differentiationRate;
@@ -52,6 +58,8 @@ public final class PottsCellFibroblast extends PottsCellWoundHealing {
      *   <li>{@code GF_PROLIFERATION} = threshold on mean GF for proliferation
      *   <li>{@code GF_DIFFERENTIATION} = threshold on mean GF for differentiation
      *   <li>{@code ECM_DIFFERENTIATION} = threshold on mean ECM for differentiation
+     *   <li>{@code WOUND_MATRIX_DIFFERENTIATION} = threshold on mean wound matrix for
+     *       differentiation (0 for no gate)
      *   <li>{@code DIFFERENTIATION_RATE} = probability of differentiation above thresholds
      *   <li>{@code DIFFERENTIATION_TARGET} = population id cells differentiate into, or {@code
      *       NONE}
@@ -68,6 +76,10 @@ public final class PottsCellFibroblast extends PottsCellWoundHealing {
         gfProliferation = parameters.getDouble("GF_PROLIFERATION");
         gfDifferentiation = parameters.getDouble("GF_DIFFERENTIATION");
         ecmDifferentiation = parameters.getDouble("ECM_DIFFERENTIATION");
+        woundMatrixDifferentiation = parameters.getDouble("WOUND_MATRIX_DIFFERENTIATION");
+        if (!(woundMatrixDifferentiation >= 0)) {
+            throw new IllegalArgumentException("WOUND_MATRIX_DIFFERENTIATION must be >= 0");
+        }
         differentiationRate = parameters.getDouble("DIFFERENTIATION_RATE");
         differentiationTarget = parameters.getString("DIFFERENTIATION_TARGET");
     }
@@ -104,6 +116,7 @@ public final class PottsCellFibroblast extends PottsCellWoundHealing {
         }
 
         if (!differentiationTarget.equals("NONE")
+                && hasWoundMatrix(sim)
                 && getMean(sim, "GF") > gfDifferentiation
                 && getMean(sim, "ECM") > ecmDifferentiation
                 && random.nextDouble() < differentiationRate) {
@@ -116,6 +129,17 @@ public final class PottsCellFibroblast extends PottsCellWoundHealing {
         }
 
         return true;
+    }
+
+    /**
+     * Checks if differentiation is allowed by the wound matrix.
+     *
+     * @param sim the simulation instance
+     * @return {@code true} if there is no gate, or the mean wound matrix is above the gate
+     */
+    boolean hasWoundMatrix(Simulation sim) {
+        return woundMatrixDifferentiation == 0
+                || getMean(sim, WOUND_MATRIX_LAYER) > woundMatrixDifferentiation;
     }
 
     /**

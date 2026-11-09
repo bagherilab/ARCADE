@@ -139,6 +139,70 @@ public class PottsCellMacrophageTest {
         assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
     }
 
+    // Turns on the switch with an injury gate of 0.5 and sets the mean injury signal and INF.
+    private PottsCellMacrophage makeInjuryGated(double injury, double inf) {
+        addSwitch();
+        f.box.put("INJURY_ACTIVATION", 0.5);
+        f.means.put("INJURY_SIGNAL", injury);
+        f.means.put("INF", inf);
+        return make(State.QUIESCENT);
+    }
+
+    @Test
+    public void stepRules_injuryBelowGate_restsAndSecretesNothing() {
+        PottsCellMacrophage cell = makeInjuryGated(0.4, 0);
+        cell.stepRules(f.random, f.sim);
+        assertFalse(cell.isActivated(f.sim));
+        assertEquals(0, secretion(cell).getRate("MMP"), EPSILON);
+        assertEquals(0, secretion(cell).getRate("GF"), EPSILON);
+    }
+
+    @Test
+    public void stepRules_injuryAboveGate_setsM2Rates() {
+        PottsCellMacrophage cell = makeInjuryGated(0.6, 0);
+        cell.stepRules(f.random, f.sim);
+        assertEquals(0, secretion(cell).getRate("MMP"), EPSILON);
+        assertEquals(3, secretion(cell).getRate("GF"), EPSILON);
+    }
+
+    @Test
+    public void stepRules_highInfWithoutInjury_setsM1Rates() {
+        PottsCellMacrophage cell = makeInjuryGated(0, THRESHOLD + 0.1);
+        cell.stepRules(f.random, f.sim);
+        assertEquals(5, secretion(cell).getRate("MMP"), EPSILON);
+        assertEquals(0, secretion(cell).getRate("GF"), EPSILON);
+    }
+
+    @Test
+    public void stepRules_injuryFalls_returnsToResting() {
+        PottsCellMacrophage cell = makeInjuryGated(0.6, 0);
+        cell.stepRules(f.random, f.sim);
+        f.means.put("INJURY_SIGNAL", 0.1);
+        cell.stepRules(f.random, f.sim);
+        assertEquals(0, secretion(cell).getRate("GF"), EPSILON);
+    }
+
+    @Test
+    public void isActivated_noGate_doesNotReadInjurySignal() {
+        addSwitch();
+        PottsCellMacrophage cell = make(State.QUIESCENT);
+        assertTrue(cell.isActivated(f.sim));
+        verify(f.sim, never()).getLattice("INJURY_SIGNAL");
+    }
+
+    @Test
+    public void constructor_negativeInjuryGate_throws() {
+        addSwitch();
+        f.box.put("INJURY_ACTIVATION", -1);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
+
+    @Test
+    public void constructor_injuryGateWithoutSwitch_throws() {
+        f.box.put("INJURY_ACTIVATION", 0.5);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
+
     @Test
     public void step_quiescentBasalDeath_becomesApoptotic() {
         f.box.put("BASAL_DEATH", 0.5);

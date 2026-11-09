@@ -126,6 +126,54 @@ public class PottsCellFibroblastTest {
         verify(f.grid).addObject(any(PottsCellMyofibroblast.class), isNull());
     }
 
+    // Sets up a quiescent fibroblast above the GF and ECM thresholds, with a wound matrix gate of
+    // 0.5.
+    private PottsCellFibroblast makeMatrixGated(double matrix) {
+        f.box.put("DIFFERENTIATION_RATE", 0.5);
+        f.box.put("DIFFERENTIATION_TARGET", "MYO");
+        f.box.put("WOUND_MATRIX_DIFFERENTIATION", 0.5);
+        f.means.put("GF", 1.0);
+        f.means.put("ECM", 1.0);
+        f.means.put("WOUND_MATRIX", matrix);
+        PottsCellFibroblast cell = make(State.QUIESCENT);
+        setUpDifferentiation(cell);
+        return cell;
+    }
+
+    @Test
+    public void stepRules_woundMatrixAboveGate_replacesCell() {
+        PottsCellFibroblast cell = makeMatrixGated(0.6);
+        assertFalse(cell.stepRules(f.random, f.sim));
+        verify(f.grid).removeObject(cell, f.location);
+    }
+
+    @Test
+    public void stepRules_woundMatrixAtGate_doesNotDifferentiate() {
+        PottsCellFibroblast cell = makeMatrixGated(0.5);
+        assertTrue(cell.stepRules(f.random, f.sim));
+        verify(f.grid, never()).removeObject(any(), any());
+    }
+
+    @Test
+    public void stepRules_noWoundMatrix_doesNotDifferentiate() {
+        PottsCellFibroblast cell = makeMatrixGated(0);
+        assertTrue(cell.stepRules(f.random, f.sim));
+        verify(f.grid, never()).removeObject(any(), any());
+    }
+
+    @Test
+    public void hasWoundMatrix_noGate_doesNotReadWoundMatrix() {
+        PottsCellFibroblast cell = make(State.QUIESCENT);
+        assertTrue(cell.hasWoundMatrix(f.sim));
+        verify(f.sim, never()).getLattice("WOUND_MATRIX");
+    }
+
+    @Test
+    public void constructor_negativeWoundMatrixGate_throws() {
+        f.box.put("WOUND_MATRIX_DIFFERENTIATION", -1);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
+
     @Test
     public void differentiate_givenTarget_replacesWithMyofibroblast() {
         f.box.put("DIFFERENTIATION_TARGET", "MYO");

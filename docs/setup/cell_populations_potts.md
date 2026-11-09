@@ -129,13 +129,15 @@ _Specifies a population that secretes up to 100 VEGF per hour, half maximal at 1
 
 The `fibroblast`, `myofibroblast`, `macrophage`, and `tissue` classes model wound healing.
 Each tick, a wound healing cell applies the rules for its class (quiescent and proliferative cells only), steps its processes, and then steps the module for its state.
-The rules read the mean `GF` (growth factor), `ECM`, and `INF` layer values over the cell; `GF` stands for the pro-repair growth factors (PDGF, TGF-β) lumped into one field; a layer that is not in the setup reads as 0.
+The rules read the mean `GF` (growth factor), `ECM`, `INF`, `INJURY_SIGNAL`, and `WOUND_MATRIX` layer values over the cell; `GF` stands for the pro-repair growth factors (PDGF, TGF-β) lumped into one field; a layer that is not in the setup reads as 0.
+
+`INJURY_SIGNAL` stands for the signals from injured tissue (the wound and its cut edge), set as an initial pattern and cleared by decay. Its decay is clearance of the signal, not repair of the tissue; tissue recovery is read from ECM, cells and closure. `WOUND_MATRIX` is the provisional matrix (fibrin clot and fibronectin) that fills a wound before collagen (`ECM`) replaces it; it can be removed by MMP through a `DEGRADER` operation.
 
 | CLASS | RULES |
 | ----- | ----- |
-| `fibroblast` | Proliferates when GF is above `GF_PROLIFERATION`. Differentiates into the `DIFFERENTIATION_TARGET` population when GF and ECM are above their thresholds. Becomes senescent spontaneously or through the bystander routes. |
+| `fibroblast` | Proliferates when GF is above `GF_PROLIFERATION`. Differentiates into the `DIFFERENTIATION_TARGET` population when GF and ECM are above their thresholds (and `WOUND_MATRIX` above `WOUND_MATRIX_DIFFERENTIATION`, if set). Becomes senescent spontaneously or through the bystander routes. |
 | `myofibroblast` | Proliferates under the same conditions as fibroblasts. Becomes apoptotic when INF is above `INF_APOPTOSIS`. Matures after a mean of `MATURATION`; mature cells become apoptotic when ECM is below `ECM_TENSION`, or senescent with probability `SENESCENCE_RATE` once the time (including the series `offset`) reaches `SENESCENCE_START`. Becomes senescent through the bystander routes. |
-| `macrophage` | Does not proliferate. Senescent cells that touch a macrophage may be cleared. If `INF_POLARIZATION` is above 0, switches each tick between M1 (INF above the threshold) and M2 secretion rates. |
+| `macrophage` | Does not proliferate. Senescent cells that touch a macrophage may be cleared. If `INF_POLARIZATION` is above 0, switches each tick between M1 (INF above the threshold) and M2 secretion rates. With `INJURY_ACTIVATION` above 0, a macrophage that is not M1 is M2 only while `INJURY_SIGNAL` is above it, and otherwise rests and secretes nothing. |
 | `tissue` | Proliferates into free space next to the cell when the mean ECM over that space is at least `ECM_PROLIFERATION`. Becomes senescent spontaneously or through the bystander routes. |
 
 Wound healing cells are quiescent, proliferative, senescent, or apoptotic; any other state (for example, in a loaded cells file) causes an error.
@@ -162,11 +164,13 @@ Wound healing populations do not support regions; a `population.region` tag caus
 | `O2_PROLIF_MIN` | 0 | mmHg | minimum mean O2 over the cell to proliferate; 0 disables the O2 gate |
 | `BASAL_DEATH` | 0 | 1/hour | probability that a quiescent cell becomes apoptotic (fibroblast and macrophage turnover) |
 | `INF_POLARIZATION` | 0 | concentration | macrophages only: threshold on mean INF for the M1 phenotype; 0 disables the switch |
+| `INJURY_ACTIVATION` | 0 | concentration | threshold on mean `INJURY_SIGNAL` for the M2 phenotype; below it a macrophage that is not M1 rests and secretes nothing; 0 means no gate; needs `INF_POLARIZATION` above 0 |
 | `M1_RATE_[LAYER]` | 0 | amount/hour | macrophages only: secretion rate into the layer in the M1 phenotype |
 | `M2_RATE_[LAYER]` | 0 | amount/hour | macrophages only: secretion rate into the layer in the M2 phenotype |
 | `GF_PROLIFERATION` | 0.1 | concentration | threshold on GF for proliferation |
 | `GF_DIFFERENTIATION` | 0.1 | concentration | threshold on GF for differentiation |
 | `ECM_DIFFERENTIATION` | 0.5 | concentration | threshold on ECM for differentiation |
+| `WOUND_MATRIX_DIFFERENTIATION` | 0 | concentration | threshold on mean `WOUND_MATRIX` for differentiation, so myofibroblasts form only where there is wound matrix; 0 means no gate |
 | `DIFFERENTIATION_RATE` | 0.2 | 1/hour | probability of differentiation above thresholds |
 | `DIFFERENTIATION_TARGET` | `NONE` | | population id fibroblasts differentiate into |
 | `INF_APOPTOSIS` | 5 | concentration | threshold on INF for myofibroblast apoptosis |
