@@ -8,16 +8,18 @@ import arcade.core.util.Parameters;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.lattice.PottsLattice;
 import arcade.potts.env.location.Voxel;
+import static arcade.potts.util.PottsEnums.State;
 
 /**
  * Extension of {@link PottsProcessSensing} for hypoxic sensing.
  *
  * <p>The {@code PottsProcessSensingHypoxic} process adds VEGF to the environment, based on the mean
- * O2 over the cell. Each tick, the cell adds {@code VEGF_SECRETION_RATE} × h(O2) to the {@code
- * VEGF} layer, where h(O2) = K<sup>n</sup> / (K<sup>n</sup> + O2<sup>n</sup>) with K = {@code
- * O2_HYPOXIA} and n = {@code HYPOXIA_HILL}. The amount is spread evenly over the cell's own voxels
- * and is added to the field at the next lattice step. This follows the patch {@code
- * PatchProcessSensingHypoxic} process, with an O2 Hill function in place of the energy threshold.
+ * O2 over the cell; apoptotic cells do not secrete. Each tick, the cell adds {@code
+ * VEGF_SECRETION_RATE} × h(O2) to the {@code VEGF} layer, where h(O2) = K<sup>n</sup> /
+ * (K<sup>n</sup> + O2<sup>n</sup>) with K = {@code O2_HYPOXIA} and n = {@code HYPOXIA_HILL}. The
+ * amount is spread evenly over the cell's own voxels and is added to the field at the next lattice
+ * step. This follows the patch {@code PatchProcessSensingHypoxic} process, with an O2 Hill function
+ * in place of the energy threshold.
  */
 public class PottsProcessSensingHypoxic extends PottsProcessSensing {
     /** Layer read as O2. */
@@ -82,7 +84,7 @@ public class PottsProcessSensingHypoxic extends PottsProcessSensing {
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-        if (secretionRate == 0) {
+        if (secretionRate == 0 || cell.getState() == State.APOPTOTIC) {
             return;
         }
 

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.lattice.Lattice;
 import arcade.core.util.MiniBox;
+import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.lattice.PottsLattice;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.PottsSimulation;
@@ -12,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static arcade.potts.agent.process.PottsProcessSecretionTest.makeCell;
+import static arcade.potts.util.PottsEnums.State;
 
 public class PottsProcessSensingHypoxicTest {
     private static final double EPSILON = 1E-12;
@@ -144,6 +146,25 @@ public class PottsProcessSensingHypoxicTest {
     public void step_noOxygen_addsFullRateOverCellVoxels() {
         PottsLattice vegf = makeVegf();
         makeProcess(RATE).step(mock(MersenneTwisterFast.class), makeSim(makeO2(0), vegf));
+        verify(vegf).addDelta(eq(List.of(VOXELS)), near(RATE / (2 * DS * DS * DS)));
+    }
+
+    @Test
+    public void step_apoptoticCell_addsNothingAndNeedsNoLayers() {
+        PottsCell cell = makeCell(sensing(RATE, K, N), VOXELS);
+        doReturn(State.APOPTOTIC).when(cell).getState();
+        PottsSimulation sim = mock(PottsSimulation.class);
+        new PottsProcessSensingHypoxic(cell).step(mock(MersenneTwisterFast.class), sim);
+        verify(sim, never()).getLattice(any());
+    }
+
+    @Test
+    public void step_senescentCell_secretes() {
+        PottsCell cell = makeCell(sensing(RATE, K, N), VOXELS);
+        doReturn(State.SENESCENT).when(cell).getState();
+        PottsLattice vegf = makeVegf();
+        new PottsProcessSensingHypoxic(cell)
+                .step(mock(MersenneTwisterFast.class), makeSim(makeO2(0), vegf));
         verify(vegf).addDelta(eq(List.of(VOXELS)), near(RATE / (2 * DS * DS * DS)));
     }
 

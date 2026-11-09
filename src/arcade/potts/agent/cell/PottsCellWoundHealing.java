@@ -19,10 +19,12 @@ import arcade.potts.agent.module.PottsModuleApoptosisSimple;
 import arcade.potts.agent.module.PottsModuleProliferationWoundHealing;
 import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.agent.module.PottsModuleSenescence;
+import arcade.potts.agent.process.PottsProcessSecretion;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
+import static arcade.potts.util.PottsEnums.Domain;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
@@ -40,7 +42,8 @@ import static arcade.potts.util.PottsEnums.State;
  *
  * <p>Quiescent cells die (become apoptotic) with probability {@code BASAL_DEATH} each tick, before
  * the rules are applied. Proliferative cells die through the basal apoptosis of the proliferation
- * module, and senescent cells through clearance.
+ * module, and senescent cells through clearance. Apoptotic cells secrete nothing: all secretion
+ * rates are set to 0 when a cell becomes apoptotic.
  *
  * <p>If {@code O2_PROLIF_MIN} is above 0, cells cannot enter or remain in the proliferative state
  * when the mean O2 over the cell is below it.
@@ -241,10 +244,26 @@ public abstract class PottsCellWoundHealing extends PottsCell {
                 break;
             case APOPTOTIC:
                 module = new PottsModuleApoptosisSimple(this);
+                stopSecretion();
                 break;
             default:
                 throw new IllegalArgumentException(
                         "wound healing cells do not support state [ " + newState + " ]");
+        }
+    }
+
+    /**
+     * Sets every secretion rate to 0.
+     *
+     * <p>Apoptotic cells secrete nothing: without this, a senescent cell keeps its last SASP rates
+     * and a macrophage its phenotype rates until it is removed.
+     */
+    void stopSecretion() {
+        if (!(getProcess(Domain.SECRETION) instanceof PottsProcessSecretion secretion)) {
+            return;
+        }
+        for (String layer : secretion.getLayers()) {
+            secretion.setRate(layer, 0);
         }
     }
 

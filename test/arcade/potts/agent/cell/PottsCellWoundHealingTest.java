@@ -1,5 +1,6 @@
 package arcade.potts.agent.cell;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import arcade.potts.agent.module.PottsModuleApoptosis;
 import arcade.potts.agent.module.PottsModuleProliferationWoundHealing;
 import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.agent.module.PottsModuleSenescence;
+import arcade.potts.agent.process.PottsProcessSecretion;
 import arcade.potts.env.location.Voxel;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -134,6 +136,33 @@ public class PottsCellWoundHealingTest {
 
         verify(process, never()).step(any(), any());
         verify(module, never()).step(any(), any());
+    }
+
+    @Test
+    public void setState_apoptotic_stopsAllSecretion() {
+        WoundHealingCell cell = make(State.QUIESCENT);
+        PottsProcessSecretion secretion = mock(PottsProcessSecretion.class);
+        doReturn(new LinkedHashSet<>(List.of("MMP", "INF"))).when(secretion).getLayers();
+        cell.processes.put(Domain.SECRETION, secretion);
+        cell.setState(State.APOPTOTIC);
+        verify(secretion).setRate("MMP", 0);
+        verify(secretion).setRate("INF", 0);
+    }
+
+    @Test
+    public void setState_notApoptotic_keepsSecretion() {
+        WoundHealingCell cell = make(State.QUIESCENT);
+        PottsProcessSecretion secretion = mock(PottsProcessSecretion.class);
+        doReturn(new LinkedHashSet<>(List.of("MMP"))).when(secretion).getLayers();
+        cell.processes.put(Domain.SECRETION, secretion);
+        cell.setState(State.PROLIFERATIVE);
+        verify(secretion, never()).setRate(any(), anyDouble());
+    }
+
+    @Test
+    public void setState_apoptoticWithoutSecretion_doesNotThrow() {
+        WoundHealingCell cell = make(State.QUIESCENT);
+        assertDoesNotThrow(() -> cell.setState(State.APOPTOTIC));
     }
 
     @Test
