@@ -5,6 +5,7 @@ import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
+import arcade.potts.sim.PottsSeries;
 import static arcade.potts.util.PottsEnums.State;
 
 /**
@@ -14,11 +15,14 @@ import static arcade.potts.util.PottsEnums.State;
  * when the mean INF over the cell is above {@code INF_APOPTOSIS}. Myofibroblasts mature with
  * probability 1 / {@code MATURATION} per tick. Mature myofibroblasts become apoptotic when the mean
  * ECM over the cell is below {@code ECM_TENSION}, and otherwise become senescent with probability
- * {@code SENESCENCE_RATE}. Myofibroblasts can also become senescent through the bystander routes.
+ * {@code SENESCENCE_RATE}, once the simulation time (including the series offset) has reached
+ * {@code SENESCENCE_START}. The start time is a tissue-level gate on this primary route only (CCN1
+ * accumulating in granulation tissue, Jun & Lau 2010); maturation and tension apoptosis are not
+ * gated. Myofibroblasts can also become senescent through the bystander routes.
  */
 public final class PottsCellMyofibroblast extends PottsCellWoundHealing {
-    /** Threshold on mean PDGF for proliferation. */
-    final double pdgfProliferation;
+    /** Threshold on mean GF for proliferation. */
+    final double gfProliferation;
 
     /** Threshold on mean INF for apoptosis. */
     final double infApoptosis;
@@ -32,6 +36,9 @@ public final class PottsCellMyofibroblast extends PottsCellWoundHealing {
     /** Probability of senescence for mature cells (per tick). */
     final double senescenceRate;
 
+    /** Time at which primary senescence becomes possible (ticks). */
+    final double senescenceStart;
+
     /** {@code true} if the cell is mature, {@code false} otherwise. */
     boolean mature;
 
@@ -41,11 +48,12 @@ public final class PottsCellMyofibroblast extends PottsCellWoundHealing {
      * <p>Loaded parameters include:
      *
      * <ul>
-     *   <li>{@code PDGF_PROLIFERATION} = threshold on mean PDGF for proliferation
+     *   <li>{@code GF_PROLIFERATION} = threshold on mean GF for proliferation
      *   <li>{@code INF_APOPTOSIS} = threshold on mean INF for apoptosis
      *   <li>{@code MATURATION} = mean time to maturation
      *   <li>{@code ECM_TENSION} = threshold on mean ECM below which mature cells become apoptotic
      *   <li>{@code SENESCENCE_RATE} = probability of senescence for mature cells
+     *   <li>{@code SENESCENCE_START} = time at which primary senescence becomes possible
      * </ul>
      *
      * @param container the cell container
@@ -56,16 +64,34 @@ public final class PottsCellMyofibroblast extends PottsCellWoundHealing {
     public PottsCellMyofibroblast(
             PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
-        pdgfProliferation = parameters.getDouble("PDGF_PROLIFERATION");
+        gfProliferation = parameters.getDouble("GF_PROLIFERATION");
         infApoptosis = parameters.getDouble("INF_APOPTOSIS");
         maturation = parameters.getDouble("MATURATION");
         ecmTension = parameters.getDouble("ECM_TENSION");
         senescenceRate = parameters.getDouble("SENESCENCE_RATE");
+        senescenceStart = parameters.getDouble("SENESCENCE_START");
+        if (!(senescenceStart >= 0)) {
+            throw new IllegalArgumentException("SENESCENCE_START must be >= 0");
+        }
+    }
+
+    /**
+     * Checks if primary senescence is possible at the current time.
+     *
+     * @param sim the simulation instance
+     * @return {@code true} if the time, including the series offset, is at least the start time
+     */
+    boolean isSenescenceOpen(Simulation sim) {
+        if (senescenceStart == 0) {
+            return true;
+        }
+        double tick = sim.getSchedule().getTime() + ((PottsSeries) sim.getSeries()).tickOffset;
+        return tick >= senescenceStart;
     }
 
     @Override
     public boolean canProliferate(Simulation sim) {
-        return PottsCellFibroblast.canProliferate(sim, this, pdgfProliferation);
+        return PottsCellFibroblast.canProliferate(sim, this, gfProliferation);
     }
 
     @Override
@@ -87,7 +113,7 @@ public final class PottsCellMyofibroblast extends PottsCellWoundHealing {
             if (getMean(sim, "ECM") < ecmTension) {
                 setState(State.APOPTOTIC);
                 return true;
-            } else if (random.nextDouble() < senescenceRate) {
+            } else if (isSenescenceOpen(sim) && random.nextDouble() < senescenceRate) {
                 setState(State.SENESCENT);
                 return true;
             }

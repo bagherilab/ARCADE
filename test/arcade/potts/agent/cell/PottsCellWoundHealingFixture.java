@@ -8,6 +8,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.env.grid.Grid;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
+import arcade.potts.agent.module.PottsModule;
 import arcade.potts.env.lattice.PottsLattice;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.Voxel;
@@ -65,7 +66,7 @@ public final class PottsCellWoundHealingFixture {
         doReturn(potts).when(sim).getPotts();
         doReturn(grid).when(sim).getGrid();
 
-        for (String layer : new String[] {"PDGF", "ECM", "INF", "O2"}) {
+        for (String layer : new String[] {"GF", "ECM", "INF", "O2"}) {
             PottsLattice lattice = mock(PottsLattice.class);
             doAnswer(i -> means.getOrDefault(layer, 0.0)).when(lattice).getAverageValue(any());
             doReturn(ecm).when(lattice).getField();
@@ -95,8 +96,8 @@ public final class PottsCellWoundHealingFixture {
         box.put("O2_PROLIF_MIN", 0);
         box.put("INF_POLARIZATION", 0);
         box.put("BASAL_DEATH", 0);
-        box.put("PDGF_PROLIFERATION", 0.2);
-        box.put("PDGF_DIFFERENTIATION", 0.3);
+        box.put("GF_PROLIFERATION", 0.2);
+        box.put("GF_DIFFERENTIATION", 0.3);
         box.put("ECM_DIFFERENTIATION", 0.3);
         box.put("DIFFERENTIATION_RATE", 0);
         box.put("DIFFERENTIATION_TARGET", "NONE");
@@ -104,6 +105,7 @@ public final class PottsCellWoundHealingFixture {
         box.put("MATURATION", 4);
         box.put("ECM_TENSION", 0.1);
         box.put("SENESCENCE_RATE", 0);
+        box.put("SENESCENCE_START", 0);
         box.put("ECM_PROLIFERATION", 0);
         box.put("senescence/RATE_EARLY", 1);
         box.put("senescence/STEPS_EARLY", 2);
@@ -171,6 +173,21 @@ public final class PottsCellWoundHealingFixture {
     public void addNeighbor(int id, int x, int y, PottsCell neighbor) {
         ids[0][x][y] = id;
         cells.put(id, neighbor);
+    }
+
+    /**
+     * Creates a mocked senescent cell in the given senescence phase.
+     *
+     * @param phase the senescence phase
+     * @return the mocked cell
+     */
+    public static PottsCell senescent(Phase phase) {
+        PottsCell cell = mock(PottsCell.class);
+        PottsModule module = mock(PottsModule.class);
+        doReturn(phase).when(module).getPhase();
+        doReturn(State.SENESCENT).when(cell).getState();
+        doReturn(module).when(cell).getModule();
+        return cell;
     }
 
     /**

@@ -49,7 +49,7 @@ public class PottsOutputSaverTest {
         saver.saveLattice = true;
         saver.tickOffset = 100;
         TreeMap<String, double[][][]> layers = new TreeMap<>();
-        layers.put("PDGF", new double[][][] {{{0.1, 1.0 / 3}}});
+        layers.put("GF", new double[][][] {{{0.1, 1.0 / 3}}});
         saver.equip(mockSimulation(layers));
         saver.save(5);
         Path layerFile = path.resolve("run_0000_000105.LAYERS.json");
@@ -59,7 +59,7 @@ public class PottsOutputSaverTest {
                         .fromJson(
                                 Files.readString(layerFile),
                                 new TypeToken<HashMap<String, double[][][]>>() {}.getType());
-        assertEquals(1.0 / 3, read.get("PDGF")[0][0][1], 0);
+        assertEquals(1.0 / 3, read.get("GF")[0][0][1], 0);
         assertTrue(Files.exists(path.resolve("run_0000_000105.CELLS.json")));
     }
 

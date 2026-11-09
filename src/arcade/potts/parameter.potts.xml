@@ -55,7 +55,7 @@
     <!-- wound healing cell parameters (fibroblast, myofibroblast, macrophage, and tissue classes) -->
     <population id="CONTACT_FREE_FRACTION" value="0" description="minimum fraction of boundary voxels that must be free to proliferate; 0 disables contact inhibition" />
     <population id="SPONTANEOUS_SENESCENCE" value="0" units="1/hour" conversion="DT" description="probability of spontaneous senescence" />
-    <population id="BYSTANDER_CONTACT" value="0" units="1/hour" conversion="DT" description="probability of senescence on contact with a senescent cell" />
+    <population id="BYSTANDER_CONTACT" value="0" units="1/hour" conversion="DT" description="probability of senescence on contact with an early-phase senescent cell" />
     <population id="BYSTANDER_PARACRINE" value="0" units="1/hour" conversion="DT" description="probability of senescence when mean INF is above INF_BYSTANDER" />
     <population id="INF_BYSTANDER" value="1000" units="concentration" description="threshold on mean INF for paracrine senescence" />
     <population id="INF_POLARIZATION" value="0" units="concentration" description="threshold on mean INF above which a macrophage is M1 (secretes M1_RATE_[LAYER]), otherwise M2 (M2_RATE_[LAYER]); 0 disables the switch" />
@@ -63,8 +63,8 @@
     <population id="M2_RATE" value="0" units="amount/hour" conversion="DT" description="macrophage secretion rate into each layer in the M2 phenotype (copied to M2_RATE_[LAYER])" />
     <population id="BASAL_DEATH" value="0" units="1/hour" conversion="DT" description="probability that a quiescent wound healing cell becomes apoptotic (fibroblast and macrophage turnover); proliferative cells use proliferation/BASAL_APOPTOSIS_RATE" />
     <population id="O2_PROLIF_MIN" value="0" units="mmHg" description="minimum mean O2 over the cell for wound healing cells to enter or remain proliferative; 0 disables the O2 gate" />
-    <population id="PDGF_PROLIFERATION" value="0.1" units="concentration" description="threshold on mean PDGF for fibroblast and myofibroblast proliferation" />
-    <population id="PDGF_DIFFERENTIATION" value="0.1" units="concentration" description="threshold on mean PDGF for fibroblast differentiation" />
+    <population id="GF_PROLIFERATION" value="0.1" units="concentration" description="threshold on mean GF (growth factor) for fibroblast and myofibroblast proliferation" />
+    <population id="GF_DIFFERENTIATION" value="0.1" units="concentration" description="threshold on mean GF for fibroblast differentiation" />
     <population id="ECM_DIFFERENTIATION" value="0.5" units="concentration" description="threshold on mean ECM for fibroblast differentiation" />
     <population id="DIFFERENTIATION_RATE" value="0.2" units="1/hour" conversion="DT" description="probability of fibroblast differentiation above thresholds" />
     <population id="DIFFERENTIATION_TARGET" value="NONE" description="population id fibroblasts differentiate into, or NONE" />
@@ -72,6 +72,7 @@
     <population id="MATURATION" value="72" units="hours" conversion="DT^-1" description="mean time to myofibroblast maturation" />
     <population id="ECM_TENSION" value="0.2" units="concentration" description="threshold on mean ECM below which mature myofibroblasts become apoptotic" />
     <population id="SENESCENCE_RATE" value="0.02" units="1/hour" conversion="DT" description="probability of senescence for mature myofibroblasts" />
+    <population id="SENESCENCE_START" value="0" units="hours" conversion="DT^-1" description="time (including the series offset) from which mature myofibroblasts can become senescent; 0 means no gate" />
     <population id="ECM_PROLIFERATION" value="0" units="concentration" description="minimum mean ECM over free boundary voxels for tissue proliferation; 0 disables the gate" />
 
     <!-- proliferation module parameters -->
@@ -128,8 +129,8 @@
     <population.process process="sensing" id="HYPOXIA_HILL" value="4" units="unitless" description="Hill exponent (steepness) of hypoxic VEGF secretion; a calibration choice, not measured" />
 
     <!-- deposition process parameters (version ECM) -->
-    <population.process process="deposition" id="RATE" value="0" units="amount/hour" conversion="DT" description="rate of ECM deposition by quiescent and proliferative cells with mean PDGF above PDGF_THRESHOLD" />
-    <population.process process="deposition" id="PDGF_THRESHOLD" value="0" units="concentration" description="threshold on mean PDGF for ECM deposition (Chandrasegaran et al. 2025)" />
+    <population.process process="deposition" id="RATE" value="0" units="amount/hour" conversion="DT" description="rate of ECM deposition by quiescent and proliferative cells with mean GF above GF_THRESHOLD" />
+    <population.process process="deposition" id="GF_THRESHOLD" value="0" units="concentration" description="threshold on mean GF for ECM deposition (Chandrasegaran et al. 2025)" />
     <population.process process="deposition" id="K_O2" value="0" units="mmHg" description="O2 at which ECM deposition is half maximal (collagen prolyl hydroxylation needs O2; ~25 mmHg inferred, to calibrate); 0 disables the O2 limit" />
 
     <!-- LAYERS ============================================================ -->

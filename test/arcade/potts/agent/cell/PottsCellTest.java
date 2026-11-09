@@ -436,7 +436,7 @@ public class PottsCellTest {
         MiniBox box = new MiniBox();
         box.put("(PROCESS)" + TAG_SEPARATOR + "DEPOSITION", "ECM");
         box.put("deposition/RATE", 1.0);
-        box.put("deposition/PDGF_THRESHOLD", 0.1);
+        box.put("deposition/GF_THRESHOLD", 0.1);
         box.put("deposition/K_O2", 0.0);
         Parameters parameters = new Parameters(box, null, null);
         PottsCell cell = new PottsCellMock(containerWithoutRegions, locationMock, parameters);

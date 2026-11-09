@@ -84,7 +84,7 @@ Smaller `MAX_SUBSTEP` values are more accurate next to secreting cells but slowe
 _Specifies a layer that diffuses at 1.33 µm²/s and decays at 1.33/hour._
 
 ```xml
-<layer id="PDGF">
+<layer id="GF">
     <layer.operation id="DIFFUSER" />
     <layer.operation id="DECAYER" />
     <layer.parameter operation="diffuser" id="DIFFUSIVITY" value="1.33" />

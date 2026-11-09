@@ -43,15 +43,15 @@ public class PottsModuleSenescenceTest {
         box.put("senescence/DRUG_START", 10);
         box.put("senescence/DRUG_DURATION", 5);
         box.put("senescence/DRUG_KILL", 0);
-        box.put("senescence/EARLY_RATE_PDGF", 4);
+        box.put("senescence/EARLY_RATE_GF", 4);
         box.put("senescence/EARLY_RATE_INF", 0);
-        box.put("senescence/LATE_RATE_PDGF", 0);
+        box.put("senescence/LATE_RATE_GF", 0);
         box.put("senescence/LATE_RATE_INF", 6);
 
         cell = mock(PottsCellWoundHealing.class);
         doAnswer(i -> new Parameters(box, null, null)).when(cell).getParameters();
         secretion = mock(PottsProcessSecretion.class);
-        doReturn(Set.of("PDGF", "INF")).when(secretion).getLayers();
+        doReturn(Set.of("GF", "INF")).when(secretion).getLayers();
         doReturn(secretion).when(cell).getProcess(Domain.SECRETION);
 
         sim = mock(PottsSimulation.class);
@@ -77,7 +77,7 @@ public class PottsModuleSenescenceTest {
     public void constructor_givenParameters_setsEarlyPhaseAndEarlyRates() {
         PottsModuleSenescence module = new PottsModuleSenescence(cell);
         assertEquals(Phase.SENESCENT_EARLY, module.getPhase());
-        verify(secretion).setRate("PDGF", 4);
+        verify(secretion).setRate("GF", 4);
         verify(secretion).setRate("INF", 0);
     }
 
@@ -93,7 +93,7 @@ public class PottsModuleSenescenceTest {
         PottsModuleSenescence module = new PottsModuleSenescence(cell);
         module.setPhase(Phase.SENESCENT_LATE);
         assertEquals(Phase.SENESCENT_LATE, module.getPhase());
-        verify(secretion).setRate("PDGF", 0);
+        verify(secretion).setRate("GF", 0);
         verify(secretion).setRate("INF", 6);
     }
 

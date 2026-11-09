@@ -15,7 +15,7 @@ public class PottsDepositionIntegrationTest {
     // Deposition is 100 per hour; dt = 0.25 hour, so each cell adds 25 per tick at most.
     private static final double PER_TICK = 25;
 
-    // Threshold on mean PDGF for deposition.
+    // Threshold on mean GF for deposition.
     private static final double THRESHOLD = 0.5;
 
     // O2 at half-maximal deposition [mmHg].
@@ -31,7 +31,7 @@ public class PottsDepositionIntegrationTest {
                 "<population.process id=\"DEPOSITION\" version=\"ECM\" />"
                         + "<population.parameter process=\"deposition\" id=\"RATE\""
                         + " value=\"100\" />"
-                        + "<population.parameter process=\"deposition\" id=\"PDGF_THRESHOLD\""
+                        + "<population.parameter process=\"deposition\" id=\"GF_THRESHOLD\""
                         + " value=\""
                         + THRESHOLD
                         + "\" />"
@@ -41,13 +41,13 @@ public class PottsDepositionIntegrationTest {
                         + extra);
     }
 
-    // Creates a setup with fixed PDGF and O2 layers and an ECM layer with the given ceiling. No
+    // Creates a setup with fixed GF and O2 layers and an ECM layer with the given ceiling. No
     // layer diffuses or decays, so total ECM is the total deposited (below the ceiling).
     static String setup(
-            String name, int ticks, double pdgf, double o2, double maximum, String populations) {
+            String name, int ticks, double gf, double o2, double maximum, String populations) {
         String layers =
-                "<layer id=\"PDGF\"><layer.parameter id=\"INITIAL_CONCENTRATION\" value=\""
-                        + pdgf
+                "<layer id=\"GF\"><layer.parameter id=\"INITIAL_CONCENTRATION\" value=\""
+                        + gf
                         + "\" /></layer>"
                         + "<layer id=\"O2\"><layer.parameter id=\"INITIAL_CONCENTRATION\" value=\""
                         + o2
@@ -69,16 +69,16 @@ public class PottsDepositionIntegrationTest {
     }
 
     @Test
-    public void deposition_pdgfAboveThreshold_depositsRate(@TempDir Path dir) throws Exception {
-        String prefix = run(dir, "pdgf", setup("pdgf", 1, 1, 0, 0, fibroblasts(0, "")));
+    public void deposition_gfAboveThreshold_depositsRate(@TempDir Path dir) throws Exception {
+        String prefix = run(dir, "gf", setup("gf", 1, 1, 0, 0, fibroblasts(0, "")));
         int n = cells(prefix, 0).size();
         assertTrue(n > 0);
         assertEquals(PER_TICK * n, total(prefix, 1, "ECM"), 1E-9);
     }
 
     @Test
-    public void deposition_noPdgf_depositsNothing(@TempDir Path dir) throws Exception {
-        String prefix = run(dir, "nopdgf", setup("nopdgf", 1, 0, 0, 0, fibroblasts(0, "")));
+    public void deposition_noGf_depositsNothing(@TempDir Path dir) throws Exception {
+        String prefix = run(dir, "nogf", setup("nogf", 1, 0, 0, 0, fibroblasts(0, "")));
         assertTrue(cells(prefix, 0).size() > 0);
         assertEquals(0, total(prefix, 1, "ECM"), 1E-12);
     }
@@ -111,7 +111,7 @@ public class PottsDepositionIntegrationTest {
 
     @Test
     public void proliferation_hypoxic_noCellStaysProliferative(@TempDir Path dir) throws Exception {
-        // PDGF is above the proliferation threshold, but O2 is below O2_PROLIF_MIN.
+        // GF is above the proliferation threshold, but O2 is below O2_PROLIF_MIN.
         String gate = "<population.parameter id=\"O2_PROLIF_MIN\" value=\"5\" />";
         String prefix = run(dir, "hypoxic", setup("hypoxic", 1, 1, 1, 0, fibroblasts(0, gate)));
         int proliferative = 0;

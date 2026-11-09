@@ -528,7 +528,7 @@ public class PottsInputBuilderTest {
         PottsInputBuilder builder = mock(PottsInputBuilder.class, CALLS_REAL_METHODS);
         builder.setupLists = new HashMap<>();
         builder.startElement("", "", "layers", atts());
-        builder.startElement("", "", "layer", atts("id", "PDGF"));
+        builder.startElement("", "", "layer", atts("id", "GF"));
         builder.startElement(
                 "", "", "layer.parameter", atts("id", "INITIAL_CONCENTRATION", "value", "2"));
         builder.startElement(
@@ -541,7 +541,7 @@ public class PottsInputBuilderTest {
         ArrayList<Box> layers = builder.setupLists.get("layers");
         assertEquals(1, layers.size());
         Box layer = layers.get(0);
-        assertEquals("PDGF", layer.getValue("id"));
+        assertEquals("GF", layer.getValue("id"));
         assertTrue(layer.filterTags("PARAMETER").contains("INITIAL_CONCENTRATION"));
         assertTrue(layer.filterTags("PARAMETER").contains("diffuser/DIFFUSIVITY"));
         assertTrue(layer.filterTags("OPERATION").contains("DIFFUSER"));

@@ -63,12 +63,12 @@ public class PottsProcessSecretionTest {
 
     @Test
     public void constructor_givenParameters_setsRatesAndPlacements() {
-        MiniBox box = secretion("PDGF", 4, "BOUNDARY");
+        MiniBox box = secretion("GF", 4, "BOUNDARY");
         box.put("secretion/RATE_ECM", 2.0);
         box.put("secretion/REGION_ECM", "INSIDE");
         PottsProcessSecretion process = new PottsProcessSecretion(makeCell(box));
-        assertEquals(4, process.getRate("PDGF"), EPSILON);
-        assertEquals(Placement.BOUNDARY, process.getPlacement("PDGF"));
+        assertEquals(4, process.getRate("GF"), EPSILON);
+        assertEquals(Placement.BOUNDARY, process.getPlacement("GF"));
         assertEquals(2, process.getRate("ECM"), EPSILON);
         assertEquals(Placement.INSIDE, process.getPlacement("ECM"));
     }
@@ -82,67 +82,67 @@ public class PottsProcessSecretionTest {
 
     @Test
     public void constructor_distributionRate_ignoresDistributionKeys() {
-        MiniBox box = secretion("PDGF", 4, "BOUNDARY");
-        box.put("secretion/RATE_PDGF_MU", 4.0);
-        box.put("secretion/RATE_PDGF_SIGMA", 1.0);
+        MiniBox box = secretion("GF", 4, "BOUNDARY");
+        box.put("secretion/RATE_GF_MU", 4.0);
+        box.put("secretion/RATE_GF_SIGMA", 1.0);
         PottsProcessSecretion process = new PottsProcessSecretion(makeCell(box));
         assertEquals(1, process.rates.size());
-        assertEquals(4, process.getRate("PDGF"), EPSILON);
+        assertEquals(4, process.getRate("GF"), EPSILON);
     }
 
     @Test
     public void constructor_negativeRate_throws() {
-        MiniBox box = secretion("PDGF", -1, "BOUNDARY");
+        MiniBox box = secretion("GF", -1, "BOUNDARY");
         assertThrows(
                 IllegalArgumentException.class, () -> new PottsProcessSecretion(makeCell(box)));
     }
 
     @Test
     public void constructor_invalidRegion_throws() {
-        MiniBox box = secretion("PDGF", 1, "EDGE");
+        MiniBox box = secretion("GF", 1, "EDGE");
         assertThrows(
                 IllegalArgumentException.class, () -> new PottsProcessSecretion(makeCell(box)));
     }
 
     @Test
     public void getLayers_givenLayers_returnsLayers() {
-        MiniBox box = secretion("PDGF", 4, "BOUNDARY");
+        MiniBox box = secretion("GF", 4, "BOUNDARY");
         box.put("secretion/RATE_ECM", 2.0);
         box.put("secretion/REGION_ECM", "INSIDE");
         PottsProcessSecretion process = new PottsProcessSecretion(makeCell(box));
-        assertEquals(new HashSet<>(List.of("ECM", "PDGF")), new HashSet<>(process.getLayers()));
+        assertEquals(new HashSet<>(List.of("ECM", "GF")), new HashSet<>(process.getLayers()));
     }
 
     @Test
     public void getLayers_modified_throws() {
         PottsProcessSecretion process =
-                new PottsProcessSecretion(makeCell(secretion("PDGF", 4, "BOUNDARY")));
+                new PottsProcessSecretion(makeCell(secretion("GF", 4, "BOUNDARY")));
         assertThrows(UnsupportedOperationException.class, () -> process.getLayers().clear());
-        assertEquals(4, process.getRate("PDGF"), EPSILON);
+        assertEquals(4, process.getRate("GF"), EPSILON);
     }
 
     @Test
     public void setRate_givenLayer_updatesRate() {
         PottsProcessSecretion process =
-                new PottsProcessSecretion(makeCell(secretion("PDGF", 4, "BOUNDARY")));
-        process.setRate("PDGF", 7);
-        assertEquals(7, process.getRate("PDGF"), EPSILON);
-        assertEquals(Placement.BOUNDARY, process.getPlacement("PDGF"));
+                new PottsProcessSecretion(makeCell(secretion("GF", 4, "BOUNDARY")));
+        process.setRate("GF", 7);
+        assertEquals(7, process.getRate("GF"), EPSILON);
+        assertEquals(Placement.BOUNDARY, process.getPlacement("GF"));
     }
 
     @Test
     public void setRate_unknownLayer_throws() {
         PottsProcessSecretion process =
-                new PottsProcessSecretion(makeCell(secretion("PDGF", 4, "BOUNDARY")));
+                new PottsProcessSecretion(makeCell(secretion("GF", 4, "BOUNDARY")));
         assertThrows(IllegalArgumentException.class, () -> process.setRate("ECM", 1));
     }
 
     @Test
     public void setRate_negativeRate_throws() {
         PottsProcessSecretion process =
-                new PottsProcessSecretion(makeCell(secretion("PDGF", 4, "BOUNDARY")));
-        assertThrows(IllegalArgumentException.class, () -> process.setRate("PDGF", -1));
-        assertEquals(4, process.getRate("PDGF"), EPSILON);
+                new PottsProcessSecretion(makeCell(secretion("GF", 4, "BOUNDARY")));
+        assertThrows(IllegalArgumentException.class, () -> process.setRate("GF", -1));
+        assertEquals(4, process.getRate("GF"), EPSILON);
     }
 
     @Test
@@ -221,9 +221,9 @@ public class PottsProcessSecretionTest {
     @Test
     public void step_boundary_addsAmountToBoundaryVoxels() {
         Voxel voxel = new Voxel(2, 2, 0);
-        PottsCell cell = makeCell(secretion("PDGF", 8, "BOUNDARY"), voxel);
+        PottsCell cell = makeCell(secretion("GF", 8, "BOUNDARY"), voxel);
         PottsLattice lattice = new PottsLattice(5, 5, 1, DS, 1, new MiniBox());
-        PottsSimulation sim = makeSim(makeIds(1, 5, voxel), "PDGF", lattice);
+        PottsSimulation sim = makeSim(makeIds(1, 5, voxel), "GF", lattice);
 
         new PottsProcessSecretion(cell).step(null, sim);
         assertEquals(0, lattice.getField()[0][1][2], EPSILON);
@@ -247,8 +247,8 @@ public class PottsProcessSecretionTest {
     @Test
     public void step_zeroRate_doesNotGetLattice() {
         Voxel voxel = new Voxel(2, 2, 0);
-        PottsCell cell = makeCell(secretion("PDGF", 0, "BOUNDARY"), voxel);
-        PottsSimulation sim = makeSim(makeIds(1, 5, voxel), "PDGF", null);
+        PottsCell cell = makeCell(secretion("GF", 0, "BOUNDARY"), voxel);
+        PottsSimulation sim = makeSim(makeIds(1, 5, voxel), "GF", null);
         new PottsProcessSecretion(cell).step(null, sim);
         verify(sim, never()).getLattice(anyString());
     }

@@ -16,23 +16,23 @@ public class PottsMacrophageIntegrationTest {
     // Threshold on mean INF for the M1 phenotype.
     private static final double THRESHOLD = 1;
 
-    // Macrophages that secrete MMP when M1 and PDGF when M2.
+    // Macrophages that secrete MMP when M1 and GF when M2.
     private static final String SWITCH =
             "<population.process id=\"SECRETION\" />"
                     + "<population.parameter id=\"INF_POLARIZATION\" value=\""
                     + THRESHOLD
                     + "\" />"
                     + "<population.parameter id=\"M1_RATE_MMP\" value=\"100\" />"
-                    + "<population.parameter id=\"M2_RATE_PDGF\" value=\"100\" />";
+                    + "<population.parameter id=\"M2_RATE_GF\" value=\"100\" />";
 
-    // Creates a setup with a fixed INF layer at the given value, and MMP and PDGF layers. No
+    // Creates a setup with a fixed INF layer at the given value, and MMP and GF layers. No
     // layer diffuses or decays, so totals are the totals secreted.
     static String setup(String name, double inf, String populations) {
         String layers =
                 "<layer id=\"INF\"><layer.parameter id=\"INITIAL_CONCENTRATION\" value=\""
                         + inf
                         + "\" /></layer>"
-                        + "<layer id=\"MMP\" /><layer id=\"PDGF\" />";
+                        + "<layer id=\"MMP\" /><layer id=\"GF\" />";
         return "<set><series name=\""
                 + name
                 + "\" ticks=\"1\" interval=\"1\" start=\"0\" end=\"0\""
@@ -51,7 +51,7 @@ public class PottsMacrophageIntegrationTest {
         int n = cells(prefix, 0).size();
         assertTrue(n > 0);
         assertEquals(PER_TICK * n, total(prefix, 1, "MMP"), 1E-9);
-        assertEquals(0, total(prefix, 1, "PDGF"), 1E-12);
+        assertEquals(0, total(prefix, 1, "GF"), 1E-12);
     }
 
     @Test
@@ -61,7 +61,7 @@ public class PottsMacrophageIntegrationTest {
         int n = cells(prefix, 0).size();
         assertTrue(n > 0);
         assertEquals(0, total(prefix, 1, "MMP"), 1E-12);
-        assertEquals(PER_TICK * n, total(prefix, 1, "PDGF"), 1E-9);
+        assertEquals(PER_TICK * n, total(prefix, 1, "GF"), 1E-9);
     }
 
     @Test
@@ -69,7 +69,7 @@ public class PottsMacrophageIntegrationTest {
         // No INF_POLARIZATION: the constant secretion rate is used even with high INF.
         String constant =
                 "<population.process id=\"SECRETION\" />"
-                        + "<population.parameter process=\"secretion\" id=\"RATE_PDGF\""
+                        + "<population.parameter process=\"secretion\" id=\"RATE_GF\""
                         + " value=\"100\" />"
                         + "<population.parameter id=\"M1_RATE_MMP\" value=\"100\" />";
         String macrophages = population("MAC", "macrophage", 4, constant);
@@ -77,6 +77,6 @@ public class PottsMacrophageIntegrationTest {
         int n = cells(prefix, 0).size();
         assertTrue(n > 0);
         assertEquals(0, total(prefix, 1, "MMP"), 1E-12);
-        assertEquals(PER_TICK * n, total(prefix, 1, "PDGF"), 1E-9);
+        assertEquals(PER_TICK * n, total(prefix, 1, "GF"), 1E-9);
     }
 }

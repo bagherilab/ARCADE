@@ -122,7 +122,7 @@ public class PottsWoundIntegrationTest {
                         "<population.parameter id=\"DIFFERENTIATION_TARGET\" value=\"MYO\" />"
                                 + "<population.parameter id=\"DIFFERENTIATION_RATE\""
                                 + " value=\"400\" />"
-                                + "<population.parameter id=\"PDGF_DIFFERENTIATION\""
+                                + "<population.parameter id=\"GF_DIFFERENTIATION\""
                                 + " value=\"-1\" />"
                                 + "<population.parameter id=\"ECM_DIFFERENTIATION\""
                                 + " value=\"-1\" />");

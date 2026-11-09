@@ -1072,7 +1072,7 @@ public class PottsSeriesTest {
     @Test
     public void updateLayers_givenLayer_appliesValuesScalesAndConversions() {
         Box box = new Box();
-        box.add("id", "PDGF");
+        box.add("id", "GF");
         box.addAtt("A", "value", "50");
         box.addTag("A", "PARAMETER");
         box.addAtt("B", "scale", "3");
@@ -1087,7 +1087,7 @@ public class PottsSeriesTest {
 
         PottsSeries series = makeSeriesForLayers(new Box[] {box}, defaults, conversion);
 
-        MiniBox layer = series.layers.get("PDGF");
+        MiniBox layer = series.layers.get("GF");
         assertEquals(50, layer.getDouble("A"), EPSILON);
         assertEquals(6, layer.getDouble("B"), EPSILON);
         assertEquals(4 * DT, layer.getDouble("C"), EPSILON);
@@ -1096,12 +1096,12 @@ public class PottsSeriesTest {
     @Test
     public void updateLayers_givenOperation_addsOperationTag() {
         Box box = new Box();
-        box.add("id", "PDGF");
+        box.add("id", "GF");
         box.addTag("DIFFUSER", "OPERATION");
 
         PottsSeries series = makeSeriesForLayers(new Box[] {box}, new MiniBox(), new MiniBox());
 
-        MiniBox layer = series.layers.get("PDGF");
+        MiniBox layer = series.layers.get("GF");
         assertTrue(layer.contains("(OPERATION)" + TAG_SEPARATOR + "DIFFUSER"));
     }
 
@@ -1183,13 +1183,13 @@ public class PottsSeriesTest {
 
     @Test
     public void addLayerDefaults_givenLayers_copiesDefaultsAndConversions() throws Exception {
-        PottsSeries series = makeSeriesWithLayers("PDGF", "ECM");
+        PottsSeries series = makeSeriesWithLayers("GF", "ECM");
         MiniBox defaults = secretionDefaults();
         MiniBox conversions = secretionConversions();
 
         series.addLayerDefaults(defaults, conversions);
 
-        for (String layer : new String[] {"PDGF", "ECM"}) {
+        for (String layer : new String[] {"GF", "ECM"}) {
             assertEquals(0.0, defaults.getDouble("secretion/RATE_" + layer), EPSILON);
             assertEquals("BOUNDARY", defaults.get("secretion/REGION_" + layer));
             assertEquals("DT", conversions.get("secretion/RATE_" + layer));
@@ -1199,7 +1199,7 @@ public class PottsSeriesTest {
 
     @Test
     public void addLayerDefaults_missingDefault_addsNothing() throws Exception {
-        PottsSeries series = makeSeriesWithLayers("PDGF");
+        PottsSeries series = makeSeriesWithLayers("GF");
         MiniBox defaults = new MiniBox();
         MiniBox conversions = new MiniBox();
 
@@ -1211,30 +1211,30 @@ public class PottsSeriesTest {
 
     @Test
     public void updatePopulation_withLayerDefaults_convertsLayerRate() throws Exception {
-        PottsSeries series = makeSeriesWithLayers("PDGF", "ECM");
+        PottsSeries series = makeSeriesWithLayers("GF", "ECM");
         MiniBox defaults = secretionDefaults();
         MiniBox conversions = secretionConversions();
         series.addLayerDefaults(defaults, conversions);
 
         Box box = new Box();
         box.add("id", POPULATION_ID_1);
-        box.addAtt("secretion/RATE_PDGF", "value", "5");
-        box.addAtt("secretion/RATE_PDGF", "scale", "2");
-        box.addTag("secretion/RATE_PDGF", "PARAMETER");
+        box.addAtt("secretion/RATE_GF", "value", "5");
+        box.addAtt("secretion/RATE_GF", "scale", "2");
+        box.addTag("secretion/RATE_GF", "PARAMETER");
         box.addAtt("secretion/REGION_ECM", "value", "INSIDE");
         box.addTag("secretion/REGION_ECM", "PARAMETER");
         series.updatePopulations(new ArrayList<>(Arrays.asList(box)), defaults, conversions);
 
         MiniBox population = series.populations.get(POPULATION_ID_1);
-        assertEquals(10 * DT, population.getDouble("secretion/RATE_PDGF"), EPSILON);
+        assertEquals(10 * DT, population.getDouble("secretion/RATE_GF"), EPSILON);
         assertEquals(0.0, population.getDouble("secretion/RATE_ECM"), EPSILON);
-        assertEquals("BOUNDARY", population.get("secretion/REGION_PDGF"));
+        assertEquals("BOUNDARY", population.get("secretion/REGION_GF"));
         assertEquals("INSIDE", population.get("secretion/REGION_ECM"));
     }
 
     @Test
     public void updatePopulation_unknownLayerParameter_throws() throws Exception {
-        PottsSeries series = makeSeriesWithLayers("PDGF");
+        PottsSeries series = makeSeriesWithLayers("GF");
         MiniBox defaults = secretionDefaults();
         MiniBox conversions = secretionConversions();
         series.addLayerDefaults(defaults, conversions);
@@ -1254,14 +1254,14 @@ public class PottsSeriesTest {
 
     @Test
     public void addLayerDefaults_uptakeRate_copiesDefaultWithoutConversion() throws Exception {
-        PottsSeries series = makeSeriesWithLayers("O2", "PDGF");
+        PottsSeries series = makeSeriesWithLayers("O2", "GF");
         MiniBox defaults = new MiniBox();
         defaults.put("uptake/RATE", 0.0);
         MiniBox conversions = new MiniBox();
 
         series.addLayerDefaults(defaults, conversions);
 
-        for (String layer : new String[] {"O2", "PDGF"}) {
+        for (String layer : new String[] {"O2", "GF"}) {
             assertEquals(0.0, defaults.getDouble("uptake/RATE_" + layer), EPSILON);
             assertFalse(conversions.contains("uptake/RATE_" + layer));
         }
@@ -1269,7 +1269,7 @@ public class PottsSeriesTest {
 
     @Test
     public void addLayerDefaults_senescenceRates_copiesDefaultsAndConversions() throws Exception {
-        PottsSeries series = makeSeriesWithLayers("PDGF", "INF");
+        PottsSeries series = makeSeriesWithLayers("GF", "INF");
         MiniBox defaults = new MiniBox();
         defaults.put("senescence/EARLY_RATE", 0.0);
         defaults.put("senescence/LATE_RATE", 0.0);
@@ -1279,7 +1279,7 @@ public class PottsSeriesTest {
 
         series.addLayerDefaults(defaults, conversions);
 
-        for (String layer : new String[] {"PDGF", "INF"}) {
+        for (String layer : new String[] {"GF", "INF"}) {
             assertEquals(0.0, defaults.getDouble("senescence/EARLY_RATE_" + layer), EPSILON);
             assertEquals(0.0, defaults.getDouble("senescence/LATE_RATE_" + layer), EPSILON);
             assertEquals("DT", conversions.get("senescence/EARLY_RATE_" + layer));
@@ -1339,7 +1339,7 @@ public class PottsSeriesTest {
 
     @Test
     public void addLayerDefaults_macrophageRates_copiesDefaultsAndConversions() throws Exception {
-        PottsSeries series = makeSeriesWithLayers("MMP", "PDGF");
+        PottsSeries series = makeSeriesWithLayers("MMP", "GF");
         MiniBox defaults = new MiniBox();
         defaults.put("M1_RATE", 0.0);
         defaults.put("M2_RATE", 0.0);
@@ -1349,7 +1349,7 @@ public class PottsSeriesTest {
 
         series.addLayerDefaults(defaults, conversions);
 
-        for (String layer : new String[] {"MMP", "PDGF"}) {
+        for (String layer : new String[] {"MMP", "GF"}) {
             assertEquals(0.0, defaults.getDouble("M1_RATE_" + layer), EPSILON);
             assertEquals(0.0, defaults.getDouble("M2_RATE_" + layer), EPSILON);
             assertEquals("DT", conversions.get("M1_RATE_" + layer));
@@ -1462,12 +1462,12 @@ public class PottsSeriesTest {
     @Test
     public void updatePotts_withLayerDefaults_assignsLayerTargets() throws Exception {
         Box box = new Box();
-        String id = "chemotaxis/LAMBDA_PDGF" + TARGET_SEPARATOR + POPULATION_KEYS[0];
+        String id = "chemotaxis/LAMBDA_GF" + TARGET_SEPARATOR + POPULATION_KEYS[0];
         box.addAtt(id, "value", "5");
         box.addAtt(id, "scale", "2");
         box.addTag(id, "PARAMETER");
 
-        PottsSeries series = makeSeriesForPottsWithLayers(box, "PDGF", "ECM");
+        PottsSeries series = makeSeriesForPottsWithLayers(box, "GF", "ECM");
 
         assertEquals(10, series.potts.getDouble(id), EPSILON);
         for (String pop : POPULATION_KEYS) {
@@ -1475,8 +1475,8 @@ public class PottsSeriesTest {
             assertEquals(0, series.potts.getDouble(ecm), EPSILON);
         }
         for (int i = 1; i < POPULATION_KEYS.length; i++) {
-            String pdgf = "chemotaxis/LAMBDA_PDGF" + TARGET_SEPARATOR + POPULATION_KEYS[i];
-            assertEquals(0, series.potts.getDouble(pdgf), EPSILON);
+            String gf = "chemotaxis/LAMBDA_GF" + TARGET_SEPARATOR + POPULATION_KEYS[i];
+            assertEquals(0, series.potts.getDouble(gf), EPSILON);
         }
     }
 
@@ -1490,7 +1490,7 @@ public class PottsSeriesTest {
         IllegalArgumentException exception =
                 assertThrows(
                         IllegalArgumentException.class,
-                        () -> makeSeriesForPottsWithLayers(box, "PDGF"));
+                        () -> makeSeriesForPottsWithLayers(box, "GF"));
         assertTrue(exception.getMessage().contains("chemotaxis/LAMBDA_PDFG"));
     }
 

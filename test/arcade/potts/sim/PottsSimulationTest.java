@@ -485,7 +485,7 @@ public class PottsSimulationTest {
         sim.potts = mock(Potts.class);
         sim.setupEnvironment();
         assertEquals(0, sim.getLatticeKeys().size());
-        assertNull(sim.getLattice("PDGF"));
+        assertNull(sim.getLattice("GF"));
     }
 
     @Test

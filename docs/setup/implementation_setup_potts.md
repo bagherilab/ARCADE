@@ -77,12 +77,12 @@ Parameters for a layer that is not in the setup cause an error.
 
 ### Example: Including chemotaxis toward a layer
 
-_Specifies chemotaxis of population A up the PDGF gradient and population B down the PDGF gradient._
+_Specifies chemotaxis of population A up the GF gradient and population B down the GF gradient._
 
 ```xml
 <potts.term id="chemotaxis" />
-<potts.parameter term="chemotaxis" id="LAMBDA_PDGF" value="20" target="A" />
-<potts.parameter term="chemotaxis" id="LAMBDA_PDGF" value="-20" target="B" />
+<potts.parameter term="chemotaxis" id="LAMBDA_GF" value="20" target="A" />
+<potts.parameter term="chemotaxis" id="LAMBDA_GF" value="-20" target="B" />
 ```
 
 ## Implementation parameters

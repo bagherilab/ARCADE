@@ -13,21 +13,21 @@ import static arcade.potts.util.PottsEnums.State;
 /**
  * Extension of {@link PottsProcessDeposition} for ECM deposition.
  *
- * <p>The {@code PottsProcessDepositionECM} process deposits ECM when the cell is activated by PDGF,
- * following Chandrasegaran et al. (2025). Each tick, a quiescent or proliferative cell whose mean
- * PDGF is above {@code PDGF_THRESHOLD} adds {@code RATE} × f(O2) to the {@code ECM} layer, where
- * f(O2) = O2 / ({@code K_O2} + O2) is the O2 limit on collagen maturation (prolyl hydroxylation
- * needs O2), using the mean O2 over the cell. If {@code K_O2} is 0, deposition is not limited by O2
- * and no {@code O2} layer is needed. The amount is spread evenly over the cell's own voxels and is
- * added to the field at the next lattice step. Senescent, apoptotic, and other cells do not deposit
- * through this process.
+ * <p>The {@code PottsProcessDepositionECM} process deposits ECM when the cell is activated by
+ * growth factor (the {@code GF} layer; PDGF in Chandrasegaran et al. 2025). Each tick, a quiescent
+ * or proliferative cell whose mean GF is above {@code GF_THRESHOLD} adds {@code RATE} × f(O2) to
+ * the {@code ECM} layer, where f(O2) = O2 / ({@code K_O2} + O2) is the O2 limit on collagen
+ * maturation (prolyl hydroxylation needs O2), using the mean O2 over the cell. If {@code K_O2} is
+ * 0, deposition is not limited by O2 and no {@code O2} layer is needed. The amount is spread evenly
+ * over the cell's own voxels and is added to the field at the next lattice step. Senescent,
+ * apoptotic, and other cells do not deposit through this process.
  */
 public class PottsProcessDepositionECM extends PottsProcessDeposition {
     /** Layer deposited into. */
     static final String ECM_LAYER = "ECM";
 
-    /** Layer read as PDGF. */
-    static final String PDGF_LAYER = "PDGF";
+    /** Layer read as GF. */
+    static final String GF_LAYER = "GF";
 
     /** Layer read as O2. */
     static final String O2_LAYER = "O2";
@@ -35,8 +35,8 @@ public class PottsProcessDepositionECM extends PottsProcessDeposition {
     /** Rate of ECM deposition [amount/tick]. */
     final double rate;
 
-    /** Threshold on mean PDGF for deposition. */
-    final double pdgfThreshold;
+    /** Threshold on mean GF for deposition. */
+    final double gfThreshold;
 
     /** O2 at which deposition is half maximal [mmHg], or 0 for no O2 limit. */
     final double kO2;
@@ -48,7 +48,7 @@ public class PottsProcessDepositionECM extends PottsProcessDeposition {
      *
      * <ul>
      *   <li>{@code RATE} = rate of ECM deposition
-     *   <li>{@code PDGF_THRESHOLD} = threshold on mean PDGF for deposition
+     *   <li>{@code GF_THRESHOLD} = threshold on mean GF for deposition
      *   <li>{@code K_O2} = O2 at which deposition is half maximal (0 for no O2 limit)
      * </ul>
      *
@@ -59,14 +59,14 @@ public class PottsProcessDepositionECM extends PottsProcessDeposition {
 
         Parameters parameters = cell.getParameters();
         rate = parameters.getDouble("deposition/RATE");
-        pdgfThreshold = parameters.getDouble("deposition/PDGF_THRESHOLD");
+        gfThreshold = parameters.getDouble("deposition/GF_THRESHOLD");
         kO2 = parameters.getDouble("deposition/K_O2");
 
         if (!(rate >= 0)) {
             throw new IllegalArgumentException("deposition RATE must be >= 0");
         }
-        if (!(pdgfThreshold >= 0)) {
-            throw new IllegalArgumentException("deposition PDGF_THRESHOLD must be >= 0");
+        if (!(gfThreshold >= 0)) {
+            throw new IllegalArgumentException("deposition GF_THRESHOLD must be >= 0");
         }
         if (!(kO2 >= 0)) {
             throw new IllegalArgumentException("deposition K_O2 must be >= 0");
@@ -109,8 +109,8 @@ public class PottsProcessDepositionECM extends PottsProcessDeposition {
             return;
         }
 
-        Lattice pdgf = getRequiredLattice(sim, PDGF_LAYER);
-        if (!(pdgf.getAverageValue(location) > pdgfThreshold)) {
+        Lattice gf = getRequiredLattice(sim, GF_LAYER);
+        if (!(gf.getAverageValue(location) > gfThreshold)) {
             return;
         }
 

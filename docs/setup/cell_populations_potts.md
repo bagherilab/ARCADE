@@ -64,11 +64,11 @@ Parameters for a layer that is not in the setup cause an error.
 
 ### Example: Secreting into layers
 
-_Specifies a population that secretes PDGF at 1000 per hour into the voxels around each cell, and ECM at 50 per hour into the voxels of each cell._
+_Specifies a population that secretes GF at 1000 per hour into the voxels around each cell, and ECM at 50 per hour into the voxels of each cell._
 
 ```xml
 <population.process id="SECRETION" />
-<population.parameter process="secretion" id="RATE_PDGF" value="1000" />
+<population.parameter process="secretion" id="RATE_GF" value="1000" />
 <population.parameter process="secretion" id="RATE_ECM" value="50" />
 <population.parameter process="secretion" id="REGION_ECM" value="INSIDE" />
 ```
@@ -91,28 +91,28 @@ Secretion that does not depend on O2 (for example, basal or SASP secretion of VE
 ### Deposition process
 
 The `DEPOSITION` process deposits matrix into the layer named by its version.
-The `ECM` version deposits into the `ECM` layer when the cell is activated by PDGF, following Chandrasegaran et al. (2025).
-Each tick, a quiescent or proliferative cell whose mean `PDGF` is above `PDGF_THRESHOLD` adds `RATE` × dt × f(O2) to the `ECM` layer, where f(O2) = O2 / (`K_O2` + O2) is the O2 limit on collagen maturation, using the mean of the `O2` layer over the cell.
+The `ECM` version deposits into the `ECM` layer when the cell is activated by growth factor (the `GF` layer; PDGF in Chandrasegaran et al. 2025).
+Each tick, a quiescent or proliferative cell whose mean `GF` is above `GF_THRESHOLD` adds `RATE` × dt × f(O2) to the `ECM` layer, where f(O2) = O2 / (`K_O2` + O2) is the O2 limit on collagen maturation, using the mean of the `O2` layer over the cell.
 If `K_O2` is 0, deposition is not limited by O2 and no `O2` layer is needed.
 The amount is spread evenly over the voxels of the cell, and is added to the layer at the next lattice step.
 Senescent, apoptotic, necrotic, and autotic cells do not deposit through this process; ECM in the SASP uses the senescence secretion rates.
-The `PDGF` and `ECM` layers are required when `RATE` is above 0.
+The `GF` and `ECM` layers are required when `RATE` is above 0.
 Do not also set `secretion/RATE_ECM` for the same population unless both are intended, since both deposit.
 
 | PARAMETER | DEFAULT | UNITS | DESCRIPTION |
 | --------- | ------- | ----- | ----------- |
 | `deposition/RATE` | 0 | amount/hour | rate of ECM deposition |
-| `deposition/PDGF_THRESHOLD` | 0 | concentration | threshold on mean PDGF for deposition |
+| `deposition/GF_THRESHOLD` | 0 | concentration | threshold on mean GF for deposition |
 | `deposition/K_O2` | 0 | mmHg | O2 at which deposition is half maximal; 0 disables the O2 limit |
 
 ### Example: Depositing ECM when activated
 
-_Specifies a population that deposits 50 ECM per hour when PDGF is above 0.1, half maximal at 25 mmHg O2._
+_Specifies a population that deposits 50 ECM per hour when GF is above 0.1, half maximal at 25 mmHg O2._
 
 ```xml
 <population.process id="DEPOSITION" version="ECM" />
 <population.parameter process="deposition" id="RATE" value="50" />
-<population.parameter process="deposition" id="PDGF_THRESHOLD" value="0.1" />
+<population.parameter process="deposition" id="GF_THRESHOLD" value="0.1" />
 <population.parameter process="deposition" id="K_O2" value="25" />
 ```
 
@@ -129,12 +129,12 @@ _Specifies a population that secretes up to 100 VEGF per hour, half maximal at 1
 
 The `fibroblast`, `myofibroblast`, `macrophage`, and `tissue` classes model wound healing.
 Each tick, a wound healing cell applies the rules for its class (quiescent and proliferative cells only), steps its processes, and then steps the module for its state.
-The rules read the mean `PDGF`, `ECM`, and `INF` layer values over the cell; a layer that is not in the setup reads as 0.
+The rules read the mean `GF` (growth factor), `ECM`, and `INF` layer values over the cell; `GF` stands for the pro-repair growth factors (PDGF, TGF-β) lumped into one field; a layer that is not in the setup reads as 0.
 
 | CLASS | RULES |
 | ----- | ----- |
-| `fibroblast` | Proliferates when PDGF is above `PDGF_PROLIFERATION`. Differentiates into the `DIFFERENTIATION_TARGET` population when PDGF and ECM are above their thresholds. Becomes senescent spontaneously or through the bystander routes. |
-| `myofibroblast` | Proliferates under the same conditions as fibroblasts. Becomes apoptotic when INF is above `INF_APOPTOSIS`. Matures after a mean of `MATURATION`; mature cells become apoptotic when ECM is below `ECM_TENSION`, or senescent with probability `SENESCENCE_RATE`. Becomes senescent through the bystander routes. |
+| `fibroblast` | Proliferates when GF is above `GF_PROLIFERATION`. Differentiates into the `DIFFERENTIATION_TARGET` population when GF and ECM are above their thresholds. Becomes senescent spontaneously or through the bystander routes. |
+| `myofibroblast` | Proliferates under the same conditions as fibroblasts. Becomes apoptotic when INF is above `INF_APOPTOSIS`. Matures after a mean of `MATURATION`; mature cells become apoptotic when ECM is below `ECM_TENSION`, or senescent with probability `SENESCENCE_RATE` once the time (including the series `offset`) reaches `SENESCENCE_START`. Becomes senescent through the bystander routes. |
 | `macrophage` | Does not proliferate. Senescent cells that touch a macrophage may be cleared. If `INF_POLARIZATION` is above 0, switches each tick between M1 (INF above the threshold) and M2 secretion rates. |
 | `tissue` | Proliferates into free space next to the cell when the mean ECM over that space is at least `ECM_PROLIFERATION`. Becomes senescent spontaneously or through the bystander routes. |
 
@@ -142,7 +142,7 @@ Wound healing cells are quiescent, proliferative, senescent, or apoptotic; any o
 A quiescent cell becomes apoptotic with probability `BASAL_DEATH` each tick, before the class rules apply. Proliferative cells die through `proliferation/BASAL_APOPTOSIS_RATE`, and senescent cells only through clearance.
 A quiescent cell becomes proliferative when it can proliferate.
 A proliferative cell returns to quiescent if it can no longer proliferate during G1; after G1, it is committed to dividing.
-Fibroblasts and myofibroblasts need PDGF above `PDGF_PROLIFERATION` to start proliferating, and at least half of it to continue.
+Fibroblasts and myofibroblasts need GF above `GF_PROLIFERATION` to start proliferating, and at least half of it to continue.
 All classes except macrophages are blocked from proliferating when the free fraction of voxels around the cell is below `CONTACT_FREE_FRACTION`.
 If `O2_PROLIF_MIN` is above 0, they are also blocked when the mean of the `O2` layer over the cell is below it; the `O2` layer is then required.
 
@@ -156,7 +156,7 @@ Wound healing populations do not support regions; a `population.region` tag caus
 | --------- | ------- | ----- | ----------- |
 | `CONTACT_FREE_FRACTION` | 0 | | minimum free fraction of voxels around the cell to proliferate; 0 disables contact inhibition |
 | `SPONTANEOUS_SENESCENCE` | 0 | 1/hour | probability of spontaneous senescence |
-| `BYSTANDER_CONTACT` | 0 | 1/hour | probability of senescence on contact with a senescent cell |
+| `BYSTANDER_CONTACT` | 0 | 1/hour | probability of senescence on contact with an early-phase senescent cell (late-phase cells induce only through the paracrine route) |
 | `BYSTANDER_PARACRINE` | 0 | 1/hour | probability of senescence when INF is above `INF_BYSTANDER` |
 | `INF_BYSTANDER` | 1000 | concentration | threshold on INF for paracrine senescence |
 | `O2_PROLIF_MIN` | 0 | mmHg | minimum mean O2 over the cell to proliferate; 0 disables the O2 gate |
@@ -164,8 +164,8 @@ Wound healing populations do not support regions; a `population.region` tag caus
 | `INF_POLARIZATION` | 0 | concentration | macrophages only: threshold on mean INF for the M1 phenotype; 0 disables the switch |
 | `M1_RATE_[LAYER]` | 0 | amount/hour | macrophages only: secretion rate into the layer in the M1 phenotype |
 | `M2_RATE_[LAYER]` | 0 | amount/hour | macrophages only: secretion rate into the layer in the M2 phenotype |
-| `PDGF_PROLIFERATION` | 0.1 | concentration | threshold on PDGF for proliferation |
-| `PDGF_DIFFERENTIATION` | 0.1 | concentration | threshold on PDGF for differentiation |
+| `GF_PROLIFERATION` | 0.1 | concentration | threshold on GF for proliferation |
+| `GF_DIFFERENTIATION` | 0.1 | concentration | threshold on GF for differentiation |
 | `ECM_DIFFERENTIATION` | 0.5 | concentration | threshold on ECM for differentiation |
 | `DIFFERENTIATION_RATE` | 0.2 | 1/hour | probability of differentiation above thresholds |
 | `DIFFERENTIATION_TARGET` | `NONE` | | population id fibroblasts differentiate into |
@@ -173,6 +173,7 @@ Wound healing populations do not support regions; a `population.region` tag caus
 | `MATURATION` | 72 | hours | mean time to myofibroblast maturation |
 | `ECM_TENSION` | 0.2 | concentration | threshold on ECM below which mature myofibroblasts become apoptotic |
 | `SENESCENCE_RATE` | 0.02 | 1/hour | probability of senescence for mature myofibroblasts |
+| `SENESCENCE_START` | 0 | hours | time (including the series `offset`) from which mature myofibroblasts can become senescent; 0 means no gate. Only this primary route is gated; maturation, tension apoptosis and the bystander routes are not |
 | `ECM_PROLIFERATION` | 0 | concentration | minimum mean ECM over free voxels for tissue proliferation; 0 disables the gate |
 
 ### Senescence
@@ -206,22 +207,22 @@ The switch needs the `SECRETION` process, or the simulation fails when the cell 
 If `INF_POLARIZATION` is 0, the macrophage uses its `secretion/RATE_[LAYER]` rates.
 The phenotype is not saved; it can be recomputed from the saved INF layer at the macrophage locations.
 
-### Example: Macrophages that switch between MMP and PDGF
+### Example: Macrophages that switch between MMP and GF
 
-_Specifies macrophages that secrete MMP at 100 per hour when mean INF is above 1 (M1), and PDGF at 100 per hour otherwise (M2)._
+_Specifies macrophages that secrete MMP at 100 per hour when mean INF is above 1 (M1), and GF at 100 per hour otherwise (M2)._
 
 ```xml
 <population id="MAC" class="macrophage" init="20">
     <population.process id="SECRETION" />
     <population.parameter id="INF_POLARIZATION" value="1" />
     <population.parameter id="M1_RATE_MMP" value="100" />
-    <population.parameter id="M2_RATE_PDGF" value="100" />
+    <population.parameter id="M2_RATE_GF" value="100" />
 </population>
 ```
 
 ### Example: Fibroblasts that differentiate into myofibroblasts
 
-_Specifies fibroblasts that deposit ECM under themselves and differentiate into a myofibroblast population that also secretes PDGF. Senescent fibroblasts secrete PDGF early and MMP late._
+_Specifies fibroblasts that deposit ECM under themselves and differentiate into a myofibroblast population that also secretes GF. Senescent fibroblasts secrete GF early and MMP late._
 
 ```xml
 <population id="FIB" class="fibroblast" init="100">
@@ -229,14 +230,14 @@ _Specifies fibroblasts that deposit ECM under themselves and differentiate into 
     <population.parameter id="DIFFERENTIATION_TARGET" value="MYO" />
     <population.parameter process="secretion" id="RATE_ECM" value="5" />
     <population.parameter process="secretion" id="REGION_ECM" value="INSIDE" />
-    <population.parameter module="senescence" id="EARLY_RATE_PDGF" value="1000" />
+    <population.parameter module="senescence" id="EARLY_RATE_GF" value="1000" />
     <population.parameter module="senescence" id="LATE_RATE_MMP" value="20000" />
 </population>
 <population id="MYO" class="myofibroblast" init="0">
     <population.process id="SECRETION" />
     <population.parameter process="secretion" id="RATE_ECM" value="30" />
     <population.parameter process="secretion" id="REGION_ECM" value="INSIDE" />
-    <population.parameter process="secretion" id="RATE_PDGF" value="200" />
+    <population.parameter process="secretion" id="RATE_GF" value="200" />
 </population>
 ```
 

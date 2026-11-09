@@ -27,23 +27,23 @@ public class PottsCellMacrophageTest {
         return new PottsCellMacrophage(f.container(state), f.location, f.parameters(), null);
     }
 
-    // Adds a secretion process for MMP and PDGF, with constant rates of 1 for both.
+    // Adds a secretion process for MMP and GF, with constant rates of 1 for both.
     private void addSecretion() {
         f.box.put("(PROCESS)" + TAG_SEPARATOR + "SECRETION", "");
-        for (String layer : new String[] {"MMP", "PDGF"}) {
+        for (String layer : new String[] {"MMP", "GF"}) {
             f.box.put("secretion/RATE_" + layer, 1.0);
             f.box.put("secretion/REGION_" + layer, "INSIDE");
         }
     }
 
-    // Turns on the switch: M1 secretes MMP at 5, M2 secretes PDGF at 3.
+    // Turns on the switch: M1 secretes MMP at 5, M2 secretes GF at 3.
     private void addSwitch() {
         addSecretion();
         f.box.put("INF_POLARIZATION", THRESHOLD);
         f.box.put("M1_RATE_MMP", 5.0);
-        f.box.put("M1_RATE_PDGF", 0.0);
+        f.box.put("M1_RATE_GF", 0.0);
         f.box.put("M2_RATE_MMP", 0.0);
-        f.box.put("M2_RATE_PDGF", 3.0);
+        f.box.put("M2_RATE_GF", 3.0);
     }
 
     // Gets the secretion process of the cell.
@@ -52,8 +52,8 @@ public class PottsCellMacrophageTest {
     }
 
     @Test
-    public void canProliferate_highPdgf_returnsFalse() {
-        f.means.put("PDGF", 10.0);
+    public void canProliferate_highGf_returnsFalse() {
+        f.means.put("GF", 10.0);
         assertFalse(make(State.QUIESCENT).canProliferate(f.sim));
     }
 
@@ -72,7 +72,7 @@ public class PottsCellMacrophageTest {
         cell.stepRules(f.random, f.sim);
         assertTrue(cell.isM1(f.sim));
         assertEquals(5, secretion(cell).getRate("MMP"), EPSILON);
-        assertEquals(0, secretion(cell).getRate("PDGF"), EPSILON);
+        assertEquals(0, secretion(cell).getRate("GF"), EPSILON);
     }
 
     @Test
@@ -83,7 +83,7 @@ public class PottsCellMacrophageTest {
         cell.stepRules(f.random, f.sim);
         assertFalse(cell.isM1(f.sim));
         assertEquals(0, secretion(cell).getRate("MMP"), EPSILON);
-        assertEquals(3, secretion(cell).getRate("PDGF"), EPSILON);
+        assertEquals(3, secretion(cell).getRate("GF"), EPSILON);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class PottsCellMacrophageTest {
         doReturn(null).when(f.sim).getLattice("INF");
         PottsCellMacrophage cell = make(State.QUIESCENT);
         cell.stepRules(f.random, f.sim);
-        assertEquals(3, secretion(cell).getRate("PDGF"), EPSILON);
+        assertEquals(3, secretion(cell).getRate("GF"), EPSILON);
     }
 
     @Test
@@ -104,7 +104,7 @@ public class PottsCellMacrophageTest {
         f.means.put("INF", 0.0);
         cell.stepRules(f.random, f.sim);
         assertEquals(0, secretion(cell).getRate("MMP"), EPSILON);
-        assertEquals(3, secretion(cell).getRate("PDGF"), EPSILON);
+        assertEquals(3, secretion(cell).getRate("GF"), EPSILON);
     }
 
     @Test
@@ -115,7 +115,7 @@ public class PottsCellMacrophageTest {
         cell.stepRules(f.random, f.sim);
         assertFalse(cell.isM1(f.sim));
         assertEquals(1, secretion(cell).getRate("MMP"), EPSILON);
-        assertEquals(1, secretion(cell).getRate("PDGF"), EPSILON);
+        assertEquals(1, secretion(cell).getRate("GF"), EPSILON);
     }
 
     @Test

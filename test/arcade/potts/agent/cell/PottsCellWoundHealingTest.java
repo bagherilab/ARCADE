@@ -20,6 +20,7 @@ import arcade.potts.env.location.Voxel;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.potts.util.PottsEnums.Domain;
+import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
 
 public class PottsCellWoundHealingTest {
@@ -173,8 +174,8 @@ public class PottsCellWoundHealingTest {
 
     @Test
     public void getMean_givenLayer_returnsMean() {
-        f.means.put("PDGF", 0.4);
-        assertEquals(0.4, make(State.QUIESCENT).getMean(f.sim, "PDGF"), EPSILON);
+        f.means.put("GF", 0.4);
+        assertEquals(0.4, make(State.QUIESCENT).getMean(f.sim, "GF"), EPSILON);
     }
 
     @Test
@@ -271,19 +272,41 @@ public class PottsCellWoundHealingTest {
     }
 
     @Test
-    public void touchesSenescent_senescentNeighbor_returnsTrue() {
-        PottsCell neighbor = mock(PottsCell.class);
-        doReturn(State.SENESCENT).when(neighbor).getState();
+    public void touchesEarlySenescent_earlySenescentNeighbor_returnsTrue() {
+        PottsCell neighbor = PottsCellWoundHealingFixture.senescent(Phase.SENESCENT_EARLY);
         f.addNeighbor(8, 1, 2, neighbor);
-        assertTrue(make(State.QUIESCENT).touchesSenescent(f.sim));
+        assertTrue(make(State.QUIESCENT).touchesEarlySenescent(f.sim));
     }
 
     @Test
-    public void touchesSenescent_otherNeighbor_returnsFalse() {
+    public void touchesEarlySenescent_lateSenescentNeighbor_returnsFalse() {
+        f.addNeighbor(8, 1, 2, PottsCellWoundHealingFixture.senescent(Phase.SENESCENT_LATE));
+        assertFalse(make(State.QUIESCENT).touchesEarlySenescent(f.sim));
+    }
+
+    @Test
+    public void touchesEarlySenescent_lateAndEarlyNeighbors_returnsTrue() {
+        f.addNeighbor(8, 1, 2, PottsCellWoundHealingFixture.senescent(Phase.SENESCENT_LATE));
+        f.addNeighbor(9, 3, 2, PottsCellWoundHealingFixture.senescent(Phase.SENESCENT_EARLY));
+        assertTrue(make(State.QUIESCENT).touchesEarlySenescent(f.sim));
+    }
+
+    @Test
+    public void checkBystanderSenescence_contactWithLateSenescent_doesNotDraw() {
+        f.box.put("BYSTANDER_CONTACT", 0.5);
+        f.addNeighbor(8, 1, 2, PottsCellWoundHealingFixture.senescent(Phase.SENESCENT_LATE));
+        WoundHealingCell cell = make(State.QUIESCENT);
+        assertFalse(cell.checkBystanderSenescence(f.random, f.sim));
+        assertEquals(State.QUIESCENT, cell.getState());
+        verify(f.random, never()).nextDouble();
+    }
+
+    @Test
+    public void touchesEarlySenescent_otherNeighbor_returnsFalse() {
         PottsCell neighbor = mock(PottsCell.class);
         doReturn(State.QUIESCENT).when(neighbor).getState();
         f.addNeighbor(8, 1, 2, neighbor);
-        assertFalse(make(State.QUIESCENT).touchesSenescent(f.sim));
+        assertFalse(make(State.QUIESCENT).touchesEarlySenescent(f.sim));
     }
 
     @Test
@@ -305,8 +328,7 @@ public class PottsCellWoundHealingTest {
     @Test
     public void checkBystanderSenescence_contactWithSenescent_becomesSenescent() {
         f.box.put("BYSTANDER_CONTACT", 0.5);
-        PottsCell neighbor = mock(PottsCell.class);
-        doReturn(State.SENESCENT).when(neighbor).getState();
+        PottsCell neighbor = PottsCellWoundHealingFixture.senescent(Phase.SENESCENT_EARLY);
         f.addNeighbor(8, 1, 2, neighbor);
         WoundHealingCell cell = make(State.QUIESCENT);
         assertTrue(cell.checkBystanderSenescence(f.random, f.sim));

@@ -2,6 +2,7 @@ package arcade.potts.agent.cell;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import sim.engine.Schedule;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.potts.util.PottsEnums.State;
@@ -21,14 +22,14 @@ public class PottsCellMyofibroblastTest {
     }
 
     @Test
-    public void canProliferate_quiescentPdgfAboveThreshold_returnsTrue() {
-        f.means.put("PDGF", 0.25);
+    public void canProliferate_quiescentGfAboveThreshold_returnsTrue() {
+        f.means.put("GF", 0.25);
         assertTrue(make(State.QUIESCENT).canProliferate(f.sim));
     }
 
     @Test
-    public void canProliferate_proliferativePdgfBelowHalfThreshold_returnsFalse() {
-        f.means.put("PDGF", 0.09);
+    public void canProliferate_proliferativeGfBelowHalfThreshold_returnsFalse() {
+        f.means.put("GF", 0.09);
         assertFalse(make(State.PROLIFERATIVE).canProliferate(f.sim));
     }
 
@@ -85,17 +86,82 @@ public class PottsCellMyofibroblastTest {
 
     @Test
     public void stepRules_quiescentCanProliferate_becomesProliferative() {
-        f.means.put("PDGF", 0.25);
+        f.means.put("GF", 0.25);
         doReturn(0.3).when(f.random).nextDouble();
         PottsCellMyofibroblast cell = make(State.QUIESCENT);
         cell.stepRules(f.random, f.sim);
         assertEquals(State.PROLIFERATIVE, cell.getState());
     }
 
+    // Creates a mature quiescent myofibroblast that always becomes senescent once allowed, with
+    // the senescence window opening at tick 10 and the simulation at the given tick.
+    private PottsCellMyofibroblast makeGated(double time) {
+        f.box.put("SENESCENCE_RATE", 0.5);
+        f.box.put("SENESCENCE_START", 10);
+        Schedule schedule = f.sim.getSchedule();
+        doReturn(time).when(schedule).getTime();
+        PottsCellMyofibroblast cell = make(State.QUIESCENT);
+        cell.mature = true;
+        return cell;
+    }
+
+    @Test
+    public void stepRules_matureBeforeSenescenceStart_doesNotBecomeSenescent() {
+        PottsCellMyofibroblast cell = makeGated(9);
+        cell.stepRules(f.random, f.sim);
+        assertEquals(State.QUIESCENT, cell.getState());
+    }
+
+    @Test
+    public void stepRules_matureAtSenescenceStart_becomesSenescent() {
+        PottsCellMyofibroblast cell = makeGated(10);
+        assertTrue(cell.stepRules(f.random, f.sim));
+        assertEquals(State.SENESCENT, cell.getState());
+    }
+
+    @Test
+    public void stepRules_matureAfterSenescenceStart_becomesSenescent() {
+        PottsCellMyofibroblast cell = makeGated(30);
+        cell.stepRules(f.random, f.sim);
+        assertEquals(State.SENESCENT, cell.getState());
+    }
+
+    @Test
+    public void stepRules_beforeSenescenceStart_drawsOnlyForMaturation() {
+        // Immature cell before the start: one draw (maturation), none for senescence.
+        PottsCellMyofibroblast cell = makeGated(0);
+        cell.mature = false;
+        cell.stepRules(f.random, f.sim);
+        assertTrue(cell.mature);
+        assertEquals(State.QUIESCENT, cell.getState());
+        verify(f.random, times(1)).nextDouble();
+    }
+
+    @Test
+    public void stepRules_lowEcmBeforeSenescenceStart_becomesApoptotic() {
+        f.means.put("ECM", 0.05);
+        PottsCellMyofibroblast cell = makeGated(0);
+        cell.stepRules(f.random, f.sim);
+        assertEquals(State.APOPTOTIC, cell.getState());
+    }
+
+    @Test
+    public void isSenescenceOpen_noStart_doesNotReadTime() {
+        PottsCellMyofibroblast cell = make(State.QUIESCENT);
+        assertTrue(cell.isSenescenceOpen(f.sim));
+        verify(f.sim, never()).getSchedule();
+    }
+
+    @Test
+    public void constructor_negativeSenescenceStart_throws() {
+        f.box.put("SENESCENCE_START", -1);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
+
     @Test
     public void canProliferate_hypoxic_returnsFalse() {
         f.box.put("O2_PROLIF_MIN", 2.0);
-        f.means.put("PDGF", 1.0);
+        f.means.put("GF", 1.0);
         f.means.put("O2", 1.0);
         assertFalse(make(State.QUIESCENT).canProliferate(f.sim));
     }

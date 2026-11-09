@@ -24,7 +24,7 @@ public class PottsProcessDepositionECMTest {
     // Deposition rate [amount/tick].
     private static final double RATE = 8;
 
-    // Threshold on mean PDGF.
+    // Threshold on mean GF.
     private static final double THRESHOLD = 0.5;
 
     // O2 at half-maximal deposition [mmHg].
@@ -40,7 +40,7 @@ public class PottsProcessDepositionECMTest {
     static MiniBox deposition(double rate, double threshold, double k) {
         MiniBox box = new MiniBox();
         box.put("deposition/RATE", rate);
-        box.put("deposition/PDGF_THRESHOLD", threshold);
+        box.put("deposition/GF_THRESHOLD", threshold);
         box.put("deposition/K_O2", k);
         return box;
     }
@@ -60,9 +60,9 @@ public class PottsProcessDepositionECMTest {
     }
 
     // Creates a mock simulation with the given layers (null for a missing layer).
-    static PottsSimulation makeSim(Lattice pdgf, Lattice o2, PottsLattice ecm) {
+    static PottsSimulation makeSim(Lattice gf, Lattice o2, PottsLattice ecm) {
         PottsSimulation sim = mock(PottsSimulation.class);
-        doReturn(pdgf).when(sim).getLattice("PDGF");
+        doReturn(gf).when(sim).getLattice("GF");
         doReturn(o2).when(sim).getLattice("O2");
         doReturn(ecm).when(sim).getLattice("ECM");
         return sim;
@@ -90,7 +90,7 @@ public class PottsProcessDepositionECMTest {
         PottsProcessDepositionECM process =
                 makeProcess(deposition(RATE, THRESHOLD, K), State.QUIESCENT);
         assertEquals(RATE, process.rate, EPSILON);
-        assertEquals(THRESHOLD, process.pdgfThreshold, EPSILON);
+        assertEquals(THRESHOLD, process.gfThreshold, EPSILON);
         assertEquals(K, process.kO2, EPSILON);
     }
 
@@ -145,7 +145,7 @@ public class PottsProcessDepositionECMTest {
     }
 
     @Test
-    public void step_pdgfAboveThreshold_depositsRateOverCellVoxels() {
+    public void step_gfAboveThreshold_depositsRateOverCellVoxels() {
         PottsLattice ecm = makeEcm();
         PottsSimulation sim = makeSim(makeLayer(THRESHOLD + 0.1), null, ecm);
         step(makeProcess(deposition(RATE, THRESHOLD, 0), State.QUIESCENT), sim);
@@ -161,7 +161,7 @@ public class PottsProcessDepositionECMTest {
     }
 
     @Test
-    public void step_pdgfAtThreshold_depositsNothing() {
+    public void step_gfAtThreshold_depositsNothing() {
         PottsLattice ecm = makeEcm();
         PottsSimulation sim = makeSim(makeLayer(THRESHOLD), null, ecm);
         step(makeProcess(deposition(RATE, THRESHOLD, 0), State.QUIESCENT), sim);
@@ -169,7 +169,7 @@ public class PottsProcessDepositionECMTest {
     }
 
     @Test
-    public void step_noPdgf_depositsNothing() {
+    public void step_noGf_depositsNothing() {
         PottsLattice ecm = makeEcm();
         PottsSimulation sim = makeSim(makeLayer(0), null, ecm);
         step(makeProcess(deposition(RATE, 0, 0), State.QUIESCENT), sim);
@@ -212,7 +212,7 @@ public class PottsProcessDepositionECMTest {
     }
 
     @Test
-    public void step_noPdgfLayer_throws() {
+    public void step_noGfLayer_throws() {
         PottsSimulation sim = makeSim(null, makeLayer(K), makeEcm());
         PottsProcessDepositionECM process =
                 makeProcess(deposition(RATE, THRESHOLD, K), State.QUIESCENT);

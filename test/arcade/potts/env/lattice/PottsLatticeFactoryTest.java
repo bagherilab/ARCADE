@@ -43,10 +43,10 @@ public class PottsLatticeFactoryTest {
     @Test
     public void createLattices_givenLayers_sizesAndInitializes() throws Exception {
         HashMap<String, MiniBox> layers = new HashMap<>();
-        layers.put("PDGF", layer(1.5));
+        layers.put("GF", layer(1.5));
         PottsLatticeFactory factory = new PottsLatticeFactory();
         factory.createLattices(series(layers));
-        PottsLattice lattice = factory.lattices.get("PDGF");
+        PottsLattice lattice = factory.lattices.get("GF");
         assertEquals(7, lattice.getLength());
         assertEquals(5, lattice.getWidth());
         assertEquals(3, lattice.getDs(), 1E-12);
@@ -101,7 +101,7 @@ public class PottsLatticeFactoryTest {
     public void createLattices_loadedField_overridesInitial() throws Exception {
         HashMap<String, MiniBox> layers = new HashMap<>();
         layers.put("ECM", layer(0));
-        layers.put("PDGF", layer(2));
+        layers.put("GF", layer(2));
         double[][][] loaded = new double[1][7][5];
         loaded[0][3][2] = 9.0;
         HashMap<String, double[][][]> fields = new HashMap<>();
@@ -109,7 +109,7 @@ public class PottsLatticeFactoryTest {
         PottsLatticeFactory factory = new PottsLatticeFactory();
         factory.createLattices(series(layers), fields);
         assertEquals(9.0, factory.lattices.get("ECM").getField()[0][3][2], 0);
-        assertEquals(2.0, factory.lattices.get("PDGF").getField()[0][3][2], 0);
+        assertEquals(2.0, factory.lattices.get("GF").getField()[0][3][2], 0);
     }
 
     @Test

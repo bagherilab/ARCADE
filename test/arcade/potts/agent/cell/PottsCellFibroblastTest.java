@@ -28,40 +28,40 @@ public class PottsCellFibroblastTest {
     }
 
     @Test
-    public void canProliferate_quiescentPdgfAboveThreshold_returnsTrue() {
-        f.means.put("PDGF", 0.25);
+    public void canProliferate_quiescentGfAboveThreshold_returnsTrue() {
+        f.means.put("GF", 0.25);
         assertTrue(make(State.QUIESCENT).canProliferate(f.sim));
     }
 
     @Test
-    public void canProliferate_quiescentPdgfAtThreshold_returnsFalse() {
-        f.means.put("PDGF", 0.2);
+    public void canProliferate_quiescentGfAtThreshold_returnsFalse() {
+        f.means.put("GF", 0.2);
         assertFalse(make(State.QUIESCENT).canProliferate(f.sim));
     }
 
     @Test
-    public void canProliferate_proliferativePdgfAtHalfThreshold_returnsTrue() {
-        f.means.put("PDGF", 0.1);
+    public void canProliferate_proliferativeGfAtHalfThreshold_returnsTrue() {
+        f.means.put("GF", 0.1);
         assertTrue(make(State.PROLIFERATIVE).canProliferate(f.sim));
     }
 
     @Test
-    public void canProliferate_proliferativePdgfBelowHalfThreshold_returnsFalse() {
-        f.means.put("PDGF", 0.09);
+    public void canProliferate_proliferativeGfBelowHalfThreshold_returnsFalse() {
+        f.means.put("GF", 0.09);
         assertFalse(make(State.PROLIFERATIVE).canProliferate(f.sim));
     }
 
     @Test
     public void canProliferate_contactInhibited_returnsFalse() {
         f.box.put("CONTACT_FREE_FRACTION", 0.5);
-        f.means.put("PDGF", 1.0);
+        f.means.put("GF", 1.0);
         f.surround(8);
         assertFalse(make(State.QUIESCENT).canProliferate(f.sim));
     }
 
     @Test
     public void stepRules_quiescentCanProliferate_becomesProliferative() {
-        f.means.put("PDGF", 0.25);
+        f.means.put("GF", 0.25);
         PottsCellFibroblast cell = make(State.QUIESCENT);
         assertTrue(cell.stepRules(f.random, f.sim));
         assertEquals(State.PROLIFERATIVE, cell.getState());
@@ -75,7 +75,7 @@ public class PottsCellFibroblastTest {
     }
 
     @Test
-    public void stepRules_proliferativeLowPdgf_staysProliferative() {
+    public void stepRules_proliferativeLowGf_staysProliferative() {
         PottsCellFibroblast cell = make(State.PROLIFERATIVE);
         assertTrue(cell.stepRules(f.random, f.sim));
         assertEquals(State.PROLIFERATIVE, cell.getState());
@@ -84,7 +84,7 @@ public class PottsCellFibroblastTest {
     @Test
     public void stepRules_spontaneousSenescence_becomesSenescent() {
         f.box.put("SPONTANEOUS_SENESCENCE", 0.5);
-        f.means.put("PDGF", 0.25);
+        f.means.put("GF", 0.25);
         PottsCellFibroblast cell = make(State.QUIESCENT);
         assertTrue(cell.stepRules(f.random, f.sim));
         assertEquals(State.SENESCENT, cell.getState());
@@ -93,7 +93,7 @@ public class PottsCellFibroblastTest {
     @Test
     public void stepRules_noTarget_doesNotDifferentiate() {
         f.box.put("DIFFERENTIATION_RATE", 0.5);
-        f.means.put("PDGF", 1.0);
+        f.means.put("GF", 1.0);
         f.means.put("ECM", 1.0);
         PottsCellFibroblast cell = make(State.QUIESCENT);
         assertTrue(cell.stepRules(f.random, f.sim));
@@ -104,7 +104,7 @@ public class PottsCellFibroblastTest {
     public void stepRules_belowDifferentiationThresholds_doesNotDifferentiate() {
         f.box.put("DIFFERENTIATION_RATE", 0.5);
         f.box.put("DIFFERENTIATION_TARGET", "MYO");
-        f.means.put("PDGF", 1.0);
+        f.means.put("GF", 1.0);
         f.means.put("ECM", 0.3);
         PottsCellFibroblast cell = make(State.QUIESCENT);
         assertTrue(cell.stepRules(f.random, f.sim));
@@ -115,7 +115,7 @@ public class PottsCellFibroblastTest {
     public void stepRules_aboveDifferentiationThresholds_replacesCell() {
         f.box.put("DIFFERENTIATION_RATE", 0.5);
         f.box.put("DIFFERENTIATION_TARGET", "MYO");
-        f.means.put("PDGF", 1.0);
+        f.means.put("GF", 1.0);
         f.means.put("ECM", 1.0);
         PottsCellFibroblast cell = make(State.PROLIFERATIVE);
         setUpDifferentiation(cell);
@@ -175,7 +175,7 @@ public class PottsCellFibroblastTest {
     @Test
     public void canProliferate_quiescentHypoxic_returnsFalse() {
         f.box.put("O2_PROLIF_MIN", 2.0);
-        f.means.put("PDGF", 1.0);
+        f.means.put("GF", 1.0);
         f.means.put("O2", 1.0);
         assertFalse(make(State.QUIESCENT).canProliferate(f.sim));
     }
@@ -183,7 +183,7 @@ public class PottsCellFibroblastTest {
     @Test
     public void canProliferate_proliferativeHypoxic_returnsFalse() {
         f.box.put("O2_PROLIF_MIN", 2.0);
-        f.means.put("PDGF", 1.0);
+        f.means.put("GF", 1.0);
         f.means.put("O2", 1.0);
         assertFalse(make(State.PROLIFERATIVE).canProliferate(f.sim));
     }
@@ -191,7 +191,7 @@ public class PottsCellFibroblastTest {
     @Test
     public void canProliferate_enoughOxygen_returnsTrue() {
         f.box.put("O2_PROLIF_MIN", 2.0);
-        f.means.put("PDGF", 1.0);
+        f.means.put("GF", 1.0);
         f.means.put("O2", 3.0);
         assertTrue(make(State.QUIESCENT).canProliferate(f.sim));
     }
