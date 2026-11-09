@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import arcade.potts.env.location.Voxel;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.State;
 
 public class PottsCellTissueTest {
@@ -87,8 +88,7 @@ public class PottsCellTissueTest {
     @Test
     public void stepRules_bystanderContact_becomesSenescent() {
         f.box.put("BYSTANDER_CONTACT", 0.5);
-        PottsCell neighbor = mock(PottsCell.class);
-        doReturn(State.SENESCENT).when(neighbor).getState();
+        PottsCell neighbor = PottsCellWoundHealingFixture.senescent(Phase.SENESCENT_EARLY);
         f.addNeighbor(8, 1, 2, neighbor);
         PottsCellTissue cell = make(State.QUIESCENT);
         assertTrue(cell.stepRules(f.random, f.sim));

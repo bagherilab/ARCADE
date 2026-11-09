@@ -14,6 +14,7 @@ import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
+import arcade.potts.agent.module.PottsModule;
 import arcade.potts.agent.module.PottsModuleApoptosisSimple;
 import arcade.potts.agent.module.PottsModuleProliferationWoundHealing;
 import arcade.potts.agent.module.PottsModuleQuiescence;
@@ -22,6 +23,7 @@ import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
+import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
 
@@ -43,9 +45,11 @@ import static arcade.potts.util.PottsEnums.State;
  * <p>If {@code O2_PROLIF_MIN} is above 0, cells cannot enter or remain in the proliferative state
  * when the mean O2 over the cell is below it.
  *
- * <p>Wound healing cells can become senescent through bystander routes: on contact with a senescent
- * cell ({@code BYSTANDER_CONTACT}) or when the mean INF over the cell is above {@code
- * INF_BYSTANDER} ({@code BYSTANDER_PARACRINE}).
+ * <p>Wound healing cells can become senescent through bystander routes: on contact with an
+ * early-phase senescent cell ({@code BYSTANDER_CONTACT}) or when the mean INF over the cell is
+ * above {@code INF_BYSTANDER} ({@code BYSTANDER_PARACRINE}). Contact induction is NOTCH1–JAG1
+ * juxtacrine signalling, active only while cells enter senescence (Hoare et al. 2016; Teo et al.
+ * 2019), so late-phase senescent cells act only through the paracrine route.
  */
 public abstract class PottsCellWoundHealing extends PottsCell {
     /** Offsets to adjacent voxels in x, y, and z. */
@@ -271,7 +275,7 @@ public abstract class PottsCellWoundHealing extends PottsCell {
      */
     boolean checkBystanderSenescence(MersenneTwisterFast random, Simulation sim) {
         if (bystanderContact > 0
-                && touchesSenescent(sim)
+                && touchesEarlySenescent(sim)
                 && random.nextDouble() < bystanderContact) {
             setState(State.SENESCENT);
             return true;
@@ -431,16 +435,24 @@ public abstract class PottsCellWoundHealing extends PottsCell {
     }
 
     /**
-     * Checks if the cell touches a senescent cell.
+     * Checks if the cell touches an early-phase senescent cell.
+     *
+     * <p>Only early-phase senescent cells induce senescence on contact: contact induction is
+     * NOTCH1–JAG1 juxtacrine signalling, active only while cells enter senescence (Hoare et al.
+     * 2016; Teo et al. 2019). Late-phase cells act through the paracrine route instead.
      *
      * @param sim the simulation instance
-     * @return {@code true} if a boundary voxel belongs to a senescent cell, {@code false} otherwise
+     * @return {@code true} if a boundary voxel belongs to an early-phase senescent cell, {@code
+     *     false} otherwise
      */
-    boolean touchesSenescent(Simulation sim) {
+    boolean touchesEarlySenescent(Simulation sim) {
         Potts potts = ((PottsSimulation) sim).getPotts();
         for (Voxel v : getBoundaryVoxels(potts.ids)) {
             PottsCell neighbor = potts.getCell(potts.ids[v.z][v.x][v.y]);
-            if (neighbor != null && neighbor.getState() == State.SENESCENT) {
+            if (neighbor != null
+                    && neighbor.getState() == State.SENESCENT
+                    && neighbor.getModule() instanceof PottsModule module
+                    && module.getPhase() == Phase.SENESCENT_EARLY) {
                 return true;
             }
         }
