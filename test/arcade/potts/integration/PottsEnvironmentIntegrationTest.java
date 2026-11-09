@@ -316,8 +316,9 @@ public class PottsEnvironmentIntegrationTest {
 
     static final int CHEMOTAXIS_TICKS = 20;
 
-    // Creates a setup with one population in a fixed layer X, with chemotaxis toward X.
-    static String chemotaxisSetup(String name, String lambda, int height) {
+    // Creates a setup with one population in a fixed layer X, with chemotaxis toward X. If matrix
+    // is not null, adds a uniform ECM layer and the matrix term with that lambda.
+    static String chemotaxisSetup(String name, String lambda, int height, String matrix) {
         return "<set><series name=\""
                 + name
                 + "\" ticks=\""
@@ -339,12 +340,21 @@ public class PottsEnvironmentIntegrationTest {
                 + "<potts.parameter term=\"chemotaxis\" id=\"LAMBDA_X\" target=\"A\" value=\""
                 + lambda
                 + "\" />"
+                + (matrix == null
+                        ? ""
+                        : "<potts.term id=\"MATRIX\" />"
+                                + "<potts.parameter term=\"matrix\" id=\"LAMBDA\" target=\"A\""
+                                + " value=\""
+                                + matrix
+                                + "\" />")
                 + "</potts>"
                 + "<populations><population id=\"A\" init=\"6\">"
                 + "<population.parameter id=\"CRITICAL_VOLUME\" value=\"400\" />"
                 + "<population.parameter id=\"CRITICAL_HEIGHT\" value=\"2\" />"
                 + "</population></populations>"
-                + "<layers><layer id=\"X\" /></layers></series></set>";
+                + "<layers><layer id=\"X\" />"
+                + (matrix == null ? "" : "<layer id=\"ECM\" />")
+                + "</layers></series></set>";
     }
 
     // Gets the mean x position of the voxels of each cell in a locations file.
@@ -369,6 +379,12 @@ public class PottsEnvironmentIntegrationTest {
     // Runs cells in a fixed gradient (X = x) and returns the x displacement of each cell.
     static HashMap<Integer, Double> runChemotaxis(Path dir, String name, String lambda, int height)
             throws Exception {
+        return runChemotaxis(dir, name, lambda, height, null);
+    }
+
+    // Runs cells in a fixed gradient, with a uniform ECM = 1 and the matrix term if matrix is set.
+    static HashMap<Integer, Double> runChemotaxis(
+            Path dir, String name, String lambda, int height, String matrix) throws Exception {
         double[][][] gradient = new double[height][CHEMOTAXIS_SIZE][CHEMOTAXIS_SIZE];
         for (int k = 0; k < height; k++) {
             for (int i = 0; i < CHEMOTAXIS_SIZE; i++) {
@@ -379,11 +395,20 @@ public class PottsEnvironmentIntegrationTest {
         }
         HashMap<String, double[][][]> snapshot = new HashMap<>();
         snapshot.put("X", gradient);
+        if (matrix != null) {
+            double[][][] ecm = new double[height][CHEMOTAXIS_SIZE][CHEMOTAXIS_SIZE];
+            for (double[][] plane : ecm) {
+                for (double[] row : plane) {
+                    java.util.Arrays.fill(row, 1);
+                }
+            }
+            snapshot.put("ECM", ecm);
+        }
         Files.writeString(
                 dir.resolve(name + "_init_0000.LAYERS.json"), new Gson().toJson(snapshot));
 
         Path setup = dir.resolve(name + ".xml");
-        Files.writeString(setup, chemotaxisSetup(name, lambda, height));
+        Files.writeString(setup, chemotaxisSetup(name, lambda, height, matrix));
         ARCADE.main(
                 new String[] {
                     "potts",
@@ -444,5 +469,23 @@ public class PottsEnvironmentIntegrationTest {
         for (double displacement : displacements.values()) {
             assertTrue(displacement > 2, "displacement " + displacement);
         }
+    }
+
+    // Gets the mean of the displacements.
+    static double mean(HashMap<Integer, Double> displacements) {
+        double mean = 0;
+        for (double displacement : displacements.values()) {
+            mean += displacement / displacements.size();
+        }
+        return mean;
+    }
+
+    @Test
+    public void matrix_denseECM_slowsChemotaxis(@TempDir Path dir) throws Exception {
+        double free = mean(runChemotaxis(dir, "free", "20", 1, "0"));
+        double slowed = mean(runChemotaxis(dir, "slowed", "20", 1, "50"));
+        assertTrue(free > 2, "free displacement " + free);
+        assertTrue(slowed > 0, "slowed displacement " + slowed);
+        assertTrue(slowed < free / 2, "slowed " + slowed + " vs free " + free);
     }
 }

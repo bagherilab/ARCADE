@@ -4,6 +4,7 @@ import java.util.HashSet;
 import arcade.potts.sim.hamiltonian.AdhesionHamiltonian2D;
 import arcade.potts.sim.hamiltonian.ChemotaxisHamiltonian;
 import arcade.potts.sim.hamiltonian.Hamiltonian;
+import arcade.potts.sim.hamiltonian.MatrixHamiltonian;
 import arcade.potts.sim.hamiltonian.PersistenceHamiltonian;
 import arcade.potts.sim.hamiltonian.SurfaceHamiltonian2D;
 import arcade.potts.sim.hamiltonian.VolumeHamiltonian;
@@ -48,6 +49,8 @@ public final class Potts2D extends Potts {
                 return new PersistenceHamiltonian(series);
             case CHEMOTAXIS:
                 return new ChemotaxisHamiltonian(series, this);
+            case MATRIX:
+                return new MatrixHamiltonian(series);
             default:
                 return null;
         }

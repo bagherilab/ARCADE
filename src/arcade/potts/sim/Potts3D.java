@@ -6,6 +6,7 @@ import arcade.potts.sim.hamiltonian.ChemotaxisHamiltonian;
 import arcade.potts.sim.hamiltonian.Hamiltonian;
 import arcade.potts.sim.hamiltonian.HeightHamiltonian;
 import arcade.potts.sim.hamiltonian.JunctionHamiltonian;
+import arcade.potts.sim.hamiltonian.MatrixHamiltonian;
 import arcade.potts.sim.hamiltonian.PersistenceHamiltonian;
 import arcade.potts.sim.hamiltonian.SubstrateHamiltonian;
 import arcade.potts.sim.hamiltonian.SurfaceHamiltonian3D;
@@ -69,6 +70,8 @@ public final class Potts3D extends Potts {
                 return new PersistenceHamiltonian(series);
             case CHEMOTAXIS:
                 return new ChemotaxisHamiltonian(series, this);
+            case MATRIX:
+                return new MatrixHamiltonian(series);
             default:
                 return null;
         }

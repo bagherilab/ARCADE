@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import arcade.potts.sim.hamiltonian.AdhesionHamiltonian2D;
 import arcade.potts.sim.hamiltonian.ChemotaxisHamiltonian;
 import arcade.potts.sim.hamiltonian.Hamiltonian;
+import arcade.potts.sim.hamiltonian.MatrixHamiltonian;
 import arcade.potts.sim.hamiltonian.PersistenceHamiltonian;
 import arcade.potts.sim.hamiltonian.SurfaceHamiltonian2D;
 import arcade.potts.sim.hamiltonian.VolumeHamiltonian;
@@ -115,6 +116,9 @@ public class Potts2DTest {
 
         h = potts2D.getHamiltonian(Term.CHEMOTAXIS, series);
         assertTrue(h instanceof ChemotaxisHamiltonian);
+
+        h = potts2D.getHamiltonian(Term.MATRIX, series);
+        assertTrue(h instanceof MatrixHamiltonian);
     }
 
     @Test

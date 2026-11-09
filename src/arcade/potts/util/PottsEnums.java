@@ -150,7 +150,10 @@ public final class PottsEnums {
         PERSISTENCE,
 
         /** Code for chemotaxis term. */
-        CHEMOTAXIS;
+        CHEMOTAXIS,
+
+        /** Code for matrix resistance term. */
+        MATRIX;
 
         /**
          * Randomly selects a {@code Term}.

@@ -8,6 +8,7 @@ import arcade.potts.sim.hamiltonian.ChemotaxisHamiltonian;
 import arcade.potts.sim.hamiltonian.Hamiltonian;
 import arcade.potts.sim.hamiltonian.HeightHamiltonian;
 import arcade.potts.sim.hamiltonian.JunctionHamiltonian;
+import arcade.potts.sim.hamiltonian.MatrixHamiltonian;
 import arcade.potts.sim.hamiltonian.PersistenceHamiltonian;
 import arcade.potts.sim.hamiltonian.SubstrateHamiltonian;
 import arcade.potts.sim.hamiltonian.SurfaceHamiltonian3D;
@@ -258,6 +259,9 @@ public class Potts3DTest {
 
         h = potts3D.getHamiltonian(Term.CHEMOTAXIS, series);
         assertTrue(h instanceof ChemotaxisHamiltonian);
+
+        h = potts3D.getHamiltonian(Term.MATRIX, series);
+        assertTrue(h instanceof MatrixHamiltonian);
     }
 
     @Test

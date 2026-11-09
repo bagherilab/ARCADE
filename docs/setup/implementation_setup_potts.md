@@ -52,6 +52,9 @@ Valid options include:
 `chemotaxis`
 : Chemotaxis energy up or down the gradients of [lattice layers]({{site.baseurl}}/setup/lattice_layers_potts) (2D and 3D)
 
+`matrix`
+: Resistance to movement through the ECM layer (2D and 3D)
+
 To modify Hamiltonian term parameters, use the [`potts.parameter`](#implementation-parameters) tag with the corresponding `term` attribute.
 
 ### Example: Including volume and adhesion Hamiltonian terms
@@ -83,6 +86,25 @@ _Specifies chemotaxis of population A up the GF gradient and population B down t
 <potts.term id="chemotaxis" />
 <potts.parameter term="chemotaxis" id="LAMBDA_GF" value="20" target="A" />
 <potts.parameter term="chemotaxis" id="LAMBDA_GF" value="-20" target="B" />
+```
+
+### Matrix term
+
+The matrix term slows cells where the `ECM` layer is dense, without making ECM take up space.
+Any change of a voxel costs `LAMBDA` × ECM for each cell involved (the cell losing and the cell gaining the voxel), where ECM is the layer value at the voxel.
+The cost is the same for gaining and losing, so it does not push cells in any direction; fewer changes succeed in dense ECM, so cells move more slowly there.
+Medium pays nothing, and the term is zero if there is no `ECM` layer.
+
+| PARAMETER | DEFAULT | UNITS | DESCRIPTION |
+| --------- | ------- | ----- | ----------- |
+| `matrix/LAMBDA` | 0 | energy/concentration | cost per unit ECM of changing a voxel, paid by each cell involved |
+
+### Example: Slowing fibroblasts more than macrophages in ECM
+
+```xml
+<potts.term id="matrix" />
+<potts.parameter term="matrix" id="LAMBDA" value="20" target="FIB" />
+<potts.parameter term="matrix" id="LAMBDA" value="5" target="MAC" />
 ```
 
 ## Implementation parameters

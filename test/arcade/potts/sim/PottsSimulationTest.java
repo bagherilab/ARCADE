@@ -38,6 +38,7 @@ import arcade.potts.env.location.PottsLocationFactory;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.PottsSimulationTest.PottsSimulationMock.DummyComponent;
 import arcade.potts.sim.hamiltonian.ChemotaxisHamiltonian;
+import arcade.potts.sim.hamiltonian.MatrixHamiltonian;
 import arcade.potts.util.PottsEnums.Ordering;
 import arcade.potts.util.PottsEnums.Term;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -517,6 +518,23 @@ public class PottsSimulationTest {
         sim.setupEnvironment();
 
         verify(chemotaxis).setLattices(sim.lattices);
+    }
+
+    @Test
+    public void setupEnvironment_withMatrix_setsLattices() {
+        Series series = createSeries(new int[0], new String[0]);
+        MiniBox layer = new MiniBox();
+        layer.put("INITIAL_CONCENTRATION", 0);
+        series.layers = new HashMap<>();
+        series.layers.put("ECM", layer);
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.potts = mock(Potts.class);
+        MatrixHamiltonian matrix = mock(MatrixHamiltonian.class);
+        doReturn(matrix).when(sim.potts).getHamiltonian(Term.MATRIX);
+
+        sim.setupEnvironment();
+
+        verify(matrix).setLattices(sim.lattices);
     }
 
     @Test

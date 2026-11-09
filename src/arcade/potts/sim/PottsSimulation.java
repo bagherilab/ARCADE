@@ -40,6 +40,7 @@ import arcade.potts.env.location.PottsLocationFactory3D;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.hamiltonian.ChemotaxisHamiltonian;
 import arcade.potts.sim.hamiltonian.Hamiltonian;
+import arcade.potts.sim.hamiltonian.MatrixHamiltonian;
 import arcade.potts.util.PottsEnums.Ordering;
 import arcade.potts.util.PottsEnums.Term;
 
@@ -367,6 +368,12 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         Hamiltonian chemotaxis = potts.getHamiltonian(Term.CHEMOTAXIS);
         if (chemotaxis != null) {
             ((ChemotaxisHamiltonian) chemotaxis).setLattices(lattices);
+        }
+
+        // Pass lattices to the matrix resistance term, if it is used.
+        Hamiltonian matrix = potts.getHamiltonian(Term.MATRIX);
+        if (matrix != null) {
+            ((MatrixHamiltonian) matrix).setLattices(lattices);
         }
     }
 
