@@ -1886,6 +1886,84 @@ public class PottsModuleFlyStemProliferationTest {
     }
 
     @Test
+    public void getBasalVoxels_mockedGetters_passesCorrectArgs() {
+        double[] centroid = {1.0, 2.0, 3.0};
+        Voxel v1 = new Voxel(0, 0, 0);
+        Voxel v2 = new Voxel(1, 0, 0);
+        Vector apicalAxis = new Vector(0, 1, 0);
+
+        when(stemLoc.getCentroid()).thenReturn(centroid);
+        when(stemLoc.getBorderVoxels()).thenReturn(new ArrayList<>(List.of(v1, v2)));
+        when(stemCell.getApicalAxis()).thenReturn(apicalAxis);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+        Bag expected = new Bag();
+
+        try (MockedStatic<PottsLocation> mocked = mockStatic(PottsLocation.class)) {
+            mocked.when(
+                            () ->
+                                    PottsLocation.getDirectionalVoxelSubset(
+                                            eq(PottsEnums.Side.BASAL),
+                                            eq(module.basalThreshold),
+                                            eq(new ArrayList<>(List.of(v1, v2))),
+                                            eq(centroid),
+                                            eq(apicalAxis)))
+                    .thenReturn(expected);
+
+            assertSame(expected, module.getBasalVoxels(stemCell, stemLoc));
+        }
+    }
+
+    @Test
+    public void calculateDaughterProspero_allBasalVoxels_returnsCorrectProspero() {
+        Voxel b1 = new Voxel(0, 0, 0),
+                b2 = new Voxel(1, 0, 0),
+                b3 = new Voxel(2, 0, 0),
+                b4 = new Voxel(3, 0, 0);
+        Bag basal = new Bag();
+        basal.add(b1);
+        basal.add(b2);
+        basal.add(b3);
+        basal.add(b4);
+
+        when(daughterLoc.getVoxels()).thenReturn(new ArrayList<>(List.of(b1, b2)));
+        when(stemCell.getProspero()).thenReturn(12.0);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertEquals(6.0, module.calculateDaughterProspero(basal, daughterLoc), EPSILON);
+    }
+
+    @Test
+    public void calculateDaughterProspero_someBasalVoxels_returnsCorrectProspero() {
+        Voxel b1 = new Voxel(0, 0, 0),
+                b2 = new Voxel(1, 0, 0),
+                b3 = new Voxel(2, 0, 0),
+                b4 = new Voxel(3, 0, 0);
+        Bag basal = new Bag();
+        basal.add(b1);
+        basal.add(b2);
+        basal.add(b3);
+
+        when(daughterLoc.getVoxels()).thenReturn(new ArrayList<>(List.of(b1, b3)));
+        when(stemCell.getProspero()).thenReturn(12.0);
+
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        assertEquals(8.0, module.calculateDaughterProspero(basal, daughterLoc), EPSILON);
+    }
+
+    @Test
+    public void calculateDaughterProspero_emptyBasalSet_returnsZero() {
+        when(daughterLoc.getVoxels()).thenReturn(new ArrayList<>());
+        when(stemCell.getProspero()).thenReturn(12.0);
+        module = new PottsModuleFlyStemProliferation(stemCell);
+
+        double result = module.calculateDaughterProspero(new Bag(), daughterLoc);
+        assertEquals(0.0, module.calculateDaughterProspero(new Bag(), daughterLoc), EPSILON);
+    }
+
+    @Test
     public void countNBNeighbors_neighborOnSeveralVoxels_countsItOnce() {
         module = spy(new PottsModuleFlyStemProliferation(stemCell));
 

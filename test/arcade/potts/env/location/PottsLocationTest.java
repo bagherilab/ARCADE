@@ -3,6 +3,7 @@ package arcade.potts.env.location;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sim.util.Bag;
@@ -2032,5 +2033,38 @@ public class PottsLocationTest {
         assertTrue(result.contains(new Voxel(5, 3, 0)));
         assertTrue(result.contains(new Voxel(1, 9, 1)));
         assertTrue(result.contains(new Voxel(2, 7, 2)));
+    }
+
+    @Test
+    public void getBorderVoxels_singleVoxel_isBorder() {
+        PottsLocation2D loc = new PottsLocation2D(new ArrayList<>(List.of(new Voxel(0, 0, 0))));
+        assertEquals(List.of(new Voxel(0, 0, 0)), loc.getBorderVoxels());
+        assertEquals(1, loc.getBorderVoxels().size());
+    }
+
+    @Test
+    public void getBorderVoxels_filledBlock_excludesInterior() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                voxels.add(new Voxel(x, y, 0));
+            }
+        }
+
+        PottsLocation2D loc = new PottsLocation2D(voxels);
+        ArrayList<Voxel> border = loc.getBorderVoxels();
+
+        assertEquals(8, border.size());
+        assertFalse(border.contains(new Voxel(1, 1, 0)));
+    }
+
+    @Test
+    public void getBorderVoxels_line_everyVoxelIsBorder() {
+        ArrayList<Voxel> voxels =
+                new ArrayList<>(
+                        List.of(new Voxel(0, 0, 0), new Voxel(1, 0, 0), new Voxel(2, 0, 0)));
+        PottsLocation2D loc = new PottsLocation2D(voxels);
+
+        assertEquals(3, loc.getBorderVoxels().size());
     }
 }

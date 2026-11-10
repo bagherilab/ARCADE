@@ -541,10 +541,10 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
     }
 
     /**
-     * Gets the basal border voxels of a location as of the moment of the call.
+     * Gets the basal border voxels of a location.
      *
-     * @param flyStemCell the stem cell whose apical axis defines "basal"
-     * @param loc the location to take the subset from (call before the cell divides)
+     * @param flyStemCell the stem cell whose apical axis is referenced for the basal side
+     * @param loc the location to take the subset from
      * @return the basal voxel subset
      */
     Bag getBasalVoxels(PottsCellFlyStem flyStemCell, PottsLocation loc) {
@@ -556,7 +556,7 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
     /**
      * Calculates the daughter's share of the parent's Prospero: the fraction of the parent's basal
-     * voxels (captured before division) that ended up in the daughter, times the parent's Prospero.
+     * voxels that ended up in the daughter times the parent's Prospero.
      *
      * @param basalVoxels the parent's basal voxel subset, captured before the split
      * @param daughterLoc location of the daughter cell
