@@ -152,6 +152,71 @@ public class PottsCellMyofibroblastTest {
         verify(f.sim, never()).getSchedule();
     }
 
+    // Creates a mature quiescent myofibroblast below the ECM threshold with the given tension
+    // apoptosis rate and the given draw.
+    private PottsCellMyofibroblast makeLowEcm(double rate, double draw) {
+        f.means.put("ECM", 0.05);
+        f.box.put("TENSION_APOPTOSIS", rate);
+        doReturn(draw).when(f.random).nextDouble();
+        PottsCellMyofibroblast cell = make(State.QUIESCENT);
+        cell.mature = true;
+        return cell;
+    }
+
+    @Test
+    public void stepRules_lowEcmZeroTensionRate_becomesApoptoticWithoutDraw() {
+        PottsCellMyofibroblast cell = makeLowEcm(0, 0.99);
+        assertTrue(cell.stepRules(f.random, f.sim));
+        assertEquals(State.APOPTOTIC, cell.getState());
+        verify(f.random, never()).nextDouble();
+    }
+
+    @Test
+    public void stepRules_lowEcmDrawBelowTensionRate_becomesApoptotic() {
+        PottsCellMyofibroblast cell = makeLowEcm(0.3, 0.2);
+        assertTrue(cell.stepRules(f.random, f.sim));
+        assertEquals(State.APOPTOTIC, cell.getState());
+    }
+
+    @Test
+    public void stepRules_lowEcmDrawAboveTensionRate_survives() {
+        PottsCellMyofibroblast cell = makeLowEcm(0.3, 0.4);
+        cell.stepRules(f.random, f.sim);
+        assertEquals(State.QUIESCENT, cell.getState());
+    }
+
+    @Test
+    public void stepRules_lowEcmSurvivor_doesNotBecomeSenescent() {
+        f.box.put("SENESCENCE_RATE", 0.5);
+        PottsCellMyofibroblast cell = makeLowEcm(0.3, 0.4);
+        cell.stepRules(f.random, f.sim);
+        assertEquals(State.QUIESCENT, cell.getState());
+    }
+
+    @Test
+    public void stepRules_highEcmWithTensionRate_doesNotBecomeApoptotic() {
+        f.box.put("TENSION_APOPTOSIS", 0.3);
+        doReturn(0.2).when(f.random).nextDouble();
+        PottsCellMyofibroblast cell = make(State.QUIESCENT);
+        cell.mature = true;
+        cell.stepRules(f.random, f.sim);
+        assertEquals(State.QUIESCENT, cell.getState());
+    }
+
+    @Test
+    public void stepRules_lowEcmTensionRate_independentOfSenescenceRate() {
+        f.box.put("SENESCENCE_RATE", 0.9);
+        PottsCellMyofibroblast cell = makeLowEcm(0.3, 0.2);
+        cell.stepRules(f.random, f.sim);
+        assertEquals(State.APOPTOTIC, cell.getState());
+    }
+
+    @Test
+    public void constructor_negativeTensionApoptosis_throws() {
+        f.box.put("TENSION_APOPTOSIS", -0.1);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
+
     @Test
     public void constructor_negativeSenescenceStart_throws() {
         f.box.put("SENESCENCE_START", -1);

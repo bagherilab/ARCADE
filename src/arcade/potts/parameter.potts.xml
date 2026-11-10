@@ -78,6 +78,7 @@
     <population id="INF_APOPTOSIS" value="5" units="concentration" description="threshold on mean INF for myofibroblast apoptosis" />
     <population id="MATURATION" value="72" units="hours" conversion="DT^-1" description="mean time to myofibroblast maturation" />
     <population id="ECM_TENSION" value="0.2" units="concentration" description="threshold on mean ECM below which mature myofibroblasts become apoptotic" />
+    <population id="TENSION_APOPTOSIS" value="0" units="1/hour" conversion="DT" description="probability that a mature myofibroblast with mean ECM below ECM_TENSION becomes apoptotic; 0 means at once (no random draw)" />
     <population id="SENESCENCE_RATE" value="0.02" units="1/hour" conversion="DT" description="probability of senescence for mature myofibroblasts" />
     <population id="SENESCENCE_START" value="0" units="hours" conversion="DT^-1" description="time (including the series offset) from which mature myofibroblasts can become senescent; 0 means no gate" />
     <population id="ECM_PROLIFERATION" value="0" units="concentration" description="minimum mean ECM over free boundary voxels for tissue proliferation; 0 disables the gate" />

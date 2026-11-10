@@ -136,7 +136,7 @@ The rules read the mean `GF` (growth factor), `ECM`, `INF`, `INJURY_SIGNAL`, and
 | CLASS | RULES |
 | ----- | ----- |
 | `fibroblast` | Proliferates when GF is above `GF_PROLIFERATION`. Differentiates into the `DIFFERENTIATION_TARGET` population when GF and ECM are above their thresholds (and `WOUND_MATRIX` above `WOUND_MATRIX_DIFFERENTIATION`, if set). Becomes senescent spontaneously or through the bystander routes. |
-| `myofibroblast` | Proliferates under the same conditions as fibroblasts. Becomes apoptotic when INF is above `INF_APOPTOSIS`. Matures after a mean of `MATURATION`; mature cells become apoptotic when ECM is below `ECM_TENSION`, or senescent with probability `SENESCENCE_RATE` once the time (including the series `offset`) reaches `SENESCENCE_START`. Becomes senescent through the bystander routes. |
+| `myofibroblast` | Proliferates under the same conditions as fibroblasts. Becomes apoptotic when INF is above `INF_APOPTOSIS`. Matures after a mean of `MATURATION`; mature cells below `ECM_TENSION` become apoptotic with probability `TENSION_APOPTOSIS` (0 = at once) and cannot become senescent; mature cells at or above it become senescent with probability `SENESCENCE_RATE` once the time (including the series `offset`) reaches `SENESCENCE_START`. Becomes senescent through the bystander routes. |
 | `macrophage` | Does not proliferate. Senescent cells that touch a macrophage may be cleared. If `INF_POLARIZATION` is above 0, switches each tick between M1 (INF above the threshold) and M2 secretion rates. With `INJURY_ACTIVATION` above 0, a macrophage that is not M1 is M2 only while `INJURY_SIGNAL` is above it, and otherwise rests and secretes nothing. |
 | `tissue` | Proliferates into free space next to the cell when the mean ECM over that space is at least `ECM_PROLIFERATION`. Becomes senescent spontaneously or through the bystander routes. |
 
@@ -179,6 +179,7 @@ Wound healing populations do not support regions; a `population.region` tag caus
 | `INF_APOPTOSIS` | 5 | concentration | threshold on INF for myofibroblast apoptosis |
 | `MATURATION` | 72 | hours | mean time to myofibroblast maturation |
 | `ECM_TENSION` | 0.2 | concentration | threshold on ECM below which mature myofibroblasts become apoptotic |
+| `TENSION_APOPTOSIS` | 0 | 1/hour | probability of apoptosis for mature myofibroblasts below `ECM_TENSION`; 0 means at once (no random draw) |
 | `SENESCENCE_RATE` | 0.02 | 1/hour | probability of senescence for mature myofibroblasts |
 | `SENESCENCE_START` | 0 | hours | time (including the series `offset`) from which mature myofibroblasts can become senescent; 0 means no gate. Only this primary route is gated; maturation, tension apoptosis and the bystander routes are not |
 | `ECM_PROLIFERATION` | 0 | concentration | minimum mean ECM over free voxels for tissue proliferation; 0 disables the gate |

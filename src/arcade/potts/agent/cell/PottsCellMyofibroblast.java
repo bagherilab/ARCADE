@@ -13,12 +13,14 @@ import static arcade.potts.util.PottsEnums.State;
  *
  * <p>Myofibroblasts proliferate under the same conditions as fibroblasts. They become apoptotic
  * when the mean INF over the cell is above {@code INF_APOPTOSIS}. Myofibroblasts mature with
- * probability 1 / {@code MATURATION} per tick. Mature myofibroblasts become apoptotic when the mean
- * ECM over the cell is below {@code ECM_TENSION}, and otherwise become senescent with probability
- * {@code SENESCENCE_RATE}, once the simulation time (including the series offset) has reached
- * {@code SENESCENCE_START}. The start time is a tissue-level gate on this primary route only (CCN1
- * accumulating in granulation tissue, Jun & Lau 2010); maturation and tension apoptosis are not
- * gated. Myofibroblasts can also become senescent through the bystander routes.
+ * probability 1 / {@code MATURATION} per tick. Mature myofibroblasts with mean ECM over the cell
+ * below {@code ECM_TENSION} become apoptotic with probability {@code TENSION_APOPTOSIS} per tick (0
+ * means at once, with no random draw); while below the threshold they cannot become senescent.
+ * Mature cells at or above the threshold become senescent with probability {@code SENESCENCE_RATE},
+ * once the simulation time (including the series offset) has reached {@code SENESCENCE_START}. The
+ * start time is a tissue-level gate on this primary route only (CCN1 accumulating in granulation
+ * tissue, Jun & Lau 2010); maturation and tension apoptosis are not gated. Myofibroblasts can also
+ * become senescent through the bystander routes.
  */
 public final class PottsCellMyofibroblast extends PottsCellWoundHealing {
     /** Threshold on mean GF for proliferation. */
@@ -32,6 +34,11 @@ public final class PottsCellMyofibroblast extends PottsCellWoundHealing {
 
     /** Threshold on mean ECM below which mature cells become apoptotic. */
     final double ecmTension;
+
+    /**
+     * Probability of apoptosis for mature cells below the ECM threshold (per tick), 0 for at once.
+     */
+    final double tensionApoptosis;
 
     /** Probability of senescence for mature cells (per tick). */
     final double senescenceRate;
@@ -52,6 +59,8 @@ public final class PottsCellMyofibroblast extends PottsCellWoundHealing {
      *   <li>{@code INF_APOPTOSIS} = threshold on mean INF for apoptosis
      *   <li>{@code MATURATION} = mean time to maturation
      *   <li>{@code ECM_TENSION} = threshold on mean ECM below which mature cells become apoptotic
+     *   <li>{@code TENSION_APOPTOSIS} = probability of apoptosis for mature cells below the ECM
+     *       threshold, 0 for at once
      *   <li>{@code SENESCENCE_RATE} = probability of senescence for mature cells
      *   <li>{@code SENESCENCE_START} = time at which primary senescence becomes possible
      * </ul>
@@ -68,6 +77,10 @@ public final class PottsCellMyofibroblast extends PottsCellWoundHealing {
         infApoptosis = parameters.getDouble("INF_APOPTOSIS");
         maturation = parameters.getDouble("MATURATION");
         ecmTension = parameters.getDouble("ECM_TENSION");
+        tensionApoptosis = parameters.getDouble("TENSION_APOPTOSIS");
+        if (!(tensionApoptosis >= 0)) {
+            throw new IllegalArgumentException("TENSION_APOPTOSIS must be >= 0");
+        }
         senescenceRate = parameters.getDouble("SENESCENCE_RATE");
         senescenceStart = parameters.getDouble("SENESCENCE_START");
         if (!(senescenceStart >= 0)) {
@@ -111,8 +124,10 @@ public final class PottsCellMyofibroblast extends PottsCellWoundHealing {
 
         if (mature) {
             if (getMean(sim, "ECM") < ecmTension) {
-                setState(State.APOPTOTIC);
-                return true;
+                if (tensionApoptosis == 0 || random.nextDouble() < tensionApoptosis) {
+                    setState(State.APOPTOTIC);
+                    return true;
+                }
             } else if (isSenescenceOpen(sim) && random.nextDouble() < senescenceRate) {
                 setState(State.SENESCENT);
                 return true;
