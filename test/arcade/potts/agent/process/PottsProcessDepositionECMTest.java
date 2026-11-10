@@ -42,7 +42,22 @@ public class PottsProcessDepositionECMTest {
         box.put("deposition/RATE", rate);
         box.put("deposition/GF_THRESHOLD", threshold);
         box.put("deposition/K_O2", k);
+        box.put("deposition/ECM_LIMIT", 0);
         return box;
+    }
+
+    // Creates deposition parameters with an ECM limit and no O2 limit.
+    static MiniBox limited(double limit) {
+        MiniBox box = deposition(RATE, THRESHOLD, 0);
+        box.put("deposition/ECM_LIMIT", limit);
+        return box;
+    }
+
+    // Creates a mock ECM lattice with the given mean.
+    static PottsLattice makeEcm(double mean) {
+        PottsLattice ecm = makeEcm();
+        doReturn(mean).when(ecm).getAverageValue(any());
+        return ecm;
     }
 
     // Creates a mock lattice with the given mean.
@@ -225,6 +240,44 @@ public class PottsProcessDepositionECMTest {
         PottsProcessDepositionECM process =
                 makeProcess(deposition(RATE, THRESHOLD, K), State.QUIESCENT);
         assertThrows(IllegalStateException.class, () -> step(process, sim));
+    }
+
+    @Test
+    public void constructor_negativeEcmLimit_throws() {
+        assertThrows(
+                IllegalArgumentException.class, () -> makeProcess(limited(-1), State.QUIESCENT));
+    }
+
+    @Test
+    public void step_ecmBelowLimit_deposits() {
+        PottsLattice ecm = makeEcm(0.9);
+        PottsSimulation sim = makeSim(makeLayer(THRESHOLD + 0.1), null, ecm);
+        step(makeProcess(limited(1), State.QUIESCENT), sim);
+        verify(ecm).addDelta(eq(List.of(VOXELS)), near(RATE / VOLUME));
+    }
+
+    @Test
+    public void step_ecmAtLimit_depositsNothing() {
+        PottsLattice ecm = makeEcm(1);
+        PottsSimulation sim = makeSim(makeLayer(THRESHOLD + 0.1), null, ecm);
+        step(makeProcess(limited(1), State.QUIESCENT), sim);
+        verify(ecm, never()).addDelta(any(), anyDouble());
+    }
+
+    @Test
+    public void step_ecmAboveLimit_depositsNothing() {
+        PottsLattice ecm = makeEcm(2.5);
+        PottsSimulation sim = makeSim(makeLayer(THRESHOLD + 0.1), null, ecm);
+        step(makeProcess(limited(1), State.QUIESCENT), sim);
+        verify(ecm, never()).addDelta(any(), anyDouble());
+    }
+
+    @Test
+    public void step_zeroLimit_depositsAtAnyEcm() {
+        PottsLattice ecm = makeEcm(100);
+        PottsSimulation sim = makeSim(makeLayer(THRESHOLD + 0.1), null, ecm);
+        step(makeProcess(limited(0), State.QUIESCENT), sim);
+        verify(ecm).addDelta(eq(List.of(VOXELS)), near(RATE / VOLUME));
     }
 
     @Test

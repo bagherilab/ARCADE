@@ -18,9 +18,11 @@ import static arcade.potts.util.PottsEnums.State;
  * or proliferative cell whose mean GF is above {@code GF_THRESHOLD} adds {@code RATE} × f(O2) to
  * the {@code ECM} layer, where f(O2) = O2 / ({@code K_O2} + O2) is the O2 limit on collagen
  * maturation (prolyl hydroxylation needs O2), using the mean O2 over the cell. If {@code K_O2} is
- * 0, deposition is not limited by O2 and no {@code O2} layer is needed. The amount is spread evenly
- * over the cell's own voxels and is added to the field at the next lattice step. Senescent,
- * apoptotic, and other cells do not deposit through this process.
+ * 0, deposition is not limited by O2 and no {@code O2} layer is needed. If {@code ECM_LIMIT} is
+ * above 0, the cell deposits only while the mean ECM over the cell is below it (fibroblasts stop
+ * laying down matrix once it is dense; the space limit of Chandrasegaran et al. 2025). The amount
+ * is spread evenly over the cell's own voxels and is added to the field at the next lattice step.
+ * Senescent, apoptotic, and other cells do not deposit through this process.
  */
 public class PottsProcessDepositionECM extends PottsProcessDeposition {
     /** Layer deposited into. */
@@ -41,6 +43,9 @@ public class PottsProcessDepositionECM extends PottsProcessDeposition {
     /** O2 at which deposition is half maximal [mmHg], or 0 for no O2 limit. */
     final double kO2;
 
+    /** Mean ECM over the cell at which deposition stops, or 0 for no limit. */
+    final double ecmLimit;
+
     /**
      * Creates an ECM deposition {@code Process} for the given {@link PottsCell}.
      *
@@ -50,6 +55,7 @@ public class PottsProcessDepositionECM extends PottsProcessDeposition {
      *   <li>{@code RATE} = rate of ECM deposition
      *   <li>{@code GF_THRESHOLD} = threshold on mean GF for deposition
      *   <li>{@code K_O2} = O2 at which deposition is half maximal (0 for no O2 limit)
+     *   <li>{@code ECM_LIMIT} = mean ECM over the cell at which deposition stops (0 for no limit)
      * </ul>
      *
      * @param cell the {@link PottsCell} the process is associated with
@@ -61,6 +67,7 @@ public class PottsProcessDepositionECM extends PottsProcessDeposition {
         rate = parameters.getDouble("deposition/RATE");
         gfThreshold = parameters.getDouble("deposition/GF_THRESHOLD");
         kO2 = parameters.getDouble("deposition/K_O2");
+        ecmLimit = parameters.getDouble("deposition/ECM_LIMIT");
 
         if (!(rate >= 0)) {
             throw new IllegalArgumentException("deposition RATE must be >= 0");
@@ -70,6 +77,9 @@ public class PottsProcessDepositionECM extends PottsProcessDeposition {
         }
         if (!(kO2 >= 0)) {
             throw new IllegalArgumentException("deposition K_O2 must be >= 0");
+        }
+        if (!(ecmLimit >= 0)) {
+            throw new IllegalArgumentException("deposition ECM_LIMIT must be >= 0");
         }
     }
 
@@ -114,12 +124,16 @@ public class PottsProcessDepositionECM extends PottsProcessDeposition {
             return;
         }
 
+        PottsLattice ecm = (PottsLattice) getRequiredLattice(sim, ECM_LAYER);
+        if (ecmLimit > 0 && !(ecm.getAverageValue(location) < ecmLimit)) {
+            return;
+        }
+
         double fraction = 1;
         if (kO2 > 0) {
             fraction = oxygenFraction(getRequiredLattice(sim, O2_LAYER).getAverageValue(location));
         }
 
-        PottsLattice ecm = (PottsLattice) getRequiredLattice(sim, ECM_LAYER);
         List<Voxel> voxels = location.getVoxels();
         if (voxels.isEmpty()) {
             return;

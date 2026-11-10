@@ -94,6 +94,7 @@ The `DEPOSITION` process deposits matrix into the layer named by its version.
 The `ECM` version deposits into the `ECM` layer when the cell is activated by growth factor (the `GF` layer; PDGF in Chandrasegaran et al. 2025).
 Each tick, a quiescent or proliferative cell whose mean `GF` is above `GF_THRESHOLD` adds `RATE` × dt × f(O2) to the `ECM` layer, where f(O2) = O2 / (`K_O2` + O2) is the O2 limit on collagen maturation, using the mean of the `O2` layer over the cell.
 If `K_O2` is 0, deposition is not limited by O2 and no `O2` layer is needed.
+If `ECM_LIMIT` is above 0, the cell deposits only while the mean `ECM` over the cell is below it, so fibroblasts stop laying down matrix where it is already dense (the space limit of Chandrasegaran et al. 2025); 0 means no limit.
 The amount is spread evenly over the voxels of the cell, and is added to the layer at the next lattice step.
 Senescent, apoptotic, necrotic, and autotic cells do not deposit through this process; ECM in the SASP uses the senescence secretion rates.
 The `GF` and `ECM` layers are required when `RATE` is above 0.
@@ -104,6 +105,7 @@ Do not also set `secretion/RATE_ECM` for the same population unless both are int
 | `deposition/RATE` | 0 | amount/hour | rate of ECM deposition |
 | `deposition/GF_THRESHOLD` | 0 | concentration | threshold on mean GF for deposition |
 | `deposition/K_O2` | 0 | mmHg | O2 at which deposition is half maximal; 0 disables the O2 limit |
+| `deposition/ECM_LIMIT` | 0 | concentration | mean ECM over the cell at which deposition stops; 0 means no limit |
 
 ### Example: Depositing ECM when activated
 

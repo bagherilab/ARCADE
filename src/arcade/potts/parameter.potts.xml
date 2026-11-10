@@ -139,6 +139,7 @@
     <!-- deposition process parameters (version ECM) -->
     <population.process process="deposition" id="RATE" value="0" units="amount/hour" conversion="DT" description="rate of ECM deposition by quiescent and proliferative cells with mean GF above GF_THRESHOLD" />
     <population.process process="deposition" id="GF_THRESHOLD" value="0" units="concentration" description="threshold on mean GF for ECM deposition (Chandrasegaran et al. 2025)" />
+    <population.process process="deposition" id="ECM_LIMIT" value="0" units="concentration" description="mean ECM over the cell at which deposition stops (dense matrix; the space limit of Chandrasegaran et al. 2025); 0 means no limit" />
     <population.process process="deposition" id="K_O2" value="0" units="mmHg" description="O2 at which ECM deposition is half maximal (collagen prolyl hydroxylation needs O2; ~25 mmHg inferred, to calibrate); 0 disables the O2 limit" />
 
     <!-- LAYERS ============================================================ -->

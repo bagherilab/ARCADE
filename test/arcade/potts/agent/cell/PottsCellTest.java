@@ -438,6 +438,7 @@ public class PottsCellTest {
         box.put("deposition/RATE", 1.0);
         box.put("deposition/GF_THRESHOLD", 0.1);
         box.put("deposition/K_O2", 0.0);
+        box.put("deposition/ECM_LIMIT", 0.0);
         Parameters parameters = new Parameters(box, null, null);
         PottsCell cell = new PottsCellMock(containerWithoutRegions, locationMock, parameters);
         assertTrue(cell.getProcess(Domain.DEPOSITION) instanceof PottsProcessDepositionECM);
