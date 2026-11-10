@@ -34,14 +34,14 @@ public class Solver {
     /** Relaxation factor for SOR. */
     private static final double OMEGA = 1.4;
 
-    /** Maximum number of iterations. */
-    private static final int MAX_ITERS = 20000;
+    /** Maximum number of iterations for SOR and bisection method. */
+    private static final int MAX_ITERS = 10000;
 
     /** Error tolerance for SOR. */
     private static final double TOLERANCE = 1E-5;
 
     /** Convergence delta for bisection method. */
-    private static final double DELTA = 1E-6;
+    private static final double DELTA = 1E-5;
 
     /** Matrix size threshold for dense representation. */
     private static final int MATRIX_THRESHOLD = 100;
@@ -424,7 +424,7 @@ public class Solver {
      * @param a the lower bound on the interval
      * @param b the upper bound on the interval
      * @param maxIters the maximum number of iterations
-     * @param tolerance the error
+     * @param tolerance the tolerance for error
      * @return the root of the function
      */
     public static double bisection(
