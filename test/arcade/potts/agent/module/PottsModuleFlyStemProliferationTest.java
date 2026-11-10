@@ -206,6 +206,7 @@ public class PottsModuleFlyStemProliferationTest {
         when(parameters.getDouble("proliferation/NB_CONTACT_HILL_N")).thenReturn(2.0);
         when(parameters.getDouble("proliferation/PROSPERO_HALF_MAX")).thenReturn(5.0);
         when(parameters.getDouble("proliferation/PROSPERO_HILL_N")).thenReturn(10.0);
+        when(parameters.getInt("proliferation/ALLOW_PARENT_DIFFERENTIATION")).thenReturn(0);
 
         module = new PottsModuleFlyStemProliferation(stemCell);
 
@@ -224,6 +225,7 @@ public class PottsModuleFlyStemProliferationTest {
         assertEquals(2.0, module.nbContactHillN, EPSILON);
         assertEquals(5.0, module.prosperoHalfMax, EPSILON);
         assertEquals(10.0, module.prosperoHillN, EPSILON);
+        assertFalse(module.allowParentDifferentiation);
     }
 
     @Test
