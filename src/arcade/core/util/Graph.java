@@ -31,6 +31,9 @@ public final class Graph {
     /** Collection of all {@code Edge} objects in a graph. */
     private final Bag allEdges;
 
+    /** Map of {@code Node} objects, for lookup. */
+    private final Map<String, Node> nodes;
+
     /** Map of {@code Node} OUT to bag of {@code Edge} objects. */
     private final Map<Node, Bag> nodeToOutBag;
 
@@ -42,6 +45,7 @@ public final class Graph {
         allEdges = new Bag();
         nodeToOutBag = new HashMap<>();
         nodeToInBag = new HashMap<>();
+        nodes = new HashMap<>();
     }
 
     /**
@@ -53,6 +57,46 @@ public final class Graph {
         allEdges.addAll(graph.allEdges);
         nodeToOutBag.putAll(graph.nodeToOutBag);
         nodeToInBag.putAll(graph.nodeToInBag);
+        updateNodes();
+    }
+
+    /** Updates nodes from graph. */
+    private void updateNodes() {
+        for (Object obj : allEdges) {
+            Edge edge = (Edge) obj;
+            Node from = edge.getFrom();
+            Node to = edge.getTo();
+
+            if (!nodes.containsKey(from.toString())) {
+                nodes.put(from.toString(), from);
+            }
+            if (!nodes.containsKey(to.toString())) {
+                nodes.put(to.toString(), to);
+            }
+        }
+    }
+
+    /**
+     * Replaces this graph with the combined contents of two graphs.
+     *
+     * <p>All existing edges are removed and the edges from {@code graph1} and {@code graph2} are
+     * copied into this graph. This method should be used after node references have been merged or
+     * reconciled between the two graphs, producing a single graph containing the same edge objects
+     * of both inputs.
+     *
+     * @param graph1 the first graph to combine
+     * @param graph2 the second graph to combine
+     */
+    public void combine(Graph graph1, Graph graph2) {
+        clear();
+        for (Object obj : graph2.getAllEdges()) {
+            Edge edge = (Edge) obj;
+            addEdge(edge);
+        }
+        for (Object obj : graph1.getAllEdges()) {
+            Edge edge = (Edge) obj;
+            addEdge(edge);
+        }
     }
 
     /** Clear edges and nodes from graph. */
@@ -60,6 +104,7 @@ public final class Graph {
         allEdges.clear();
         nodeToOutBag.clear();
         nodeToInBag.clear();
+        nodes.clear();
     }
 
     /**
@@ -89,6 +134,28 @@ public final class Graph {
      */
     public boolean contains(Edge edge) {
         return checkEdge(edge);
+    }
+
+    /**
+     * Retrieve the node object for the given coordinates. Returns null if no node exists.
+     *
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     * @return the node object
+     */
+    public Node lookup(int x, int y, int z) {
+        return nodes.get("(" + x + "," + y + "," + z + ")");
+    }
+
+    /**
+     * Retrieve the node object for the given coordinates. Returns null if no node exists.
+     *
+     * @param node to lookup an original node
+     * @return the node object
+     */
+    public Node lookup(Node node) {
+        return nodes.get(node.toString());
     }
 
     /**
@@ -206,6 +273,7 @@ public final class Graph {
         for (Object obj : allEdges) {
             Edge edge = (Edge) obj;
             if (f.filter(edge)) {
+                g.addNodes(edge);
                 g.allEdges.add(edge);
                 g.setOutMap(edge.getFrom(), edge);
                 g.setInMap(edge.getTo(), edge);
@@ -255,6 +323,8 @@ public final class Graph {
                     e.setTo(join);
                 }
             }
+
+            nodes.put(join.toString(), join);
         }
     }
 
@@ -269,15 +339,36 @@ public final class Graph {
     }
 
     /**
-     * Adds edge to graph.
+     * Adds edge object to graph.
      *
      * @param edge the edge to add
      */
     public void addEdge(Edge edge) {
+        addNodes(edge);
         allEdges.add(edge);
         setOutMap(edge.getFrom(), edge);
         setInMap(edge.getTo(), edge);
         setLinks(edge);
+    }
+
+    /**
+     * Helper function to adds the nodes from an edge to a graph.
+     *
+     * @param edge the edge to add
+     */
+    private void addNodes(Edge edge) {
+        Node from = edge.getFrom();
+        Node to = edge.getTo();
+        if (!nodes.containsKey(from.toString())) {
+            nodes.put(from.toString(), from);
+        } else {
+            edge.setFrom(nodes.get(from.toString()));
+        }
+        if (!nodes.containsKey(to.toString())) {
+            nodes.put(to.toString(), to);
+        } else {
+            edge.setTo(nodes.get(to.toString()));
+        }
     }
 
     /**
@@ -290,7 +381,7 @@ public final class Graph {
         Bag objs = nodeToOutBag.get(node);
         if (objs == null) {
             objs = new Bag(10);
-            nodeToOutBag.put(node.duplicate(), objs);
+            nodeToOutBag.put(node, objs);
         }
         objs.add(edge);
     }
@@ -305,7 +396,7 @@ public final class Graph {
         Bag objs = nodeToInBag.get(node);
         if (objs == null) {
             objs = new Bag(10);
-            nodeToInBag.put(node.duplicate(), objs);
+            nodeToInBag.put(node, objs);
         }
         objs.add(edge);
     }
@@ -353,6 +444,19 @@ public final class Graph {
         unsetOutMap(edge.getFrom(), edge);
         unsetInMap(edge.getTo(), edge);
         unsetLinks(edge);
+        removeNodeIfDetached(edge.getFrom());
+        removeNodeIfDetached(edge.getTo());
+    }
+
+    /**
+     * Remove a node if it is detached from the graph.
+     *
+     * @param node the node to check
+     */
+    private void removeNodeIfDetached(Node node) {
+        if (!nodeToInBag.containsKey(node) && !nodeToOutBag.containsKey(node)) {
+            nodes.remove(node.toString());
+        }
     }
 
     /**
@@ -736,8 +840,8 @@ public final class Graph {
          * @param to the node the edge is to
          */
         public Edge(Node from, Node to) {
-            this.from = from.duplicate();
-            this.to = to.duplicate();
+            this.from = from;
+            this.to = to;
             edgesIn = new ArrayList<>();
             edgesOut = new ArrayList<>();
         }
@@ -822,7 +926,7 @@ public final class Graph {
          *
          * @return the reversed edge
          */
-        Edge reverse() {
+        public Edge reverse() {
             Node tempTo = to;
             Node tempFrom = from;
             to = tempFrom;
