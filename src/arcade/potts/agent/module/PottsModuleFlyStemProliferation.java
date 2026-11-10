@@ -15,10 +15,7 @@ import arcade.core.util.Vector;
 import arcade.core.util.distributions.Distribution;
 import arcade.core.util.distributions.NormalDistribution;
 import arcade.core.util.distributions.UniformDistribution;
-import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.agent.cell.PottsCellContainer;
-import arcade.potts.agent.cell.PottsCellFly;
-import arcade.potts.agent.cell.PottsCellFlyStem;
+import arcade.potts.agent.cell.*;
 import arcade.potts.agent.cell.PottsCellFlyStem.StemType;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocation2D;
@@ -43,6 +40,8 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
 
     /** Basal rate of apoptosis (ticks^-1). */
     final double basalApoptosisRate;
+
+    final boolean allowParentDifferentiation;
 
     /** Rate of Prospero change (ticks^-1). */
     final double prosperoRate;
@@ -407,6 +406,15 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                         SymmetricDivisionRuleset.class,
                         parameters,
                         "proliferation/SYMMETRIC_DIVISION_RULESET");
+
+        allowParentDifferentiation =
+                (parameters.getInt("proliferation/ALLOW_PARENT_DIFFERENTIATION") != 0);
+
+        if (allowParentDifferentiation
+                && symmetricDivisionRuleset != SymmetricDivisionRuleset.TF_CONCENTRATION) {
+            throw new InvalidParameterException(
+                    "parent cell differentiation is only supported with the TF_CONCENTRATION symmetric division ruleset");
+        }
         range = parameters.getDouble("proliferation/DIFFERENTIATION_RULESET_EQUALITY_RANGE");
         equalityOffsetPercentY =
                 parameters.getDouble(
@@ -538,6 +546,60 @@ public class PottsModuleFlyStemProliferation extends PottsModuleProliferationVol
                     divisionPlane.getUnitNormalVector(),
                     daughterProspero);
         }
+
+        if (allowParentDifferentiation) {
+            double remainingProspero = ((PottsCellFly) cell).getProspero();
+            double parentConcentration = prosperoConcentration(remainingProspero, parentLoc);
+
+            if (parentConcentration > tfConcentration) {
+                differentiateParentToGMC(parentLoc, sim, potts, random, remainingProspero);
+            }
+        }
+    }
+
+    private void differentiateParentToGMC(
+            PottsLocation parentLoc,
+            Simulation sim,
+            Potts potts,
+            MersenneTwisterFast random,
+            double remainingProspero) {
+
+        PottsCellFlyStem oldCell = (PottsCellFlyStem) cell;
+        Location location = oldCell.getLocation();
+
+        sim.getGrid().removeObject(oldCell, location);
+        oldCell.stop();
+
+        int newPop = oldCell.getLinks().next(random);
+        double criticalVolume = calculateGMCDaughterCellCriticalVolume((PottsLocation) location);
+
+        PottsCellContainer differentiatedParentContainer =
+                new PottsCellContainer(
+                        oldCell.getID(),
+                        oldCell.getParent(),
+                        newPop,
+                        oldCell.getAge(),
+                        oldCell.getDivisions(),
+                        State.PROLIFERATIVE,
+                        null,
+                        0,
+                        null,
+                        criticalVolume,
+                        oldCell.getCriticalHeight(),
+                        oldCell.getCriticalRegionVolumes(),
+                        oldCell.getCriticalRegionHeights());
+
+        PottsCell differentiatedParent =
+                (PottsCellFlyGMC)
+                        differentiatedParentContainer.convert(
+                                sim.getCellFactory(), location, random);
+
+        sim.getGrid().addObject(differentiatedParent, null);
+        potts.register(differentiatedParent);
+        differentiatedParent.reset(potts.ids, potts.regions);
+        differentiatedParent.schedule(sim.getSchedule());
+
+        ((PottsCellFly) differentiatedParent).setProspero(remainingProspero);
     }
 
     /**
