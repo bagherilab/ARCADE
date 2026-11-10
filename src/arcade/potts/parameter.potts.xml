@@ -97,6 +97,7 @@
     <population.module module="proliferation" id="GMC_CRITICAL_VOLUME_OVERRIDE" value="0" units="um^3" conversion="DS^-3" description="If &gt; 0 and VOLUME_BASED_CRITICAL_VOLUME=0, overrides the formula-derived GMC daughter critical volume with this fixed value (converted to voxels); 0 = disabled (use formula)" />
     <!-- Deterministic Differentiation-->
     <population.module module="proliferation" id="HAS_DETERMINISTIC_DIFFERENTIATION" value="TRUE" description="if TRUE, differentiation is determined deterministically" />
+    <population.module module="proliferation" id="ALLOW_PARENT_DIFFERENTIATION" value="0" description="0 -> do not allow parent differentiation, anything else, do allow" />
     <!-- Prospero rate of change -->
     <population.module module="proliferation" id="PROSPERO_RATE" value="1" units="Prospero/hour" conversion="DT" description="rate of change of Prospero" />
     <!-- Transcription factor ratio (Prospero) and differentiation ruleset -->
@@ -109,7 +110,6 @@
     <population.module module="proliferation" id="MM_LIKE_Y" value="50" description="Mud mutant stem cell split offset percent for y" />
     <population.module module="proliferation" id="NANO_LIKE_X" value="-1" description="Nanobody stem cell split offset percent for x" />
     <population.module module="proliferation" id="NANO_LIKE_Y" value="-1" description="Nanobody stem cell split offset percent for y" />
-
     <!-- apoptosis module parameters -->
     <population.module module="apoptosis" id="RATE_EARLY" value="4" units="steps/hour" conversion="DT" description="rate of events in early apoptosis phase" />
     <population.module module="apoptosis" id="RATE_LATE" value="1.8" units="steps/hour" conversion="DT" description="rate of events in late apoptosis phase" />
