@@ -339,7 +339,7 @@ public final class Graph {
     }
 
     /**
-     * Adds edge to graph. Default behavior is to duplicate nodes.
+     * Adds edge object to graph.
      *
      * @param edge the edge to add
      */
@@ -348,21 +348,6 @@ public final class Graph {
         allEdges.add(edge);
         setOutMap(edge.getFrom(), edge);
         setInMap(edge.getTo(), edge);
-        setLinks(edge);
-    }
-
-    /**
-     * Adds edge to graph.
-     *
-     * @param edge the edge to add
-     * @param duplicate {@code true} if desired behavior is to duplicate nodes, {@code false}
-     *     otherwise
-     */
-    public void addEdge(Edge edge, boolean duplicate) {
-        addNodes(edge);
-        allEdges.add(edge);
-        setOutMap(edge.getFrom(), edge, duplicate);
-        setInMap(edge.getTo(), edge, duplicate);
         setLinks(edge);
     }
 
@@ -387,8 +372,7 @@ public final class Graph {
     }
 
     /**
-     * Adds the edge to the bag for the mapping of OUT node to edge. Default behavior is to
-     * duplicate nodes.
+     * Adds the edge to the bag for the mapping of OUT node to edge.
      *
      * @param node the node hash
      * @param edge the edge
@@ -397,33 +381,13 @@ public final class Graph {
         Bag objs = nodeToOutBag.get(node);
         if (objs == null) {
             objs = new Bag(10);
-            nodeToOutBag.put(node.duplicate(), objs);
+            nodeToOutBag.put(node, objs);
         }
         objs.add(edge);
     }
 
     /**
-     * Adds the edge to the bag for the mapping of OUT node to edge. Used in cases new node object
-     * is not needed.
-     *
-     * @param node the node hash
-     * @param edge the edge
-     * @param duplicate {@code true} if desired behavior is to duplicate nodes, {@code false}
-     *     otherwise
-     */
-    private void setOutMap(Node node, Edge edge, boolean duplicate) {
-        Bag objs = nodeToOutBag.get(node);
-        if (objs == null) {
-            objs = new Bag(10);
-            Node bagNode = duplicate ? node.duplicate() : node;
-            nodeToOutBag.put(bagNode, objs);
-        }
-        objs.add(edge);
-    }
-
-    /**
-     * Adds the edge to the bag for the mapping of IN node to edge. Default behavior is to duplicate
-     * nodes.
+     * Adds the edge to the bag for the mapping of IN node to edge.
      *
      * @param node the node hash
      * @param edge the edge
@@ -432,26 +396,7 @@ public final class Graph {
         Bag objs = nodeToInBag.get(node);
         if (objs == null) {
             objs = new Bag(10);
-            nodeToInBag.put(node.duplicate(), objs);
-        }
-        objs.add(edge);
-    }
-
-    /**
-     * Adds the edge to the bag for the mapping of IN node to edge. Used in cases new node object is
-     * not needed.
-     *
-     * @param node the node hash
-     * @param edge the edge
-     * @param duplicate {@code true} if desired behavior is to duplicate nodes, {@code false}
-     *     otherwise
-     */
-    private void setInMap(Node node, Edge edge, boolean duplicate) {
-        Bag objs = nodeToInBag.get(node);
-        if (objs == null) {
-            objs = new Bag(10);
-            Node bagNode = duplicate ? node.duplicate() : node;
-            nodeToInBag.put(bagNode, objs);
+            nodeToInBag.put(node, objs);
         }
         objs.add(edge);
     }
@@ -889,30 +834,14 @@ public final class Graph {
         private final ArrayList<Edge> edgesOut;
 
         /**
-         * Creates an {@code Edge} between two {@link Node} objects. Default behavior is to
-         * duplicate nodes.
+         * Creates an {@code Edge} between two {@link Node} objects.
          *
          * @param from the node the edge is from
          * @param to the node the edge is to
          */
         public Edge(Node from, Node to) {
-            this.from = from.duplicate();
-            this.to = to.duplicate();
-            edgesIn = new ArrayList<>();
-            edgesOut = new ArrayList<>();
-        }
-
-        /**
-         * Creates an {@code Edge} object for graph sites. Used in cases where a new node object is
-         * not needed.
-         *
-         * @param from the node the edge is from
-         * @param to the node the edge is to
-         * @param duplicate {@code true} if nodes should be duplicated, {@code false} otherwise
-         */
-        public Edge(Node from, Node to, boolean duplicate) {
-            this.from = duplicate ? from.duplicate() : from;
-            this.to = duplicate ? to.duplicate() : to;
+            this.from = from;
+            this.to = to;
             edgesIn = new ArrayList<>();
             edgesOut = new ArrayList<>();
         }
