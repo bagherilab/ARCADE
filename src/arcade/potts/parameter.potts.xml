@@ -155,6 +155,7 @@
     <layer.operation operation="diffuser" id="STEADY" value="0" description="1 to solve the layer to steady state each tick (for fast layers such as O2 with uptake or supply), 0 to step in time" />
     <layer.operation operation="diffuser" id="STEADY_TOLERANCE" value="0.001" units="(layer units)" description="a steady solve stops when the largest change over a cycle of 8 iterations is below this" />
     <layer.operation operation="diffuser" id="STEADY_MAX_ITERATIONS" value="500" description="iterations allowed in a steady solve before an exception is thrown" />
+    <layer.operation operation="diffuser" id="DECAY_RATE" value="0" units="1/hour" conversion="DT" description="first-order decay applied inside the diffusion substeps, together with continuous sources (for fast decay, where a once-per-tick decayer leaves cells sensing the low point of each tick); 0 for none; not with STEADY = 1 or a decayer on the same layer" />
 
     <!-- decayer operation parameters -->
     <layer.operation operation="decayer" id="DECAY_RATE" value="0" units="1/hour" conversion="DT" description="decay rate of molecule" />

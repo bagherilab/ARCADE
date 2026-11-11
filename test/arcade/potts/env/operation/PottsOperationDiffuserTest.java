@@ -604,4 +604,154 @@ public class PottsOperationDiffuserTest {
             }
         }
     }
+
+    // Diffuser parameters with decay inside the substeps [per tick, after conversion].
+    static MiniBox paramsSubstepDecay(double d, double maxSubstep, double decayPerTick) {
+        MiniBox p = params(d, maxSubstep);
+        p.put("diffuser/DECAY_RATE", decayPerTick);
+        return p;
+    }
+
+    static void setSource(PottsLattice l, int i, int j, double rate) {
+        l.addSource(List.of(new Voxel(i, j, 0)), rate);
+    }
+
+    @Test
+    public void constructor_negativeDecayRate_throws() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        new PottsOperationDiffuser(
+                                lattice(3, 3, 3, 0.25, paramsSubstepDecay(1, 30, -1))));
+    }
+
+    @Test
+    public void constructor_decayRateWithSteady_throws() {
+        MiniBox p = paramsSubstepDecay(1, 30, 0.5);
+        p.put("diffuser/STEADY", 1);
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new PottsOperationDiffuser(lattice(3, 3, 3, 0.25, p)));
+    }
+
+    @Test
+    public void constructor_decayRateWithDecayer_throws() {
+        MiniBox p = paramsSubstepDecay(1, 30, 0.5);
+        p.put("(OPERATION)" + MiniBox.TAG_SEPARATOR + "DECAYER", "");
+        p.put("decayer/DECAY_RATE", 0.5);
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new PottsOperationDiffuser(lattice(3, 3, 3, 0.25, p)));
+    }
+
+    @Test
+    public void step_zeroDecayRateNoSource_matchesDiffuserWithoutKey() {
+        PottsLattice a = lattice(6, 5, 3, 0.25, params(10, 30));
+        PottsLattice b = lattice(6, 5, 3, 0.25, paramsSubstepDecay(10, 30, 0));
+        a.getField()[0][2][3] = 7;
+        b.getField()[0][2][3] = 7;
+        new PottsOperationDiffuser(a).step(null, null);
+        new PottsOperationDiffuser(b).step(null, null);
+        for (int i = 0; i < 6; i++) {
+            assertArrayEquals(a.getField()[0][i], b.getField()[0][i], 0);
+        }
+    }
+
+    @Test
+    public void step_sourceNoDecay_addsSourceTimesTickExactly() {
+        PottsLattice l = lattice(7, 7, 3, 0.25, params(10, 30));
+        l.getField()[0][1][1] = 2;
+        setSource(l, 3, 3, 0.004);
+        new PottsOperationDiffuser(l).step(null, null);
+        assertEquals(2 + 0.004 * 900, total(l.getField()[0]), 1E-9);
+        assertTrue(l.getField()[0][3][4] > 0);
+        assertTrue(l.getField()[0][3][3] < 0.004 * 900);
+    }
+
+    @Test
+    public void step_uniformSourceWithDecayNoDiffusion_followsSubstepRecursion() {
+        double s = 0.002;
+        double kTick = 0.9;
+        PottsLattice l = lattice(4, 3, 3, 0.25, paramsSubstepDecay(0, 30, kTick));
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 3; j++) {
+                setSource(l, i, j, s);
+            }
+        }
+        new PottsOperationDiffuser(l).step(null, null);
+
+        double factor = Math.exp(-kTick / 30);
+        double expected = 0;
+        for (int n = 0; n < 30; n++) {
+            expected = (expected + s * 30) * factor;
+        }
+        // Continuous solution (S / k)(1 - exp(-k T)), with k in 1/s.
+        double k = kTick / 900;
+        double continuous = s / k * (1 - Math.exp(-kTick));
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 3; j++) {
+                assertEquals(expected, l.getField()[0][i][j], 1E-12);
+                assertEquals(continuous, l.getField()[0][i][j], 0.02 * continuous);
+            }
+        }
+    }
+
+    @Test
+    public void step_sourceProfileWithDecay_matchesExactSteadyProfile() {
+        // 1D: 200 voxels of 3 um, source over voxels [50, 150), D = 10 um^2/s, k = 3.6/hour.
+        int n = 200;
+        double ds = 3;
+        double diffusivity = 10;
+        double k = 3.6 / 3600;
+        double rate = 3.6 / 3600;
+        PottsLattice l = lattice(n, 1, ds, 0.25, paramsSubstepDecay(diffusivity, 30, k * 900));
+        PottsOperationDiffuser d = new PottsOperationDiffuser(l);
+        for (int tick = 0; tick < 60; tick++) {
+            for (int i = 50; i < 150; i++) {
+                setSource(l, i, 0, rate);
+            }
+            d.step(null, null);
+            l.getSource()[0][0][0] = 0;
+            for (int i = 0; i < n; i++) {
+                l.getSource()[0][i][0] = 0;
+            }
+        }
+
+        // Exact steady state of D c'' - k c + S = 0 on the grid (no-flux), by the Thomas algorithm.
+        double a = diffusivity / (ds * ds);
+        double[] diag = new double[n];
+        double[] rhs = new double[n];
+        for (int i = 0; i < n; i++) {
+            diag[i] = 2 * a + k - ((i == 0 || i == n - 1) ? a : 0);
+            rhs[i] = (i >= 50 && i < 150) ? rate : 0;
+        }
+        double[] c = new double[n];
+        double[] cp = new double[n];
+        double[] dp = new double[n];
+        cp[0] = -a / diag[0];
+        dp[0] = rhs[0] / diag[0];
+        for (int i = 1; i < n; i++) {
+            double m = diag[i] + a * cp[i - 1];
+            cp[i] = -a / m;
+            dp[i] = (rhs[i] + a * dp[i - 1]) / m;
+        }
+        c[n - 1] = dp[n - 1];
+        for (int i = n - 2; i >= 0; i--) {
+            c[i] = dp[i] - cp[i] * c[i + 1];
+        }
+
+        for (int i : new int[] {100, 66, 50, 40, 20, 10}) {
+            assertEquals(c[i], l.getField()[0][i][0], 0.03 * c[i]);
+        }
+    }
+
+    @Test
+    public void step_sourceOnSteadyLayer_throws() {
+        MiniBox p = params(10, 30);
+        p.put("diffuser/STEADY", 1);
+        PottsLattice l = lattice(4, 4, 3, 0.25, p);
+        setSource(l, 1, 1, 0.01);
+        PottsOperationDiffuser d = new PottsOperationDiffuser(l);
+        assertThrows(IllegalArgumentException.class, () -> d.step(null, null));
+    }
 }

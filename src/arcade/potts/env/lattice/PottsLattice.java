@@ -34,6 +34,11 @@ import static arcade.potts.util.PottsEnums.Ordering;
  * #addExchange(List, double, double)}. The diffuser uses both inside its implicit solve, and they
  * are cleared at the end of the lattice step. Without a diffuser, they have no effect.
  *
+ * <p>Continuous sources (rates per voxel, for example release from another layer) are added with
+ * {@link #addSource(List, double)}. The diffuser adds them in every substep, so they enter the
+ * field spread over the tick instead of as one pulse at its start. They are cleared at the end of
+ * the lattice step; without a diffuser, they have no effect.
+ *
  * <p>Operations listed in the layer parameters are created with the lattice and stepped at {@code
  * LATTICES}: diffuser, then decayer. The degrader, which reads another lattice, is stepped at
  * {@code LAST_LATTICE}, after all lattices have stepped.
@@ -61,6 +66,11 @@ public class PottsLattice implements Lattice {
      * Array of summed products P * T [layer units/s], used by the diffuser and cleared each step.
      */
     final double[][][] exchangeTarget;
+
+    /**
+     * Array of continuous source rates [layer units/s], used by the diffuser and cleared each step.
+     */
+    final double[][][] source;
 
     /** Length of the array (x direction). */
     private final int length;
@@ -113,6 +123,7 @@ public class PottsLattice implements Lattice {
         sink = new double[height][length][width];
         exchange = new double[height][length][width];
         exchangeTarget = new double[height][length][width];
+        source = new double[height][length][width];
 
         // Add lattice operations.
         operations = new EnumMap<>(Category.class);
@@ -340,7 +351,31 @@ public class PottsLattice implements Lattice {
         return exchangeTarget;
     }
 
-    /** Clears all uptake rates and exchanges. */
+    /**
+     * Adds a continuous source rate to each voxel for the current tick.
+     *
+     * <p>The diffuser adds the source in every substep and the rate is cleared at the end of the
+     * lattice step.
+     *
+     * @param voxels the voxels (repeated voxels receive the rate once per occurrence)
+     * @param rate the source rate per voxel [layer units/s]
+     */
+    public void addSource(List<Voxel> voxels, double rate) {
+        for (Voxel v : voxels) {
+            source[v.z][v.x][v.y] += rate;
+        }
+    }
+
+    /**
+     * Gets the array of continuous source rates.
+     *
+     * @return the source array [layer units/s]
+     */
+    public double[][][] getSource() {
+        return source;
+    }
+
+    /** Clears all uptake rates, exchanges and sources. */
     void clearReactions() {
         for (int k = 0; k < height; k++) {
             for (int i = 0; i < length; i++) {
@@ -348,6 +383,7 @@ public class PottsLattice implements Lattice {
                     sink[k][i][j] = 0;
                     exchange[k][i][j] = 0;
                     exchangeTarget[k][i][j] = 0;
+                    source[k][i][j] = 0;
                 }
             }
         }

@@ -32,14 +32,13 @@ public class PottsComponentReleaseTest {
         return new PottsLattice(3, 2, 1, 3.0, DT, new MiniBox());
     }
 
-    // A mock target layer with a diffuser (or no operations) and the tick length.
-    static PottsLattice makeTarget(boolean withOperation) {
+    // A mock target layer with a diffuser (or none) and the tick length.
+    static PottsLattice makeTarget(boolean withDiffuser) {
         PottsLattice target = mock(PottsLattice.class);
         doReturn(DT).when(target).getDt();
-        doReturn(withOperation ? mock(Operation.class) : null)
+        doReturn(withDiffuser ? mock(Operation.class) : null)
                 .when(target)
                 .getOperation(Category.DIFFUSER);
-        doReturn(null).when(target).getOperation(Category.DECAYER);
         return target;
     }
 
@@ -83,11 +82,11 @@ public class PottsComponentReleaseTest {
 
         release.step(sim);
 
-        verify(target, never()).addDelta(any(), anyDouble());
+        verify(target, never()).addSource(any(), anyDouble());
     }
 
     @Test
-    public void step_givenSource_addsRateTimesSourceTimesTick() {
+    public void step_givenSource_addsRatePerSecondTimesSource() {
         PottsLattice source = makeSource();
         source.getField()[0][0][0] = 1.0;
         source.getField()[0][2][1] = 0.5;
@@ -98,9 +97,9 @@ public class PottsComponentReleaseTest {
 
         release.step(sim);
 
-        verify(target).addDelta(List.of(new Voxel(0, 0, 0)), 4 * DT * 1.0);
-        verify(target).addDelta(List.of(new Voxel(2, 1, 0)), 4 * DT * 0.5);
-        verify(target, times(2)).addDelta(any(), anyDouble());
+        verify(target).addSource(List.of(new Voxel(0, 0, 0)), 4 / 3600.0 * 1.0);
+        verify(target).addSource(List.of(new Voxel(2, 1, 0)), 4 / 3600.0 * 0.5);
+        verify(target, times(2)).addSource(any(), anyDouble());
     }
 
     @Test
@@ -118,9 +117,9 @@ public class PottsComponentReleaseTest {
         source.getField()[0][1][0] = 0;
         release.step(sim);
 
-        verify(target).addDelta(List.of(new Voxel(1, 0, 0)), 2 * DT * 1.0);
-        verify(target).addDelta(List.of(new Voxel(1, 0, 0)), 2 * DT * 0.25);
-        verify(target, times(2)).addDelta(any(), anyDouble());
+        verify(target).addSource(List.of(new Voxel(1, 0, 0)), 2 / 3600.0 * 1.0);
+        verify(target).addSource(List.of(new Voxel(1, 0, 0)), 2 / 3600.0 * 0.25);
+        verify(target, times(2)).addSource(any(), anyDouble());
     }
 
     @Test
@@ -141,7 +140,7 @@ public class PottsComponentReleaseTest {
     }
 
     @Test
-    public void step_targetWithoutDiffuserOrDecayer_throws() {
+    public void step_targetWithoutDiffuser_throws() {
         PottsSimulation sim = makeSim(makeSource(), makeTarget(false));
         PottsComponentRelease release = new PottsComponentRelease(parameters(1, "SRC"));
         release.register(sim, "SIG");
@@ -153,8 +152,9 @@ public class PottsComponentReleaseTest {
         PottsLattice source = makeSource();
         source.getField()[0][0][1] = 2.0;
         MiniBox ops = new MiniBox();
-        ops.put("(OPERATION)" + arcade.core.util.MiniBox.TAG_SEPARATOR + "DECAYER", "");
-        ops.put("decayer/DECAY_RATE", 0.0);
+        ops.put("(OPERATION)" + MiniBox.TAG_SEPARATOR + "DIFFUSER", "");
+        ops.put("diffuser/DIFFUSIVITY", 0.0);
+        ops.put("diffuser/MAX_SUBSTEP", 30.0);
         PottsLattice target = new PottsLattice(3, 2, 1, 3.0, DT, ops);
         PottsSimulation sim = makeSim(source, target);
         PottsComponentRelease release = new PottsComponentRelease(parameters(3, "SRC"));

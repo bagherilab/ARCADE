@@ -24,13 +24,19 @@ public class PottsReleaseIntegrationTest {
 
     private static final int TICKS = 8;
 
+    private static final double SUBSTEP = 30;
+
     // A setup with a uniform source layer, a decaying target layer, and release between them.
     static String setup(String name) {
         String layers =
                 "<layer id=\"SRC\"><layer.parameter id=\"INITIAL_CONCENTRATION\" value=\"1\" />"
                         + "</layer>"
-                        + "<layer id=\"SIG\"><layer.operation id=\"DECAYER\" />"
-                        + "<layer.parameter operation=\"decayer\" id=\"DECAY_RATE\" value=\""
+                        + "<layer id=\"SIG\"><layer.operation id=\"DIFFUSER\" />"
+                        + "<layer.parameter operation=\"diffuser\" id=\"DIFFUSIVITY\" value=\"10\" />"
+                        + "<layer.parameter operation=\"diffuser\" id=\"MAX_SUBSTEP\" value=\""
+                        + SUBSTEP
+                        + "\" />"
+                        + "<layer.parameter operation=\"diffuser\" id=\"DECAY_RATE\" value=\""
                         + DECAY
                         + "\" /></layer>";
         String component =
@@ -60,7 +66,7 @@ public class PottsReleaseIntegrationTest {
     }
 
     @Test
-    public void release_uniformSourceWithDecay_matchesExactRecursion(@TempDir Path dir)
+    public void release_uniformSourceWithSubstepDecay_matchesContinuousSolution(@TempDir Path dir)
             throws Exception {
         Path file = dir.resolve("release.xml");
         Files.writeString(file, setup("release"));
@@ -69,13 +75,17 @@ public class PottsReleaseIntegrationTest {
                     "potts", file.toString(), dir.toAbsolutePath() + "/", "--savelayers"
                 });
 
-        // Each tick: c <- (c + RATE DT) exp(-DECAY DT), from c = 0.
-        double a = RATE * DT;
-        double f = Math.exp(-DECAY * DT);
+        // Each substep h: c <- (c + RATE h) exp(-DECAY h), from c = 0 (h in hours). The uniform
+        // source makes diffusion irrelevant.
+        int substeps = (int) Math.round(DT * 3600 / SUBSTEP);
+        double h = DT / substeps;
+        double f = Math.exp(-DECAY * h);
         double expected = 0;
-        for (int t = 0; t < TICKS; t++) {
-            expected = (expected + a) * f;
+        for (int n = 0; n < TICKS * substeps; n++) {
+            expected = (expected + RATE * h) * f;
         }
+        // Continuous solution (RATE / DECAY)(1 - exp(-DECAY t)).
+        double continuous = RATE / DECAY * (1 - Math.exp(-DECAY * DT * TICKS));
 
         String json =
                 Files.readString(
@@ -89,7 +99,6 @@ public class PottsReleaseIntegrationTest {
                 assertEquals(expected, value, 1E-9);
             }
         }
-        // Approaches the steady value a f / (1 - f).
-        assertEquals(a * f / (1 - f), expected, 0.03 * a * f / (1 - f));
+        assertEquals(continuous, expected, 0.01 * continuous);
     }
 }

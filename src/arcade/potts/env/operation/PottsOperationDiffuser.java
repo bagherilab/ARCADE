@@ -4,6 +4,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.potts.env.lattice.PottsLattice;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 /**
  * Extension of {@link PottsOperation} for diffusion.
@@ -31,6 +32,14 @@ import arcade.potts.env.lattice.PottsLattice;
  * reactions in 2D, and no planned layer has slow ones. With no sink or exchange, a steady layer is
  * stepped in time as usual.
  *
+ * <p>Continuous sources S per voxel (from {@link PottsLattice#addSource}) and first-order decay at
+ * {@code DECAY_RATE} k are applied inside the time-stepping substeps: each substep of length h adds
+ * S h, solves diffusion, and multiplies by exp(-k h). A source released once per tick and decayed
+ * once per tick after a whole tick of diffusion would leave cells sensing the low point of a
+ * sawtooth; spreading both over the substeps follows dc/dt = D lap c + S - k c to substep accuracy.
+ * With no source and k = 0 the step is unchanged. Sources are not supported for steady layers, and
+ * a layer with {@code DECAY_RATE} above 0 must not also have a decayer.
+ *
  * <p>Loaded parameters include:
  *
  * <ul>
@@ -42,6 +51,8 @@ import arcade.potts.env.lattice.PottsLattice;
  *   <li>{@code STEADY_TOLERANCE} = the solve stops when the largest change over a cycle of
  *       iterations is below this [layer units]
  *   <li>{@code STEADY_MAX_ITERATIONS} = iterations allowed before throwing an exception
+ *   <li>{@code DECAY_RATE} = first-order decay applied inside the substeps [1/tick after
+ *       conversion]; 0 for none
  * </ul>
  */
 public class PottsOperationDiffuser extends PottsOperation {
@@ -56,6 +67,9 @@ public class PottsOperationDiffuser extends PottsOperation {
 
     /** Half-saturation constant for uptake [layer units]. */
     final double halfSaturation;
+
+    /** Decay factor exp(-k h) applied after each substep (1 for no decay). */
+    final double substepDecay;
 
     /** Number of iteration parameters cycled in steady solves. */
     static final int STEADY_PARAMETERS = 8;
@@ -147,6 +161,22 @@ public class PottsOperationDiffuser extends PottsOperation {
             throw new IllegalArgumentException(
                     "steady diffuser requires STEADY_TOLERANCE > 0 and STEADY_MAX_ITERATIONS >= 1");
         }
+
+        double decayRate =
+                parameters.contains("diffuser/DECAY_RATE")
+                        ? parameters.getDouble("diffuser/DECAY_RATE")
+                        : 0;
+        if (!(decayRate >= 0)) {
+            throw new IllegalArgumentException("diffuser requires DECAY_RATE >= 0");
+        }
+        if (decayRate > 0 && steady) {
+            throw new IllegalArgumentException("diffuser DECAY_RATE requires STEADY = 0");
+        }
+        if (decayRate > 0 && parameters.contains("(OPERATION)" + TAG_SEPARATOR + "DECAYER")) {
+            throw new IllegalArgumentException(
+                    "diffuser DECAY_RATE cannot be combined with a decayer on the same layer");
+        }
+        substepDecay = Math.exp(-decayRate / substeps);
 
         cpX = new double[latticeLength];
         invX = new double[latticeLength];
@@ -498,17 +528,60 @@ public class PottsOperationDiffuser extends PottsOperation {
                     "uptake or exchange requires diffuser STEADY = 1 (steady solve)");
         }
 
+        double[][] source = lattice.getSource()[0];
+        boolean hasSource = anyPositive(source);
+        if (hasSource && steady) {
+            throw new IllegalArgumentException("continuous sources require diffuser STEADY = 0");
+        }
+
         if (hasReaction) {
             steadySolve(f, sink, exchange, target);
             return;
         }
 
-        if (r == 0) {
+        boolean decays = substepDecay < 1;
+        if (r == 0 && !hasSource && !decays) {
             return;
         }
 
         for (int s = 0; s < substeps; s++) {
-            diffuseSubstep(f);
+            if (hasSource) {
+                addSource(f, source);
+            }
+            if (r > 0) {
+                diffuseSubstep(f);
+            }
+            if (decays) {
+                scale(f, substepDecay);
+            }
+        }
+    }
+
+    /**
+     * Adds one substep of the continuous source to the field.
+     *
+     * @param f the 2D field
+     * @param source the source rates [layer units/s]
+     */
+    private void addSource(double[][] f, double[][] source) {
+        for (int i = 0; i < latticeLength; i++) {
+            for (int j = 0; j < latticeWidth; j++) {
+                f[i][j] += source[i][j] * substep;
+            }
+        }
+    }
+
+    /**
+     * Multiplies the field by a factor.
+     *
+     * @param f the 2D field
+     * @param factor the factor
+     */
+    private static void scale(double[][] f, double factor) {
+        for (double[] row : f) {
+            for (int j = 0; j < row.length; j++) {
+                row[j] *= factor;
+            }
         }
     }
 }
