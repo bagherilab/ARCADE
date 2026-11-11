@@ -94,10 +94,14 @@ The matrix term slows cells where the `ECM` layer is dense, without making ECM t
 Any change of a voxel costs `LAMBDA` × ECM for each cell involved (the cell losing and the cell gaining the voxel), where ECM is the layer value at the voxel.
 The cost is the same for gaining and losing, so it does not push cells in any direction; fewer changes succeed in dense ECM, so cells move more slowly there.
 Medium pays nothing, and the term is zero if there is no `ECM` layer.
+If `WOUND_MATRIX_WEIGHT` w is above 0, the provisional matrix (`WOUND_MATRIX`, the fibrin clot) also resists, and the cost is `LAMBDA` × (ECM + w × WOUND_MATRIX).
+Cells must break the clot down to advance, so invasion slows where it is dense and speeds up as MMP clears it.
+A missing layer contributes 0.
 
 | PARAMETER | DEFAULT | UNITS | DESCRIPTION |
 | --------- | ------- | ----- | ----------- |
 | `matrix/LAMBDA` | 0 | energy/concentration | cost per unit ECM of changing a voxel, paid by each cell involved |
+| `matrix/WOUND_MATRIX_WEIGHT` | 0 | unitless | weight of `WOUND_MATRIX` relative to ECM; 0 for ECM only |
 
 ### Example: Slowing fibroblasts more than macrophages in ECM
 

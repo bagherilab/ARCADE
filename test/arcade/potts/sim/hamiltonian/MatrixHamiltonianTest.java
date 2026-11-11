@@ -150,4 +150,83 @@ public class MatrixHamiltonianTest {
         MatrixHamiltonian mh = makeTerm(3, 5, "ECM");
         assertEquals(0, mh.getDelta(1, 1, 2, 4, 2, 0), EPSILON);
     }
+
+    // Creates a term with ECM (value x) and WOUND_MATRIX (value 2 everywhere) and the given weight.
+    static MatrixHamiltonian makeTermWithClot(double lambdaA, double lambdaB, double weight) {
+        PottsSeries series = makeSeries(lambdaA, lambdaB);
+        series.potts.put("matrix/WOUND_MATRIX_WEIGHT", weight);
+        MatrixHamiltonian mh = new MatrixHamiltonian(series);
+        mh.register(makeCell(1, 1));
+        mh.register(makeCell(2, 2));
+        PottsLattice clot = new PottsLattice(7, 7, 1, 1, 1, new MiniBox());
+        clot.setField(2.0);
+        HashMap<String, Lattice> lattices = new HashMap<>();
+        lattices.put("ECM", makeLattice());
+        lattices.put("WOUND_MATRIX", clot);
+        mh.setLattices(lattices);
+        return mh;
+    }
+
+    @Test
+    public void constructor_negativeWoundMatrixWeight_throwsException() {
+        PottsSeries series = makeSeries(3, 5);
+        series.potts.put("matrix/WOUND_MATRIX_WEIGHT", -0.5);
+        assertThrows(IllegalArgumentException.class, () -> new MatrixHamiltonian(series));
+    }
+
+    @Test
+    public void constructor_noWoundMatrixWeight_defaultsToZero() {
+        assertEquals(0, new MatrixHamiltonian(makeSeries(3, 5)).woundMatrixWeight, EPSILON);
+    }
+
+    @Test
+    public void getDelta_zeroWoundMatrixWeight_matchesEcmOnly() {
+        MatrixHamiltonian withClot = makeTermWithClot(3, 5, 0);
+        MatrixHamiltonian ecmOnly = makeTerm(3, 5, "ECM");
+        assertEquals(ecmOnly.getDelta(1, 2, 4, 2, 0), withClot.getDelta(1, 2, 4, 2, 0), EPSILON);
+        assertEquals(ecmOnly.getDelta(0, 1, 3, 2, 0), withClot.getDelta(0, 1, 3, 2, 0), EPSILON);
+        assertNull(withClot.woundMatrix);
+    }
+
+    @Test
+    public void getDelta_withWoundMatrixWeight_addsWeightedClot() {
+        MatrixHamiltonian mh = makeTermWithClot(3, 5, 0.5);
+        // ECM = 4 at x = 4, clot = 2: matrix = 4 + 0.5 * 2 = 5.
+        assertEquals((3 + 5) * 5.0, mh.getDelta(1, 2, 4, 2, 0), EPSILON);
+        assertEquals(3 * 5.0, mh.getDelta(0, 1, 4, 2, 0), EPSILON);
+        // ECM = 0 at x = 0: only the clot resists.
+        assertEquals(5 * 0.5 * 2, mh.getDelta(2, 0, 0, 2, 0), EPSILON);
+    }
+
+    @Test
+    public void getDelta_withWoundMatrixWeightMediumOnly_returnsZero() {
+        MatrixHamiltonian mh = makeTermWithClot(3, 5, 1);
+        assertEquals(0, mh.getDelta(0, 0, 4, 2, 0), EPSILON);
+    }
+
+    @Test
+    public void getDelta_withWoundMatrixWeightNoClotLayer_matchesEcmOnly() {
+        PottsSeries series = makeSeries(3, 5);
+        series.potts.put("matrix/WOUND_MATRIX_WEIGHT", 1.0);
+        MatrixHamiltonian mh = new MatrixHamiltonian(series);
+        mh.register(makeCell(1, 1));
+        HashMap<String, Lattice> lattices = new HashMap<>();
+        lattices.put("ECM", makeLattice());
+        mh.setLattices(lattices);
+        assertEquals(3 * 4.0, mh.getDelta(0, 1, 4, 2, 0), EPSILON);
+    }
+
+    @Test
+    public void getDelta_withWoundMatrixWeightNoEcmLayer_usesClotOnly() {
+        PottsSeries series = makeSeries(3, 5);
+        series.potts.put("matrix/WOUND_MATRIX_WEIGHT", 1.5);
+        MatrixHamiltonian mh = new MatrixHamiltonian(series);
+        mh.register(makeCell(1, 1));
+        PottsLattice clot = new PottsLattice(7, 7, 1, 1, 1, new MiniBox());
+        clot.setField(2.0);
+        HashMap<String, Lattice> lattices = new HashMap<>();
+        lattices.put("WOUND_MATRIX", clot);
+        mh.setLattices(lattices);
+        assertEquals(3 * 1.5 * 2, mh.getDelta(0, 1, 4, 2, 0), EPSILON);
+    }
 }

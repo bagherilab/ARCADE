@@ -16,10 +16,18 @@ import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
  * makes fewer copies succeed where ECM is dense, so cells move more slowly there. It stands for the
  * physical resistance of the matrix to cell movement without making ECM take up space. Medium pays
  * nothing, and the term is zero without an ECM layer.
+ *
+ * <p>If {@code WOUND_MATRIX_WEIGHT} w is above 0, the provisional matrix also resists: the cost is
+ * {@code LAMBDA * (ECM + w * WOUND_MATRIX)}. A fibrin clot is a permissive substrate, but cells
+ * must break it down to advance, so invasion slows where the clot is dense and speeds up as MMP
+ * clears it. A missing layer contributes 0, and w = 0 (the default) gives the ECM-only term.
  */
 public class MatrixHamiltonian implements Hamiltonian {
     /** Layer that resists movement. */
     static final String ECM_LAYER = "ECM";
+
+    /** Provisional matrix layer, weighted by {@code WOUND_MATRIX_WEIGHT}. */
+    static final String WOUND_MATRIX_LAYER = "WOUND_MATRIX";
 
     /** Map of cell id to lambda. */
     final HashMap<Integer, Double> configs;
@@ -29,6 +37,12 @@ public class MatrixHamiltonian implements Hamiltonian {
 
     /** ECM lattice, or {@code null} if there is none. */
     Lattice lattice;
+
+    /** Wound matrix lattice, or {@code null} if there is none or its weight is 0. */
+    Lattice woundMatrix;
+
+    /** Weight of the wound matrix relative to ECM. */
+    double woundMatrixWeight;
 
     /**
      * Creates the matrix resistance energy term for the {@code Potts} Hamiltonian.
@@ -48,6 +62,7 @@ public class MatrixHamiltonian implements Hamiltonian {
      */
     public void setLattices(Map<String, ? extends Lattice> lattices) {
         lattice = lattices.get(ECM_LAYER);
+        woundMatrix = woundMatrixWeight > 0 ? lattices.get(WOUND_MATRIX_LAYER) : null;
     }
 
     @Override
@@ -64,15 +79,22 @@ public class MatrixHamiltonian implements Hamiltonian {
      * {@inheritDoc}
      *
      * <p>Each cell involved (the one losing and the one gaining the voxel) pays its own lambda
-     * times the ECM at the voxel.
+     * times the matrix at the voxel: ECM plus the weighted wound matrix.
      */
     @Override
     public double getDelta(int sourceID, int targetID, int x, int y, int z) {
-        if (lattice == null) {
+        if (lattice == null && woundMatrix == null) {
             return 0;
         }
         double lambda = getLambda(sourceID) + getLambda(targetID);
-        return lambda == 0 ? 0 : lambda * lattice.getField()[z][x][y];
+        if (lambda == 0) {
+            return 0;
+        }
+        double matrix = lattice == null ? 0 : lattice.getField()[z][x][y];
+        if (woundMatrix != null) {
+            matrix += woundMatrixWeight * woundMatrix.getField()[z][x][y];
+        }
+        return lambda * matrix;
     }
 
     /**
@@ -105,6 +127,14 @@ public class MatrixHamiltonian implements Hamiltonian {
      * @param series the series instance
      */
     void initialize(PottsSeries series) {
+        String weightKey = "matrix/WOUND_MATRIX_WEIGHT";
+        woundMatrixWeight =
+                series.potts != null && series.potts.contains(weightKey)
+                        ? series.potts.getDouble(weightKey)
+                        : 0;
+        if (!(woundMatrixWeight >= 0)) {
+            throw new IllegalArgumentException("matrix/WOUND_MATRIX_WEIGHT must be >= 0");
+        }
         if (series.populations == null) {
             return;
         }

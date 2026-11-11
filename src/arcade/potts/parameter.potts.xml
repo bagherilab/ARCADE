@@ -42,6 +42,7 @@
 
     <!-- matrix resistance term parameters -->
     <potts.term term="matrix" id="LAMBDA" value="0" units="energy/concentration" description="cost per unit ECM of changing a voxel, paid by each cell involved; slows movement through dense ECM" />
+    <potts.term term="matrix" id="WOUND_MATRIX_WEIGHT" value="0" units="unitless" description="weight of WOUND_MATRIX (provisional matrix) relative to ECM in the matrix resistance; the clot slows invasion until MMP clears it; 0 for ECM only" />
 
     <!-- default parameters for populations -->
     <population id="CRITICAL_VOLUME" value="TRUNCATED_NORMAL(MU=1300,SIGMA=200)" units="um^3" conversion="DS^-3" />
