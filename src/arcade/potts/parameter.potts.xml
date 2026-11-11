@@ -170,6 +170,9 @@
     <component class="oxygen_source" id="BLOOD_O2" value="60" units="mmHg" description="blood value the exchange relaxes toward" />
     <component class="oxygen_source" id="MASK" value="SUPPLY" description="id of the mask layer (0 = no supply, 1 = full supply; no operations)" />
 
+    <!-- release component parameters -->
+    <component class="release" id="RATE" value="0" units="(layer units)/hour per source unit" description="release into each registered layer per unit of the source layer value, every tick; 0 disables release" />
+    <component class="release" id="SOURCE" value="WOUND_MATRIX" description="id of the source layer, read every tick" />
     <!-- vessels component parameters -->
     <component class="vessels" id="P_O2" value="0" units="1/s" description="exchange rate toward blood O2 per unit vessel weight (an in-slice vessel has weight = integrity per voxel); 0 disables delivery" />
     <component class="vessels" id="BLOOD_O2" value="60" units="mmHg" description="blood value the exchange relaxes toward" />
