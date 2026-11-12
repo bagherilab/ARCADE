@@ -230,4 +230,150 @@ public class PottsCellMyofibroblastTest {
         f.means.put("O2", 1.0);
         assertFalse(make(State.QUIESCENT).canProliferate(f.sim));
     }
+
+    @Test
+    public void constructor_negativeGfSurvival_throws() {
+        f.box.put("GF_SURVIVAL", -0.1);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
+
+    @Test
+    public void constructor_negativeGfApoptosis_throws() {
+        f.box.put("GF_APOPTOSIS", -0.1);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
+
+    @Test
+    public void constructor_invalidBystanderMature_throws() {
+        f.box.put("BYSTANDER_MATURE", 2);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
+
+    // Creates a mature quiescent myofibroblast with GF below a survival threshold of 0.5, the
+    // given GF apoptosis rate and the given draw.
+    private PottsCellMyofibroblast makeLowGf(double rate, double draw) {
+        f.means.put("GF", 0.1);
+        f.box.put("GF_SURVIVAL", 0.5);
+        f.box.put("GF_APOPTOSIS", rate);
+        doReturn(draw).when(f.random).nextDouble();
+        PottsCellMyofibroblast cell = make(State.QUIESCENT);
+        cell.mature = true;
+        return cell;
+    }
+
+    @Test
+    public void stepRules_lowGfZeroRate_becomesApoptoticWithoutDraw() {
+        PottsCellMyofibroblast cell = makeLowGf(0, 0.99);
+        assertTrue(cell.stepRules(f.random, f.sim));
+        assertEquals(State.APOPTOTIC, cell.getState());
+        verify(f.random, never()).nextDouble();
+    }
+
+    @Test
+    public void stepRules_lowGfDrawBelowRate_becomesApoptotic() {
+        PottsCellMyofibroblast cell = makeLowGf(0.3, 0.2);
+        assertTrue(cell.stepRules(f.random, f.sim));
+        assertEquals(State.APOPTOTIC, cell.getState());
+    }
+
+    @Test
+    public void stepRules_lowGfSurvivor_doesNotBecomeSenescent() {
+        f.box.put("SENESCENCE_RATE", 0.5);
+        PottsCellMyofibroblast cell = makeLowGf(0.3, 0.4);
+        cell.stepRules(f.random, f.sim);
+        assertEquals(State.QUIESCENT, cell.getState());
+    }
+
+    @Test
+    public void stepRules_lowGfSurvivorLowEcm_skipsTensionCheck() {
+        f.means.put("ECM", 0.05);
+        PottsCellMyofibroblast cell = makeLowGf(0.3, 0.4);
+        cell.stepRules(f.random, f.sim);
+        assertEquals(State.QUIESCENT, cell.getState());
+    }
+
+    @Test
+    public void stepRules_gfAboveSurvival_doesNotBecomeApoptotic() {
+        f.means.put("GF", 0.6);
+        f.box.put("GF_SURVIVAL", 0.5);
+        PottsCellMyofibroblast cell = make(State.QUIESCENT);
+        cell.mature = true;
+        cell.stepRules(f.random, f.sim);
+        assertNotEquals(State.APOPTOTIC, cell.getState());
+    }
+
+    @Test
+    public void stepRules_zeroGfSurvival_doesNotCheckGf() {
+        f.means.put("GF", 0.0);
+        PottsCellMyofibroblast cell = make(State.QUIESCENT);
+        cell.mature = true;
+        cell.stepRules(f.random, f.sim);
+        assertNotEquals(State.APOPTOTIC, cell.getState());
+    }
+
+    @Test
+    public void stepRules_immatureLowGf_doesNotBecomeApoptotic() {
+        f.means.put("GF", 0.1);
+        f.box.put("GF_SURVIVAL", 0.5);
+        doReturn(0.3).when(f.random).nextDouble();
+        PottsCellMyofibroblast cell = make(State.QUIESCENT);
+        cell.stepRules(f.random, f.sim);
+        assertEquals(State.QUIESCENT, cell.getState());
+    }
+
+    // Sets up paracrine bystander conditions (INF above the bystander threshold, below apoptosis).
+    private void setParacrine(int matureOnly) {
+        f.box.put("BYSTANDER_PARACRINE", 0.5);
+        f.box.put("INF_BYSTANDER", 1);
+        f.means.put("INF", 2.0);
+        f.box.put("BYSTANDER_MATURE", matureOnly);
+    }
+
+    @Test
+    public void stepRules_bystanderAllCellsImmature_becomesSenescent() {
+        setParacrine(0);
+        PottsCellMyofibroblast cell = make(State.QUIESCENT);
+        assertTrue(cell.stepRules(f.random, f.sim));
+        assertEquals(State.SENESCENT, cell.getState());
+        assertFalse(cell.mature);
+    }
+
+    @Test
+    public void stepRules_bystanderMatureOnlyImmature_doesNotBecomeSenescent() {
+        setParacrine(1);
+        doReturn(0.3).when(f.random).nextDouble();
+        PottsCellMyofibroblast cell = make(State.QUIESCENT);
+        cell.stepRules(f.random, f.sim);
+        assertEquals(State.QUIESCENT, cell.getState());
+    }
+
+    @Test
+    public void stepRules_bystanderMatureOnlyMature_becomesSenescent() {
+        setParacrine(1);
+        PottsCellMyofibroblast cell = make(State.QUIESCENT);
+        cell.mature = true;
+        assertTrue(cell.stepRules(f.random, f.sim));
+        assertEquals(State.SENESCENT, cell.getState());
+    }
+
+    @Test
+    public void stepRules_bystanderMatureOnlyLowEcm_becomesApoptotic() {
+        setParacrine(1);
+        f.means.put("ECM", 0.05);
+        PottsCellMyofibroblast cell = make(State.QUIESCENT);
+        cell.mature = true;
+        cell.stepRules(f.random, f.sim);
+        assertEquals(State.APOPTOTIC, cell.getState());
+    }
+
+    @Test
+    public void stepRules_bystanderMatureOnlyLowGf_becomesApoptotic() {
+        setParacrine(1);
+        f.means.put("GF", 0.1);
+        f.box.put("GF_SURVIVAL", 0.5);
+        PottsCellMyofibroblast cell = make(State.QUIESCENT);
+        cell.mature = true;
+        cell.stepRules(f.random, f.sim);
+        assertEquals(State.APOPTOTIC, cell.getState());
+    }
 }
