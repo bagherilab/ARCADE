@@ -13,7 +13,7 @@ import static arcade.potts.util.PottsEnums.Region;
 /** Implementation of {@link Hamiltonian} for volume energy. */
 public class VolumeHamiltonian implements Hamiltonian {
     /** Map of hamiltonian config objects. */
-    final HashMap<Integer, VolumeHamiltonianConfig> configs;
+    final IdMap<VolumeHamiltonianConfig> configs;
 
     /** Map of population to lambda values. */
     final HashMap<Integer, Double> popToLambda;
@@ -27,7 +27,7 @@ public class VolumeHamiltonian implements Hamiltonian {
      * @param series the associated Series instance
      */
     public VolumeHamiltonian(PottsSeries series) {
-        configs = new HashMap<>();
+        configs = new IdMap<>();
         popToLambda = new HashMap<>();
         popToLambdasRegion = new HashMap<>();
         initialize(series);

@@ -15,7 +15,7 @@ import static arcade.potts.util.PottsEnums.Region;
 /** Implementation of {@link Hamiltonian} for persistence energy. */
 public class PersistenceHamiltonian implements Hamiltonian {
     /** Map of hamiltonian config objects. */
-    final HashMap<Integer, PersistenceHamiltonianConfig> configs;
+    final IdMap<PersistenceHamiltonianConfig> configs;
 
     /** Map of population to lambda values. */
     final HashMap<Integer, Double> popToLambda;
@@ -35,7 +35,7 @@ public class PersistenceHamiltonian implements Hamiltonian {
      * @param series the associated Series instance
      */
     public PersistenceHamiltonian(PottsSeries series) {
-        configs = new HashMap<>();
+        configs = new IdMap<>();
         popToLambda = new HashMap<>();
         popToDecay = new HashMap<>();
         popToLambdasRegion = new HashMap<>();

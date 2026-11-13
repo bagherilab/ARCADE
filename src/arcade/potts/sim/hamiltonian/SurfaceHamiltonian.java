@@ -14,7 +14,7 @@ import static arcade.potts.util.PottsEnums.Region;
 /** Implementation of {@link Hamiltonian} for surface energy. */
 public abstract class SurfaceHamiltonian implements Hamiltonian {
     /** Map of hamiltonian config objects. */
-    final HashMap<Integer, SurfaceHamiltonianConfig> configs;
+    final IdMap<SurfaceHamiltonianConfig> configs;
 
     /** Map of population to lambda values. */
     final HashMap<Integer, Double> popToLambda;
@@ -35,7 +35,7 @@ public abstract class SurfaceHamiltonian implements Hamiltonian {
      * @param potts the associated Potts instance
      */
     public SurfaceHamiltonian(PottsSeries series, Potts potts) {
-        configs = new HashMap<>();
+        configs = new IdMap<>();
         popToLambda = new HashMap<>();
         popToLambdasRegion = new HashMap<>();
         initialize(series);

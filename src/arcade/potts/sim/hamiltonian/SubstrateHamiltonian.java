@@ -17,7 +17,7 @@ public class SubstrateHamiltonian implements Hamiltonian {
     static final double THRESHOLD_FRACTION = 0.01;
 
     /** Map of hamiltonian config objects. */
-    final HashMap<Integer, SubstrateHamiltonianConfig> configs;
+    final IdMap<SubstrateHamiltonianConfig> configs;
 
     /** Map of population to substrate adhesion values. */
     final HashMap<Integer, Double> popToSubstrate;
@@ -35,7 +35,7 @@ public class SubstrateHamiltonian implements Hamiltonian {
      * @param potts the associated Potts instance
      */
     public SubstrateHamiltonian(PottsSeries series, Potts potts) {
-        configs = new HashMap<>();
+        configs = new IdMap<>();
         popToSubstrate = new HashMap<>();
         initialize(series);
 

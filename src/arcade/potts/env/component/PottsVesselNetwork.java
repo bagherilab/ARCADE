@@ -130,6 +130,74 @@ public class PottsVesselNetwork {
     }
 
     /**
+     * Removes a segment, and any end node left without segments.
+     *
+     * @param segment the segment
+     */
+    public void removeSegment(PottsVesselEdge segment) {
+        if (!segments.remove(segment)) {
+            throw new IllegalArgumentException("segment is not in the network");
+        }
+        graph.removeEdge(segment);
+        PottsVesselNode from = nodes.get(segment.getFrom());
+        PottsVesselNode to = nodes.get(segment.getTo());
+        pairs.remove(before(from, to) ? List.of(from, to) : List.of(to, from));
+        for (PottsVesselNode node : new PottsVesselNode[] {from, to}) {
+            if (getDegree(node) == 0) {
+                nodes.remove(node);
+            }
+        }
+    }
+
+    /**
+     * Checks if the network contains a node.
+     *
+     * @param node the node
+     * @return {@code true} if the node is in the network, {@code false} otherwise
+     */
+    public boolean contains(PottsVesselNode node) {
+        return nodes.containsKey(node);
+    }
+
+    /**
+     * Checks if the network contains a segment.
+     *
+     * @param segment the segment
+     * @return {@code true} if the segment is in the network, {@code false} otherwise
+     */
+    public boolean contains(PottsVesselEdge segment) {
+        return segments.contains(segment);
+    }
+
+    /**
+     * Gets the node of the network at a position, if there is one.
+     *
+     * @param x the x coordinate [um]
+     * @param y the y coordinate [um]
+     * @param z the z coordinate [um]
+     * @return the node, or {@code null} if there is no node at the position
+     */
+    public PottsVesselNode findNode(double x, double y, double z) {
+        double wrapped = PottsVesselGeometry.wrapZ(z, thickness);
+        return nodes.get(
+                new PottsVesselNode(
+                        (int) Math.round(x / UNIT),
+                        (int) Math.round(y / UNIT),
+                        (int) Math.round(wrapped / UNIT),
+                        Root.NONE));
+    }
+
+    /**
+     * Gets the number of segments that touch a node.
+     *
+     * @param node the node
+     * @return the degree
+     */
+    public int getDegree(PottsVesselNode node) {
+        return getSegments(node).size();
+    }
+
+    /**
      * Checks if one node comes before another in x, then y, then z order.
      *
      * <p>{@link Graph.Node#compareTo} ignores z, so nodes along a segment parallel to z would

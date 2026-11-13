@@ -16,7 +16,7 @@ import static arcade.potts.util.PottsEnums.Region;
 /** Implementation of {@link Hamiltonian} for height energy. */
 public class HeightHamiltonian implements Hamiltonian {
     /** Map of hamiltonian config objects. */
-    final HashMap<Integer, HeightHamiltonianConfig> configs;
+    final IdMap<HeightHamiltonianConfig> configs;
 
     /** Map of population to lambda values. */
     final HashMap<Integer, Double> popToLambda;
@@ -30,7 +30,7 @@ public class HeightHamiltonian implements Hamiltonian {
      * @param series the associated Series instance
      */
     public HeightHamiltonian(PottsSeries series) {
-        configs = new HashMap<>();
+        configs = new IdMap<>();
         popToLambda = new HashMap<>();
         popToLambdasRegion = new HashMap<>();
         initialize(series);

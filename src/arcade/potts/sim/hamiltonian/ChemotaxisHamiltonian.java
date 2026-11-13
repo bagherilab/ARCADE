@@ -27,7 +27,7 @@ public class ChemotaxisHamiltonian implements Hamiltonian {
     };
 
     /** Map of cell id to lambda values for each layer. */
-    final HashMap<Integer, TreeMap<String, Double>> configs;
+    final IdMap<TreeMap<String, Double>> configs;
 
     /** Map of population to lambda values for each layer. */
     final HashMap<Integer, TreeMap<String, Double>> popToLambdas;
@@ -38,6 +38,52 @@ public class ChemotaxisHamiltonian implements Hamiltonian {
     /** Map of layer id to lattice. */
     Map<String, ? extends Lattice> lattices;
 
+    /** Per-cell layers with non-zero lambda, rebuilt when the cell's lambdas or lattices change. */
+    final IdMap<Compiled> compiled = new IdMap<>();
+
+    /** Layers and lambdas of one cell's chemotaxis terms, in the order of its lambda map. */
+    static final class Compiled {
+        /** Lambda map the terms were built from. */
+        final TreeMap<String, Double> source;
+
+        /** Lattice map the terms were built from. */
+        final Map<String, ? extends Lattice> lattices;
+
+        /** Lattices with non-zero lambda ({@code null} if missing). */
+        final Lattice[] layers;
+
+        /** Non-zero lambdas, matching {@link #layers}. */
+        final double[] lambdas;
+
+        /**
+         * Builds the terms for a lambda map.
+         *
+         * @param source the lambda map
+         * @param lattices the lattice map
+         */
+        Compiled(TreeMap<String, Double> source, Map<String, ? extends Lattice> lattices) {
+            this.source = source;
+            this.lattices = lattices;
+            int n = 0;
+            for (double lambda : source.values()) {
+                if (lambda != 0) {
+                    n++;
+                }
+            }
+            layers = new Lattice[n];
+            lambdas = new double[n];
+            int k = 0;
+            for (Map.Entry<String, Double> entry : source.entrySet()) {
+                double lambda = entry.getValue();
+                if (lambda != 0) {
+                    layers[k] = lattices.get(entry.getKey());
+                    lambdas[k] = lambda;
+                    k++;
+                }
+            }
+        }
+    }
+
     /**
      * Creates the chemotaxis energy term for the {@code Potts} Hamiltonian.
      *
@@ -45,7 +91,7 @@ public class ChemotaxisHamiltonian implements Hamiltonian {
      * @param potts the associated Potts instance
      */
     public ChemotaxisHamiltonian(PottsSeries series, Potts potts) {
-        configs = new HashMap<>();
+        configs = new IdMap<>();
         popToLambdas = new HashMap<>();
         initialize(series);
 
@@ -69,6 +115,7 @@ public class ChemotaxisHamiltonian implements Hamiltonian {
     @Override
     public void deregister(PottsCell cell) {
         configs.remove(cell.getID());
+        compiled.remove(cell.getID());
     }
 
     /**
@@ -113,14 +160,17 @@ public class ChemotaxisHamiltonian implements Hamiltonian {
             return 0;
         }
 
-        double energy = 0;
-        for (Map.Entry<String, Double> entry : configs.get(id).entrySet()) {
-            double lambda = entry.getValue();
-            if (lambda == 0) {
-                continue;
-            }
+        TreeMap<String, Double> source = configs.get(id);
+        Compiled terms = compiled.get(id);
+        if (terms == null || terms.source != source || terms.lattices != lattices) {
+            terms = new Compiled(source, lattices);
+            compiled.put(id, terms);
+        }
 
-            double[][][] field = lattices.get(entry.getKey()).getField();
+        double energy = 0;
+        for (int n = 0; n < terms.lambdas.length; n++) {
+            double lambda = terms.lambdas[n];
+            double[][][] field = terms.layers[n].getField();
             double sum = 0;
             int count = 0;
             for (int[] offset : OFFSETS) {

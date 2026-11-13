@@ -219,4 +219,27 @@ public class PottsVesselNetworkTest {
                                         + " \"z\": 0, \"root\": \"PORTAL\"}],"
                                         + " \"segments\": []}"));
     }
+
+    @Test
+    public void removeSegment_called_removesSegmentAndIsolatedNodes() {
+        PottsVesselNetwork network = new PottsVesselNetwork(100);
+        PottsVesselNode a = network.addNode(0, 0, 0, Root.ARTERIAL);
+        PottsVesselNode b = network.addNode(10, 0, 0, Root.NONE);
+        PottsVesselNode c = network.addNode(20, 0, 0, Root.NONE);
+        PottsVesselEdge ab = network.addSegment(a, b, 1);
+        PottsVesselEdge bc = network.addSegment(b, c, 1);
+        network.removeSegment(bc);
+        assertEquals(List.of(ab), network.getSegments());
+        assertFalse(network.contains(c));
+        assertTrue(network.contains(b));
+        assertEquals(1, network.getDegree(b));
+        assertFalse(network.contains(bc));
+        assertNull(network.findNode(20, 0, 0));
+        assertEquals(b, network.findNode(10, 0, 0));
+        // The pair is free again.
+        PottsVesselNode c2 = network.addNode(20, 0, 0, Root.NONE);
+        network.addSegment(c2, b, 1);
+        assertEquals(2, network.getDegree(b));
+        assertThrows(IllegalArgumentException.class, () -> network.removeSegment(bc));
+    }
 }

@@ -184,6 +184,26 @@
     <component class="vessels" id="LAMBDA" value="100" units="um" description="O2 diffusion length along z for vessels near the slice (kernel exp(-|z|/LAMBDA), cut off at 3 LAMBDA)" />
     <component class="vessels" id="D_RECRUIT" value="10" units="um" description="distance from the slice that recruitment sites come from" />
 
+    <!-- vessel_growth component parameters -->
+    <component class="vessel_growth" id="INTERVAL" value="4" units="ticks" description="ticks between growth updates" />
+    <component class="vessel_growth" id="P_MAX" value="0" units="1/hour" description="maximum sprouting rate per eligible node (R1), times VEGF occupancy V/(K_V+V); 0 disables sprouting" />
+    <component class="vessel_growth" id="K_V" value="1" units="(layer units)" description="VEGF value at half occupancy (sensitivity)" />
+    <component class="vessel_growth" id="D_TIP" value="40" units="um" description="no new sprout within this distance of an active tip" />
+    <component class="vessel_growth" id="T_REFRACT" value="24" units="hours" description="no new sprout from a node within this time of its last sprout" />
+    <component class="vessel_growth" id="BETA" value="1" description="steering strength on the relative VEGF difference (V(q) - V(p)) / V(p) (precision)" />
+    <component class="vessel_growth" id="KAPPA" value="2" description="persistence of the tip heading" />
+    <component class="vessel_growth" id="V_TIP" value="10" units="um/hour" description="tip speed; one segment of V_TIP x interval per update" />
+    <component class="vessel_growth" id="D_SUPPORT" value="10" units="um" description="a tip extends only to points within this distance of a fibroblast or myofibroblast" />
+    <component class="vessel_growth" id="D_ANAST" value="10" units="um" description="a tip joins a segment outside its sprout within this distance" />
+    <component class="vessel_growth" id="L_MAX" value="200" units="um" description="sprouts stop extending at this length" />
+    <component class="vessel_growth" id="T_REGRESS" value="24" units="hours" description="blind sprouts (and dead ends) not extended for this time regress back to their branch point" />
+    <component class="vessel_growth" id="I_SPROUT" value="0.2" description="integrity of new segments" />
+    <component class="vessel_growth" id="K_MAT" value="0.004" units="1/hour" description="maturation rate of perfused segments toward integrity 1" />
+    <component class="vessel_growth" id="I_STABLE" value="0.8" description="segments at or above this integrity are not pruned" />
+    <component class="vessel_growth" id="S_SURVIVE" value="0.2" description="immature perfused segments with VEGF occupancy below this can be pruned" />
+    <component class="vessel_growth" id="K_PRUNE" value="0.1" units="1/hour" description="pruning rate of immature, VEGF-starved perfused segments" />
+    <component class="vessel_growth" id="VESSELS" value="VESSELS" description="id of the vessel component whose network grows" />
+
     <!-- ACTIONS =========================================================== -->
 
     <!-- insert action parameters -->

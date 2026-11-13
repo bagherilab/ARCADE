@@ -14,7 +14,7 @@ import static arcade.potts.util.PottsEnums.Region;
 /** Implementation of {@link Hamiltonian} for adhesion energy. */
 public abstract class AdhesionHamiltonian implements Hamiltonian {
     /** Map of hamiltonian config objects. */
-    final HashMap<Integer, AdhesionHamiltonianConfig> configs;
+    final IdMap<AdhesionHamiltonianConfig> configs;
 
     /** Map of population to adhesion values. */
     final HashMap<Integer, double[]> popToAdhesion;
@@ -35,7 +35,7 @@ public abstract class AdhesionHamiltonian implements Hamiltonian {
      * @param series the associated Series instance
      */
     public AdhesionHamiltonian(PottsSeries series, Potts potts) {
-        configs = new HashMap<>();
+        configs = new IdMap<>();
         configs.put(0, null);
         popToAdhesion = new HashMap<>();
         popToAdhesionRegion = new HashMap<>();

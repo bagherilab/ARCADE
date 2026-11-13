@@ -29,6 +29,7 @@ import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.env.component.PottsComponentOxygenSource;
 import arcade.potts.env.component.PottsComponentRelease;
+import arcade.potts.env.component.PottsComponentVesselGrowth;
 import arcade.potts.env.component.PottsComponentVessels;
 import arcade.potts.env.grid.PottsGrid;
 import arcade.potts.env.lattice.PottsLattice;
@@ -295,6 +296,8 @@ public abstract class PottsSimulation extends SimState implements Simulation {
                 return new PottsComponentVessels(parameters);
             case "release":
                 return new PottsComponentRelease(parameters);
+            case "vessel_growth":
+                return new PottsComponentVesselGrowth(parameters);
             default:
                 return null;
         }

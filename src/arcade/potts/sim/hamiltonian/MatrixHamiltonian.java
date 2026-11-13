@@ -30,7 +30,7 @@ public class MatrixHamiltonian implements Hamiltonian {
     static final String WOUND_MATRIX_LAYER = "WOUND_MATRIX";
 
     /** Map of cell id to lambda. */
-    final HashMap<Integer, Double> configs;
+    final IdMap<Double> configs;
 
     /** Map of population to lambda. */
     final HashMap<Integer, Double> popToLambda;
@@ -50,7 +50,7 @@ public class MatrixHamiltonian implements Hamiltonian {
      * @param series the associated Series instance
      */
     public MatrixHamiltonian(PottsSeries series) {
-        configs = new HashMap<>();
+        configs = new IdMap<>();
         popToLambda = new HashMap<>();
         initialize(series);
     }

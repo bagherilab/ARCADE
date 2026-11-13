@@ -11,7 +11,7 @@ import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
 /** Implementation of {@link Hamiltonian} for tight junction energy. */
 public class JunctionHamiltonian implements Hamiltonian {
     /** Map of hamiltonian config objects. */
-    final HashMap<Integer, JunctionHamiltonianConfig> configs;
+    final IdMap<JunctionHamiltonianConfig> configs;
 
     /** Map of population to lambda values. */
     final HashMap<Integer, Double> popToLambda;
@@ -26,7 +26,7 @@ public class JunctionHamiltonian implements Hamiltonian {
      * @param potts the associated Potts instance
      */
     public JunctionHamiltonian(PottsSeries series, Potts potts) {
-        configs = new HashMap<>();
+        configs = new IdMap<>();
         popToLambda = new HashMap<>();
         initialize(series);
 
