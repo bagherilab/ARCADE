@@ -43,6 +43,7 @@
     <!-- matrix resistance term parameters -->
     <potts.term term="matrix" id="LAMBDA" value="0" units="energy/concentration" description="cost per unit ECM of changing a voxel, paid by each cell involved; slows movement through dense ECM" />
     <potts.term term="matrix" id="WOUND_MATRIX_WEIGHT" value="0" units="unitless" description="weight of WOUND_MATRIX (provisional matrix) relative to ECM in the matrix resistance; the clot slows invasion until MMP clears it; 0 for ECM only" />
+    <potts.term term="matrix" id="MATURE_ECM_WEIGHT" value="0" units="unitless" description="extra weight of MATURE_ECM (ECM present at the start, removed by MMP, never deposited) in the matrix resistance; cross-linked dermis is harder to cross than new wound matrix; 0 for no extra resistance" />
 
     <!-- default parameters for populations -->
     <population id="CRITICAL_VOLUME" value="TRUNCATED_NORMAL(MU=1300,SIGMA=200)" units="um^3" conversion="DS^-3" />
@@ -73,6 +74,9 @@
     <population id="GF_PROLIFERATION" value="0.1" units="concentration" description="threshold on mean GF (growth factor) for fibroblast and myofibroblast proliferation" />
     <population id="GF_DIFFERENTIATION" value="0.1" units="concentration" description="threshold on mean GF for fibroblast differentiation" />
     <population id="ECM_DIFFERENTIATION" value="0.5" units="concentration" description="threshold on mean ECM for fibroblast differentiation" />
+    <population id="WOUND_MATRIX_PROLIFERATION" value="0" units="concentration" description="threshold on mean WOUND_MATRIX (provisional fibrin/fibronectin matrix) for fibroblast and myofibroblast proliferation, so cells divide on the wound's provisional matrix rather than in intact dermis; a proliferative cell needs at least half of it; 0 means no gate" />
+    <population id="REPOPULATION_DENSITY" value="0" units="1/um^2" conversion="DS^2" description="local cell density below which a fibroblast in new tissue (mean MATURE_ECM below 0.5) may proliferate after the wound matrix is gone, so the wound refills to normal density; needs WOUND_MATRIX_PROLIFERATION and the MATURE_ECM layer; 0 means off" />
+    <population id="REPOPULATION_RADIUS" value="100" units="um" conversion="DS^-1" description="radius around the cell centroid for the local density in REPOPULATION_DENSITY" />
     <population id="WOUND_MATRIX_DIFFERENTIATION" value="0" units="concentration" description="threshold on mean WOUND_MATRIX (provisional fibrin/fibronectin matrix) for fibroblast differentiation, so myofibroblasts form only where there is wound matrix; 0 means no gate" />
     <population id="DIFFERENTIATION_RATE" value="0.2" units="1/hour" conversion="DT" description="probability of fibroblast differentiation above thresholds" />
     <population id="DIFFERENTIATION_TARGET" value="NONE" description="population id fibroblasts differentiate into, or NONE" />

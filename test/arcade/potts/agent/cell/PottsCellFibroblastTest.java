@@ -5,9 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import sim.engine.Schedule;
 import sim.engine.Stoppable;
+import sim.util.Bag;
 import arcade.core.agent.cell.CellFactory;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
+import arcade.potts.env.location.PottsLocation;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.potts.util.PottsEnums.Ordering;
@@ -49,6 +51,67 @@ public class PottsCellFibroblastTest {
     public void canProliferate_proliferativeGfBelowHalfThreshold_returnsFalse() {
         f.means.put("GF", 0.09);
         assertFalse(make(State.PROLIFERATIVE).canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_quiescentWoundMatrixAboveGate_returnsTrue() {
+        f.box.put("WOUND_MATRIX_PROLIFERATION", 0.4);
+        f.means.put("GF", 1.0);
+        f.means.put("WOUND_MATRIX", 0.5);
+        assertTrue(make(State.QUIESCENT).canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_quiescentWoundMatrixAtGate_returnsFalse() {
+        f.box.put("WOUND_MATRIX_PROLIFERATION", 0.4);
+        f.means.put("GF", 1.0);
+        f.means.put("WOUND_MATRIX", 0.4);
+        assertFalse(make(State.QUIESCENT).canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_quiescentNoWoundMatrix_returnsFalse() {
+        f.box.put("WOUND_MATRIX_PROLIFERATION", 0.4);
+        f.means.put("GF", 1.0);
+        f.means.put("WOUND_MATRIX", 0.0);
+        assertFalse(make(State.QUIESCENT).canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_proliferativeWoundMatrixAtHalfGate_returnsTrue() {
+        f.box.put("WOUND_MATRIX_PROLIFERATION", 0.4);
+        f.means.put("GF", 1.0);
+        f.means.put("WOUND_MATRIX", 0.2);
+        assertTrue(make(State.PROLIFERATIVE).canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_proliferativeWoundMatrixBelowHalfGate_returnsFalse() {
+        f.box.put("WOUND_MATRIX_PROLIFERATION", 0.4);
+        f.means.put("GF", 1.0);
+        f.means.put("WOUND_MATRIX", 0.19);
+        assertFalse(make(State.PROLIFERATIVE).canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_woundMatrixGateWithLowGf_returnsFalse() {
+        f.box.put("WOUND_MATRIX_PROLIFERATION", 0.4);
+        f.means.put("GF", 0.1);
+        f.means.put("WOUND_MATRIX", 1.0);
+        assertFalse(make(State.QUIESCENT).canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_noWoundMatrixGate_doesNotReadWoundMatrix() {
+        f.means.put("GF", 1.0);
+        assertTrue(make(State.QUIESCENT).canProliferate(f.sim));
+        verify(f.sim, never()).getLattice("WOUND_MATRIX");
+    }
+
+    @Test
+    public void constructor_negativeWoundMatrixProliferation_throws() {
+        f.box.put("WOUND_MATRIX_PROLIFERATION", -1);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
     }
 
     @Test
@@ -242,5 +305,132 @@ public class PottsCellFibroblastTest {
         f.means.put("GF", 1.0);
         f.means.put("O2", 3.0);
         assertTrue(make(State.QUIESCENT).canProliferate(f.sim));
+    }
+
+    // Sets up a fibroblast after the clot is gone, in new tissue, with the repopulation rule on and
+    // the cell centroid at (x, y); others are centroids of other cells in the grid.
+    private PottsCellFibroblast makeRepopulating(
+            State state, double density, double x, double y, double[]... others) {
+        f.box.put("WOUND_MATRIX_PROLIFERATION", 0.4);
+        f.box.put("REPOPULATION_DENSITY", density);
+        f.means.put("GF", 1.0);
+        f.means.put("WOUND_MATRIX", 0.0);
+        f.means.put("MATURE_ECM", 0.0);
+        PottsCellFibroblast cell = make(state);
+        doReturn(new double[] {x, y, 0}).when(f.location).getCentroid();
+        Bag bag = new Bag();
+        bag.add(cell);
+        for (double[] o : others) {
+            PottsLocation loc = mock(PottsLocation.class);
+            doReturn(new double[] {o[0], o[1], 0}).when(loc).getCentroid();
+            PottsCell other = mock(PottsCell.class);
+            doReturn(loc).when(other).getLocation();
+            bag.add(other);
+        }
+        doReturn(bag).when(f.grid).getAllObjects();
+        return cell;
+    }
+
+    @Test
+    public void canProliferate_repopulationOff_doesNotReadGrid() {
+        f.box.put("WOUND_MATRIX_PROLIFERATION", 0.4);
+        f.means.put("GF", 1.0);
+        assertFalse(make(State.QUIESCENT).canProliferate(f.sim));
+        verify(f.grid, never()).getAllObjects();
+    }
+
+    @Test
+    public void canProliferate_clotGoneNewTissueLowDensity_returnsTrue() {
+        assertTrue(makeRepopulating(State.QUIESCENT, 0.2, 2, 2).canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_proliferativeClotGoneLowDensity_returnsTrue() {
+        assertTrue(makeRepopulating(State.PROLIFERATIVE, 0.2, 2, 2).canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_clotGoneHighDensity_returnsFalse() {
+        double[] a = {1, 2};
+        double[] b = {3, 3};
+        assertFalse(makeRepopulating(State.QUIESCENT, 0.2, 2, 2, a, b).canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_clotGoneFarCells_notCounted() {
+        double[] far = {10, 10};
+        assertTrue(makeRepopulating(State.QUIESCENT, 0.2, 2, 2, far, far).canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_clotGoneMatureTissue_returnsFalse() {
+        PottsCellFibroblast cell = makeRepopulating(State.QUIESCENT, 0.2, 2, 2);
+        f.means.put("MATURE_ECM", 0.5);
+        assertFalse(cell.canProliferate(f.sim));
+        verify(f.grid, never()).getAllObjects();
+    }
+
+    @Test
+    public void canProliferate_clotGoneLowGf_returnsFalse() {
+        PottsCellFibroblast cell = makeRepopulating(State.QUIESCENT, 0.2, 2, 2);
+        f.means.put("GF", 0.2);
+        assertFalse(cell.canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_clotGoneContactInhibited_returnsFalse() {
+        f.box.put("CONTACT_FREE_FRACTION", 0.5);
+        f.surround(8);
+        assertFalse(makeRepopulating(State.QUIESCENT, 0.2, 2, 2).canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_clotPresent_doesNotReadGrid() {
+        PottsCellFibroblast cell = makeRepopulating(State.QUIESCENT, 0.2, 2, 2);
+        f.means.put("WOUND_MATRIX", 1.0);
+        assertTrue(cell.canProliferate(f.sim));
+        verify(f.grid, never()).getAllObjects();
+    }
+
+    @Test
+    public void canProliferate_noMatureEcmLayer_throws() {
+        PottsCellFibroblast cell = makeRepopulating(State.QUIESCENT, 0.2, 2, 2);
+        doReturn(null).when(f.sim).getLattice("MATURE_ECM");
+        assertThrows(IllegalStateException.class, () -> cell.canProliferate(f.sim));
+    }
+
+    @Test
+    public void getLocalDensity_center_dividesByDiscArea() {
+        // Radius 1.5 around (2, 2) covers all 9 voxels of the 3 x 3 domain.
+        double[] a = {1, 1};
+        PottsCellFibroblast cell = makeRepopulating(State.QUIESCENT, 0.2, 2, 2, a);
+        assertEquals(2.0 / 9, cell.getLocalDensity(f.sim), 1e-12);
+    }
+
+    @Test
+    public void getLocalDensity_corner_dividesByAreaInsideDomain() {
+        // Radius 1.5 around (1, 1) covers 4 voxels inside the domain.
+        PottsCellFibroblast cell = makeRepopulating(State.QUIESCENT, 0.2, 1, 1);
+        assertEquals(0.25, cell.getLocalDensity(f.sim), 1e-12);
+    }
+
+    @Test
+    public void constructor_negativeRepopulationDensity_throws() {
+        f.box.put("REPOPULATION_DENSITY", -1);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
+
+    @Test
+    public void constructor_zeroRepopulationRadius_throws() {
+        f.box.put("WOUND_MATRIX_PROLIFERATION", 0.4);
+        f.box.put("REPOPULATION_DENSITY", 0.2);
+        f.box.put("REPOPULATION_RADIUS", 0);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
+
+    @Test
+    public void constructor_repopulationWithoutClotGate_throws() {
+        f.box.put("REPOPULATION_DENSITY", 0.2);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
     }
 }

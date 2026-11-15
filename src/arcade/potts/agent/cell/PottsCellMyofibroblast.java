@@ -36,6 +36,9 @@ public final class PottsCellMyofibroblast extends PottsCellWoundHealing {
     /** Threshold on mean GF for proliferation. */
     final double gfProliferation;
 
+    /** Threshold on mean wound matrix for proliferation (0 for no gate). */
+    final double woundMatrixProliferation;
+
     /** Threshold on mean INF for apoptosis. */
     final double infApoptosis;
 
@@ -77,6 +80,8 @@ public final class PottsCellMyofibroblast extends PottsCellWoundHealing {
      *
      * <ul>
      *   <li>{@code GF_PROLIFERATION} = threshold on mean GF for proliferation
+     *   <li>{@code WOUND_MATRIX_PROLIFERATION} = threshold on mean wound matrix for proliferation
+     *       (0 for no gate)
      *   <li>{@code INF_APOPTOSIS} = threshold on mean INF for apoptosis
      *   <li>{@code MATURATION} = mean time to maturation
      *   <li>{@code ECM_TENSION} = threshold on mean ECM below which mature cells become apoptotic
@@ -101,6 +106,7 @@ public final class PottsCellMyofibroblast extends PottsCellWoundHealing {
             PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
         super(container, location, parameters, links);
         gfProliferation = parameters.getDouble("GF_PROLIFERATION");
+        woundMatrixProliferation = PottsCellFibroblast.readWoundMatrixProliferation(parameters);
         infApoptosis = parameters.getDouble("INF_APOPTOSIS");
         maturation = parameters.getDouble("MATURATION");
         ecmTension = parameters.getDouble("ECM_TENSION");
@@ -144,7 +150,8 @@ public final class PottsCellMyofibroblast extends PottsCellWoundHealing {
 
     @Override
     public boolean canProliferate(Simulation sim) {
-        return PottsCellFibroblast.canProliferate(sim, this, gfProliferation);
+        return PottsCellFibroblast.canProliferate(
+                sim, this, gfProliferation, woundMatrixProliferation);
     }
 
     @Override

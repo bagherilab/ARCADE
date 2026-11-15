@@ -229,4 +229,98 @@ public class MatrixHamiltonianTest {
         mh.setLattices(lattices);
         assertEquals(3 * 1.5 * 2, mh.getDelta(0, 1, 4, 2, 0), EPSILON);
     }
+
+    // Creates a term with ECM (value x), MATURE_ECM (value 3 everywhere), WOUND_MATRIX (value 2
+    // everywhere) and the given weights.
+    static MatrixHamiltonian makeTermWithMature(
+            double lambdaA, double lambdaB, double matureWeight, double clotWeight) {
+        PottsSeries series = makeSeries(lambdaA, lambdaB);
+        series.potts.put("matrix/MATURE_ECM_WEIGHT", matureWeight);
+        series.potts.put("matrix/WOUND_MATRIX_WEIGHT", clotWeight);
+        MatrixHamiltonian mh = new MatrixHamiltonian(series);
+        mh.register(makeCell(1, 1));
+        mh.register(makeCell(2, 2));
+        PottsLattice mature = new PottsLattice(7, 7, 1, 1, 1, new MiniBox());
+        mature.setField(3.0);
+        PottsLattice clot = new PottsLattice(7, 7, 1, 1, 1, new MiniBox());
+        clot.setField(2.0);
+        HashMap<String, Lattice> lattices = new HashMap<>();
+        lattices.put("ECM", makeLattice());
+        lattices.put("MATURE_ECM", mature);
+        lattices.put("WOUND_MATRIX", clot);
+        mh.setLattices(lattices);
+        return mh;
+    }
+
+    @Test
+    public void constructor_negativeMatureEcmWeight_throwsException() {
+        PottsSeries series = makeSeries(3, 5);
+        series.potts.put("matrix/MATURE_ECM_WEIGHT", -1.0);
+        assertThrows(IllegalArgumentException.class, () -> new MatrixHamiltonian(series));
+    }
+
+    @Test
+    public void constructor_noMatureEcmWeight_defaultsToZero() {
+        assertEquals(0, new MatrixHamiltonian(makeSeries(3, 5)).matureEcmWeight, EPSILON);
+    }
+
+    @Test
+    public void getDelta_zeroMatureEcmWeight_matchesEcmOnly() {
+        MatrixHamiltonian withMature = makeTermWithMature(3, 5, 0, 0);
+        MatrixHamiltonian ecmOnly = makeTerm(3, 5, "ECM");
+        assertEquals(ecmOnly.getDelta(1, 2, 4, 2, 0), withMature.getDelta(1, 2, 4, 2, 0), EPSILON);
+        assertEquals(ecmOnly.getDelta(0, 1, 3, 2, 0), withMature.getDelta(0, 1, 3, 2, 0), EPSILON);
+        assertNull(withMature.matureEcm);
+    }
+
+    @Test
+    public void getDelta_withMatureEcmWeight_addsWeightedMatureEcm() {
+        MatrixHamiltonian mh = makeTermWithMature(3, 5, 2, 0);
+        // ECM = 4 at x = 4, mature = 3: matrix = 4 + 2 * 3 = 10.
+        assertEquals((3 + 5) * 10.0, mh.getDelta(1, 2, 4, 2, 0), EPSILON);
+        assertEquals(3 * 10.0, mh.getDelta(0, 1, 4, 2, 0), EPSILON);
+        assertEquals(3 * 10.0, mh.getDelta(1, 0, 4, 2, 0), EPSILON);
+        // ECM = 0 at x = 0: only the mature ECM resists.
+        assertEquals(5 * 2 * 3.0, mh.getDelta(2, 0, 0, 2, 0), EPSILON);
+    }
+
+    @Test
+    public void getDelta_withMatureEcmAndClotWeights_addsBoth() {
+        MatrixHamiltonian mh = makeTermWithMature(3, 5, 2, 0.5);
+        // ECM = 4, clot 0.5 * 2 = 1, mature 2 * 3 = 6: matrix = 11.
+        assertEquals(3 * 11.0, mh.getDelta(0, 1, 4, 2, 0), EPSILON);
+    }
+
+    @Test
+    public void getDelta_withMatureEcmWeightMediumOnly_returnsZero() {
+        MatrixHamiltonian mh = makeTermWithMature(3, 5, 2, 0);
+        assertEquals(0, mh.getDelta(0, 0, 4, 2, 0), EPSILON);
+    }
+
+    @Test
+    public void getDelta_withMatureEcmWeightNoMatureLayer_matchesEcmOnly() {
+        PottsSeries series = makeSeries(3, 5);
+        series.potts.put("matrix/MATURE_ECM_WEIGHT", 2.0);
+        MatrixHamiltonian mh = new MatrixHamiltonian(series);
+        mh.register(makeCell(1, 1));
+        HashMap<String, Lattice> lattices = new HashMap<>();
+        lattices.put("ECM", makeLattice());
+        mh.setLattices(lattices);
+        assertNull(mh.matureEcm);
+        assertEquals(3 * 4.0, mh.getDelta(0, 1, 4, 2, 0), EPSILON);
+    }
+
+    @Test
+    public void getDelta_withMatureEcmWeightNoEcmLayer_usesMatureOnly() {
+        PottsSeries series = makeSeries(3, 5);
+        series.potts.put("matrix/MATURE_ECM_WEIGHT", 2.0);
+        MatrixHamiltonian mh = new MatrixHamiltonian(series);
+        mh.register(makeCell(1, 1));
+        PottsLattice mature = new PottsLattice(7, 7, 1, 1, 1, new MiniBox());
+        mature.setField(3.0);
+        HashMap<String, Lattice> lattices = new HashMap<>();
+        lattices.put("MATURE_ECM", mature);
+        mh.setLattices(lattices);
+        assertEquals(3 * 2 * 3.0, mh.getDelta(0, 1, 4, 2, 0), EPSILON);
+    }
 }

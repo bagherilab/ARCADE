@@ -28,6 +28,28 @@ public class PottsCellMyofibroblastTest {
     }
 
     @Test
+    public void canProliferate_woundMatrixBelowGate_returnsFalse() {
+        f.box.put("WOUND_MATRIX_PROLIFERATION", 0.4);
+        f.means.put("GF", 1.0);
+        f.means.put("WOUND_MATRIX", 0.1);
+        assertFalse(make(State.QUIESCENT).canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_woundMatrixAboveGate_returnsTrue() {
+        f.box.put("WOUND_MATRIX_PROLIFERATION", 0.4);
+        f.means.put("GF", 1.0);
+        f.means.put("WOUND_MATRIX", 0.5);
+        assertTrue(make(State.QUIESCENT).canProliferate(f.sim));
+    }
+
+    @Test
+    public void constructor_negativeWoundMatrixProliferation_throws() {
+        f.box.put("WOUND_MATRIX_PROLIFERATION", -1);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
+
+    @Test
     public void canProliferate_proliferativeGfBelowHalfThreshold_returnsFalse() {
         f.means.put("GF", 0.09);
         assertFalse(make(State.PROLIFERATIVE).canProliferate(f.sim));
@@ -375,5 +397,15 @@ public class PottsCellMyofibroblastTest {
         cell.mature = true;
         cell.stepRules(f.random, f.sim);
         assertEquals(State.APOPTOTIC, cell.getState());
+    }
+
+    @Test
+    public void canProliferate_repopulationParameterSet_clotGoneReturnsFalse() {
+        f.box.put("WOUND_MATRIX_PROLIFERATION", 0.4);
+        f.box.put("REPOPULATION_DENSITY", 0.2);
+        f.means.put("GF", 1.0);
+        f.means.put("WOUND_MATRIX", 0.0);
+        assertFalse(make(State.QUIESCENT).canProliferate(f.sim));
+        verify(f.grid, never()).getAllObjects();
     }
 }
