@@ -40,6 +40,12 @@ import static arcade.core.util.MiniBox.TAG_SEPARATOR;
  * With no source and k = 0 the step is unchanged. Sources are not supported for steady layers, and
  * a layer with {@code DECAY_RATE} above 0 must not also have a decayer.
  *
+ * <p>First-order clearance rates q per voxel (from {@link PottsLattice#addClearance}, for example
+ * uptake of a growth factor by the cells occupying the voxel) are also applied inside the
+ * time-stepping substeps: each substep multiplies the voxel by exp(-q h), after diffusion and
+ * before decay. This follows dc/dt = D lap c - q c to substep accuracy. Clearance is not supported
+ * for steady layers.
+ *
  * <p>Loaded parameters include:
  *
  * <ul>
@@ -119,6 +125,9 @@ public class PottsOperationDiffuser extends PottsOperation {
     /** Scratch array for forward sweeps. */
     private final double[] scratch;
 
+    /** Per-voxel clearance factors exp(-q h) for the current tick. */
+    private final double[][] clearanceFactor;
+
     /**
      * Creates a diffuser for the given lattice.
      *
@@ -190,6 +199,7 @@ public class PottsOperationDiffuser extends PottsOperation {
         scratchField = new double[latticeLength][latticeWidth];
         scratchRow = new double[latticeWidth];
         cycleStart = new double[latticeLength][latticeWidth];
+        clearanceFactor = new double[latticeLength][latticeWidth];
     }
 
     /**
@@ -534,14 +544,28 @@ public class PottsOperationDiffuser extends PottsOperation {
             throw new IllegalArgumentException("continuous sources require diffuser STEADY = 0");
         }
 
+        double[][] clearance = lattice.getClearance()[0];
+        boolean hasClearance = anyPositive(clearance);
+        if (hasClearance && steady) {
+            throw new IllegalArgumentException("clearance requires diffuser STEADY = 0");
+        }
+
         if (hasReaction) {
             steadySolve(f, sink, exchange, target);
             return;
         }
 
         boolean decays = substepDecay < 1;
-        if (r == 0 && !hasSource && !decays) {
+        if (r == 0 && !hasSource && !decays && !hasClearance) {
             return;
+        }
+
+        if (hasClearance) {
+            for (int i = 0; i < latticeLength; i++) {
+                for (int j = 0; j < latticeWidth; j++) {
+                    clearanceFactor[i][j] = Math.exp(-clearance[i][j] * substep);
+                }
+            }
         }
 
         for (int s = 0; s < substeps; s++) {
@@ -550,6 +574,9 @@ public class PottsOperationDiffuser extends PottsOperation {
             }
             if (r > 0) {
                 diffuseSubstep(f);
+            }
+            if (hasClearance) {
+                multiply(f, clearanceFactor);
             }
             if (decays) {
                 scale(f, substepDecay);
@@ -567,6 +594,20 @@ public class PottsOperationDiffuser extends PottsOperation {
         for (int i = 0; i < latticeLength; i++) {
             for (int j = 0; j < latticeWidth; j++) {
                 f[i][j] += source[i][j] * substep;
+            }
+        }
+    }
+
+    /**
+     * Multiplies each voxel of the field by its own factor.
+     *
+     * @param f the 2D field
+     * @param factors the 2D factors
+     */
+    private static void multiply(double[][] f, double[][] factors) {
+        for (int i = 0; i < f.length; i++) {
+            for (int j = 0; j < f[i].length; j++) {
+                f[i][j] *= factors[i][j];
             }
         }
     }

@@ -397,4 +397,15 @@ public class PottsLatticeTest {
         assertEquals(0, lattice.getSource()[0][1][2], 1E-12);
         assertEquals(0, lattice.getField()[0][1][2], 1E-12);
     }
+
+    @Test
+    public void addClearance_givenVoxels_accumulatesAndClearsAtStep() {
+        PottsLattice lattice = new PottsLattice(4, 3, 1, 3.0, 0.25, new MiniBox());
+        lattice.addClearance(java.util.List.of(new arcade.potts.env.location.Voxel(1, 2, 0)), 0.5);
+        lattice.addClearance(java.util.List.of(new arcade.potts.env.location.Voxel(1, 2, 0)), 0.25);
+        assertEquals(0.75, lattice.getClearance()[0][1][2], 1E-12);
+        assertEquals(0, lattice.getClearance()[0][0][0], 1E-12);
+        lattice.step(mock(arcade.potts.sim.PottsSimulation.class));
+        assertEquals(0, lattice.getClearance()[0][1][2], 1E-12);
+    }
 }

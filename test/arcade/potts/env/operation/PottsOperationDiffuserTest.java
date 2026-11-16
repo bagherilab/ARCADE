@@ -754,4 +754,82 @@ public class PottsOperationDiffuserTest {
         PottsOperationDiffuser d = new PottsOperationDiffuser(l);
         assertThrows(IllegalArgumentException.class, () -> d.step(null, null));
     }
+
+    static void setClearance(PottsLattice l, int i, int j, double rate) {
+        l.addClearance(List.of(new Voxel(i, j, 0)), rate);
+    }
+
+    @Test
+    public void step_clearanceNoDiffusion_decaysOnlyClearedVoxelsExactly() {
+        double q = 1E-3;
+        PottsLattice l = lattice(4, 3, 3, 0.25, params(0, 30));
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 3; j++) {
+                l.getField()[0][i][j] = 2;
+            }
+        }
+        setClearance(l, 1, 1, q);
+        new PottsOperationDiffuser(l).step(null, null);
+        assertEquals(2 * Math.exp(-q * 900), l.getField()[0][1][1], 1E-12);
+        assertEquals(2, l.getField()[0][0][0], 1E-12);
+        assertEquals(2, l.getField()[0][3][2], 1E-12);
+    }
+
+    @Test
+    public void step_clearanceWithDecay_combinesRates() {
+        double q = 1E-3;
+        double kTick = 0.9;
+        PottsLattice l = lattice(4, 3, 3, 0.25, paramsSubstepDecay(0, 30, kTick));
+        l.getField()[0][2][1] = 5;
+        setClearance(l, 2, 1, q);
+        new PottsOperationDiffuser(l).step(null, null);
+        assertEquals(5 * Math.exp(-q * 900 - kTick), l.getField()[0][2][1], 1E-12);
+    }
+
+    @Test
+    public void step_uniformClearanceWithDiffusion_matchesUniformDecay() {
+        double q = 5E-4;
+        PottsLattice a = lattice(6, 5, 3, 0.25, params(10, 30));
+        PottsLattice b = lattice(6, 5, 3, 0.25, paramsSubstepDecay(10, 30, q * 900));
+        a.getField()[0][2][3] = 7;
+        b.getField()[0][2][3] = 7;
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 5; j++) {
+                setClearance(a, i, j, q);
+            }
+        }
+        new PottsOperationDiffuser(a).step(null, null);
+        new PottsOperationDiffuser(b).step(null, null);
+        for (int i = 0; i < 6; i++) {
+            assertArrayEquals(b.getField()[0][i], a.getField()[0][i], 1E-12);
+        }
+    }
+
+    @Test
+    public void step_localClearance_lowersTotalAndFieldNearSink() {
+        PottsLattice a = lattice(9, 9, 3, 0.25, params(10, 30));
+        PottsLattice b = lattice(9, 9, 3, 0.25, params(10, 30));
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                a.getField()[0][i][j] = 1;
+                b.getField()[0][i][j] = 1;
+            }
+        }
+        setClearance(a, 4, 4, 1E-2);
+        new PottsOperationDiffuser(a).step(null, null);
+        new PottsOperationDiffuser(b).step(null, null);
+        assertTrue(total(a.getField()[0]) < total(b.getField()[0]));
+        assertTrue(a.getField()[0][4][4] < a.getField()[0][4][5]);
+        assertTrue(a.getField()[0][4][5] < a.getField()[0][0][0]);
+    }
+
+    @Test
+    public void step_clearanceOnSteadyLayer_throws() {
+        MiniBox p = params(10, 30);
+        p.put("diffuser/STEADY", 1);
+        PottsLattice l = lattice(4, 4, 3, 0.25, p);
+        setClearance(l, 1, 1, 0.01);
+        PottsOperationDiffuser d = new PottsOperationDiffuser(l);
+        assertThrows(IllegalArgumentException.class, () -> d.step(null, null));
+    }
 }

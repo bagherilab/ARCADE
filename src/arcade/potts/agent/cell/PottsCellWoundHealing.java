@@ -20,6 +20,7 @@ import arcade.potts.agent.module.PottsModuleProliferationWoundHealing;
 import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.agent.module.PottsModuleSenescence;
 import arcade.potts.agent.process.PottsProcessSecretion;
+import arcade.potts.env.lattice.PottsLattice;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
@@ -53,6 +54,12 @@ import static arcade.potts.util.PottsEnums.State;
  * above {@code INF_BYSTANDER} ({@code BYSTANDER_PARACRINE}). Contact induction is NOTCH1–JAG1
  * juxtacrine signalling, active only while cells enter senescence (Hoare et al. 2016; Teo et al.
  * 2019), so late-phase senescent cells act only through the paracrine route.
+ *
+ * <p>If {@code GF_UPTAKE} is above 0, quiescent and proliferative cells take up GF: each tick,
+ * after the rules, the cell adds a first-order clearance at this rate to the voxels it occupies
+ * (receptor-mediated endocytosis by target cells; Zhou et al. 2018, Adler et al. 2020). The GF
+ * diffuser applies it inside its substeps, so clearance grows with the number of cells. Senescent
+ * and apoptotic cells take up nothing.
  */
 public abstract class PottsCellWoundHealing extends PottsCell {
     /**
@@ -99,6 +106,12 @@ public abstract class PottsCellWoundHealing extends PottsCell {
     /** Probability of basal death for quiescent cells (per tick). */
     final double basalDeath;
 
+    /** Layer taken up by {@code GF_UPTAKE}. */
+    static final String GF_LAYER = "GF";
+
+    /** First-order GF uptake rate (per tick), or 0 for none. */
+    final double gfUptake;
+
     /** Boundary voxels for the current step, or {@code null} if not yet computed. */
     private List<Voxel> boundaryVoxels;
 
@@ -119,6 +132,7 @@ public abstract class PottsCellWoundHealing extends PottsCell {
      *   <li>{@code INF_BYSTANDER} = threshold on mean INF for paracrine senescence
      *   <li>{@code O2_PROLIF_MIN} = minimum mean O2 for proliferation (0 for no O2 gate)
      *   <li>{@code BASAL_DEATH} = probability of basal death for quiescent cells
+     *   <li>{@code GF_UPTAKE} = first-order GF uptake rate in occupied voxels (0 for none)
      * </ul>
      *
      * @param container the cell container
@@ -153,6 +167,34 @@ public abstract class PottsCellWoundHealing extends PottsCell {
         if (!(basalDeath >= 0)) {
             throw new IllegalArgumentException("BASAL_DEATH must be >= 0");
         }
+        gfUptake = parameters.getDouble("GF_UPTAKE");
+        if (!(gfUptake >= 0)) {
+            throw new IllegalArgumentException("GF_UPTAKE must be >= 0");
+        }
+    }
+
+    /**
+     * Adds the GF uptake of the cell to the GF lattice for the current tick.
+     *
+     * <p>Only quiescent and proliferative cells take up GF. The rate per tick is converted to a
+     * rate per second for the diffuser.
+     *
+     * @param sim the simulation instance
+     */
+    void addGfUptake(Simulation sim) {
+        if (gfUptake == 0) {
+            return;
+        }
+        State state = (State) getState();
+        if (state != State.QUIESCENT && state != State.PROLIFERATIVE) {
+            return;
+        }
+        PottsLattice lattice = (PottsLattice) sim.getLattice(GF_LAYER);
+        if (lattice == null) {
+            throw new IllegalStateException("GF_UPTAKE requires layer [ " + GF_LAYER + " ]");
+        }
+        List<Voxel> voxels = ((PottsLocation) getLocation()).getVoxels();
+        lattice.addClearance(voxels, gfUptake / (lattice.getDt() * 3600.0));
     }
 
     /**
@@ -231,6 +273,9 @@ public abstract class PottsCellWoundHealing extends PottsCell {
                 return;
             }
         }
+
+        // Take up GF (after the rules, so a cell that has just become senescent does not).
+        addGfUptake(sim);
 
         // Step processes.
         for (Process process : processes.values()) {

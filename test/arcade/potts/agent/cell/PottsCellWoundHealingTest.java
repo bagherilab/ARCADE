@@ -591,4 +591,91 @@ public class PottsCellWoundHealingTest {
         f.box.put("BASAL_DEATH", -0.1);
         assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
     }
+
+    // Gets the mocked GF lattice with a tick length of 0.25 hours.
+    private arcade.potts.env.lattice.PottsLattice gfLattice() {
+        arcade.potts.env.lattice.PottsLattice gf =
+                (arcade.potts.env.lattice.PottsLattice) f.sim.getLattice("GF");
+        doReturn(0.25).when(gf).getDt();
+        return gf;
+    }
+
+    @Test
+    public void step_zeroGfUptake_addsNoClearance() {
+        arcade.potts.env.lattice.PottsLattice gf = gfLattice();
+        WoundHealingCell cell = make(State.QUIESCENT);
+        cell.module = mock(Module.class);
+        cell.step(simstate());
+        verify(gf, never()).addClearance(any(), anyDouble());
+    }
+
+    @Test
+    public void step_quiescentGfUptake_addsClearanceOnOwnVoxelsPerSecond() {
+        arcade.potts.env.lattice.PottsLattice gf = gfLattice();
+        f.setVoxels(new Voxel(2, 2, 0), new Voxel(3, 2, 0));
+        f.box.put("GF_UPTAKE", 0.5);
+        WoundHealingCell cell = make(State.QUIESCENT);
+        cell.module = mock(Module.class);
+        cell.step(simstate());
+        verify(gf)
+                .addClearance(
+                        eq(List.of(new Voxel(2, 2, 0), new Voxel(3, 2, 0))),
+                        doubleThat(r -> Math.abs(r - 0.5 / 900) < EPSILON));
+    }
+
+    @Test
+    public void step_proliferativeGfUptake_addsClearance() {
+        arcade.potts.env.lattice.PottsLattice gf = gfLattice();
+        f.box.put("GF_UPTAKE", 0.5);
+        WoundHealingCell cell = make(State.PROLIFERATIVE);
+        cell.module = mock(Module.class);
+        cell.step(simstate());
+        verify(gf).addClearance(any(), anyDouble());
+    }
+
+    @Test
+    public void step_senescentGfUptake_addsNoClearance() {
+        arcade.potts.env.lattice.PottsLattice gf = gfLattice();
+        f.box.put("GF_UPTAKE", 0.5);
+        WoundHealingCell cell = make(State.SENESCENT);
+        cell.module = mock(Module.class);
+        cell.step(simstate());
+        verify(gf, never()).addClearance(any(), anyDouble());
+    }
+
+    @Test
+    public void step_basalDeathGfUptake_addsNoClearance() {
+        arcade.potts.env.lattice.PottsLattice gf = gfLattice();
+        f.box.put("GF_UPTAKE", 0.5);
+        f.box.put("BASAL_DEATH", 1.0);
+        WoundHealingCell cell = make(State.QUIESCENT);
+        cell.step(simstate());
+        assertEquals(State.APOPTOTIC, cell.getState());
+        verify(gf, never()).addClearance(any(), anyDouble());
+    }
+
+    @Test
+    public void step_removedByRulesGfUptake_addsNoClearance() {
+        arcade.potts.env.lattice.PottsLattice gf = gfLattice();
+        f.box.put("GF_UPTAKE", 0.5);
+        WoundHealingCell cell = make(State.QUIESCENT);
+        cell.keep = false;
+        cell.step(simstate());
+        verify(gf, never()).addClearance(any(), anyDouble());
+    }
+
+    @Test
+    public void step_gfUptakeWithoutGfLayer_throws() {
+        f.box.put("GF_UPTAKE", 0.5);
+        doReturn(null).when(f.sim).getLattice("GF");
+        WoundHealingCell cell = make(State.QUIESCENT);
+        cell.module = mock(Module.class);
+        assertThrows(IllegalStateException.class, () -> cell.step(simstate()));
+    }
+
+    @Test
+    public void constructor_negativeGfUptake_throws() {
+        f.box.put("GF_UPTAKE", -0.1);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
 }

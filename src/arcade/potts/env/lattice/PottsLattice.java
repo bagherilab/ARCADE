@@ -34,6 +34,11 @@ import static arcade.potts.util.PottsEnums.Ordering;
  * #addExchange(List, double, double)}. The diffuser uses both inside its implicit solve, and they
  * are cleared at the end of the lattice step. Without a diffuser, they have no effect.
  *
+ * <p>First-order clearance rates (per voxel, for example uptake of a growth factor by the cells
+ * occupying the voxel) are added with {@link #addClearance(List, double)}. The time-stepping
+ * diffuser removes c times the rate inside its substeps. They are cleared at the end of the lattice
+ * step; without a diffuser, they have no effect.
+ *
  * <p>Continuous sources (rates per voxel, for example release from another layer) are added with
  * {@link #addSource(List, double)}. The diffuser adds them in every substep, so they enter the
  * field spread over the tick instead of as one pulse at its start. They are cleared at the end of
@@ -71,6 +76,9 @@ public class PottsLattice implements Lattice {
      * Array of continuous source rates [layer units/s], used by the diffuser and cleared each step.
      */
     final double[][][] source;
+
+    /** Array of first-order clearance rates [1/s], used by the diffuser and cleared each step. */
+    final double[][][] clearance;
 
     /** Length of the array (x direction). */
     private final int length;
@@ -124,6 +132,7 @@ public class PottsLattice implements Lattice {
         exchange = new double[height][length][width];
         exchangeTarget = new double[height][length][width];
         source = new double[height][length][width];
+        clearance = new double[height][length][width];
 
         // Add lattice operations.
         operations = new EnumMap<>(Category.class);
@@ -375,7 +384,31 @@ public class PottsLattice implements Lattice {
         return source;
     }
 
-    /** Clears all uptake rates, exchanges and sources. */
+    /**
+     * Adds a first-order clearance rate to each voxel for the current tick.
+     *
+     * <p>The diffuser removes the field at this rate times the local value inside its time-stepping
+     * substeps, and the rate is cleared at the end of the lattice step.
+     *
+     * @param voxels the voxels (repeated voxels receive the rate once per occurrence)
+     * @param rate the clearance rate per voxel [1/s]
+     */
+    public void addClearance(List<Voxel> voxels, double rate) {
+        for (Voxel v : voxels) {
+            clearance[v.z][v.x][v.y] += rate;
+        }
+    }
+
+    /**
+     * Gets the array of first-order clearance rates.
+     *
+     * @return the clearance array [1/s]
+     */
+    public double[][][] getClearance() {
+        return clearance;
+    }
+
+    /** Clears all uptake rates, exchanges, sources and clearance rates. */
     void clearReactions() {
         for (int k = 0; k < height; k++) {
             for (int i = 0; i < length; i++) {
@@ -384,6 +417,7 @@ public class PottsLattice implements Lattice {
                     exchange[k][i][j] = 0;
                     exchangeTarget[k][i][j] = 0;
                     source[k][i][j] = 0;
+                    clearance[k][i][j] = 0;
                 }
             }
         }
@@ -435,7 +469,7 @@ public class PottsLattice implements Lattice {
             applyMaximum();
         }
 
-        // Clear uptake rates and exchanges, which were used by the diffuser.
+        // Clear uptake rates, exchanges, sources and clearance, which were used by the diffuser.
         clearReactions();
     }
 
