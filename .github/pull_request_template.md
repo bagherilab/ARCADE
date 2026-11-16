@@ -15,8 +15,10 @@
 
 ## Urgency
 <!-- Optional: is this blocking other work or tied to a deadline? e.g. "Needed by 12/1 for paper resubmission". -->
-<!-- Please set the "Target review date" and "Target merge date" fields in the dropdown under "Projects → ARCADE" in the right sidebar. -->
 
 
-> [!IMPORTANT]
-> Please double check that your new code includes tests for new functionality. Delete this note once you have confirmed your code is properly tested!
+## Checklist for marking PR ready for review
+- [ ] New functionality is covered by tests
+- [ ] Assigned yourself as an assignee
+- [ ] Attached the appropriate labels
+- [ ] Set the "Target review date" and "Target merge date" fields under "Projects → ARCADE" in the right sidebar
