@@ -3,6 +3,7 @@ package arcade.potts.util;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.agent.process.ProcessDomain;
+import arcade.core.env.operation.OperationCategory;
 import arcade.core.util.Vector;
 
 /**
@@ -18,6 +19,7 @@ import arcade.core.util.Vector;
  *   <li>{@code Term} defining different potts energy terms
  *   <li>{@code Phase} defining phase for a given state
  *   <li>{@code Direction} defining directions in the voxel environment
+ *   <li>{@code Category} defining operation categories for potts lattices
  * </ul>
  */
 public final class PottsEnums {
@@ -32,7 +34,10 @@ public final class PottsEnums {
         POTTS,
 
         /** Stepping order for cells. */
-        CELLS
+        CELLS,
+
+        /** Stepping order for lattices. */
+        LATTICES
     }
 
     /** Cell state codes for potts simulations. */
@@ -219,6 +224,28 @@ public final class PottsEnums {
          * @return a random {@code Direction}
          */
         public static Direction random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
+        }
+    }
+
+    /** Operation categories for potts lattices. */
+    public enum Category implements OperationCategory {
+        /** Code for undefined category. */
+        UNDEFINED,
+
+        /** Code for diffusion operation. */
+        DIFFUSER,
+
+        /** Code for decay operation. */
+        DECAYER;
+
+        /**
+         * Randomly selects a {@code Category}, excluding {@code UNDEFINED}.
+         *
+         * @param rng the random number generator
+         * @return a random {@code Category}
+         */
+        public static Category random(MersenneTwisterFast rng) {
             return values()[rng.nextInt(values().length - 1) + 1];
         }
     }

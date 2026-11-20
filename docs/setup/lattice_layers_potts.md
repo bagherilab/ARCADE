@@ -14,12 +14,14 @@ parent: Lattice layers
 {:toc}
 
 The `layer` tag defines a single layer.
-Nested tags include `layer.parameter` for parameters.
+Nested tags include `layer.parameter` for parameters and `layer.operation` for operations.
 
 ```xml
 <layers>
     <layer id="[ID]">
         <layer.parameter id="[ID]" value="[VALUE]" scale="[SCALE]" />
+        <layer.parameter id="[ID]" value="[VALUE]" scale="[SCALE]" operation="[OPERATION]" />
+        <layer.operation id="[ID]" />
         ...
     </layer>
     ...
@@ -29,13 +31,42 @@ Nested tags include `layer.parameter` for parameters.
 Each potts layer is a field with one value per voxel, the same size as the potts grid (`length` × `width` × `height`).
 Values are concentrations (amount/µm³) and are shared by cells and empty space.
 
-{: .warning }
-Operations are not yet available for potts layers.
-`layer.operation` tags and operation-specific parameters are ignored, so layer values stay constant over the simulation.
-
 {% assign implementation = "potts" %}
 {% include_relative layers/initialization.md implementation=implementation %}
 {% include_relative layers/parameter.md implementation=implementation %}
+
+## Layer operations
+
+The `layer.operation` tag lists operations on the layer, stepped each tick after cells: diffuser, then decayer.
+Valid options include:
+
+`DIFFUSER`
+: Diffuses the quantity with no-flux boundaries (2D only)
+
+`DECAYER`
+: Decays the quantity at a first-order rate
+
+| PARAMETER | DEFAULT | UNITS | DESCRIPTION |
+| --------- | ------- | ----- | ----------- |
+| `diffuser/DIFFUSIVITY` | 0 | µm²/s | diffusivity of the quantity |
+| `diffuser/MAX_SUBSTEP` | 2 | s | maximum diffusion substep |
+| `decayer/DECAY_RATE` | 0 | 1/hour | first-order decay rate |
+
+Unlike the patch operations, which are sized for the one-minute patch tick, potts operations support any tick length: diffusion uses an implicit scheme that is stable for any diffusivity, and decay uses the exact factor exp(-rate × dt).
+Smaller `MAX_SUBSTEP` values are more accurate next to secreting cells but slower.
+
+### Example: Diffusing and decaying layer
+
+_Specifies a layer that diffuses at 1.33 µm²/s and decays at 1.33/hour._
+
+```xml
+<layer id="PDGF">
+    <layer.operation id="DIFFUSER" />
+    <layer.operation id="DECAYER" />
+    <layer.parameter operation="diffuser" id="DIFFUSIVITY" value="1.33" />
+    <layer.parameter operation="decayer" id="DECAY_RATE" value="1.33" />
+</layer>
+```
 
 ## Saving and loading layers
 
