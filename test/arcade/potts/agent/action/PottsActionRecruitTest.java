@@ -3,6 +3,9 @@ package arcade.potts.agent.action;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import sim.engine.Schedule;
@@ -11,6 +14,7 @@ import arcade.core.env.component.Component;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.env.component.PottsComponentVesselCells;
 import arcade.potts.env.component.PottsComponentVessels;
 import arcade.potts.env.component.PottsVesselNetwork;
 import arcade.potts.env.component.PottsVesselNode;
@@ -343,5 +347,180 @@ public class PottsActionRecruitTest {
         MiniBox parameters = vesselParameters(300, 10);
         parameters.put("SOURCE", "BLOOD");
         assertThrows(IllegalArgumentException.class, () -> new PottsActionRecruit(parameters));
+    }
+
+    // Vessel cell id and population code in the vessel cell tests.
+    private static final int VESSEL_ID = 7;
+
+    private static final int VESSEL_POP = 2;
+
+    // Recruit parameters for vessel sites with the vessel cell component.
+    static MiniBox vesselCellParameters(double rate, double distance) {
+        MiniBox parameters = vesselParameters(rate, distance);
+        parameters.put("VESSEL_CELLS", "VESSEL_CELLS");
+        return parameters;
+    }
+
+    // A vessel simulation where a vessel cell (id 7, population VESSEL) fills rows 4-6, which hold
+    // every site, and a vessel cell component. MAC has a critical volume of 8 voxels.
+    static PottsSimulation makeVesselCellSim() {
+        PottsSimulation sim = makeVesselSim();
+        sim.getSeries().populations.get("MAC").put("CRITICAL_VOLUME", 8);
+        MiniBox vesselPop = new MiniBox();
+        vesselPop.put("CODE", VESSEL_POP);
+        sim.getSeries().populations.put("VESSEL", vesselPop);
+
+        Potts potts = sim.getPotts();
+        for (int x = 0; x < SIZE; x++) {
+            for (int y = 4; y <= 6; y++) {
+                potts.ids[0][x][y] = VESSEL_ID;
+            }
+        }
+        PottsCell vessel = mock(PottsCell.class);
+        doReturn(VESSEL_POP).when(vessel).getPop();
+        doReturn(vessel).when(potts).getCell(VESSEL_ID);
+
+        PottsComponentVesselCells cells = mock(PottsComponentVesselCells.class);
+        doReturn("VESSEL").when(cells).getPopulation();
+        doReturn(cells).when(sim).getComponent("VESSEL_CELLS");
+        return sim;
+    }
+
+    @Test
+    public void step_siteInVessel_entersOnFreeVoxelAsExit() {
+        PottsSimulation sim = makeVesselCellSim();
+        PottsActionRecruit action = new PottsActionRecruit(vesselCellParameters(3000, 20));
+        action.register(sim, "MAC");
+
+        for (int t = 0; t < 5; t++) {
+            action.step(sim);
+        }
+
+        // Every site is in the vessel cell: each new cell is put on one free voxel near it, and the
+        // vessel cell gives up nothing.
+        PottsComponentVesselCells cells =
+                (PottsComponentVesselCells) sim.getComponent("VESSEL_CELLS");
+        verify(cells, never()).carve(any(), anyInt(), any(), any());
+        ArgumentCaptor<ArrayList<Voxel>> captor = ArgumentCaptor.forClass(ArrayList.class);
+        verify(sim, atLeastOnce()).insertCell(eq(1), captor.capture());
+        for (ArrayList<Voxel> voxels : captor.getAllValues()) {
+            assertEquals(1, voxels.size());
+            Voxel v = voxels.get(0);
+            assertEquals(0, sim.getPotts().ids[0][v.x][v.y]);
+        }
+        assertTrue(action.getRecruited() > 0);
+        assertEquals(action.getRecruited(), action.getExits());
+        assertEquals(0, action.getFailures());
+    }
+
+    @Test
+    public void step_siteInVesselNoFreeVoxel_fails() {
+        // D_RECRUIT 2 um (voxels are 10 um) reaches only the site voxel, which is in the vessel.
+        PottsSimulation sim = makeVesselCellSim();
+        PottsActionRecruit action = new PottsActionRecruit(vesselCellParameters(3000, 2));
+        action.register(sim, "MAC");
+
+        for (int t = 0; t < 5; t++) {
+            action.step(sim);
+        }
+
+        verify(sim, never()).insertCell(anyInt(), any());
+        assertEquals(0, action.getRecruited());
+        assertEquals(0, action.getExits());
+        assertTrue(action.getFailures() > 0);
+    }
+
+    @Test
+    public void step_siteInOtherCell_usesFreeVoxelPath() {
+        PottsSimulation sim = makeVesselCellSim();
+        PottsCell other = sim.getPotts().getCell(VESSEL_ID);
+        doReturn(VESSEL_POP + 1).when(other).getPop();
+        PottsActionRecruit action = new PottsActionRecruit(vesselCellParameters(3000, 20));
+        action.register(sim, "MAC");
+
+        for (int t = 0; t < 5; t++) {
+            action.step(sim);
+        }
+
+        assertTrue(action.getRecruited() > 0);
+        assertEquals(0, action.getExits());
+    }
+
+    @Test
+    public void step_vesselCellsKeyWithoutComponent_sameAsWithoutKey() {
+        PottsSimulation plain = makeVesselSim();
+        PottsActionRecruit without = new PottsActionRecruit(vesselParameters(3000, 10));
+        without.register(plain, "MAC");
+        PottsSimulation keyed = makeVesselSim();
+        PottsActionRecruit with = new PottsActionRecruit(vesselCellParameters(3000, 10));
+        with.register(keyed, "MAC");
+
+        for (int t = 0; t < 20; t++) {
+            without.step(plain);
+            with.step(keyed);
+        }
+
+        ArgumentCaptor<ArrayList<Voxel>> a = ArgumentCaptor.forClass(ArrayList.class);
+        ArgumentCaptor<ArrayList<Voxel>> b = ArgumentCaptor.forClass(ArrayList.class);
+        verify(plain, atLeastOnce()).insertCell(eq(1), a.capture());
+        verify(keyed, atLeastOnce()).insertCell(eq(1), b.capture());
+        assertEquals(a.getAllValues(), b.getAllValues());
+        assertEquals(without.getRecruited(), with.getRecruited());
+    }
+
+    @Test
+    public void recruitAt_unregisteredPop_throws() {
+        PottsSimulation sim = makeVesselSim();
+        PottsActionRecruit action = new PottsActionRecruit(vesselParameters(300, 10));
+        action.register(sim, "MAC");
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> action.recruitAt(sim, 99, new Voxel(5, 5, 0)));
+    }
+
+    // Counts the log lines of the recruit logger while stepping an action for ticks.
+    static int countLogLines(PottsSimulation sim, PottsActionRecruit action, int ticks) {
+        Logger logger = Logger.getLogger(PottsActionRecruit.class.getName());
+        List<LogRecord> records = new ArrayList<>();
+        Handler handler =
+                new Handler() {
+                    @Override
+                    public void publish(LogRecord record) {
+                        records.add(record);
+                    }
+
+                    @Override
+                    public void flush() {}
+
+                    @Override
+                    public void close() {}
+                };
+        logger.addHandler(handler);
+        try {
+            for (int t = 0; t < ticks; t++) {
+                action.step(sim);
+            }
+        } finally {
+            logger.removeHandler(handler);
+        }
+        return records.size();
+    }
+
+    @Test
+    public void step_withVesselCells_logsCountsDaily() {
+        // Tick length 1 hour: one line after 24 ticks, a second after 48.
+        PottsSimulation sim = makeVesselCellSim();
+        PottsActionRecruit action = new PottsActionRecruit(vesselCellParameters(30, 20));
+        action.register(sim, "MAC");
+        assertEquals(1, countLogLines(sim, action, 25));
+        assertEquals(1, countLogLines(sim, action, 24));
+    }
+
+    @Test
+    public void step_withoutVesselCells_doesNotLog() {
+        PottsSimulation sim = makeVesselSim();
+        PottsActionRecruit action = new PottsActionRecruit(vesselCellParameters(30, 10));
+        action.register(sim, "MAC");
+        assertEquals(0, countLogLines(sim, action, 50));
     }
 }

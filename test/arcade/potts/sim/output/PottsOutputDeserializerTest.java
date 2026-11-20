@@ -91,6 +91,22 @@ public class PottsOutputDeserializerTest {
     }
 
     @Test
+    public void deserializer_forCellWithoutPhase_createsNullPhase() {
+        PottsCellDeserializer deserializer = new PottsCellDeserializer();
+        String string =
+                "{\"id\":3,\"parent\":0,\"pop\":2,\"age\":7,\"divisions\":0,"
+                        + "\"state\":\"UNDEFINED\",\"voxels\":12,\"criticals\":[10.0,5.0]}";
+
+        JsonObject json = JsonParser.parseString(string).getAsJsonObject();
+        PottsCellContainer object =
+                deserializer.deserialize(json, PottsCellContainer.class, CELL_CONTEXT);
+
+        assertEquals(3, object.id);
+        assertNull(object.phase);
+        assertEquals(12, object.voxels);
+    }
+
+    @Test
     public void deserializer_forCellNoRegion_createObject() {
         PottsCellDeserializer deserializer = new PottsCellDeserializer();
 

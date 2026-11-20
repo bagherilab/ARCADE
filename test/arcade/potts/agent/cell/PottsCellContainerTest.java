@@ -195,6 +195,22 @@ public class PottsCellContainerTest {
     }
 
     @Test
+    public void convert_vesselClass_createsVesselCell() {
+        Location location = mock(PottsLocation.class);
+        PottsCellFactory factory = new PottsCellFactory();
+        MiniBox parameters = new MiniBox();
+        parameters.put("CLASS", "vessel");
+        factory.popToParameters.put(1, parameters);
+        factory.popToRegions.put(1, false);
+
+        PottsCellContainer container =
+                new PottsCellContainer(1, 0, 1, 0, 0, State.UNDEFINED, null, 0, 10, 5);
+        PottsCell cell = (PottsCell) container.convert(factory, location, RANDOM);
+
+        assertEquals(PottsCellVessel.class, cell.getClass());
+    }
+
+    @Test
     public void convert_noRegionsWithParent_createsObject() {
         Location location = mock(PottsLocation.class);
         PottsCellFactory factory = new PottsCellFactory();

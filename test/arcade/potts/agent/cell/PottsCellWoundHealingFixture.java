@@ -104,6 +104,8 @@ public final class PottsCellWoundHealingFixture {
         box.put("O2_PROLIF_MIN", 0);
         box.put("INF_POLARIZATION", 0);
         box.put("INJURY_ACTIVATION", 0);
+        box.put("INF_PROLIFERATION", 0);
+        box.put("INF_PROLIFERATION_RATE", 0);
         box.put("BASAL_DEATH", 0);
         box.put("GF_UPTAKE", 0);
         box.put("GF_PROLIFERATION", 0.2);

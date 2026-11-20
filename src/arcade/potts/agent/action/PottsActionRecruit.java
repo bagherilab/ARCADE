@@ -2,6 +2,7 @@ package arcade.potts.agent.action;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.util.distribution.Poisson;
@@ -11,6 +12,8 @@ import arcade.core.env.component.Component;
 import arcade.core.env.lattice.Lattice;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
+import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.env.component.PottsComponentVesselCells;
 import arcade.potts.env.component.PottsComponentVessels;
 import arcade.potts.env.lattice.PottsLattice;
 import arcade.potts.env.location.Voxel;
@@ -41,8 +44,24 @@ import static arcade.potts.util.PottsEnums.Ordering;
  * sites are chosen in proportion to their rates. Each new cell is inserted on one free voxel within
  * {@code D_RECRUIT} of its site, chosen at random. If there is no free voxel, or the insertion is
  * rejected, the attempt is counted as a failure.
+ *
+ * <p>If the vessel cell component named by {@code VESSEL_CELLS} exists and the site voxel belongs
+ * to one of its vessel cells, the new cell exits from the vessel: it is inserted by the same free
+ * voxel rule (one free voxel within {@code D_RECRUIT} of the site) and counted as an exit. A
+ * macrophage is deformable, so one free voxel next to the vessel is enough for it to enter; it then
+ * grows to its target volume. The vessel cell is not changed. With the component, the counts of
+ * recruited cells, exits, and failures are logged once per simulated day. Without the component,
+ * recruitment and its logging are unchanged.
+ *
+ * <p>The exit check reads the site voxel only, so it works for a slice or a 3D lattice.
  */
 public class PottsActionRecruit implements Action {
+    /** Logger for {@code PottsActionRecruit}. */
+    private static final Logger LOGGER = Logger.getLogger(PottsActionRecruit.class.getName());
+
+    /** Hours between log lines of the counts when the vessel cell component exists. */
+    private static final double LOG_INTERVAL = 24;
+
     /** Sources of recruitment sites. */
     public enum Source {
         /** Sites from the supply mask layer (implicit vasculature). */
@@ -73,6 +92,9 @@ public class PottsActionRecruit implements Action {
     /** Id of the mask layer. */
     private final String mask;
 
+    /** Id of the vessel cell component, or {@code null} for none. */
+    private final String vesselCells;
+
     /** Codes of the registered populations. */
     private final ArrayList<Integer> pops = new ArrayList<>();
 
@@ -97,6 +119,12 @@ public class PottsActionRecruit implements Action {
     /** Number of recruitment attempts that failed. */
     private int failures;
 
+    /** Number of cells recruited by exit from a vessel cell. */
+    private int exits;
+
+    /** Number of steps taken with a positive rate. */
+    private int steps;
+
     /**
      * Creates an {@link Action} for recruiting cell agents.
      *
@@ -113,6 +141,7 @@ public class PottsActionRecruit implements Action {
      *   <li>{@code K_RECRUIT} = half-saturation of the summed signal [layer units]
      *   <li>{@code D_RECRUIT} = distance from a site that cells are inserted within [um]
      *   <li>{@code MASK} = id of the supply mask layer
+     *   <li>{@code VESSEL_CELLS} = id of the vessel cell component, used only if it exists
      * </ul>
      *
      * @param parameters the action parameters dictionary
@@ -128,6 +157,7 @@ public class PottsActionRecruit implements Action {
         halfSaturation = parameters.getDouble("K_RECRUIT");
         distance = parameters.getDouble("D_RECRUIT");
         mask = parameters.get("MASK");
+        vesselCells = parameters.get("VESSEL_CELLS");
 
         signals = new ArrayList<>();
         String signalList = parameters.get("SIGNALS");
@@ -373,6 +403,7 @@ public class PottsActionRecruit implements Action {
         }
         PottsSimulation sim = (PottsSimulation) simstate;
         double[] rates = siteRates(sim);
+        logCounts(sim);
         double[] cumulative = new double[rates.length];
         double total = 0;
         for (int n = 0; n < rates.length; n++) {
@@ -383,25 +414,127 @@ public class PottsActionRecruit implements Action {
             return;
         }
 
-        int[][][] ids = sim.getPotts().ids;
         for (int pop : pops) {
             int number = new Poisson(total, sim.random).nextInt();
             for (int c = 0; c < number; c++) {
-                Voxel site = sites.get(chooseSite(cumulative, sim.random));
-                List<Voxel> free = freeVoxelsNear(ids, site, ds);
-                if (free.isEmpty()) {
-                    failures++;
-                    continue;
-                }
-                ArrayList<Voxel> seed = new ArrayList<>();
-                seed.add(free.get(sim.random.nextInt(free.size())));
-                if (sim.insertCell(pop, seed) == null) {
-                    failures++;
-                } else {
-                    recruited++;
-                }
+                recruitAt(sim, pop, sites.get(chooseSite(cumulative, sim.random)));
             }
         }
+    }
+
+    /**
+     * Logs the counts once per {@link #LOG_INTERVAL} hours, only if the vessel cell component
+     * exists.
+     *
+     * @param sim the simulation instance
+     */
+    private void logCounts(PottsSimulation sim) {
+        if (getVesselCells(sim) == null) {
+            return;
+        }
+        int interval = Math.max(1, (int) Math.round(LOG_INTERVAL / tick));
+        if (steps > 0 && steps % interval == 0) {
+            LOGGER.info(
+                    String.format(
+                            "recruit [ %s ]: %d recruited (%d by exit from vessel cells),"
+                                    + " %d failures",
+                            signals.isEmpty() ? "NONE" : String.join(",", signals),
+                            recruited,
+                            exits,
+                            failures));
+        }
+        steps++;
+    }
+
+    /**
+     * Gets the vessel cell component, if it exists.
+     *
+     * @param sim the simulation instance
+     * @return the vessel cell component, or {@code null} if there is none
+     */
+    private PottsComponentVesselCells getVesselCells(Simulation sim) {
+        if (vesselCells == null) {
+            return null;
+        }
+        Component component = sim.getComponent(vesselCells);
+        return component instanceof PottsComponentVesselCells
+                ? (PottsComponentVesselCells) component
+                : null;
+    }
+
+    /**
+     * Recruits one cell of a registered population at a site.
+     *
+     * <p>The cell is inserted on one free voxel within the insertion distance of the site. If the
+     * site is in a vessel cell (and the vessel cell component exists), the new cell is counted as
+     * an exit. The recruited or failure count is updated.
+     *
+     * @param sim the simulation instance
+     * @param pop the population code
+     * @param site the site
+     * @return the new cell, or {@code null} if the attempt failed
+     * @throws IllegalArgumentException if the population is not registered
+     */
+    public PottsCell recruitAt(PottsSimulation sim, int pop, Voxel site) {
+        if (!pops.contains(pop)) {
+            throw new IllegalArgumentException(
+                    "recruit population [ " + pop + " ] is not registered");
+        }
+        if (sites == null) {
+            siteRates(sim);
+        }
+        int[][][] ids = sim.getPotts().ids;
+
+        List<Voxel> free = freeVoxelsNear(ids, site, ds);
+        if (free.isEmpty()) {
+            failures++;
+            return null;
+        }
+        ArrayList<Voxel> seed = new ArrayList<>();
+        seed.add(free.get(sim.random.nextInt(free.size())));
+
+        PottsCell cell = sim.insertCell(pop, seed);
+        if (cell == null) {
+            failures++;
+        } else {
+            recruited++;
+            if (inVesselCell(sim, site)) {
+                exits++;
+            }
+        }
+        return cell;
+    }
+
+    /**
+     * Checks whether a site is in a vessel cell.
+     *
+     * @param sim the simulation instance
+     * @param site the site
+     * @return {@code true} if the vessel cell component exists and a vessel cell owns the site
+     */
+    boolean inVesselCell(PottsSimulation sim, Voxel site) {
+        PottsComponentVesselCells cells = getVesselCells(sim);
+        if (cells == null) {
+            return false;
+        }
+        int id = sim.getPotts().ids[site.z][site.x][site.y];
+        if (id == 0) {
+            return false;
+        }
+        PottsCell owner = sim.getPotts().getCell(id);
+        return owner != null && owner.getPop() == popCode(sim, cells.getPopulation());
+    }
+
+    /**
+     * Gets the code of a population.
+     *
+     * @param sim the simulation instance
+     * @param name the population name
+     * @return the population code, or -1 if there is no such population
+     */
+    private static int popCode(Simulation sim, String name) {
+        MiniBox box = name == null ? null : sim.getSeries().populations.get(name);
+        return box == null ? -1 : box.getInt("CODE");
     }
 
     /**
@@ -423,5 +556,14 @@ public class PottsActionRecruit implements Action {
      */
     public int getFailures() {
         return failures;
+    }
+
+    /**
+     * Gets the number of cells recruited by exit from a vessel cell.
+     *
+     * @return the number of exits
+     */
+    public int getExits() {
+        return exits;
     }
 }

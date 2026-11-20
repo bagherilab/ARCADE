@@ -18,6 +18,7 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModule;
+import arcade.potts.agent.process.PottsProcessClearance;
 import arcade.potts.agent.process.PottsProcessDepositionECM;
 import arcade.potts.agent.process.PottsProcessSecretion;
 import arcade.potts.agent.process.PottsProcessSensingHypoxic;
@@ -442,6 +443,16 @@ public class PottsCellTest {
         Parameters parameters = new Parameters(box, null, null);
         PottsCell cell = new PottsCellMock(containerWithoutRegions, locationMock, parameters);
         assertTrue(cell.getProcess(Domain.DEPOSITION) instanceof PottsProcessDepositionECM);
+    }
+
+    @Test
+    public void constructor_withClearanceProcess_makesProcess() {
+        MiniBox box = new MiniBox();
+        box.put("(PROCESS)" + TAG_SEPARATOR + "CLEARANCE", "");
+        box.put("clearance/RATE", 0.1);
+        Parameters parameters = new Parameters(box, null, null);
+        PottsCell cell = new PottsCellMock(containerWithoutRegions, locationMock, parameters);
+        assertTrue(cell.getProcess(Domain.CLEARANCE) instanceof PottsProcessClearance);
     }
 
     @Test

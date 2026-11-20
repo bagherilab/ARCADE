@@ -54,6 +54,36 @@ public class PottsVesselDeliveryTest {
     }
 
     @Test
+    public void exchangeWeights_notByIntegrity_givesOnePerVoxel() {
+        PottsVesselNetwork network =
+                perfused(new double[] {0, 4.5, 0}, new double[] {30, 4.5, 0}, 0.2);
+        double[][] w = PottsVesselDelivery.exchangeWeights(network, SIZE, SIZE, DS, LAMBDA, false);
+        for (int i = 0; i < 10; i++) {
+            assertEquals(1, w[i][1], EPSILON);
+        }
+        assertEquals(30 / DS, total(w), EPSILON);
+    }
+
+    @Test
+    public void exchangeWeights_byIntegrity_matchesDefault() {
+        PottsVesselNetwork network =
+                perfused(new double[] {0, 4.5, 0}, new double[] {30, 4.5, 0}, 0.2);
+        double[][] a = PottsVesselDelivery.exchangeWeights(network, SIZE, SIZE, DS, LAMBDA);
+        double[][] b = PottsVesselDelivery.exchangeWeights(network, SIZE, SIZE, DS, LAMBDA, true);
+        for (int i = 0; i < SIZE; i++) {
+            assertArrayEquals(a[i], b[i], EPSILON);
+        }
+    }
+
+    @Test
+    public void exchangeWeights_notByIntegrityZeroIntegrity_stillSkipped() {
+        PottsVesselNetwork network =
+                perfused(new double[] {0, 4.5, 0}, new double[] {30, 4.5, 0}, 0);
+        double[][] w = PottsVesselDelivery.exchangeWeights(network, SIZE, SIZE, DS, LAMBDA, false);
+        assertEquals(0, total(w), EPSILON);
+    }
+
+    @Test
     public void exchangeWeights_vesselNearSlice_isScaledByKernel() {
         PottsVesselNetwork near =
                 perfused(new double[] {0, 4.5, 10}, new double[] {30, 4.5, 10}, 1);
@@ -117,6 +147,32 @@ public class PottsVesselDeliveryTest {
         PottsVesselNetwork network =
                 perfused(new double[] {0, 4.5, 20}, new double[] {30, 4.5, 20}, 1);
         assertEquals(0, total(PottsVesselDelivery.siteWeights(network, SIZE, SIZE, DS, 5)));
+    }
+
+    @Test
+    public void siteWeights_belowMinIntegrity_givesNothing() {
+        PottsVesselNetwork network =
+                perfused(new double[] {4.5, 4.5, -40}, new double[] {4.5, 4.5, 40}, 0.5);
+        assertEquals(0, total(PottsVesselDelivery.siteWeights(network, SIZE, SIZE, DS, 5, 0.8)));
+    }
+
+    @Test
+    public void siteWeights_atOrAboveMinIntegrity_keepsIntegrityWeight() {
+        PottsVesselNetwork network =
+                perfused(new double[] {4.5, 4.5, -40}, new double[] {4.5, 4.5, 40}, 0.8);
+        double[][] w = PottsVesselDelivery.siteWeights(network, SIZE, SIZE, DS, 5, 0.8);
+        assertEquals(0.8 * 10, w[1][1], EPSILON);
+    }
+
+    @Test
+    public void siteWeights_zeroMinIntegrity_matchesDefault() {
+        PottsVesselNetwork network =
+                perfused(new double[] {4.5, 4.5, -40}, new double[] {4.5, 4.5, 40}, 0.3);
+        double[][] a = PottsVesselDelivery.siteWeights(network, SIZE, SIZE, DS, 5);
+        double[][] b = PottsVesselDelivery.siteWeights(network, SIZE, SIZE, DS, 5, 0);
+        for (int i = 0; i < SIZE; i++) {
+            assertArrayEquals(a[i], b[i], EPSILON);
+        }
     }
 
     @Test

@@ -17,6 +17,7 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModule;
+import arcade.potts.agent.process.PottsProcessClearance;
 import arcade.potts.agent.process.PottsProcessDeposition;
 import arcade.potts.agent.process.PottsProcessSecretion;
 import arcade.potts.agent.process.PottsProcessSensing;
@@ -484,6 +485,8 @@ public abstract class PottsCell implements Cell {
                 return PottsProcessSensing.make(this, version);
             case DEPOSITION:
                 return PottsProcessDeposition.make(this, version);
+            case CLEARANCE:
+                return new PottsProcessClearance(this);
             case UNDEFINED:
             default:
                 return null;
@@ -621,7 +624,7 @@ public abstract class PottsCell implements Cell {
                     age,
                     divisions,
                     state,
-                    ((PottsModule) module).getPhase(),
+                    module == null ? null : ((PottsModule) module).getPhase(),
                     (int) getVolume(),
                     regionVolumes,
                     criticalVolume,
@@ -636,7 +639,7 @@ public abstract class PottsCell implements Cell {
                     age,
                     divisions,
                     state,
-                    ((PottsModule) module).getPhase(),
+                    module == null ? null : ((PottsModule) module).getPhase(),
                     (int) getVolume(),
                     criticalVolume,
                     criticalHeight);

@@ -216,4 +216,91 @@ public class PottsModuleSenescenceTest {
         module.step(random, sim);
         assertEquals(Phase.SENESCENT_EARLY, module.getPhase());
     }
+
+    // Resident senescent cells (2026-11-18): cells that start the simulation already in late
+    // senescence (loaded with phase SENESCENT_LATE) stand for the chronic senescent load of aged
+    // skin. They use CLEARANCE_LATE x RESIDENT_CLEARANCE_FOLD and LATE_RATE x RESIDENT_SASP_FOLD.
+
+    @Test
+    public void setPhase_lateBeforeAnyStep_isResidentAndScalesLateRates() {
+        box.put("senescence/RESIDENT_SASP_FOLD", 0.5);
+        PottsModuleSenescence module = new PottsModuleSenescence(cell);
+        module.setPhase(Phase.SENESCENT_LATE);
+        assertTrue(module.isResident());
+        verify(secretion).setRate("INF", 3.0);
+    }
+
+    @Test
+    public void step_earlyToLate_isNotResidentAndKeepsLateRates() {
+        box.put("senescence/RESIDENT_SASP_FOLD", 0.5);
+        PottsModuleSenescence module = new PottsModuleSenescence(cell);
+        setSteps(module, 10);
+        module.step(random, sim);
+        assertEquals(Phase.SENESCENT_LATE, module.getPhase());
+        assertFalse(module.isResident());
+        verify(secretion).setRate("INF", 6.0);
+        verify(secretion, never()).setRate("INF", 3.0);
+    }
+
+    @Test
+    public void step_residentZeroClearanceFold_notClearedByMacrophage() {
+        box.put("senescence/CLEARANCE_LATE", 0.9);
+        box.put("senescence/RESIDENT_CLEARANCE_FOLD", 0);
+        doReturn(true).when(cell).touchesMacrophage(sim);
+        PottsModuleSenescence module = new PottsModuleSenescence(cell);
+        module.setPhase(Phase.SENESCENT_LATE);
+        setSteps(module, 0);
+        module.step(random, sim);
+        verify(cell, never()).setState(any());
+    }
+
+    @Test
+    public void step_residentClearanceFold_scalesLateClearance() {
+        box.put("senescence/CLEARANCE_LATE", 0.8);
+        box.put("senescence/RESIDENT_CLEARANCE_FOLD", 0.5);
+        doReturn(true).when(cell).touchesMacrophage(sim);
+        doReturn(0.5).when(random).nextDouble();
+        PottsModuleSenescence module = new PottsModuleSenescence(cell);
+        module.setPhase(Phase.SENESCENT_LATE);
+        setSteps(module, 0);
+        module.step(random, sim);
+        verify(cell, never()).setState(any());
+        doReturn(0.3).when(random).nextDouble();
+        module.step(random, sim);
+        verify(cell).setState(State.APOPTOTIC);
+    }
+
+    @Test
+    public void step_residentDuringDrugWindow_isKilledByDrug() {
+        box.put("senescence/RESIDENT_CLEARANCE_FOLD", 0);
+        box.put("senescence/DRUG_KILL", 0.5);
+        time = 12;
+        PottsModuleSenescence module = new PottsModuleSenescence(cell);
+        module.setPhase(Phase.SENESCENT_LATE);
+        setSteps(module, 0);
+        module.step(random, sim);
+        verify(cell).setState(State.APOPTOTIC);
+    }
+
+    @Test
+    public void constructor_noResidentParameters_residentBehavesAsLate() {
+        box.put("senescence/CLEARANCE_LATE", 0.8);
+        doReturn(true).when(cell).touchesMacrophage(sim);
+        doReturn(0.5).when(random).nextDouble();
+        PottsModuleSenescence module = new PottsModuleSenescence(cell);
+        module.setPhase(Phase.SENESCENT_LATE);
+        verify(secretion).setRate("INF", 6.0);
+        setSteps(module, 0);
+        module.step(random, sim);
+        verify(cell).setState(State.APOPTOTIC);
+    }
+
+    @Test
+    public void constructor_negativeResidentFold_throws() {
+        box.put("senescence/RESIDENT_SASP_FOLD", -1);
+        assertThrows(IllegalArgumentException.class, () -> new PottsModuleSenescence(cell));
+        box.put("senescence/RESIDENT_SASP_FOLD", 1);
+        box.put("senescence/RESIDENT_CLEARANCE_FOLD", -1);
+        assertThrows(IllegalArgumentException.class, () -> new PottsModuleSenescence(cell));
+    }
 }

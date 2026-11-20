@@ -9,6 +9,7 @@ import arcade.potts.sim.hamiltonian.Hamiltonian;
 import arcade.potts.sim.hamiltonian.MatrixHamiltonian;
 import arcade.potts.sim.hamiltonian.PersistenceHamiltonian;
 import arcade.potts.sim.hamiltonian.SurfaceHamiltonian2D;
+import arcade.potts.sim.hamiltonian.VesselHamiltonian;
 import arcade.potts.sim.hamiltonian.VolumeHamiltonian;
 import static org.junit.jupiter.api.Assertions.*;
 import static arcade.potts.sim.PottsTest.*;
@@ -119,6 +120,9 @@ public class Potts2DTest {
 
         h = potts2D.getHamiltonian(Term.MATRIX, series);
         assertTrue(h instanceof MatrixHamiltonian);
+
+        h = potts2D.getHamiltonian(Term.VESSEL, series);
+        assertTrue(h instanceof VesselHamiltonian);
     }
 
     @Test

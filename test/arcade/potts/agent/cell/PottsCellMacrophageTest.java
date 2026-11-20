@@ -212,4 +212,106 @@ public class PottsCellMacrophageTest {
         cell.step(simstate);
         assertEquals(State.APOPTOTIC, cell.getState());
     }
+
+    // Turns on INF-driven proliferation: threshold 1 on mean INF, entry probability 0.1 per tick.
+    private void addInfProliferation() {
+        f.box.put("INF_PROLIFERATION", 1.0);
+        f.box.put("INF_PROLIFERATION_RATE", 0.1);
+    }
+
+    @Test
+    public void canProliferate_infAboveProliferationThreshold_returnsTrue() {
+        addInfProliferation();
+        f.means.put("INF", 1.5);
+        assertTrue(make(State.QUIESCENT).canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_infAtProliferationThreshold_returnsFalse() {
+        addInfProliferation();
+        f.means.put("INF", 1.0);
+        assertFalse(make(State.QUIESCENT).canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_proliferationOff_highInf_returnsFalse() {
+        f.means.put("INF", 100.0);
+        assertFalse(make(State.QUIESCENT).canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_proliferativeAboveHalfThreshold_returnsTrue() {
+        addInfProliferation();
+        f.means.put("INF", 0.6);
+        assertTrue(make(State.PROLIFERATIVE).canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_proliferativeBelowHalfThreshold_returnsFalse() {
+        addInfProliferation();
+        f.means.put("INF", 0.4);
+        assertFalse(make(State.PROLIFERATIVE).canProliferate(f.sim));
+    }
+
+    @Test
+    public void canProliferate_contactInhibited_returnsFalse() {
+        addInfProliferation();
+        f.box.put("CONTACT_FREE_FRACTION", 0.5);
+        f.surround(8);
+        f.means.put("INF", 1.5);
+        assertFalse(make(State.QUIESCENT).canProliferate(f.sim));
+    }
+
+    @Test
+    public void stepRules_infAboveThresholdDrawBelowRate_becomesProliferative() {
+        addInfProliferation();
+        f.means.put("INF", 1.5);
+        PottsCellMacrophage cell = make(State.QUIESCENT);
+        assertTrue(cell.stepRules(f.random, f.sim));
+        assertEquals(State.PROLIFERATIVE, cell.getState());
+    }
+
+    @Test
+    public void stepRules_infAboveThresholdDrawAboveRate_staysQuiescent() {
+        addInfProliferation();
+        f.means.put("INF", 1.5);
+        doReturn(0.5).when(f.random).nextDouble();
+        PottsCellMacrophage cell = make(State.QUIESCENT);
+        assertTrue(cell.stepRules(f.random, f.sim));
+        assertEquals(State.QUIESCENT, cell.getState());
+    }
+
+    @Test
+    public void stepRules_proliferationOff_doesNotDraw() {
+        f.means.put("INF", 100.0);
+        PottsCellMacrophage cell = make(State.QUIESCENT);
+        cell.stepRules(f.random, f.sim);
+        verify(f.random, never()).nextDouble();
+    }
+
+    @Test
+    public void constructor_negativeProliferationThreshold_throws() {
+        f.box.put("INF_PROLIFERATION", -1.0);
+        f.box.put("INF_PROLIFERATION_RATE", 0.1);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
+
+    @Test
+    public void constructor_proliferationRateAboveOne_throws() {
+        f.box.put("INF_PROLIFERATION", 1.0);
+        f.box.put("INF_PROLIFERATION_RATE", 1.5);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
+
+    @Test
+    public void constructor_proliferationThresholdWithoutRate_throws() {
+        f.box.put("INF_PROLIFERATION", 1.0);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
+
+    @Test
+    public void constructor_proliferationRateWithoutThreshold_throws() {
+        f.box.put("INF_PROLIFERATION_RATE", 0.1);
+        assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));
+    }
 }

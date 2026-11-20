@@ -159,6 +159,30 @@ public class PottsComponentVesselsTest {
     }
 
     @Test
+    public void getSiteWeights_minIntegrityAboveNetwork_hasNoSites() {
+        PottsSimulation sim = makeSim(makeLattice(true));
+        MiniBox box = parameters(0.4);
+        box.put("RECRUIT_MIN_INTEGRITY", 1.5);
+        assertThrows(IllegalArgumentException.class, () -> new PottsComponentVessels(box));
+        box.put("RECRUIT_MIN_INTEGRITY", 1.0);
+        PottsComponentVessels vessels = new PottsComponentVessels(box);
+        PottsVesselNetwork net = network();
+        for (PottsVesselEdge e : net.getSegments()) {
+            e.setIntegrity(0.9);
+        }
+        vessels.setNetwork(net);
+        vessels.register(sim, "O2");
+        double[][] sites = vessels.getSiteWeights(sim);
+        double total = 0;
+        for (double[] row : sites) {
+            for (double v : row) {
+                total += v;
+            }
+        }
+        assertEquals(0, total, EPSILON);
+    }
+
+    @Test
     public void step_zeroPermeability_doesNothingAndNeedsNoLayers() {
         PottsSimulation sim = mock(PottsSimulation.class);
         PottsComponentVessels vessels = makeVessels(0, sim);

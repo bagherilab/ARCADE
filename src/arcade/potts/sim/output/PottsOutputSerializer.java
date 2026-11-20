@@ -140,7 +140,9 @@ public final class PottsOutputSerializer {
             json.addProperty("age", src.age);
             json.addProperty("divisions", src.divisions);
             json.addProperty("state", ((State) src.state).name());
-            json.addProperty("phase", src.phase.name());
+            if (src.phase != null) {
+                json.addProperty("phase", src.phase.name());
+            }
             json.addProperty("voxels", src.voxels);
 
             JsonArray criticals = new JsonArray();

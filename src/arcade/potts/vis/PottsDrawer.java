@@ -484,7 +484,8 @@ public abstract class PottsDrawer extends Drawer {
 
                     switch (view) {
                         case STATE:
-                            int state = ((PottsModule) cell.getModule()).getPhase().ordinal();
+                            PottsModule module = (PottsModule) cell.getModule();
+                            int state = module == null ? 0 : module.getPhase().ordinal();
                             arr[a][b] = state;
                             break;
                         case POPULATION:

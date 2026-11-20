@@ -167,4 +167,54 @@ public class PottsComponentReleaseTest {
         assertEquals(3 * DT * 2.0, target.getField()[0][0][1], EPSILON);
         assertEquals(0, target.getField()[0][1][1], EPSILON);
     }
+
+    // Fading release (2026-11-18): with TAU > 0, the rate is RATE * exp(-t / TAU), t in hours.
+
+    static PottsSimulation makeSimAt(PottsLattice source, PottsLattice target, double tick) {
+        PottsSimulation sim = makeSim(source, target);
+        Schedule schedule = mock(Schedule.class);
+        doReturn(tick).when(schedule).getTime();
+        doReturn(schedule).when(sim).getSchedule();
+        doReturn(mock(arcade.potts.sim.PottsSeries.class)).when(sim).getSeries();
+        return sim;
+    }
+
+    @Test
+    public void step_withTau_fadesExponentiallyInHours() {
+        PottsLattice source = makeSource();
+        source.getField()[0][0][0] = 1.0;
+        PottsLattice target = makeTarget(true);
+        PottsSimulation sim = makeSimAt(source, target, 40);
+        MiniBox box = parameters(4, "SRC");
+        box.put("TAU", 10);
+        PottsComponentRelease release = new PottsComponentRelease(box);
+        release.register(sim, "SIG");
+
+        release.step(sim);
+
+        verify(target).addSource(List.of(new Voxel(0, 0, 0)), 4 / 3600.0 * Math.exp(-1.0));
+    }
+
+    @Test
+    public void step_zeroTau_doesNotFade() {
+        PottsLattice source = makeSource();
+        source.getField()[0][0][0] = 1.0;
+        PottsLattice target = makeTarget(true);
+        PottsSimulation sim = makeSimAt(source, target, 4000);
+        MiniBox box = parameters(4, "SRC");
+        box.put("TAU", 0);
+        PottsComponentRelease release = new PottsComponentRelease(box);
+        release.register(sim, "SIG");
+
+        release.step(sim);
+
+        verify(target).addSource(List.of(new Voxel(0, 0, 0)), 4 / 3600.0);
+    }
+
+    @Test
+    public void constructor_negativeTau_throws() {
+        MiniBox box = parameters(4, "SRC");
+        box.put("TAU", -1);
+        assertThrows(IllegalArgumentException.class, () -> new PottsComponentRelease(box));
+    }
 }

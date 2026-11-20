@@ -70,7 +70,10 @@ public final class PottsOutputDeserializer {
             int voxels = jsonObject.get("voxels").getAsInt();
 
             State state = State.valueOf(jsonObject.get("state").getAsString());
-            Phase phase = Phase.valueOf(jsonObject.get("phase").getAsString());
+            Phase phase =
+                    jsonObject.has("phase")
+                            ? Phase.valueOf(jsonObject.get("phase").getAsString())
+                            : null;
 
             JsonArray criticals = jsonObject.get("criticals").getAsJsonArray();
             double criticalVolume = criticals.get(0).getAsDouble();

@@ -738,6 +738,17 @@ public class PottsTest {
     }
 
     @Test
+    public void change_infiniteEnergy_neverFlips() {
+        PottsMock spy = makeChangeMock(1, 2, new double[] {-5, Double.POSITIVE_INFINITY, 3}, true);
+        spy.ids[0][0][0] = 1;
+        spy.regions[0][0][0] = Region.DEFAULT.ordinal();
+        spy.change(1, 2, 0, 0, 0, 0);
+        assertEquals(1, spy.ids[0][0][0]);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(2)).getLocation()), never())
+                .add(0, 0, 0);
+    }
+
+    @Test
     public void change_positiveEnergyZeroSourceNonzeroTargetRegions_updatesFields() {
         PottsMock spy = makeChangeMock(0, 1, new double[] {-1, 1, 3}, true);
         spy.ids[0][0][0] = 0;

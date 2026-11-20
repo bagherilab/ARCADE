@@ -65,8 +65,14 @@ public class PottsComponentVessels implements Component {
     /** Cached exchange weights, matching {@link #exchangeVoxels}. */
     private final ArrayList<Double> exchangeWeights = new ArrayList<>();
 
+    /** Lowest segment integrity that gives recruitment sites. */
+    private final double recruitMinIntegrity;
+
     /** Cached recruitment site weights, indexed [x][y]. */
     private double[][] siteWeights;
+
+    /** {@code true} if O2 exchange is scaled by segment integrity. */
+    private final boolean exchangeByIntegrity;
 
     /**
      * Creates a {@link Component} for a vessel network.
@@ -78,6 +84,10 @@ public class PottsComponentVessels implements Component {
      *   <li>{@code BLOOD_O2} = blood value the exchange relaxes toward [layer units]
      *   <li>{@code LAMBDA} = O2 diffusion length along z [um]
      *   <li>{@code D_RECRUIT} = distance from the slice that recruitment sites come from [um]
+     *   <li>{@code EXCHANGE_BY_INTEGRITY} = 1 (default) to scale O2 exchange by segment integrity,
+     *       0 for full exchange from every perfused segment (new vessels deliver O2 at once)
+     *   <li>{@code RECRUIT_MIN_INTEGRITY} = lowest segment integrity that gives recruitment sites
+     *       (default 0; in [0, 1])
      * </ul>
      *
      * @param parameters the component parameters dictionary
@@ -87,9 +97,19 @@ public class PottsComponentVessels implements Component {
         bloodValue = parameters.getDouble("BLOOD_O2");
         lambda = parameters.getDouble("LAMBDA");
         recruitDistance = parameters.getDouble("D_RECRUIT");
+        exchangeByIntegrity =
+                !parameters.contains("EXCHANGE_BY_INTEGRITY")
+                        || parameters.getDouble("EXCHANGE_BY_INTEGRITY") != 0;
         if (!(permeability >= 0) || !(lambda > 0) || !(recruitDistance >= 0)) {
             throw new IllegalArgumentException(
                     "vessels require P_O2 >= 0, LAMBDA > 0, and D_RECRUIT >= 0");
+        }
+        recruitMinIntegrity =
+                parameters.contains("RECRUIT_MIN_INTEGRITY")
+                        ? parameters.getDouble("RECRUIT_MIN_INTEGRITY")
+                        : 0;
+        if (!(recruitMinIntegrity >= 0 && recruitMinIntegrity <= 1)) {
+            throw new IllegalArgumentException("RECRUIT_MIN_INTEGRITY must be in [0, 1]");
         }
     }
 
@@ -211,7 +231,8 @@ public class PottsComponentVessels implements Component {
         exchangeVoxels.clear();
         exchangeWeights.clear();
         double[][] weights =
-                PottsVesselDelivery.exchangeWeights(network, length, width, ds, lambda);
+                PottsVesselDelivery.exchangeWeights(
+                        network, length, width, ds, lambda, exchangeByIntegrity);
         for (int i = 0; i < length; i++) {
             for (int j = 0; j < width; j++) {
                 if (weights[i][j] > 0) {
@@ -221,7 +242,9 @@ public class PottsComponentVessels implements Component {
             }
         }
 
-        siteWeights = PottsVesselDelivery.siteWeights(network, length, width, ds, recruitDistance);
+        siteWeights =
+                PottsVesselDelivery.siteWeights(
+                        network, length, width, ds, recruitDistance, recruitMinIntegrity);
         prepared = true;
     }
 

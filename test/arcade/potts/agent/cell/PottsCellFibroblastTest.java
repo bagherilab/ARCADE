@@ -415,6 +415,23 @@ public class PottsCellFibroblastTest {
     }
 
     @Test
+    public void getLocalDensity_vesselCell_notCountedAndVoxelsLeftOut() {
+        // A vessel cell with centroid (1, 1) owns voxels (1, 1) and (1, 2): it is not counted and
+        // its 2 voxels are left out of the 9-voxel disc around (2, 2).
+        double[] a = {3, 3};
+        PottsCellFibroblast cell = makeRepopulating(State.QUIESCENT, 0.2, 2, 2, a);
+        PottsLocation loc = mock(PottsLocation.class);
+        doReturn(new double[] {1, 1, 0}).when(loc).getCentroid();
+        PottsCellVessel vessel = mock(PottsCellVessel.class);
+        doReturn(loc).when(vessel).getLocation();
+        f.grid.getAllObjects().add(vessel);
+        f.cells.put(9, vessel);
+        f.ids[0][1][1] = 9;
+        f.ids[0][1][2] = 9;
+        assertEquals(2.0 / 7, cell.getLocalDensity(f.sim), 1e-12);
+    }
+
+    @Test
     public void constructor_negativeRepopulationDensity_throws() {
         f.box.put("REPOPULATION_DENSITY", -1);
         assertThrows(IllegalArgumentException.class, () -> make(State.QUIESCENT));

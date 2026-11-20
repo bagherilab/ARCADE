@@ -27,10 +27,17 @@ import static arcade.potts.util.PottsEnums.Ordering;
  * <p>Example: injury chemokines released from the provisional matrix ({@code SOURCE} = {@code
  * WOUND_MATRIX}) into a diffusing, decaying {@code INJURY_SIGNAL}. With decay rate k, the layer
  * settles near {@code RATE} s / k where the source is wide compared with the diffusion length.
+ *
+ * <p>If {@code TAU} is above 0, the rate fades as {@code RATE} exp(-t / {@code TAU}), with t the
+ * simulation time in hours. Damage signals come mainly from platelets and damaged cells in the
+ * first days after injury, so release then switches off even while the clot remains.
  */
 public class PottsComponentRelease implements Component {
     /** Release rate per unit source [layer units/hour per source unit]. */
     private final double rate;
+
+    /** Time constant of the fading rate [hours], or 0 for a constant rate. */
+    private final double tau;
 
     /** Id of the source layer. */
     private final String source;
@@ -46,6 +53,7 @@ public class PottsComponentRelease implements Component {
      * <ul>
      *   <li>{@code RATE} = release rate per unit source [layer units/hour per source unit]
      *   <li>{@code SOURCE} = id of the source layer
+     *   <li>{@code TAU} = time constant of the fading rate [hours] (optional; 0 for constant)
      * </ul>
      *
      * @param parameters the component parameters dictionary
@@ -53,6 +61,10 @@ public class PottsComponentRelease implements Component {
     public PottsComponentRelease(MiniBox parameters) {
         rate = parameters.getDouble("RATE");
         source = parameters.get("SOURCE");
+        tau = parameters.contains("TAU") ? parameters.getDouble("TAU") : 0;
+        if (!(tau >= 0) || Double.isInfinite(tau)) {
+            throw new IllegalArgumentException("release requires TAU >= 0");
+        }
         if (!(rate >= 0)) {
             throw new IllegalArgumentException("release requires RATE >= 0");
         }
@@ -102,6 +114,12 @@ public class PottsComponentRelease implements Component {
                         "release layer [ " + layer + " ] requires a diffuser");
             }
             double perSecond = rate / 3600.0;
+            if (tau > 0) {
+                double tick =
+                        sim.getSchedule().getTime()
+                                + ((arcade.potts.sim.PottsSeries) sim.getSeries()).tickOffset;
+                perSecond *= Math.exp(-tick * lattice.getDt() / tau);
+            }
             for (int k = 0; k < values.length; k++) {
                 for (int i = 0; i < values[k].length; i++) {
                     for (int j = 0; j < values[k][i].length; j++) {

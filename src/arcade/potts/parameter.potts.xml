@@ -69,6 +69,8 @@
     <population id="INJURY_ACTIVATION" value="0" units="concentration" description="threshold on mean INJURY_SIGNAL (signals from injured tissue; its decay is signal clearance, not tissue repair) for macrophages to take the M2 phenotype; below it (and not M1) they rest and secrete nothing; 0 means no gate; needs INF_POLARIZATION above 0" />
     <population id="M1_RATE" value="0" units="amount/hour" conversion="DT" description="macrophage secretion rate into each layer in the M1 phenotype (copied to M1_RATE_[LAYER])" />
     <population id="M2_RATE" value="0" units="amount/hour" conversion="DT" description="macrophage secretion rate into each layer in the M2 phenotype (copied to M2_RATE_[LAYER])" />
+    <population id="INF_PROLIFERATION" value="0" units="concentration" description="threshold on mean INF above which a quiescent macrophage may enter the cell cycle (INF stands in for CSF1); in G1 it needs at least half the threshold; 0 means macrophages do not proliferate" />
+    <population id="INF_PROLIFERATION_RATE" value="0" units="1/hour" conversion="DT" description="probability that a quiescent macrophage above INF_PROLIFERATION enters the cell cycle; must be above 0 exactly when INF_PROLIFERATION is" />
     <population id="BASAL_DEATH" value="0" units="1/hour" conversion="DT" description="probability that a quiescent wound healing cell becomes apoptotic (fibroblast and macrophage turnover); proliferative cells use proliferation/BASAL_APOPTOSIS_RATE" />
     <population id="GF_UPTAKE" value="0" units="1/hour" conversion="DT" description="first-order GF uptake rate in the voxels occupied by a quiescent or proliferative wound healing cell (receptor-mediated endocytosis), applied by the time-stepping GF diffuser; 0 means none" />
     <population id="O2_PROLIF_MIN" value="0" units="mmHg" description="minimum mean O2 over the cell for wound healing cells to enter or remain proliferative; 0 disables the O2 gate" />
@@ -132,6 +134,8 @@
     <population.module module="senescence" id="DRUG_START" value="0" units="hours" conversion="DT^-1" description="start of senolytic drug window" />
     <population.module module="senescence" id="DRUG_DURATION" value="0" units="hours" conversion="DT^-1" description="duration of senolytic drug window" />
     <population.module module="senescence" id="DRUG_KILL" value="0" units="1/hour" conversion="DT" description="probability of clearance by senolytic drug during the window" />
+    <population.module module="senescence" id="RESIDENT_CLEARANCE_FOLD" value="1" description="fold on CLEARANCE_LATE for resident senescent cells (late senescent before their first step)" />
+    <population.module module="senescence" id="RESIDENT_SASP_FOLD" value="1" description="fold on late-phase secretion rates for resident senescent cells" />
 
     <!-- secretion process parameters (copied to RATE_[LAYER] and REGION_[LAYER] for each layer) -->
     <population.process process="secretion" id="RATE" value="0" units="amount/hour" conversion="DT" description="rate of secretion into each layer" />
@@ -150,6 +154,7 @@
     <population.process process="deposition" id="GF_THRESHOLD" value="0" units="concentration" description="threshold on mean GF for ECM deposition (Chandrasegaran et al. 2025)" />
     <population.process process="deposition" id="ECM_LIMIT" value="0" units="concentration" description="mean ECM over the cell at which deposition stops (dense matrix; the space limit of Chandrasegaran et al. 2025); 0 means no limit" />
     <population.process process="deposition" id="K_O2" value="0" units="mmHg" description="O2 at which ECM deposition is half maximal (collagen prolyl hydroxylation needs O2; ~25 mmHg inferred, to calibrate); 0 disables the O2 limit" />
+    <population.process process="clearance" id="RATE" value="0" units="1/hour" conversion="DT" description="rate at which a quiescent or proliferative cell clears the provisional matrix (WOUND_MATRIX) in its own voxels (cell-surface plasmin and MMPs; L65)" />
 
     <!-- LAYERS ============================================================ -->
 
@@ -172,6 +177,8 @@
     <!-- degrader operation parameters -->
     <layer.operation operation="degrader" id="ENZYME" value="NONE" description="layer id of degrading enzyme" />
     <layer.operation operation="degrader" id="RATE" value="0" units="1/(concentration.hour)" conversion="DT" description="enzyme-dependent degradation rate" />
+    <layer.operation operation="degrader" id="PROTECTED" value="NONE" description="layer id of the protected part of each voxel (mature, crosslinked collagen); NONE for no protection" />
+    <layer.operation operation="degrader" id="PROTECTED_RATE" value="0" units="1/(concentration.hour)" conversion="DT" description="degradation rate of the protected part (used only with PROTECTED)" />
 
     <!-- COMPONENTS ======================================================== -->
 
@@ -183,11 +190,14 @@
     <!-- release component parameters -->
     <component class="release" id="RATE" value="0" units="(layer units)/hour per source unit" description="release into each registered layer per unit of the source layer value, every tick; 0 disables release" />
     <component class="release" id="SOURCE" value="WOUND_MATRIX" description="id of the source layer, read every tick" />
+    <component class="release" id="TAU" value="0" units="hours" description="time constant of a fading release, RATE exp(-t/TAU) (damage signals mostly in the first days); 0 = constant" />
     <!-- vessels component parameters -->
     <component class="vessels" id="P_O2" value="0" units="1/s" description="exchange rate toward blood O2 per unit vessel weight (an in-slice vessel has weight = integrity per voxel); 0 disables delivery" />
     <component class="vessels" id="BLOOD_O2" value="60" units="mmHg" description="blood value the exchange relaxes toward" />
     <component class="vessels" id="LAMBDA" value="100" units="um" description="O2 diffusion length along z for vessels near the slice (kernel exp(-|z|/LAMBDA), cut off at 3 LAMBDA)" />
     <component class="vessels" id="D_RECRUIT" value="10" units="um" description="distance from the slice that recruitment sites come from" />
+    <component class="vessels" id="EXCHANGE_BY_INTEGRITY" value="1" description="1 = O2 exchange of a perfused segment scales with its integrity; 0 = full exchange from every perfused segment (new capillaries deliver O2 once perfused)" />
+    <component class="vessels" id="RECRUIT_MIN_INTEGRITY" value="0" description="lowest segment integrity that gives monocyte recruitment sites (0 = every perfused segment)" />
 
     <!-- vessel_growth component parameters -->
     <component class="vessel_growth" id="INTERVAL" value="4" units="ticks" description="ticks between growth updates" />
@@ -207,7 +217,28 @@
     <component class="vessel_growth" id="I_STABLE" value="0.8" description="segments at or above this integrity are not pruned" />
     <component class="vessel_growth" id="S_SURVIVE" value="0.2" description="immature perfused segments with VEGF occupancy below this can be pruned" />
     <component class="vessel_growth" id="K_PRUNE" value="0.1" units="1/hour" description="pruning rate of immature, VEGF-starved perfused segments" />
+    <component class="vessel_growth" id="INJURY_WEIGHT" value="0" description="weight of the INJURY_SIGNAL layer added to VEGF in every growth rule (early wound angiogenic cue: FGF2, PDGF); 0 = VEGF alone" />
+    <component class="vessel_growth" id="INJURY_TAU" value="0" units="hours" description="fading time of INJURY_WEIGHT, w exp(-t/tau) (FGF2 released at injury, largely gone by about day 3); 0 = constant" />
+    <component class="vessel_growth" id="SPROUT_MIN_INTEGRITY" value="0" description="integrity every segment at a node needs before the node can start a sprout (vessel maturity; integrity matures while perfused at K_MAT); 0 = any perfused node" />
+    <component class="vessel_growth" id="FIBRIN_SUPPORT" value="0" description="WOUND_MATRIX value above which a voxel supports sprout extension, as well as fibroblasts and myofibroblasts (tips migrate on fibrin, integrin avb3); 0 = cells only" />
     <component class="vessel_growth" id="VESSELS" value="VESSELS" description="id of the vessel component whose network grows" />
+
+    <!-- vessel_cells component parameters -->
+    <component class="vessel_cells" id="R_MATURE" value="5" units="um" description="outer radius of a mature segment (integrity 1); R_OUT = R_MATURE + (R_SPROUT - R_MATURE)(1 - I)" />
+    <component class="vessel_cells" id="R_SPROUT" value="8" units="um" description="outer radius of a sprout (integrity 0)" />
+    <component class="vessel_cells" id="L_PIECE" value="30" units="um" description="largest in-plane length of a vessel piece (one vessel cell)" />
+    <component class="vessel_cells" id="N_MIN" value="6" units="voxels" description="smallest vessel piece; smaller pieces merge with a neighbour along the chain, or get no cell if isolated" />
+    <component class="vessel_cells" id="LAMBDA_ANCHOR_MIN" value="10" units="energy" description="anchor strength at integrity 0 (placeholder)" />
+    <component class="vessel_cells" id="LAMBDA_ANCHOR_MAX" value="50" units="energy" description="anchor strength at integrity 1 (anchor screen)" />
+    <component class="vessel_cells" id="D_DRIFT_FOLD" value="2" description="a vessel cell has drifted if its centroid is farther than D_DRIFT_FOLD x R_OUT from all its segments" />
+    <component class="vessel_cells" id="VESSELS" value="VESSELS" description="id of the vessel component whose network the cells follow" />
+    <component class="vessel_cells" id="POPULATION" value="VESSEL" description="name of the vessel cell population (class vessel)" />
+    <component class="vessel_cells" id="TIP_POPULATION" value="VTIP" description="name of the tip cell population (class vessel); may be absent" />
+    <component class="vessel_cells" id="GROWTH" value="GROWTH" description="id of the vessel_growth component; tip cells (and network changes) only if it exists" />
+    <component class="vessel_cells" id="LAMBDA_GUIDE" value="50" units="energy" description="guide strength drawing tip cells into the footprint of their aim (placeholder, to calibrate: unobstructed tips reach the aim in about one hour)" />
+    <component class="vessel_cells" id="G_TIP" value="160" units="um^2/hour" description="growth of the tip cell target area while aimed (one aim footprint per hour, V_TIP x 1 h x 2 R_SPROUT), up to one hour of growth since the last append" />
+    <component class="vessel_cells" id="N_TIP0" value="6" units="voxels" description="voxels a tip cell buds with (N_MIN)" />
+    <component class="vessel_cells" id="D_BUD_FOLD" value="2" description="a tip buds from the nearest vessel cell within D_BUD_FOLD x R_OUT of the tip node" />
 
     <!-- ACTIONS =========================================================== -->
 
@@ -224,4 +255,5 @@
     <action class="recruit" id="K_RECRUIT" value="1" units="(layer units)" description="half-saturation of the summed signal" />
     <action class="recruit" id="D_RECRUIT" value="10" units="um" description="distance from a supplied site that recruited cells are inserted within" />
     <action class="recruit" id="MASK" value="SUPPLY" description="id of the supply mask layer (same as the oxygen source)" />
+    <action class="recruit" id="VESSEL_CELLS" value="VESSEL_CELLS" description="id of the vessel cell component; if it exists, a cell whose site is in a vessel cell is inserted on voxels taken from that vessel cell (its critical volume), falling back to a free voxel; ignored if the component does not exist" />
 </parameters>

@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiPredicate;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import ec.util.MersenneTwisterFast;
@@ -57,8 +58,39 @@ import static arcade.potts.util.PottsEnums.Ordering;
  *       parent vessel.
  * </ol>
  *
+ * <p><b>Injury cue.</b> If {@code INJURY_WEIGHT} w is above 0, every rule above reads the signal V
+ * + w I instead of V, where I is the {@code INJURY_SIGNAL} layer: the early, wound-released
+ * angiogenic factors (FGF2 and PDGF from platelets, the clot and damaged tissue) that start wound
+ * sprouting before hypoxic VEGF rises. If {@code INJURY_TAU} τ is above 0, the weight fades as w
+ * exp(-t / τ) with t the time since the start [hours], since FGF2 is released at injury and is
+ * largely gone within about 3 days; τ = 0 keeps w constant. With w = 0 (the default) the VEGF layer
+ * is read alone, and unwounded tissue (I = 0) is unaffected at any w.
+ *
+ * <p><b>Mature sources.</b> If {@code SPROUT_MIN_INTEGRITY} m is above 0, a node starts a sprout
+ * (R1) only if every segment at it has integrity at least m, and a dormant tip activates only if
+ * its segment does. Integrity is the vessel's maturation clock (R7): new segments start at {@code
+ * I_SPROUT} and mature while perfused, so new vessels cannot sprout until they have matured, as
+ * sprouting angiogenesis starts from established, pericyte-covered vessels. With m = 0 (the
+ * default) any perfused node can sprout.
+ *
+ * <p><b>Fibrin support.</b> If {@code FIBRIN_SUPPORT} f is above 0, voxels where the provisional
+ * matrix ({@code WOUND_MATRIX} layer, the fibrin clot) is above f also count as support for R3, as
+ * well as fibroblasts and myofibroblasts: sprout tips migrate on fibrin through integrin αvβ3 and
+ * enter the clot ahead of the fibroblast front. With f = 0 (the default) only cells support, and
+ * unwounded tissue (no clot) is unaffected at any f.
+ *
  * <p>New segments start at integrity {@code I_SPROUT}. Perfusion is updated before and after the
  * edits, and the vessel component is refreshed so that delivery and recruitment follow.
+ *
+ * <p><b>Coupling to vessel cells.</b> Without coupling (the default), the component behaves as
+ * above. Once a vessel cell component calls {@link #couple}, extension (R2, R3) changes for tips
+ * whose proposed segment is in the plane (the coupling predicate is true for it): the direction is
+ * chosen as above, but from the tip's front (the in-plane position its tip cell reached, if set),
+ * and the segment is not added. Instead it is stored as the tip's aim ({@link #propose}), and the
+ * vessel cell component appends a segment ({@link #append}) when its tip cell has moved far enough
+ * ({@link #appendPoint}). R4 and R5 are checked at append time, and R6 counts time since the last
+ * append. A tip with no allowed direction keeps its aim. Tips whose proposed segment is out of the
+ * plane extend as above.
  */
 public class PottsComponentVesselGrowth implements Component {
     /** Number of candidate directions. */
@@ -127,11 +159,38 @@ public class PottsComponentVesselGrowth implements Component {
     /** Id of the VEGF layer. */
     private String layer;
 
+    /** Weight w of the injury signal added to VEGF (0 for VEGF alone). */
+    private final double injuryWeight;
+
+    /** Provisional-matrix value above which a voxel supports extension (0 for cells only). */
+    private final double fibrinSupport;
+
+    /** Provisional matrix layer read when the fibrin support threshold is above 0. */
+    static final String MATRIX_LAYER = "WOUND_MATRIX";
+
+    /** Integrity a vessel needs to be a sprout source (0 for any). */
+    private final double sproutMinIntegrity;
+
+    /** Fading time τ of the injury weight [hours] (0 for a constant weight). */
+    private final double injuryTau;
+
+    /** Injury signal layer read when the weight is above 0. */
+    static final String INJURY_LAYER = "INJURY_SIGNAL";
+
     /** Tracked tips. */
     private final List<Sprout> sprouts = new ArrayList<>();
 
     /** Time each node last sprouted [hours]. */
     private final Map<PottsVesselNode, Double> lastSprouted = new HashMap<>();
+
+    /** Time over which a tip advances one aim length [hours]. */
+    static final double AIM_TIME = 1;
+
+    /**
+     * Coupling predicate: {@code true} if the segment from the first to the second point is in the
+     * plane, or {@code null} without coupling.
+     */
+    private BiPredicate<double[], double[]> inPlane;
 
     /** A sprout: its tip, heading, length, and bookkeeping. */
     static final class Sprout {
@@ -156,6 +215,18 @@ public class PottsComponentVesselGrowth implements Component {
         /** Nodes of the sprout and near its base, which are not anastomosis targets. */
         final Set<PottsVesselNode> excluded = new HashSet<>();
 
+        /** In-plane front {x, y} [um] reached by the tip cell, or {@code null} if not set. */
+        double[] front;
+
+        /** Start of the aim (the proposed segment) [um], or {@code null} with no aim. */
+        double[] aimStart;
+
+        /** End of the aim [um], or {@code null} with no aim. */
+        double[] aimEnd;
+
+        /** {@code true} once the sprout joined another vessel at an append. */
+        boolean joined;
+
         /**
          * Creates a sprout.
          *
@@ -179,7 +250,11 @@ public class PottsComponentVesselGrowth implements Component {
      * [layer units], {@code D_TIP} [um], {@code T_REFRACT} [hours], {@code BETA}, {@code KAPPA},
      * {@code V_TIP} [um/hour], {@code D_SUPPORT} [um], {@code D_ANAST} [um], {@code L_MAX} [um],
      * {@code T_REGRESS} [hours], {@code I_SPROUT}, {@code K_MAT} [1/hour], {@code I_STABLE}, {@code
-     * S_SURVIVE}, {@code K_PRUNE} [1/hour], and {@code VESSELS} (vessel component id).
+     * S_SURVIVE}, {@code K_PRUNE} [1/hour], {@code VESSELS} (vessel component id), and optionally
+     * {@code INJURY_WEIGHT} (weight of the injury signal added to VEGF; 0 if absent), {@code
+     * FIBRIN_SUPPORT} (provisional matrix above which a voxel supports extension; 0 if absent),
+     * {@code INJURY_TAU} (fading time of the injury weight [hours]; 0 if absent), and {@code
+     * SPROUT_MIN_INTEGRITY} (integrity a vessel needs to sprout; 0 if absent).
      *
      * @param parameters the component parameters dictionary
      */
@@ -202,6 +277,30 @@ public class PottsComponentVesselGrowth implements Component {
         survivalOccupancy = parameters.getDouble("S_SURVIVE");
         pruneRate = parameters.getDouble("K_PRUNE");
         vessels = parameters.get("VESSELS");
+        injuryWeight =
+                parameters.contains("INJURY_WEIGHT") ? parameters.getDouble("INJURY_WEIGHT") : 0;
+        fibrinSupport =
+                parameters.contains("FIBRIN_SUPPORT") ? parameters.getDouble("FIBRIN_SUPPORT") : 0;
+        if (!(fibrinSupport >= 0) || Double.isInfinite(fibrinSupport)) {
+            throw new IllegalArgumentException(
+                    "vessel growth requires a finite FIBRIN_SUPPORT >= 0");
+        }
+        sproutMinIntegrity =
+                parameters.contains("SPROUT_MIN_INTEGRITY")
+                        ? parameters.getDouble("SPROUT_MIN_INTEGRITY")
+                        : 0;
+        if (!(sproutMinIntegrity >= 0 && sproutMinIntegrity <= 1)) {
+            throw new IllegalArgumentException(
+                    "vessel growth requires SPROUT_MIN_INTEGRITY in [0, 1]");
+        }
+        injuryTau = parameters.contains("INJURY_TAU") ? parameters.getDouble("INJURY_TAU") : 0;
+        if (!(injuryTau >= 0) || Double.isInfinite(injuryTau)) {
+            throw new IllegalArgumentException("vessel growth requires a finite INJURY_TAU >= 0");
+        }
+        if (!(injuryWeight >= 0) || Double.isInfinite(injuryWeight)) {
+            throw new IllegalArgumentException(
+                    "vessel growth requires a finite INJURY_WEIGHT >= 0");
+        }
         if (interval < 1
                 || !(maxRate >= 0)
                 || !(halfOccupancy > 0)
@@ -261,12 +360,139 @@ public class PottsComponentVesselGrowth implements Component {
     }
 
     /**
+     * Checks if every segment at a node is mature enough to be a sprout source.
+     *
+     * @param network the vessel network
+     * @param node the node
+     * @return {@code true} if the threshold is 0 or every segment at the node reaches it
+     */
+    boolean isMature(PottsVesselNetwork network, PottsVesselNode node) {
+        if (sproutMinIntegrity == 0) {
+            return true;
+        }
+        for (PottsVesselEdge segment : network.getSegments(node)) {
+            if (segment.getIntegrity() < sproutMinIntegrity) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Gets the injury weight at a time.
+     *
+     * @param time the time since the start [hours]
+     * @return w exp(-t / τ), or w if τ is 0
+     */
+    double injuryWeightAt(double time) {
+        return injuryTau == 0 ? injuryWeight : injuryWeight * Math.exp(-time / injuryTau);
+    }
+
+    /**
+     * Gets the signal the growth rules read: VEGF plus the weighted injury signal.
+     *
+     * @param vegf the VEGF values in the slice, indexed [x][y]
+     * @param injury the injury signal values in the slice, or {@code null} if there is no layer
+     * @param weight the injury weight w
+     * @return the VEGF array itself if w is 0, otherwise a new array of V + w I
+     */
+    static double[][] signal(double[][] vegf, double[][] injury, double weight) {
+        if (weight == 0) {
+            return vegf;
+        }
+        if (injury == null) {
+            throw new IllegalStateException(
+                    "vessel growth INJURY_WEIGHT > 0 needs layer [ " + INJURY_LAYER + " ]");
+        }
+        double[][] combined = new double[vegf.length][];
+        for (int i = 0; i < vegf.length; i++) {
+            combined[i] = new double[vegf[i].length];
+            for (int j = 0; j < vegf[i].length; j++) {
+                combined[i][j] = vegf[i][j] + weight * injury[i][j];
+            }
+        }
+        return combined;
+    }
+
+    /**
      * Gets the tracked tips.
      *
      * @return the list of sprouts
      */
     List<Sprout> getSprouts() {
         return sprouts;
+    }
+
+    /**
+     * Couples extension of in-plane tips to tip cells.
+     *
+     * @param inPlane {@code true} if the segment from the first to the second point [um] is in the
+     *     plane
+     */
+    public void couple(BiPredicate<double[], double[]> inPlane) {
+        this.inPlane = inPlane;
+    }
+
+    /**
+     * Checks if extension is coupled to tip cells.
+     *
+     * @return {@code true} if coupled, {@code false} otherwise
+     */
+    public boolean isCoupled() {
+        return inPlane != null;
+    }
+
+    /**
+     * Gets the tip speed.
+     *
+     * @return the tip speed [um/hour]
+     */
+    public double getSpeed() {
+        return speed;
+    }
+
+    /**
+     * Gets the integrity of new segments.
+     *
+     * @return the integrity
+     */
+    public double getSproutIntegrity() {
+        return sproutIntegrity;
+    }
+
+    /**
+     * Gets the aim length, the distance a tip advances in {@link #AIM_TIME}.
+     *
+     * @return the aim length [um]
+     */
+    public double getAimLength() {
+        return speed * AIM_TIME;
+    }
+
+    /**
+     * Gets the active tips with an in-plane aim.
+     *
+     * @return the sprouts that are not dormant or capped and have an aim, in order of creation
+     */
+    public List<Sprout> getActiveInPlaneSprouts() {
+        List<Sprout> active = new ArrayList<>();
+        for (Sprout sprout : sprouts) {
+            if (!sprout.dormant && !sprout.capped && sprout.aimEnd != null) {
+                active.add(sprout);
+            }
+        }
+        return active;
+    }
+
+    /**
+     * Sets the in-plane front of a tip, from which it is aimed.
+     *
+     * @param sprout the sprout
+     * @param x the front x [um]
+     * @param y the front y [um]
+     */
+    public void setFront(Sprout sprout, double x, double y) {
+        sprout.front = new double[] {x, y};
     }
 
     @Override
@@ -292,7 +518,14 @@ public class PottsComponentVesselGrowth implements Component {
         double dt = interval * vegf.getDt();
         double now = simstate.schedule.getTime() * vegf.getDt();
         boolean[][] support = supportMap(((PottsSimulation) sim).getPotts());
-        double[][] field = vegf.getField()[0];
+        Lattice matrix = fibrinSupport > 0 ? sim.getLattice(MATRIX_LAYER) : null;
+        addFibrin(support, matrix == null ? null : matrix.getField()[0], fibrinSupport);
+        Lattice injury = injuryWeight > 0 ? sim.getLattice(INJURY_LAYER) : null;
+        double[][] field =
+                signal(
+                        vegf.getField()[0],
+                        injury == null ? null : injury.getField()[0],
+                        injuryWeightAt(now));
 
         boolean changed =
                 update(
@@ -334,6 +567,31 @@ public class PottsComponentVesselGrowth implements Component {
             }
         }
         return support;
+    }
+
+    /**
+     * Marks voxels whose provisional matrix is above the threshold as support.
+     *
+     * @param support the support map, indexed [x][y], changed in place
+     * @param matrix the provisional matrix values in the slice, or {@code null} if there is no
+     *     layer
+     * @param threshold the fibrin support threshold (0 for none)
+     */
+    static void addFibrin(boolean[][] support, double[][] matrix, double threshold) {
+        if (threshold == 0) {
+            return;
+        }
+        if (matrix == null) {
+            throw new IllegalStateException(
+                    "vessel growth FIBRIN_SUPPORT > 0 needs layer [ " + MATRIX_LAYER + " ]");
+        }
+        for (int i = 0; i < support.length; i++) {
+            for (int j = 0; j < support[i].length; j++) {
+                if (matrix[i][j] > threshold) {
+                    support[i][j] = true;
+                }
+            }
+        }
     }
 
     /**
@@ -428,12 +686,16 @@ public class PottsComponentVesselGrowth implements Component {
         double thickness = network.getThickness();
         for (Sprout sprout : sprouts) {
             if (sprout.dormant
+                    && isMature(network, sprout.tip)
                     && random.nextDouble() < chance(field, ds, sprout.tip.getPosition(), dt)) {
                 sprout.dormant = false;
             }
         }
         for (PottsVesselNode node : network.getNodes()) {
-            if (node.isRoot() || network.getDegree(node) != 2 || !isPerfused(network, node)) {
+            if (node.isRoot()
+                    || network.getDegree(node) != 2
+                    || !isPerfused(network, node)
+                    || !isMature(network, node)) {
                 continue;
             }
             Double last = lastSprouted.get(node);
@@ -458,7 +720,10 @@ public class PottsComponentVesselGrowth implements Component {
             if (sprout.dormant || sprout.capped) {
                 continue;
             }
-            PottsVesselNode target = extend(network, sprout, field, support, ds, dt, random);
+            PottsVesselNode target =
+                    inPlane == null
+                            ? extend(network, sprout, field, support, ds, dt, random)
+                            : aim(network, sprout, field, support, ds, dt, random);
             if (target == null) {
                 continue;
             }
@@ -604,10 +869,48 @@ public class PottsComponentVesselGrowth implements Component {
             MersenneTwisterFast random) {
         double step = Math.min(speed * dt, maxLength - sprout.length);
         double[] p = sprout.tip.getPosition();
+        int chosen = choose(network, sprout, p, step, field, support, ds, random);
+        if (chosen < 0) {
+            return null;
+        }
+
+        double[] u = UNIT_DIRECTIONS[chosen];
+        double[] q = {p[0] + step * u[0], p[1] + step * u[1], p[2] + step * u[2]};
+        PottsVesselNode node = network.addNode(q[0], q[1], q[2], Root.NONE);
+        network.addSegment(sprout.tip, node, sproutIntegrity);
+        sprout.tip = node;
+        sprout.heading = UNIT_DIRECTIONS[chosen];
+        sprout.length += step;
+        sprout.excluded.add(node);
+        return node;
+    }
+
+    /**
+     * Chooses the direction of a step from a point (R2, R3).
+     *
+     * @param network the vessel network
+     * @param sprout the sprout
+     * @param p the point the step starts from [um]
+     * @param step the step length [um]
+     * @param field the VEGF values
+     * @param support the support map
+     * @param ds the voxel size [um]
+     * @param random the random number generator
+     * @return the index of the chosen direction in {@link #UNIT_DIRECTIONS}, or -1 if no direction
+     *     is allowed
+     */
+    int choose(
+            PottsVesselNetwork network,
+            Sprout sprout,
+            double[] p,
+            double step,
+            double[][] field,
+            boolean[][] support,
+            double ds,
+            MersenneTwisterFast random) {
         double vp = value(field, ds, p);
         double width = field.length * ds;
         double height = field[0].length * ds;
-        double thickness = network.getThickness();
 
         double[] scores = new double[DIRECTIONS];
         double[][] targets = new double[DIRECTIONS][];
@@ -616,13 +919,7 @@ public class PottsComponentVesselGrowth implements Component {
             double[] u = UNIT_DIRECTIONS[k];
             double[] q = {p[0] + step * u[0], p[1] + step * u[1], p[2] + step * u[2]};
             scores[k] = Double.NEGATIVE_INFINITY;
-            if (q[0] < 0 || q[0] >= width || q[1] < 0 || q[1] >= height) {
-                continue;
-            }
-            if (!isSupported(support, ds, q, supportDistance)) {
-                continue;
-            }
-            if (network.findNode(q[0], q[1], q[2]) != null) {
+            if (!allowed(network, q, width, height, support, ds)) {
                 continue;
             }
             double score = 0;
@@ -642,7 +939,7 @@ public class PottsComponentVesselGrowth implements Component {
             best = Math.max(best, score);
         }
         if (best == Double.NEGATIVE_INFINITY) {
-            return null;
+            return -1;
         }
 
         double total = 0;
@@ -663,14 +960,253 @@ public class PottsComponentVesselGrowth implements Component {
                 break;
             }
         }
+        return chosen;
+    }
 
-        double[] q = targets[chosen];
-        PottsVesselNode node = network.addNode(q[0], q[1], q[2], Root.NONE);
+    /**
+     * Checks if a step may end at a point (R3): inside the slice in x and y, within {@code
+     * D_SUPPORT} of a supporting cell, and not at an existing node.
+     *
+     * @param network the vessel network
+     * @param q the point [um]
+     * @param width the slice width along x [um]
+     * @param height the slice height along y [um]
+     * @param support the support map
+     * @param ds the voxel size [um]
+     * @return {@code true} if allowed, {@code false} otherwise
+     */
+    private boolean allowed(
+            PottsVesselNetwork network,
+            double[] q,
+            double width,
+            double height,
+            boolean[][] support,
+            double ds) {
+        if (q[0] < 0 || q[0] >= width || q[1] < 0 || q[1] >= height) {
+            return false;
+        }
+        if (!isSupported(support, ds, q, supportDistance)) {
+            return false;
+        }
+        return network.findNode(q[0], q[1], q[2]) == null;
+    }
+
+    /**
+     * Aims a coupled tip (R2, R3), or extends it if its proposed segment is out of the plane.
+     *
+     * <p>The direction is chosen once, from the tip's front (at the tip's z) if it has one, or from
+     * the tip. A proposal in the plane (from the front, or from the tip along the same direction)
+     * becomes the tip's aim ({@link #propose}) and no segment is added. Otherwise the tip extends
+     * out of the plane exactly as in R3: one step of {@code V_TIP} dt from the tip along the chosen
+     * direction, if that end is allowed (in the slice, supported, not at a node); if not, it stalls
+     * this update. A tip with no allowed direction keeps its aim.
+     *
+     * @param network the vessel network
+     * @param sprout the sprout
+     * @param field the VEGF values
+     * @param support the support map
+     * @param ds the voxel size [um]
+     * @param dt the update interval [hours]
+     * @param random the random number generator
+     * @return the new tip node if the tip extended out of the plane, or {@code null} otherwise
+     */
+    PottsVesselNode aim(
+            PottsVesselNetwork network,
+            Sprout sprout,
+            double[][] field,
+            boolean[][] support,
+            double ds,
+            double dt,
+            MersenneTwisterFast random) {
+        double step = Math.min(speed * dt, maxLength - sprout.length);
+        double[] t = sprout.tip.getPosition();
+        double[] p =
+                sprout.front == null ? t : new double[] {sprout.front[0], sprout.front[1], t[2]};
+        int chosen = choose(network, sprout, p, step, field, support, ds, random);
+        if (chosen < 0) {
+            return null;
+        }
+
+        double[] u = UNIT_DIRECTIONS[chosen];
+        double[] q = {p[0] + step * u[0], p[1] + step * u[1], p[2] + step * u[2]};
+        // The segment that would be added out of the plane starts at the tip, as in R3.
+        double[] r =
+                p == t
+                        ? q
+                        : new double[] {t[0] + step * u[0], t[1] + step * u[1], t[2] + step * u[2]};
+        if (inPlane.test(p, q) || (r != q && inPlane.test(t, r))) {
+            propose(sprout, p, u, step);
+            return null;
+        }
+
+        // Out of the plane: extend from the tip as without coupling, if the end is allowed there.
+        if (r != q && !allowed(network, r, field.length * ds, field[0].length * ds, support, ds)) {
+            return null;
+        }
+        PottsVesselNode node = network.addNode(r[0], r[1], r[2], Root.NONE);
         network.addSegment(sprout.tip, node, sproutIntegrity);
-        sprout.tip = node;
-        sprout.heading = UNIT_DIRECTIONS[chosen];
         sprout.length += step;
+        sprout.tip = node;
+        sprout.heading = u;
         sprout.excluded.add(node);
+        sprout.front = null;
+        sprout.aimStart = null;
+        sprout.aimEnd = null;
+        return node;
+    }
+
+    /**
+     * Stores the aim of an in-plane tip: a segment from a point along a direction.
+     *
+     * @param sprout the sprout
+     * @param start the start of the aim [um]
+     * @param direction the unit direction
+     * @param length the aim length [um]
+     */
+    void propose(Sprout sprout, double[] start, double[] direction, double length) {
+        sprout.aimStart = start.clone();
+        sprout.aimEnd =
+                new double[] {
+                    start[0] + length * direction[0],
+                    start[1] + length * direction[1],
+                    start[2] + length * direction[2]
+                };
+        sprout.heading = direction;
+    }
+
+    /**
+     * Gets the point at which an aimed tip should append a segment, given its front.
+     *
+     * <p>Only forward progress is credited ({@link #credit}): the front's distance from the tip
+     * node along the in-plane aim direction, up to {@code V_TIP} times the time since the last
+     * append (or creation) and up to the aim's end. A front behind the node, or farther than {@code
+     * maxOffset} to the side of the aim line, gets no credit. A segment is due when the credit is
+     * at least the aim length, less a tolerance. The aim length here is shortened to the forward
+     * distance from the tip node to the aim's end, if that is shorter (an aim with a z part reaches
+     * less far in the plane), and to the length left before {@code L_MAX}. The point is the tip
+     * node moved by the credit along the in-plane aim direction, at the z of the aim's end. An aim
+     * with no in-plane part gets no point.
+     *
+     * @param sprout the sprout
+     * @param x the front x [um]
+     * @param y the front y [um]
+     * @param now the current time [hours]
+     * @param tolerance the tolerance on the front's position [um]
+     * @param maxOffset the largest sideways offset of the front from the aim line [um]
+     * @return the point {x, y, z} [um], or {@code null} if no segment is due
+     */
+    public double[] appendPoint(
+            Sprout sprout, double x, double y, double now, double tolerance, double maxOffset) {
+        if (sprout.aimEnd == null) {
+            return null;
+        }
+        double[] t = sprout.tip.getPosition();
+        double ux = sprout.aimEnd[0] - sprout.aimStart[0];
+        double uy = sprout.aimEnd[1] - sprout.aimStart[1];
+        double norm = Math.hypot(ux, uy);
+        if (!(norm > 1e-9)) {
+            return null;
+        }
+        ux /= norm;
+        uy /= norm;
+        double reach = Math.max(0, (sprout.aimEnd[0] - t[0]) * ux + (sprout.aimEnd[1] - t[1]) * uy);
+        double cap = Math.min(speed * (now - sprout.lastGrowth), reach);
+        double credit = credit(t, sprout.aimStart, sprout.aimEnd, x, y, cap, maxOffset);
+        double due = Math.min(Math.min(getAimLength(), reach), maxLength - sprout.length);
+        if (credit == 0 || !(credit >= due - tolerance - 1e-9)) {
+            return null;
+        }
+        return new double[] {t[0] + credit * ux, t[1] + credit * uy, sprout.aimEnd[2]};
+    }
+
+    /**
+     * Gets the forward credit of a tip's front.
+     *
+     * <p>With û the in-plane unit direction of the aim, the credit is {@code max(0, (front - node)
+     * · û)}, capped at {@code cap}. A front whose sideways distance from the aim line (through the
+     * aim's start along û) is more than {@code maxOffset} gets no credit, as does an aim with no
+     * in-plane part.
+     *
+     * @param node the tip node {x, y, ...} [um]
+     * @param aimStart the start of the aim {x, y, ...} [um]
+     * @param aimEnd the end of the aim {x, y, ...} [um]
+     * @param x the front x [um]
+     * @param y the front y [um]
+     * @param cap the largest credit [um]
+     * @param maxOffset the largest sideways offset [um]
+     * @return the credit [um]
+     */
+    static double credit(
+            double[] node,
+            double[] aimStart,
+            double[] aimEnd,
+            double x,
+            double y,
+            double cap,
+            double maxOffset) {
+        double ux = aimEnd[0] - aimStart[0];
+        double uy = aimEnd[1] - aimStart[1];
+        double norm = Math.hypot(ux, uy);
+        if (!(norm > 1e-9)) {
+            return 0;
+        }
+        ux /= norm;
+        uy /= norm;
+        double side = Math.abs((x - aimStart[0]) * uy - (y - aimStart[1]) * ux);
+        if (side > maxOffset) {
+            return 0;
+        }
+        double forward = (x - node[0]) * ux + (y - node[1]) * uy;
+        return Math.max(0, Math.min(forward, cap));
+    }
+
+    /**
+     * Appends a segment to an aimed tip at a point (R3), then checks anastomosis (R4) and the
+     * length cap (R5).
+     *
+     * <p>The sprout's time of last growth is set, so R6 counts from now. A sprout that joins
+     * another vessel is marked {@code joined} and no longer tracked. Perfusion is updated; the
+     * caller refreshes the vessel component.
+     *
+     * @param network the vessel network
+     * @param sprout the sprout
+     * @param x the point x [um]
+     * @param y the point y [um]
+     * @param z the point z [um]
+     * @param now the current time [hours]
+     * @return the new tip node, or {@code null} if the sprout is not active, its tip is no longer a
+     *     dead end, or a node is there
+     */
+    public PottsVesselNode append(
+            PottsVesselNetwork network, Sprout sprout, double x, double y, double z, double now) {
+        if (!sprouts.contains(sprout) || sprout.dormant || sprout.capped) {
+            return null;
+        }
+        if (sprout.length > 0 && network.getDegree(sprout.tip) != 1) {
+            return null;
+        }
+        if (network.findNode(x, y, z) != null) {
+            return null;
+        }
+        double[] a = sprout.tip.getPosition();
+        PottsVesselNode node = network.addNode(x, y, z, Root.NONE);
+        network.addSegment(sprout.tip, node, sproutIntegrity);
+        double thickness = network.getThickness();
+        double[] heading = unit(PottsVesselGeometry.vector(a, node.getPosition(), thickness));
+        if (heading != null) {
+            sprout.heading = heading;
+        }
+        sprout.length += distance(a, node.getPosition(), thickness);
+        sprout.tip = node;
+        sprout.excluded.add(node);
+        sprout.lastGrowth = now;
+        if (anastomose(network, sprout)) {
+            sprout.joined = true;
+            sprouts.remove(sprout);
+        } else if (sprout.length >= maxLength - 1e-9) {
+            sprout.capped = true;
+        }
+        PottsVesselPerfusion.update(network);
         return node;
     }
 

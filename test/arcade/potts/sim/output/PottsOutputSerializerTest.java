@@ -150,6 +150,19 @@ public class PottsOutputSerializerTest {
     }
 
     @Test
+    public void serialize_forCellWithoutPhase_omitsPhase() {
+        PottsCellSerializer serializer = new PottsCellSerializer();
+        PottsCellContainer container =
+                new PottsCellContainer(3, 0, 2, 7, 0, State.UNDEFINED, null, 12, 10, 5);
+
+        JsonObject json = (JsonObject) serializer.serialize(container, null, null);
+
+        assertFalse(json.has("phase"));
+        assertEquals(3, json.get("id").getAsInt());
+        assertEquals("UNDEFINED", json.get("state").getAsString());
+    }
+
+    @Test
     public void serialize_forCellNoRegion_createsJSON() {
         PottsCellSerializer serializer = new PottsCellSerializer();
 

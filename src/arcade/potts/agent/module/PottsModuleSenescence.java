@@ -1,5 +1,6 @@
 package arcade.potts.agent.module;
 
+import java.security.InvalidParameterException;
 import sim.util.distribution.Poisson;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
@@ -22,6 +23,12 @@ import static arcade.potts.util.PottsEnums.State;
  *
  * <p>Each tick, a senescent cell may be cleared (set to apoptotic) at a basal rate, by a touching
  * macrophage at a phase-specific rate, or by a senolytic drug during the drug window.
+ *
+ * <p>A cell that is set to the late phase before its first step (it starts the simulation already
+ * late senescent) is a resident senescent cell, standing for the chronic senescent load of aged
+ * skin. Residents are cleared by touching macrophages at {@code CLEARANCE_LATE} times {@code
+ * RESIDENT_CLEARANCE_FOLD} and secrete {@code LATE_RATE_[LAYER]} times {@code RESIDENT_SASP_FOLD}.
+ * Both folds default to 1, so residents then behave as other late-phase cells.
  */
 public class PottsModuleSenescence extends PottsModule {
     /** Event rate for early phase (steps/tick). */
@@ -48,6 +55,18 @@ public class PottsModuleSenescence extends PottsModule {
     /** Probability of clearance by drug during the drug window (per tick). */
     final double drugKill;
 
+    /** Fold on {@code CLEARANCE_LATE} for resident senescent cells. */
+    final double residentClearanceFold;
+
+    /** Fold on late-phase secretion rates for resident senescent cells. */
+    final double residentSaspFold;
+
+    /** {@code true} once the module has stepped. */
+    private boolean stepped;
+
+    /** {@code true} if the cell was late senescent before its first step. */
+    private boolean resident;
+
     /**
      * Creates a senescence {@code Module} for the given {@link PottsCell}.
      *
@@ -64,6 +83,8 @@ public class PottsModuleSenescence extends PottsModule {
      *   <li>{@code DRUG_START} = start of drug window
      *   <li>{@code DRUG_DURATION} = duration of drug window
      *   <li>{@code DRUG_KILL} = probability of clearance by drug during the drug window
+     *   <li>{@code RESIDENT_CLEARANCE_FOLD} = fold on {@code CLEARANCE_LATE} for residents
+     *   <li>{@code RESIDENT_SASP_FOLD} = fold on late-phase secretion rates for residents
      * </ul>
      *
      * @param cell the {@link PottsCell} the module is associated with
@@ -80,6 +101,8 @@ public class PottsModuleSenescence extends PottsModule {
         drugStart = parameters.getDouble("senescence/DRUG_START");
         drugDuration = parameters.getDouble("senescence/DRUG_DURATION");
         drugKill = parameters.getDouble("senescence/DRUG_KILL");
+        residentClearanceFold = fold(parameters, "senescence/RESIDENT_CLEARANCE_FOLD");
+        residentSaspFold = fold(parameters, "senescence/RESIDENT_SASP_FOLD");
 
         setPhase(Phase.SENESCENT_EARLY);
     }
@@ -92,7 +115,39 @@ public class PottsModuleSenescence extends PottsModule {
     @Override
     public void setPhase(Phase phase) {
         super.setPhase(phase);
+        if (phase == Phase.SENESCENT_LATE && !stepped) {
+            resident = true;
+        }
         setSecretionRates();
+    }
+
+    /**
+     * Checks if the cell is a resident senescent cell.
+     *
+     * @return {@code true} if the cell was late senescent before its first step
+     */
+    public boolean isResident() {
+        return resident;
+    }
+
+    /**
+     * Gets a fold parameter, 1 if it is not given.
+     *
+     * @param parameters the cell parameters
+     * @param key the parameter key
+     * @return the fold
+     */
+    static double fold(Parameters parameters, String key) {
+        double value;
+        try {
+            value = parameters.getDouble(key);
+        } catch (InvalidParameterException e) {
+            return 1;
+        }
+        if (!(value >= 0) || Double.isInfinite(value)) {
+            throw new IllegalArgumentException(key + " must be finite and >= 0");
+        }
+        return value;
     }
 
     /** Sets the secretion rate for each secreted layer to the rate for the current phase. */
@@ -105,13 +160,17 @@ public class PottsModuleSenescence extends PottsModule {
         String prefix =
                 phase == Phase.SENESCENT_LATE ? "senescence/LATE_RATE_" : "senescence/EARLY_RATE_";
         Parameters parameters = cell.getParameters();
+        double fold = resident ? residentSaspFold : 1;
         for (String layer : secretion.getLayers()) {
-            secretion.setRate(layer, parameters.getDouble(prefix + layer));
+            double rate = parameters.getDouble(prefix + layer);
+            secretion.setRate(layer, fold == 1 ? rate : rate * fold);
         }
     }
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
+        stepped = true;
+
         // Check for clearance.
         if (isCleared(random, sim)) {
             cell.setState(State.APOPTOTIC);
@@ -143,6 +202,9 @@ public class PottsModuleSenescence extends PottsModule {
         }
 
         double clearance = phase == Phase.SENESCENT_LATE ? clearanceLate : clearanceEarly;
+        if (resident && residentClearanceFold != 1) {
+            clearance *= residentClearanceFold;
+        }
         if (clearance > 0
                 && cell instanceof PottsCellWoundHealing
                 && ((PottsCellWoundHealing) cell).touchesMacrophage(sim)

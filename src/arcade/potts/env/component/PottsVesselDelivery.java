@@ -7,7 +7,8 @@ import java.util.List;
  *
  * <p>Exchange: each perfused segment is sampled every ds / 2. A sample at height z (|z| &le; 3
  * lambda from the slice) adds I exp(-|z| / lambda) (sample length / ds) to the voxel under its (x,
- * y), where I is the segment integrity. A vessel lying in the slice gives a weight of I per voxel
+ * y), where I is the segment integrity (or 1 for every perfused segment with integrity above 0, if
+ * exchange is not scaled by integrity). A vessel lying in the slice gives a weight of I per voxel
  * along it. A vessel near but outside the slice gives the same, scaled by exp(-|z| / lambda), which
  * stands for O2 that diffuses to the slice along z. A vessel crossing the slice steeply puts all of
  * its weight in one voxel.
@@ -55,6 +56,27 @@ public final class PottsVesselDelivery {
      */
     public static double[][] exchangeWeights(
             PottsVesselNetwork network, int length, int width, double ds, double lambda) {
+        return exchangeWeights(network, length, width, ds, lambda, true);
+    }
+
+    /**
+     * Gets the O2 exchange weight of each voxel, optionally not scaled by integrity.
+     *
+     * @param network the vessel network, with perfusion updated
+     * @param length the lattice length (x direction) [voxels]
+     * @param width the lattice width (y direction) [voxels]
+     * @param ds the voxel size [um]
+     * @param lambda the O2 diffusion length along z [um]
+     * @param byIntegrity {@code true} to scale by segment integrity, {@code false} for weight 1
+     * @return the 2D weights, indexed [x][y]
+     */
+    public static double[][] exchangeWeights(
+            PottsVesselNetwork network,
+            int length,
+            int width,
+            double ds,
+            double lambda,
+            boolean byIntegrity) {
         if (!(ds > 0) || !(lambda > 0)) {
             throw new IllegalArgumentException("delivery requires ds > 0 and lambda > 0");
         }
@@ -64,7 +86,7 @@ public final class PottsVesselDelivery {
             if (!segment.isPerfused() || segment.getIntegrity() == 0) {
                 continue;
             }
-            double integrity = segment.getIntegrity();
+            double integrity = byIntegrity ? segment.getIntegrity() : 1;
             List<double[]> samples =
                     PottsVesselGeometry.sample(
                             segment.getStart().getPosition(),
@@ -95,13 +117,39 @@ public final class PottsVesselDelivery {
      */
     public static double[][] siteWeights(
             PottsVesselNetwork network, int length, int width, double ds, double distance) {
+        return siteWeights(network, length, width, ds, distance, 0);
+    }
+
+    /**
+     * Gets the recruitment site weight of each voxel, from segments at or above an integrity.
+     *
+     * <p>Monocytes leave the blood mainly through mature post-capillary venules, so new, immature
+     * segments (integrity below {@code minIntegrity}) give no recruitment sites.
+     *
+     * @param network the vessel network, with perfusion updated
+     * @param length the lattice length (x direction) [voxels]
+     * @param width the lattice width (y direction) [voxels]
+     * @param ds the voxel size [um]
+     * @param distance the distance from the slice that sites come from [um]
+     * @param minIntegrity the lowest segment integrity that gives sites
+     * @return the 2D weights (integrity times vessel length [um]), indexed [x][y]
+     */
+    public static double[][] siteWeights(
+            PottsVesselNetwork network,
+            int length,
+            int width,
+            double ds,
+            double distance,
+            double minIntegrity) {
         if (!(ds > 0)) {
             throw new IllegalArgumentException("delivery requires ds > 0");
         }
         double thickness = network.getThickness();
         double[][] weights = new double[length][width];
         for (PottsVesselEdge segment : network.getSegments()) {
-            if (!segment.isPerfused() || segment.getIntegrity() == 0) {
+            if (!segment.isPerfused()
+                    || segment.getIntegrity() == 0
+                    || segment.getIntegrity() < minIntegrity) {
                 continue;
             }
             double[][] piece =

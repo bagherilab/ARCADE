@@ -161,7 +161,8 @@ public final class PottsCellFibroblast extends PottsCellWoundHealing {
      *
      * <p>Counts the cells (including this one) whose centroid is within the radius of this cell's
      * centroid in x and y, and divides by the number of voxel positions of that disc that lie
-     * inside the domain, so density is not underestimated at the domain edges.
+     * inside the domain, so density is not underestimated at the domain edges. Vessel cells are not
+     * tissue: they are not counted, and voxels they own are left out of the area.
      *
      * @param sim the simulation instance
      * @return the number of cells per voxel area
@@ -170,7 +171,12 @@ public final class PottsCellFibroblast extends PottsCellWoundHealing {
         double[] c = ((PottsLocation) getLocation()).getCentroid();
         double r2 = repopulationRadius * repopulationRadius;
         int count = 0;
+        boolean vessels = false;
         for (Object obj : sim.getGrid().getAllObjects()) {
+            if (obj instanceof PottsCellVessel) {
+                vessels = true;
+                continue;
+            }
             double[] d = ((PottsLocation) ((Cell) obj).getLocation()).getCentroid();
             double dx = d[0] - c[0];
             double dy = d[1] - c[1];
@@ -178,7 +184,8 @@ public final class PottsCellFibroblast extends PottsCellWoundHealing {
                 count++;
             }
         }
-        int[][] plane = ((PottsSimulation) sim).getPotts().ids[0];
+        Potts potts = ((PottsSimulation) sim).getPotts();
+        int[][] plane = potts.ids[0];
         int r = (int) Math.ceil(repopulationRadius);
         int area = 0;
         for (int x = (int) Math.floor(c[0]) - r; x <= (int) Math.ceil(c[0]) + r; x++) {
@@ -187,12 +194,25 @@ public final class PottsCellFibroblast extends PottsCellWoundHealing {
                         x >= 1 && x < plane.length - 1 && y >= 1 && y < plane[0].length - 1;
                 double dx = x - c[0];
                 double dy = y - c[1];
-                if (inside && dx * dx + dy * dy <= r2) {
+                if (inside
+                        && dx * dx + dy * dy <= r2
+                        && !(vessels && isVessel(potts, plane[x][y]))) {
                     area++;
                 }
             }
         }
         return area == 0 ? 0 : (double) count / area;
+    }
+
+    /**
+     * Checks if a voxel is owned by a vessel cell.
+     *
+     * @param potts the potts instance
+     * @param id the id at the voxel
+     * @return {@code true} if the voxel belongs to a {@link PottsCellVessel}
+     */
+    private static boolean isVessel(Potts potts, int id) {
+        return id > 0 && potts.getCell(id) instanceof PottsCellVessel;
     }
 
     /**

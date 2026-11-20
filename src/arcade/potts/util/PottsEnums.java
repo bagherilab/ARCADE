@@ -98,7 +98,10 @@ public final class PottsEnums {
         SENSING,
 
         /** Code for deposition domain. */
-        DEPOSITION
+        DEPOSITION,
+
+        /** Code for clearance domain. */
+        CLEARANCE
     }
 
     /** Cell region codes for potts simulations. */
@@ -153,7 +156,10 @@ public final class PottsEnums {
         CHEMOTAXIS,
 
         /** Code for matrix resistance term. */
-        MATRIX;
+        MATRIX,
+
+        /** Code for vessel anchor and guide term. */
+        VESSEL;
 
         /**
          * Randomly selects a {@code Term}.

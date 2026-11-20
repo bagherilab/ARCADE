@@ -8,12 +8,19 @@ import arcade.core.util.GrabBag;
 import arcade.core.util.Parameters;
 import arcade.potts.agent.process.PottsProcessSecretion;
 import static arcade.potts.util.PottsEnums.Domain;
+import static arcade.potts.util.PottsEnums.State;
 
 /**
  * Extension of {@link PottsCellWoundHealing} for macrophages.
  *
- * <p>Macrophages do not proliferate. Senescent cells that touch a macrophage may be cleared (see
- * {@link arcade.potts.agent.module.PottsModuleSenescence}).
+ * <p>Macrophages do not proliferate unless {@code INF_PROLIFERATION} is above 0. Then a quiescent
+ * macrophage whose mean INF is above {@code INF_PROLIFERATION} enters the cell cycle with
+ * probability {@code INF_PROLIFERATION_RATE} per tick. During G1 it returns to quiescence if mean
+ * INF falls below half of the threshold or it is contact inhibited, as fibroblasts do with GF. INF
+ * stands in for CSF1 (Chandrasegaran et al. 2025), which senescent cells co-secrete with it.
+ *
+ * <p>Senescent cells that touch a macrophage may be cleared (see {@link
+ * arcade.potts.agent.module.PottsModuleSenescence}).
  *
  * <p>If {@code INF_POLARIZATION} is above 0, macrophages switch phenotype each tick, following
  * Chandrasegaran et al. (2025): when the mean INF over the cell is above {@code INF_POLARIZATION},
@@ -34,6 +41,12 @@ public final class PottsCellMacrophage extends PottsCellWoundHealing {
     /** Threshold on mean injury signal for activation (M2), or 0 for no gate. */
     final double injuryActivation;
 
+    /** Threshold on mean INF for proliferation, or 0 for no proliferation. */
+    final double infProliferation;
+
+    /** Probability per tick of entering the cell cycle above the INF threshold. */
+    final double infProliferationRate;
+
     /** Secretion rates for each layer in the M1 phenotype [amount/tick]. */
     final TreeMap<String, Double> m1Rates;
 
@@ -51,6 +64,8 @@ public final class PottsCellMacrophage extends PottsCellWoundHealing {
      *   <li>{@code M2_RATE_[LAYER]} = secretion rate for each layer in the M2 phenotype
      *   <li>{@code INJURY_ACTIVATION} = threshold on mean injury signal for the M2 phenotype (0 for
      *       no gate)
+     *   <li>{@code INF_PROLIFERATION} = threshold on mean INF for proliferation (0 for none)
+     *   <li>{@code INF_PROLIFERATION_RATE} = probability per tick of entering the cell cycle
      * </ul>
      *
      * @param container the cell container
@@ -63,6 +78,8 @@ public final class PottsCellMacrophage extends PottsCellWoundHealing {
         super(container, location, parameters, links);
         infPolarization = parameters.getDouble("INF_POLARIZATION");
         injuryActivation = parameters.getDouble("INJURY_ACTIVATION");
+        infProliferation = parameters.getDouble("INF_PROLIFERATION");
+        infProliferationRate = parameters.getDouble("INF_PROLIFERATION_RATE");
         m1Rates = new TreeMap<>();
         m2Rates = new TreeMap<>();
 
@@ -71,6 +88,16 @@ public final class PottsCellMacrophage extends PottsCellWoundHealing {
         }
         if (!(injuryActivation >= 0)) {
             throw new IllegalArgumentException("INJURY_ACTIVATION must be >= 0");
+        }
+        if (!(infProliferation >= 0)) {
+            throw new IllegalArgumentException("INF_PROLIFERATION must be >= 0");
+        }
+        if (!(infProliferationRate >= 0 && infProliferationRate <= 1)) {
+            throw new IllegalArgumentException("INF_PROLIFERATION_RATE must be in [0, 1]");
+        }
+        if ((infProliferation > 0) != (infProliferationRate > 0)) {
+            throw new IllegalArgumentException(
+                    "INF_PROLIFERATION and INF_PROLIFERATION_RATE must both be above 0 or both 0");
         }
         if (infPolarization == 0) {
             if (injuryActivation > 0) {
@@ -92,7 +119,17 @@ public final class PottsCellMacrophage extends PottsCellWoundHealing {
 
     @Override
     public boolean canProliferate(Simulation sim) {
-        return false;
+        if (infProliferation == 0) {
+            return false;
+        }
+        double inf = getMean(sim, "INF");
+        boolean enoughInf =
+                getState() == State.PROLIFERATIVE
+                        ? inf >= infProliferation / 2
+                        : inf > infProliferation;
+        return enoughInf
+                && hasOxygenToProliferate(sim)
+                && !isContactInhibited(getFreeFraction(sim));
     }
 
     /**
@@ -124,6 +161,12 @@ public final class PottsCellMacrophage extends PottsCellWoundHealing {
             for (String layer : m1Rates.keySet()) {
                 secretion.setRate(layer, rates == null ? 0 : rates.get(layer));
             }
+        }
+        if (infProliferation > 0
+                && getState() == State.QUIESCENT
+                && canProliferate(sim)
+                && random.nextDouble() < infProliferationRate) {
+            setState(State.PROLIFERATIVE);
         }
         return true;
     }

@@ -113,4 +113,62 @@ public class PottsOperationDegraderTest {
         PottsLattice target = new PottsLattice(4, 4, 1, 3, 1, missing);
         assertThrows(IllegalArgumentException.class, () -> new PottsOperationDegrader(target));
     }
+
+    // Protected fraction (2026-11-18): the part of a voxel covered by the PROTECTED layer (mature,
+    // crosslinked dermal collagen) degrades at PROTECTED_RATE instead of RATE.
+
+    static PottsLattice protectedEcm(double rate, double protectedRate) {
+        MiniBox p = new MiniBox();
+        p.put("degrader/ENZYME", "MMP");
+        p.put("degrader/RATE", rate);
+        p.put("degrader/PROTECTED", "MATURE_ECM");
+        p.put("degrader/PROTECTED_RATE", protectedRate);
+        return new PottsLattice(4, 4, 1, 3, 1, p);
+    }
+
+    static Simulation simWith(PottsLattice mmp, PottsLattice mature) {
+        Simulation sim = simWith(mmp);
+        doReturn(mature).when(sim).getLattice("MATURE_ECM");
+        return sim;
+    }
+
+    @Test
+    public void step_protectedPart_degradesAtProtectedRate() {
+        PottsLattice target = protectedEcm(1.0, 0.1);
+        target.setField(1.5);
+        PottsLattice mature = enzymeLattice(1, 1.0);
+        new PottsOperationDegrader(target).step(null, simWith(enzymeLattice(1, 2.0), mature));
+        double expected = 0.5 * Math.exp(-1.0 * 2.0) + 1.0 * Math.exp(-0.1 * 2.0);
+        assertEquals(expected, target.getField()[0][1][1], 1E-12);
+    }
+
+    @Test
+    public void step_protectedLayerAboveField_protectsOnlyTheField() {
+        PottsLattice target = protectedEcm(1.0, 0.1);
+        target.setField(0.4);
+        PottsLattice mature = enzymeLattice(1, 1.0);
+        new PottsOperationDegrader(target).step(null, simWith(enzymeLattice(1, 2.0), mature));
+        assertEquals(0.4 * Math.exp(-0.1 * 2.0), target.getField()[0][2][2], 1E-12);
+    }
+
+    @Test
+    public void step_noProtectedLayer_matchesPlainDegrader() {
+        PottsLattice a = protectedEcm(1.0, 0.1);
+        a.setField(1.0);
+        PottsLattice mature = enzymeLattice(1, 0.0);
+        new PottsOperationDegrader(a).step(null, simWith(enzymeLattice(1, 2.0), mature));
+        assertEquals(Math.exp(-2.0), a.getField()[0][0][0], 1E-12);
+    }
+
+    @Test
+    public void constructor_protectedWithoutValidRate_throws() {
+        MiniBox p = new MiniBox();
+        p.put("degrader/ENZYME", "MMP");
+        p.put("degrader/RATE", 1.0);
+        p.put("degrader/PROTECTED", "MATURE_ECM");
+        p.put("degrader/PROTECTED_RATE", -1.0);
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new PottsOperationDegrader(new PottsLattice(4, 4, 1, 3, 1, p)));
+    }
 }
