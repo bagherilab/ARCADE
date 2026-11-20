@@ -1,7 +1,7 @@
 package arcade.potts.agent.cell;
 
 import java.util.EnumMap;
-
+import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.cell.CellFactory;
@@ -12,7 +12,6 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.potts.util.PottsEnums.Phase;
 import arcade.potts.util.PottsEnums.Region;
-import ec.util.MersenneTwisterFast;
 
 /**
  * Implementation of {@link CellContainer} for {@link PottsCell} agents.
