@@ -2,6 +2,7 @@ package arcade.potts.env.lattice;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import sim.engine.Schedule;
 import sim.engine.SimState;
@@ -23,14 +24,21 @@ import static arcade.potts.util.PottsEnums.Ordering;
 /**
  * Implementation of {@link Lattice} for potts models.
  *
- * <p>The field is a {@code [z][x][y]} array aligned 1:1 with the potts {@code ids} array.
- * Operations listed in the layer parameters are created with the lattice and stepped at {@code
+ * <p>The field is a {@code [z][x][y]} array aligned 1:1 with the potts {@code ids} array. Secreted
+ * amounts are added to a separate {@code delta} array with {@link #addDelta(List, double)} and
+ * added to the field at the start of the lattice step, so all cells sense the same field regardless
+ * of the order in which they step.
+ *
+ * <p>Operations listed in the layer parameters are created with the lattice and stepped at {@code
  * LATTICES}: diffuser, then decayer. The degrader, which reads another lattice, is stepped at
  * {@code LAST_LATTICE}, after all lattices have stepped.
  */
 public class PottsLattice implements Lattice {
     /** Array containing lattice values. */
     final double[][][] field;
+
+    /** Array containing pending amounts, added to the field at the next lattice step. */
+    final double[][][] delta;
 
     /** Length of the array (x direction). */
     private final int length;
@@ -72,6 +80,7 @@ public class PottsLattice implements Lattice {
         this.dt = dt;
         this.parameters = parameters;
         field = new double[height][length][width];
+        delta = new double[height][length][width];
 
         // Add lattice operations.
         operations = new EnumMap<>(Category.class);
@@ -228,6 +237,30 @@ public class PottsLattice implements Lattice {
         }
     }
 
+    /**
+     * Adds a pending amount to each voxel, added to the field at the next lattice step.
+     *
+     * @param voxels the voxels (repeated voxels receive the amount once per occurrence)
+     * @param increment the concentration increment per voxel
+     */
+    public void addDelta(List<Voxel> voxels, double increment) {
+        for (Voxel v : voxels) {
+            delta[v.z][v.x][v.y] += increment;
+        }
+    }
+
+    /** Adds pending amounts to the field and clears them. */
+    void applyDelta() {
+        for (int k = 0; k < height; k++) {
+            for (int i = 0; i < length; i++) {
+                for (int j = 0; j < width; j++) {
+                    field[k][i][j] += delta[k][i][j];
+                    delta[k][i][j] = 0;
+                }
+            }
+        }
+    }
+
     @Override
     public void schedule(Schedule schedule) {
         schedule.scheduleRepeating(this, Ordering.LATTICES.ordinal(), 1);
@@ -243,6 +276,9 @@ public class PottsLattice implements Lattice {
     @Override
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
+
+        // Add pending amounts from cells.
+        applyDelta();
 
         // Step diffuser operation, if it exists.
         if (operations.containsKey(Category.DIFFUSER)) {

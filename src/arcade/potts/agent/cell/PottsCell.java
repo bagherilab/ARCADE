@@ -1,6 +1,7 @@
 package arcade.potts.agent.cell;
 
 import java.util.EnumMap;
+import java.util.Map;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Stoppable;
@@ -13,9 +14,12 @@ import arcade.core.agent.process.ProcessDomain;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
+import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModule;
+import arcade.potts.agent.process.PottsProcessSecretion;
 import arcade.potts.env.location.PottsLocation;
+import static arcade.potts.util.PottsEnums.Domain;
 import static arcade.potts.util.PottsEnums.Ordering;
 import static arcade.potts.util.PottsEnums.Region;
 
@@ -96,6 +100,9 @@ public abstract class PottsCell implements Cell {
     /** Cell parameters. */
     final Parameters parameters;
 
+    /** Map of process domains and {@link Process} instances. */
+    final Map<Domain, Process> processes;
+
     /** Cell population links. */
     final GrabBag links;
 
@@ -120,6 +127,18 @@ public abstract class PottsCell implements Cell {
         this.links = links;
         this.criticalVolume = container.criticalVolume;
         this.criticalHeight = container.criticalHeight;
+
+        // Add cell processes.
+        processes = new EnumMap<>(Domain.class);
+        MiniBox processBox = parameters.filter("(PROCESS)");
+        for (String processKey : processBox.getKeys()) {
+            Domain domain = Domain.valueOf(processKey);
+            String version = processBox.get(processKey);
+            Process process = makeProcess(domain, version);
+            if (process != null) {
+                processes.put(domain, process);
+            }
+        }
 
         setState(container.state);
 
@@ -182,7 +201,7 @@ public abstract class PottsCell implements Cell {
 
     @Override
     public Process getProcess(ProcessDomain domain) {
-        return null;
+        return processes.get(domain);
     }
 
     @Override
@@ -436,8 +455,30 @@ public abstract class PottsCell implements Cell {
         // Increase age of cell.
         age++;
 
+        // Step processes.
+        for (Process process : processes.values()) {
+            process.step(simstate.random, sim);
+        }
+
         // Step the module for the cell state.
         module.step(simstate.random, sim);
+    }
+
+    /**
+     * Makes the specified {@link Process} object.
+     *
+     * @param domain the process domain
+     * @param version the process version
+     * @return the process instance
+     */
+    Process makeProcess(Domain domain, String version) {
+        switch (domain) {
+            case SECRETION:
+                return new PottsProcessSecretion(this);
+            case UNDEFINED:
+            default:
+                return null;
+        }
     }
 
     /**
