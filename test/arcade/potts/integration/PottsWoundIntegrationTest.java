@@ -144,10 +144,10 @@ public class PottsWoundIntegrationTest {
     @Test
     public void senescence_earlyThenLate_switchesSecretedLayer(@TempDir Path dir) throws Exception {
         // Every cell becomes senescent on the first tick and moves to late at the end of it.
-        String tissue =
+        String fibroblasts =
                 population(
-                        "TIS",
-                        "tissue",
+                        "FIB",
+                        "fibroblast",
                         4,
                         SASP
                                 + "<population.parameter id=\"SPONTANEOUS_SENESCENCE\""
@@ -156,7 +156,7 @@ public class PottsWoundIntegrationTest {
                                 + " value=\"400\" />"
                                 + "<population.parameter module=\"senescence\" id=\"STEPS_EARLY\""
                                 + " value=\"1\" />");
-        String prefix = run(dir, "sasp", setup("sasp", 2, tissue));
+        String prefix = run(dir, "sasp", setup("sasp", 2, fibroblasts));
 
         int n = cells(prefix, 0).size();
         assertTrue(n > 0);
@@ -176,10 +176,10 @@ public class PottsWoundIntegrationTest {
     @Test
     public void senescence_loadedLate_secretesLateFromFirstTick(@TempDir Path dir)
             throws Exception {
-        String tissue = population("TIS", "tissue", 4, SASP);
+        String fibroblasts = population("FIB", "fibroblast", 4, SASP);
 
         // Write initial cells, then mark them as late senescent.
-        String init = run(dir, "init", setup("init", 0, tissue));
+        String init = run(dir, "init", setup("init", 0, fibroblasts));
         JsonArray cells = cells(init, 0);
         for (JsonElement element : cells) {
             JsonObject cell = element.getAsJsonObject();
@@ -192,7 +192,7 @@ public class PottsWoundIntegrationTest {
                 run(
                         dir,
                         "late",
-                        setup("late", 1, tissue),
+                        setup("late", 1, fibroblasts),
                         "--loadpath",
                         dir.toAbsolutePath() + "/init_[#]_000000",
                         "--cells",
@@ -211,12 +211,12 @@ public class PottsWoundIntegrationTest {
                         "FIB",
                         "fibroblast",
                         1,
-                        "<population.parameter id=\"DIFFERENTIATION_TARGET\" value=\"TIS\" />");
-        String tissue = population("TIS", "tissue", 0, "");
+                        "<population.parameter id=\"DIFFERENTIATION_TARGET\" value=\"MAC\" />");
+        String macrophages = population("MAC", "macrophage", 0, "");
         Exception e =
                 assertThrows(
                         IllegalArgumentException.class,
-                        () -> run(dir, "bad", setup("bad", 1, fibroblasts + tissue)));
-        assertTrue(e.getMessage().contains("TIS"));
+                        () -> run(dir, "bad", setup("bad", 1, fibroblasts + macrophages)));
+        assertTrue(e.getMessage().contains("MAC"));
     }
 }

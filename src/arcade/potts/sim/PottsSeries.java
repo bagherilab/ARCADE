@@ -24,7 +24,7 @@ public final class PottsSeries extends Series {
 
     /** Cell classes for wound healing populations, which do not support regions. */
     static final List<String> WOUND_HEALING_CLASSES =
-            List.of("fibroblast", "myofibroblast", "macrophage", "tissue");
+            List.of("fibroblast", "myofibroblast", "macrophage");
 
     /** Parameters copied to {@code [KEY]_[LAYER]} for each layer. */
     static final String[] LAYER_PARAMETERS = {

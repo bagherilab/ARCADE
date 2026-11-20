@@ -75,7 +75,7 @@ _Specifies a population that secretes PDGF at 1000 per hour into the voxels arou
 
 ## Wound healing cells
 
-The `fibroblast`, `myofibroblast`, `macrophage`, and `tissue` classes model wound healing.
+The `fibroblast`, `myofibroblast`, and `macrophage` classes model wound healing.
 Each tick, a wound healing cell applies the rules for its class (quiescent and proliferative cells only), steps its processes, and then steps the module for its state.
 The rules read the mean `PDGF`, `ECM`, and `INF` layer values over the cell; a layer that is not in the setup reads as 0.
 
@@ -84,7 +84,6 @@ The rules read the mean `PDGF`, `ECM`, and `INF` layer values over the cell; a l
 | `fibroblast` | Proliferates when PDGF is above `PDGF_PROLIFERATION`. Differentiates into the `DIFFERENTIATION_TARGET` population when PDGF and ECM are above their thresholds. Becomes senescent spontaneously or through the bystander routes. |
 | `myofibroblast` | Proliferates under the same conditions as fibroblasts. Becomes apoptotic when INF is above `INF_APOPTOSIS`. Matures after a mean of `MATURATION`; mature cells become apoptotic when ECM is below `ECM_TENSION`, or senescent with probability `SENESCENCE_RATE`. Becomes senescent through the bystander routes. |
 | `macrophage` | Does not proliferate. Senescent cells that touch a macrophage may be cleared. |
-| `tissue` | Proliferates into free space next to the cell when the mean ECM over that space is at least `ECM_PROLIFERATION`. Becomes senescent spontaneously or through the bystander routes. |
 
 A quiescent cell becomes proliferative when it can proliferate.
 A proliferative cell returns to quiescent if it can no longer proliferate during G1; after G1, it is committed to dividing.
@@ -113,7 +112,6 @@ Wound healing populations do not support regions; a `population.region` tag caus
 | `MATURATION` | 72 | hours | mean time to myofibroblast maturation |
 | `ECM_TENSION` | 0.2 | concentration | threshold on ECM below which mature myofibroblasts become apoptotic |
 | `SENESCENCE_RATE` | 0.02 | 1/hour | probability of senescence for mature myofibroblasts |
-| `ECM_PROLIFERATION` | 0 | concentration | minimum mean ECM over free voxels for tissue proliferation; 0 disables the gate |
 
 ### Senescence
 

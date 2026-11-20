@@ -182,8 +182,6 @@ public final class PottsCellContainer implements CellContainer {
                 return new PottsCellMyofibroblast(this, location, parameters, links);
             case "macrophage":
                 return new PottsCellMacrophage(this, location, parameters, links);
-            case "tissue":
-                return new PottsCellTissue(this, location, parameters, links);
             default:
             case "stem":
                 return new PottsCellStem(this, location, parameters, links);

@@ -44,8 +44,6 @@ Valid options for classes include:
 `macrophage`
 : Wound macrophage; clears senescent cells it touches
 
-`tissue`
-: Wound tissue (parenchyma) cell
 {% endif %}
 
 | ATTRIBUTE | DESCRIPTION                            | TYPE    | DEFAULT             | REQUIRED |

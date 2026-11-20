@@ -245,23 +245,6 @@ public class PottsCellWoundHealingTest {
     }
 
     @Test
-    public void getFreeMean_givenFreeVoxels_returnsMeanOverFreeVoxels() {
-        f.addNeighbor(8, 1, 2, mock(PottsCell.class));
-        f.ecm[0][1][2] = 9;
-        f.ecm[0][3][2] = 1;
-        f.ecm[0][2][1] = 2;
-        f.ecm[0][2][3] = 3;
-        assertEquals(2, make(State.QUIESCENT).getFreeMean(f.sim, "ECM"), EPSILON);
-    }
-
-    @Test
-    public void getFreeMean_noFreeVoxels_returnsZero() {
-        f.surround(8);
-        f.ecm[0][1][2] = 9;
-        assertEquals(0, make(State.QUIESCENT).getFreeMean(f.sim, "ECM"), EPSILON);
-    }
-
-    @Test
     public void touchesMacrophage_macrophageNeighbor_returnsTrue() {
         f.addNeighbor(8, 1, 2, mock(PottsCellMacrophage.class));
         assertTrue(make(State.QUIESCENT).touchesMacrophage(f.sim));

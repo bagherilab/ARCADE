@@ -101,7 +101,6 @@ public final class PottsCellWoundHealingFixture {
         box.put("MATURATION", 4);
         box.put("ECM_TENSION", 0.1);
         box.put("SENESCENCE_RATE", 0);
-        box.put("ECM_PROLIFERATION", 0);
         box.put("senescence/RATE_EARLY", 1);
         box.put("senescence/STEPS_EARLY", 2);
         box.put("senescence/CLEARANCE_EARLY", 0);

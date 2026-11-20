@@ -172,12 +172,9 @@ public class PottsCellContainerTest {
     public void convert_woundClasses_createsWoundCells() {
         Location location = mock(PottsLocation.class);
         PottsCellFactory factory = new PottsCellFactory();
-        String[] classes = {"fibroblast", "myofibroblast", "macrophage", "tissue"};
+        String[] classes = {"fibroblast", "myofibroblast", "macrophage"};
         Class<?>[] types = {
-            PottsCellFibroblast.class,
-            PottsCellMyofibroblast.class,
-            PottsCellMacrophage.class,
-            PottsCellTissue.class,
+            PottsCellFibroblast.class, PottsCellMyofibroblast.class, PottsCellMacrophage.class,
         };
 
         for (int i = 0; i < classes.length; i++) {

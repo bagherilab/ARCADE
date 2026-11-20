@@ -337,28 +337,6 @@ public abstract class PottsCellWoundHealing extends PottsCell {
     }
 
     /**
-     * Gets the mean value of a layer over the free boundary voxels.
-     *
-     * @param sim the simulation instance
-     * @param layer the layer id
-     * @return the mean value, or 0 if the layer does not exist or there are no free voxels
-     */
-    double getFreeMean(Simulation sim, String layer) {
-        Lattice lattice = sim.getLattice(layer);
-        int[][][] ids = ((PottsSimulation) sim).getPotts().ids;
-        List<Voxel> free = getFreeVoxels(ids, getBoundaryVoxels(ids));
-        if (lattice == null || free.isEmpty()) {
-            return 0;
-        }
-        double[][][] field = lattice.getField();
-        double sum = 0;
-        for (Voxel v : free) {
-            sum += field[v.z][v.x][v.y];
-        }
-        return sum / free.size();
-    }
-
-    /**
      * Checks if the cell touches a macrophage.
      *
      * @param sim the simulation instance

@@ -1304,11 +1304,11 @@ public class PottsSeriesTest {
     @Test
     public void updatePopulation_differentiationTargetWrongClass_throws() throws Exception {
         PottsSeries series = makeSeriesWithLayers();
-        Box fibroblasts = makeWoundPopulation("FIB", "fibroblast", "TIS");
-        Box tissue = makeWoundPopulation("TIS", "tissue", null);
+        Box fibroblasts = makeWoundPopulation("FIB", "fibroblast", "MAC");
+        Box macrophages = makeWoundPopulation("MAC", "macrophage", null);
         assertThrows(
                 IllegalArgumentException.class,
-                () -> updateWoundPopulations(series, fibroblasts, tissue));
+                () -> updateWoundPopulations(series, fibroblasts, macrophages));
     }
 
     @Test
@@ -1367,14 +1367,14 @@ public class PottsSeriesTest {
         try {
             updateWoundPopulations(
                     series,
-                    makeWoundPopulation("TIS", "tissue", "MYO"),
+                    makeWoundPopulation("MAC", "macrophage", "MYO"),
                     makeWoundPopulation("MYO", "myofibroblast", null));
         } finally {
             logger.removeHandler(handler);
         }
         assertEquals(1, records.size());
         assertEquals(Level.WARNING, records.get(0).getLevel());
-        assertTrue(records.get(0).getMessage().contains("TIS"));
+        assertTrue(records.get(0).getMessage().contains("MAC"));
     }
 
     // Creates a series with populations and the given layers, then updates potts.
