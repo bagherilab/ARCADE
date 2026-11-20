@@ -61,7 +61,10 @@ public final class PottsEnums {
         NECROTIC,
 
         /** Code for autotic cells. */
-        AUTOTIC;
+        AUTOTIC,
+
+        /** Code for senescent cells. */
+        SENESCENT;
 
         /**
          * Randomly selects a {@code State}.
@@ -169,7 +172,13 @@ public final class PottsEnums {
         APOPTOTIC_LATE,
 
         /** Code for apoptosed cell. */
-        APOPTOSED;
+        APOPTOSED,
+
+        /** Code for early senescence phase. */
+        SENESCENT_EARLY,
+
+        /** Code for late senescence phase. */
+        SENESCENT_LATE;
 
         /**
          * Randomly selects a {@code Phase}.

@@ -1,6 +1,8 @@
 package arcade.potts.env.location;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
@@ -308,5 +310,50 @@ public class PottsLocation3DTest {
         assertThrows(
                 UnsupportedOperationException.class,
                 () -> loc.getOffsetInApicalFrame(offsets, apicalAxis));
+    }
+
+    @Test
+    public void getBoundaryVoxels_singleVoxel_returnsSixNeighbors() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(2, 2, 1));
+        PottsLocation3D loc = new PottsLocation3D(voxels);
+        List<Voxel> boundary = loc.getBoundaryVoxels(new int[3][5][5]);
+        HashSet<Voxel> expected =
+                new HashSet<>(
+                        List.of(
+                                new Voxel(2, 1, 1),
+                                new Voxel(3, 2, 1),
+                                new Voxel(2, 3, 1),
+                                new Voxel(1, 2, 1),
+                                new Voxel(2, 2, 2),
+                                new Voxel(2, 2, 0)));
+        assertEquals(6, boundary.size());
+        assertEquals(expected, new HashSet<>(boundary));
+    }
+
+    @Test
+    public void getBoundaryVoxels_adjacentVoxels_excludesOwnVoxelsAndIsUnique() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(2, 2, 1));
+        voxels.add(new Voxel(2, 2, 2));
+        PottsLocation3D loc = new PottsLocation3D(voxels);
+        List<Voxel> boundary = loc.getBoundaryVoxels(new int[4][5][5]);
+        assertEquals(10, boundary.size());
+        assertEquals(10, new HashSet<>(boundary).size());
+        assertFalse(boundary.contains(new Voxel(2, 2, 1)));
+        assertFalse(boundary.contains(new Voxel(2, 2, 2)));
+        assertTrue(boundary.contains(new Voxel(2, 2, 0)));
+        assertTrue(boundary.contains(new Voxel(2, 2, 3)));
+    }
+
+    @Test
+    public void getBoundaryVoxels_atEdge_excludesVoxelsOutsideArray() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(2, 2, 0));
+        PottsLocation3D loc = new PottsLocation3D(voxels);
+        List<Voxel> boundary = loc.getBoundaryVoxels(new int[3][5][5]);
+        assertEquals(5, boundary.size());
+        assertTrue(boundary.contains(new Voxel(2, 2, 1)));
+        assertFalse(boundary.contains(new Voxel(2, 2, -1)));
     }
 }
