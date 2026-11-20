@@ -398,7 +398,7 @@ public abstract class Potts implements Steppable {
      * @param z the z coordinate
      * @return the list of unique IDs
      */
-    abstract HashSet<Integer> getUniqueIDs(int x, int y, int z);
+    public abstract HashSet<Integer> getUniqueIDs(int x, int y, int z);
 
     /**
      * Gets unique regions adjacent to given voxel.

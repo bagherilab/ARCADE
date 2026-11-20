@@ -319,7 +319,11 @@ public abstract class Series {
             box.put("(DISTRIBUTION)" + TAG_SEPARATOR + parameter, match.group(1).toUpperCase());
             for (int i = 0; i < (match.groupCount() - 1) / 2; i++) {
                 int index = 2 * (i + 1);
-                box.put(parameter + "_" + match.group(index), match.group(index + 1));
+                String key = parameter + "_" + match.group(index);
+                box.put(key, match.group(index + 1));
+                if (scales.contains(parameter)) {
+                    box.put(key, box.getDouble(key) * scales.getDouble(parameter));
+                }
             }
         } else {
             box.put(parameter, value);
