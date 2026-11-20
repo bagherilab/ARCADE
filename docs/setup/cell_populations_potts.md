@@ -76,7 +76,14 @@ _Specifies a population that secretes PDGF at 1000 per hour into the voxels arou
 ## Wound healing cells
 
 The `fibroblast`, `myofibroblast`, and `macrophage` classes model wound healing.
-Each tick, a wound healing cell applies the rules for its class (quiescent and proliferative cells only), steps its processes, and then steps the module for its state.
+Each tick, a wound healing cell:
+
+1. applies the rules for its class (below), but only if it is quiescent or proliferative; cells in other states (for example senescent or apoptotic) skip this step;
+2. steps its processes;
+3. steps the module for its current state (for example the proliferation, senescence, or apoptosis module).
+
+If a rule removes the cell from the simulation (a fibroblast that differentiates is replaced by a new cell of the target population), the rest of the tick is skipped.
+
 The rules read the mean `PDGF`, `ECM`, and `INF` layer values over the cell; a layer that is not in the setup reads as 0.
 
 | CLASS | RULES |
