@@ -1,9 +1,7 @@
 package arcade.potts.agent.cell;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import sim.engine.SimState;
 import ec.util.MersenneTwisterFast;
@@ -43,11 +41,6 @@ import static arcade.potts.util.PottsEnums.State;
  * INF_BYSTANDER} ({@code BYSTANDER_PARACRINE}).
  */
 public abstract class PottsCellWoundHealing extends PottsCell {
-    /** Offsets to adjacent voxels in x, y, and z. */
-    private static final int[][] OFFSETS = {
-        {1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1},
-    };
-
     /** Minimum free fraction of the boundary for proliferation. */
     final double contactFreeFraction;
 
@@ -262,63 +255,11 @@ public abstract class PottsCellWoundHealing extends PottsCell {
      */
     List<Voxel> getBoundaryVoxels(int[][][] ids) {
         if (boundaryVoxels == null) {
-            boundaryVoxels = Collections.unmodifiableList(computeBoundaryVoxels(ids));
+            boundaryVoxels =
+                    Collections.unmodifiableList(
+                            ((PottsLocation) getLocation()).getBoundaryVoxels(ids));
         }
         return boundaryVoxels;
-    }
-
-    /**
-     * Computes voxels adjacent to the cell that the cell does not own.
-     *
-     * @param ids the potts array of cell ids
-     * @return the list of unique boundary voxels within the array
-     */
-    private List<Voxel> computeBoundaryVoxels(int[][][] ids) {
-        LinkedHashSet<Voxel> boundary = new LinkedHashSet<>();
-        for (Voxel voxel : ((PottsLocation) getLocation()).getVoxels()) {
-            for (int[] offset : OFFSETS) {
-                int x = voxel.x + offset[0];
-                int y = voxel.y + offset[1];
-                int z = voxel.z + offset[2];
-                if (z < 0
-                        || z >= ids.length
-                        || x < 0
-                        || x >= ids[z].length
-                        || y < 0
-                        || y >= ids[z][x].length) {
-                    continue;
-                }
-                if (ids[z][x][y] != id) {
-                    boundary.add(new Voxel(x, y, z));
-                }
-            }
-        }
-        return new ArrayList<>(boundary);
-    }
-
-    /**
-     * Gets boundary voxels that are empty and inside the domain.
-     *
-     * <p>The potts array has a one-voxel border that is always empty but is not part of the domain.
-     *
-     * @param ids the potts array of cell ids
-     * @param boundary the boundary voxels
-     * @return the list of free boundary voxels
-     */
-    static List<Voxel> getFreeVoxels(int[][][] ids, List<Voxel> boundary) {
-        List<Voxel> free = new ArrayList<>();
-        for (Voxel v : boundary) {
-            boolean inside =
-                    v.x >= 1
-                            && v.y >= 1
-                            && v.x <= ids[v.z].length - 2
-                            && v.y <= ids[v.z][v.x].length - 2
-                            && (ids.length == 1 || (v.z >= 1 && v.z <= ids.length - 2));
-            if (inside && ids[v.z][v.x][v.y] == 0) {
-                free.add(v);
-            }
-        }
-        return free;
     }
 
     /**
@@ -333,7 +274,7 @@ public abstract class PottsCellWoundHealing extends PottsCell {
         if (boundary.isEmpty()) {
             return 0;
         }
-        return (double) getFreeVoxels(ids, boundary).size() / boundary.size();
+        return (double) PottsLocation.getFreeVoxels(ids, boundary).size() / boundary.size();
     }
 
     /**

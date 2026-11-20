@@ -10,6 +10,8 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.potts.env.lattice.PottsLattice;
 import arcade.potts.env.location.PottsLocation;
+import arcade.potts.env.location.PottsLocation2D;
+import arcade.potts.env.location.PottsLocation3D;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSeries;
@@ -154,6 +156,23 @@ public final class PottsCellWoundHealingFixture {
         }
         List<Voxel> list = new ArrayList<>(List.of(voxels));
         doAnswer(i -> new ArrayList<>(list)).when(location).getVoxels();
+        doAnswer(i -> boundaryVoxels(list, i.getArgument(0)))
+                .when(location)
+                .getBoundaryVoxels(any());
+    }
+
+    /**
+     * Gets the boundary voxels of a real location with the given voxels.
+     *
+     * @param voxels the voxels of the location
+     * @param ids the potts array of cell ids
+     * @return the boundary voxels
+     */
+    static List<Voxel> boundaryVoxels(List<Voxel> voxels, int[][][] ids) {
+        ArrayList<Voxel> copy = new ArrayList<>(voxels);
+        PottsLocation real =
+                ids.length == 1 ? new PottsLocation2D(copy) : new PottsLocation3D(copy);
+        return real.getBoundaryVoxels(ids);
     }
 
     /**

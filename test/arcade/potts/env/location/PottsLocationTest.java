@@ -3,6 +3,7 @@ package arcade.potts.env.location;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sim.util.Double3D;
@@ -1662,5 +1663,41 @@ public class PottsLocationTest {
         PottsLocationMock spyLocation = spy(loc);
         spyLocation.split(randomDoubleZero, mockPlane);
         verify(spyLocation).split(randomDoubleZero, mockPlane, .5);
+    }
+
+    @Test
+    public void getFreeVoxels_twoDimensional_excludesOccupiedAndBorder() {
+        int[][][] ids = new int[1][5][5];
+        ids[0][3][2] = 8;
+        List<Voxel> boundary =
+                List.of(
+                        new Voxel(3, 2, 0),
+                        new Voxel(0, 2, 0),
+                        new Voxel(2, 4, 0),
+                        new Voxel(1, 2, 0));
+        assertEquals(List.of(new Voxel(1, 2, 0)), PottsLocation.getFreeVoxels(ids, boundary));
+    }
+
+    @Test
+    public void getFreeVoxels_threeDimensionalAtBorder_countsTopAndBottomAsOccupied() {
+        int[][][] ids = new int[3][5][5];
+        List<Voxel> boundary =
+                List.of(
+                        new Voxel(1, 2, 1),
+                        new Voxel(3, 2, 1),
+                        new Voxel(2, 1, 1),
+                        new Voxel(2, 3, 1),
+                        new Voxel(2, 2, 0),
+                        new Voxel(2, 2, 2));
+        assertEquals(4, PottsLocation.getFreeVoxels(ids, boundary).size());
+    }
+
+    @Test
+    public void getFreeVoxels_threeDimensionalInside_countsAboveAndBelowAsFree() {
+        int[][][] ids = new int[5][5][5];
+        ids[1][2][2] = 8;
+        List<Voxel> boundary = List.of(new Voxel(2, 2, 1), new Voxel(2, 2, 3), new Voxel(1, 2, 2));
+        List<Voxel> free = PottsLocation.getFreeVoxels(ids, boundary);
+        assertEquals(List.of(new Voxel(2, 2, 3), new Voxel(1, 2, 2)), free);
     }
 }

@@ -1,6 +1,8 @@
 package arcade.potts.env.location;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
@@ -366,5 +368,87 @@ public class PottsLocation2DTest {
 
         Voxel result = loc.getOffsetInApicalFrame(offsets, apicalAxis);
         assertEquals(new Voxel(3, 3, 0), result);
+    }
+
+    @Test
+    public void getBoundaryVoxels_singleVoxel_returnsFourNeighbors() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(2, 2, 0));
+        PottsLocation2D loc = new PottsLocation2D(voxels);
+        List<Voxel> boundary = loc.getBoundaryVoxels(new int[1][5][5]);
+        HashSet<Voxel> expected =
+                new HashSet<>(
+                        List.of(
+                                new Voxel(2, 1, 0),
+                                new Voxel(3, 2, 0),
+                                new Voxel(2, 3, 0),
+                                new Voxel(1, 2, 0)));
+        assertEquals(4, boundary.size());
+        assertEquals(expected, new HashSet<>(boundary));
+    }
+
+    @Test
+    public void getBoundaryVoxels_adjacentVoxels_excludesOwnVoxels() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(2, 2, 0));
+        voxels.add(new Voxel(2, 3, 0));
+        PottsLocation2D loc = new PottsLocation2D(voxels);
+        List<Voxel> boundary = loc.getBoundaryVoxels(new int[1][5][5]);
+        HashSet<Voxel> expected =
+                new HashSet<>(
+                        List.of(
+                                new Voxel(1, 2, 0),
+                                new Voxel(3, 2, 0),
+                                new Voxel(2, 1, 0),
+                                new Voxel(1, 3, 0),
+                                new Voxel(3, 3, 0),
+                                new Voxel(2, 4, 0)));
+        assertEquals(6, boundary.size());
+        assertEquals(expected, new HashSet<>(boundary));
+    }
+
+    @Test
+    public void getBoundaryVoxels_sharedNeighbor_returnsUniqueVoxels() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(2, 2, 0));
+        voxels.add(new Voxel(3, 3, 0));
+        PottsLocation2D loc = new PottsLocation2D(voxels);
+        List<Voxel> boundary = loc.getBoundaryVoxels(new int[1][6][6]);
+        HashSet<Voxel> expected =
+                new HashSet<>(
+                        List.of(
+                                new Voxel(2, 1, 0),
+                                new Voxel(1, 2, 0),
+                                new Voxel(3, 2, 0),
+                                new Voxel(2, 3, 0),
+                                new Voxel(4, 3, 0),
+                                new Voxel(3, 4, 0)));
+        assertEquals(6, boundary.size());
+        assertEquals(expected, new HashSet<>(boundary));
+    }
+
+    @Test
+    public void getBoundaryVoxels_atEdge_excludesVoxelsOutsideArray() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 0, 0));
+        PottsLocation2D loc = new PottsLocation2D(voxels);
+        List<Voxel> boundary = loc.getBoundaryVoxels(new int[1][3][3]);
+        assertEquals(
+                new HashSet<>(List.of(new Voxel(1, 0, 0), new Voxel(0, 1, 0))),
+                new HashSet<>(boundary));
+        assertEquals(2, boundary.size());
+    }
+
+    @Test
+    public void getBoundaryVoxels_occupiedNeighbor_includesNeighbor() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(2, 2, 0));
+        PottsLocation2D loc = new PottsLocation2D(voxels);
+        int[][][] ids = new int[1][5][5];
+        ids[0][2][2] = 1;
+        ids[0][3][2] = 2;
+        List<Voxel> boundary = loc.getBoundaryVoxels(ids);
+        assertEquals(4, boundary.size());
+        assertTrue(boundary.contains(new Voxel(3, 2, 0)));
     }
 }

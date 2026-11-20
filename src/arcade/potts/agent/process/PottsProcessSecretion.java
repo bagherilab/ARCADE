@@ -1,7 +1,5 @@
 package arcade.potts.agent.process;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
@@ -33,11 +31,6 @@ public class PottsProcessSecretion extends PottsProcess {
         /** Voxels owned by the cell. */
         INSIDE
     }
-
-    /** Offsets to adjacent voxels in x, y, and z. */
-    private static final int[][] OFFSETS = {
-        {1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1},
-    };
 
     /** Secretion rate for each layer [amount/tick]. */
     final TreeMap<String, Double> rates;
@@ -125,36 +118,6 @@ public class PottsProcessSecretion extends PottsProcess {
         return placements.get(layer);
     }
 
-    /**
-     * Gets voxels adjacent to the cell that the cell does not own.
-     *
-     * @param ids the potts array of cell ids
-     * @return the list of unique boundary voxels within the array
-     */
-    List<Voxel> getBoundaryVoxels(int[][][] ids) {
-        int id = cell.getID();
-        LinkedHashSet<Voxel> boundary = new LinkedHashSet<>();
-        for (Voxel voxel : location.getVoxels()) {
-            for (int[] offset : OFFSETS) {
-                int x = voxel.x + offset[0];
-                int y = voxel.y + offset[1];
-                int z = voxel.z + offset[2];
-                if (z < 0
-                        || z >= ids.length
-                        || x < 0
-                        || x >= ids[z].length
-                        || y < 0
-                        || y >= ids[z][x].length) {
-                    continue;
-                }
-                if (ids[z][x][y] != id) {
-                    boundary.add(new Voxel(x, y, z));
-                }
-            }
-        }
-        return new ArrayList<>(boundary);
-    }
-
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
         List<Voxel> boundary = null;
@@ -170,7 +133,7 @@ public class PottsProcessSecretion extends PottsProcess {
                 voxels = location.getVoxels();
             } else {
                 if (boundary == null) {
-                    boundary = getBoundaryVoxels(((PottsSimulation) sim).getPotts().ids);
+                    boundary = location.getBoundaryVoxels(((PottsSimulation) sim).getPotts().ids);
                 }
                 voxels = boundary;
             }
