@@ -1,7 +1,7 @@
 package arcade.potts.agent.cell;
 
 import java.util.EnumMap;
-import ec.util.MersenneTwisterFast;
+
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.cell.CellFactory;
@@ -10,8 +10,9 @@ import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
-import static arcade.potts.util.PottsEnums.Phase;
-import static arcade.potts.util.PottsEnums.Region;
+import arcade.potts.util.PottsEnums.Phase;
+import arcade.potts.util.PottsEnums.Region;
+import ec.util.MersenneTwisterFast;
 
 /**
  * Implementation of {@link CellContainer} for {@link PottsCell} agents.
@@ -182,6 +183,10 @@ public final class PottsCellContainer implements CellContainer {
                 return new PottsCellMyofibroblast(this, location, parameters, links);
             case "macrophage":
                 return new PottsCellMacrophage(this, location, parameters, links);
+            case "fly-stem-wt":
+            case "fly-stem-mudmut":
+                // Genotype (StemType) is resolved from CLASS in the PottsCellFlyStem constructor.
+                return new PottsCellFlyStem(this, location, parameters, links);
             default:
             case "stem":
                 return new PottsCellStem(this, location, parameters, links);
