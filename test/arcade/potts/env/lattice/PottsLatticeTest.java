@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import sim.engine.Schedule;
+import sim.engine.Steppable;
 import arcade.core.util.MiniBox;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.env.operation.PottsOperationDecayer;
+import arcade.potts.env.operation.PottsOperationDegrader;
 import arcade.potts.env.operation.PottsOperationDiffuser;
 import arcade.potts.sim.PottsSimulation;
 import static org.junit.jupiter.api.Assertions.*;
@@ -91,6 +94,8 @@ public class PottsLatticeTest {
         parameters.put("diffuser/DIFFUSIVITY", 10.0);
         parameters.put("diffuser/MAX_SUBSTEP", 2.0);
         parameters.put("decayer/DECAY_RATE", 0.3);
+        parameters.put("degrader/ENZYME", "MMP");
+        parameters.put("degrader/RATE", 0.5);
         return parameters;
     }
 
@@ -169,5 +174,64 @@ public class PottsLatticeTest {
                 assertEquals(value, lattice.getField()[0][i][j], EPSILON * value);
             }
         }
+    }
+
+    @Test
+    public void constructor_degrader_createsDegrader() {
+        PottsLattice lattice =
+                new PottsLattice(3, 3, 1, 3.0, 1.0 / 60, operationParameters("DEGRADER"));
+        assertTrue(lattice.getOperation(Category.DEGRADER) instanceof PottsOperationDegrader);
+    }
+
+    @Test
+    public void schedule_withDegrader_schedulesAtLastLattice() {
+        PottsLattice lattice =
+                new PottsLattice(3, 3, 1, 3.0, 1.0 / 60, operationParameters("DEGRADER"));
+        Schedule schedule = mock(Schedule.class);
+        lattice.schedule(schedule);
+        verify(schedule).scheduleRepeating(lattice, Ordering.LATTICES.ordinal(), 1);
+        verify(schedule)
+                .scheduleRepeating(
+                        any(Steppable.class), eq(Ordering.LAST_LATTICE.ordinal()), eq(1.0));
+    }
+
+    @Test
+    public void schedule_withDegrader_scheduledStepDegrades() {
+        PottsLattice lattice =
+                new PottsLattice(3, 3, 1, 3.0, 1.0 / 60, operationParameters("DEGRADER"));
+        lattice.setField(4.0);
+        Schedule schedule = mock(Schedule.class);
+        lattice.schedule(schedule);
+        ArgumentCaptor<Steppable> captor = ArgumentCaptor.forClass(Steppable.class);
+        verify(schedule)
+                .scheduleRepeating(captor.capture(), eq(Ordering.LAST_LATTICE.ordinal()), eq(1.0));
+
+        PottsLattice mmp = makeLattice(3, 3);
+        mmp.setField(2.0);
+        PottsSimulation sim = mock(PottsSimulation.class);
+        doReturn(mmp).when(sim).getLattice("MMP");
+        captor.getValue().step(sim);
+
+        assertEquals(4.0 * Math.exp(-0.5 * 2.0), lattice.getField()[0][1][1], EPSILON);
+    }
+
+    @Test
+    public void schedule_noDegrader_doesNotScheduleLastLattice() {
+        PottsLattice lattice =
+                new PottsLattice(3, 3, 1, 3.0, 1.0 / 60, operationParameters("DECAYER"));
+        Schedule schedule = mock(Schedule.class);
+        lattice.schedule(schedule);
+        verify(schedule, never())
+                .scheduleRepeating(
+                        any(Steppable.class), eq(Ordering.LAST_LATTICE.ordinal()), anyDouble());
+    }
+
+    @Test
+    public void step_withDegrader_doesNotDegrade() {
+        PottsLattice lattice =
+                new PottsLattice(3, 3, 1, 3.0, 1.0 / 60, operationParameters("DEGRADER"));
+        lattice.setField(4.0);
+        lattice.step(mock(PottsSimulation.class));
+        assertEquals(4.0, lattice.getField()[0][1][1], EPSILON);
     }
 }

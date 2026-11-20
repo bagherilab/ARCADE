@@ -4,14 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.lattice.LatticeFactory;
+import arcade.core.env.operation.Operation;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
+import arcade.potts.env.operation.PottsOperationDegrader;
+import static arcade.potts.util.PottsEnums.Category;
 
 /**
  * Implementation of {@link LatticeFactory} for {@link PottsLattice} objects.
  *
  * <p>Creates one lattice per layer, sized like the potts {@code ids} array, with every voxel set to
  * the layer {@code INITIAL_CONCENTRATION} unless a loaded field is supplied for that layer.
+ * Degrader enzymes must name an existing layer.
  */
 public class PottsLatticeFactory implements LatticeFactory {
     /** Map of layer id to lattice. */
@@ -55,6 +59,17 @@ public class PottsLatticeFactory implements LatticeFactory {
                             layer);
             lattice.setField(layer.getDouble("INITIAL_CONCENTRATION"));
             lattices.put(key, lattice);
+        }
+
+        for (PottsLattice lattice : lattices.values()) {
+            Operation degrader = lattice.getOperation(Category.DEGRADER);
+            if (degrader != null) {
+                String enzyme = ((PottsOperationDegrader) degrader).getEnzyme();
+                if (!lattices.containsKey(enzyme)) {
+                    throw new IllegalArgumentException(
+                            "unknown degrader enzyme [ " + enzyme + " ]");
+                }
+            }
         }
 
         if (loaded != null) {
