@@ -1265,4 +1265,54 @@ public class PottsSeriesTest {
                         () -> series.updatePopulations(boxes, defaults, conversions));
         assertTrue(exception.getMessage().contains("secretion/RATE_PDFG"));
     }
+
+    // Creates a series with populations and the given layers, then updates potts.
+    private PottsSeries makeSeriesForPottsWithLayers(Box box, String... layers) throws Exception {
+        PottsSeries series = makeSeriesWithLayers(layers);
+        series.populations = makePopulations();
+        MiniBox defaults = new MiniBox();
+        for (String key : POTTS.getKeys()) {
+            defaults.put(key, POTTS.get(key));
+        }
+        defaults.put("chemotaxis/LAMBDA", 0.0);
+        MiniBox conversions = new MiniBox();
+        series.addLayerDefaults(defaults, conversions);
+        series.updatePotts(new ArrayList<>(Arrays.asList(box)), defaults, conversions);
+        return series;
+    }
+
+    @Test
+    public void updatePotts_withLayerDefaults_assignsLayerTargets() throws Exception {
+        Box box = new Box();
+        String id = "chemotaxis/LAMBDA_PDGF" + TARGET_SEPARATOR + POPULATION_KEYS[0];
+        box.addAtt(id, "value", "5");
+        box.addAtt(id, "scale", "2");
+        box.addTag(id, "PARAMETER");
+
+        PottsSeries series = makeSeriesForPottsWithLayers(box, "PDGF", "ECM");
+
+        assertEquals(10, series.potts.getDouble(id), EPSILON);
+        for (String pop : POPULATION_KEYS) {
+            String ecm = "chemotaxis/LAMBDA_ECM" + TARGET_SEPARATOR + pop;
+            assertEquals(0, series.potts.getDouble(ecm), EPSILON);
+        }
+        for (int i = 1; i < POPULATION_KEYS.length; i++) {
+            String pdgf = "chemotaxis/LAMBDA_PDGF" + TARGET_SEPARATOR + POPULATION_KEYS[i];
+            assertEquals(0, series.potts.getDouble(pdgf), EPSILON);
+        }
+    }
+
+    @Test
+    public void updatePotts_unknownLayerParameter_throws() {
+        Box box = new Box();
+        String id = "chemotaxis/LAMBDA_PDFG" + TARGET_SEPARATOR + POPULATION_KEYS[0];
+        box.addAtt(id, "value", "5");
+        box.addTag(id, "PARAMETER");
+
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> makeSeriesForPottsWithLayers(box, "PDGF"));
+        assertTrue(exception.getMessage().contains("chemotaxis/LAMBDA_PDFG"));
+    }
 }

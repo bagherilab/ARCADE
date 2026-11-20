@@ -322,6 +322,19 @@ public class PottsTest {
     }
 
     @Test
+    public void getHamiltonian_givenTerm_returnsInstance() {
+        PottsSeries series = makeSeries(0, 0, 0);
+        series.terms = new ArrayList<>();
+        series.terms.add(Term.VOLUME);
+        series.terms.add(Term.CHEMOTAXIS);
+        PottsMock pottsMock = new PottsMock(series);
+
+        assertSame(pottsMock.hamiltonian.get(0), pottsMock.getHamiltonian(Term.VOLUME));
+        assertSame(pottsMock.hamiltonian.get(1), pottsMock.getHamiltonian(Term.CHEMOTAXIS));
+        assertNull(pottsMock.getHamiltonian(Term.ADHESION));
+    }
+
+    @Test
     public void constructor_withTerms_createsList() {
         PottsSeries series = makeSeries(0, 0, 0);
 
