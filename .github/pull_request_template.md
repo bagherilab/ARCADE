@@ -1,3 +1,6 @@
+## Urgency
+<!-- Optional: is this blocking other work or tied to a deadline? e.g. "Needed by 12/1 for paper resubmission". -->
+
 ## Estimated time to review
 <!-- XS (<10 min), S (<30 min), M (<1 hr), L (<3 hr), XL (>3hr) -->
 
@@ -12,9 +15,6 @@
 
 ## How to verify changes
 <!-- Can alternatively be "Example Usage". Should include how users can verify the changes described are functioning as described on their local computer. Include example setup files where necessary. -->
-
-## Urgency
-<!-- Optional: is this blocking other work or tied to a deadline? e.g. "Needed by 12/1 for paper resubmission". -->
 
 
 ## Checklist for marking PR ready for review
