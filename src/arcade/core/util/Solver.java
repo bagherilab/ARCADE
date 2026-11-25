@@ -1,9 +1,14 @@
 package arcade.core.util;
 
 import java.util.ArrayList;
-import java.util.logging.Logger;
 import arcade.core.util.Matrix.Value;
-import static arcade.core.util.Matrix.*;
+import static arcade.core.util.Matrix.add;
+import static arcade.core.util.Matrix.forwardSubstitution;
+import static arcade.core.util.Matrix.multiply;
+import static arcade.core.util.Matrix.normalize;
+import static arcade.core.util.Matrix.scale;
+import static arcade.core.util.Matrix.subtract;
+import static arcade.core.util.Matrix.toSparse;
 
 /**
  * Static utility class implementing various numerical solvers.
@@ -19,8 +24,6 @@ import static arcade.core.util.Matrix.*;
  * </ul>
  */
 public class Solver {
-    /** Logger for {@code Solver}. */
-    private static final Logger LOGGER = Logger.getLogger(Solver.class.getName());
 
     /** Error tolerance for Cash-Karp. */
     private static final double ERROR = 1E-5;
@@ -37,11 +40,11 @@ public class Solver {
     /** Relaxation factor for SOR. */
     private static final double OMEGA = 1.4;
 
-    /** Maximum number of iterations. */
+    /** Maximum number of iterations for SOR and bisection method. */
     private static final int MAX_ITERS = 10000;
 
     /** Error tolerance for SOR. */
-    private static final double TOLERANCE = 1E-8;
+    private static final double TOLERANCE = 1E-5;
 
     /** Convergence delta for bisection method. */
     private static final double DELTA = 1E-5;
@@ -370,7 +373,6 @@ public class Solver {
             double[] r = subtract(vec, multiply(mat, xCurr));
             error = normalize(r);
         }
-
         return xCurr;
     }
 
@@ -396,6 +398,7 @@ public class Solver {
         double[] c = forwardSubstitution(sparseA, vec);
         ArrayList<Value> t = forwardSubstitution(sparseA);
         t = scale(t, -1);
+        MatrixArray tArray = new MatrixArray(t, mat.length, mat[0].length);
 
         // Set initial guess.
         double[] xCurr = x0;
@@ -404,7 +407,7 @@ public class Solver {
         // Iterate until convergence.
         while (i < maxIters && error > tolerance) {
             // Calculate new guess for x.
-            xCurr = add(scale(add(multiply(t, xPrev), c), OMEGA), scale(xPrev, 1 - OMEGA));
+            xCurr = add(scale(add(tArray.multiply(xPrev), c), OMEGA), scale(xPrev, 1 - OMEGA));
 
             // Set previous to copy of current and increment iteration count.
             xPrev = xCurr;
@@ -414,7 +417,6 @@ public class Solver {
             double[] r = subtract(vec, multiply(sparseA, xCurr));
             error = normalize(r);
         }
-
         return xCurr;
     }
 
@@ -428,9 +430,11 @@ public class Solver {
      * @param a the lower bound on the interval
      * @param b the upper bound on the interval
      * @param maxIters the maximum number of iterations
+     * @param tolerance the error tolerance
      * @return the root of the function
      */
-    public static double bisection(Function func, double a, double b, int maxIters) {
+    public static double bisection(
+            Function func, double a, double b, int maxIters, double tolerance) {
         double c;
         double fc;
         int i = 0;
@@ -452,7 +456,7 @@ public class Solver {
             fc = func.f(c);
 
             // Check for exit conditions.
-            if (fc == 0 || (b - a) / 2 < DELTA) {
+            if (fc == 0 || (b - a) / 2 < tolerance) {
                 return c;
             } else {
                 if (Math.signum(fc) == Math.signum(func.f(a))) {
@@ -469,7 +473,7 @@ public class Solver {
     }
 
     /**
-     * Finds root using bisection method with default maximum iterations.
+     * Finds root using bisection method with default maximum iterations and tolerance.
      *
      * <p>Root is found by repeatedly bisecting the interval and selecting the interval in which the
      * function changes sign. If no root is found, the simulation will throw an ArithmeticException.
@@ -480,6 +484,38 @@ public class Solver {
      * @return the root of the function
      */
     public static double bisection(Function func, double a, double b) {
-        return bisection(func, a, b, MAX_ITERS);
+        return bisection(func, a, b, MAX_ITERS, DELTA);
+    }
+
+    /**
+     * Finds root using bisection method with default maximum iterations.
+     *
+     * <p>Root is found by repeatedly bisecting the interval and selecting the interval in which the
+     * function changes sign. If no root is found, the simulation will throw an ArithmeticException.
+     *
+     * @param func the function
+     * @param a the lower bound on the interval
+     * @param b the upper bound on the interval
+     * @param delta the error tolerance
+     * @return the root of the function
+     */
+    public static double bisection(Function func, double a, double b, double delta) {
+        return bisection(func, a, b, MAX_ITERS, delta);
+    }
+
+    /**
+     * Finds root using bisection method with default tolerance.
+     *
+     * <p>Root is found by repeatedly bisecting the interval and selecting the interval in which the
+     * function changes sign. If no root is found, the simulation will throw an ArithmeticException.
+     *
+     * @param func the function
+     * @param a the lower bound on the interval
+     * @param b the upper bound on the interval
+     * @param maxIters the maximum number of iterations
+     * @return the root of the function
+     */
+    public static double bisection(Function func, double a, double b, int maxIters) {
+        return bisection(func, a, b, maxIters, DELTA);
     }
 }
