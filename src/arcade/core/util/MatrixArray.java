@@ -75,6 +75,8 @@ public class MatrixArray {
      * @param alValues the non-zero matrix entries
      * @param rows the number of rows in the matrix
      * @param columns the number of columns in the matrix
+     * @throws IllegalArgumentException if the matrix is empty, contains empty rows, or contains an
+     *     entry outside the declared dimensions
      */
     public MatrixArray(ArrayList<Value> alValues, int rows, int columns) {
         nRows = rows;
@@ -97,6 +99,17 @@ public class MatrixArray {
 
         int i = 0;
         for (Value v : alValues) {
+            if (v.i < 0 || v.i >= nRows || v.j < 0 || v.j >= nColumns) {
+                throw new IllegalArgumentException(
+                        "Matrix array ctor: entry ("
+                                + v.i
+                                + ","
+                                + v.j
+                                + ") outside matrix of size "
+                                + nRows
+                                + "x"
+                                + nColumns);
+            }
             values[i] = v;
             i++;
         }
