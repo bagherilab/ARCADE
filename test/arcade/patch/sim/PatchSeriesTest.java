@@ -80,9 +80,9 @@ public class PatchSeriesTest {
             PARAMETERS.addTag(PATCH_PARAMETER_NAMES[i], "PATCH");
             PARAMETERS.addAtt(PATCH_PARAMETER_NAMES[i], "value", "" + PATCH_PARAMETER_VALUES[i]);
         }
-        MiniBox potts = PARAMETERS.getIdValForTag("PATCH");
-        for (String key : potts.getKeys()) {
-            PATCH.put(key, potts.get(key));
+        MiniBox patch = PARAMETERS.getIdValForTag("PATCH");
+        for (String key : patch.getKeys()) {
+            PATCH.put(key, patch.get(key));
         }
 
         // POPULATION
