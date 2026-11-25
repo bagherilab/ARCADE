@@ -58,22 +58,18 @@ public class MatrixArray {
             }
         }
 
-        //
-        // No need to sort, since we built them in order.
-        //
-
         values = new Value[nNonZero];
         int i = 0;
         for (Value v : alValues) {
             values[i] = v;
             i++;
         }
-    } // ctor
+    }
 
     /**
      * Constructs a sparse matrix from a collection of matrix entries.
      *
-     * <p>The entries are sorted by row and column index and copied into an internal array to
+     * <p>The entries are sorted by row, then column index and copied into an internal array to
      * support efficient sparse matrix operations such as matrix-vector multiplication.
      *
      * @param alValues the non-zero matrix entries
@@ -83,8 +79,18 @@ public class MatrixArray {
     public MatrixArray(ArrayList<Value> alValues, int rows, int columns) {
         nRows = rows;
         nColumns = columns;
+
+        if (nRows == 0) {
+            throw new IllegalArgumentException("MatrixArray ctor: input is empty");
+        }
+
+        if (nColumns == 0) {
+            throw new IllegalArgumentException("Matrix array ctor: empty columns");
+        }
+
         values = new Value[alValues.size()];
 
+        // sort by row, then column
         Collections.sort(
                 alValues,
                 (v1, v2) -> (v1.i == v2.i ? Integer.compare(v1.j, v2.j) : (v1.i > v2.i ? 1 : -1)));
@@ -152,7 +158,13 @@ public class MatrixArray {
      */
     public double[] multiply(double[] b) {
         if (b.length != nRows) {
-            throw new IllegalArgumentException("MatrixArray.multiply (by a vector): conformation");
+            throw new IllegalArgumentException(
+                    "Cannot multiple matrix of size "
+                            + nRows
+                            + "x"
+                            + nColumns
+                            + " by vector of length "
+                            + b.length);
         }
         double[] multiplied = new double[nRows];
 
