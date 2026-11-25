@@ -2,7 +2,13 @@ package arcade.core.util;
 
 import java.util.ArrayList;
 import arcade.core.util.Matrix.Value;
-import static arcade.core.util.Matrix.*;
+import static arcade.core.util.Matrix.add;
+import static arcade.core.util.Matrix.forwardSubstitution;
+import static arcade.core.util.Matrix.multiply;
+import static arcade.core.util.Matrix.normalize;
+import static arcade.core.util.Matrix.scale;
+import static arcade.core.util.Matrix.subtract;
+import static arcade.core.util.Matrix.toSparse;
 
 /**
  * Static utility class implementing various numerical solvers.
@@ -424,7 +430,7 @@ public class Solver {
      * @param a the lower bound on the interval
      * @param b the upper bound on the interval
      * @param maxIters the maximum number of iterations
-     * @param tolerance the tolerance for error
+     * @param tolerance the error tolerance
      * @return the root of the function
      */
     public static double bisection(
