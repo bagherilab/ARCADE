@@ -3,8 +3,10 @@ package arcade.patch.agent.action;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import sim.engine.Schedule;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
@@ -15,9 +17,12 @@ import arcade.patch.agent.cell.PatchCellFactory;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.Coordinate;
 import arcade.patch.env.location.CoordinateUVWZ;
+import arcade.patch.env.location.PatchLocation;
 import arcade.patch.env.location.PatchLocationFactory;
+import arcade.patch.env.location.PatchLocationFactoryHex;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.sim.PatchSimulation;
+import arcade.patch.util.PatchEnums.Direction;
 import arcade.patch.util.PatchEnums.Ordering;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -37,6 +42,18 @@ public class PatchActionInsertTest {
 
     /** Maximum cells of one population per location, unless a test overrides it. */
     private static final int MAX_DENSITY = 100;
+
+    /** Simulation radius used for geometric placement tests. */
+    private static final int SIMULATION_RADIUS = 10;
+
+    /** Simulation depth used for geometric placement tests. */
+    private static final int SIMULATION_DEPTH = 1;
+
+    /** Population code used for geometric placement tests. */
+    private static final int POPULATION_CODE = 1;
+
+    /** Population name used for geometric placement tests. */
+    private static final String POPULATION_NAME = "A";
 
     private PatchSeries series;
 
@@ -68,22 +85,50 @@ public class PatchActionInsertTest {
      * @throws Exception if the field cannot be accessed
      */
     private static void setField(Object target, String name, Object value) throws Exception {
-        Class<?> type = target.getClass();
-        while (type != null) {
+        Field field = findField(target.getClass(), name);
+        field.setAccessible(true);
+        field.set(target, value);
+    }
+
+    /**
+     * Sets a field on an object, wrapping reflective failures.
+     *
+     * @param object the object to modify
+     * @param name the name of the field
+     * @param value the value to set
+     */
+    private static void setFieldUnchecked(Object object, String name, Object value) {
+        try {
+            setField(object, name, value);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    /**
+     * Finds a declared field on a class or one of its superclasses.
+     *
+     * @param type the class to search
+     * @param name the name of the field
+     * @return the field
+     * @throws NoSuchFieldException if the field does not exist
+     */
+    private static Field findField(Class<?> type, String name) throws NoSuchFieldException {
+        Class<?> current = type;
+
+        while (current != null) {
             try {
-                Field field = type.getDeclaredField(name);
-                field.setAccessible(true);
-                field.set(target, value);
-                return;
+                return current.getDeclaredField(name);
             } catch (NoSuchFieldException e) {
-                type = type.getSuperclass();
+                current = current.getSuperclass();
             }
         }
+
         throw new NoSuchFieldException(name);
     }
 
     /**
-     * Creates parameters for the action.
+     * Creates parameters for the action, inserting around the center.
      *
      * @param timeDelay the time delay before the action is called
      * @param insertRadius the radius cells are inserted into
@@ -98,6 +143,50 @@ public class PatchActionInsertTest {
         parameters.put("INSERT_RADIUS", insertRadius);
         parameters.put("INSERT_NUMBER", insertNumber);
         parameters.put("CONFLUENCE", confluence ? 1 : 0);
+        parameters.put("INSERT_DIRECTION", Direction.CENTER.name());
+        parameters.put("INSERT_OFFSET", 0);
+        return parameters;
+    }
+
+    /**
+     * Creates parameters with a given direction, randomizing the other settings.
+     *
+     * @param direction the insertion direction, or {@code null} to omit it
+     * @return the parameters dictionary
+     */
+    private static MiniBox makeDirectionParameters(String direction) {
+        MiniBox parameters = new MiniBox();
+        parameters.put("TIME_DELAY", randomIntBetween(0, 10));
+        parameters.put("INSERT_RADIUS", randomIntBetween(1, 5));
+        parameters.put("INSERT_NUMBER", randomIntBetween(1, 10));
+        parameters.put("INSERT_OFFSET", randomIntBetween(0, 5));
+        parameters.put("CONFLUENCE", 0);
+
+        if (direction != null) {
+            parameters.put("INSERT_DIRECTION", direction);
+        }
+
+        return parameters;
+    }
+
+    /**
+     * Creates parameters with explicit insertion settings.
+     *
+     * @param direction the insertion direction
+     * @param radius the insertion radius
+     * @param offset the insertion offset
+     * @param number the number of cells to insert from each population
+     * @return the parameters dictionary
+     */
+    private static MiniBox makeDirectionParameters(
+            Direction direction, int radius, int offset, int number) {
+        MiniBox parameters = new MiniBox();
+        parameters.put("TIME_DELAY", 0);
+        parameters.put("INSERT_RADIUS", radius);
+        parameters.put("INSERT_NUMBER", number);
+        parameters.put("INSERT_OFFSET", offset);
+        parameters.put("INSERT_DIRECTION", direction.name());
+        parameters.put("CONFLUENCE", 0);
         return parameters;
     }
 
@@ -125,7 +214,9 @@ public class PatchActionInsertTest {
         for (int i = 0; i < count; i++) {
             coordinates.add(new CoordinateUVWZ(i, -i, 0, 0));
         }
-        doReturn(coordinates).when(locationFactory).getCoordinates(anyInt(), anyInt());
+        doAnswer(invocation -> new ArrayList<>(coordinates))
+                .when(locationFactory)
+                .getCoordinates(anyInt(), anyInt(), any(Direction.class), anyInt());
     }
 
     @BeforeEach
@@ -419,7 +510,7 @@ public class PatchActionInsertTest {
 
         action.step(sim);
 
-        verify(locationFactory).getCoordinates(4, SERIES_DEPTH);
+        verify(locationFactory).getCoordinates(4, SERIES_DEPTH, Direction.CENTER, 0);
     }
 
     /**
@@ -465,5 +556,307 @@ public class PatchActionInsertTest {
         Field field = PatchActionInsert.class.getDeclaredField(name);
         field.setAccessible(true);
         return field.getBoolean(action);
+    }
+
+    /**
+     * Creates a series with the given radius and a single registered population.
+     *
+     * @param radius the radius of the simulation
+     * @return the mock series
+     */
+    private static PatchSeries makeSeries(int radius) {
+        MiniBox population = new MiniBox();
+        population.put("CODE", POPULATION_CODE);
+
+        PatchSeries series = mock(PatchSeries.class);
+        setFieldUnchecked(series, "radius", radius);
+        setFieldUnchecked(series, "depth", SIMULATION_DEPTH);
+
+        series.populations = new HashMap<>();
+        series.populations.put(POPULATION_NAME, population);
+
+        return series;
+    }
+
+    /**
+     * Creates a simulation backed by a real hexagonal location factory and grid.
+     *
+     * @param series the simulation series
+     * @return the mock simulation
+     */
+    private static PatchSimulation makeSimulation(PatchSeries series) {
+        PatchLocationFactoryHex hexLocationFactory = new PatchLocationFactoryHex();
+        setFieldUnchecked(hexLocationFactory, "simulationRadius", series.radius);
+
+        PatchCellFactory hexCellFactory = mock(PatchCellFactory.class);
+        doAnswer(
+                        invocation -> {
+                            PatchCellContainer container = mock(PatchCellContainer.class);
+                            doAnswer(
+                                            convert -> {
+                                                // The action reads the location back off the cell,
+                                                // so the cell must report the one it was built at.
+                                                Location location = convert.getArgument(1);
+                                                PatchCell cell = mock(PatchCell.class);
+                                                doReturn(location).when(cell).getLocation();
+                                                return cell;
+                                            })
+                                    .when(container)
+                                    .convert(any(), any(Location.class), any());
+                            return container;
+                        })
+                .when(hexCellFactory)
+                .createCellForPopulation(anyInt(), anyInt());
+
+        PatchSimulation sim = mock(PatchSimulation.class);
+        setFieldUnchecked(sim, "locationFactory", hexLocationFactory);
+        setFieldUnchecked(sim, "cellFactory", hexCellFactory);
+
+        sim.random = new MersenneTwisterFast(randomSeed());
+
+        doReturn(series).when(sim).getSeries();
+        doReturn(mock(PatchGrid.class)).when(sim).getGrid();
+        doReturn(mock(Schedule.class)).when(sim).getSchedule();
+
+        return sim;
+    }
+
+    /**
+     * Steps the action and returns the coordinates of the inserted cells.
+     *
+     * @param direction the insertion direction
+     * @param radius the insertion radius
+     * @param offset the insertion offset
+     * @param number the number of cells to insert from each population
+     * @param simulationRadius the radius of the simulation
+     * @return the list of coordinates that cells were inserted into
+     */
+    private static ArrayList<CoordinateUVWZ> insertedCoordinates(
+            Direction direction, int radius, int offset, int number, int simulationRadius) {
+        PatchSeries hexSeries = makeSeries(simulationRadius);
+        PatchSimulation hexSim = makeSimulation(hexSeries);
+        PatchGrid hexGrid = (PatchGrid) hexSim.getGrid();
+
+        PatchActionInsert action =
+                new PatchActionInsert(
+                        hexSeries, makeDirectionParameters(direction, radius, offset, number));
+        action.register(hexSim, POPULATION_NAME);
+        action.step(hexSim);
+
+        ArgumentCaptor<Location> captor = ArgumentCaptor.forClass(Location.class);
+        verify(hexGrid, atLeast(0)).addObject(any(), captor.capture());
+
+        ArrayList<CoordinateUVWZ> coordinates = new ArrayList<>();
+
+        for (Location location : captor.getAllValues()) {
+            PatchLocation patchLocation = (PatchLocation) location;
+            coordinates.add((CoordinateUVWZ) patchLocation.getCoordinate());
+        }
+
+        return coordinates;
+    }
+
+    @Test
+    public void constructor_directionMissing_throwsException() {
+        PatchSeries directionSeries = mock(PatchSeries.class);
+        MiniBox parameters = makeDirectionParameters((String) null);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new PatchActionInsert(directionSeries, parameters));
+    }
+
+    @Test
+    public void constructor_directionInvalid_throwsException() {
+        PatchSeries directionSeries = mock(PatchSeries.class);
+        MiniBox parameters = makeDirectionParameters(randomString());
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new PatchActionInsert(directionSeries, parameters));
+    }
+
+    @Test
+    public void constructor_directionValid_createsAction() {
+        for (Direction direction : Direction.values()) {
+            PatchSeries directionSeries = mock(PatchSeries.class);
+            MiniBox parameters = makeDirectionParameters(direction.name());
+
+            assertDoesNotThrow(() -> new PatchActionInsert(directionSeries, parameters));
+        }
+    }
+
+    @Test
+    public void constructor_directionLowercase_createsAction() {
+        for (Direction direction : Direction.values()) {
+            PatchSeries directionSeries = mock(PatchSeries.class);
+            MiniBox parameters = makeDirectionParameters(direction.name().toLowerCase());
+
+            assertDoesNotThrow(() -> new PatchActionInsert(directionSeries, parameters));
+        }
+    }
+
+    @Test
+    public void constructor_directionInvalid_messageListsValidDirections() {
+        PatchSeries directionSeries = mock(PatchSeries.class);
+        MiniBox parameters = makeDirectionParameters(randomString());
+
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> new PatchActionInsert(directionSeries, parameters));
+
+        for (Direction direction : Direction.values()) {
+            assertTrue(exception.getMessage().contains(direction.name()));
+        }
+    }
+
+    @Test
+    public void step_centerDirection_insertsAroundSimulationCenter() {
+        int radius = 3;
+        int number = 10;
+
+        ArrayList<CoordinateUVWZ> coordinates =
+                insertedCoordinates(Direction.CENTER, radius, 0, number, SIMULATION_RADIUS);
+
+        assertEquals(number, coordinates.size());
+
+        for (CoordinateUVWZ coordinate : coordinates) {
+            assertTrue(Math.abs(coordinate.u) < radius);
+            assertTrue(Math.abs(coordinate.v) < radius);
+            assertTrue(Math.abs(coordinate.w) < radius);
+        }
+    }
+
+    @Test
+    public void step_withOffset_insertsAroundOffsetCenter() {
+        int radius = 3;
+        int offset = 5;
+        int number = 10;
+
+        ArrayList<CoordinateUVWZ> coordinates =
+                insertedCoordinates(Direction.NE, radius, offset, number, SIMULATION_RADIUS);
+
+        assertEquals(number, coordinates.size());
+
+        // The NE unit offset is (1, -1, 0), so the region is centered there.
+        for (CoordinateUVWZ coordinate : coordinates) {
+            assertTrue(Math.abs(coordinate.u - offset) < radius);
+            assertTrue(Math.abs(coordinate.v + offset) < radius);
+            assertTrue(Math.abs(coordinate.w) < radius);
+        }
+    }
+
+    @Test
+    public void step_withOffset_doesNotInsertAtSimulationCenter() {
+        int radius = 2;
+        int offset = SIMULATION_RADIUS - radius;
+        int number = 10;
+
+        ArrayList<CoordinateUVWZ> coordinates =
+                insertedCoordinates(Direction.N, radius, offset, number, SIMULATION_RADIUS);
+
+        for (CoordinateUVWZ coordinate : coordinates) {
+            assertFalse(coordinate.u == 0 && coordinate.v == 0 && coordinate.w == 0);
+        }
+    }
+
+    @Test
+    public void step_offsetExceedsSimulation_clampsWithinSimulation() {
+        int radius = 3;
+        int offset = SIMULATION_RADIUS * 2;
+        int number = 10;
+
+        ArrayList<CoordinateUVWZ> coordinates =
+                insertedCoordinates(Direction.S, radius, offset, number, SIMULATION_RADIUS);
+
+        assertEquals(number, coordinates.size());
+
+        for (CoordinateUVWZ coordinate : coordinates) {
+            assertTrue(Math.abs(coordinate.u) < SIMULATION_RADIUS);
+            assertTrue(Math.abs(coordinate.v) < SIMULATION_RADIUS);
+            assertTrue(Math.abs(coordinate.w) < SIMULATION_RADIUS);
+        }
+    }
+
+    @Test
+    public void step_offsetExceedsSimulation_matchesMaximumOffset() {
+        int radius = 3;
+        int number = 10;
+        int maximum = SIMULATION_RADIUS - radius;
+
+        HashSet<CoordinateUVWZ> clamped =
+                new HashSet<>(
+                        insertedCoordinates(
+                                Direction.SW, radius, maximum + 10, number, SIMULATION_RADIUS));
+
+        // All coordinates from the clamped region lie in the region at the maximum offset.
+        PatchLocationFactoryHex factory = new PatchLocationFactoryHex();
+        setFieldUnchecked(factory, "simulationRadius", SIMULATION_RADIUS);
+
+        HashSet<Coordinate> expected =
+                new HashSet<>(
+                        factory.getCoordinates(radius, SIMULATION_DEPTH, Direction.SW, maximum));
+
+        for (CoordinateUVWZ coordinate : clamped) {
+            assertTrue(expected.contains(coordinate));
+        }
+    }
+
+    @Test
+    public void step_insertRadiusExceedsSimulation_clampsToSimulationRadius() {
+        int simulationRadius = 4;
+        int number = 10;
+
+        ArrayList<CoordinateUVWZ> coordinates =
+                insertedCoordinates(
+                        Direction.CENTER, simulationRadius * 3, 0, number, simulationRadius);
+
+        assertEquals(number, coordinates.size());
+
+        for (CoordinateUVWZ coordinate : coordinates) {
+            assertTrue(Math.abs(coordinate.u) < simulationRadius);
+            assertTrue(Math.abs(coordinate.v) < simulationRadius);
+            assertTrue(Math.abs(coordinate.w) < simulationRadius);
+        }
+    }
+
+    @Test
+    public void step_numberExceedsCoordinates_insertsAvailableCoordinates() {
+        int radius = 2;
+        int number = 1000;
+
+        PatchLocationFactoryHex factory = new PatchLocationFactoryHex();
+        setFieldUnchecked(factory, "simulationRadius", SIMULATION_RADIUS);
+        int available = factory.getCoordinates(radius, SIMULATION_DEPTH).size();
+
+        ArrayList<CoordinateUVWZ> coordinates =
+                insertedCoordinates(Direction.CENTER, radius, 0, number, SIMULATION_RADIUS);
+
+        assertEquals(available, coordinates.size());
+    }
+
+    @Test
+    public void step_multipleCells_insertsIntoUniqueCoordinates() {
+        int radius = 3;
+        int number = 10;
+
+        ArrayList<CoordinateUVWZ> coordinates =
+                insertedCoordinates(Direction.NW, radius, 4, number, SIMULATION_RADIUS);
+
+        assertEquals(number, coordinates.size());
+        assertEquals(number, new HashSet<>(coordinates).size());
+    }
+
+    @Test
+    public void step_invalidDirectionForGeometry_throwsException() {
+        PatchSeries hexSeries = makeSeries(SIMULATION_RADIUS);
+        PatchSimulation hexSim = makeSimulation(hexSeries);
+
+        PatchActionInsert action =
+                new PatchActionInsert(hexSeries, makeDirectionParameters(Direction.E, 2, 3, 5));
+        action.register(hexSim, POPULATION_NAME);
+
+        assertThrows(IllegalArgumentException.class, () -> action.step(hexSim));
     }
 }
