@@ -1058,4 +1058,51 @@ public class PottsSeriesTest {
         PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
         assertEquals(className, series.getVisClass());
     }
+
+    private PottsSeries makeSeriesForLayers(Box[] boxes, MiniBox defaults, MiniBox conversion) {
+        PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
+        try {
+            Field dsField = Series.class.getDeclaredField("ds");
+            dsField.setAccessible(true);
+            dsField.setDouble(series, DS);
+            Field dtField = Series.class.getDeclaredField("dt");
+            dtField.setAccessible(true);
+            dtField.setDouble(series, DT);
+        } catch (Exception ignored) {
+        }
+        series.updateLayers(new ArrayList<>(Arrays.asList(boxes)), defaults, conversion);
+        return series;
+    }
+
+    @Test
+    public void updateLayers_noLayers_createsEmptyMap() {
+        PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
+        series.updateLayers(null, new MiniBox(), new MiniBox());
+        assertNotNull(series.layers);
+        assertEquals(0, series.layers.size());
+    }
+
+    @Test
+    public void updateLayers_givenLayer_appliesValuesScalesAndConversions() {
+        Box box = new Box();
+        box.add("id", "PDGF");
+        box.addAtt("A", "value", "50");
+        box.addTag("A", "PARAMETER");
+        box.addAtt("B", "scale", "3");
+        box.addTag("B", "PARAMETER");
+
+        MiniBox defaults = new MiniBox();
+        defaults.put("A", 1.0);
+        defaults.put("B", 2.0);
+        defaults.put("C", 4.0);
+        MiniBox conversion = new MiniBox();
+        conversion.put("C", "DT");
+
+        PottsSeries series = makeSeriesForLayers(new Box[] {box}, defaults, conversion);
+
+        MiniBox layer = series.layers.get("PDGF");
+        assertEquals(50, layer.getDouble("A"), EPSILON);
+        assertEquals(6, layer.getDouble("B"), EPSILON);
+        assertEquals(4 * DT, layer.getDouble("C"), EPSILON);
+    }
 }

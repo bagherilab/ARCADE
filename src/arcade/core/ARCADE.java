@@ -295,6 +295,7 @@ public abstract class ARCADE {
         String loadPath = settings.get("LOAD_PATH");
         boolean loadCells = settings.contains("LOAD_CELLS");
         boolean loadLocations = settings.contains("LOAD_LOCATIONS");
+        boolean loadLayers = settings.contains("LOAD_LAYERS");
 
         // Iterate through each series and run.
         for (Series s : series) {
@@ -305,11 +306,12 @@ public abstract class ARCADE {
             }
 
             // Create loader if flagged.
-            if (loadCells || loadLocations) {
+            if (loadCells || loadLocations || loadLayers) {
                 s.loader = this.getLoader(s);
                 s.loader.prefix = loadPath;
                 s.loader.loadCells = loadCells;
                 s.loader.loadLocations = loadLocations;
+                s.loader.loadLayers = loadLayers;
             }
 
             // Skip simulations if there is an error in the series.

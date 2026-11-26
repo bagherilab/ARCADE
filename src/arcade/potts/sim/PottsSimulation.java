@@ -1,7 +1,11 @@
 package arcade.potts.sim;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import arcade.core.agent.action.Action;
@@ -20,6 +24,8 @@ import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.env.grid.PottsGrid;
+import arcade.potts.env.lattice.PottsLattice;
+import arcade.potts.env.lattice.PottsLatticeFactory;
 import arcade.potts.env.location.PottsLocationFactory;
 import static arcade.potts.util.PottsEnums.Ordering;
 
@@ -36,6 +42,9 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 
     /** {@link arcade.core.env.grid.Grid} containing agents in the simulation. */
     Grid grid;
+
+    /** Map of layer id to lattice. */
+    Map<String, PottsLattice> lattices;
 
     /** Cell ID tracker. */
     int id;
@@ -122,7 +131,29 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 
     @Override
     public final Lattice getLattice(String key) {
-        return null;
+        return lattices == null ? null : lattices.get(key);
+    }
+
+    /**
+     * Gets the set of lattice keys.
+     *
+     * @return the set of layer ids
+     */
+    public final Set<String> getLatticeKeys() {
+        return lattices == null ? Collections.emptySet() : lattices.keySet();
+    }
+
+    /**
+     * Gets all lattice fields, sorted by layer id.
+     *
+     * @return the map of layer id to field array
+     */
+    public final Map<String, double[][][]> getLayers() {
+        TreeMap<String, double[][][]> layers = new TreeMap<>();
+        if (lattices != null) {
+            lattices.forEach((key, lattice) -> layers.put(key, lattice.getField()));
+        }
+        return layers;
     }
 
     @Override
@@ -255,7 +286,23 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 
     @Override
     public final void setupEnvironment() {
-        // TODO add environment setup (currently not needed)
+        PottsLatticeFactory factory = new PottsLatticeFactory();
+        Map<String, double[][][]> loaded = null;
+        if (series.loader != null && series.loader.loadLayers) {
+            loaded = series.loader.loadLayers();
+            if (loaded == null) {
+                throw new IllegalStateException(
+                        "unable to load layers file [ "
+                                + series.loader.prefix.replace(
+                                        "[#]", String.format("%04d", getSeed()))
+                                + ".LAYERS.json ]");
+            }
+        }
+        factory.createLattices(series, loaded);
+        lattices = factory.lattices;
+        for (PottsLattice lattice : lattices.values()) {
+            lattice.schedule(schedule);
+        }
     }
 
     @Override

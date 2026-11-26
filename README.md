@@ -63,7 +63,7 @@ When using command line, first navigate to the directory containing the jar.
 Then:
 
 ```bash
-$ java -jar arcade-X.X.X.jar potts XML PATH [(-v|--vis)] [--loadpath] [(-c|--cells)] [(-l|--locations)]
+$ java -jar arcade-X.X.X.jar potts XML PATH [(-v|--vis)] [--loadpath] [(-c|--cells)] [(-l|--locations)] [--loadlayers] [--savelayers]
 
     XML
         Absolute path to setup XML
@@ -77,6 +77,10 @@ $ java -jar arcade-X.X.X.jar potts XML PATH [(-v|--vis)] [--loadpath] [(-c|--cel
         Flag for loading .CELLS file
     [(-l|--locations)]
         Flag for loading .LOCATIONS file
+    [--loadlayers]
+        Flag for loading .LAYERS file
+    [--savelayers]
+        Flag for saving .LAYERS files
 ```
 
 <details>
@@ -101,7 +105,7 @@ $ java -jar arcade.jar potts /path/to/setup.xml /path/to/output/ --vis
 <summary><strong>:small_orange_diamond: Example: Running model from command line using loaded files</strong></summary>
 
 ```bash
-$ java -jar arcade.jar potts /path/to/setup.xml /path/to/output/ --loadpath /path/to/load/files --cells --locations
+$ java -jar arcade.jar potts /path/to/setup.xml /path/to/output/ --loadpath /path/to/load/files --cells --locations --loadlayers
 ```
 
 </details>
@@ -116,7 +120,7 @@ ARCADE uses a setup file that describes the setup of the simulations, agents, an
 
 The models saves simulation snapshots to `.json` files, which describe the simulation and agents.
 Values in `[ALL CAPS]` are replaced with simulation values.
-Each simulation series produces a single overview file, and a number `.CELLS`/`.LOCATIONS` snapshots determined by the total number of simulation ticks and the snapshot interval.
+Each simulation series produces a single overview file, and a number `.CELLS`/`.LOCATIONS` (and optionally `.LAYERS`) snapshots determined by the total number of simulation ticks and the snapshot interval.
 
 ### Simulation series overview
 
@@ -204,4 +208,22 @@ This file can be used to as initial conditions by loading with `--locations`.
   },
   ...
 ]
+```
+
+### Simulation `.LAYERS` snapshot
+
+The `.LAYERS` snapshot file includes the value of each lattice layer at every voxel, indexed as `[z][x][y]`.
+This file is only saved when running with `--savelayers`.
+This file can be used as initial conditions by loading with `--loadlayers`.
+
+```python
+{
+  "[LAYER_ID]": [
+    [
+      [[VALUE], [VALUE], ...],
+      ...
+    ]
+  ],
+  ...
+}
 ```

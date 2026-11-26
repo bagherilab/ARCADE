@@ -1,2 +1,4 @@
 <commands>
+    <switch id="LOAD_LAYERS" long="loadlayers" help="Load the LAYERS snapshot file" />
+    <switch id="SAVE_LAYERS" long="savelayers" help="Save the LAYERS output files" />
 </commands>

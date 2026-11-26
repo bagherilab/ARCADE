@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import com.google.gson.Gson;
@@ -128,6 +129,23 @@ public class OutputLoaderTest {
     }
 
     @Test
+    public void equip_loadLayers_readsLayersFile(@TempDir Path path) throws IOException {
+        Series series = mock(Series.class);
+        Simulation sim = mock(Simulation.class);
+
+        Files.createFile(path.resolve("equip.LAYERS.json"));
+        String prefix = path.toAbsolutePath() + "/equip";
+        OutputLoader loader = new OutputLoaderMock(series);
+        loader.prefix = prefix;
+        loader.loadLayers = true;
+
+        loader.equip(sim);
+        assertNull(loader.cellJson);
+        assertNull(loader.locationJson);
+        assertEquals("", loader.layerJson);
+    }
+
+    @Test
     public void loadCells_called_loadsContents() {
         OutputLoader loader = mock(OutputLoader.class, CALLS_REAL_METHODS);
         ArrayList<CellContainer> list = new ArrayList<>();
@@ -169,6 +187,23 @@ public class OutputLoaderTest {
         ArrayList<LocationContainer> loaded = loader.loadLocations();
         verify(gson).fromJson(loader.locationJson, DEFAULT_LOCATION_TYPE);
         assertSame(list, loaded);
+    }
+
+    @Test
+    public void loadLayers_called_parsesContents() {
+        OutputLoader loader = mock(OutputLoader.class, CALLS_REAL_METHODS);
+        loader.layerJson = "{\"X\": [[[1.5, 2.0]]]}";
+
+        try {
+            Field field = OutputLoader.class.getDeclaredField("gson");
+            field.setAccessible(true);
+            field.set(loader, new Gson());
+        } catch (Exception ignored) {
+        }
+
+        HashMap<String, double[][][]> loaded = loader.loadLayers();
+        assertEquals(1, loaded.size());
+        assertArrayEquals(new double[][][] {{{1.5, 2.0}}}, loaded.get("X"));
     }
 
     @Test

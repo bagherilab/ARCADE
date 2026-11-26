@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sim.engine.Schedule;
@@ -18,6 +20,7 @@ import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.agent.cell.PottsCellFactory;
+import arcade.potts.env.lattice.PottsLattice;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocationContainer;
 import arcade.potts.env.location.PottsLocationFactory;
@@ -401,10 +404,82 @@ public class PottsSimulationTest {
     }
 
     @Test
-    public void getLattice_initialized_returnsNull() {
+    public void getLattice_beforeSetup_returnsNull() {
         Series series = mock(PottsSeries.class);
         PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
         assertNull(sim.getLattice(""));
+    }
+
+    @Test
+    public void setupEnvironment_noLayers_createsNoLattices() {
+        Series series = createSeries(new int[0], new String[0]);
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.setupEnvironment();
+        assertEquals(0, sim.getLatticeKeys().size());
+        assertNull(sim.getLattice("PDGF"));
+    }
+
+    @Test
+    public void setupEnvironment_givenLayers_createsLattices() {
+        Series series = createSeries(new int[0], new String[0]);
+        MiniBox layer = new MiniBox();
+        layer.put("INITIAL_CONCENTRATION", 0);
+        series.layers = new HashMap<>();
+        series.layers.put("X", layer);
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.setupEnvironment();
+        assertEquals(Set.of("X"), sim.getLatticeKeys());
+        assertTrue(sim.getLattice("X") instanceof PottsLattice);
+    }
+
+    @Test
+    public void setupEnvironment_loadLayersMissingFile_throws() {
+        Series series = createSeries(new int[0], new String[0]);
+        OutputLoader loader = mock(OutputLoader.class);
+        loader.loadLayers = true;
+        loader.prefix = "run_[#]";
+        doReturn(null).when(loader).loadLayers();
+        series.loader = loader;
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        IllegalStateException e = assertThrows(IllegalStateException.class, sim::setupEnvironment);
+        assertTrue(e.getMessage().contains(String.format("run_%04d.LAYERS.json", sim.getSeed())));
+    }
+
+    @Test
+    public void setupEnvironment_loadLayers_usesLoadedField() throws Exception {
+        Series series = createSeries(new int[0], new String[0]);
+        for (String name : new String[] {"length", "width", "height"}) {
+            Field field = Series.class.getDeclaredField(name);
+            field.setAccessible(true);
+            field.setInt(series, 1);
+        }
+        MiniBox layer = new MiniBox();
+        layer.put("INITIAL_CONCENTRATION", 0);
+        series.layers = new HashMap<>();
+        series.layers.put("X", layer);
+        HashMap<String, double[][][]> fields = new HashMap<>();
+        fields.put("X", new double[][][] {{{7.0}}});
+        OutputLoader loader = mock(OutputLoader.class);
+        loader.loadLayers = true;
+        doReturn(fields).when(loader).loadLayers();
+        series.loader = loader;
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.setupEnvironment();
+        assertEquals(7.0, sim.getLattice("X").getField()[0][0][0], 0);
+    }
+
+    @Test
+    public void getLayers_givenLattices_returnsSortedFields() {
+        Series series = createSeries(new int[0], new String[0]);
+        MiniBox layer = new MiniBox();
+        layer.put("INITIAL_CONCENTRATION", 0);
+        series.layers = new HashMap<>();
+        series.layers.put("B", layer);
+        series.layers.put("A", layer);
+        PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+        sim.setupEnvironment();
+        assertEquals(List.of("A", "B"), new ArrayList<>(sim.getLayers().keySet()));
+        assertSame(sim.getLattice("A").getField(), sim.getLayers().get("A"));
     }
 
     @Test

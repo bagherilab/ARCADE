@@ -16,7 +16,7 @@ A `set` can include multiple `series` tags.
 <set prefix="[PREFIX]">
     <series name="[NAME]" start="[START]" end="[END]"
             ds="[DS]" margin="[MARGIN]" length="[LENGTH]" width="[WIDTH]" height="[HEIGHT]"
-            dt="[DT]" ticks="[TICKS]" interval="[INTERVAL]">
+            dt="[DT]" ticks="[TICKS]" interval="[INTERVAL]" offset="[OFFSET]">
         ...
     </series>
 </set>
@@ -36,6 +36,9 @@ A `set` can include multiple `series` tags.
 | `dt`       | temporal conversion factor (hrs/tick)          | integer, float, fraction | 1       |
 | `ticks`    | total number of simulation ticks               | integer                  | 100     |
 | `interval` | number of ticks between snapshots              | integer                  | 50      |
+| `offset`   | tick offset added to output file labels        | integer                  | 0       |
+
+Use `offset` when restarting from a snapshot at tick N so output files continue from N; it does not change the simulation clock.
 
 If `height = 1`, the simulation uses 2D rules.
 If `height > 1`, the simulation uses 3D rules.
