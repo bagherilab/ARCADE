@@ -1,21 +1,29 @@
 package arcade.potts.env.lattice;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.Map;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import arcade.core.env.lattice.Lattice;
 import arcade.core.env.location.Location;
 import arcade.core.env.operation.Operation;
 import arcade.core.env.operation.OperationCategory;
+import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.Voxel;
+import arcade.potts.env.operation.PottsOperationDecayer;
+import arcade.potts.env.operation.PottsOperationDiffuser;
+import static arcade.potts.util.PottsEnums.Category;
+import static arcade.potts.util.PottsEnums.Ordering;
 
 /**
  * Implementation of {@link Lattice} for potts models.
  *
- * <p>The field is a {@code [z][x][y]} array aligned 1:1 with the potts {@code ids} array. A lattice
- * without operations is static, so nothing is scheduled.
+ * <p>The field is a {@code [z][x][y]} array aligned 1:1 with the potts {@code ids} array.
+ * Operations listed in the layer parameters are created with the lattice and stepped at {@code
+ * LATTICES}: diffuser, then decayer.
  */
 public class PottsLattice implements Lattice {
     /** Array containing lattice values. */
@@ -39,6 +47,9 @@ public class PottsLattice implements Lattice {
     /** Lattice parameters. */
     final MiniBox parameters;
 
+    /** Map of operation categories and {@link Operation} instances. */
+    final Map<Category, Operation> operations;
+
     /**
      * Creates a {@code PottsLattice}.
      *
@@ -58,6 +69,33 @@ public class PottsLattice implements Lattice {
         this.dt = dt;
         this.parameters = parameters;
         field = new double[height][length][width];
+
+        // Add lattice operations.
+        operations = new EnumMap<>(Category.class);
+        MiniBox operationBox = parameters.filter("(OPERATION)");
+        for (String operationKey : operationBox.getKeys()) {
+            Category category = Category.valueOf(operationKey);
+            String version = operationBox.get(operationKey);
+            operations.put(category, makeOperation(category, version));
+        }
+    }
+
+    /**
+     * Makes the specified {@link Operation} object.
+     *
+     * @param category the operation category
+     * @param version the operation version
+     * @return the operation instance
+     */
+    Operation makeOperation(Category category, String version) {
+        switch (category) {
+            case DIFFUSER:
+                return new PottsOperationDiffuser(this);
+            case DECAYER:
+                return new PottsOperationDecayer(this);
+            default:
+                throw new IllegalArgumentException("unsupported operation [ " + category + " ]");
+        }
     }
 
     /**
@@ -100,7 +138,7 @@ public class PottsLattice implements Lattice {
 
     @Override
     public Operation getOperation(OperationCategory category) {
-        return null;
+        return operations.get(category);
     }
 
     @Override
@@ -186,8 +224,22 @@ public class PottsLattice implements Lattice {
     }
 
     @Override
-    public void schedule(Schedule schedule) {}
+    public void schedule(Schedule schedule) {
+        schedule.scheduleRepeating(this, Ordering.LATTICES.ordinal(), 1);
+    }
 
     @Override
-    public void step(SimState simstate) {}
+    public void step(SimState simstate) {
+        Simulation sim = (Simulation) simstate;
+
+        // Step diffuser operation, if it exists.
+        if (operations.containsKey(Category.DIFFUSER)) {
+            operations.get(Category.DIFFUSER).step(simstate.random, sim);
+        }
+
+        // Step decayer operation, if it exists.
+        if (operations.containsKey(Category.DECAYER)) {
+            operations.get(Category.DECAYER).step(simstate.random, sim);
+        }
+    }
 }

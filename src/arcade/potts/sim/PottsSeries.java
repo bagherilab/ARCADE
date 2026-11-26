@@ -318,6 +318,12 @@ public final class PottsSeries extends Series {
                 double conversion = parseConversion(layerConversions.get(convert), ds, dt);
                 layer.put(convert, layer.getDouble(convert) * conversion);
             }
+
+            // Get list of operations.
+            HashSet<String> operations = box.filterTags("OPERATION");
+            for (String operation : operations) {
+                layer.put("(OPERATION)" + TAG_SEPARATOR + operation, "");
+            }
         }
     }
 
