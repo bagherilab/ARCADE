@@ -9,6 +9,7 @@ import arcade.core.util.Parameters;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.lattice.PottsLattice;
 import arcade.potts.env.location.PottsLocation;
+import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
@@ -28,6 +29,12 @@ public class PottsProcessSecretionTest {
         PottsCell cell = mock(PottsCell.class);
         PottsLocation location = mock(PottsLocation.class);
         doReturn(new ArrayList<>(List.of(voxels))).when(location).getVoxels();
+        doAnswer(
+                        i ->
+                                new PottsLocation2D(new ArrayList<>(List.of(voxels)))
+                                        .getBoundaryVoxels(i.getArgument(0)))
+                .when(location)
+                .getBoundaryVoxels(any());
         doReturn(location).when(cell).getLocation();
         doReturn(new Parameters(box, null, null)).when(cell).getParameters();
         doReturn(ID).when(cell).getID();
@@ -105,52 +112,44 @@ public class PottsProcessSecretionTest {
     }
 
     @Test
-    public void getBoundaryVoxels_twoDimensional_returnsUniqueAdjacentVoxels() {
-        Voxel[] voxels = {new Voxel(2, 2, 0), new Voxel(2, 3, 0)};
-        PottsProcessSecretion process = new PottsProcessSecretion(makeCell(new MiniBox(), voxels));
-        List<Voxel> boundary = process.getBoundaryVoxels(makeIds(1, 5, voxels));
-        HashSet<Voxel> expected =
-                new HashSet<>(
-                        List.of(
-                                new Voxel(1, 2, 0),
-                                new Voxel(3, 2, 0),
-                                new Voxel(2, 1, 0),
-                                new Voxel(1, 3, 0),
-                                new Voxel(3, 3, 0),
-                                new Voxel(2, 4, 0)));
-        assertEquals(6, boundary.size());
-        assertEquals(expected, new HashSet<>(boundary));
+    public void getLayers_givenLayers_returnsLayers() {
+        MiniBox box = secretion("PDGF", 4, "BOUNDARY");
+        box.put("secretion/RATE_ECM", 2.0);
+        box.put("secretion/REGION_ECM", "INSIDE");
+        PottsProcessSecretion process = new PottsProcessSecretion(makeCell(box));
+        assertEquals(new HashSet<>(List.of("ECM", "PDGF")), new HashSet<>(process.getLayers()));
     }
 
     @Test
-    public void getBoundaryVoxels_neighborCell_includesNeighborVoxels() {
-        Voxel voxel = new Voxel(2, 2, 0);
-        PottsProcessSecretion process = new PottsProcessSecretion(makeCell(new MiniBox(), voxel));
-        int[][][] ids = makeIds(1, 5, voxel);
-        ids[0][3][2] = ID + 1;
-        List<Voxel> boundary = process.getBoundaryVoxels(ids);
-        assertEquals(4, boundary.size());
-        assertTrue(boundary.contains(new Voxel(3, 2, 0)));
+    public void getLayers_modified_throws() {
+        PottsProcessSecretion process =
+                new PottsProcessSecretion(makeCell(secretion("PDGF", 4, "BOUNDARY")));
+        assertThrows(UnsupportedOperationException.class, () -> process.getLayers().clear());
+        assertEquals(4, process.getRate("PDGF"), EPSILON);
     }
 
     @Test
-    public void getBoundaryVoxels_atEdge_skipsOutsideArray() {
-        Voxel voxel = new Voxel(0, 0, 0);
-        PottsProcessSecretion process = new PottsProcessSecretion(makeCell(new MiniBox(), voxel));
-        List<Voxel> boundary = process.getBoundaryVoxels(makeIds(1, 5, voxel));
-        assertEquals(
-                new HashSet<>(List.of(new Voxel(1, 0, 0), new Voxel(0, 1, 0))),
-                new HashSet<>(boundary));
+    public void setRate_givenLayer_updatesRate() {
+        PottsProcessSecretion process =
+                new PottsProcessSecretion(makeCell(secretion("PDGF", 4, "BOUNDARY")));
+        process.setRate("PDGF", 7);
+        assertEquals(7, process.getRate("PDGF"), EPSILON);
+        assertEquals(Placement.BOUNDARY, process.getPlacement("PDGF"));
     }
 
     @Test
-    public void getBoundaryVoxels_threeDimensional_includesAboveAndBelow() {
-        Voxel voxel = new Voxel(2, 2, 1);
-        PottsProcessSecretion process = new PottsProcessSecretion(makeCell(new MiniBox(), voxel));
-        List<Voxel> boundary = process.getBoundaryVoxels(makeIds(3, 5, voxel));
-        assertEquals(6, boundary.size());
-        assertTrue(boundary.contains(new Voxel(2, 2, 0)));
-        assertTrue(boundary.contains(new Voxel(2, 2, 2)));
+    public void setRate_unknownLayer_throws() {
+        PottsProcessSecretion process =
+                new PottsProcessSecretion(makeCell(secretion("PDGF", 4, "BOUNDARY")));
+        assertThrows(IllegalArgumentException.class, () -> process.setRate("ECM", 1));
+    }
+
+    @Test
+    public void setRate_negativeRate_throws() {
+        PottsProcessSecretion process =
+                new PottsProcessSecretion(makeCell(secretion("PDGF", 4, "BOUNDARY")));
+        assertThrows(IllegalArgumentException.class, () -> process.setRate("PDGF", -1));
+        assertEquals(4, process.getRate("PDGF"), EPSILON);
     }
 
     @Test

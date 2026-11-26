@@ -3,7 +3,9 @@ package arcade.potts.env.location;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import sim.util.Double3D;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
@@ -675,6 +677,62 @@ public abstract class PottsLocation implements Location {
         height = calculateHeight();
         calculateCenter();
         return makeLocation(voxelsB);
+    }
+
+    /**
+     * Gets the voxels adjacent to the location that are not part of it.
+     *
+     * <p>Adjacent voxels are the face neighbors of each voxel of the location (4 in 2D, 6 in 3D).
+     * Only voxels inside the bounds of {@code ids} are included; the values in {@code ids} are not
+     * read.
+     *
+     * @param ids the potts array of cell ids, used for its bounds
+     * @return the list of unique boundary voxels, in order of first occurrence
+     */
+    public List<Voxel> getBoundaryVoxels(int[][][] ids) {
+        HashSet<Voxel> own = new HashSet<>(voxels);
+        LinkedHashSet<Voxel> boundary = new LinkedHashSet<>();
+        for (Voxel voxel : voxels) {
+            for (Voxel v : getNeighbors(voxel)) {
+                if (v.z < 0
+                        || v.z >= ids.length
+                        || v.x < 0
+                        || v.x >= ids[v.z].length
+                        || v.y < 0
+                        || v.y >= ids[v.z][v.x].length) {
+                    continue;
+                }
+                if (!own.contains(v)) {
+                    boundary.add(v);
+                }
+            }
+        }
+        return new ArrayList<>(boundary);
+    }
+
+    /**
+     * Gets boundary voxels that are empty and inside the domain.
+     *
+     * <p>The potts array has a one-voxel border that is always empty but is not part of the domain.
+     *
+     * @param ids the potts array of cell ids
+     * @param boundary the boundary voxels
+     * @return the list of free boundary voxels
+     */
+    public static List<Voxel> getFreeVoxels(int[][][] ids, List<Voxel> boundary) {
+        List<Voxel> free = new ArrayList<>();
+        for (Voxel v : boundary) {
+            boolean inside =
+                    v.x >= 1
+                            && v.y >= 1
+                            && v.x <= ids[v.z].length - 2
+                            && v.y <= ids[v.z][v.x].length - 2
+                            && (ids.length == 1 || (v.z >= 1 && v.z <= ids.length - 2));
+            if (inside && ids[v.z][v.x][v.y] == 0) {
+                free.add(v);
+            }
+        }
+        return free;
     }
 
     /**

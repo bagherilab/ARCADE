@@ -1,8 +1,7 @@
 package arcade.potts.agent.process;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
@@ -16,11 +15,12 @@ import arcade.potts.sim.PottsSimulation;
 /**
  * Extension of {@link PottsProcess} for secretion into lattice layers.
  *
- * <p>Each tick, the cell secretes {@code RATE_[LAYER]} (amount per tick) into each layer. The
- * amount is spread evenly over the cell's own voxels ({@code INSIDE}) or the voxels adjacent to the
- * cell that the cell does not own ({@code BOUNDARY}), as set by {@code REGION_[LAYER]}. Amounts are
- * added to the lattice with {@link PottsLattice#addDelta(List, double)}, so they are added to the
- * field at the next lattice step.
+ * <p>Each tick, the cell secretes {@code RATE_[LAYER]} (amount per tick) into each layer. The rate
+ * can be changed during the simulation with {@link #setRate(String, double)}. The amount is spread
+ * evenly over the cell's own voxels ({@code INSIDE}) or the voxels adjacent to the cell that the
+ * cell does not own ({@code BOUNDARY}), as set by {@code REGION_[LAYER]}. Amounts are added to the
+ * lattice with {@link PottsLattice#addDelta(List, double)}, so they are added to the field at the
+ * next lattice step.
  */
 public class PottsProcessSecretion extends PottsProcess {
     /** Voxels that secreted amounts are added to. */
@@ -31,11 +31,6 @@ public class PottsProcessSecretion extends PottsProcess {
         /** Voxels owned by the cell. */
         INSIDE
     }
-
-    /** Offsets to adjacent voxels in x, y, and z. */
-    private static final int[][] OFFSETS = {
-        {1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1},
-    };
 
     /** Secretion rate for each layer [amount/tick]. */
     final TreeMap<String, Double> rates;
@@ -78,6 +73,15 @@ public class PottsProcessSecretion extends PottsProcess {
     }
 
     /**
+     * Gets the layers secreted by the process.
+     *
+     * @return a read-only copy of the set of layer ids
+     */
+    public Set<String> getLayers() {
+        return Set.copyOf(rates.keySet());
+    }
+
+    /**
      * Gets the secretion rate for a layer.
      *
      * @param layer the layer id
@@ -88,6 +92,23 @@ public class PottsProcessSecretion extends PottsProcess {
     }
 
     /**
+     * Sets the secretion rate for a layer.
+     *
+     * @param layer the layer id
+     * @param rate the secretion rate [amount/tick]
+     */
+    public void setRate(String layer, double rate) {
+        if (!rates.containsKey(layer)) {
+            throw new IllegalArgumentException("layer [ " + layer + " ] is not secreted");
+        }
+        if (!(rate >= 0)) {
+            throw new IllegalArgumentException(
+                    "secretion rate for layer [ " + layer + " ] must be >= 0");
+        }
+        rates.put(layer, rate);
+    }
+
+    /**
      * Gets the secretion placement for a layer.
      *
      * @param layer the layer id
@@ -95,36 +116,6 @@ public class PottsProcessSecretion extends PottsProcess {
      */
     public Placement getPlacement(String layer) {
         return placements.get(layer);
-    }
-
-    /**
-     * Gets voxels adjacent to the cell that the cell does not own.
-     *
-     * @param ids the potts array of cell ids
-     * @return the list of unique boundary voxels within the array
-     */
-    List<Voxel> getBoundaryVoxels(int[][][] ids) {
-        int id = cell.getID();
-        LinkedHashSet<Voxel> boundary = new LinkedHashSet<>();
-        for (Voxel voxel : location.getVoxels()) {
-            for (int[] offset : OFFSETS) {
-                int x = voxel.x + offset[0];
-                int y = voxel.y + offset[1];
-                int z = voxel.z + offset[2];
-                if (z < 0
-                        || z >= ids.length
-                        || x < 0
-                        || x >= ids[z].length
-                        || y < 0
-                        || y >= ids[z][x].length) {
-                    continue;
-                }
-                if (ids[z][x][y] != id) {
-                    boundary.add(new Voxel(x, y, z));
-                }
-            }
-        }
-        return new ArrayList<>(boundary);
     }
 
     @Override
@@ -142,7 +133,7 @@ public class PottsProcessSecretion extends PottsProcess {
                 voxels = location.getVoxels();
             } else {
                 if (boundary == null) {
-                    boundary = getBoundaryVoxels(((PottsSimulation) sim).getPotts().ids);
+                    boundary = location.getBoundaryVoxels(((PottsSimulation) sim).getPotts().ids);
                 }
                 voxels = boundary;
             }

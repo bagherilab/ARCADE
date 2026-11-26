@@ -34,6 +34,16 @@ Valid options for classes include:
 {% elsif include.implementation == "potts" %}
 `stem`
 : Basic stem cell
+
+`fibroblast`
+: Wound fibroblast; can differentiate into a `myofibroblast` population
+
+`myofibroblast`
+: Wound myofibroblast
+
+`macrophage`
+: Wound macrophage; clears senescent cells it touches
+
 {% endif %}
 
 | ATTRIBUTE | DESCRIPTION                            | TYPE    | DEFAULT             | REQUIRED |

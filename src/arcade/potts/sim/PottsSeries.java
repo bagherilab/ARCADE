@@ -3,6 +3,8 @@ package arcade.potts.sim;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.logging.Logger;
 import arcade.core.sim.Series;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
@@ -17,9 +19,20 @@ public final class PottsSeries extends Series {
     /** Default cell class. */
     public static final String DEFAULT_CELL_CLASS = "stem";
 
+    /** Logger for {@code PottsSeries}. */
+    private static final Logger LOGGER = Logger.getLogger(PottsSeries.class.getName());
+
+    /** Cell classes for wound healing populations, which do not support regions. */
+    static final List<String> WOUND_HEALING_CLASSES =
+            List.of("fibroblast", "myofibroblast", "macrophage");
+
     /** Parameters copied to {@code [KEY]_[LAYER]} for each layer. */
     static final String[] LAYER_PARAMETERS = {
-        "secretion/RATE", "secretion/REGION", "chemotaxis/LAMBDA",
+        "secretion/RATE",
+        "secretion/REGION",
+        "senescence/EARLY_RATE",
+        "senescence/LATE_RATE",
+        "chemotaxis/LAMBDA",
     };
 
     /** Map of potts settings. */
@@ -308,6 +321,86 @@ public final class PottsSeries extends Series {
 
             // Check that per-layer parameters name an existing layer.
             checkLayerParameters(parameters, populationDefaults);
+
+            // Check that senescence secretion rates are not negative.
+            checkSenescenceRates(population);
+        }
+
+        // Check wound healing populations.
+        checkWoundHealingRegions();
+        checkDifferentiationTargets();
+    }
+
+    /**
+     * Checks that senescence secretion rates are not negative.
+     *
+     * <p>Rates are set when cells enter a senescence phase, so a negative rate is checked here to
+     * fail at setup instead of during the simulation.
+     *
+     * @param population the population parameters
+     */
+    void checkSenescenceRates(MiniBox population) {
+        for (String key : population.getKeys()) {
+            boolean rate =
+                    key.startsWith("senescence/EARLY_RATE_")
+                            || key.startsWith("senescence/LATE_RATE_");
+            if (rate && !(population.getDouble(key) >= 0)) {
+                throw new IllegalArgumentException(
+                        "senescence secretion rate [ " + key + " ] must be >= 0");
+            }
+        }
+    }
+
+    /** Checks that wound healing populations do not have regions. */
+    void checkWoundHealingRegions() {
+        for (String id : populations.keySet()) {
+            MiniBox population = populations.get(id);
+            if (!WOUND_HEALING_CLASSES.contains(population.get("CLASS"))) {
+                continue;
+            }
+            for (String key : population.getKeys()) {
+                if (key.startsWith("(REGION)")) {
+                    throw new IllegalArgumentException(
+                            "regions are not supported for wound healing population [ "
+                                    + id
+                                    + " ]");
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks that each differentiation target names a myofibroblast population.
+     *
+     * <p>Populations without a {@code DIFFERENTIATION_TARGET} parameter, or with the value {@code
+     * NONE}, are skipped. Only fibroblasts differentiate, so a target set for a population of any
+     * other class is ignored with a warning.
+     */
+    void checkDifferentiationTargets() {
+        for (String id : populations.keySet()) {
+            String target = populations.get(id).get("DIFFERENTIATION_TARGET");
+            if (target == null || target.equals("NONE")) {
+                continue;
+            }
+            if (!populations.get(id).get("CLASS").equals("fibroblast")) {
+                LOGGER.warning(
+                        "differentiation target [ "
+                                + target
+                                + " ] for population [ "
+                                + id
+                                + " ] is ignored because only fibroblasts differentiate");
+                continue;
+            }
+            MiniBox targetPopulation = populations.get(target);
+            if (targetPopulation == null
+                    || !targetPopulation.get("CLASS").equals("myofibroblast")) {
+                throw new IllegalArgumentException(
+                        "differentiation target [ "
+                                + target
+                                + " ] for population [ "
+                                + id
+                                + " ] is not a myofibroblast population");
+            }
         }
     }
 
