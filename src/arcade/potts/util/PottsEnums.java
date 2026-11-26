@@ -37,7 +37,10 @@ public final class PottsEnums {
         CELLS,
 
         /** Stepping order for lattices. */
-        LATTICES
+        LATTICES,
+
+        /** Stepping order for lattice operations that read other lattices. */
+        LAST_LATTICE
     }
 
     /** Cell state codes for potts simulations. */
@@ -237,7 +240,10 @@ public final class PottsEnums {
         DIFFUSER,
 
         /** Code for decay operation. */
-        DECAYER;
+        DECAYER,
+
+        /** Code for enzyme-dependent degradation operation. */
+        DEGRADER;
 
         /**
          * Randomly selects a {@code Category}, excluding {@code UNDEFINED}.

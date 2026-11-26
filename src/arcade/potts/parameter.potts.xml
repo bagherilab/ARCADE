@@ -114,4 +114,8 @@
 
     <!-- decayer operation parameters -->
     <layer.operation operation="decayer" id="DECAY_RATE" value="0" units="1/hour" conversion="DT" description="decay rate of molecule" />
+
+    <!-- degrader operation parameters -->
+    <layer.operation operation="degrader" id="ENZYME" value="NONE" description="layer id of degrading enzyme" />
+    <layer.operation operation="degrader" id="RATE" value="0" units="1/(concentration.hour)" conversion="DT" description="enzyme-dependent degradation rate" />
 </parameters>

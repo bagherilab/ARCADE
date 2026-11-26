@@ -7,6 +7,8 @@ import arcade.core.util.MiniBox;
 import arcade.potts.sim.PottsSeries;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static arcade.potts.util.PottsEnums.Category;
 
 public class PottsLatticeFactoryTest {
     static PottsSeries series(HashMap<String, MiniBox> layers) throws Exception {
@@ -63,6 +65,36 @@ public class PottsLatticeFactoryTest {
         assertNotSame(factory.lattices.get("A"), factory.lattices.get("B"));
         assertEquals(1, factory.lattices.get("A").getField()[0][0][0], 1E-12);
         assertEquals(2, factory.lattices.get("B").getField()[0][0][0], 1E-12);
+    }
+
+    static MiniBox degraderLayer(String enzyme) {
+        MiniBox box = layer(1);
+        box.put("(OPERATION)" + TAG_SEPARATOR + "DEGRADER", "");
+        box.put("degrader/ENZYME", enzyme);
+        box.put("degrader/RATE", 1.0);
+        return box;
+    }
+
+    @Test
+    public void createLattices_degraderReferencingOtherLayer_createsOperation() throws Exception {
+        HashMap<String, MiniBox> layers = new HashMap<>();
+        layers.put("ECM", degraderLayer("MMP"));
+        layers.put("MMP", layer(0));
+        PottsLatticeFactory factory = new PottsLatticeFactory();
+        factory.createLattices(series(layers));
+        assertNotNull(factory.lattices.get("ECM").getOperation(Category.DEGRADER));
+    }
+
+    @Test
+    public void createLattices_degraderUnknownEnzyme_throws() throws Exception {
+        HashMap<String, MiniBox> layers = new HashMap<>();
+        layers.put("ECM", degraderLayer("NOPE"));
+        PottsLatticeFactory factory = new PottsLatticeFactory();
+        IllegalArgumentException e =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> factory.createLattices(series(layers)));
+        assertTrue(e.getMessage().contains("NOPE"));
     }
 
     @Test
