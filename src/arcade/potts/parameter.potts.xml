@@ -37,6 +37,9 @@
     <potts.term term="persistence" id="LAMBDA_NUCLEUS" value="0.01" conversion="DS^-2" />
     <potts.term term="persistence" id="DECAY" value="0.05" units="/hour" conversion="DT" />
 
+    <!-- chemotaxis term parameters (copied to LAMBDA_[LAYER] for each layer) -->
+    <potts.term term="chemotaxis" id="LAMBDA" value="0" units="energy/concentration" description="strength of chemotaxis up the layer gradient" />
+
     <!-- default parameters for populations -->
     <population id="CRITICAL_VOLUME" value="TRUNCATED_NORMAL(MU=1300,SIGMA=200)" units="um^3" conversion="DS^-3" />
     <population id="CRITICAL_HEIGHT" value="TRUNCATED_NORMAL(MU=9,SIGMA=2)" units="um" conversion="DS^-1" />

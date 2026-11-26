@@ -4,6 +4,7 @@ import java.util.HashSet;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import arcade.potts.sim.hamiltonian.AdhesionHamiltonian3D;
+import arcade.potts.sim.hamiltonian.ChemotaxisHamiltonian;
 import arcade.potts.sim.hamiltonian.Hamiltonian;
 import arcade.potts.sim.hamiltonian.HeightHamiltonian;
 import arcade.potts.sim.hamiltonian.JunctionHamiltonian;
@@ -254,6 +255,9 @@ public class Potts3DTest {
 
         h = potts3D.getHamiltonian(Term.PERSISTENCE, series);
         assertTrue(h instanceof PersistenceHamiltonian);
+
+        h = potts3D.getHamiltonian(Term.CHEMOTAXIS, series);
+        assertTrue(h instanceof ChemotaxisHamiltonian);
     }
 
     @Test

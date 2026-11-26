@@ -1,6 +1,7 @@
 package arcade.potts.sim;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashSet;
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -62,6 +63,9 @@ public abstract class Potts implements Steppable {
     /** List of Hamiltonian terms. */
     ArrayList<Hamiltonian> hamiltonian;
 
+    /** Map of term to Hamiltonian term instance. */
+    final EnumMap<Term, Hamiltonian> terms;
+
     /**
      * Creates a cellular {@code Potts} model.
      *
@@ -95,10 +99,13 @@ public abstract class Potts implements Steppable {
 
         // Initialize hamiltonian list.
         hamiltonian = new ArrayList<>();
+        terms = new EnumMap<>(Term.class);
         if (series.terms != null) {
-            series.terms.stream()
-                    .map(term -> getHamiltonian(term, series))
-                    .forEach(h -> hamiltonian.add(h));
+            for (Term term : series.terms) {
+                Hamiltonian h = getHamiltonian(term, series);
+                hamiltonian.add(h);
+                terms.put(term, h);
+            }
         }
     }
 
@@ -122,6 +129,16 @@ public abstract class Potts implements Steppable {
         for (Hamiltonian h : hamiltonian) {
             h.deregister(cell);
         }
+    }
+
+    /**
+     * Gets the Hamiltonian term instance used by the model.
+     *
+     * @param term the Hamiltonian term
+     * @return the Hamiltonian instance, or {@code null} if the term is not used
+     */
+    public Hamiltonian getHamiltonian(Term term) {
+        return terms.get(term);
     }
 
     /**
