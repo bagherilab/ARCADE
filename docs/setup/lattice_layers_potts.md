@@ -95,6 +95,11 @@ _Specifies a matrix layer (ECM) degraded by a diffusing enzyme layer (MMP) at 0.
 </layer>
 ```
 
+## Secretion into layers
+
+Cells add to layers through the [secretion process]({{site.baseurl}}/setup/cell_populations_potts#secretion-process).
+Secreted amounts are held until the start of the lattice step, so every cell senses the same layer values regardless of the order in which cells step.
+
 ## Saving and loading layers
 
 Use `--savelayers` to write a `.LAYERS` snapshot at every snapshot interval.

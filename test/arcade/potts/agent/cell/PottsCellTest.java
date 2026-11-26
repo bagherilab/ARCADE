@@ -5,22 +5,26 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 import org.mockito.stubbing.Answer;
 import sim.engine.Schedule;
 import sim.engine.Stoppable;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.agent.module.Module;
+import arcade.core.agent.process.Process;
 import arcade.core.env.location.*;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModule;
+import arcade.potts.agent.process.PottsProcessSecretion;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.sim.PottsSimulation;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.potts.util.PottsEnums.Domain;
 import static arcade.potts.util.PottsEnums.Ordering;
 import static arcade.potts.util.PottsEnums.Phase;
@@ -147,6 +151,7 @@ public class PottsCellTest {
     @BeforeAll
     public static void setupMocks() {
         parametersMock = mock(Parameters.class);
+        doReturn(new MiniBox()).when(parametersMock).filter(any(String.class));
         locationMock = mock(PottsLocation.class);
 
         regionList = EnumSet.of(Region.DEFAULT, Region.NUCLEUS);
@@ -391,6 +396,34 @@ public class PottsCellTest {
     @Test
     public void getProcess_defaultConstructor_returnsNull() {
         assertNull(cellWithoutRegions.getProcess(Domain.UNDEFINED));
+    }
+
+    @Test
+    public void constructor_withSecretionProcess_makesProcess() {
+        MiniBox box = new MiniBox();
+        box.put("(PROCESS)" + TAG_SEPARATOR + "SECRETION", "");
+        Parameters parameters = new Parameters(box, null, null);
+        PottsCell cell = new PottsCellMock(containerWithoutRegions, locationMock, parameters);
+        assertTrue(cell.getProcess(Domain.SECRETION) instanceof PottsProcessSecretion);
+    }
+
+    @Test
+    public void constructor_undefinedProcess_addsNoProcess() {
+        MiniBox box = new MiniBox();
+        box.put("(PROCESS)" + TAG_SEPARATOR + "UNDEFINED", "");
+        Parameters parameters = new Parameters(box, null, null);
+        PottsCell cell = new PottsCellMock(containerWithoutRegions, locationMock, parameters);
+        assertTrue(cell.processes.isEmpty());
+    }
+
+    @Test
+    public void constructor_unknownProcess_throws() {
+        MiniBox box = new MiniBox();
+        box.put("(PROCESS)" + TAG_SEPARATOR + "SECRETIONS", "");
+        Parameters parameters = new Parameters(box, null, null);
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new PottsCellMock(containerWithoutRegions, locationMock, parameters));
     }
 
     @Test
@@ -965,6 +998,22 @@ public class PottsCellTest {
 
         cell.step(sim);
         assertEquals(cellAge + 1, cell.getAge(), EPSILON);
+    }
+
+    @Test
+    public void step_withProcess_stepsProcessBeforeModule() {
+        PottsCell cell = new PottsCellMock(containerWithoutRegions, locationMock, parametersMock);
+        PottsSimulation sim = mock(PottsSimulation.class);
+        Module module = mock(Module.class);
+        Process process = mock(Process.class);
+        cell.module = module;
+        cell.processes.put(Domain.SECRETION, process);
+
+        cell.step(sim);
+
+        InOrder order = inOrder(process, module);
+        order.verify(process).step(sim.random, sim);
+        order.verify(module).step(sim.random, sim);
     }
 
     @Test
